@@ -680,7 +680,7 @@ class ConsentEvaluation(_messages.Message):
       NOT_APPLICABLE: The Consent is not applicable to the requested access
         determination. For example, the Consent does not apply to the user for
         which the access determination is requested, or it has a `state` of
-        `REVOKED`.
+        `REVOKED`, or it has expired.
       NO_MATCHING_POLICY: The Consent does not have a policy that matches the
         `resource_attributes` of the evaluated resource.
       NO_SATISFIED_POLICY: The Consent has at least one policy that matches

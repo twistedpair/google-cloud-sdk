@@ -40,6 +40,7 @@ class GkehubV1alpha(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.projects_locations_features = self.ProjectsLocationsFeaturesService(self)
+    self.projects_locations_fleet = self.ProjectsLocationsFleetService(self)
     self.projects_locations_memberships = self.ProjectsLocationsMembershipsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
@@ -271,6 +272,69 @@ class GkehubV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsLocationsFleetService(base_api.BaseApiService):
+    """Service class for the projects_locations_fleet resource."""
+
+    _NAME = 'projects_locations_fleet'
+
+    def __init__(self, client):
+      super(GkehubV1alpha.ProjectsLocationsFleetService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a fleet.
+
+      Args:
+        request: (GkehubProjectsLocationsFleetCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Fleet) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/fleet',
+        http_method='POST',
+        method_id='gkehub.projects.locations.fleet.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1alpha/{+parent}/fleet',
+        request_field='fleet',
+        request_type_name='GkehubProjectsLocationsFleetCreateRequest',
+        response_type_name='Fleet',
+        supports_download=False,
+    )
+
+    def SearchFleets(self, request, global_params=None):
+      r"""Search fleets within a given organization or folder, and whose hosting projects the caller has `gkehub.memberships.get` permission on.
+
+      Args:
+        request: (GkehubProjectsLocationsFleetSearchFleetsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SearchFleetsResponse) The response message.
+      """
+      config = self.GetMethodConfig('SearchFleets')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SearchFleets.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='gkehub.projects.locations.fleet.searchFleets',
+        ordered_params=['projectsId', 'locationsId'],
+        path_params=['locationsId', 'projectsId'],
+        query_params=['query'],
+        relative_path='v1alpha/projects/{projectsId}/locations/{locationsId}/fleet:searchFleets',
+        request_field='',
+        request_type_name='GkehubProjectsLocationsFleetSearchFleetsRequest',
+        response_type_name='SearchFleetsResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsMembershipsService(base_api.BaseApiService):
     """Service class for the projects_locations_memberships resource."""
 
@@ -280,6 +344,114 @@ class GkehubV1alpha(base_api.BaseApiClient):
       super(GkehubV1alpha.ProjectsLocationsMembershipsService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new Membership. **This is currently only supported for GKE clusters on Google Cloud**. To register other clusters, follow the instructions at https://cloud.google.com/anthos/multicluster-management/connect/registering-a-cluster.
+
+      Args:
+        request: (GkehubProjectsLocationsMembershipsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/memberships',
+        http_method='POST',
+        method_id='gkehub.projects.locations.memberships.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['membershipId', 'requestId'],
+        relative_path='v1alpha/{+parent}/memberships',
+        request_field='membership',
+        request_type_name='GkehubProjectsLocationsMembershipsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Removes a Membership. **This is currently only supported for GKE clusters on Google Cloud**. To unregister other clusters, follow the instructions at https://cloud.google.com/anthos/multicluster-management/connect/unregistering-a-cluster.
+
+      Args:
+        request: (GkehubProjectsLocationsMembershipsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/memberships/{membershipsId}',
+        http_method='DELETE',
+        method_id='gkehub.projects.locations.memberships.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='GkehubProjectsLocationsMembershipsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def GenerateConnectManifest(self, request, global_params=None):
+      r"""Generates the manifest for deployment of the GKE connect agent. **This method is used internally by Google-provided libraries.** Most clients should not need to call this method directly.
+
+      Args:
+        request: (GkehubProjectsLocationsMembershipsGenerateConnectManifestRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GenerateConnectManifestResponse) The response message.
+      """
+      config = self.GetMethodConfig('GenerateConnectManifest')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GenerateConnectManifest.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/memberships/{membershipsId}:generateConnectManifest',
+        http_method='GET',
+        method_id='gkehub.projects.locations.memberships.generateConnectManifest',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['imagePullSecretContent', 'isUpgrade', 'namespace', 'proxy', 'registry', 'version'],
+        relative_path='v1alpha/{+name}:generateConnectManifest',
+        request_field='',
+        request_type_name='GkehubProjectsLocationsMembershipsGenerateConnectManifestRequest',
+        response_type_name='GenerateConnectManifestResponse',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets the details of a Membership.
+
+      Args:
+        request: (GkehubProjectsLocationsMembershipsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Membership) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/memberships/{membershipsId}',
+        http_method='GET',
+        method_id='gkehub.projects.locations.memberships.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='GkehubProjectsLocationsMembershipsGetRequest',
+        response_type_name='Membership',
+        supports_download=False,
+    )
 
     def GetIamPolicy(self, request, global_params=None):
       r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
@@ -305,6 +477,60 @@ class GkehubV1alpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='GkehubProjectsLocationsMembershipsGetIamPolicyRequest',
         response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists Memberships in a given project and location.
+
+      Args:
+        request: (GkehubProjectsLocationsMembershipsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListMembershipsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/memberships',
+        http_method='GET',
+        method_id='gkehub.projects.locations.memberships.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/memberships',
+        request_field='',
+        request_type_name='GkehubProjectsLocationsMembershipsListRequest',
+        response_type_name='ListMembershipsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates an existing Membership.
+
+      Args:
+        request: (GkehubProjectsLocationsMembershipsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/memberships/{membershipsId}',
+        http_method='PATCH',
+        method_id='gkehub.projects.locations.memberships.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1alpha/{+name}',
+        request_field='membership',
+        request_type_name='GkehubProjectsLocationsMembershipsPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -517,6 +743,33 @@ class GkehubV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetFleet(self, request, global_params=None):
+      r"""Returns the details of a fleet.
+
+      Args:
+        request: (GkehubProjectsLocationsGetFleetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Fleet) The response message.
+      """
+      config = self.GetMethodConfig('GetFleet')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetFleet.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/fleet',
+        http_method='GET',
+        method_id='gkehub.projects.locations.getFleet',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='GkehubProjectsLocationsGetFleetRequest',
+        response_type_name='Fleet',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists information about the supported locations for this service.
 
@@ -541,6 +794,33 @@ class GkehubV1alpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='GkehubProjectsLocationsListRequest',
         response_type_name='ListLocationsResponse',
+        supports_download=False,
+    )
+
+    def UpdateFleet(self, request, global_params=None):
+      r"""Updates a fleet.
+
+      Args:
+        request: (GkehubProjectsLocationsUpdateFleetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Fleet) The response message.
+      """
+      config = self.GetMethodConfig('UpdateFleet')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateFleet.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/fleet',
+        http_method='PATCH',
+        method_id='gkehub.projects.locations.updateFleet',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha/{+name}',
+        request_field='fleet',
+        request_type_name='GkehubProjectsLocationsUpdateFleetRequest',
+        response_type_name='Fleet',
         supports_download=False,
     )
 

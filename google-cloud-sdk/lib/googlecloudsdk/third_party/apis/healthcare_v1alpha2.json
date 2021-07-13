@@ -1017,7 +1017,7 @@
           "type": "string",
           "enumDescriptions": [
             "No evaluation result specified. This option is invalid.",
-            "The Consent is not applicable to the requested access determination. For example, the Consent does not apply to the user for which the access determination is requested, or it has a `state` of `REVOKED`.",
+            "The Consent is not applicable to the requested access determination. For example, the Consent does not apply to the user for which the access determination is requested, or it has a `state` of `REVOKED`, or it has expired.",
             "The Consent does not have a policy that matches the `resource_attributes` of the evaluated resource.",
             "The Consent has at least one policy that matches the `resource_attributes` of the evaluated resource, but no `authorization_rule` was satisfied.",
             "The Consent has at least one policy that matches the `resource_attributes` of the evaluated resource, and at least one `authorization_rule` was satisfied."
@@ -1469,6 +1469,275 @@
         }
       }
     },
+    "FhirStore": {
+      "id": "FhirStore",
+      "description": "Represents a FHIR store.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. Resource name of the FHIR store, of the form `projects\/{project_id}\/datasets\/{dataset_id}\/fhirStores\/{fhir_store_id}`.",
+          "type": "string"
+        },
+        "enableUpdateCreate": {
+          "description": "Whether this FHIR store has the [updateCreate capability](https:\/\/www.hl7.org\/fhir\/capabilitystatement-definitions.html#CapabilityStatement.rest.resource.updateCreate). This determines if the client can use an Update operation to create a new resource with a client-specified ID. If false, all IDs are server-assigned through the Create operation and attempts to update a non-existent resource return errors. It is strongly advised not to include or encode any sensitive data such as patient identifiers in client-specified resource IDs. Those IDs are part of the FHIR resource path recorded in Cloud audit logs and Pub\/Sub notifications. Those IDs can also be contained in reference fields within other resources.",
+          "type": "boolean"
+        },
+        "notificationConfig": {
+          "description": "If non-empty, publish all resource modifications of this FHIR store to this destination. The Pub\/Sub message attributes contain a map with a string describing the action that has triggered the notification. For example, \"action\":\"CreateResource\".",
+          "$ref": "NotificationConfig"
+        },
+        "disableReferentialIntegrity": {
+          "description": "Immutable. Whether to disable referential integrity in this FHIR store. This field is immutable after FHIR store creation. The default value is false, meaning that the API enforces referential integrity and fail the requests that result in inconsistent state in the FHIR store. When this field is set to true, the API skips referential integrity checks. Consequently, operations that rely on references, such as Patient-everything, do not return all the results if broken references exist.",
+          "type": "boolean"
+        },
+        "disableResourceVersioning": {
+          "description": "Immutable. Whether to disable resource versioning for this FHIR store. This field can not be changed after the creation of FHIR store. If set to false, which is the default behavior, all write operations cause historical versions to be recorded automatically. The historical versions can be fetched through the history APIs, but cannot be updated. If set to true, no historical versions are kept. The server sends errors for attempts to read the historical versions.",
+          "type": "boolean"
+        },
+        "labels": {
+          "description": "User-supplied key-value pairs used to organize FHIR stores. Label keys must be between 1 and 63 characters long, have a UTF-8 encoding of maximum 128 bytes, and must conform to the following PCRE regular expression: \\p{Ll}\\p{Lo}{0,62} Label values are optional, must be between 1 and 63 characters long, have a UTF-8 encoding of maximum 128 bytes, and must conform to the following PCRE regular expression: [\\p{Ll}\\p{Lo}\\p{N}_-]{0,63} No more than 64 labels can be associated with a given store.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "version": {
+          "description": "Immutable. The FHIR specification version that this FHIR store supports natively. This field is immutable after store creation. Requests are rejected if they contain FHIR resources of a different version. Version is required for every FHIR store.",
+          "type": "string",
+          "enumDescriptions": [
+            "VERSION_UNSPECIFIED is treated as STU3 to accommodate the existing FHIR stores.",
+            "Draft Standard for Trial Use, [Release 2](https:\/\/www.hl7.org\/fhir\/DSTU2)",
+            "Standard for Trial Use, [Release 3](https:\/\/www.hl7.org\/fhir\/STU3)",
+            "[Release 4](https:\/\/www.hl7.org\/fhir\/R4)"
+          ],
+          "enum": [
+            "VERSION_UNSPECIFIED",
+            "DSTU2",
+            "STU3",
+            "R4"
+          ]
+        },
+        "streamConfigs": {
+          "description": "A list of streaming configs that configure the destinations of streaming export for every resource mutation in this FHIR store. Each store is allowed to have up to 10 streaming configs. After a new config is added, the next resource mutation is streamed to the new location in addition to the existing ones. When a location is removed from the list, the server stops streaming to that location. Some lag (typically on the order of dozens of seconds) is expected before the results show up in the streaming destination.",
+          "type": "array",
+          "items": {
+            "$ref": "StreamConfig"
+          }
+        }
+      }
+    },
+    "NotificationConfig": {
+      "id": "NotificationConfig",
+      "description": "Specifies where the server sends notifications upon changes to a data store.",
+      "type": "object",
+      "properties": {
+        "pubsubTopic": {
+          "description": "The [Pub\/Sub](https:\/\/cloud.google.com\/pubsub\/docs\/) topic that notifications of changes are published on. Supplied by the client. PubsubMessage.Data contains the resource name. PubsubMessage.MessageId is the ID of this message. It is guaranteed to be unique within the topic. PubsubMessage.PublishTime is the time at which the message was published. Notifications are only sent if the topic is non-empty. [Topic names](https:\/\/cloud.google.com\/pubsub\/docs\/overview#names) must be scoped to a project. Cloud Healthcare API service account must have publisher permissions on the given Pub\/Sub topic. Not having adequate permissions causes the calls that send notifications to fail. If a notification can't be published to Pub\/Sub, errors are logged to Cloud Logging (see [Viewing error logs in Cloud Logging](https:\/\/cloud.google.com\/healthcare\/docs\/how-tos\/logging)). If the number of errors exceeds a certain rate, some aren't submitted. Note that not all operations trigger notifications, see [Configuring Pub\/Sub notifications](https:\/\/cloud.google.com\/healthcare\/docs\/how-tos\/pubsub) for specific details.",
+          "type": "string"
+        },
+        "sendForBulkImport": {
+          "description": "Indicates whether or not to send Pub\/Sub notifications on bulk import. Only supported for DICOM imports.",
+          "type": "boolean"
+        }
+      }
+    },
+    "StreamConfig": {
+      "id": "StreamConfig",
+      "description": "Contains configuration for streaming FHIR export.",
+      "type": "object",
+      "properties": {
+        "resourceTypes": {
+          "description": "Supply a FHIR resource type (such as \"Patient\" or \"Observation\"). See https:\/\/www.hl7.org\/fhir\/valueset-resource-types.html for a list of all FHIR resource types. The server treats an empty list as an intent to stream all the supported resource types in this FHIR store.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "bigqueryDestination": {
+          "description": "The destination BigQuery structure that contains both the dataset location and corresponding schema config. The output is organized in one table per resource type. The server reuses the existing tables (if any) that are named after the resource types, e.g. \"Patient\", \"Observation\". When there is no existing table for a given resource type, the server attempts to create one. When a table schema doesn't align with the schema config, either because of existing incompatible schema or out of band incompatible modification, the server does not stream in new data. One resolution in this case is to delete the incompatible table and let the server recreate one, though the newly created table only contains data after the table recreation. BigQuery imposes a 1 MB limit on streaming insert row size, therefore any resource mutation that generates more than 1 MB of BigQuery data will not be streamed. Results are appended to the corresponding BigQuery tables. Different versions of the same resource are distinguishable by the meta.versionId and meta.lastUpdated columns. The operation (CREATE\/UPDATE\/DELETE) that results in the new version is recorded in the meta.tag. The tables contain all historical resource versions since streaming was enabled. For query convenience, the server also creates one view per table of the same name containing only the current resource version. The streamed data in the BigQuery dataset is not guaranteed to be completely unique. The combination of the id and meta.versionId columns should ideally identify a single unique row. But in rare cases, duplicates may exist. At query time, users may use the SQL select statement to keep only one of the duplicate rows given an id and meta.versionId pair. Alternatively, the server created view mentioned above also filters out duplicates. Before adding this configuration, you must add the [`bigquery.dataEditor`](https:\/\/cloud.google.com\/bigquery\/docs\/access-control#bigquery.dataEditor) role to your project's **Cloud Healthcare Service Agent** [service account](https:\/\/cloud.google.com\/iam\/docs\/service-accounts). If a resource mutation cannot be streamed to BigQuery, errors will be logged to Cloud Logging (see [Viewing error logs in Cloud Logging](https:\/\/cloud.google.com\/healthcare\/docs\/how-tos\/logging)).",
+          "$ref": "GoogleCloudHealthcareV1alpha2FhirBigQueryDestination"
+        },
+        "deidentifiedStoreDestination": {
+          "description": "The destination FHIR store for de-identified resources. After this field is added, all subsequent creates\/updates\/patches to the source store will be de-identified using the provided configuration and applied to the destination store. Importing resources to the source store will not trigger the streaming. If the source store already contains resources when this option is enabled, those resources will not be copied to the destination store unless they are subsequently updated. This may result in invalid references in the destination store. Before adding this config, you must grant the healthcare.fhirResources.update permission on the destination store to your project's **Cloud Healthcare Service Agent** [service account](https:\/\/cloud.google.com\/healthcare\/docs\/how-tos\/permissions-healthcare-api-gcp-products#the_cloud_healthcare_service_agent). The destination store must set `enable_update_create` to true. The destination store must have `disable_referential_integrity` set to true. If a resource cannot be de-identified, errors will be logged to Cloud Logging (see [Viewing error logs in Cloud Logging](\/healthcare\/docs\/how-tos\/cloud-logging)).",
+          "$ref": "DeidentifiedStoreDestination"
+        }
+      }
+    },
+    "GoogleCloudHealthcareV1alpha2FhirBigQueryDestination": {
+      "id": "GoogleCloudHealthcareV1alpha2FhirBigQueryDestination",
+      "description": "The configuration for exporting to BigQuery.",
+      "type": "object",
+      "properties": {
+        "datasetUri": {
+          "description": "BigQuery URI to an existing dataset, up to 2000 characters long, in the format `bq:\/\/projectId.bqDatasetId`.",
+          "type": "string"
+        },
+        "schemaConfig": {
+          "description": "The configuration for the exported BigQuery schema.",
+          "$ref": "SchemaConfig"
+        },
+        "force": {
+          "description": "Use `write_disposition` instead. If `write_disposition` is specified, this parameter is ignored. force=false is equivalent to write_disposition=WRITE_EMPTY and force=true is equivalent to write_disposition=WRITE_TRUNCATE.",
+          "type": "boolean"
+        },
+        "writeDisposition": {
+          "description": "Determines if existing data in the destination dataset is overwritten, appended to, or not written if the tables contain data. If a write_disposition is specified, the `force` parameter is ignored.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default behavior is the same as WRITE_EMPTY.",
+            "Only export data if the destination tables are empty.",
+            "Erase all existing data in the tables before writing the instances.",
+            "Append data to the existing tables."
+          ],
+          "enum": [
+            "WRITE_DISPOSITION_UNSPECIFIED",
+            "WRITE_EMPTY",
+            "WRITE_TRUNCATE",
+            "WRITE_APPEND"
+          ]
+        }
+      }
+    },
+    "SchemaConfig": {
+      "id": "SchemaConfig",
+      "description": "Configuration for the FHIR BigQuery and Cloud Storage schema. Determines how the server generates the schema.",
+      "type": "object",
+      "properties": {
+        "schemaType": {
+          "description": "Specifies the output schema type. Schema type is required.",
+          "type": "string",
+          "enumDescriptions": [
+            "No schema type specified. This type is unsupported.",
+            "A data-driven schema generated from the fields present in the FHIR data being exported, with no additional simplification.",
+            "Analytics schema defined by the FHIR community. See https:\/\/github.com\/FHIR\/sql-on-fhir\/blob\/master\/sql-on-fhir.md. BigQuery only allows a maximum of 10,000 columns per table. Due to this limitation, the server will not generate schemas for fields of type `Resource`, which can hold any resource type. The affected fields are `Parameters.parameter.resource`, `Bundle.entry.resource`, and `Bundle.entry.response.outcome`."
+          ],
+          "enum": [
+            "SCHEMA_TYPE_UNSPECIFIED",
+            "LOSSLESS",
+            "ANALYTICS"
+          ]
+        },
+        "recursiveStructureDepth": {
+          "description": "The depth for all recursive structures in the output analytics schema. For example, `concept` in the CodeSystem resource is a recursive structure; when the depth is 2, the CodeSystem table will have a column called `concept.concept` but not `concept.concept.concept`. If not specified or set to 0, the server will use the default value 2. The maximum depth allowed is 5.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "DeidentifiedStoreDestination": {
+      "id": "DeidentifiedStoreDestination",
+      "description": "Contains configuration for streaming de-identified FHIR export.",
+      "type": "object",
+      "properties": {
+        "store": {
+          "description": "The full resource name of a Cloud Healthcare FHIR store, for example, `projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/fhirStores\/{fhir_store_id}`.",
+          "type": "string"
+        },
+        "config": {
+          "description": "The configuration to use when de-identifying resources that are added to this store.",
+          "$ref": "DeidentifyConfig"
+        }
+      }
+    },
+    "ListFhirStoresResponse": {
+      "id": "ListFhirStoresResponse",
+      "description": "Lists the FHIR stores in the given dataset.",
+      "type": "object",
+      "properties": {
+        "fhirStores": {
+          "description": "The returned FHIR stores. Won't be more FHIR stores than the value of page_size in the request.",
+          "type": "array",
+          "items": {
+            "$ref": "FhirStore"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results or empty if there are no more results in the list.",
+          "type": "string"
+        }
+      }
+    },
+    "ImportResourcesRequest": {
+      "id": "ImportResourcesRequest",
+      "description": "Request to import resources.",
+      "type": "object",
+      "properties": {
+        "contentStructure": {
+          "description": "The content structure in the source location. If not specified, the server treats the input source files as BUNDLE.",
+          "type": "string",
+          "enumDescriptions": [
+            "If the content structure is not specified, the default value `BUNDLE` is used.",
+            "The source file contains one or more lines of newline-delimited JSON (ndjson). Each line is a bundle that contains one or more resources.",
+            "The source file contains one or more lines of newline-delimited JSON (ndjson). Each line is a single resource.",
+            "The entire file is one JSON bundle. The JSON can span multiple lines.",
+            "The entire file is one JSON resource. The JSON can span multiple lines."
+          ],
+          "enum": [
+            "CONTENT_STRUCTURE_UNSPECIFIED",
+            "BUNDLE",
+            "RESOURCE",
+            "BUNDLE_PRETTY",
+            "RESOURCE_PRETTY"
+          ]
+        },
+        "gcsSource": {
+          "description": "Cloud Storage source data location and import configuration. The Healthcare Service Agent account requires the `roles\/storage.objectAdmin` role on the Cloud Storage location. For each Cloud Storage object, use a text file that contains the format specified in ContentStructure.",
+          "$ref": "GoogleCloudHealthcareV1alpha2FhirGcsSource"
+        },
+        "gcsErrorDestination": {
+          "description": "The Cloud Storage destination to write the error report to. The Healthcare Service Agent account requires the `roles\/storage.objectAdmin` role on the Cloud Storage location. Writing a file to the same destination multiple times results in the previous version of the file being overwritten.",
+          "$ref": "GoogleCloudHealthcareV1alpha2FhirGcsErrorDestination"
+        }
+      }
+    },
+    "GoogleCloudHealthcareV1alpha2FhirGcsSource": {
+      "id": "GoogleCloudHealthcareV1alpha2FhirGcsSource",
+      "description": "Specifies the configuration for importing data from Cloud Storage.",
+      "type": "object",
+      "properties": {
+        "uri": {
+          "description": "Points to a Cloud Storage URI containing file(s) to import. The URI must be in the following format: `gs:\/\/{bucket_id}\/{object_id}`. The URI can include wildcards in `object_id` and thus identify multiple files. Supported wildcards: * `*` to match 0 or more non-separator characters * `**` to match 0 or more characters (including separators). Must be used at the end of a path and with no other wildcards in the path. Can also be used with a file extension (such as .ndjson), which imports all files with the extension in the specified directory and its sub-directories. For example, `gs:\/\/my-bucket\/my-directory\/**.ndjson` imports all files with `.ndjson` extensions in `my-directory\/` and its sub-directories. * `?` to match 1 character Files matching the wildcard are expected to contain content only, no metadata.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudHealthcareV1alpha2FhirGcsErrorDestination": {
+      "id": "GoogleCloudHealthcareV1alpha2FhirGcsErrorDestination",
+      "description": "Specifies the Cloud Storage destination where errors are recorded.",
+      "type": "object",
+      "properties": {
+        "uriPrefix": {
+          "description": "URI for a Cloud Storage directory where the server writes error report files, in the format `gs:\/\/{bucket-id}\/{path\/to\/destination\/dir}`. If there is no trailing slash, the service appends one when composing the object path. The Cloud Storage bucket referenced in `uri_prefix` must exist or an error occurs.",
+          "type": "string"
+        }
+      }
+    },
+    "ExportResourcesRequest": {
+      "id": "ExportResourcesRequest",
+      "description": "Request to export resources.",
+      "type": "object",
+      "properties": {
+        "gcsDestination": {
+          "description": "The Cloud Storage output destination. The Healthcare Service Agent account requires the `roles\/storage.objectAdmin` role on the Cloud Storage location. The exported outputs are organized by FHIR resource types. The server creates one object per resource type. Each object contains newline delimited JSON, and each line is a FHIR resource.",
+          "$ref": "GoogleCloudHealthcareV1alpha2FhirGcsDestination"
+        },
+        "bigqueryDestination": {
+          "description": "The BigQuery output destination. The Cloud Healthcare Service Agent requires two IAM roles on the BigQuery location: `roles\/bigquery.dataEditor` and `roles\/bigquery.jobUser`. The output is one BigQuery table per resource type. Note that unlike in FhirStore.StreamConfig.BigQueryDestination, BigQuery views will not be created by ExportResources.",
+          "$ref": "GoogleCloudHealthcareV1alpha2FhirBigQueryDestination"
+        }
+      }
+    },
+    "GoogleCloudHealthcareV1alpha2FhirGcsDestination": {
+      "id": "GoogleCloudHealthcareV1alpha2FhirGcsDestination",
+      "description": "The configuration for exporting to Cloud Storage.",
+      "type": "object",
+      "properties": {
+        "uriPrefix": {
+          "description": "URI for a Cloud Storage directory where the server writes result files, in the format `gs:\/\/{bucket-id}\/{path\/to\/destination\/dir}`. If there is no trailing slash, the service appends one when composing the object path. The Cloud Storage bucket referenced in `uri_prefix` must exist or an error occurs.",
+          "type": "string"
+        }
+      }
+    },
     "Dataset": {
       "id": "Dataset",
       "description": "A message representing a health dataset. A health dataset represents a collection of healthcare data pertaining to one or more patients. This may include multiple modalities of healthcare data, such as electronic medical records or medical imaging data.",
@@ -1565,21 +1834,6 @@
           "additionalProperties": {
             "type": "string"
           }
-        }
-      }
-    },
-    "NotificationConfig": {
-      "id": "NotificationConfig",
-      "description": "Specifies where the server sends notifications upon changes to a data store.",
-      "type": "object",
-      "properties": {
-        "pubsubTopic": {
-          "description": "The [Pub\/Sub](https:\/\/cloud.google.com\/pubsub\/docs\/) topic that notifications of changes are published on. Supplied by the client. PubsubMessage.Data contains the resource name. PubsubMessage.MessageId is the ID of this message. It is guaranteed to be unique within the topic. PubsubMessage.PublishTime is the time at which the message was published. Notifications are only sent if the topic is non-empty. [Topic names](https:\/\/cloud.google.com\/pubsub\/docs\/overview#names) must be scoped to a project. Cloud Healthcare API service account must have publisher permissions on the given Pub\/Sub topic. Not having adequate permissions causes the calls that send notifications to fail. If a notification can't be published to Pub\/Sub, errors are logged to Cloud Logging (see [Viewing error logs in Cloud Logging](https:\/\/cloud.google.com\/healthcare\/docs\/how-tos\/logging)). If the number of errors exceeds a certain rate, some aren't submitted. Note that not all operations trigger notifications, see [Configuring Pub\/Sub notifications](https:\/\/cloud.google.com\/healthcare\/docs\/how-tos\/pubsub) for specific details.",
-          "type": "string"
-        },
-        "sendForBulkImport": {
-          "description": "Indicates whether or not to send Pub\/Sub notifications on bulk import. Only supported for DICOM imports.",
-          "type": "boolean"
         }
       }
     },
@@ -1840,260 +2094,6 @@
       "properties": {
         "uri": {
           "description": "Points to a Cloud Storage URI containing file(s) to import. The URI must be in the following format: `gs:\/\/{bucket_id}\/{object_id}`. The URI can include wildcards in `object_id` and thus identify multiple files. Supported wildcards: * `*` to match 0 or more non-separator characters * `**` to match 0 or more characters (including separators). Must be used at the end of a path and with no other wildcards in the path. Can also be used with a file extension (such as .ndjson), which imports all files with the extension in the specified directory and its sub-directories. For example, `gs:\/\/my-bucket\/my-directory\/**.ndjson` imports all files with `.ndjson` extensions in `my-directory\/` and its sub-directories. * `?` to match 1 character Files matching the wildcard are expected to contain content only, no metadata.",
-          "type": "string"
-        }
-      }
-    },
-    "FhirStore": {
-      "id": "FhirStore",
-      "description": "Represents a FHIR store.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "Output only. Resource name of the FHIR store, of the form `projects\/{project_id}\/datasets\/{dataset_id}\/fhirStores\/{fhir_store_id}`.",
-          "type": "string"
-        },
-        "enableUpdateCreate": {
-          "description": "Whether this FHIR store has the [updateCreate capability](https:\/\/www.hl7.org\/fhir\/capabilitystatement-definitions.html#CapabilityStatement.rest.resource.updateCreate). This determines if the client can use an Update operation to create a new resource with a client-specified ID. If false, all IDs are server-assigned through the Create operation and attempts to update a non-existent resource return errors. It is strongly advised not to include or encode any sensitive data such as patient identifiers in client-specified resource IDs. Those IDs are part of the FHIR resource path recorded in Cloud audit logs and Pub\/Sub notifications. Those IDs can also be contained in reference fields within other resources.",
-          "type": "boolean"
-        },
-        "notificationConfig": {
-          "description": "If non-empty, publish all resource modifications of this FHIR store to this destination. The Pub\/Sub message attributes contain a map with a string describing the action that has triggered the notification. For example, \"action\":\"CreateResource\".",
-          "$ref": "NotificationConfig"
-        },
-        "disableReferentialIntegrity": {
-          "description": "Immutable. Whether to disable referential integrity in this FHIR store. This field is immutable after FHIR store creation. The default value is false, meaning that the API enforces referential integrity and fail the requests that result in inconsistent state in the FHIR store. When this field is set to true, the API skips referential integrity checks. Consequently, operations that rely on references, such as Patient-everything, do not return all the results if broken references exist.",
-          "type": "boolean"
-        },
-        "disableResourceVersioning": {
-          "description": "Immutable. Whether to disable resource versioning for this FHIR store. This field can not be changed after the creation of FHIR store. If set to false, which is the default behavior, all write operations cause historical versions to be recorded automatically. The historical versions can be fetched through the history APIs, but cannot be updated. If set to true, no historical versions are kept. The server sends errors for attempts to read the historical versions.",
-          "type": "boolean"
-        },
-        "labels": {
-          "description": "User-supplied key-value pairs used to organize FHIR stores. Label keys must be between 1 and 63 characters long, have a UTF-8 encoding of maximum 128 bytes, and must conform to the following PCRE regular expression: \\p{Ll}\\p{Lo}{0,62} Label values are optional, must be between 1 and 63 characters long, have a UTF-8 encoding of maximum 128 bytes, and must conform to the following PCRE regular expression: [\\p{Ll}\\p{Lo}\\p{N}_-]{0,63} No more than 64 labels can be associated with a given store.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        },
-        "version": {
-          "description": "Immutable. The FHIR specification version that this FHIR store supports natively. This field is immutable after store creation. Requests are rejected if they contain FHIR resources of a different version. Version is required for every FHIR store.",
-          "type": "string",
-          "enumDescriptions": [
-            "VERSION_UNSPECIFIED is treated as STU3 to accommodate the existing FHIR stores.",
-            "Draft Standard for Trial Use, [Release 2](https:\/\/www.hl7.org\/fhir\/DSTU2)",
-            "Standard for Trial Use, [Release 3](https:\/\/www.hl7.org\/fhir\/STU3)",
-            "[Release 4](https:\/\/www.hl7.org\/fhir\/R4)"
-          ],
-          "enum": [
-            "VERSION_UNSPECIFIED",
-            "DSTU2",
-            "STU3",
-            "R4"
-          ]
-        },
-        "streamConfigs": {
-          "description": "A list of streaming configs that configure the destinations of streaming export for every resource mutation in this FHIR store. Each store is allowed to have up to 10 streaming configs. After a new config is added, the next resource mutation is streamed to the new location in addition to the existing ones. When a location is removed from the list, the server stops streaming to that location. Some lag (typically on the order of dozens of seconds) is expected before the results show up in the streaming destination.",
-          "type": "array",
-          "items": {
-            "$ref": "StreamConfig"
-          }
-        }
-      }
-    },
-    "StreamConfig": {
-      "id": "StreamConfig",
-      "description": "Contains configuration for streaming FHIR export.",
-      "type": "object",
-      "properties": {
-        "resourceTypes": {
-          "description": "Supply a FHIR resource type (such as \"Patient\" or \"Observation\"). See https:\/\/www.hl7.org\/fhir\/valueset-resource-types.html for a list of all FHIR resource types. The server treats an empty list as an intent to stream all the supported resource types in this FHIR store.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "bigqueryDestination": {
-          "description": "The destination BigQuery structure that contains both the dataset location and corresponding schema config. The output is organized in one table per resource type. The server reuses the existing tables (if any) that are named after the resource types, e.g. \"Patient\", \"Observation\". When there is no existing table for a given resource type, the server attempts to create one. When a table schema doesn't align with the schema config, either because of existing incompatible schema or out of band incompatible modification, the server does not stream in new data. One resolution in this case is to delete the incompatible table and let the server recreate one, though the newly created table only contains data after the table recreation. BigQuery imposes a 1 MB limit on streaming insert row size, therefore any resource mutation that generates more than 1 MB of BigQuery data will not be streamed. Results are appended to the corresponding BigQuery tables. Different versions of the same resource are distinguishable by the meta.versionId and meta.lastUpdated columns. The operation (CREATE\/UPDATE\/DELETE) that results in the new version is recorded in the meta.tag. The tables contain all historical resource versions since streaming was enabled. For query convenience, the server also creates one view per table of the same name containing only the current resource version. The streamed data in the BigQuery dataset is not guaranteed to be completely unique. The combination of the id and meta.versionId columns should ideally identify a single unique row. But in rare cases, duplicates may exist. At query time, users may use the SQL select statement to keep only one of the duplicate rows given an id and meta.versionId pair. Alternatively, the server created view mentioned above also filters out duplicates. Before adding this configuration, you must add the [`bigquery.dataEditor`](https:\/\/cloud.google.com\/bigquery\/docs\/access-control#bigquery.dataEditor) role to your project's **Cloud Healthcare Service Agent** [service account](https:\/\/cloud.google.com\/iam\/docs\/service-accounts). If a resource mutation cannot be streamed to BigQuery, errors will be logged to Cloud Logging (see [Viewing error logs in Cloud Logging](https:\/\/cloud.google.com\/healthcare\/docs\/how-tos\/logging)).",
-          "$ref": "GoogleCloudHealthcareV1alpha2FhirBigQueryDestination"
-        },
-        "deidentifiedStoreDestination": {
-          "description": "The destination FHIR store for de-identified resources. After this field is added, all subsequent creates\/updates\/patches to the source store will be de-identified using the provided configuration and applied to the destination store. Importing resources to the source store will not trigger the streaming. If the source store already contains resources when this option is enabled, those resources will not be copied to the destination store unless they are subsequently updated. This may result in invalid references in the destination store. Before adding this config, you must grant the healthcare.fhirResources.update permission on the destination store to your project's **Cloud Healthcare Service Agent** [service account](https:\/\/cloud.google.com\/healthcare\/docs\/how-tos\/permissions-healthcare-api-gcp-products#the_cloud_healthcare_service_agent). The destination store must set `enable_update_create` to true. The destination store must have `disable_referential_integrity` set to true. If a resource cannot be de-identified, errors will be logged to Cloud Logging (see [Viewing error logs in Cloud Logging](\/healthcare\/docs\/how-tos\/cloud-logging)).",
-          "$ref": "DeidentifiedStoreDestination"
-        }
-      }
-    },
-    "GoogleCloudHealthcareV1alpha2FhirBigQueryDestination": {
-      "id": "GoogleCloudHealthcareV1alpha2FhirBigQueryDestination",
-      "description": "The configuration for exporting to BigQuery.",
-      "type": "object",
-      "properties": {
-        "datasetUri": {
-          "description": "BigQuery URI to an existing dataset, up to 2000 characters long, in the format `bq:\/\/projectId.bqDatasetId`.",
-          "type": "string"
-        },
-        "schemaConfig": {
-          "description": "The configuration for the exported BigQuery schema.",
-          "$ref": "SchemaConfig"
-        },
-        "force": {
-          "description": "Use `write_disposition` instead. If `write_disposition` is specified, this parameter is ignored. force=false is equivalent to write_disposition=WRITE_EMPTY and force=true is equivalent to write_disposition=WRITE_TRUNCATE.",
-          "type": "boolean"
-        },
-        "writeDisposition": {
-          "description": "Determines if existing data in the destination dataset is overwritten, appended to, or not written if the tables contain data. If a write_disposition is specified, the `force` parameter is ignored.",
-          "type": "string",
-          "enumDescriptions": [
-            "Default behavior is the same as WRITE_EMPTY.",
-            "Only export data if the destination tables are empty.",
-            "Erase all existing data in the tables before writing the instances.",
-            "Append data to the existing tables."
-          ],
-          "enum": [
-            "WRITE_DISPOSITION_UNSPECIFIED",
-            "WRITE_EMPTY",
-            "WRITE_TRUNCATE",
-            "WRITE_APPEND"
-          ]
-        }
-      }
-    },
-    "SchemaConfig": {
-      "id": "SchemaConfig",
-      "description": "Configuration for the FHIR BigQuery and Cloud Storage schema. Determines how the server generates the schema.",
-      "type": "object",
-      "properties": {
-        "schemaType": {
-          "description": "Specifies the output schema type. Schema type is required.",
-          "type": "string",
-          "enumDescriptions": [
-            "No schema type specified. This type is unsupported.",
-            "A data-driven schema generated from the fields present in the FHIR data being exported, with no additional simplification.",
-            "Analytics schema defined by the FHIR community. See https:\/\/github.com\/FHIR\/sql-on-fhir\/blob\/master\/sql-on-fhir.md. BigQuery only allows a maximum of 10,000 columns per table. Due to this limitation, the server will not generate schemas for fields of type `Resource`, which can hold any resource type. The affected fields are `Parameters.parameter.resource`, `Bundle.entry.resource`, and `Bundle.entry.response.outcome`."
-          ],
-          "enum": [
-            "SCHEMA_TYPE_UNSPECIFIED",
-            "LOSSLESS",
-            "ANALYTICS"
-          ]
-        },
-        "recursiveStructureDepth": {
-          "description": "The depth for all recursive structures in the output analytics schema. For example, `concept` in the CodeSystem resource is a recursive structure; when the depth is 2, the CodeSystem table will have a column called `concept.concept` but not `concept.concept.concept`. If not specified or set to 0, the server will use the default value 2. The maximum depth allowed is 5.",
-          "type": "string",
-          "format": "int64"
-        }
-      }
-    },
-    "DeidentifiedStoreDestination": {
-      "id": "DeidentifiedStoreDestination",
-      "description": "Contains configuration for streaming de-identified FHIR export.",
-      "type": "object",
-      "properties": {
-        "store": {
-          "description": "The full resource name of a Cloud Healthcare FHIR store, for example, `projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/fhirStores\/{fhir_store_id}`.",
-          "type": "string"
-        },
-        "config": {
-          "description": "The configuration to use when de-identifying resources that are added to this store.",
-          "$ref": "DeidentifyConfig"
-        }
-      }
-    },
-    "ListFhirStoresResponse": {
-      "id": "ListFhirStoresResponse",
-      "description": "Lists the FHIR stores in the given dataset.",
-      "type": "object",
-      "properties": {
-        "fhirStores": {
-          "description": "The returned FHIR stores. Won't be more FHIR stores than the value of page_size in the request.",
-          "type": "array",
-          "items": {
-            "$ref": "FhirStore"
-          }
-        },
-        "nextPageToken": {
-          "description": "Token to retrieve the next page of results or empty if there are no more results in the list.",
-          "type": "string"
-        }
-      }
-    },
-    "ImportResourcesRequest": {
-      "id": "ImportResourcesRequest",
-      "description": "Request to import resources.",
-      "type": "object",
-      "properties": {
-        "contentStructure": {
-          "description": "The content structure in the source location. If not specified, the server treats the input source files as BUNDLE.",
-          "type": "string",
-          "enumDescriptions": [
-            "If the content structure is not specified, the default value `BUNDLE` is used.",
-            "The source file contains one or more lines of newline-delimited JSON (ndjson). Each line is a bundle that contains one or more resources.",
-            "The source file contains one or more lines of newline-delimited JSON (ndjson). Each line is a single resource.",
-            "The entire file is one JSON bundle. The JSON can span multiple lines.",
-            "The entire file is one JSON resource. The JSON can span multiple lines."
-          ],
-          "enum": [
-            "CONTENT_STRUCTURE_UNSPECIFIED",
-            "BUNDLE",
-            "RESOURCE",
-            "BUNDLE_PRETTY",
-            "RESOURCE_PRETTY"
-          ]
-        },
-        "gcsSource": {
-          "description": "Cloud Storage source data location and import configuration. The Healthcare Service Agent account requires the `roles\/storage.objectAdmin` role on the Cloud Storage location. For each Cloud Storage object, use a text file that contains the format specified in ContentStructure.",
-          "$ref": "GoogleCloudHealthcareV1alpha2FhirGcsSource"
-        },
-        "gcsErrorDestination": {
-          "description": "The Cloud Storage destination to write the error report to. The Healthcare Service Agent account requires the `roles\/storage.objectAdmin` role on the Cloud Storage location. Writing a file to the same destination multiple times results in the previous version of the file being overwritten.",
-          "$ref": "GoogleCloudHealthcareV1alpha2FhirGcsErrorDestination"
-        }
-      }
-    },
-    "GoogleCloudHealthcareV1alpha2FhirGcsSource": {
-      "id": "GoogleCloudHealthcareV1alpha2FhirGcsSource",
-      "description": "Specifies the configuration for importing data from Cloud Storage.",
-      "type": "object",
-      "properties": {
-        "uri": {
-          "description": "Points to a Cloud Storage URI containing file(s) to import. The URI must be in the following format: `gs:\/\/{bucket_id}\/{object_id}`. The URI can include wildcards in `object_id` and thus identify multiple files. Supported wildcards: * `*` to match 0 or more non-separator characters * `**` to match 0 or more characters (including separators). Must be used at the end of a path and with no other wildcards in the path. Can also be used with a file extension (such as .ndjson), which imports all files with the extension in the specified directory and its sub-directories. For example, `gs:\/\/my-bucket\/my-directory\/**.ndjson` imports all files with `.ndjson` extensions in `my-directory\/` and its sub-directories. * `?` to match 1 character Files matching the wildcard are expected to contain content only, no metadata.",
-          "type": "string"
-        }
-      }
-    },
-    "GoogleCloudHealthcareV1alpha2FhirGcsErrorDestination": {
-      "id": "GoogleCloudHealthcareV1alpha2FhirGcsErrorDestination",
-      "description": "Specifies the Cloud Storage destination where errors are recorded.",
-      "type": "object",
-      "properties": {
-        "uriPrefix": {
-          "description": "URI for a Cloud Storage directory where the server writes error report files, in the format `gs:\/\/{bucket-id}\/{path\/to\/destination\/dir}`. If there is no trailing slash, the service appends one when composing the object path. The Cloud Storage bucket referenced in `uri_prefix` must exist or an error occurs.",
-          "type": "string"
-        }
-      }
-    },
-    "ExportResourcesRequest": {
-      "id": "ExportResourcesRequest",
-      "description": "Request to export resources.",
-      "type": "object",
-      "properties": {
-        "gcsDestination": {
-          "description": "The Cloud Storage output destination. The Healthcare Service Agent account requires the `roles\/storage.objectAdmin` role on the Cloud Storage location. The exported outputs are organized by FHIR resource types. The server creates one object per resource type. Each object contains newline delimited JSON, and each line is a FHIR resource.",
-          "$ref": "GoogleCloudHealthcareV1alpha2FhirGcsDestination"
-        },
-        "bigqueryDestination": {
-          "description": "The BigQuery output destination. The Cloud Healthcare Service Agent requires two IAM roles on the BigQuery location: `roles\/bigquery.dataEditor` and `roles\/bigquery.jobUser`. The output is one BigQuery table per resource type. Note that unlike in FhirStore.StreamConfig.BigQueryDestination, BigQuery views will not be created by ExportResources.",
-          "$ref": "GoogleCloudHealthcareV1alpha2FhirBigQueryDestination"
-        }
-      }
-    },
-    "GoogleCloudHealthcareV1alpha2FhirGcsDestination": {
-      "id": "GoogleCloudHealthcareV1alpha2FhirGcsDestination",
-      "description": "The configuration for exporting to Cloud Storage.",
-      "type": "object",
-      "properties": {
-        "uriPrefix": {
-          "description": "URI for a Cloud Storage directory where the server writes result files, in the format `gs:\/\/{bucket-id}\/{path\/to\/destination\/dir}`. If there is no trailing slash, the service appends one when composing the object path. The Cloud Storage bucket referenced in `uri_prefix` must exist or an error occurs.",
           "type": "string"
         }
       }

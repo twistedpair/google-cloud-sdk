@@ -47,6 +47,14 @@ def StreamAttributeConfig(name='stream'):
       completion_id_field='id')
 
 
+def RouteAttributeConfig(name='route'):
+  return concepts.ResourceParameterAttributeConfig(
+      name=name,
+      help_text='The route of the {resource}.',
+      completion_request_params={'fieldMask': 'name'},
+      completion_id_field='id')
+
+
 def LocationAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='location', help_text='The Cloud location for the {resource}.')
@@ -86,6 +94,18 @@ def GetStreamResourceSpec(resource_name='stream'):
       'datastream.projects.locations.streams',
       resource_name=resource_name,
       streamsId=StreamAttributeConfig(name=resource_name),
+      locationsId=LocationAttributeConfig(),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      disable_auto_completers=False)
+
+
+def GetRouteResourceSpec(resource_name='route'):
+  return concepts.ResourceSpec(
+      'datastream.projects.locations.privateConnections.routes',
+      resource_name=resource_name,
+      routesId=RouteAttributeConfig(name=resource_name),
+      privateConnectionsId=PrivateConnectionAttributeConfig(
+          'private-connection'),
       locationsId=LocationAttributeConfig(),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       disable_auto_completers=False)
@@ -240,16 +260,17 @@ def AddPrivateConnectionResourceArg(parser, verb, positional=True):
       resource_specs).AddToParser(parser)
 
 
-def AddStreamResourceArg(parser, verb):
+def AddStreamResourceArg(parser, verb, required=True):
   """Add resource arguments for creating/updating a stream.
 
   Args:
     parser: argparse.ArgumentParser, the parser for the command.
     verb: str, the verb to describe the resource, such as 'to update'.
+    required: bool, if True, means that a flag is required.
   """
-  source_parser = parser.add_group(required=True)
+  source_parser = parser.add_group(required=required)
   source_config_parser_group = source_parser.add_group(
-      required=True, mutex=True)
+      required=required, mutex=True)
   source_config_parser_group.add_argument(
       '--oracle-source-config',
       help="""\
@@ -281,9 +302,9 @@ def AddStreamResourceArg(parser, verb):
        """
       )
 
-  destination_parser = parser.add_group(required=True)
+  destination_parser = parser.add_group(required=required)
   destination_config_parser_group = destination_parser.add_group(
-      required=True, mutex=True)
+      required=required, mutex=True)
   destination_config_parser_group.add_argument(
       '--gcs-destination-config',
       help="""\
@@ -312,7 +333,7 @@ def AddStreamResourceArg(parser, verb):
           '--source-name',
           GetConnectionProfileResourceSpec(),
           'Resource ID of the source connection profile.',
-          required=True,
+          required=required,
           flag_name_overrides={'location': ''},
           group=source_parser
       ),
@@ -320,7 +341,7 @@ def AddStreamResourceArg(parser, verb):
           '--destination-name',
           GetConnectionProfileResourceSpec(),
           'Resource ID of the destination connection profile.',
-          required=True,
+          required=required,
           flag_name_overrides={'location': ''},
           group=destination_parser
       )
@@ -331,3 +352,29 @@ def AddStreamResourceArg(parser, verb):
           '--source-name.location': ['--location'],
           '--destination-name.location': ['--location']
       }).AddToParser(parser)
+
+
+def AddRouteResourceArg(parser, verb, positional=True):
+  """Add a resource argument for a Datastream route.
+
+  Args:
+    parser: the parser for the command.
+    verb: str, the verb to describe the resource, such as 'to create'.
+    positional: bool, if True, means that the resource is a positional rather
+      than a flag.
+  """
+  if positional:
+    name = 'route'
+  else:
+    name = '--route'
+
+  resource_specs = [
+      presentation_specs.ResourcePresentationSpec(
+          name,
+          GetRouteResourceSpec(),
+          'The route {}.'.format(verb),
+          required=True)
+  ]
+  concept_parsers.ConceptParser(
+      resource_specs).AddToParser(parser)
+

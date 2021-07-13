@@ -20,7 +20,7 @@ from __future__ import unicode_literals
 
 import contextlib
 
-from googlecloudsdk.api_lib.container.azure import util as azure_api_util
+from googlecloudsdk.api_lib.container.gkemulticloud import util as api_util
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
@@ -82,5 +82,5 @@ def GkemulticloudEndpointOverride(location, track=base.ReleaseTrack.GA):
 def _GetEffectiveEndpoint(location, track=base.ReleaseTrack.GA):
   """Returns regional GKE Multi-cloud Endpoint."""
   endpoint = apis.GetEffectiveApiEndpoint(
-      azure_api_util.MODULE_NAME, azure_api_util.GetApiVersionForTrack(track))
+      api_util.MODULE_NAME, api_util.GetApiVersionForTrack(track))
   return _AppendLocation(endpoint, location)

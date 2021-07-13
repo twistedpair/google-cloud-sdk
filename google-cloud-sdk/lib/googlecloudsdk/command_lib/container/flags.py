@@ -1473,7 +1473,8 @@ Start the rotation of this cluster to a new IP. For example:
   $ {command} example-cluster --start-ip-rotation
 
 This causes the cluster to serve on two IPs, and will initiate a node upgrade \
-to point to the new IP."""
+to point to the new IP. See documentation for more details: \
+https://cloud.google.com/kubernetes-engine/docs/how-to/ip-rotation."""
   parser.add_argument(
       '--start-ip-rotation',
       action='store_true',
@@ -1490,7 +1491,8 @@ Start the rotation of IP and credentials for this cluster. For example:
   $ {command} example-cluster --start-credential-rotation
 
 This causes the cluster to serve on two IPs, and will initiate a node upgrade \
-to point to the new IP."""
+to point to the new IP. See documentation for more details: \
+https://cloud.google.com/kubernetes-engine/docs/how-to/credential-rotation."""
   parser.add_argument(
       '--start-credential-rotation',
       action='store_true',
@@ -1507,7 +1509,8 @@ Complete the IP rotation for this cluster. For example:
   $ {command} example-cluster --complete-ip-rotation
 
 This causes the cluster to stop serving its old IP, and return to a single IP \
-state."""
+state. See documentation for more details: \
+https://cloud.google.com/kubernetes-engine/docs/how-to/ip-rotation."""
   parser.add_argument(
       '--complete-ip-rotation',
       action='store_true',
@@ -1524,7 +1527,8 @@ Complete the IP and credential rotation for this cluster. For example:
   $ {command} example-cluster --complete-credential-rotation
 
 This causes the cluster to stop serving its old IP, return to a single IP, and \
-invalidate old credentials."""
+invalidate old credentials. See documentation for more details: \
+https://cloud.google.com/kubernetes-engine/docs/how-to/credential-rotation."""
   parser.add_argument(
       '--complete-credential-rotation',
       action='store_true',
@@ -2564,7 +2568,13 @@ def AddGkeOidcFlag(parser):
   parser.add_argument(
       '--enable-gke-oidc',
       default=None,
-      action='store_true',
+      action=actions.DeprecationAction(
+          '--enable-gke-oidc',
+          warn='GKE OIDC is being replaced by Identity Service across Anthos '
+          'and GKE. Thus, flag `--enable-gke-oidc` is also deprecated. Please '
+          'use `--enable-identity-service` to enable the Identity Service '
+          'component',
+          action='store_true'),
       help="""\
 Enable GKE OIDC authentication on the cluster.
 
@@ -2573,6 +2583,23 @@ properly setting OIDC config.
 
 GKE OIDC is by default disabled when creating a new cluster. To disable GKE OIDC
 in an existing cluster, explicitly set flag `--no-enable-gke-oidc`.
+""")
+
+
+def AddIdentityServiceFlag(parser):
+  parser.add_argument(
+      '--enable-identity-service',
+      default=None,
+      action='store_true',
+      help="""\
+Enable Identity Service component on the cluster.
+
+When enabled, users can authenticate to Kubernetes cluster with external
+identity providers.
+
+Identity Service is by default disabled when creating a new cluster.
+To disable Identity Service in an existing cluster, explicitly set flag
+`--no-enable-identity-service`.
 """)
 
 

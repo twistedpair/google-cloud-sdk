@@ -2203,8 +2203,10 @@ class GoogleCloudMlV1Scheduling(_messages.Message):
       jobs#formatting_your_configuration_parameters). For example: ```yaml
       trainingInput: scheduling: maxWaitTime: 3600s ```
     priority: Optional. Job scheduling will be based on this priority. A 32
-      bit integer [-2,147,483,648 , 2,147,483,647], the bigger the number, the
-      higher the priority. Default to 0 if not set.
+      bit integer [-1000, 1000], the bigger the number, the higher the
+      priority. Default to 0 if not set. If there are multiple jobs requesting
+      same type of accelerators, the high priority job will be scheduled prior
+      to ones with low priority.
     resilientToWorkerRestart: Optional. If true, reschedules an entire job if
       a worker gets restarted. This feature can be used by distributed
       training jobs that are not resilient to workers leaving and joining a

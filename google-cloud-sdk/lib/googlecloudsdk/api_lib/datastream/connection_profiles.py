@@ -90,8 +90,10 @@ class ConnectionProfilesClient(object):
         databaseService=args.database_service)
 
   def _GetGCSProfile(self, args):
-    return self._messages.GcsProfile(
-        bucketName=args.bucket_name, rootPath=args.root_path)
+    gcs_profile = self._messages.GcsProfile(
+        bucketName=args.bucket_name)
+    gcs_profile.rootPath = args.root_path if args.root_path else '/'
+    return gcs_profile
 
   def _ParseSslConfig(self, data):
     return self._messages.MysqlSslConfig(

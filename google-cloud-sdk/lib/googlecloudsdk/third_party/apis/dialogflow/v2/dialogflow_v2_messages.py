@@ -8597,7 +8597,7 @@ class GoogleCloudDialogflowV2Environment(_messages.Message):
       field is read-only, i.e., it cannot be set by create and update methods.
 
   Fields:
-    agentVersion: Required. The agent version loaded into this environment.
+    agentVersion: Optional. The agent version loaded into this environment.
       Supported formats: - `projects//agent/versions/` -
       `projects//locations//agent/versions/`
     description: Optional. The developer-provided description for this

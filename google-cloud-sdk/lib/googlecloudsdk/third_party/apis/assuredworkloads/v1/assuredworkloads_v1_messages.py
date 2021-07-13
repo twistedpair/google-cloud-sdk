@@ -624,7 +624,9 @@ class GoogleCloudAssuredworkloadsV1beta1WorkloadResourceInfo(_messages.Message):
 
     Values:
       RESOURCE_TYPE_UNSPECIFIED: Unknown resource type.
-      CONSUMER_PROJECT: Consumer project.
+      CONSUMER_PROJECT: Deprecated. Existing workloads will continue to
+        support this, but new CreateWorkloadRequests should not specify this
+        as an input value.
       CONSUMER_FOLDER: Consumer Folder.
       ENCRYPTION_KEYS_PROJECT: Consumer project containing encryption keys.
       KEYRING: Keyring resource that hosts encryption keys.
@@ -664,7 +666,9 @@ class GoogleCloudAssuredworkloadsV1beta1WorkloadResourceSettings(_messages.Messa
 
     Values:
       RESOURCE_TYPE_UNSPECIFIED: Unknown resource type.
-      CONSUMER_PROJECT: Consumer project.
+      CONSUMER_PROJECT: Deprecated. Existing workloads will continue to
+        support this, but new CreateWorkloadRequests should not specify this
+        as an input value.
       CONSUMER_FOLDER: Consumer Folder.
       ENCRYPTION_KEYS_PROJECT: Consumer project containing encryption keys.
       KEYRING: Keyring resource that hosts encryption keys.

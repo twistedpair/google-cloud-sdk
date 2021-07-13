@@ -30,6 +30,7 @@ CMEK_KEY_ANNOTATION = 'run.googleapis.com/encryption-key'
 POST_CMEK_KEY_REVOCATION_ACTION_TYPE_ANNOTATION = 'run.googleapis.com/post-key-revocation-action-type'
 SECRETS_ANNOTATION = 'run.googleapis.com/secrets'
 CPU_THROTTLE_ANNOTATION = 'run.googleapis.com/cpu-throttling'
+CONFIDENTIAL_ANNOTATION = 'run.googleapis.com/confidential'
 
 EGRESS_SETTINGS_ANNOTATION = 'run.googleapis.com/vpc-access-egress'
 EGRESS_SETTINGS_ALL = 'all'

@@ -786,6 +786,7 @@ class GoogleCloudFunctionsV2alphaOperationMetadata(_messages.Message):
     createTime: The time the operation was created.
     endTime: The time the operation finished running.
     requestResource: The original request that started the operation.
+    stages: Mechanism for reporting in-progress stages
     statusDetail: Human-readable status of the operation, if any.
     target: Server-defined resource path for the target of the operation.
     verb: Name of the verb executed by the operation.
@@ -822,9 +823,62 @@ class GoogleCloudFunctionsV2alphaOperationMetadata(_messages.Message):
   createTime = _messages.StringField(3)
   endTime = _messages.StringField(4)
   requestResource = _messages.MessageField('RequestResourceValue', 5)
-  statusDetail = _messages.StringField(6)
-  target = _messages.StringField(7)
-  verb = _messages.StringField(8)
+  stages = _messages.MessageField('GoogleCloudFunctionsV2alphaStage', 6, repeated=True)
+  statusDetail = _messages.StringField(7)
+  target = _messages.StringField(8)
+  verb = _messages.StringField(9)
+
+
+class GoogleCloudFunctionsV2alphaStage(_messages.Message):
+  r"""Each Stage of the deployment process
+
+  Enums:
+    NameValueValuesEnum: Name of the Stage
+    StateValueValuesEnum: Current state of the Stage
+
+  Fields:
+    message: Message describing the Stage
+    name: Name of the Stage
+    resource: Resource of the Stage
+    resourceUri: Link to the current Stage resource
+    state: Current state of the Stage
+  """
+
+  class NameValueValuesEnum(_messages.Enum):
+    r"""Name of the Stage
+
+    Values:
+      NAME_UNSPECIFIED: Not specified. Invalid name.
+      ARTIFACT_REGISTRY: Artifact Regsitry Stage
+      BUILD: Build Stage
+      SERVICE: Service Stage
+      TRIGGER: Trigger Stage
+    """
+    NAME_UNSPECIFIED = 0
+    ARTIFACT_REGISTRY = 1
+    BUILD = 2
+    SERVICE = 3
+    TRIGGER = 4
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Current state of the Stage
+
+    Values:
+      STATE_UNSPECIFIED: Not specified. Invalid state.
+      NOT_STARTED: Stage has not started.
+      IN_PROGRESS: Stage is in progress.
+      COMPLETE: Stage has completed.
+    """
+    STATE_UNSPECIFIED = 0
+    NOT_STARTED = 1
+    IN_PROGRESS = 2
+    COMPLETE = 3
+
+  message = _messages.StringField(1)
+  name = _messages.EnumField('NameValueValuesEnum', 2)
+  resource = _messages.StringField(3)
+  resourceUri = _messages.StringField(4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
 
 
 class HttpsTrigger(_messages.Message):

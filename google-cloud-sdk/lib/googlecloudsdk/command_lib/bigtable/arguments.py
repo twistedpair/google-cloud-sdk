@@ -611,3 +611,23 @@ def GetAndValidateKmsKeyName(args):
             'combination of --kms-project, --kms-location, --kms-keyring and ' +
             '--kms-key to specify the key ID in pieces.')
     return None  # User didn't specify KMS key
+
+
+def AddStartTimeArgs(parser, verb):
+  parser.add_argument(
+      '--start-time',
+      required=False,
+      type=arg_parsers.Datetime.Parse,
+      help=('Start time of the time range {}. '
+            'See $ gcloud topic datetimes for information on time formats.'
+            .format(verb)))
+
+
+def AddEndTimeArgs(parser, verb):
+  parser.add_argument(
+      '--end-time',
+      required=False,
+      type=arg_parsers.Datetime.Parse,
+      help=('End time of the time range {}. '
+            'See $ gcloud topic datetimes for information on time formats.'
+            .format(verb)))

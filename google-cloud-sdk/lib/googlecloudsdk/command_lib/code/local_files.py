@@ -19,7 +19,6 @@ from __future__ import unicode_literals
 
 import functools
 import itertools
-import os.path
 
 from googlecloudsdk.command_lib.code import local
 from googlecloudsdk.command_lib.code import yaml_helper
@@ -118,12 +117,13 @@ class LocalRuntimeFiles(object):
       if self._settings.builder.trust:
         artifact['buildpacks']['trustBuilder'] = True
     else:
+      # Macos needs a relative path or else
+      # e2e.surface.code.dev_mac_test.MacE2ETest.testNamespace fails.
+      dockerfile_rel_path = self._settings.builder.DockerfileRelPath(
+          self._settings.context)
       artifact['docker'] = {
           'dockerfile':
-              six.ensure_text(
-                  os.path.relpath(
-                      self._settings.builder.dockerfile,
-                      self._settings.context).encode('unicode_escape'))
+              six.ensure_text(dockerfile_rel_path.encode('unicode_escape'))
       }
 
     artifacts = yaml_helper.GetOrCreate(

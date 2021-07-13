@@ -127,7 +127,7 @@ def AddGcsProfileGroup(parser, required=True):
   gcs_profile.add_argument(
       '--root-path',
       help="""The root path inside the Cloud Storage bucket.""",
-      required=required)
+      required=False)
 
 
 def AddDepthGroup(parser):

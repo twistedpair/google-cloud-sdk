@@ -20,32 +20,8 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from apitools.base.py import list_pager
-from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.api_lib.container.gkemulticloud import util
 from googlecloudsdk.calliope import base
-
-
-_VERSION_MAP = {
-    base.ReleaseTrack.ALPHA: 'v1',
-    base.ReleaseTrack.BETA: 'v1',
-    base.ReleaseTrack.GA: 'v1',
-}
-
-
-MODULE_NAME = 'gkemulticloud'
-
-
-def GetApiVersionForTrack(release_track=base.ReleaseTrack.GA):
-  return _VERSION_MAP.get(release_track)
-
-
-def GetMessagesModule(release_track=base.ReleaseTrack.GA):
-  api_version = _VERSION_MAP.get(release_track)
-  return apis.GetMessagesModule(MODULE_NAME, api_version)
-
-
-def GetClientInstance(release_track=base.ReleaseTrack.GA):
-  api_version = _VERSION_MAP.get(release_track)
-  return apis.GetClientInstance(MODULE_NAME, api_version)
 
 
 class _AzureClientBase(object):
@@ -55,8 +31,8 @@ class _AzureClientBase(object):
     if track != base.ReleaseTrack.ALPHA:
       raise Exception('Only ALPHA release track currently supported.')
     self.track = track
-    self.client = client or GetClientInstance(track)
-    self.messages = messages or GetMessagesModule(track)
+    self.client = client or util.GetClientInstance(track)
+    self.messages = messages or util.GetMessagesModule(track)
     self._service = self._GetService()
 
   def List(self, parent_ref, page_size, limit):
@@ -98,7 +74,7 @@ class _AzureClientBase(object):
 
   def _CreateAzureDiskTemplate(self, size_gib):
     # Using this to hide the 'v1alpha' that shows up in the type.
-    version = GetApiVersionForTrack(self.track).capitalize()
+    version = util.GetApiVersionForTrack(self.track).capitalize()
     msg = 'GoogleCloudGkemulticloud{}AzureDiskTemplate'.format(version)
     return getattr(self.messages, msg)(sizeGib=size_gib)
 
@@ -175,7 +151,7 @@ class ClustersClient(_AzureClientBase):
 
   def _AddAzureCluster(self, req):
     # Using this to hide the 'v1alpha' that shows up in the type.
-    version = GetApiVersionForTrack(self.track).capitalize()
+    version = util.GetApiVersionForTrack(self.track).capitalize()
     msg = 'GoogleCloudGkemulticloud{}AzureCluster'.format(version)
     attr = 'googleCloudGkemulticloud{}AzureCluster'.format(version)
     cluster = getattr(self.messages, msg)()
@@ -184,7 +160,7 @@ class ClustersClient(_AzureClientBase):
 
   def _AddAzureNetworking(self, req):
     # Using this to hide the 'v1alpha' that shows up in the type.
-    version = GetApiVersionForTrack(self.track).capitalize()
+    version = util.GetApiVersionForTrack(self.track).capitalize()
     msg = 'GoogleCloudGkemulticloud{}AzureClusterNetworking'.format(version)
     net = getattr(self.messages, msg)()
     req.networking = net
@@ -192,7 +168,7 @@ class ClustersClient(_AzureClientBase):
 
   def _AddAzureControlPlane(self, req):
     # Using this to hide the 'v1alpha' that shows up in the type.
-    version = GetApiVersionForTrack(self.track).capitalize()
+    version = util.GetApiVersionForTrack(self.track).capitalize()
     msg = 'GoogleCloudGkemulticloud{}AzureControlPlane'.format(version)
     cp = getattr(self.messages, msg)()
     req.controlPlane = cp
@@ -200,7 +176,7 @@ class ClustersClient(_AzureClientBase):
 
   def _CreateSshConfig(self, **kwargs):
     # Using this to hide the 'v1alpha' that shows up in the type.
-    version = GetApiVersionForTrack(self.track).capitalize()
+    version = util.GetApiVersionForTrack(self.track).capitalize()
     msg = 'GoogleCloudGkemulticloud{}AzureSshConfig'.format(version)
     return getattr(self.messages, msg)(**kwargs)
 
@@ -214,7 +190,7 @@ class ClustersClient(_AzureClientBase):
       A GoogleCloudGkemulticloudAzureAuthorization message.
     """
     # Using this to hide the 'v1alpha' that shows up in the type.
-    version = GetApiVersionForTrack(self.track).capitalize()
+    version = util.GetApiVersionForTrack(self.track).capitalize()
 
     cluster_user_msg = 'GoogleCloudGkemulticloud{}AzureClusterUser'.format(
         version)
@@ -240,7 +216,7 @@ class NodePoolsClient(_AzureClientBase):
 
   def __AddMessageForTrack(self, req, type_name, **kwargs):
     """For adding messages where attribute and type have a very long name."""
-    version = GetApiVersionForTrack(self.track).capitalize()
+    version = util.GetApiVersionForTrack(self.track).capitalize()
     msg = '{}{}{}'.format(self._message_prefix, version, type_name)
     attr = '{}{}{}'.format(self.__attribute_prefix, version, type_name)
     instance = getattr(self.messages, msg)(**kwargs)
@@ -328,7 +304,7 @@ class ClientsClient(_AzureClientBase):
 
   def _AddClient(self, req):
     # Using this to hide the 'v1alpha' that shows up in the type.
-    version = GetApiVersionForTrack(self.track).capitalize()
+    version = util.GetApiVersionForTrack(self.track).capitalize()
     msg = 'GoogleCloudGkemulticloud{}AzureClient'.format(version)
     attr = 'googleCloudGkemulticloud{}AzureClient'.format(version)
     client = getattr(self.messages, msg)()

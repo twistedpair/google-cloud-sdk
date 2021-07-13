@@ -25,18 +25,26 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 
 
-def PromptForRegion():
+def GetPromptForRegionFunc(available_regions=constants.SUPPORTED_REGION):
+  """Returns a no argument function that prompts available regions and catches the user selection."""
+  return lambda: PromptForRegion(available_regions)
+
+
+def PromptForRegion(available_regions=constants.SUPPORTED_REGION):
   """Prompt for region from list of available regions.
 
   This method is referenced by the declaritive iam commands as a fallthrough
   for getting the region.
+
+  Args:
+    available_regions: list of the available regions to choose from
 
   Returns:
     The region specified by the user, str
   """
 
   if console_io.CanPrompt():
-    all_regions = list(constants.SUPPORTED_REGION)
+    all_regions = list(available_regions)
     idx = console_io.PromptChoice(
         all_regions, message='Please specify a region:\n', cancel_option=True)
     region = all_regions[idx]

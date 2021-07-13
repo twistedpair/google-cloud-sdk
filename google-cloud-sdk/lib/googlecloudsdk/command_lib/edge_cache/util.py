@@ -1,4 +1,4 @@
-  # -*- coding: utf-8 -*- #
+# -*- coding: utf-8 -*- #
 # Copyright 2020 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
@@ -17,7 +17,40 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.core import resources
+
 
 def SetLocationAsGlobal():
   """Set default location to global."""
-  return "global"
+  return 'global'
+
+
+def SetFailoverOriginRelativeName(unused_ref, args, request):
+  """Parse the provided failover origin to a relative name.
+
+  Relative name includes defaults (or overridden values) for project & location.
+  Location defaults to 'global'.
+
+  Args:
+    unused_ref: A string representing the operation reference. Unused and may be
+      None.
+    args: The argparse namespace.
+    request: The request to modify.
+
+  Returns:
+    The updated request.
+  """
+
+  # request.parent has the form 'projects/<project>/locations/<location>'
+  project = request.parent.split('/')[1]
+
+  request.edgeCacheOrigin.failoverOrigin = resources.REGISTRY.Parse(
+      args.failover_origin,
+      params={
+          'projectsId': args.project or project,
+          'locationsId': args.location or SetLocationAsGlobal(),
+          'edgeCacheOriginsId': request.edgeCacheOriginId
+      },
+      collection='networkservices.projects.locations.edgeCacheOrigins'
+  ).RelativeName()
+  return request

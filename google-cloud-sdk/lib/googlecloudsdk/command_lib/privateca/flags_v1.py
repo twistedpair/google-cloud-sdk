@@ -125,7 +125,8 @@ def _StripVal(val):
 def AddUsePresetProfilesFlag(parser):
   base.Argument(
       '--use-preset-profile',
-      help='The name of an existing preset profile used to encapsulate X.509 parameter values.',
+      help='The name of an existing preset profile used to encapsulate X.509 parameter values. USE_PRESET_PROFILE must be one of: {}'
+      .format(', '.join(preset_profiles.GetPresetProfileOptions())),
       required=False).AddToParser(parser)
 
 

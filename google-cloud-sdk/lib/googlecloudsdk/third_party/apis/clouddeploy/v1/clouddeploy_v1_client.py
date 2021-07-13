@@ -230,33 +230,6 @@ class ClouddeployV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def Delete(self, request, global_params=None):
-      r"""Deletes a single Release.
-
-      Args:
-        request: (ClouddeployProjectsLocationsDeliveryPipelinesReleasesDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/deliveryPipelines/{deliveryPipelinesId}/releases/{releasesId}',
-        http_method='DELETE',
-        method_id='clouddeploy.projects.locations.deliveryPipelines.releases.delete',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['allowMissing', 'etag', 'requestId', 'validateOnly'],
-        relative_path='v1/{+name}',
-        request_field='',
-        request_type_name='ClouddeployProjectsLocationsDeliveryPipelinesReleasesDeleteRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
     def Get(self, request, global_params=None):
       r"""Gets details of a single Release.
 

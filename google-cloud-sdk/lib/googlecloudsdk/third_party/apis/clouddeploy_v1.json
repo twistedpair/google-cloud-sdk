@@ -464,6 +464,10 @@
           "description": "Information specifying a GKE Cluster.",
           "$ref": "GkeCluster"
         },
+        "gke": {
+          "description": "Information specifying a GKE Cluster.",
+          "$ref": "GkeCluster"
+        },
         "etag": {
           "description": "Optional. This checksum is computed by the server based on the value of other fields, and may be sent on update and delete requests to ensure the client has an up-to-date value before proceeding.",
           "type": "string"
@@ -2167,51 +2171,6 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Creates a new Release in a given project and location."
-                    },
-                    "delete": {
-                      "id": "clouddeploy.projects.locations.deliveryPipelines.releases.delete",
-                      "path": "v1/{+name}",
-                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/deliveryPipelines/{deliveryPipelinesId}/releases/{releasesId}",
-                      "httpMethod": "DELETE",
-                      "parameters": {
-                        "name": {
-                          "description": "Required. The name of the `Release` to delete. Format is projects\/{project_id}\/locations\/{location_name}\/deliveryPipelines\/{pipeline_name}\/release\/{release_name}.",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deliveryPipelines\/[^\/]+\/releases\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "requestId": {
-                          "description": "Optional. A request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes after the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
-                          "location": "query",
-                          "type": "string"
-                        },
-                        "allowMissing": {
-                          "description": "Optional. If set to true, then deleting an already deleted or non-existing `DeliveryPipeline` will succeed.",
-                          "location": "query",
-                          "type": "boolean"
-                        },
-                        "validateOnly": {
-                          "description": "Optional. If set, validate the request and preview the review, but do not actually post it.",
-                          "location": "query",
-                          "type": "boolean"
-                        },
-                        "etag": {
-                          "description": "Optional. This checksum is computed by the server based on the value of other fields, and may be sent on update and delete requests to ensure the client has an up-to-date value before proceeding.",
-                          "location": "query",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "response": {
-                        "$ref": "Operation"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Deletes a single Release."
                     },
                     "promote": {
                       "id": "clouddeploy.projects.locations.deliveryPipelines.releases.promote",

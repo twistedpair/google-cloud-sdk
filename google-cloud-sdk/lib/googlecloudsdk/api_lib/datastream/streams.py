@@ -170,6 +170,101 @@ class StreamsClient(object):
 
     return stream_obj
 
+  def _GetExistingStream(self, name):
+    get_req = self._messages.DatastreamProjectsLocationsStreamsGetRequest(
+        name=name
+    )
+    return self._service.Get(get_req)
+
+  def _UpdateLabels(self, stream, args):
+    """Updates labels of the stream."""
+    add_labels = labels_util.GetUpdateLabelsDictFromArgs(args)
+    remove_labels = labels_util.GetRemoveLabelsListFromArgs(args)
+    value_type = self._messages.Stream.LabelsValue
+    update_result = labels_util.Diff(
+        additions=add_labels,
+        subtractions=remove_labels,
+        clear=args.clear_labels
+    ).Apply(value_type, stream.labels)
+    if update_result.needs_update:
+      stream.labels = update_result.labels
+
+  def _UpdateListWithFieldNamePrefixes(
+      self, update_fields, prefix_to_check, prefix_to_add):
+    """Returns an updated list of field masks with necessary prefixes."""
+    temp_fields = [
+        prefix_to_add + field
+        for field in update_fields
+        if field.startswith(prefix_to_check)
+    ]
+    update_fields = [
+        x for x in update_fields if (not x.startswith(prefix_to_check))
+    ]
+    update_fields.extend(temp_fields)
+    return update_fields
+
+  def _GetUpdatedStream(self, stream, args):
+    """Returns updated stream."""
+    # Verify command flag names align with Stream object field names.
+    update_fields = []
+    user_update_mask = args.update_mask or ''
+    user_update_mask_list = user_update_mask.split(',')
+    update_fields.extend(user_update_mask_list)
+
+    if args.IsSpecified('display_name'):
+      stream.displayName = args.display_name
+
+    if args.IsSpecified('source_name'):
+      source_connection_profile_ref = args.CONCEPTS.source_name.Parse()
+      stream.sourceConfig.sourceConnectionProfileName = (
+          source_connection_profile_ref.RelativeName())
+      if 'source_name' in update_fields:
+        update_fields.remove('source_name')
+        update_fields.append('source_config.source_connection_profile_name')
+
+    if args.IsSpecified('oracle_source_config'):
+      stream.sourceConfig.oracleSourceConfig = self._ParseOracleSourceConfig(
+          args.oracle_source_config)
+      # Fix field names in update mask
+      update_fields = self._UpdateListWithFieldNamePrefixes(
+          update_fields, 'oracle_source_config', 'source_config.')
+
+    elif args.IsSpecified('mysql_source_config'):
+      stream.sourceConfig.mysqlSourceConfig = self._ParseMysqlSourceConfig(
+          args.mysql_source_config)
+      update_fields = self._UpdateListWithFieldNamePrefixes(
+          update_fields, 'mysql_source_config', 'source_config.')
+
+    if args.IsSpecified('destination_name'):
+      destination_connection_profile_ref = (
+          args.CONCEPTS.destination_name.Parse())
+      stream.destinationConfig.destinationConnectionProfileName = (
+          destination_connection_profile_ref.RelativeName())
+      if 'destination_name' in update_fields:
+        update_fields.remove('destination_name')
+        update_fields.append(
+            'destination_config.destination_connection_profile_name')
+
+    if args.IsSpecified('gcs_destination_config'):
+      stream.destinationConfig.gcsDestinationConfig = (
+          self._ParseGcsDestinationConfig(args.gcs_destination_config))
+      update_fields = self._UpdateListWithFieldNamePrefixes(
+          update_fields, 'gcs_destination_config', 'destination_config.')
+
+    if args.IsSpecified('backfill_none'):
+      stream.backfillNone = self._messages.BackfillNoneStrategy()
+
+    elif args.IsSpecified('backfill_all'):
+      backfill_all_strategy = self._GetBackfillAllStrategy(args)
+      stream.backfillAll = backfill_all_strategy
+
+    if args.IsSpecified('state'):
+      stream.state = self._messages.Stream.StateValueValuesEnum(
+          (args.state).upper())
+
+    self._UpdateLabels(stream, args)
+    return stream, update_fields
+
   def Create(self, parent_ref, stream_id, args=None):
     """Creates a stream.
 
@@ -198,3 +293,38 @@ class StreamsClient(object):
         force=force)
 
     return self._service.Create(create_req)
+
+  def Update(self, name, args=None):
+    """Updates a stream.
+
+    Args:
+      name: str, the reference of the stream to
+          update.
+      args: argparse.Namespace, The arguments that this command was
+          invoked with.
+
+    Returns:
+      Operation: the operation for updating the connection profile.
+    """
+    validate_only = args.validate_only
+    force = args.force
+
+    current_stream = self._GetExistingStream(name)
+
+    updated_stream, update_fields = self._GetUpdatedStream(
+        current_stream, args)
+
+    request_id = util.GenerateRequestId()
+    update_req_type = self._messages.DatastreamProjectsLocationsStreamsPatchRequest
+    update_req = update_req_type(
+        stream=updated_stream,
+        name=updated_stream.name,
+        requestId=request_id,
+        validateOnly=validate_only,
+        force=force
+    )
+    if args.update_mask:
+      update_req.updateMask = ','.join(update_fields)
+
+    return self._service.Patch(update_req)
+

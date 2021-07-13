@@ -61,6 +61,22 @@ LEGACY_V1_FLAGS = [
 ]
 LEGACY_V1_FLAG_ERROR = '`%s` is only supported in Cloud Functions V1.'
 
+_UNSUPPORTED_V2_FLAGS = [
+    # TODO(b/192479883): Support --retry flag.
+    ('retry', '--retry'),
+    # TODO(b/191995547): Support deploying from source.
+    ('ignore_file', '--ignore-file'),
+    ('stage_bucket', '--stage-bucket'),
+    # TODO(b/192480007): Add support for secrets.
+    ('set_secrets', '--set-secrets'),
+    ('update_secrets', '--update-secrets'),
+    ('remove_secrets', '--remove-secrets'),
+    ('clear_secrets', '--clear-secrets'),
+    # TODO(b/184877044): Add support when Eventarc gets GCS support
+    ('trigger_bucket', '--trigger-bucket'),
+]
+_UNSUPPORTED_V2_FLAG_ERROR = '`%s` is not yet supported in Cloud Functions V2.'
+
 EVENT_TYPE_PUBSUB_MESSAGE_PUBLISHED = 'google.cloud.pubsub.topic.v1.messagePublished'
 
 CLOUD_RUN_SERVICE_COLLECTION_K8S = 'run.namespaces.services'
@@ -392,6 +408,12 @@ def _ValidateLegacyV1Flags(args):
       raise exceptions.FunctionsError(LEGACY_V1_FLAG_ERROR % flag_name)
 
 
+def _ValidateUnsupportedV2Flags(args):
+  for flag_variable, flag_name in _UNSUPPORTED_V2_FLAGS:
+    if args.IsSpecified(flag_variable):
+      raise exceptions.FunctionsError(_UNSUPPORTED_V2_FLAG_ERROR % flag_name)
+
+
 def _GetLabels(args, messages, existing_function):
   """Constructs labels from command-line arguments.
 
@@ -563,6 +585,7 @@ def Run(args, release_track):
   function_ref = args.CONCEPTS.name.Parse()
 
   _ValidateLegacyV1Flags(args)
+  _ValidateUnsupportedV2Flags(args)
 
   existing_function = _GetFunction(client, messages, function_ref)
   is_new_function = existing_function is None

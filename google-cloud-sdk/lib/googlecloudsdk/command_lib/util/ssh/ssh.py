@@ -1043,8 +1043,13 @@ def _BuildIapTunnelProxyCommandArgs(iap_tunnel_args, env):
   gcloud_command.extend([
       'compute', 'start-iap-tunnel', iap_tunnel_args.instance, port_token,
       '--listen-on-stdin',
-      '--project=' + iap_tunnel_args.project,
-      '--zone=' + iap_tunnel_args.zone])
+      '--project=' + iap_tunnel_args.project])
+  if iap_tunnel_args.zone:
+    gcloud_command.append('--zone=' + iap_tunnel_args.zone)
+  if iap_tunnel_args.region:
+    gcloud_command.append('--region=' + iap_tunnel_args.region)
+  if iap_tunnel_args.network:
+    gcloud_command.append('--network=' + iap_tunnel_args.network)
   for arg in iap_tunnel_args.pass_through_args:
     gcloud_command.append(_EscapeProxyCommandArg(arg, env))
 

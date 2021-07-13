@@ -108,7 +108,8 @@ class AuthorizationPolicy(_messages.Message):
     labels: Optional. Set of label tags associated with the
       AuthorizationPolicy resource.
     name: Required. Name of the AuthorizationPolicy resource. It matches
-      pattern `projects/*/locations/{location}/authorizationPolicies/`.
+      pattern
+      `projects/{project}/locations/{location}/authorizationPolicies/`.
     rules: Optional. List of rules to match. Note that at least one of the
       rules must match in order for the action specified in the 'action' field
       to be taken. A rule is a match if there is a matching source and
@@ -914,7 +915,7 @@ class NetworksecurityProjectsLocationsAuthorizationPoliciesCreateRequest(_messag
       containing only letters, numbers, hyphens, and underscores, and should
       not start with a number. E.g. "authz_policy".
     parent: Required. The parent resource of the AuthorizationPolicy. Must be
-      in the format `projects/*/locations/{location}`.
+      in the format `projects/{project}/locations/{location}`.
   """
 
   authorizationPolicy = _messages.MessageField('AuthorizationPolicy', 1)
@@ -928,7 +929,8 @@ class NetworksecurityProjectsLocationsAuthorizationPoliciesDeleteRequest(_messag
 
   Fields:
     name: Required. A name of the AuthorizationPolicy to delete. Must be in
-      the format `projects/*/locations/{location}/authorizationPolicies/*`.
+      the format
+      `projects/{project}/locations/{location}/authorizationPolicies/*`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -963,7 +965,8 @@ class NetworksecurityProjectsLocationsAuthorizationPoliciesGetRequest(_messages.
 
   Fields:
     name: Required. A name of the AuthorizationPolicy to get. Must be in the
-      format `projects/*/locations/{location}/authorizationPolicies/*`.
+      format
+      `projects/{project}/locations/{location}/authorizationPolicies/*`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -981,7 +984,7 @@ class NetworksecurityProjectsLocationsAuthorizationPoliciesListRequest(_messages
       system should return the next page of data.
     parent: Required. The project and location from which the
       AuthorizationPolicies should be listed, specified in the format
-      `projects/*/locations/{location}`.
+      `projects/{project}/locations/{location}`.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -997,7 +1000,8 @@ class NetworksecurityProjectsLocationsAuthorizationPoliciesPatchRequest(_message
     authorizationPolicy: A AuthorizationPolicy resource to be passed as the
       request body.
     name: Required. Name of the AuthorizationPolicy resource. It matches
-      pattern `projects/*/locations/{location}/authorizationPolicies/`.
+      pattern
+      `projects/{project}/locations/{location}/authorizationPolicies/`.
     updateMask: Optional. Field mask is used to specify the fields to be
       overwritten in the AuthorizationPolicy resource by the update. The
       fields specified in the update_mask are relative to the resource, not

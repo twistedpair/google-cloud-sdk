@@ -78,9 +78,10 @@ class GoogleCloudRecaptchaenterpriseV1AnnotateAssessmentRequest(_messages.Messag
         method, billing details, shipping address or other transaction
         information.
       INITIATED_TWO_FACTOR: Indicates that the user was served a 2FA
-        challenge. Sufficiently old assessments with this reason that have not
-        been overwritten with PASSED_TWO_FACTOR will be treated as an
-        abandoned 2FA flow, equivalent to FAILED_TWO_FACTOR.
+        challenge. An old assessment with `ENUM_VALUES.INITIATED_TWO_FACTOR`
+        reason that has not been overwritten with `PASSED_TWO_FACTOR` is
+        treated as an abandoned 2FA flow. This is equivalent to
+        `FAILED_TWO_FACTOR`.
       PASSED_TWO_FACTOR: Indicates that the user passed a 2FA challenge.
       FAILED_TWO_FACTOR: Indicates that the user failed a 2FA challenge.
       CORRECT_PASSWORD: Indicates the user provided the correct password.
@@ -421,12 +422,12 @@ class GoogleCloudRecaptchaenterpriseV1TestingOptions(_messages.Message):
         factors.
       NOCAPTCHA: Challenge requests for this key will always return a
         nocaptcha, which does not require a solution.
-      CHALLENGE: Challenge requests for this key will always return an
-        unsolvable challenge.
+      UNSOLVABLE_CHALLENGE: Challenge requests for this key will always return
+        an unsolvable challenge.
     """
     TESTING_CHALLENGE_UNSPECIFIED = 0
     NOCAPTCHA = 1
-    CHALLENGE = 2
+    UNSOLVABLE_CHALLENGE = 2
 
   testingChallenge = _messages.EnumField('TestingChallengeValueValuesEnum', 1)
   testingScore = _messages.FloatField(2, variant=_messages.Variant.FLOAT)

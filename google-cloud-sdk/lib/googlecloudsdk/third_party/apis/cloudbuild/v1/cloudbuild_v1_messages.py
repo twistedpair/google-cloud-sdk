@@ -572,6 +572,10 @@ class BuildOptions(_messages.Message):
     logging: Option to specify the logging mode, which determines if and where
       build logs are stored.
     machineType: Compute Engine machine type on which to run the build.
+    pool: Optional. Specification for execution on a `WorkerPool`. See
+      [running builds in a custom worker
+      pool](https://cloud.google.com/build/docs/custom-workers/run-builds-in-
+      custom-worker-pool) for more information.
     requestedVerifyOption: Requested verifiability options.
     secretEnv: A list of global environment variables, which are encrypted
       using a Cloud Key Management Service crypto key. These values must be
@@ -589,9 +593,7 @@ class BuildOptions(_messages.Message):
       build step. Using a global volume in a build with only one step is not
       valid as it is indicative of a build request with an incorrect
       configuration.
-    workerPool: Option to specify a `WorkerPool` for the build. Format:
-      projects/{project}/locations/{location}/workerPools/{workerPool} This
-      field is in beta and is available only to restricted users.
+    workerPool: This field deprecated; please use `pool.name` instead.
   """
 
   class LogStreamingOptionValueValuesEnum(_messages.Enum):
@@ -690,12 +692,13 @@ class BuildOptions(_messages.Message):
   logStreamingOption = _messages.EnumField('LogStreamingOptionValueValuesEnum', 6)
   logging = _messages.EnumField('LoggingValueValuesEnum', 7)
   machineType = _messages.EnumField('MachineTypeValueValuesEnum', 8)
-  requestedVerifyOption = _messages.EnumField('RequestedVerifyOptionValueValuesEnum', 9)
-  secretEnv = _messages.StringField(10, repeated=True)
-  sourceProvenanceHash = _messages.EnumField('SourceProvenanceHashValueListEntryValuesEnum', 11, repeated=True)
-  substitutionOption = _messages.EnumField('SubstitutionOptionValueValuesEnum', 12)
-  volumes = _messages.MessageField('Volume', 13, repeated=True)
-  workerPool = _messages.StringField(14)
+  pool = _messages.MessageField('PoolOption', 9)
+  requestedVerifyOption = _messages.EnumField('RequestedVerifyOptionValueValuesEnum', 10)
+  secretEnv = _messages.StringField(11, repeated=True)
+  sourceProvenanceHash = _messages.EnumField('SourceProvenanceHashValueListEntryValuesEnum', 12, repeated=True)
+  substitutionOption = _messages.EnumField('SubstitutionOptionValueValuesEnum', 13)
+  volumes = _messages.MessageField('Volume', 14, repeated=True)
+  workerPool = _messages.StringField(15)
 
 
 class BuildStep(_messages.Message):
@@ -1952,6 +1955,96 @@ class CloudbuildProjectsLocationsTriggersWebhookRequest(_messages.Message):
   trigger = _messages.StringField(5)
 
 
+class CloudbuildProjectsLocationsWorkerPoolsCreateRequest(_messages.Message):
+  r"""A CloudbuildProjectsLocationsWorkerPoolsCreateRequest object.
+
+  Fields:
+    parent: Required. The parent resource where this worker pool will be
+      created. Format: `projects/{project}/locations/{location}`.
+    validateOnly: If set, validate the request and preview the response, but
+      do not actually post it.
+    workerPool: A WorkerPool resource to be passed as the request body.
+    workerPoolId: Required. Immutable. The ID to use for the `WorkerPool`,
+      which will become the final component of the resource name. This value
+      should be 1-63 characters, and valid characters are /a-z-/.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  validateOnly = _messages.BooleanField(2)
+  workerPool = _messages.MessageField('WorkerPool', 3)
+  workerPoolId = _messages.StringField(4)
+
+
+class CloudbuildProjectsLocationsWorkerPoolsDeleteRequest(_messages.Message):
+  r"""A CloudbuildProjectsLocationsWorkerPoolsDeleteRequest object.
+
+  Fields:
+    allowMissing: If set to true, and the `WorkerPool` is not found, the
+      request will succeed but no action will be taken on the server.
+    etag: Optional. If this is provided, it must match the server's etag on
+      the workerpool for the request to be processed.
+    name: Required. The name of the `WorkerPool` to delete. Format:
+      `projects/{project}/locations/{workerPool}/workerPools/{workerPool}`.
+    validateOnly: If set, validate the request and preview the response, but
+      do not actually post it.
+  """
+
+  allowMissing = _messages.BooleanField(1)
+  etag = _messages.StringField(2)
+  name = _messages.StringField(3, required=True)
+  validateOnly = _messages.BooleanField(4)
+
+
+class CloudbuildProjectsLocationsWorkerPoolsGetRequest(_messages.Message):
+  r"""A CloudbuildProjectsLocationsWorkerPoolsGetRequest object.
+
+  Fields:
+    name: Required. The name of the `WorkerPool` to retrieve. Format:
+      `projects/{project}/locations/{location}/workerPools/{workerPool}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class CloudbuildProjectsLocationsWorkerPoolsListRequest(_messages.Message):
+  r"""A CloudbuildProjectsLocationsWorkerPoolsListRequest object.
+
+  Fields:
+    pageSize: The maximum number of `WorkerPool`s to return. The service may
+      return fewer than this value. If omitted, the server will use a sensible
+      default.
+    pageToken: A page token, received from a previous `ListWorkerPools` call.
+      Provide this to retrieve the subsequent page.
+    parent: Required. The parent of the collection of `WorkerPools`. Format:
+      `projects/{project}/locations/location`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class CloudbuildProjectsLocationsWorkerPoolsPatchRequest(_messages.Message):
+  r"""A CloudbuildProjectsLocationsWorkerPoolsPatchRequest object.
+
+  Fields:
+    name: Output only. The resource name of the `WorkerPool`, with format
+      `projects/{project}/locations/{location}/workerPools/{worker_pool}`. The
+      value of `{worker_pool}` is provided by `worker_pool_id` in
+      `CreateWorkerPool` request and the value of `{location}` is determined
+      by the endpoint accessed.
+    updateMask: A mask specifying which fields in `worker_pool` to update.
+    validateOnly: If set, validate the request and preview the response, but
+      do not actually post it.
+    workerPool: A WorkerPool resource to be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  updateMask = _messages.StringField(2)
+  validateOnly = _messages.BooleanField(3)
+  workerPool = _messages.MessageField('WorkerPool', 4)
+
+
 class CloudbuildProjectsTriggersCreateRequest(_messages.Message):
   r"""A CloudbuildProjectsTriggersCreateRequest object.
 
@@ -2094,6 +2187,21 @@ class ClusterOptions(_messages.Message):
   name = _messages.StringField(1)
 
 
+class CreateWorkerPoolOperationMetadata(_messages.Message):
+  r"""Metadata for the `CreateWorkerPool` operation.
+
+  Fields:
+    completeTime: Time the operation was completed.
+    createTime: Time the operation was created.
+    workerPool: The resource name of the `WorkerPool` to create. Format:
+      `projects/{project}/locations/{location}/workerPools/{worker_pool}`.
+  """
+
+  completeTime = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  workerPool = _messages.StringField(3)
+
+
 class CronConfig(_messages.Message):
   r"""CronConfig describes the configuration of a trigger that creates a build
   whenever a Cloud Scheduler event is received.
@@ -2118,6 +2226,21 @@ class CronConfig(_messages.Message):
   enterpriseConfigResource = _messages.StringField(1)
   schedule = _messages.StringField(2)
   timeZone = _messages.StringField(3)
+
+
+class DeleteWorkerPoolOperationMetadata(_messages.Message):
+  r"""Metadata for the `DeleteWorkerPool` operation.
+
+  Fields:
+    completeTime: Time the operation was completed.
+    createTime: Time the operation was created.
+    workerPool: The resource name of the `WorkerPool` being deleted. Format:
+      `projects/{project}/locations/{location}/workerPools/{worker_pool}`.
+  """
+
+  completeTime = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  workerPool = _messages.StringField(3)
 
 
 class Empty(_messages.Message):
@@ -2644,6 +2767,59 @@ class ListGithubEnterpriseConfigsResponse(_messages.Message):
   configs = _messages.MessageField('GitHubEnterpriseConfig', 1, repeated=True)
 
 
+class ListWorkerPoolsResponse(_messages.Message):
+  r"""Response containing existing `WorkerPools`.
+
+  Fields:
+    nextPageToken: Continuation token used to page through large result sets.
+      Provide this value in a subsequent ListWorkerPoolsRequest to return the
+      next page of results.
+    workerPools: `WorkerPools` for the specified project.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  workerPools = _messages.MessageField('WorkerPool', 2, repeated=True)
+
+
+class NetworkConfig(_messages.Message):
+  r"""Defines the network configuration for the pool.
+
+  Enums:
+    EgressOptionValueValuesEnum: Option to configure network egress for the
+      workers.
+
+  Fields:
+    egressOption: Option to configure network egress for the workers.
+    peeredNetwork: Required. Immutable. The network definition that the
+      workers are peered to. If this section is left empty, the workers will
+      be peered to `WorkerPool.project_id` on the service producer network.
+      Must be in the format `projects/{project}/global/networks/{network}`,
+      where `{project}` is a project number, such as `12345`, and `{network}`
+      is the name of a VPC network in the project. See [Understanding network
+      configuration options](https://cloud.google.com/cloud-build/docs/custom-
+      workers/set-up-custom-worker-pool-
+      environment#understanding_the_network_configuration_options)
+  """
+
+  class EgressOptionValueValuesEnum(_messages.Enum):
+    r"""Option to configure network egress for the workers.
+
+    Values:
+      EGRESS_OPTION_UNSPECIFIED: If set, defaults to PUBLIC_EGRESS.
+      NO_PUBLIC_EGRESS: If set, workers are created without any public
+        address, which prevents network egress to public IPs unless a network
+        proxy is configured.
+      PUBLIC_EGRESS: If set, workers are created with a public address which
+        allows for public internet egress.
+    """
+    EGRESS_OPTION_UNSPECIFIED = 0
+    NO_PUBLIC_EGRESS = 1
+    PUBLIC_EGRESS = 2
+
+  egressOption = _messages.EnumField('EgressOptionValueValuesEnum', 1)
+  peeredNetwork = _messages.StringField(2)
+
+
 class Notification(_messages.Message):
   r"""Notification is the container which holds the data that is relevant to
   this particular notification.
@@ -2888,6 +3064,34 @@ class Operation(_messages.Message):
   metadata = _messages.MessageField('MetadataValue', 3)
   name = _messages.StringField(4)
   response = _messages.MessageField('ResponseValue', 5)
+
+
+class PoolOption(_messages.Message):
+  r"""Details about how a build should be executed on a `WorkerPool`. See
+  [running builds in a custom worker
+  pool](https://cloud.google.com/build/docs/custom-workers/run-builds-in-
+  custom-worker-pool) for more information.
+
+  Fields:
+    name: The `WorkerPool` resource to execute the build on. You must have
+      `cloudbuild.workerpools.use` on the project hosting the WorkerPool.
+      Format
+      projects/{project}/locations/{location}/workerPools/{workerPoolId}
+  """
+
+  name = _messages.StringField(1)
+
+
+class PrivatePoolV1Config(_messages.Message):
+  r"""Configuration for a V1 `PrivatePool`.
+
+  Fields:
+    networkConfig: Network configuration for the pool.
+    workerConfig: Machine configuration for the workers in the pool.
+  """
+
+  networkConfig = _messages.MessageField('NetworkConfig', 1)
+  workerConfig = _messages.MessageField('WorkerConfig', 2)
 
 
 class PubsubConfig(_messages.Message):
@@ -3463,7 +3667,8 @@ class StorageSource(_messages.Message):
     generation: Google Cloud Storage generation for the object. If the
       generation is omitted, the latest generation will be used.
     object: Google Cloud Storage object containing the source. This object
-      must be a gzipped archive file (`.tar.gz`) containing source to build.
+      must be a zipped (`.zip`) or gzipped archive file (`.tar.gz`) containing
+      source to build.
   """
 
   bucket = _messages.StringField(1)
@@ -3502,6 +3707,21 @@ class TimeSpan(_messages.Message):
 
   endTime = _messages.StringField(1)
   startTime = _messages.StringField(2)
+
+
+class UpdateWorkerPoolOperationMetadata(_messages.Message):
+  r"""Metadata for the `UpdateWorkerPool` operation.
+
+  Fields:
+    completeTime: Time the operation was completed.
+    createTime: Time the operation was created.
+    workerPool: The resource name of the `WorkerPool` being updated. Format:
+      `projects/{project}/locations/{location}/workerPools/{worker_pool}`.
+  """
+
+  completeTime = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  workerPool = _messages.StringField(3)
 
 
 class Volume(_messages.Message):
@@ -3580,6 +3800,124 @@ class WebhookConfig(_messages.Message):
 
   secret = _messages.StringField(1)
   state = _messages.EnumField('StateValueValuesEnum', 2)
+
+
+class WorkerConfig(_messages.Message):
+  r"""Defines the configuration to be used for creating workers in the pool.
+
+  Fields:
+    diskSizeGb: Size of the disk attached to the worker, in GB. See [Worker
+      pool config file](https://cloud.google.com/cloud-build/docs/custom-
+      workers/worker-pool-config-file). Specify a value of up to 1000. If `0`
+      is specified, Cloud Build will use a standard disk size.
+    machineType: Machine type of a worker, such as `e2-medium`. See [Worker
+      pool config file](https://cloud.google.com/cloud-build/docs/custom-
+      workers/worker-pool-config-file). If left blank, Cloud Build will use a
+      sensible default.
+  """
+
+  diskSizeGb = _messages.IntegerField(1)
+  machineType = _messages.StringField(2)
+
+
+class WorkerPool(_messages.Message):
+  r"""Configuration for a `WorkerPool`. Cloud Build owns and maintains a pool
+  of workers for general use and have no access to a project's private
+  network. By default, builds submitted to Cloud Build will use a worker from
+  this pool. If your build needs access to resources on a private network,
+  create and use a `WorkerPool` to run your builds. Private `WorkerPool`s give
+  your builds access to any single VPC network that you administer, including
+  any on-prem resources connected to that VPC network. For an overview of
+  custom worker pools, see [Custom workers
+  overview](https://cloud.google.com/cloud-build/docs/custom-workers/custom-
+  workers-overview).
+
+  Enums:
+    StateValueValuesEnum: Output only. `WorkerPool` state.
+
+  Messages:
+    AnnotationsValue: User specified annotations. See
+      https://google.aip.dev/128#annotations for more details such as format
+      and size limitations.
+
+  Fields:
+    annotations: User specified annotations. See
+      https://google.aip.dev/128#annotations for more details such as format
+      and size limitations.
+    createTime: Output only. Time at which the request to create the
+      `WorkerPool` was received.
+    deleteTime: Output only. Time at which the request to delete the
+      `WorkerPool` was received.
+    displayName: A user-specified, human-readable name for the `WorkerPool`.
+      If provided, this value must be 1-63 characters.
+    etag: Output only. Checksum computed by the server. May be sent on update
+      and delete requests to ensure that the client has an up-to-date value
+      before proceeding.
+    name: Output only. The resource name of the `WorkerPool`, with format
+      `projects/{project}/locations/{location}/workerPools/{worker_pool}`. The
+      value of `{worker_pool}` is provided by `worker_pool_id` in
+      `CreateWorkerPool` request and the value of `{location}` is determined
+      by the endpoint accessed.
+    privatePoolV1Config: Private Pool using a v1 configuration.
+    state: Output only. `WorkerPool` state.
+    uid: Output only. A unique identifier for the `WorkerPool`.
+    updateTime: Output only. Time at which the request to update the
+      `WorkerPool` was received.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. `WorkerPool` state.
+
+    Values:
+      STATE_UNSPECIFIED: State of the `WorkerPool` is unknown.
+      CREATING: `WorkerPool` is being created.
+      RUNNING: `WorkerPool` is running.
+      DELETING: `WorkerPool` is being deleted: cancelling builds and draining
+        workers.
+      DELETED: `WorkerPool` is deleted.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    RUNNING = 2
+    DELETING = 3
+    DELETED = 4
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""User specified annotations. See https://google.aip.dev/128#annotations
+    for more details such as format and size limitations.
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  createTime = _messages.StringField(2)
+  deleteTime = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  etag = _messages.StringField(5)
+  name = _messages.StringField(6)
+  privatePoolV1Config = _messages.MessageField('PrivatePoolV1Config', 7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  uid = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
 
 
 encoding.AddCustomJsonFieldMapping(

@@ -32,7 +32,7 @@ class CreateBucketTask(task.Task):
       bucket_resource (resource_reference.BucketResource): Should contain
         desired metadata for bucket.
     """
-    super().__init__()
+    super(CreateBucketTask, self).__init__()
     self._bucket_resource = bucket_resource
 
   def execute(self, task_status_queue=None):

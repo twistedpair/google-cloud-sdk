@@ -2308,16 +2308,13 @@ class SQLIntegration(_messages.Message):
     StateValueValuesEnum: Output only. The current state of the managed OU.
 
   Fields:
-    createTime: Output only. The time the instance was created. Synthetic
-      field is populated automatically by CCFE. go/ccfe-synthetic-field-user-
-      guide
+    createTime: Output only. The time the instance was created.
     name: The unique name of the sql integration in the form of `projects/{pro
       ject_id}/locations/global/domains/{domain_name}/sqlIntegrations/{sql_int
       egration}`
     sqlInstance: The full resource name of an integrated sql instance
     state: Output only. The current state of the managed OU.
-    updateTime: Output only. Last update time. Synthetic field is populated
-      automatically by CCFE.
+    updateTime: Output only. Last update time for this SQL instance.
   """
 
   class StateValueValuesEnum(_messages.Enum):

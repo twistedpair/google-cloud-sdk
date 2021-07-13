@@ -320,7 +320,7 @@ class VmwareengineV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new cluster in a given project and location.
+      r"""Creates a new cluster in a given private cloud. Creating a new cluster provides additional nodes for use in the parent private cloud and requires sufficient [node quota](https://cloud.google.com/vmware-engine/quotas).
 
       Args:
         request: (VmwareengineProjectsLocationsPrivateCloudsClustersCreateRequest) input message
@@ -347,7 +347,7 @@ class VmwareengineV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single cluster.
+      r"""Deletes a `Cluster` resource. To avoid unintended data loss, migrate or gracefully shut down any workloads running on the cluster before deletion.
 
       Args:
         request: (VmwareengineProjectsLocationsPrivateCloudsClustersDeleteRequest) input message
@@ -374,7 +374,7 @@ class VmwareengineV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single cluster.
+      r"""Retrieves a `Cluster` resource by its resource name.
 
       Args:
         request: (VmwareengineProjectsLocationsPrivateCloudsClustersGetRequest) input message
@@ -428,7 +428,7 @@ class VmwareengineV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists clusters in a given private cloud.
+      r"""Lists `Cluster` resources in a given private cloud.
 
       Args:
         request: (VmwareengineProjectsLocationsPrivateCloudsClustersListRequest) input message
@@ -455,7 +455,7 @@ class VmwareengineV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the parameters of a single cluster. Only fields specified in `update_mask` are applied.
+      r"""Modifies a `Cluster` resource. Only the following fields can be updated: `labels`, `nodeCount`. Only fields specified in `updateMask` are applied.
 
       Args:
         request: (VmwareengineProjectsLocationsPrivateCloudsClustersPatchRequest) input message
@@ -546,7 +546,7 @@ class VmwareengineV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new private cloud in a given project and location.
+      r"""Creates a new `PrivateCloud` resource in a given project and location. Creating a private cloud also creates a [management cluster](https://cloud.google.com/vmware-engine/docs/concepts-vmware-components) for that private cloud. For the first private cloud created in the given VPC (`networkConfig.network`), VMware Engine creates a VPC peering with a service network.
 
       Args:
         request: (VmwareengineProjectsLocationsPrivateCloudsCreateRequest) input message
@@ -573,7 +573,7 @@ class VmwareengineV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Starts private cloud delayed deletion. The resource is deleted after system defined delay passes. Until then, deletion can be cancelled by using `UndeletePrivateCloud`.
+      r"""Marks a `PrivateCloud` resource for deletion. A `PrivateCloud` resource marked for deletion has `PrivateCloud.state` set to `DELETED` and `expireTime` set to the time when deletion is final and can no longer be reversed. When deletion is final, all private cloud resources are irreversibly removed and billing stops.
 
       Args:
         request: (VmwareengineProjectsLocationsPrivateCloudsDeleteRequest) input message
@@ -600,7 +600,7 @@ class VmwareengineV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single private cloud.
+      r"""Retrieves a `PrivateCloud` resource by its resource name.
 
       Args:
         request: (VmwareengineProjectsLocationsPrivateCloudsGetRequest) input message
@@ -654,7 +654,7 @@ class VmwareengineV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists private clouds in a given project and location.
+      r"""Lists `PrivateCloud` resources in a given project and location.
 
       Args:
         request: (VmwareengineProjectsLocationsPrivateCloudsListRequest) input message
@@ -681,7 +681,7 @@ class VmwareengineV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the parameters of a single private cloud. Only fields specified in `update_mask` are applied.
+      r"""Modifies a `PrivateCloud` resource. Only the following fields can be updated: `labels`, `description`. Only fields specified in `updateMask` are applied.
 
       Args:
         request: (VmwareengineProjectsLocationsPrivateCloudsPatchRequest) input message
@@ -870,7 +870,7 @@ class VmwareengineV1(base_api.BaseApiClient):
     )
 
     def Undelete(self, request, global_params=None):
-      r"""Stops the private cloud deletion process started by `DeletePrivateCloud`.
+      r"""Unmarks a private cloud that was previously marked for deletion by `DeletePrivateCloud`. A `PrivateCloud` resource marked for deletion has `PrivateCloud.state` set to `DELETED` and `PrivateCloud.expireTime` set to the time when deletion can no longer be reversed.
 
       Args:
         request: (VmwareengineProjectsLocationsPrivateCloudsUndeleteRequest) input message

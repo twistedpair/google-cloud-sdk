@@ -109,8 +109,7 @@ def ValidateParameters(tunnel_target):
       if not field_value and field_name in ('region', 'network', 'ip'):
         raise MissingTunnelParameter('Missing required tunnel argument: ' +
                                      field_name)
-      # TODO(b/190426150): Add zone to the list of params to reject for on-prem.
-      if field_value and field_name in ('instance', 'interface'):
+      if field_value and field_name in ('instance', 'interface', 'zone'):
         raise UnexpectedTunnelParameter('Unexpected tunnel argument: ' +
                                         field_name)
   else:
@@ -160,8 +159,6 @@ def CreateWebSocketConnectUrl(tunnel_target):
   if tunnel_target.ip:
     return _CreateWebSocketUrl(CONNECT_ENDPOINT,
                                {'project': tunnel_target.project,
-                                # TODO(b/190426150): Remove zone
-                                'zone': tunnel_target.zone,
                                 'region': tunnel_target.region,
                                 'network': tunnel_target.network,
                                 'ip': tunnel_target.ip,
@@ -179,10 +176,12 @@ def CreateWebSocketConnectUrl(tunnel_target):
 
 def CreateWebSocketReconnectUrl(tunnel_target, sid, ack_bytes):
   """Create Reconnect URL for WebSocket connection."""
-  # TODO(b/190426150): Only include zone for non-IP connections
-  url_query_pieces = {'sid': sid, 'ack': ack_bytes, 'zone': tunnel_target.zone}
+  url_query_pieces = {'sid': sid, 'ack': ack_bytes}
+
   if tunnel_target.ip:
     url_query_pieces['region'] = tunnel_target.region
+  else:
+    url_query_pieces['zone'] = tunnel_target.zone
 
   return _CreateWebSocketUrl(RECONNECT_ENDPOINT, url_query_pieces,
                              tunnel_target.url_override)

@@ -62,7 +62,6 @@ class LoggingV2(base_api.BaseApiClient):
     self.folders_logs = self.FoldersLogsService(self)
     self.folders_sinks = self.FoldersSinksService(self)
     self.folders = self.FoldersService(self)
-    self.locations_buckets_jobs = self.LocationsBucketsJobsService(self)
     self.locations_buckets_tables = self.LocationsBucketsTablesService(self)
     self.locations_buckets_views = self.LocationsBucketsViewsService(self)
     self.locations_buckets = self.LocationsBucketsService(self)
@@ -1081,6 +1080,32 @@ class LoggingV2(base_api.BaseApiClient):
         request_field='<request>',
         request_type_name='ListLogEntriesRequest',
         response_type_name='ListLogEntriesResponse',
+        supports_download=False,
+    )
+
+    def Query(self, request, global_params=None):
+      r"""Runs a SQL query synchronously and returns query results if the query completes within a specified timeout. The results from a previous query can also be fetched by specifying a result reference.
+
+      Args:
+        request: (QueryLogEntriesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (QueryResults) The response message.
+      """
+      config = self.GetMethodConfig('Query')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Query.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='logging.entries.query',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path='v2/entries:query',
+        request_field='<request>',
+        request_type_name='QueryLogEntriesRequest',
+        response_type_name='QueryResults',
         supports_download=False,
     )
 
@@ -2180,43 +2205,6 @@ class LoggingV2(base_api.BaseApiClient):
       super(LoggingV2.FoldersService, self).__init__(client)
       self._upload_configs = {
           }
-
-  class LocationsBucketsJobsService(base_api.BaseApiService):
-    """Service class for the locations_buckets_jobs resource."""
-
-    _NAME = 'locations_buckets_jobs'
-
-    def __init__(self, client):
-      super(LoggingV2.LocationsBucketsJobsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Get(self, request, global_params=None):
-      r"""Get the results of a query job.
-
-      Args:
-        request: (LoggingLocationsBucketsJobsGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GetQueryResultsResponse) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}/jobs/{jobsId}',
-        http_method='GET',
-        method_id='logging.locations.buckets.jobs.get',
-        ordered_params=['jobName'],
-        path_params=['jobName'],
-        query_params=['pageSize', 'pageToken', 'startIndex'],
-        relative_path='v2/{+jobName}',
-        request_field='',
-        request_type_name='LoggingLocationsBucketsJobsGetRequest',
-        response_type_name='GetQueryResultsResponse',
-        supports_download=False,
-    )
 
   class LocationsBucketsTablesService(base_api.BaseApiService):
     """Service class for the locations_buckets_tables resource."""
@@ -5032,32 +5020,6 @@ class LoggingV2(base_api.BaseApiClient):
         request_field='',
         request_type_name='LoggingGetCmekSettingsRequest',
         response_type_name='CmekSettings',
-        supports_download=False,
-    )
-
-    def Queries(self, request, global_params=None):
-      r"""Runs a SQL query synchronously and returns query results if the query completes within a specified timeout. The results of the query job can also be fetched with GetQueryResults.
-
-      Args:
-        request: (QueryRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (QueryResponse) The response message.
-      """
-      config = self.GetMethodConfig('Queries')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Queries.method_config = lambda: base_api.ApiMethodInfo(
-        http_method='POST',
-        method_id='logging.queries',
-        ordered_params=[],
-        path_params=[],
-        query_params=[],
-        relative_path='v2/queries',
-        request_field='<request>',
-        request_type_name='QueryRequest',
-        response_type_name='QueryResponse',
         supports_download=False,
     )
 

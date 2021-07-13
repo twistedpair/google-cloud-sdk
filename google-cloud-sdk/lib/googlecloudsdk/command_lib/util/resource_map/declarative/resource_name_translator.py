@@ -24,6 +24,23 @@ from googlecloudsdk.command_lib.util.resource_map.declarative import declarative
 from googlecloudsdk.core import exceptions
 
 
+def _validate_translator_args(asset_inventory_type=None,
+                              krm_kind=None,
+                              collection_name=None):
+  """Validates that arguments passed to the translator are correctly passed."""
+  args_specified = sum(
+      bool(identifier)
+      for identifier in [asset_inventory_type, krm_kind, collection_name])
+  if args_specified > 1:
+    raise ResourceNameTranslatorError(
+        'Must specify only one [asset_inventory_type, krm_kind, collection_name]'
+    )
+  if args_specified < 1:
+    raise ResourceNameTranslatorError(
+        'Must specify at least one of [asset_inventory_type, krm_kind, collection_name]'
+    )
+
+
 class ResourceNameTranslatorError(exceptions.Error):
   """Generic error class for ResourceNameTranslator Errors."""
 
@@ -95,34 +112,40 @@ class ResourceNameTranslator(object):
                    collection_name=None):
     """Gets resource object wrapper given resource identifier."""
 
-    args_specified = sum(
-        bool(identifier)
-        for identifier in [asset_inventory_type, krm_kind, collection_name])
-    if args_specified > 1:
-      raise ResourceNameTranslatorError(
-          'Must specify only one [asset_inventory_type, krm_kind, collection_name]'
-      )
-    if args_specified < 1:
-      raise ResourceNameTranslatorError(
-          'Must specify at least one of [asset_inventory_type, krm_kind, collection_name]'
-      )
+    _validate_translator_args(
+        asset_inventory_type=asset_inventory_type,
+        krm_kind=krm_kind,
+        collection_name=collection_name)
 
     if asset_inventory_type:
-      if asset_inventory_type not in self.ai_map:
+      if not self.is_translatable(asset_inventory_type=asset_inventory_type):
         raise ResourceIdentifierNotFoundError(asset_inventory_type)
       return self.ai_map[asset_inventory_type]
 
     if krm_kind:
       if not isinstance(krm_kind, tuple):
-        raise ValueError(
+        raise ResourceNameTranslatorError(
             '[krm_kind] must be of type [tuple(krm_group, krm_type)]')
-      elif KrmKind(*krm_kind) not in self.krm_map:
+      elif not self.is_translatable(krm_kind=krm_kind):
         raise ResourceIdentifierNotFoundError(krm_kind)
-
       return self.krm_map[KrmKind(*krm_kind)]
 
     if collection_name:
-      if collection_name not in self.collection_map:
-        raise ResourceIdentifierNotFoundError(collection_name)
+      if not self.is_translatable(collection_name=collection_name):
+        raise ResourceIdentifierNotFoundError(collection_name.lower())
 
-      return self.collection_map[collection_name]
+      return self.collection_map[collection_name.lower()]
+
+  def is_translatable(self,
+                      asset_inventory_type=None,
+                      krm_kind=None,
+                      collection_name=None):
+    """Returns true if given asset identifier exists in translation maps."""
+    if asset_inventory_type:
+      return asset_inventory_type in self.ai_map
+    elif krm_kind:
+      return KrmKind(*krm_kind) in self.krm_map
+    elif collection_name:
+      return collection_name.lower() in self.collection_map
+    else:
+      return False

@@ -328,69 +328,6 @@ class Exponential(_messages.Message):
   scale = _messages.FloatField(3)
 
 
-class GetQueryResultsResponse(_messages.Message):
-  r"""Response object of GetQueryResults.
-
-  Messages:
-    RowsValueListEntry: A RowsValueListEntry object.
-
-  Fields:
-    jobComplete: Whether the query has completed or not. If rows or totalRows
-      are present, this will always be true. If this is false, totalRows will
-      not be available.
-    jobName: Reference to the Job that was created to run the query. Example:
-      projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/jobs/[
-      JOB_ID]
-    pageToken: A token used for paging results. When this token is non-empty,
-      it indicates additional results are available.
-    rows: An object with as many results as can be contained within the
-      maximum permitted reply size. To get any additional rows, you can call
-      GetQueryResults and specify the jobReference returned above. Present
-      only when the query completes successfully.The REST-based representation
-      of this data leverages a series of JSON f,v objects for indicating
-      fields and values.
-    schema: The schema of the results. Present only when the query completes
-      successfully.
-    totalBytesProcessed: The total number of bytes processed for this query.
-    totalRows: The total number of rows in the complete query result set,
-      which can be more than the number of rows in this single page of
-      results. Present only when the query completes successfully.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class RowsValueListEntry(_messages.Message):
-    r"""A RowsValueListEntry object.
-
-    Messages:
-      AdditionalProperty: An additional property for a RowsValueListEntry
-        object.
-
-    Fields:
-      additionalProperties: Properties of the object.
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a RowsValueListEntry object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A extra_types.JsonValue attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('extra_types.JsonValue', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  jobComplete = _messages.BooleanField(1)
-  jobName = _messages.StringField(2)
-  pageToken = _messages.StringField(3)
-  rows = _messages.MessageField('RowsValueListEntry', 4, repeated=True)
-  schema = _messages.MessageField('TableSchema', 5)
-  totalBytesProcessed = _messages.IntegerField(6)
-  totalRows = _messages.IntegerField(7)
-
-
 class HttpRequest(_messages.Message):
   r"""A common proto for logging HTTP requests. Only contains semantics
   defined by the HTTP specification. Product-specific logging information MUST
@@ -2925,24 +2862,6 @@ class LoggingLocationsBucketsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
-class LoggingLocationsBucketsJobsGetRequest(_messages.Message):
-  r"""A LoggingLocationsBucketsJobsGetRequest object.
-
-  Fields:
-    jobName: Required. Fully qualified Job ID of the query job. Example:
-      projects/PROJECT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/jobs/JOB_ID
-    pageSize: Maximum number of results to read.
-    pageToken: Page token, returned by a previous call, to request the next
-      page of results.
-    startIndex: Zero-based index of the starting row.
-  """
-
-  jobName = _messages.StringField(1, required=True)
-  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(3)
-  startIndex = _messages.IntegerField(4)
-
-
 class LoggingLocationsBucketsListRequest(_messages.Message):
   r"""A LoggingLocationsBucketsListRequest object.
 
@@ -5309,67 +5228,71 @@ class Operation(_messages.Message):
   response = _messages.MessageField('ResponseValue', 5)
 
 
-class QueryRequest(_messages.Message):
-  r"""The parameters to Query.
+class QueryLogEntriesRequest(_messages.Message):
+  r"""The parameters to QueryLogEntries.
 
   Fields:
-    dryRun: Optional. If set to true, the query job is not executed. Instead,
-      if the query is valid, statistics is returned about the job such as how
-      many bytes would be processed. If the query is invalid, an error
-      returns. The default value is false.
-    pageSize: Optional. The maximum number of rows of data to return per page
-      of results. Setting this flag to a small value such as 1000 and then
-      paging through results might improve reliability when the query result
-      set is large. In addition to this limit, responses are also limited to
-      10 MB. By default, there is no maximum row count, and only the byte
-      limit applies.
-    query: Required. A query string, following the BigQuery SQL query syntax.
-      Table names should be kept unqualified, and they must be accessible
-      using the view specified in the resource_names.Example: SELECT count(*)
-      FROM audit_log;
+    pageSize: Optional. The maximum number of rows to return in the results.
+      Responses are limited to 10 MB in size.By default, there is no maximum
+      row count, and only the byte limit applies. When the byte limit is
+      reached, the rest of query results will be paginated.
+    pageToken: Optional. Page token returned by a previous call to
+      QueryLogEntries to paginate through the response rows.
+    query: Optional. A query string, following the BigQuery SQL query syntax.
+      The FROM clause should specify a fully qualified log view corresponding
+      to the log view in the resource_names. For example: SELECT count(*) FROM
+      my_project.logs_my_bucket_US._AllLogs;
     resourceNames: Required. Names of one or more log views to run a SQL
-      query. Currently, only a single view may be selected. Multiple view
-      selection will be supported in the future.Examples: projects/[PROJECT_ID
-      ]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID] organizati
-      ons/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/
-      [VIEW_ID] billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/b
-      uckets/[BUCKET_ID]/views/[VIEW_ID] folders/[FOLDER_ID]/locations/[LOCATI
-      ON_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]Requires
-      'logging.views.access' on view resource.
+      query. Currently, only a single view is supported. Multiple view
+      selection may be supported in the future.Examples: projects/[PROJECT_ID]
+      /locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID] organizatio
+      ns/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[
+      VIEW_ID] billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/bu
+      ckets/[BUCKET_ID]/views/[VIEW_ID] folders/[FOLDER_ID]/locations/[LOCATIO
+      N_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]Requires 'logging.views.access'
+      on the specified view resources.
+    resultReference: Optional. Reference to a result from a previous query. If
+      the results have expired the query will return a NOT_FOUND error.
+    validateOnly: Optional. If set to true, the query is not executed.
+      Instead, if the query is valid, statistics is returned about the query
+      such as how many bytes would be processed. If the query is invalid, an
+      error returns. The default value is false.
   """
 
-  dryRun = _messages.BooleanField(1)
-  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
   query = _messages.StringField(3)
   resourceNames = _messages.StringField(4, repeated=True)
+  resultReference = _messages.StringField(5)
+  validateOnly = _messages.BooleanField(6)
 
 
-class QueryResponse(_messages.Message):
-  r"""A QueryResponse object.
+class QueryResults(_messages.Message):
+  r"""Results of a SQL query over logs.
 
   Messages:
     RowsValueListEntry: A RowsValueListEntry object.
 
   Fields:
-    jobComplete: Whether the query has completed or not. If rows or totalRows
-      are present, this will always be true. If this is false, totalRows will
-      not be available.
-    jobName: Reference to the Job that was created to run the query. This
-      field will be present even if the original request timed out, in which
-      case GetQueryResults can be used to read the results once the query has
-      completed. Since this API only returns the first page of results,
-      subsequent pages can be fetched via the same mechanism
-      (GetQueryResults). Example:
-      projects/PROJECT_ID/locations/LOCATION_ID/buckets/BUCKET_ID/jobs/JOB_ID
-    pageToken: A token used for paging results.
-    rows: An object with as many results as can be contained within the
-      maximum permitted reply size. To get any additional rows, you can call
-      GetQueryResults and specify the jobReference returned above.
+    nextPageToken: A token that can be sent as page_token to retrieve the next
+      page. If this field is omitted, there are no subsequent pages.
+    queryComplete: Whether the query has completed or not. If rows or
+      totalRows are present, this will always be true. If this is false,
+      totalRows will not be available. The client needs to poll on
+      QueryLogEntries specifying the result_reference and wait for results.
+    resultReference: An opaque string that can be used as a reference to this
+      query result. This result reference can be used in the QueryLogEntries
+      query to fetch this result up to 24 hours in the future.
+    rows: Query result rows. The number of rows returned depends upon the page
+      size requested. To get any additional rows, you can call QueryLogEntries
+      and specify the result_reference and the page_token.The REST-based
+      representation of this data leverages a series of JSON f,v objects for
+      indicating fields and values.
     schema: The schema of the results. It shows the columns present in the
       output table. Present only when the query completes successfully.
     totalBytesProcessed: The total number of bytes processed for this query.
-      If this query was a dry run, this is the number of bytes that would be
-      processed if the query were run.
+      If this query was a validate_only query, this is the number of bytes
+      that would be processed if the query were run.
     totalRows: The total number of rows in the complete query result set,
       which can be more than the number of rows in this single page of
       results.
@@ -5400,9 +5323,9 @@ class QueryResponse(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  jobComplete = _messages.BooleanField(1)
-  jobName = _messages.StringField(2)
-  pageToken = _messages.StringField(3)
+  nextPageToken = _messages.StringField(1)
+  queryComplete = _messages.BooleanField(2)
+  resultReference = _messages.StringField(3)
   rows = _messages.MessageField('RowsValueListEntry', 4, repeated=True)
   schema = _messages.MessageField('TableSchema', 5)
   totalBytesProcessed = _messages.IntegerField(6)
@@ -5688,13 +5611,15 @@ class SuppressionInfo(_messages.Message):
 
 
 class Table(_messages.Message):
-  r"""A table storing logs in an analytics log bucket.
+  r"""A table storing logs in an analytics log bucket. Logs are all stored in
+  a single unified 'logs' table in each Log Bucket. There may be other derived
+  tables curated by Google for specific purposes.
 
   Fields:
     createTime: Output only. The time when this table was created.
     description: Describes this table.
-    name: The resource name of the table. Example: projects/[PROJECT_ID]/locat
-      ions/[LOCATION_ID]/buckets/[BUCKET_ID]/tables/[TABLE_NAME]
+    name: Output only. The resource name of the table. Example: projects/[PROJ
+      ECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/tables/[TABLE_NAME]
     rowCount: Output only. The number of rows of data in this table, excluding
       any data in the streaming buffer.
     schema: Describes the schema of this table.
@@ -5713,7 +5638,10 @@ class Table(_messages.Message):
 
 
 class TableFieldSchema(_messages.Message):
-  r"""A field in TableSchema.
+  r"""A field in TableSchema. The fields describe the static fields in the
+  LogEntry. Any dynamic fields generated by the customer in fields like labels
+  and jsonPayload are not listed in the schema as they use a native JSON type
+  field.
 
   Enums:
     ModeValueValuesEnum: Optional. The field mode. Possible values include
@@ -5721,15 +5649,12 @@ class TableFieldSchema(_messages.Message):
     TypeValueValuesEnum: Required. The field data type.
 
   Fields:
-    description: Optional. The field description. The maximum length is 1,024
-      characters.
+    description: Optional. The field description.
     fields: Optional. Describes the nested schema fields if the type property
       is set to RECORD.
     mode: Optional. The field mode. Possible values include NULLABLE, REQUIRED
       and REPEATED. The default value is NULLABLE.
-    name: Required. The field name. The name must contain only letters (a-z,
-      A-Z), numbers (0-9), or underscores (_), and must start with a letter or
-      underscore. The maximum length is 128 characters.
+    name: Required. The field name corresponding to fields in the LogEntry.
     type: Required. The field data type.
   """
 
@@ -5792,7 +5717,7 @@ class TableFieldSchema(_messages.Message):
 
 
 class TableSchema(_messages.Message):
-  r"""Schema of a Table.
+  r"""Schema of a table containing logs.
 
   Fields:
     fields: Describes the fields in a table.

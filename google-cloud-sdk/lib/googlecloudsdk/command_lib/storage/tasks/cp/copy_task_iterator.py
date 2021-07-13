@@ -160,7 +160,8 @@ class CopyTaskIterator:
                source_name_iterator,
                destination_string,
                custom_md5_digest=None,
-               task_status_queue=None):
+               task_status_queue=None,
+               user_request_args=None):
     """Initializes a CopyTaskIterator instance.
 
     Args:
@@ -171,6 +172,7 @@ class CopyTaskIterator:
         for validating a single resource upload.
       task_status_queue (multiprocessing.Queue|None): Used for estimating total
         workload from this iterator.
+      user_request_args (UserRequestArgs|None): Values for RequestConfig.
     """
     self._source_name_iterator = (
         plurality_checkable_iterator.PluralityCheckableIterator(
@@ -178,6 +180,7 @@ class CopyTaskIterator:
     self._multiple_sources = self._source_name_iterator.is_plural()
     self._custom_md5_digest = custom_md5_digest
     self._task_status_queue = task_status_queue
+    self._user_request_args = user_request_args
 
     self._total_file_count = 0
     self._total_size = 0
@@ -262,8 +265,10 @@ class CopyTaskIterator:
       if self._task_status_queue:
         self._update_workload_estimation(source.resource)
 
-      yield copy_task_factory.get_copy_task(source.resource,
-                                            destination_resource)
+      yield copy_task_factory.get_copy_task(
+          source.resource,
+          destination_resource,
+          user_request_args=self._user_request_args)
 
     if (self._task_status_queue and
         (self._total_file_count > 0 or self._total_size > 0)):

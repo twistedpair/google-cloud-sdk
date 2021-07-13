@@ -20,6 +20,7 @@
   "servicePath": "",
   "baseUrl": "https://appengine.googleapis.com/",
   "batchPath": "batch",
+  "fullyEncodeReservedExpansion": true,
   "parameters": {
     "access_token": {
       "type": "string",

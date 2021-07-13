@@ -499,12 +499,15 @@ class CertificatemanagerProjectsLocationsCertificateMapsCertificateMapEntriesLis
   sListRequest object.
 
   Fields:
-    filter: Filter expression to restrict the Certificate Map Entries
-      returned.
+    filter: Filter expression to restrict the returned Certificate Map
+      Entries.
     orderBy: A list of Certificate Map Entry field names used to specify the
       order of the returned results. The default sorting order is ascending.
       To specify descending order for a field, add a suffix " desc".
-    pageSize: Maximum number of certificate map entries to return per call.
+    pageSize: Maximum number of certificate map entries to return. The service
+      may return fewer than this value. If unspecified, at most 50 certificate
+      map entries will be returned. The maximum value is 1000; values above
+      1000 will be coerced to 1000.
     pageToken: The value returned by the last
       `ListCertificateMapEntriesResponse`. Indicates that this is a
       continuation of a prior `ListCertificateMapEntries` call, and that the

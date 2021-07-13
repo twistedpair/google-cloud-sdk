@@ -989,7 +989,7 @@ class JobInstanceDeadlineChange(ConfigChanger):
 
 
 class CpuThrottlingChange(ConfigChanger):
-  """Sets a cpu-throttling annotation on the service."""
+  """Sets the cpu-throttling annotation on the service."""
 
   def __init__(self, throttling):
     super(CpuThrottlingChange, self).__init__()
@@ -998,4 +998,17 @@ class CpuThrottlingChange(ConfigChanger):
   def Adjust(self, resource):
     resource.template.annotations[
         container_resource.CPU_THROTTLE_ANNOTATION] = str(self._throttling)
+    return resource
+
+
+class ConfidentialChange(ConfigChanger):
+  """Sets the confidential annotation on the service."""
+
+  def __init__(self, confidential):
+    super(ConfidentialChange, self).__init__()
+    self._confidential = confidential
+
+  def Adjust(self, resource):
+    resource.template.annotations[
+        container_resource.CONFIDENTIAL_ANNOTATION] = str(self._confidential)
     return resource

@@ -44,6 +44,7 @@ class BigtableadminV2(base_api.BaseApiClient):
     self.operations = self.OperationsService(self)
     self.projects_instances_appProfiles = self.ProjectsInstancesAppProfilesService(self)
     self.projects_instances_clusters_backups = self.ProjectsInstancesClustersBackupsService(self)
+    self.projects_instances_clusters_hotTablets = self.ProjectsInstancesClustersHotTabletsService(self)
     self.projects_instances_clusters = self.ProjectsInstancesClustersService(self)
     self.projects_instances_tables = self.ProjectsInstancesTablesService(self)
     self.projects_instances = self.ProjectsInstancesService(self)
@@ -556,6 +557,43 @@ class BigtableadminV2(base_api.BaseApiClient):
         request_field='testIamPermissionsRequest',
         request_type_name='BigtableadminProjectsInstancesClustersBackupsTestIamPermissionsRequest',
         response_type_name='TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsInstancesClustersHotTabletsService(base_api.BaseApiService):
+    """Service class for the projects_instances_clusters_hotTablets resource."""
+
+    _NAME = 'projects_instances_clusters_hotTablets'
+
+    def __init__(self, client):
+      super(BigtableadminV2.ProjectsInstancesClustersHotTabletsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists Hot Tablets in a cluster, within the time range provided. Hot Tablets are ordered based on CPU usage.
+
+      Args:
+        request: (BigtableadminProjectsInstancesClustersHotTabletsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListHotTabletsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}/clusters/{clustersId}/hotTablets',
+        http_method='GET',
+        method_id='bigtableadmin.projects.instances.clusters.hotTablets.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['endTime', 'pageSize', 'pageToken', 'startTime'],
+        relative_path='v2/{+parent}/hotTablets',
+        request_field='',
+        request_type_name='BigtableadminProjectsInstancesClustersHotTabletsListRequest',
+        response_type_name='ListHotTabletsResponse',
         supports_download=False,
     )
 

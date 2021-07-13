@@ -18,21 +18,14 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from googlecloudsdk.command_lib.ai import constants
 from googlecloudsdk.command_lib.ai.custom_jobs import local_util
 from googlecloudsdk.command_lib.ai.docker import build as docker_build
 from googlecloudsdk.command_lib.ai.docker import utils as docker_utils
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.core import log
-from googlecloudsdk.core import resources
 from googlecloudsdk.core.util import files
 
 # TODO(b/191347326): Consider adding tests for the "public" methods in this file
-
-
-def ParseJobName(name):
-  return resources.REGISTRY.Parse(
-      name, collection=constants.CUSTOM_JOB_COLLECTION).Name()
 
 
 def _ConstructSingleWorkerPoolSpec(aiplatform_client,

@@ -150,7 +150,7 @@ def _ApplySecretsArgsToFunction(function, args):
   old_secrets_dict = secrets_util.GetSecretsAsDict(function)
   try:
     new_secrets_dict_by_type, needs_update = secrets_config.ApplyFlags(
-        old_secrets_dict, args)
+        old_secrets_dict, args, _GetProject())
   except ArgumentTypeError as error:
     exceptions.reraise(function_exceptions.FunctionsError(error))
 
@@ -160,11 +160,11 @@ def _ApplySecretsArgsToFunction(function, args):
     _LogSecretsPermissionMessage(_GetProject(), function.serviceAccountEmail)
   if needs_update['secret_environment_variables']:
     function.secretEnvironmentVariables = secrets_util.SecretEnvVarsToMessages(
-        new_secrets_dict_by_type['secret_environment_variables'], _GetProject())
+        new_secrets_dict_by_type['secret_environment_variables'])
     updated_fields.append('secretEnvironmentVariables')
   if needs_update['secret_volumes']:
     function.secretVolumes = secrets_util.SecretVolumesToMessages(
-        new_secrets_dict_by_type['secret_volumes'], _GetProject())
+        new_secrets_dict_by_type['secret_volumes'])
     updated_fields.append('secretVolumes')
   return updated_fields
 
@@ -195,8 +195,16 @@ def _CreateCloudBuildLogURL(build_name):
            matched_groups['projectnumber']))
 
 
+def _ValidateV1Flag(args):
+  if args.timeout and args.timeout > 540:
+    raise ArgumentTypeError('--timeout: value must be less than or equal to '
+                            '540s; received: {}s'.format(args.timeout))
+
+
 def Run(args, track=None, enable_runtime=True, enable_build_worker_pool=False):
   """Run a function deployment with the given args."""
+  flags.ValidateV1TimeoutFlag(args)
+
   # Check for labels that start with `deployment`, which is not allowed.
   labels_util.CheckNoDeploymentLabels('--remove-labels', args.remove_labels)
   labels_util.CheckNoDeploymentLabels('--update-labels', args.update_labels)

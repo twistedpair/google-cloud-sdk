@@ -498,6 +498,7 @@ class CreateClusterOptions(object):
       enable_workload_certificates=None,
       enable_alts=None,
       enable_gke_oidc=None,
+      enable_identity_service=None,
       enable_shielded_nodes=None,
       linux_sysctls=None,
       disable_default_snat=None,
@@ -641,6 +642,7 @@ class CreateClusterOptions(object):
     self.enable_workload_certificates = enable_workload_certificates
     self.enable_alts = enable_alts
     self.enable_gke_oidc = enable_gke_oidc
+    self.enable_identity_service = enable_identity_service
     self.enable_shielded_nodes = enable_shielded_nodes
     self.linux_sysctls = linux_sysctls
     self.disable_default_snat = disable_default_snat
@@ -741,6 +743,7 @@ class UpdateClusterOptions(object):
                enable_workload_certificates=None,
                enable_alts=None,
                enable_gke_oidc=None,
+               enable_identity_service=None,
                enable_shielded_nodes=None,
                disable_default_snat=None,
                resource_usage_bigquery_dataset=None,
@@ -826,6 +829,7 @@ class UpdateClusterOptions(object):
     self.enable_workload_certificates = enable_workload_certificates
     self.enable_alts = enable_alts
     self.enable_gke_oidc = enable_gke_oidc
+    self.enable_identity_service = enable_identity_service
     self.enable_shielded_nodes = enable_shielded_nodes
     self.disable_default_snat = disable_default_snat
     self.resource_usage_bigquery_dataset = resource_usage_bigquery_dataset
@@ -3423,6 +3427,9 @@ class V1Beta1Adapter(V1Adapter):
     if options.enable_gke_oidc:
       cluster.gkeOidcConfig = self.messages.GkeOidcConfig(
           enabled=options.enable_gke_oidc)
+    if options.enable_identity_service:
+      cluster.identityServiceConfig = self.messages.IdentityServiceConfig(
+          enabled=options.enable_identity_service)
     if options.enable_master_global_access is not None:
       if not options.enable_private_nodes:
         raise util.Error(
@@ -3534,6 +3541,11 @@ class V1Beta1Adapter(V1Adapter):
       update = self.messages.ClusterUpdate(
           desiredGkeOidcConfig=self.messages.GkeOidcConfig(
               enabled=options.enable_gke_oidc))
+
+    if options.enable_identity_service is not None:
+      update = self.messages.ClusterUpdate(
+          desiredIdentityServiceConfig=self.messages.IdentityServiceConfig(
+              enabled=options.enable_identity_service))
 
     if options.enable_stackdriver_kubernetes:
       update = self.messages.ClusterUpdate(
@@ -3913,6 +3925,9 @@ class V1Alpha1Adapter(V1Beta1Adapter):
     if options.enable_gke_oidc:
       cluster.gkeOidcConfig = self.messages.GkeOidcConfig(
           enabled=options.enable_gke_oidc)
+    if options.enable_identity_service:
+      cluster.identityServiceConfig = self.messages.IdentityServiceConfig(
+          enabled=options.enable_identity_service)
     if options.security_profile is not None:
       cluster.securityProfile = self.messages.SecurityProfile(
           name=options.security_profile)
@@ -4028,6 +4043,11 @@ class V1Alpha1Adapter(V1Beta1Adapter):
       update = self.messages.ClusterUpdate(
           desiredGkeOidcConfig=self.messages.GkeOidcConfig(
               enabled=options.enable_gke_oidc))
+
+    if options.enable_identity_service is not None:
+      update = self.messages.ClusterUpdate(
+          desiredIdentityServiceConfig=self.messages.IdentityServiceConfig(
+              enabled=options.enable_identity_service))
 
     if options.enable_cost_management is not None:
       update = self.messages.ClusterUpdate(

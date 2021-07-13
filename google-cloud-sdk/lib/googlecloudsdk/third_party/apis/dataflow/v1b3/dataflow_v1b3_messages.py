@@ -2454,6 +2454,7 @@ class FlexTemplateRuntimeEnvironment(_messages.Message):
       restrictions](https://cloud.google.com/compute/docs/labeling-
       resources#restrictions) page. An object containing a list of "key":
       value pairs. Example: { "name": "wrench", "mass": "1kg", "count": "3" }.
+    diskSizeGb: Worker disk size, in gigabytes.
     enableStreamingEngine: Whether to enable Streaming Engine for the job.
     flexrsGoal: Set FlexRS goal for the job.
       https://cloud.google.com/dataflow/docs/guides/flexrs
@@ -2462,6 +2463,7 @@ class FlexTemplateRuntimeEnvironment(_messages.Message):
       projects//locations//keyRings//cryptoKeys/
     machineType: The machine type to use for the job. Defaults to the value
       from the template if not specified.
+    maxNumWorkers: The maximum number of workers to cap scaling at.
     maxWorkers: The maximum number of Google Compute Engine instances to be
       made available to your pipeline during execution, from 1 to 1000.
     network: Network to which VMs will be assigned. If empty or unspecified,
@@ -2558,22 +2560,24 @@ class FlexTemplateRuntimeEnvironment(_messages.Message):
 
   additionalExperiments = _messages.StringField(1, repeated=True)
   additionalUserLabels = _messages.MessageField('AdditionalUserLabelsValue', 2)
-  enableStreamingEngine = _messages.BooleanField(3)
-  flexrsGoal = _messages.EnumField('FlexrsGoalValueValuesEnum', 4)
-  ipConfiguration = _messages.EnumField('IpConfigurationValueValuesEnum', 5)
-  kmsKeyName = _messages.StringField(6)
-  machineType = _messages.StringField(7)
-  maxWorkers = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  network = _messages.StringField(9)
-  numWorkers = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  sdkContainerImage = _messages.StringField(11)
-  serviceAccountEmail = _messages.StringField(12)
-  stagingLocation = _messages.StringField(13)
-  subnetwork = _messages.StringField(14)
-  tempLocation = _messages.StringField(15)
-  workerRegion = _messages.StringField(16)
-  workerZone = _messages.StringField(17)
-  zone = _messages.StringField(18)
+  diskSizeGb = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  enableStreamingEngine = _messages.BooleanField(4)
+  flexrsGoal = _messages.EnumField('FlexrsGoalValueValuesEnum', 5)
+  ipConfiguration = _messages.EnumField('IpConfigurationValueValuesEnum', 6)
+  kmsKeyName = _messages.StringField(7)
+  machineType = _messages.StringField(8)
+  maxNumWorkers = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  maxWorkers = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  network = _messages.StringField(11)
+  numWorkers = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  sdkContainerImage = _messages.StringField(13)
+  serviceAccountEmail = _messages.StringField(14)
+  stagingLocation = _messages.StringField(15)
+  subnetwork = _messages.StringField(16)
+  tempLocation = _messages.StringField(17)
+  workerRegion = _messages.StringField(18)
+  workerZone = _messages.StringField(19)
+  zone = _messages.StringField(20)
 
 
 class FloatingPointList(_messages.Message):

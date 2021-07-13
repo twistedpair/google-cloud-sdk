@@ -470,6 +470,20 @@
           "items": {
             "type": "string"
           }
+        },
+        "connectMode": {
+          "description": "The network connect mode of the Filestore instance. If not provided, the connect mode defaults to DIRECT_PEERING.",
+          "type": "string",
+          "enumDescriptions": [
+            "Not set.",
+            "Connect via direct peering to the Filestore service.",
+            "Connect to your Filestore instance using Private Service Access. Private services access provides an IP address range for multiple Google Cloud services, including Filestore."
+          ],
+          "enum": [
+            "CONNECT_MODE_UNSPECIFIED",
+            "DIRECT_PEERING",
+            "PRIVATE_SERVICE_ACCESS"
+          ]
         }
       }
     },

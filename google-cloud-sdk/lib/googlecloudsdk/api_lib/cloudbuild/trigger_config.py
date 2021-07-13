@@ -274,7 +274,11 @@ def ParseBuildConfigArgs(trigger,
     need_repo: Whether or not a repo needs to be included explicitly in flags.
   """
   if args.build_config:
-    trigger.filename = args.build_config
+    # If we don't need a repo, then the repository information is already known
+    # and we just need the filename. Otherwise, this trigger needs to
+    # be a GitFileSource trigger (which is taken care of in ParseGitRepoSource).
+    if not need_repo:
+      trigger.filename = args.build_config
     trigger.substitutions = cloudbuild_util.EncodeTriggerSubstitutions(
         args.substitutions, messages)
   if args.dockerfile:
@@ -366,7 +370,6 @@ def ParseGitRepoSource(trigger, args, messages, required=False):
     messages: A Cloud Build messages module.
     required: Whether or not the repository info is required.
   """
-  repo_source = messages.GitRepoSource()
 
   # AddGitRepoSource (defined earlier in this file) adds repo and branch/tag
   # as required fields in the same argument group, so repo is set iff branch
@@ -381,13 +384,16 @@ def ParseGitRepoSource(trigger, args, messages, required=False):
   if not args.repo:
     return
 
-  repo_source.uri = args.repo
   if args.branch:
-    repo_source.ref = 'refs/heads/' + args.branch
+    ref = 'refs/heads/' + args.branch
   else:
-    repo_source.ref = 'refs/tags/' + args.tag
+    ref = 'refs/tags/' + args.tag
 
-  trigger.sourceToBuild = repo_source
+  trigger.sourceToBuild = messages.GitRepoSource(uri=args.repo, ref=ref)
+
+  if args.build_config:
+    trigger.gitFileSource = messages.GitFileSource(
+        path=args.build_config, uri=args.repo, revision=ref)
 
 
 def ParseRequireApproval(trigger, args, messages):

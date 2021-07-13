@@ -61,7 +61,10 @@ def _get_random_prefix():
 class FileUploadTask(task.Task):
   """Represents a command operation triggering a file upload."""
 
-  def __init__(self, source_resource, destination_resource):
+  def __init__(self,
+               source_resource,
+               destination_resource,
+               user_request_args=None):
     """Initializes task.
 
     Args:
@@ -71,10 +74,12 @@ class FileUploadTask(task.Task):
       destination_resource (resource_reference.ObjectResource|UnknownResource):
           Must contain the full object path. Directories will not be accepted.
           Existing objects at the this location will be overwritten.
+      user_request_args (UserRequestArgs|None): Values for RequestConfig.
     """
     super(FileUploadTask, self).__init__()
     self._source_resource = source_resource
     self._destination_resource = destination_resource
+    self._user_request_args = user_request_args
     self.parallel_processing_key = (
         self._destination_resource.storage_url.url_string)
 
@@ -99,7 +104,8 @@ class FileUploadTask(task.Task):
           self._source_resource,
           self._destination_resource,
           offset=0,
-          length=size).execute(task_status_queue)
+          length=size,
+          user_request_args=self._user_request_args).execute(task_status_queue)
     else:
       component_size_property = (
           properties.VALUES.storage.parallel_composite_upload_component_size)
@@ -138,7 +144,8 @@ class FileUploadTask(task.Task):
             offset,
             length,
             component_number=i,
-            total_components=len(component_offsets_and_lengths))
+            total_components=len(component_offsets_and_lengths),
+            user_request_args=self._user_request_args)
 
         file_part_upload_tasks.append(upload_task)
 

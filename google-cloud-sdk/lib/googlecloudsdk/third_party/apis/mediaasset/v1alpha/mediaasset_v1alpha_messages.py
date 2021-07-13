@@ -76,13 +76,19 @@ class Annotation(_messages.Message):
   throughput.
 
   Messages:
-    DataValue: Required. Data held by the annotation.
+    DataValue: Required. Data held by the annotation. Data must have "start"
+      and "end" fields. For "start" and "end": If the type is datetime, it
+      must be a string that follows RFC3339. If the type is number or
+      duration, it must be a valid int64.
     LabelsValue: The labels associated with this resource. Each label is a
       key-value pair.
 
   Fields:
     createTime: Output only. The creation time of the annotation.
-    data: Required. Data held by the annotation.
+    data: Required. Data held by the annotation. Data must have "start" and
+      "end" fields. For "start" and "end": If the type is datetime, it must be
+      a string that follows RFC3339. If the type is number or duration, it
+      must be a valid int64.
     etag: Etag of the resource used in output and update requests.
     labels: The labels associated with this resource. Each label is a key-
       value pair.
@@ -95,7 +101,10 @@ class Annotation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DataValue(_messages.Message):
-    r"""Required. Data held by the annotation.
+    r"""Required. Data held by the annotation. Data must have "start" and
+    "end" fields. For "start" and "end": If the type is datetime, it must be a
+    string that follows RFC3339. If the type is number or duration, it must be
+    a valid int64.
 
     Messages:
       AdditionalProperty: An additional property for a DataValue object.
@@ -1656,14 +1665,34 @@ class GoogleIamV1TestIamPermissionsResponse(_messages.Message):
 class IndexedFieldConfig(_messages.Message):
   r"""A IndexedFieldConfig object.
 
+  Enums:
+    TokenizationValueValuesEnum: String tokenization mode.
+
   Fields:
     expression: Expression to evaluate in the context of an indexed property
       defaults to the property name.
-    fullTextSearch: Enable full text search - strings only.
+    fullTextSearch: Enable full text search - strings only. DEPRECATED, use
+      tokenization
+    tokenization: String tokenization mode.
   """
+
+  class TokenizationValueValuesEnum(_messages.Enum):
+    r"""String tokenization mode.
+
+    Values:
+      TOKENIZATION_UNSPECIFIED: No tokenization - only exact string matches
+        are supported.
+      WORDS: Use word tokens.
+      SUBSTRINGS_NGRAM_3: Uses 3-ngram tokens supporting efficient substring
+        searches.
+    """
+    TOKENIZATION_UNSPECIFIED = 0
+    WORDS = 1
+    SUBSTRINGS_NGRAM_3 = 2
 
   expression = _messages.StringField(1)
   fullTextSearch = _messages.BooleanField(2)
+  tokenization = _messages.EnumField('TokenizationValueValuesEnum', 3)
 
 
 class Input(_messages.Message):
@@ -2320,13 +2349,15 @@ class MediaassetProjectsLocationsAssetTypesAssetsGetRequest(_messages.Message):
     name: Required. The name of the asset to retrieve, in the following form:
       `projects/{project}/locations/{location}/assetTypes/{type}/assets/{asset
       }`.
-    readMask: Extra fields to be poplulated as part of the asset resource in
-      the response. Currently, this only supports populating asset metadata
+    newReadMask: Extra fields to be poplulated as part of the asset resource
+      in the response. Currently, this only supports populating asset metadata
       (no wildcards and no contents of the entire asset).
+    readMask: This is temporary.
   """
 
   name = _messages.StringField(1, required=True)
-  readMask = _messages.StringField(2)
+  newReadMask = _messages.StringField(2)
+  readMask = _messages.StringField(3)
 
 
 class MediaassetProjectsLocationsAssetTypesAssetsListRequest(_messages.Message):
@@ -2336,6 +2367,9 @@ class MediaassetProjectsLocationsAssetTypesAssetsListRequest(_messages.Message):
     filter: The filter to apply to list results. Valid field expressions are
       defined in assetType.indexedFieldConfig. Format:
       https://cloud.google.com/logging/docs/view/advanced-queries
+    newReadMask: Extra fields to be poplulated as part of the asset resource
+      in the response. Currently, this only supports populating asset metadata
+      (no wildcards and no contents of the entire asset).
     pageSize: The maximum number of items to return. If unspecified, server
       will pick an appropriate default. Server may return fewer items than
       requested. A caller should only rely on response's next_page_token to
@@ -2344,16 +2378,15 @@ class MediaassetProjectsLocationsAssetTypesAssetsListRequest(_messages.Message):
       request, if any.
     parent: Required. The parent resource name, in the following form:
       `projects/{project}/locations/{location}/assetTypes/{type}`.
-    readMask: Extra fields to be poplulated as part of the asset resource in
-      the response. Currently, this only supports populating asset metadata
-      (no wildcards and no contents of the entire asset).
+    readMask: This is temporary.
   """
 
   filter = _messages.StringField(1)
-  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(3)
-  parent = _messages.StringField(4, required=True)
-  readMask = _messages.StringField(5)
+  newReadMask = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+  readMask = _messages.StringField(6)
 
 
 class MediaassetProjectsLocationsAssetTypesAssetsPatchRequest(_messages.Message):

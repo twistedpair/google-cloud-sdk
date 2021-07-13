@@ -563,13 +563,13 @@
           "type": "string"
         },
         "createTime": {
-          "description": "Output only. The time the instance was created. Synthetic field is populated automatically by CCFE. go\/ccfe-synthetic-field-user-guide",
+          "description": "Output only. The time the instance was created.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
-          "description": "Output only. Last update time. Synthetic field is populated automatically by CCFE.",
+          "description": "Output only. Last update time for this SQL instance.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"

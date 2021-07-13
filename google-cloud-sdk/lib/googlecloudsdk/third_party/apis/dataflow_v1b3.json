@@ -2617,6 +2617,16 @@
         "sdkContainerImage": {
           "description": "Docker registry location of container image to use for the 'worker harness. Default is the container for the version of the SDK. Note this field is only valid for portable pipelines.",
           "type": "string"
+        },
+        "maxNumWorkers": {
+          "description": "The maximum number of workers to cap scaling at.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "diskSizeGb": {
+          "description": "Worker disk size, in gigabytes.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },

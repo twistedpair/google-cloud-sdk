@@ -128,6 +128,37 @@ class Binding(_messages.Message):
   role = _messages.StringField(3)
 
 
+class Channel(_messages.Message):
+  r"""A representation of the Channel resource. A Channel is a resource on
+  which event providers publish their events. The published events are
+  delivered through the transport associated with the channel. Note that a
+  channel is associated with exactly one event provider.
+
+  Fields:
+    createTime: Output only. The creation time.
+    name: Required. The resource name of the channel. Must be unique within
+      the location on the project and must be in
+      `projects/{project}/locations/{location}/channels/{channel}` format.
+    provider: Required. The name of the event provider (e.g. Eventarc SaaS
+      partner) associated with the channel. This provider will be granted
+      permissions to publish events to the channel.
+    pubsubTopic: Output only. The name of the Pub/Sub topic created and
+      managed by Eventarc system as a transport for the event delivery.
+      Format: `projects/{PROJECT_ID}/topics/{TOPIC_NAME}`.
+    uid: Output only. Server assigned unique identifier for the channel. The
+      value is a UUID4 string and guaranteed to remain unchanged until the
+      resource is deleted.
+    updateTime: Output only. The last-modified time.
+  """
+
+  createTime = _messages.StringField(1)
+  name = _messages.StringField(2)
+  provider = _messages.StringField(3)
+  pubsubTopic = _messages.StringField(4)
+  uid = _messages.StringField(5)
+  updateTime = _messages.StringField(6)
+
+
 class CloudRun(_messages.Message):
   r"""Represents a Cloud Run destination.
 
@@ -193,6 +224,91 @@ class EventFilter(_messages.Message):
   attribute = _messages.StringField(1)
   operator = _messages.StringField(2)
   value = _messages.StringField(3)
+
+
+class EventarcProjectsLocationsChannelsCreateRequest(_messages.Message):
+  r"""A EventarcProjectsLocationsChannelsCreateRequest object.
+
+  Fields:
+    channel: A Channel resource to be passed as the request body.
+    channelId: Required. The user-provided ID to be assigned to the channel.
+    parent: Required. The parent collection in which to add this channel.
+    validateOnly: Required. If set, validate the request and preview the
+      review, but do not actually post it.
+  """
+
+  channel = _messages.MessageField('Channel', 1)
+  channelId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  validateOnly = _messages.BooleanField(4)
+
+
+class EventarcProjectsLocationsChannelsDeleteRequest(_messages.Message):
+  r"""A EventarcProjectsLocationsChannelsDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the channel to be deleted.
+    validateOnly: Required. If set, validate the request and preview the
+      review, but do not actually post it.
+  """
+
+  name = _messages.StringField(1, required=True)
+  validateOnly = _messages.BooleanField(2)
+
+
+class EventarcProjectsLocationsChannelsGetRequest(_messages.Message):
+  r"""A EventarcProjectsLocationsChannelsGetRequest object.
+
+  Fields:
+    name: Required. The name of the channel to get.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class EventarcProjectsLocationsChannelsListRequest(_messages.Message):
+  r"""A EventarcProjectsLocationsChannelsListRequest object.
+
+  Fields:
+    orderBy: The sorting order of the resources returned. Value should be a
+      comma separated list of fields. The default sorting oder is ascending.
+      To specify descending order for a field, append a ` desc` suffix; for
+      example: `name desc, channel_id`.
+    pageSize: The maximum number of channels to return on each page. Note: The
+      service may send fewer.
+    pageToken: The page token; provide the value from the `next_page_token`
+      field in a previous `ListChannels` call to retrieve the subsequent page.
+      When paginating, all other parameters provided to `ListChannels` must
+      match the call that provided the page token.
+    parent: Required. The parent collection to list channels on.
+  """
+
+  orderBy = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
+class EventarcProjectsLocationsChannelsPatchRequest(_messages.Message):
+  r"""A EventarcProjectsLocationsChannelsPatchRequest object.
+
+  Fields:
+    channel: A Channel resource to be passed as the request body.
+    name: Required. The resource name of the channel. Must be unique within
+      the location on the project and must be in
+      `projects/{project}/locations/{location}/channels/{channel}` format.
+    updateMask: The fields to be updated; only fields explicitly provided will
+      be updated. If no field mask is provided, all provided fields in the
+      request will be updated. To update all fields, provide a field mask of
+      "*".
+    validateOnly: Required. If set, validate the request and preview the
+      review, but do not actually post it.
+  """
+
+  channel = _messages.MessageField('Channel', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+  validateOnly = _messages.BooleanField(4)
 
 
 class EventarcProjectsLocationsGetRequest(_messages.Message):
@@ -768,6 +884,22 @@ class Ingress(_messages.Message):
   pubsubTopic = _messages.StringField(4)
   uid = _messages.StringField(5)
   updateTime = _messages.StringField(6)
+
+
+class ListChannelsResponse(_messages.Message):
+  r"""The response message for the ListChannels method.
+
+  Fields:
+    channels: The requested channels, up to the number specified in
+      `page_size`.
+    nextPageToken: A page token that can be sent to ListChannels to request
+      the next page. If this is empty, then there are no more pages.
+    unreachable: Unreachable resources, if any.
+  """
+
+  channels = _messages.MessageField('Channel', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListIngressesResponse(_messages.Message):

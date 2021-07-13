@@ -571,7 +571,7 @@ def RunImageImport(args,
                    import_args,
                    tags,
                    output_filter,
-                   release_track,
+                   release_track,  # pylint:disable=unused-argument
                    docker_image_tag=_DEFAULT_BUILDER_VERSION):
   """Run a build over gce_vm_image_import on Google Cloud Builder.
 
@@ -594,8 +594,11 @@ def RunImageImport(args,
   Raises:
     FailedBuildException: If the build is completed and not 'SUCCESS'.
   """
+  # TODO (b/191234695)
+  del release_track  # Unused argument
+
   AppendArg(import_args, 'client_version', config.CLOUD_SDK_VERSION)
-  builder_region = _GetBuilderRegion(release_track, _GetImageImportRegion, args)
+  builder_region = _GetImageImportRegion(args)
   builder = _GetBuilder(_IMAGE_IMPORT_BUILDER_EXECUTABLE, docker_image_tag,
                         builder_region)
   return RunImageCloudBuild(args, builder, import_args, tags, output_filter,
@@ -645,7 +648,7 @@ def _GetRegionalizedBuilder(executable, region, docker_image_tag):
 
   Args:
     executable: name of builder executable to run
-    region: region for the builder
+    region: GCS region for the builder
     docker_image_tag: tag for Docker builder images (e.g. 'release')
 
   Returns:
@@ -653,6 +656,11 @@ def _GetRegionalizedBuilder(executable, region, docker_image_tag):
   """
   if not region:
     return ''
+
+  # eu/europe is the only mismatch in region naming between Artifact registry
+  # and GCS
+  if region == 'eu':
+    region = 'europe'
 
   regionalized_builder = _REGIONALIZED_BUILDER_DOCKER_PATTERN.format(
       executable=executable,
@@ -828,9 +836,13 @@ def RunImageCloudBuild(args, builder, builder_args, tags, output_filter,
 
 def GetDaisyTimeout(args):
   # Make Daisy time out before gcloud by shaving off 3% from the timeout time,
-  # up to a max of 5m (300s).
+  # but no longer than 5m (300s) and no shorter than 30s.
   timeout_offset = int(args.timeout * 0.03)
-  daisy_timeout = args.timeout - min(timeout_offset, 300)
+  timeout_offset = min(max(timeout_offset, 30), 300)
+  daisy_timeout = args.timeout - timeout_offset
+
+  # Prevent the daisy timeout from being <=0.
+  daisy_timeout = max(1, daisy_timeout)
   return daisy_timeout
 
 
@@ -1273,7 +1285,7 @@ def AppendBoolArgDefaultTrue(args, name, arg):
     args.append('-{0}={1}'.format(name, arg))
 
 
-def AddCommonDaisyArgs(parser, operation='a build'):
+def AddCommonDaisyArgs(parser, operation='a build', extra_timeout_help=''):
   """Common arguments for Daisy builds."""
 
   parser.add_argument(
@@ -1285,13 +1297,15 @@ def AddCommonDaisyArgs(parser, operation='a build'):
 
   parser.add_argument(
       '--timeout',
-      type=arg_parsers.Duration(),
+      type=arg_parsers.Duration(upper_bound='24h'),
       default='2h',
       help=("""\
-          Maximum time {} can last before it fails as "TIMEOUT".
-          For example, specifying `2h` fails the process after 2 hours.
+          Maximum time {} can last before it fails as "TIMEOUT". For example, if
+          you specify `2h`, the process fails after 2 hours.
           See $ gcloud topic datetimes for information about duration formats.
-          """).format(operation))
+
+          This timeout option has a maximum value of 24 hours.{}
+          """).format(operation, extra_timeout_help))
   base.ASYNC_FLAG.AddToParser(parser)
 
 

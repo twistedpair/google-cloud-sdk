@@ -579,7 +579,9 @@ class EdgeCacheOrigin(_messages.Message):
       response codes, which include HTTP 409 (Conflict) and HTTP 429 (Too Many
       Requests) - NOT_FOUND: Retry if the origin returns a HTTP 404 (Not
       Found). This can be useful when generating video content, and the
-      segment is not available yet.
+      segment is not available yet. - FORBIDDEN: Retry if the origin returns a
+      HTTP 403 (Forbidden). This can be useful for origins that return 403
+      (instead of 404) for missing conent for security reasons.
     timeout: Optional. The connection and HTTP timeout configuration for this
       origin.
     updateTime: Output only. Update timestamp in RFC3339 text format.

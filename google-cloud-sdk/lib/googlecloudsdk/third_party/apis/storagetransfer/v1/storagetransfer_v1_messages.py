@@ -48,11 +48,17 @@ class AwsS3Data(_messages.Message):
     path: Root path to transfer objects. Must be an empty string or full path
       name that ends with a '/'. This field is treated as an object prefix. As
       such, it should generally not begin with a '/'.
+    roleArn: Input only. Role arn to support temporary credentials via
+      AssumeRoleWithWebIdentity. When role arn is provided, transfer service
+      will fetch temporary credentials for the session using
+      AssumeRoleWithWebIdentity call for the provided role using the
+      [GoogleServiceAccount] for this project.
   """
 
   awsAccessKey = _messages.MessageField('AwsAccessKey', 1)
   bucketName = _messages.StringField(2)
   path = _messages.StringField(3)
+  roleArn = _messages.StringField(4)
 
 
 class AzureBlobStorageData(_messages.Message):
@@ -91,10 +97,14 @@ class AzureCredentials(_messages.Message):
   retention#user-credentials).
 
   Fields:
-    sasToken: Required. Azure shared access signature. (see [Grant limited
-      access to Azure Storage resources using shared access signatures
+    sasToken: Required. Azure shared access signature (SAS). *Note:*Copying
+      data from Azure Data Lake Storage (ADLS) Gen 2 is in
+      [Preview](/products/#product-launch-stages). During Preview, if you are
+      copying data from ADLS Gen 2, you must use an account SAS. For more
+      information about SAS, see [Grant limited access to Azure Storage
+      resources using shared access signatures
       (SAS)](https://docs.microsoft.com/en-us/azure/storage/common/storage-
-      sas-overview)).
+      sas-overview).
   """
 
   sasToken = _messages.StringField(1)
@@ -301,9 +311,11 @@ class GoogleServiceAccount(_messages.Message):
 
   Fields:
     accountEmail: Email address of the service account.
+    subjectId: Unique identifier for the service account.
   """
 
   accountEmail = _messages.StringField(1)
+  subjectId = _messages.StringField(2)
 
 
 class HttpData(_messages.Message):

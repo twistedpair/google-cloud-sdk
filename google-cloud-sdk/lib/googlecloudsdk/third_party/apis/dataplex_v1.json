@@ -280,7 +280,7 @@
           "$ref": "GoogleCloudDataplexV1SecurityStatus"
         },
         "metastore": {
-          "description": "Required. Settings to manage metadata publishing to a Hive Metastore from the lake.",
+          "description": "Optional. Settings to manage metadata publishing to a Hive Metastore from the lake.",
           "$ref": "GoogleCloudDataplexV1LakeMetastore"
         },
         "actions": {
@@ -359,7 +359,7 @@
       "type": "object",
       "properties": {
         "service": {
-          "description": "Optional. Immutable. A relative reference to the Dataproc Metastore (https:\/\/cloud.google.com\/dataproc-metastore\/docs) service instance into which metadata will be published. This is of the form: projects\/{project_number}\/locations\/{location_id}\/services\/{service_id} where the location matches the location of the lake.",
+          "description": "Optional. A relative reference to the Dataproc Metastore (https:\/\/cloud.google.com\/dataproc-metastore\/docs) service instance into which metadata will be published. This is of the form: projects\/{project_number}\/locations\/{location_id}\/services\/{service_id} where the project and location matches the those of the lake.",
           "type": "string"
         }
       }

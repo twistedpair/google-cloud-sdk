@@ -63,8 +63,47 @@ class UserRequestArgs:
     self.predefined_acl_string = predefined_acl_string
     self.predefined_default_acl_string = predefined_default_acl_string
 
+  def __eq__(self, other):
+    if not isinstance(other, type(self)):
+      return NotImplemented
+    return (self.cache_control == other.cache_control and
+            self.content_disposition == other.content_disposition and
+            self.content_encoding == other.content_encoding and
+            self.content_language == other.content_language and
+            self.content_type == other.content_type and
+            self.custom_headers == other.custom_headers and
+            self.custom_metadata == other.custom_metadata and
+            self.custom_time == other.custom_time and
+            self.max_bytes_per_call == other.max_bytes_per_call and
+            self.md5_hash == other.md5_hash and
+            self.precondition_generation_match
+            == other.precondition_generation_match and
+            self.precondition_metageneration_match
+            == other.precondition_metageneration_match and
+            self.predefined_acl_string == other.predefined_acl_string and
+            self.predefined_default_acl_string
+            == other.predefined_default_acl_string)
+
   def __repr__(self):
     return debug_output.generic_repr(self)
+
+
+def get_user_request_args_from_command_args(args):
+  """Returns UserRequestArgs from a command's Run method "args" parameter."""
+  return UserRequestArgs(
+      cache_control=getattr(args, 'cache_control', None),
+      content_disposition=getattr(args, 'content_disposition', None),
+      content_encoding=getattr(args, 'content_encoding', None),
+      content_language=getattr(args, 'content_language', None),
+      content_type=getattr(args, 'content_type', None),
+      custom_headers=getattr(args, 'custom_headers', None),
+      custom_metadata=getattr(args, 'custom_metadata', None),
+      custom_time=getattr(args, 'custom_time', None),
+      md5_hash=getattr(args, 'content_md5', None),
+      precondition_generation_match=getattr(args, 'if_generation_match', None),
+      precondition_metageneration_match=getattr(args, 'if_metageneration_match',
+                                                None),
+  )
 
 
 class _RequestConfig(object):

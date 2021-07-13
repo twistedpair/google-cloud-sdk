@@ -29,7 +29,10 @@ from six.moves import queue
 class DeleteTaskIteratorFactory:
   """Creates bucket and object delete task iterators."""
 
-  def __init__(self, name_expansion_iterator, task_status_queue=None):
+  def __init__(self,
+               name_expansion_iterator,
+               task_status_queue=None,
+               user_request_args=None):
     """Initializes factory.
 
     Args:
@@ -37,9 +40,11 @@ class DeleteTaskIteratorFactory:
         iterators to flatten.
       task_status_queue (multiprocessing.Queue|None): Used for estimating total
         workload from this iterator.
+      user_request_args (UserRequestArgs|None): Values for RequestConfig.
     """
     self._name_expansion_iterator = name_expansion_iterator
     self._task_status_queue = task_status_queue
+    self._user_request_args = user_request_args
 
     self._bucket_delete_tasks = queue.Queue()
     self._object_delete_tasks = queue.Queue()
@@ -61,7 +66,9 @@ class DeleteTaskIteratorFactory:
             delete_bucket_task.DeleteBucketTask(resource.storage_url))
       else:
         self._object_delete_tasks.put(
-            delete_object_task.DeleteObjectTask(resource.storage_url))
+            delete_object_task.DeleteObjectTask(
+                resource.storage_url,
+                user_request_args=self._user_request_args))
       yield True
 
   def _resource_iterator(self, resource_queue):

@@ -28,7 +28,11 @@ from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 
 _PACKAGE_TYPE_CHOICES = {
-    'MAVEN': 'MAVEN',
+    'MAVEN': 'Maven package.',
+}
+
+_EXPERIMENTAL_PACKAGE_TYPE_CHOICES = {
+    'GO': 'Go third party package.',
 }
 
 
@@ -315,8 +319,20 @@ def GetAdditionalPackageTypesFlag():
       type=arg_parsers.ArgList(
           choices=_PACKAGE_TYPE_CHOICES,
           element_type=lambda package_type: package_type.upper()),
-      hidden=True,
       metavar='ADDITIONAL_PACKAGE_TYPES',
       help=(
-          'The comma-separated list of additional package types besides OS packages (e.g. MAVEN).'
+          'A comma-separated list of package types to scan in addition to OS packages.'
+      ))
+
+
+def GetExperimentalPackageTypesFlag():
+  return base.Argument(
+      '--experimental-package-types',
+      type=arg_parsers.ArgList(
+          choices=_EXPERIMENTAL_PACKAGE_TYPE_CHOICES,
+          element_type=lambda package_type: package_type.upper()),
+      hidden=True,
+      metavar='EXPERIMENTAL_PACKAGE_TYPES',
+      help=(
+          'A comma-separated list of experimental package types to scan in addition to OS packages and officially supported third party packages.'
       ))

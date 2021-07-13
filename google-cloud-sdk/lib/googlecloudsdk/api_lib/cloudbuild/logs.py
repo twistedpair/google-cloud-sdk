@@ -219,8 +219,13 @@ class GCLLogTailer(TailerBase):
                   'resource.labels.build_id="{build_id}"').format(
                       project_id=self.project_id, build_id=self.build_id)
     if self.is_cb4a:
-      log_filter = ('labels."k8s-pod/tekton_dev/taskRun"="{build_id}"').format(
-          build_id=self.build_id)
+      # The labels starting with 'k8s-pod/' in the log entries from GKE-on-GCP
+      # clusters are different from other labels. The dots '.' in the labels are
+      # converted to '_'. For example, 'k8s-pod/tekton.dev/taskRun' is
+      # converted to 'k8s-pod/tekton_dev/taskRun'.
+      log_filter = ('labels."k8s-pod/tekton.dev/taskRun"="{build_id}" OR '
+                    'labels."k8s-pod/tekton_dev/taskRun"="{build_id}"').format(
+                        build_id=self.build_id)
 
     output_logs = self.tailer.TailLogs(
         [parent],
@@ -262,7 +267,12 @@ class GCLLogTailer(TailerBase):
             timestamp=self.timestamp,
             build_id=self.build_id)
     if self.is_cb4a:
-      log_filter = ('labels."k8s-pod/tekton_dev/taskRun"="{build_id}" AND '
+      # The labels starting with 'k8s-pod/' in the log entries from GKE-on-GCP
+      # clusters are different from other labels. The dots '.' in the labels are
+      # converted to '_'. For example, 'k8s-pod/tekton.dev/taskRun' is
+      # converted to 'k8s-pod/tekton_dev/taskRun'.
+      log_filter = ('(labels."k8s-pod/tekton.dev/taskRun"="{build_id}" OR '
+                    'labels."k8s-pod/tekton_dev/taskRun"="{build_id}") AND '
                     'timestamp>="{timestamp}"').format(
                         build_id=self.build_id, timestamp=self.timestamp)
 

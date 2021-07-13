@@ -443,6 +443,10 @@ def DetermineBuildRegion(build_config, desired_region=None):
   Returns:
     str, The region that the build should be sent to, or None if it should be
     sent to the global region.
+
+  Note: we do not validate region strings so that old versions of gcloud are
+  able to access new regions. This is aligned with the approach used by other
+  teams.
   """
   # If the build is configured to run in a regional worker pool, use the worker
   # pool's resource ID to determine which regional GCB service to send it to.
@@ -455,9 +459,21 @@ def DetermineBuildRegion(build_config, desired_region=None):
   if not cloudbuild_util.IsRegionalWorkerPool(wp_resource):
     return desired_region
   wp_region = cloudbuild_util.RegionalWorkerPoolRegion(wp_resource)
-  # If the user told us to hit a different region, then they made a mistake.
+  # If the configuration includes a substitution for the region, and the user
+  # fails to include a --region flag, issue a warning
+  matches = []
+  if build_config.substitutions and wp_region:
+    substitution_keys = list(
+        p.key for p in build_config.substitutions.additionalProperties)
+    matches = [(k in wp_region) for k in substitution_keys]
+  if (not desired_region) and wp_region and matches:
+    raise c_exceptions.InvalidArgumentException(
+        '--region',
+        '--region flag required when workerpool resource includes region '
+        'substitution')
+  # Prefer the region specified in the command line flag
   if desired_region and desired_region != wp_region:
-    raise RegionMismatchError(desired_region, wp_region)
+    return desired_region
   return wp_region
 
 

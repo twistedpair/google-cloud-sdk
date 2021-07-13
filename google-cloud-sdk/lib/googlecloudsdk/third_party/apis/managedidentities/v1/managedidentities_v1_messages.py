@@ -187,6 +187,8 @@ class Domain(_messages.Message):
     admin: Optional. The name of delegated administrator account used to
       perform Active Directory operations. If not specified, `setupadmin` will
       be used.
+    auditLogsEnabled: Optional. Configuration for audit logs. True if audit
+      logs are enabled, else false. Default is audit logs disabled.
     authorizedNetworks: Optional. The full names of the Google Compute Engine
       [networks](/compute/docs/networks-and-firewalls#networks) the domain
       instance is connected to. Networks can be added using UpdateDomain. The
@@ -261,17 +263,18 @@ class Domain(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   admin = _messages.StringField(1)
-  authorizedNetworks = _messages.StringField(2, repeated=True)
-  createTime = _messages.StringField(3)
-  fqdn = _messages.StringField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  locations = _messages.StringField(6, repeated=True)
-  name = _messages.StringField(7)
-  reservedIpRange = _messages.StringField(8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
-  statusMessage = _messages.StringField(10)
-  trusts = _messages.MessageField('Trust', 11, repeated=True)
-  updateTime = _messages.StringField(12)
+  auditLogsEnabled = _messages.BooleanField(2)
+  authorizedNetworks = _messages.StringField(3, repeated=True)
+  createTime = _messages.StringField(4)
+  fqdn = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  locations = _messages.StringField(7, repeated=True)
+  name = _messages.StringField(8)
+  reservedIpRange = _messages.StringField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  statusMessage = _messages.StringField(11)
+  trusts = _messages.MessageField('Trust', 12, repeated=True)
+  updateTime = _messages.StringField(13)
 
 
 class Empty(_messages.Message):
@@ -942,7 +945,7 @@ class LDAPSSettings(_messages.Message):
     certificate: Output only. The certificate used to configure LDAPS.
       Certificates can be chained with a maximum length of 15.
     certificatePassword: Input only. The password used to encrypt the uploaded
-      pfx certificate.
+      PFX certificate.
     certificatePfx: Input only. The uploaded PKCS12-formatted certificate to
       configure LDAPS with. It will enable the domain controllers in this
       domain to accept LDAPS connections (either LDAP over SSL/TLS or the
@@ -1877,32 +1880,30 @@ class SetIamPolicyRequest(_messages.Message):
 
 
 class SqlIntegration(_messages.Message):
-  r"""Represents the Sql instance integrated with AD.
+  r"""Represents the SQL instance integrated with Managed AD.
 
   Enums:
-    StateValueValuesEnum: Output only. The current state of the sql
+    StateValueValuesEnum: Output only. The current state of the SQL
       integration.
 
   Fields:
-    createTime: Output only. The time sql integration was created. Synthetic
-      field is populated automatically by CCFE.
-    name: The unique name of the sql integration in the form of `projects/{pro
+    createTime: Output only. The time the SQL integration was created.
+    name: The unique name of the SQL integration in the form of `projects/{pro
       ject_id}/locations/global/domains/{domain_name}/sqlIntegrations/{sql_int
       egration}`
-    sqlInstance: The full resource name of an integrated sql instance
-    state: Output only. The current state of the sql integration.
-    updateTime: Output only. The time sql integration was updated. Synthetic
-      field is populated automatically by CCFE.
+    sqlInstance: The full resource name of an integrated SQL instance
+    state: Output only. The current state of the SQL integration.
+    updateTime: Output only. The time the SQL integration was updated.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. The current state of the sql integration.
+    r"""Output only. The current state of the SQL integration.
 
     Values:
       STATE_UNSPECIFIED: Not Set
-      CREATING: The sqlIntegration is being created.
-      DELETING: The sqlIntegration is being deleted.
-      READY: The sqlIntegration is ready.
+      CREATING: The SQL integration is being created.
+      DELETING: The SQL integration is being deleted.
+      READY: The SQL integration is ready.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1

@@ -434,7 +434,7 @@
           "type": "string"
         },
         "data": {
-          "description": "Required. Data held by the annotation.",
+          "description": "Required. Data held by the annotation. Data must have \"start\" and \"end\" fields. For \"start\" and \"end\": If the type is datetime, it must be a string that follows RFC3339. If the type is number or duration, it must be a valid int64.",
           "type": "object",
           "additionalProperties": {
             "type": "any",
@@ -689,12 +689,26 @@
       "type": "object",
       "properties": {
         "fullTextSearch": {
-          "description": "Enable full text search - strings only.",
+          "description": "Enable full text search - strings only. DEPRECATED, use tokenization",
           "type": "boolean"
         },
         "expression": {
           "description": "Expression to evaluate in the context of an indexed property defaults to the property name.",
           "type": "string"
+        },
+        "tokenization": {
+          "description": "String tokenization mode.",
+          "type": "string",
+          "enumDescriptions": [
+            "No tokenization - only exact string matches are supported.",
+            "Use word tokens.",
+            "Uses 3-ngram tokens supporting efficient substring searches."
+          ],
+          "enum": [
+            "TOKENIZATION_UNSPECIFIED",
+            "WORDS",
+            "SUBSTRINGS_NGRAM_3"
+          ]
         }
       }
     },
@@ -2400,10 +2414,15 @@
                           "type": "string"
                         },
                         "readMask": {
-                          "description": "Extra fields to be poplulated as part of the asset resource in the response. Currently, this only supports populating asset metadata (no wildcards and no contents of the entire asset).",
+                          "description": "This is temporary.",
                           "location": "query",
                           "type": "string",
                           "format": "google-fieldmask"
+                        },
+                        "newReadMask": {
+                          "description": "Extra fields to be poplulated as part of the asset resource in the response. Currently, this only supports populating asset metadata (no wildcards and no contents of the entire asset).",
+                          "location": "query",
+                          "type": "string"
                         }
                       },
                       "parameterOrder": [
@@ -2482,10 +2501,15 @@
                           "type": "string"
                         },
                         "readMask": {
-                          "description": "Extra fields to be poplulated as part of the asset resource in the response. Currently, this only supports populating asset metadata (no wildcards and no contents of the entire asset).",
+                          "description": "This is temporary.",
                           "location": "query",
                           "type": "string",
                           "format": "google-fieldmask"
+                        },
+                        "newReadMask": {
+                          "description": "Extra fields to be poplulated as part of the asset resource in the response. Currently, this only supports populating asset metadata (no wildcards and no contents of the entire asset).",
+                          "location": "query",
+                          "type": "string"
                         }
                       },
                       "parameterOrder": [

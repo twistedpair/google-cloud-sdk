@@ -2271,6 +2271,7 @@
             "`\/18` CIDR range.",
             "`\/19` CIDR range.",
             "`\/20` CIDR range.",
+            "`\/22` CIDR range. Supported for evaluation only.",
             "`\/23` CIDR range. Supported for evaluation only."
           ],
           "enum": [
@@ -2280,6 +2281,7 @@
             "SLASH_18",
             "SLASH_19",
             "SLASH_20",
+            "SLASH_22",
             "SLASH_23"
           ]
         },
@@ -4840,16 +4842,16 @@
     },
     "GoogleCloudApigeeV1DeveloperMonetizationConfig": {
       "id": "GoogleCloudApigeeV1DeveloperMonetizationConfig",
-      "description": "Monetization related configuration for the developer.",
+      "description": "Monetization configuration for the developer.",
       "type": "object",
       "properties": {
         "billingType": {
-          "description": "`billing_type` specifies whether the developer is PREPAID or POSTPAID.",
+          "description": "Billing type.",
           "type": "string",
           "enumDescriptions": [
             "The default\/unset value.",
-            "This means that the developer will maintain a balance the charged amount will be deducted from their balance.",
-            "This means that no balance will be maintained by the developer. The API provider will take care of retrieving the money from the developer."
+            "Developer pays in advance for the use of APIs and the charged amount is deducted from their account balance.",
+            "Developer does not maintain an account balance. The API provider bills the developer for API usage."
           ],
           "enum": [
             "BILLING_TYPE_UNSPECIFIED",
@@ -4861,11 +4863,11 @@
     },
     "GoogleCloudApigeeV1DeveloperBalance": {
       "id": "GoogleCloudApigeeV1DeveloperBalance",
-      "description": "Monetization balance associated with the developer",
+      "description": "Account balance for the developer.",
       "type": "object",
       "properties": {
         "wallets": {
-          "description": "Output only. List of all the wallets. Each individual wallet stores the balance for a particular type of currency",
+          "description": "Output only. List of all wallets. Each individual wallet stores the account balance for a particular currency.",
           "readOnly": true,
           "type": "array",
           "items": {
@@ -4876,7 +4878,7 @@
     },
     "GoogleCloudApigeeV1DeveloperBalanceWallet": {
       "id": "GoogleCloudApigeeV1DeveloperBalanceWallet",
-      "description": "A wallet will hold a balance for a particular currency",
+      "description": "Wallet used to manage an account balance for a particular currency.",
       "type": "object",
       "properties": {
         "balance": {
@@ -4884,7 +4886,7 @@
           "$ref": "GoogleTypeMoney"
         },
         "lastCreditTime": {
-          "description": "Output only. The time when the developer last credited an amount into this wallet.",
+          "description": "Output only. Time at which the developer last added credit to the account in milliseconds since epoch.",
           "readOnly": true,
           "type": "string",
           "format": "int64"
@@ -11850,7 +11852,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "name": {
-                  "description": "Required. Email address of the developer. Use the following structure in your request: `organizations\/{org}\/developers\/{developer_email}`",
+                  "description": "Required. Name of the developer. Use the following structure in your request: `organizations\/{org}\/developers\/{developer_id}`",
                   "pattern": "^organizations\/[^\/]+\/developers\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -11871,7 +11873,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Sets the status of a developer. Valid values are `active` or `inactive`. A developer is `active` by default. If you set a developer's status to `inactive`, the API keys assigned to the developer apps are no longer valid even though the API keys are set to `approved`. Inactive developers can still sign in to the developer portal and create apps; however, any new API keys generated during app creation won't work. If successful, the API call returns the following HTTP status code: `204 No Content`"
+              "description": "Sets the status of a developer. A developer is `active` by default. If you set a developer's status to `inactive`, the API keys assigned to the developer apps are no longer valid even though the API keys are set to `approved`. Inactive developers can still sign in to the developer portal and create apps; however, any new API keys generated during app creation won't work. To set the status of a developer, set the `action` query parameter to `active` or `inactive`, and the `Content-Type` header to `application\/octet-stream`. If successful, the API call returns the following HTTP status code: `204 No Content`"
             },
             "attributes": {
               "id": "apigee.organizations.developers.attributes",
@@ -11880,7 +11882,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
-                  "description": "Required. Email address of the developer for which attributes are being updated in the following format: `organizations\/{org}\/developers\/{developer_email}`",
+                  "description": "Required. Email address of the developer for which attributes are being updated. Use the following structure in your request: `organizations\/{org}\/developers\/{developer_email}`",
                   "pattern": "^organizations\/[^\/]+\/developers\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -11908,7 +11910,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "name": {
-                  "description": "Required. Resource name of the DeveloperMonetizationConfig. Use the following structure in your request: `organizations\/{org}\/developers\/{developer}\/monetizationConfig`",
+                  "description": "Required. Monetization configuration for the developer. Use the following structure in your request: `organizations\/{org}\/developers\/{developer}\/monetizationConfig`",
                   "pattern": "^organizations\/[^\/]+\/developers\/[^\/]+\/monetizationConfig$",
                   "location": "path",
                   "required": true,
@@ -11924,7 +11926,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Get monetization configuration for the developer."
+              "description": "Gets the monetization configuration for the developer."
             },
             "updateMonetizationConfig": {
               "id": "apigee.organizations.developers.updateMonetizationConfig",
@@ -11933,7 +11935,7 @@
               "httpMethod": "PUT",
               "parameters": {
                 "name": {
-                  "description": "Required. Resource name of the DeveloperMonetizationConfig. Use the following structure in your request: `organizations\/{org}\/developers\/{developer}\/monetizationConfig`",
+                  "description": "Required. Monetization configuration for the developer. Use the following structure in your request: `organizations\/{org}\/developers\/{developer}\/monetizationConfig`",
                   "pattern": "^organizations\/[^\/]+\/developers\/[^\/]+\/monetizationConfig$",
                   "location": "path",
                   "required": true,
@@ -11952,7 +11954,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Update monetization configuration for the developer."
+              "description": "Updates the monetization configuration for the developer."
             },
             "getBalance": {
               "id": "apigee.organizations.developers.getBalance",
@@ -11961,7 +11963,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "name": {
-                  "description": "Required. Resource name of the DeveloperBalance. Use the following structure in your request: `organizations\/{org}\/developers\/{developer}\/balance`",
+                  "description": "Required. Account balance for the developer. Use the following structure in your request: `organizations\/{org}\/developers\/{developer}\/balance`",
                   "pattern": "^organizations\/[^\/]+\/developers\/[^\/]+\/balance$",
                   "location": "path",
                   "required": true,
@@ -11977,7 +11979,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Get the balance associated with the developer"
+              "description": "Gets the account balance for the developer."
             }
           }
           ,
@@ -12643,7 +12645,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. Email address of the developer for which attributes are being listed in the following format: `organizations\/{org}\/developers\/{developer_email}`",
+                      "description": "Required. Email address of the developer for which attributes are being listed. Use the following structure in your request: `organizations\/{org}\/developers\/{developer_email}`",
                       "pattern": "^organizations\/[^\/]+\/developers\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -12672,7 +12674,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
-                      "description": "Required. Resource name of the DeveloperBalance. Use the following structure in your request: `organizations\/{org}\/developers\/{developer}\/balance`",
+                      "description": "Required. Account balance for the developer. Use the following structure in your request: `organizations\/{org}\/developers\/{developer}\/balance`",
                       "pattern": "^organizations\/[^\/]+\/developers\/[^\/]+\/balance$",
                       "location": "path",
                       "required": true,
@@ -12691,7 +12693,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Credit the developer balance"
+                  "description": "Credits the account balance for the developer."
                 }
               }
             },

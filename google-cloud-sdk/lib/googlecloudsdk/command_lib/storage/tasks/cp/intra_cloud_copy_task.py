@@ -37,15 +37,19 @@ from googlecloudsdk.command_lib.storage.tasks import task_status
 class IntraCloudCopyTask(task.Task):
   """Represents a command operation copying an object around the cloud."""
 
-  def __init__(self, source_resource, destination_resource):
+  def __init__(self,
+               source_resource,
+               destination_resource,
+               user_request_args=None):
     """Initializes task.
 
     Args:
       source_resource (resource_reference.Resource): Must
-          contain the full object path. Directories will not be accepted.
+        contain the full object path. Directories will not be accepted.
       destination_resource (resource_reference.Resource): Must
-          contain the full object path. Directories will not be accepted.
-          Existing objects at the this location will be overwritten.
+        contain the full object path. Directories will not be accepted.
+        Existing objects at the this location will be overwritten.
+      user_request_args (UserRequestArgs|None): Values for RequestConfig.
     """
     super(IntraCloudCopyTask, self).__init__()
 
@@ -58,6 +62,7 @@ class IntraCloudCopyTask(task.Task):
 
     self._source_resource = source_resource
     self._destination_resource = destination_resource
+    self._user_request_args = user_request_args
     self.parallel_processing_key = (
         self._destination_resource.storage_url.url_string)
 
@@ -74,7 +79,8 @@ class IntraCloudCopyTask(task.Task):
     )
 
     request_config = request_config_factory.get_request_config(
-        self._destination_resource.storage_url)
+        self._destination_resource.storage_url,
+        user_request_args=self._user_request_args)
     # TODO(b/161900052): Support all of copy_object's parameters
     provider = self._source_resource.storage_url.scheme
     api_factory.get_api(provider).copy_object(

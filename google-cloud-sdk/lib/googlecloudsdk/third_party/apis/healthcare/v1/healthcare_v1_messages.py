@@ -564,7 +564,7 @@ class ConsentEvaluation(_messages.Message):
       NOT_APPLICABLE: The Consent is not applicable to the requested access
         determination. For example, the Consent does not apply to the user for
         which the access determination is requested, or it has a `state` of
-        `REVOKED`.
+        `REVOKED`, or it has expired.
       NO_MATCHING_POLICY: The Consent does not have a policy that matches the
         `resource_attributes` of the evaluated resource.
       NO_SATISFIED_POLICY: The Consent has at least one policy that matches
@@ -752,9 +752,8 @@ class DeidentifyDatasetRequest(_messages.Message):
     config: Deidentify configuration.
     destinationDataset: The name of the dataset resource to create and write
       the redacted data to. * The destination dataset must not exist. * The
-      destination dataset must be in the same project and location as the
-      source dataset. De-identifying data across multiple projects or
-      locations is not supported.
+      destination dataset must be in the same location as the source dataset.
+      De-identifying data across multiple locations is not supported.
   """
 
   config = _messages.MessageField('DeidentifyConfig', 1)
@@ -770,10 +769,10 @@ class DeidentifyDicomStoreRequest(_messages.Message):
       redacted data to. For example, `projects/{project_id}/locations/{locatio
       n_id}/datasets/{dataset_id}/dicomStores/{dicom_store_id}`. * The
       destination dataset must exist. * The source dataset and destination
-      dataset must both reside in the same project. De-identifying data across
-      multiple projects is not supported. * The destination DICOM store must
-      not exist. * The caller must have the necessary permissions to create
-      the destination DICOM store.
+      dataset must both reside in the same location. De-identifying data
+      across multiple locations is not supported. * The destination DICOM
+      store must not exist. * The caller must have the necessary permissions
+      to create the destination DICOM store.
     filterConfig: Filter configuration.
   """
 
@@ -791,9 +790,9 @@ class DeidentifyFhirStoreRequest(_messages.Message):
       redacted data to. For example, `projects/{project_id}/locations/{locatio
       n_id}/datasets/{dataset_id}/fhirStores/{fhir_store_id}`. * The
       destination dataset must exist. * The source dataset and destination
-      dataset must both reside in the same project. De-identifying data across
-      multiple projects is not supported. * The destination FHIR store must
-      exist. * The caller must have the healthcare.fhirResources.update
+      dataset must both reside in the same location. De-identifying data
+      across multiple locations is not supported. * The destination FHIR store
+      must exist. * The caller must have the healthcare.fhirResources.update
       permission to write to the destination FHIR store.
     resourceFilter: A filter specifying the resources to include in the
       output. If not specified, all resources are included in the output.
@@ -1126,7 +1125,9 @@ class ExportResourcesRequest(_messages.Message):
     bigqueryDestination: The BigQuery output destination. The Cloud Healthcare
       Service Agent requires two IAM roles on the BigQuery location:
       `roles/bigquery.dataEditor` and `roles/bigquery.jobUser`. The output is
-      one BigQuery table per resource type.
+      one BigQuery table per resource type. Note that unlike in
+      FhirStore.StreamConfig.BigQueryDestination, BigQuery views will not be
+      created by ExportResources.
     gcsDestination: The Cloud Storage output destination. The Healthcare
       Service Agent account requires the `roles/storage.objectAdmin` role on
       the Cloud Storage location. The exported outputs are organized by FHIR
@@ -1227,6 +1228,13 @@ class FhirStore(_messages.Message):
       with a given store.
 
   Fields:
+    defaultSearchHandlingStrict: If true, overrides the default search
+      behavior for this FHIR store to `handling=strict` which returns an error
+      for unrecognized search parameters. If false, uses the FHIR
+      specification default `handling=lenient` which ignores unrecognized
+      search parameters. The handling can always be changed from the default
+      on an individual API call by setting the HTTP header `Prefer:
+      handling=strict` or `Prefer: handling=lenient`.
     disableReferentialIntegrity: Immutable. Whether to disable referential
       integrity in this FHIR store. This field is immutable after FHIR store
       creation. The default value is false, meaning that the API enforces
@@ -1252,8 +1260,8 @@ class FhirStore(_messages.Message):
       existent resource return errors. It is strongly advised not to include
       or encode any sensitive data such as patient identifiers in client-
       specified resource IDs. Those IDs are part of the FHIR resource path
-      recorded in Cloud audit logs and Cloud Pub/Sub notifications. Those IDs
-      can also be contained in reference fields within other resources.
+      recorded in Cloud audit logs and Pub/Sub notifications. Those IDs can
+      also be contained in reference fields within other resources.
     labels: User-supplied key-value pairs used to organize FHIR stores. Label
       keys must be between 1 and 63 characters long, have a UTF-8 encoding of
       maximum 128 bytes, and must conform to the following PCRE regular
@@ -1266,9 +1274,9 @@ class FhirStore(_messages.Message):
       `projects/{project_id}/datasets/{dataset_id}/fhirStores/{fhir_store_id}`
       .
     notificationConfig: If non-empty, publish all resource modifications of
-      this FHIR store to this destination. The Cloud Pub/Sub message
-      attributes contain a map with a string describing the action that has
-      triggered the notification. For example, "action":"CreateResource".
+      this FHIR store to this destination. The Pub/Sub message attributes
+      contain a map with a string describing the action that has triggered the
+      notification. For example, "action":"CreateResource".
     streamConfigs: A list of streaming configs that configure the destinations
       of streaming export for every resource mutation in this FHIR store. Each
       store is allowed to have up to 10 streaming configs. After a new config
@@ -1338,14 +1346,15 @@ class FhirStore(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  disableReferentialIntegrity = _messages.BooleanField(1)
-  disableResourceVersioning = _messages.BooleanField(2)
-  enableUpdateCreate = _messages.BooleanField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  notificationConfig = _messages.MessageField('NotificationConfig', 6)
-  streamConfigs = _messages.MessageField('StreamConfig', 7, repeated=True)
-  version = _messages.EnumField('VersionValueValuesEnum', 8)
+  defaultSearchHandlingStrict = _messages.BooleanField(1)
+  disableReferentialIntegrity = _messages.BooleanField(2)
+  disableResourceVersioning = _messages.BooleanField(3)
+  enableUpdateCreate = _messages.BooleanField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  notificationConfig = _messages.MessageField('NotificationConfig', 7)
+  streamConfigs = _messages.MessageField('StreamConfig', 8, repeated=True)
+  version = _messages.EnumField('VersionValueValuesEnum', 9)
 
 
 class Field(_messages.Message):
@@ -1511,16 +1520,16 @@ class GoogleCloudHealthcareV1DicomGcsSource(_messages.Message):
     uri: Points to a Cloud Storage URI containing file(s) with content only.
       The URI must be in the following format: `gs://{bucket_id}/{object_id}`.
       The URI can include wildcards in `object_id` and thus identify multiple
-      files. Supported wildcards: '*' to match 0 or more non-separator
-      characters '**' to match 0 or more characters (including separators).
+      files. Supported wildcards: * '*' to match 0 or more non-separator
+      characters * '**' to match 0 or more characters (including separators).
       Must be used at the end of a path and with no other wildcards in the
       path. Can also be used with a file extension (such as .dcm), which
       imports all files with the extension in the specified directory and its
       sub-directories. For example, `gs://my-bucket/my-directory/**.dcm`
       imports all files with .dcm extensions in `my-directory/` and its sub-
-      directories. '?' to match 1 character All other URI formats are invalid.
-      Files matching the wildcard are expected to contain content only, no
-      metadata.
+      directories. * '?' to match 1 character. All other URI formats are
+      invalid. Files matching the wildcard are expected to contain content
+      only, no metadata.
   """
 
   uri = _messages.StringField(1)
@@ -1530,9 +1539,10 @@ class GoogleCloudHealthcareV1FhirBigQueryDestination(_messages.Message):
   r"""The configuration for exporting to BigQuery.
 
   Enums:
-    WriteDispositionValueValuesEnum: Determines whether existing tables in the
-      destination dataset are overwritten or appended to. If a
-      write_disposition is specified, the `force` parameter is ignored.
+    WriteDispositionValueValuesEnum: Determines if existing data in the
+      destination dataset is overwritten, appended to, or not written if the
+      tables contain data. If a write_disposition is specified, the `force`
+      parameter is ignored.
 
   Fields:
     datasetUri: BigQuery URI to an existing dataset, up to 2000 characters
@@ -1544,15 +1554,15 @@ class GoogleCloudHealthcareV1FhirBigQueryDestination(_messages.Message):
       force=false is equivalent to write_disposition=WRITE_EMPTY and
       force=true is equivalent to write_disposition=WRITE_TRUNCATE.
     schemaConfig: The configuration for the exported BigQuery schema.
-    writeDisposition: Determines whether existing tables in the destination
-      dataset are overwritten or appended to. If a write_disposition is
-      specified, the `force` parameter is ignored.
+    writeDisposition: Determines if existing data in the destination dataset
+      is overwritten, appended to, or not written if the tables contain data.
+      If a write_disposition is specified, the `force` parameter is ignored.
   """
 
   class WriteDispositionValueValuesEnum(_messages.Enum):
-    r"""Determines whether existing tables in the destination dataset are
-    overwritten or appended to. If a write_disposition is specified, the
-    `force` parameter is ignored.
+    r"""Determines if existing data in the destination dataset is overwritten,
+    appended to, or not written if the tables contain data. If a
+    write_disposition is specified, the `force` parameter is ignored.
 
     Values:
       WRITE_DISPOSITION_UNSPECIFIED: Default behavior is the same as
@@ -3473,17 +3483,20 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresMessagesGetRequest(_messages
     Values:
       MESSAGE_VIEW_UNSPECIFIED: Not specified, equivalent to FULL.
       RAW_ONLY: Server responses include all the message fields except
-        parsed_data field.
+        parsed_data field, and schematized_data fields.
       PARSED_ONLY: Server responses include all the message fields except data
-        field.
+        field, and schematized_data fields.
       FULL: Server responses include all the message fields.
+      SCHEMATIZED_ONLY: Server responses include all the message fields except
+        data and parsed_data fields.
       BASIC: Server responses include only the name field.
     """
     MESSAGE_VIEW_UNSPECIFIED = 0
     RAW_ONLY = 1
     PARSED_ONLY = 2
     FULL = 3
-    BASIC = 4
+    SCHEMATIZED_ONLY = 4
+    BASIC = 5
 
   name = _messages.StringField(1, required=True)
   view = _messages.EnumField('ViewValueValuesEnum', 2)
@@ -3578,17 +3591,20 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresMessagesListRequest(_message
     Values:
       MESSAGE_VIEW_UNSPECIFIED: Not specified, equivalent to FULL.
       RAW_ONLY: Server responses include all the message fields except
-        parsed_data field.
+        parsed_data field, and schematized_data fields.
       PARSED_ONLY: Server responses include all the message fields except data
-        field.
+        field, and schematized_data fields.
       FULL: Server responses include all the message fields.
+      SCHEMATIZED_ONLY: Server responses include all the message fields except
+        data and parsed_data fields.
       BASIC: Server responses include only the name field.
     """
     MESSAGE_VIEW_UNSPECIFIED = 0
     RAW_ONLY = 1
     PARSED_ONLY = 2
     FULL = 3
-    BASIC = 4
+    SCHEMATIZED_ONLY = 4
+    BASIC = 5
 
   filter = _messages.StringField(1)
   orderBy = _messages.StringField(2)
@@ -3784,10 +3800,14 @@ class HealthcareProjectsLocationsListRequest(_messages.Message):
   r"""A HealthcareProjectsLocationsListRequest object.
 
   Fields:
-    filter: The standard list filter.
+    filter: A filter to narrow down results to a preferred subset. The
+      filtering language accepts strings like "displayName=tokyo", and is
+      documented in more detail in [AIP-160](https://google.aip.dev/160).
     name: The resource that owns the locations collection, if applicable.
-    pageSize: The standard list page size.
-    pageToken: The standard list page token.
+    pageSize: The maximum number of results to return. If not set, the service
+      selects a default.
+    pageToken: A page token received from the `next_page_token` field in the
+      response. Send that page token to receive the subsequent page.
   """
 
   filter = _messages.StringField(1)
@@ -3902,10 +3922,10 @@ class Hl7V2NotificationConfig(_messages.Message):
       the label with key `x` as set using the Message.labels map. For example,
       `labels."priority"="high"`. The operator `:*` can be used to assert the
       existence of a label. For example, `labels."priority":*`.
-    pubsubTopic: The [Cloud Pub/Sub](https://cloud.google.com/pubsub/docs/)
-      topic that notifications of changes are published on. Supplied by the
-      client. The notification is a `PubsubMessage` with the following fields:
-      * `PubsubMessage.Data` contains the resource name. *
+    pubsubTopic: The [Pub/Sub](https://cloud.google.com/pubsub/docs/) topic
+      that notifications of changes are published on. Supplied by the client.
+      The notification is a `PubsubMessage` with the following fields: *
+      `PubsubMessage.Data` contains the resource name. *
       `PubsubMessage.MessageId` is the ID of this notification. It's
       guaranteed to be unique within the topic. * `PubsubMessage.PublishTime`
       is the time when the message was published. Note that notifications are
@@ -3915,9 +3935,9 @@ class Hl7V2NotificationConfig(_messages.Message):
       PROJECT_NUMBER@gcp-sa-healthcare.iam.gserviceaccount.com, must have
       publisher permissions on the given Pub/Sub topic. Not having adequate
       permissions causes the calls that send notifications to fail. If a
-      notification cannot be published to Cloud Pub/Sub, errors are logged to
-      Cloud Logging. For more information, see [Viewing error logs in Cloud
-      Logging](/healthcare/docs/how-tos/logging)).
+      notification cannot be published to Pub/Sub, errors are logged to Cloud
+      Logging. For more information, see [Viewing error logs in Cloud
+      Logging](https://cloud.google.com/healthcare/docs/how-tos/logging)).
   """
 
   filter = _messages.StringField(1)
@@ -4584,23 +4604,23 @@ class NotificationConfig(_messages.Message):
   r"""Specifies where to send notifications upon changes to a data store.
 
   Fields:
-    pubsubTopic: The [Cloud Pub/Sub](https://cloud.google.com/pubsub/docs/)
-      topic that notifications of changes are published on. Supplied by the
-      client. PubsubMessage.Data contains the resource name.
-      PubsubMessage.MessageId is the ID of this message. It is guaranteed to
-      be unique within the topic. PubsubMessage.PublishTime is the time at
-      which the message was published. Notifications are only sent if the
-      topic is non-empty. [Topic
+    pubsubTopic: The [Pub/Sub](https://cloud.google.com/pubsub/docs/) topic
+      that notifications of changes are published on. Supplied by the client.
+      PubsubMessage.Data contains the resource name. PubsubMessage.MessageId
+      is the ID of this message. It is guaranteed to be unique within the
+      topic. PubsubMessage.PublishTime is the time at which the message was
+      published. Notifications are only sent if the topic is non-empty. [Topic
       names](https://cloud.google.com/pubsub/docs/overview#names) must be
       scoped to a project. Cloud Healthcare API service account must have
-      publisher permissions on the given Cloud Pub/Sub topic. Not having
-      adequate permissions causes the calls that send notifications to fail.
-      If a notification can't be published to Cloud Pub/Sub, errors are logged
-      to Cloud Logging (see [Viewing logs](/healthcare/docs/how-tos/logging)).
-      If the number of errors exceeds a certain rate, some aren't submitted.
-      Note that not all operations trigger notifications, see [Configuring
-      Pub/Sub notifications](https://cloud.google.com/healthcare/docs/how-
-      tos/pubsub) for specific details.
+      publisher permissions on the given Pub/Sub topic. Not having adequate
+      permissions causes the calls that send notifications to fail. If a
+      notification can't be published to Pub/Sub, errors are logged to Cloud
+      Logging (see [Viewing error logs in Cloud
+      Logging](https://cloud.google.com/healthcare/docs/how-tos/logging)). If
+      the number of errors exceeds a certain rate, some aren't submitted. Note
+      that not all operations trigger notifications, see [Configuring Pub/Sub
+      notifications](https://cloud.google.com/healthcare/docs/how-tos/pubsub)
+      for specific details.
   """
 
   pubsubTopic = _messages.StringField(1)
@@ -4726,8 +4746,9 @@ class OperationMetadata(_messages.Message):
     createTime: The time at which the operation was created by the API.
     endTime: The time at which execution was completed.
     logsUrl: A link to audit and error logs in the log viewer. Error logs are
-      generated only by some operations, listed at [Viewing
-      logs](/healthcare/docs/how-tos/logging).
+      generated only by some operations, listed at [Viewing error logs in
+      Cloud Logging](https://cloud.google.com/healthcare/docs/how-
+      tos/logging).
   """
 
   apiMethodName = _messages.StringField(1)
@@ -4868,9 +4889,9 @@ class QueryAccessibleDataRequest(_messages.Message):
   r"""Queries all data_ids that are consented for a given use in the given
   consent store and writes them to a specified destination. The returned
   Operation includes a progress counter for the number of User data mappings
-  processed. Errors are logged to Cloud Logging (see [Viewing logs]
-  (/healthcare/docs/how-tos/logging) and [QueryAccessibleData] for a sample
-  log entry).
+  processed. Errors are logged to Cloud Logging (see [Viewing error logs in
+  Cloud Logging] (https://cloud.google.com/healthcare/docs/how-tos/logging)
+  and [QueryAccessibleData] for a sample log entry).
 
   Messages:
     RequestAttributesValue: The values of request attributes associated with
@@ -4947,6 +4968,18 @@ class QueryAccessibleDataRequest(_messages.Message):
   gcsDestination = _messages.MessageField('GoogleCloudHealthcareV1ConsentGcsDestination', 1)
   requestAttributes = _messages.MessageField('RequestAttributesValue', 2)
   resourceAttributes = _messages.MessageField('ResourceAttributesValue', 3)
+
+
+class QueryAccessibleDataResponse(_messages.Message):
+  r"""Response for successful QueryAccessibleData operations. This structure
+  is included in the response upon operation completion.
+
+  Fields:
+    gcsUris: List of files, each of which contains a list of data_id(s) that
+      are consented for a specified use in the request.
+  """
+
+  gcsUris = _messages.StringField(1, repeated=True)
 
 
 class RedactConfig(_messages.Message):
@@ -5478,7 +5511,7 @@ class StreamConfig(_messages.Message):
       above also filters out duplicates. If a resource mutation cannot be
       streamed to BigQuery, errors are logged to Cloud Logging. For more
       information, see [Viewing error logs in Cloud
-      Logging](/healthcare/docs/how-tos/logging)).
+      Logging](https://cloud.google.com/healthcare/docs/how-tos/logging)).
     resourceTypes: Supply a FHIR resource type (such as "Patient" or
       "Observation"). See https://www.hl7.org/fhir/valueset-resource-
       types.html for a list of all FHIR resource types. The server treats an

@@ -276,7 +276,7 @@
     },
     "Instance": {
       "id": "Instance",
-      "description": "A Google Cloud Redis instance.",
+      "description": "A Google Cloud Redis instance. next id = 30",
       "type": "object",
       "properties": {
         "name": {

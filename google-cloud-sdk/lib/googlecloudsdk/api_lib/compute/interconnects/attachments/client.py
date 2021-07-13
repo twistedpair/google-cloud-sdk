@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.core import log
+
 
 class InterconnectAttachment(object):
   """Abstracts Interconnect attachment resource."""
@@ -272,6 +274,8 @@ class InterconnectAttachment(object):
     ]
     if not only_generate_request:
       resources = self._compute_client.MakeRequests(requests)
+      if validate_only:
+        log.status.Print('Validation was successful.')
       return resources[0]
     return requests
 

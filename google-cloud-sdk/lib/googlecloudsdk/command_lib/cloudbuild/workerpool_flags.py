@@ -20,10 +20,14 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import arg_parsers
 
-_CREATE_FILE_DESC = ('A file that contains the configuration for the '
-                     'WorkerPool to be created.')
-_UPDATE_FILE_DESC = ('A file that contains updates to the configuration for '
-                     'the WorkerPool.')
+_WP_CONFIG_LINK = 'https://cloud.google.com/build/docs/private-pools/worker-pool-config-file-schema'
+
+_CREATE_FILE_DESC = ('A file that contains the configuration for the'
+                     ' worker pool to be created. See %s for options.'
+                     % _WP_CONFIG_LINK)
+_UPDATE_FILE_DESC = ('A file that contains updates to the configuration for'
+                     ' the worker pool. See %s for options.'
+                     % _WP_CONFIG_LINK)
 
 
 def AddWorkerpoolArgs(parser, update=False):
@@ -40,19 +44,20 @@ def AddWorkerpoolArgs(parser, update=False):
   verb = 'update' if update else 'create'
   parser.add_argument(
       'WORKER_POOL',
-      help='The unique identifier for the custom worker pool to %s. This value should be 1-63 characters, and valid characters are [a-z][0-9]-'
+      help='The unique identifier for the worker pool to %s. This value should be 1-63 characters, and valid characters are [a-z][0-9]-'
       % verb)
   parser.add_argument(
       '--region',
       required=True,
-      help='The Cloud region where the WorkerPool is %sd.' % verb)
+      help='The Cloud region where the worker pool is %sd. See https://cloud.google.com/build/docs/locations for available locations.'
+      % verb)
   file_or_flags = parser.add_mutually_exclusive_group(required=update)
   file_or_flags.add_argument(
       '--config-from-file',
       help=(_UPDATE_FILE_DESC if update else _CREATE_FILE_DESC),
   )
   flags = file_or_flags.add_argument_group(
-      'Command-line flags to configure the WorkerPool:')
+      'Command-line flags to configure the worker pool:')
   if not update:
     flags.add_argument(
         '--peered-network',
@@ -64,7 +69,7 @@ projects/{network_project}/global/networks/{network_name}.
 If not specified, the workers are not peered to any network.
 """)
   worker_flags = flags.add_argument_group(
-      'Configuration to be used for creating workers in the WorkerPool:')
+      'Configuration to be used for creating workers in the worker pool:')
   worker_flags.add_argument(
       '--worker-machine-type',
       help="""\

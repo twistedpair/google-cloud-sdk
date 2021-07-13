@@ -1560,21 +1560,9 @@ class GoogleCloudDatacatalogV1KafkaClusterSpec(_messages.Message):
       clients. For example: `host1:port1,host2:port2,host3:port3`. For more
       information, see [bootstrap.servers property]
       (https://kafka.apache.org/documentation/#bootstrap.servers).
-    propertiesGcsUri: URI of the Google Cloud Storage properties file with
-      additional properties represented by this entry that are required to
-      connect to a Kafka cluster. To connect to the cluster, query engines
-      pass the properties in this file to Kafka consumers. The full list of
-      supported properties depends on the engine. The properties file should
-      be a valid Kafka consumer configuration file. For more information, see
-      [Consumer Configs]
-      (https://kafka.apache.org/documentation/#consumerconfigs). For SSL
-      authorization, if supported by the query engine, keystore and truststore
-      paths are interpreted relative to the properties file. Example:
-      `gs://my_bucket/kafka/consumer.properties`.
   """
 
   bootstrapServers = _messages.StringField(1)
-  propertiesGcsUri = _messages.StringField(2)
 
 
 class GoogleCloudDatacatalogV1KafkaTopicSpec(_messages.Message):

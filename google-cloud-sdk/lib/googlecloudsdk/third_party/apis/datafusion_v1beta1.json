@@ -692,6 +692,87 @@
         }
       }
     },
+    "AddDnsPeeringRequest": {
+      "id": "AddDnsPeeringRequest",
+      "description": "Request message to create dns peering.",
+      "type": "object",
+      "properties": {
+        "dnsPeering": {
+          "description": "Dns peering config.",
+          "$ref": "DnsPeering"
+        }
+      }
+    },
+    "DnsPeering": {
+      "id": "DnsPeering",
+      "description": "DNS peering configuration. These configurations are used to create DNS peering with the customer Cloud DNS.",
+      "type": "object",
+      "properties": {
+        "zone": {
+          "description": "Required. Name of the zone.",
+          "type": "string"
+        },
+        "domain": {
+          "description": "Required. Name of the dns.",
+          "type": "string"
+        },
+        "description": {
+          "description": "Optional. Optional description of the dns zone.",
+          "type": "string"
+        },
+        "targetProject": {
+          "description": "Optional. Optional target project to which dns peering should happen.",
+          "type": "string"
+        },
+        "targetNetwork": {
+          "description": "Optional. Optional target network to which dns peering should happen.",
+          "type": "string"
+        }
+      }
+    },
+    "AddDnsPeeringResponse": {
+      "id": "AddDnsPeeringResponse",
+      "description": "Response message for set dns peering method.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "RemoveDnsPeeringRequest": {
+      "id": "RemoveDnsPeeringRequest",
+      "description": "Request message to remove dns peering.",
+      "type": "object",
+      "properties": {
+        "zone": {
+          "description": "Required. The zone to be removed.",
+          "type": "string"
+        }
+      }
+    },
+    "RemoveDnsPeeringResponse": {
+      "id": "RemoveDnsPeeringResponse",
+      "description": "Response message for set dns peering method.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "ListDnsPeeringsResponse": {
+      "id": "ListDnsPeeringsResponse",
+      "description": "List dns peering response.",
+      "type": "object",
+      "properties": {
+        "dnsPeerings": {
+          "description": "List of dns peering configs.",
+          "type": "array",
+          "items": {
+            "$ref": "DnsPeering"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results or empty if there are no more results in the list.",
+          "type": "string"
+        }
+      }
+    },
     "ListLocationsResponse": {
       "id": "ListLocationsResponse",
       "description": "The response message for Locations.ListLocations.",
@@ -1551,6 +1632,102 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
+                    }
+                  }
+                },
+                "dnsPeerings": {
+                  "methods": {
+                    "add": {
+                      "id": "datafusion.projects.locations.instances.dnsPeerings.add",
+                      "path": "v1beta1/{+parent}/dnsPeerings:add",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}/dnsPeerings:add",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "The resource on which DNS peering will be created.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "AddDnsPeeringRequest"
+                      },
+                      "response": {
+                        "$ref": "AddDnsPeeringResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Add DNS peering on the given resource."
+                    },
+                    "remove": {
+                      "id": "datafusion.projects.locations.instances.dnsPeerings.remove",
+                      "path": "v1beta1/{+parent}/dnsPeerings:remove",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}/dnsPeerings:remove",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "The resource on which DNS peering will be removed.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "RemoveDnsPeeringRequest"
+                      },
+                      "response": {
+                        "$ref": "RemoveDnsPeeringResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Remove DNS peering on the given resource."
+                    },
+                    "list": {
+                      "id": "datafusion.projects.locations.instances.dnsPeerings.list",
+                      "path": "v1beta1/{+parent}/dnsPeerings:list",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}/dnsPeerings:list",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The resource on which dns peering will be listed.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "The maximum number of items to return.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "The next_page_token value to use if there are additional results to retrieve for this list request.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListDnsPeeringsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "List DNS peering for a given resource."
                     }
                   }
                 }

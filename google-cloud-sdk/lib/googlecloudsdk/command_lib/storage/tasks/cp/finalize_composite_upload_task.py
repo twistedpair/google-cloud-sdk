@@ -28,8 +28,12 @@ from googlecloudsdk.command_lib.storage.tasks.cp import delete_temporary_compone
 class FinalizeCompositeUploadTask(task.Task):
   """Composes and deletes object resources received as messages."""
 
-  def __init__(self, expected_component_count, source_resource,
-               destination_resource, random_prefix=''):
+  def __init__(self,
+               expected_component_count,
+               source_resource,
+               destination_resource,
+               random_prefix='',
+               user_request_args=None):
     """Initializes task.
 
     Args:
@@ -39,12 +43,14 @@ class FinalizeCompositeUploadTask(task.Task):
       destination_resource (resource_reference.UnknownResource): Metadata for
           the final composite object.
       random_prefix (str): Random id added to component names.
+      user_request_args (UserRequestArgs|None): Values for RequestConfig.
     """
     super().__init__()
     self._expected_component_count = expected_component_count
     self._source_resource = source_resource
     self._destination_resource = destination_resource
     self._random_prefix = random_prefix
+    self._user_request_args = user_request_args
 
   def execute(self, task_status_queue=None):
     uploaded_components = [
@@ -65,7 +71,9 @@ class FinalizeCompositeUploadTask(task.Task):
     ]
 
     compose_task = compose_objects_task.ComposeObjectsTask(
-        uploaded_objects, self._destination_resource)
+        uploaded_objects,
+        self._destination_resource,
+        user_request_args=self._user_request_args)
     compose_task.execute(task_status_queue=task_status_queue)
 
     # After a successful compose call, we consider the upload complete and can
@@ -89,10 +97,8 @@ class FinalizeCompositeUploadTask(task.Task):
   def __eq__(self, other):
     if not isinstance(other, type(self)):
       return NotImplemented
-    return (
-        self._expected_component_count == other._expected_component_count
-        and self._source_resource == other._source_resource
-        and self._destination_resource == other._destination_resource
-        and self._random_prefix == other._random_prefix
-    )
-
+    return (self._expected_component_count == other._expected_component_count
+            and self._source_resource == other._source_resource and
+            self._destination_resource == other._destination_resource and
+            self._random_prefix == other._random_prefix and
+            self._user_request_args == other._user_request_args)

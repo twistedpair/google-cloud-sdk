@@ -2363,15 +2363,13 @@ class SqlIntegration(_messages.Message):
       integration.
 
   Fields:
-    createTime: Output only. The time sql integration was created. Synthetic
-      field is populated automatically by CCFE.
+    createTime: Output only. The time sql integration was created.
     name: The unique name of the sql integration in the form of `projects/{pro
       ject_id}/locations/global/domains/{domain_name}/sqlIntegrations/{sql_int
       egration}`
     sqlInstance: The full resource name of an integrated sql instance
     state: Output only. The current state of the sql integration.
-    updateTime: Output only. The time sql integration was updated. Synthetic
-      field is populated automatically by CCFE.
+    updateTime: Output only. The time sql integration was updated.
   """
 
   class StateValueValuesEnum(_messages.Enum):

@@ -913,7 +913,7 @@ class ApigeeOrganizationsDevelopersAttributesListRequest(_messages.Message):
 
   Fields:
     parent: Required. Email address of the developer for which attributes are
-      being listed in the following format:
+      being listed. Use the following structure in your request:
       `organizations/{org}/developers/{developer_email}`
   """
 
@@ -927,7 +927,7 @@ class ApigeeOrganizationsDevelopersAttributesRequest(_messages.Message):
     googleCloudApigeeV1Attributes: A GoogleCloudApigeeV1Attributes resource to
       be passed as the request body.
     parent: Required. Email address of the developer for which attributes are
-      being updated in the following format:
+      being updated. Use the following structure in your request:
       `organizations/{org}/developers/{developer_email}`
   """
 
@@ -942,7 +942,7 @@ class ApigeeOrganizationsDevelopersBalanceCreditRequest(_messages.Message):
     googleCloudApigeeV1CreditDeveloperBalanceRequest: A
       GoogleCloudApigeeV1CreditDeveloperBalanceRequest resource to be passed
       as the request body.
-    name: Required. Resource name of the DeveloperBalance. Use the following
+    name: Required. Account balance for the developer. Use the following
       structure in your request:
       `organizations/{org}/developers/{developer}/balance`
   """
@@ -982,7 +982,7 @@ class ApigeeOrganizationsDevelopersGetBalanceRequest(_messages.Message):
   r"""A ApigeeOrganizationsDevelopersGetBalanceRequest object.
 
   Fields:
-    name: Required. Resource name of the DeveloperBalance. Use the following
+    name: Required. Account balance for the developer. Use the following
       structure in your request:
       `organizations/{org}/developers/{developer}/balance`
   """
@@ -994,7 +994,7 @@ class ApigeeOrganizationsDevelopersGetMonetizationConfigRequest(_messages.Messag
   r"""A ApigeeOrganizationsDevelopersGetMonetizationConfigRequest object.
 
   Fields:
-    name: Required. Resource name of the DeveloperMonetizationConfig. Use the
+    name: Required. Monetization configuration for the developer. Use the
       following structure in your request:
       `organizations/{org}/developers/{developer}/monetizationConfig`
   """
@@ -1055,9 +1055,8 @@ class ApigeeOrganizationsDevelopersSetDeveloperStatusRequest(_messages.Message):
 
   Fields:
     action: Status of the developer. Valid values are `active` and `inactive`.
-    name: Required. Email address of the developer. Use the following
-      structure in your request:
-      `organizations/{org}/developers/{developer_email}`
+    name: Required. Name of the developer. Use the following structure in your
+      request: `organizations/{org}/developers/{developer_id}`
   """
 
   action = _messages.StringField(1)
@@ -1137,7 +1136,7 @@ class ApigeeOrganizationsDevelopersUpdateMonetizationConfigRequest(_messages.Mes
     googleCloudApigeeV1DeveloperMonetizationConfig: A
       GoogleCloudApigeeV1DeveloperMonetizationConfig resource to be passed as
       the request body.
-    name: Required. Resource name of the DeveloperMonetizationConfig. Use the
+    name: Required. Monetization configuration for the developer. Use the
       following structure in your request:
       `organizations/{org}/developers/{developer}/monetizationConfig`
   """
@@ -5015,24 +5014,24 @@ class GoogleCloudApigeeV1DeveloperAppKey(_messages.Message):
 
 
 class GoogleCloudApigeeV1DeveloperBalance(_messages.Message):
-  r"""Monetization balance associated with the developer
+  r"""Account balance for the developer.
 
   Fields:
-    wallets: Output only. List of all the wallets. Each individual wallet
-      stores the balance for a particular type of currency
+    wallets: Output only. List of all wallets. Each individual wallet stores
+      the account balance for a particular currency.
   """
 
   wallets = _messages.MessageField('GoogleCloudApigeeV1DeveloperBalanceWallet', 1, repeated=True)
 
 
 class GoogleCloudApigeeV1DeveloperBalanceWallet(_messages.Message):
-  r"""A wallet will hold a balance for a particular currency
+  r"""Wallet used to manage an account balance for a particular currency.
 
   Fields:
     balance: Current remaining balance of the developer for a particular
       currency.
-    lastCreditTime: Output only. The time when the developer last credited an
-      amount into this wallet.
+    lastCreditTime: Output only. Time at which the developer last added credit
+      to the account in milliseconds since epoch.
   """
 
   balance = _messages.MessageField('GoogleTypeMoney', 1)
@@ -5040,27 +5039,24 @@ class GoogleCloudApigeeV1DeveloperBalanceWallet(_messages.Message):
 
 
 class GoogleCloudApigeeV1DeveloperMonetizationConfig(_messages.Message):
-  r"""Monetization related configuration for the developer.
+  r"""Monetization configuration for the developer.
 
   Enums:
-    BillingTypeValueValuesEnum: `billing_type` specifies whether the developer
-      is PREPAID or POSTPAID.
+    BillingTypeValueValuesEnum: Billing type.
 
   Fields:
-    billingType: `billing_type` specifies whether the developer is PREPAID or
-      POSTPAID.
+    billingType: Billing type.
   """
 
   class BillingTypeValueValuesEnum(_messages.Enum):
-    r"""`billing_type` specifies whether the developer is PREPAID or POSTPAID.
+    r"""Billing type.
 
     Values:
       BILLING_TYPE_UNSPECIFIED: The default/unset value.
-      PREPAID: This means that the developer will maintain a balance the
-        charged amount will be deducted from their balance.
-      POSTPAID: This means that no balance will be maintained by the
-        developer. The API provider will take care of retrieving the money
-        from the developer.
+      PREPAID: Developer pays in advance for the use of APIs and the charged
+        amount is deducted from their account balance.
+      POSTPAID: Developer does not maintain an account balance. The API
+        provider bills the developer for API usage.
     """
     BILLING_TYPE_UNSPECIFIED = 0
     PREPAID = 1
@@ -5740,6 +5736,7 @@ class GoogleCloudApigeeV1Instance(_messages.Message):
       SLASH_18: `/18` CIDR range.
       SLASH_19: `/19` CIDR range.
       SLASH_20: `/20` CIDR range.
+      SLASH_22: `/22` CIDR range. Supported for evaluation only.
       SLASH_23: `/23` CIDR range. Supported for evaluation only.
     """
     CIDR_RANGE_UNSPECIFIED = 0
@@ -5748,7 +5745,8 @@ class GoogleCloudApigeeV1Instance(_messages.Message):
     SLASH_18 = 3
     SLASH_19 = 4
     SLASH_20 = 5
-    SLASH_23 = 6
+    SLASH_22 = 6
+    SLASH_23 = 7
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. State of the instance. Values other than `ACTIVE` means

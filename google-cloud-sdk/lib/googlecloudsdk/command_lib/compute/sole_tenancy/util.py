@@ -76,7 +76,7 @@ def GetSchedulingNodeAffinityListFromArgs(args,
   if support_node_project and args.IsSpecified('node_project'):
     node_affinities.append(
         messages.SchedulingNodeAffinity(
-            key='compute.googleapis.com/project-id',
+            key='compute.googleapis.com/project',
             operator=operator_enum.IN,
             values=[args.node_project]))
   return node_affinities

@@ -181,6 +181,27 @@ def _List(requests, http, batch_url, errors):
   return _ListCore(requests, http, batch_url, errors, _HandleMessageList)
 
 
+def _IsEmptyOperation(operation, service):
+  """Checks whether operation argument is empty.
+
+  Args:
+    operation: Operation thats checked for emptyness.
+    service: Variable used to access service.client.MESSAGES_MODULE.Operation.
+
+  Returns:
+    True if operation is empty, False otherwise.
+  """
+  if not isinstance(operation, service.client.MESSAGES_MODULE.Operation):
+    raise ValueError('operation must be instance of'
+                     + 'service.client.MESSAGES_MODULE.Operation')
+
+  for field in operation.all_fields():
+    if (field.name != 'kind' and field.name != 'warnings' and
+        getattr(operation, field.name) is not None):
+      return False
+  return True
+
+
 def ListJson(requests, http, batch_url, errors):
   """Makes a series of list and/or aggregatedList batch requests.
 
@@ -291,6 +312,7 @@ def MakeRequests(requests,
 
     service, _, request_body = request
     if (isinstance(response, service.client.MESSAGES_MODULE.Operation) and
+        not _IsEmptyOperation(response, service) and
         service.__class__.__name__ not in (
             'GlobalOperationsService', 'RegionOperationsService',
             'ZoneOperationsService', 'GlobalOrganizationOperationsService',

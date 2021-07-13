@@ -529,10 +529,12 @@ class ClusterMetrics(_messages.Message):
 
   Messages:
     HdfsMetricsValue: The HDFS metrics.
+    SparkMetricsValue: The Spark metrics.
     YarnMetricsValue: The YARN metrics.
 
   Fields:
     hdfsMetrics: The HDFS metrics.
+    sparkMetrics: The Spark metrics.
     yarnMetrics: The YARN metrics.
   """
 
@@ -550,6 +552,31 @@ class ClusterMetrics(_messages.Message):
 
     class AdditionalProperty(_messages.Message):
       r"""An additional property for a HdfsMetricsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.IntegerField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class SparkMetricsValue(_messages.Message):
+    r"""The Spark metrics.
+
+    Messages:
+      AdditionalProperty: An additional property for a SparkMetricsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type SparkMetricsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a SparkMetricsValue object.
 
       Fields:
         key: Name of the additional property.
@@ -587,7 +614,8 @@ class ClusterMetrics(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   hdfsMetrics = _messages.MessageField('HdfsMetricsValue', 1)
-  yarnMetrics = _messages.MessageField('YarnMetricsValue', 2)
+  sparkMetrics = _messages.MessageField('SparkMetricsValue', 2)
+  yarnMetrics = _messages.MessageField('YarnMetricsValue', 3)
 
 
 class ClusterOperation(_messages.Message):
@@ -1320,14 +1348,14 @@ class DataprocProjectsRegionsClustersCreateRequest(_messages.Message):
     projectId: Required. The ID of the Google Cloud Platform project that the
       cluster belongs to.
     region: Required. The Dataproc region in which to handle the request.
-    requestId: Optional. A unique id used to identify the request. If the
+    requestId: Optional. A unique ID used to identify the request. If the
       server receives two CreateClusterRequest (https://cloud.google.com/datap
       roc/docs/reference/rpc/google.cloud.dataproc.v1#google.cloud.dataproc.v1
       .CreateClusterRequest)s with the same id, then the second request will
       be ignored and the first google.longrunning.Operation created and stored
       in the backend is returned.It is recommended to always set this value to
       a UUID (https://en.wikipedia.org/wiki/Universally_unique_identifier).The
-      id must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
+      ID must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
       and hyphens (-). The maximum length is 40 characters.
   """
 
@@ -1363,14 +1391,14 @@ class DataprocProjectsRegionsClustersDeleteRequest(_messages.Message):
     projectId: Required. The ID of the Google Cloud Platform project that the
       cluster belongs to.
     region: Required. The Dataproc region in which to handle the request.
-    requestId: Optional. A unique id used to identify the request. If the
+    requestId: Optional. A unique ID used to identify the request. If the
       server receives two DeleteClusterRequest (https://cloud.google.com/datap
       roc/docs/reference/rpc/google.cloud.dataproc.v1#google.cloud.dataproc.v1
       .DeleteClusterRequest)s with the same id, then the second request will
       be ignored and the first google.longrunning.Operation created and stored
       in the backend is returned.It is recommended to always set this value to
       a UUID (https://en.wikipedia.org/wiki/Universally_unique_identifier).The
-      id must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
+      ID must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
       and hyphens (-). The maximum length is 40 characters.
   """
 
@@ -1510,14 +1538,14 @@ class DataprocProjectsRegionsClustersPatchRequest(_messages.Message):
     projectId: Required. The ID of the Google Cloud Platform project the
       cluster belongs to.
     region: Required. The Dataproc region in which to handle the request.
-    requestId: Optional. A unique id used to identify the request. If the
+    requestId: Optional. A unique ID used to identify the request. If the
       server receives two UpdateClusterRequest (https://cloud.google.com/datap
       roc/docs/reference/rpc/google.cloud.dataproc.v1#google.cloud.dataproc.v1
       .UpdateClusterRequest)s with the same id, then the second request will
       be ignored and the first google.longrunning.Operation created and stored
       in the backend is returned.It is recommended to always set this value to
       a UUID (https://en.wikipedia.org/wiki/Universally_unique_identifier).The
-      id must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
+      ID must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
       and hyphens (-). The maximum length is 40 characters.
     updateMask: Required. Specifies the path, relative to Cluster, of the
       field to update. For example, to change the number of workers in a
@@ -1543,6 +1571,24 @@ class DataprocProjectsRegionsClustersPatchRequest(_messages.Message):
   region = _messages.StringField(5, required=True)
   requestId = _messages.StringField(6)
   updateMask = _messages.StringField(7)
+
+
+class DataprocProjectsRegionsClustersRepairRequest(_messages.Message):
+  r"""A DataprocProjectsRegionsClustersRepairRequest object.
+
+  Fields:
+    clusterName: Required. The cluster name.
+    projectId: Required. The ID of the Google Cloud Platform project the
+      cluster belongs to.
+    region: Required. The Dataproc region in which to handle the request.
+    repairClusterRequest: A RepairClusterRequest resource to be passed as the
+      request body.
+  """
+
+  clusterName = _messages.StringField(1, required=True)
+  projectId = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  repairClusterRequest = _messages.MessageField('RepairClusterRequest', 4)
 
 
 class DataprocProjectsRegionsClustersSetIamPolicyRequest(_messages.Message):
@@ -4132,6 +4178,26 @@ class RegexValidation(_messages.Message):
   regexes = _messages.StringField(1, repeated=True)
 
 
+class RepairClusterRequest(_messages.Message):
+  r"""A request to repair a cluster.
+
+  Fields:
+    clusterUuid: Optional. Specifying the cluster_uuid means the RPC will fail
+      (with error NOT_FOUND) if a cluster with the specified UUID does not
+      exist.
+    requestId: Optional. A unique ID used to identify the request. If the
+      server receives two RepairClusterRequests with the same ID, the second
+      request is ignored, and the first google.longrunning.Operation created
+      and stored in the backend is returned.Recommendation: Set this value to
+      a UUID (https://en.wikipedia.org/wiki/Universally_unique_identifier).The
+      ID must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
+      and hyphens (-). The maximum length is 40 characters.
+  """
+
+  clusterUuid = _messages.StringField(1)
+  requestId = _messages.StringField(2)
+
+
 class ReservationAffinity(_messages.Message):
   r"""Reservation Affinity for consuming Zonal reservation.
 
@@ -4219,8 +4285,8 @@ class RuntimeInfo(_messages.Message):
   Fields:
     endpoints: Output only. Map of remote access endpoints (such as web
       interfaces and APIs) to their URIs.
-    processOutputUri: Output only. A URI pointing to the location of the
-      stdout of the workload's main process.
+    outputUri: Output only. A URI pointing to the location of the stdout of
+      the workload's main process.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -4249,7 +4315,7 @@ class RuntimeInfo(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   endpoints = _messages.MessageField('EndpointsValue', 1)
-  processOutputUri = _messages.StringField(2)
+  outputUri = _messages.StringField(2)
 
 
 class SecurityConfig(_messages.Message):
@@ -4851,13 +4917,13 @@ class StartClusterRequest(_messages.Message):
     clusterUuid: Optional. Specifying the cluster_uuid means the RPC will fail
       (with error NOT_FOUND) if a cluster with the specified UUID does not
       exist.
-    requestId: Optional. A unique id used to identify the request. If the
+    requestId: Optional. A unique ID used to identify the request. If the
       server receives two StartClusterRequest (https://cloud.google.com/datapr
       oc/docs/reference/rpc/google.cloud.dataproc.v1#google.cloud.dataproc.v1.
       StartClusterRequest)s with the same id, then the second request will be
       ignored and the first google.longrunning.Operation created and stored in
       the backend is returned.Recommendation: Set this value to a UUID
-      (https://en.wikipedia.org/wiki/Universally_unique_identifier).The id
+      (https://en.wikipedia.org/wiki/Universally_unique_identifier).The ID
       must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
       and hyphens (-). The maximum length is 40 characters.
   """
@@ -4924,13 +4990,13 @@ class StopClusterRequest(_messages.Message):
     clusterUuid: Optional. Specifying the cluster_uuid means the RPC will fail
       (with error NOT_FOUND) if a cluster with the specified UUID does not
       exist.
-    requestId: Optional. A unique id used to identify the request. If the
+    requestId: Optional. A unique ID used to identify the request. If the
       server receives two StopClusterRequest (https://cloud.google.com/datapro
       c/docs/reference/rpc/google.cloud.dataproc.v1#google.cloud.dataproc.v1.S
       topClusterRequest)s with the same id, then the second request will be
       ignored and the first google.longrunning.Operation created and stored in
       the backend is returned.Recommendation: Set this value to a UUID
-      (https://en.wikipedia.org/wiki/Universally_unique_identifier).The id
+      (https://en.wikipedia.org/wiki/Universally_unique_identifier).The ID
       must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
       and hyphens (-). The maximum length is 40 characters.
   """

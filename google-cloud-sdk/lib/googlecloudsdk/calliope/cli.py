@@ -752,6 +752,7 @@ class _CompletionFinder(argcomplete.CompletionFinder):
     double_quote_special = '\\`"$'
     single_quote_special = '\\'
     continuation_special = '=/:'
+    no_escaping_shells = ('tcsh', 'fish', 'zsh')
 
     # If the word under the cursor was quoted, escape the quote char.
     # Otherwise, escape most special characters and specially handle most
@@ -768,8 +769,9 @@ class _CompletionFinder(argcomplete.CompletionFinder):
     else:
       special_chars = single_quote_special
 
-    if encoding.GetEncodedValue(os.environ, '_ARGCOMPLETE_SHELL') == 'tcsh':
-      # tcsh escapes special characters itself.
+    if encoding.GetEncodedValue(os.environ,
+                                '_ARGCOMPLETE_SHELL') in no_escaping_shells:
+      # these shells escape special characters themselves.
       special_chars = ''
     elif cword_prequote == "'":
       # Nothing can be escaped in single quotes, so we need to close

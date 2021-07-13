@@ -19,10 +19,24 @@ from __future__ import division
 from __future__ import unicode_literals
 
 
-def AddDisplayNameFlag(parser):
+def AddDisplayNameFlag(parser, required=True):
   """Adds a --display-name flag to the given parser."""
   help_text = """Friendly name for the stream."""
-  parser.add_argument('--display-name', help=help_text, required=True)
+  parser.add_argument('--display-name', help=help_text, required=required)
+
+
+def AddUpdateMaskFlag(parser):
+  """Adds a --update-mask flag to the given parser."""
+  help_text = """Used to specify the fields to be overwritten in the stream resource by the update.
+  If the update mask is used, then a field will be overwritten only if it is in the mask. If the user does not provide a mask then all fields will be overwritten.
+  This is a comma-separated list of fully qualified names of fields, written as snake_case or camelCase. Example: "display_name, source_config.oracle_source_config"."""
+  parser.add_argument('--update-mask', help=help_text)
+
+
+def AddStateFlag(parser):
+  """Adds a --state flag to the given parser."""
+  help_text = """Stream state, can be set to: "RUNNING" or "PAUSED"."""
+  parser.add_argument('--state', help=help_text)
 
 
 def AddValidateOnlyFlag(parser):
@@ -40,9 +54,9 @@ def AddForceFlag(parser):
       '--force', help=help_text, action='store_true', default=False)
 
 
-def AddBackfillStrategyGroup(parser):
+def AddBackfillStrategyGroup(parser, required=True):
   """Adds a --backfiill-all or --backfill-none flag to the given parser."""
-  backfill_group = parser.add_group(required=True, mutex=True)
+  backfill_group = parser.add_group(required=required, mutex=True)
   backfill_group.add_argument(
       '--backfill-none',
       help="""Do not automatically backfill any objects.""",

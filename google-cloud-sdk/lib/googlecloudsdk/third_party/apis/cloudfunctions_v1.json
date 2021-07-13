@@ -943,6 +943,66 @@
             "type": "any",
             "description": "Properties of the object. Contains field @type with type URL."
           }
+        },
+        "stages": {
+          "description": "Mechanism for reporting in-progress stages",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudFunctionsV2alphaStage"
+          }
+        }
+      }
+    },
+    "GoogleCloudFunctionsV2alphaStage": {
+      "id": "GoogleCloudFunctionsV2alphaStage",
+      "description": "Each Stage of the deployment process",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Name of the Stage",
+          "type": "string",
+          "enumDescriptions": [
+            "Not specified. Invalid name.",
+            "Artifact Regsitry Stage",
+            "Build Stage",
+            "Service Stage",
+            "Trigger Stage"
+          ],
+          "enum": [
+            "NAME_UNSPECIFIED",
+            "ARTIFACT_REGISTRY",
+            "BUILD",
+            "SERVICE",
+            "TRIGGER"
+          ]
+        },
+        "message": {
+          "description": "Message describing the Stage",
+          "type": "string"
+        },
+        "state": {
+          "description": "Current state of the Stage",
+          "type": "string",
+          "enumDescriptions": [
+            "Not specified. Invalid state.",
+            "Stage has not started.",
+            "Stage is in progress.",
+            "Stage has completed."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "NOT_STARTED",
+            "IN_PROGRESS",
+            "COMPLETE"
+          ]
+        },
+        "resource": {
+          "description": "Resource of the Stage",
+          "type": "string"
+        },
+        "resourceUri": {
+          "description": "Link to the current Stage resource",
+          "type": "string"
         }
       }
     }

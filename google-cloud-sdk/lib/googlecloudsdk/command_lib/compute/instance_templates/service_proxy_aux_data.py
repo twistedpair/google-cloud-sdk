@@ -53,3 +53,19 @@ sudo gsutil cp %s ${SERVICE_PROXY_AGENT_DIRECTORY}
 ARCHIVE_NAME=$(ls ${SERVICE_PROXY_AGENT_DIRECTORY})
 sudo tar -xzf ${SERVICE_PROXY_AGENT_DIRECTORY}/${ARCHIVE_NAME} -C ${SERVICE_PROXY_AGENT_DIRECTORY}
 ${SERVICE_PROXY_AGENT_DIRECTORY}/service-proxy-agent/service-proxy-agent-bootstrap.sh"""
+
+startup_script_for_asm_service_proxy = """#! /bin/bash
+ISTIOD_ENTRY="{ingress_ip} istiod-{asm_revision}.istio-system.svc"
+if ! grep -Fq "${{ISTIOD_ENTRY}}" /etc/hosts; then
+  echo "${{ISTIOD_ENTRY}} # Added by Anthos Service Mesh" | sudo tee -a /etc/hosts
+fi
+DEFAULT_ISTIOD_ENTRY="{ingress_ip} istiod.istio-system.svc"
+if ! grep -Fq "${{DEFAULT_ISTIOD_ENTRY}}" /etc/hosts; then
+  echo "${{DEFAULT_ISTIOD_ENTRY}} # Added by Anthos Service Mesh" | sudo tee -a /etc/hosts
+fi
+SERVICE_PROXY_AGENT_BUCKET=$(curl http://metadata.google.internal/computeMetadata/v1/instance/attributes/gce-service-proxy-agent-bucket -H Metadata-Flavor:Google)
+ARCHIVE_NAME=$(basename ${{SERVICE_PROXY_AGENT_BUCKET}})
+export SERVICE_PROXY_AGENT_DIRECTORY=$(mktemp -d)
+sudo gsutil cp ${{SERVICE_PROXY_AGENT_BUCKET}} ${{SERVICE_PROXY_AGENT_DIRECTORY}}
+sudo tar -xzf ${{SERVICE_PROXY_AGENT_DIRECTORY}}/${{ARCHIVE_NAME}} -C ${{SERVICE_PROXY_AGENT_DIRECTORY}}
+${{SERVICE_PROXY_AGENT_DIRECTORY}}/service-proxy-agent/service-proxy-agent-bootstrap.sh"""

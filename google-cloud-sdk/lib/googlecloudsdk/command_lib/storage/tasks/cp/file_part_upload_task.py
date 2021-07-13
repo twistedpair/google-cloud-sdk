@@ -33,11 +33,11 @@ from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.api_lib.storage import errors as api_errors
 from googlecloudsdk.api_lib.storage import request_config_factory
 from googlecloudsdk.command_lib.storage import errors as command_errors
-from googlecloudsdk.command_lib.storage import file_part
 from googlecloudsdk.command_lib.storage import hash_util
 from googlecloudsdk.command_lib.storage import progress_callbacks
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage import tracker_file_util
+from googlecloudsdk.command_lib.storage import upload_stream
 from googlecloudsdk.command_lib.storage.tasks import task
 from googlecloudsdk.command_lib.storage.tasks import task_status
 from googlecloudsdk.command_lib.storage.tasks.cp import file_part_task
@@ -54,26 +54,39 @@ UploadedComponent = collections.namedtuple(
 
 
 class FilePartUploadTask(file_part_task.FilePartTask):
-  """Uploads a range of bytes from a file.
+  """Uploads a range of bytes from a file."""
 
-  Normally, don't docstring private attributes, but initialization parameters
-  need to be more specific than parent class's.
+  def __init__(self,
+               source_resource,
+               destination_resource,
+               offset,
+               length,
+               component_number=None,
+               total_components=None,
+               user_request_args=None):
+    """Initializes task.
 
-  Attributes:
-    _source_resource (resource_reference.FileObjectResource): Must contain local
-      filesystem path to upload object. Does not need to contain metadata.
-    _destination_resource (resource_reference.ObjectResource|UnknownResource):
-      Must contain the full object path. Directories will not be accepted.
-      Existing objects at the this location will be overwritten.
-    _offset (int): The index of the first byte in the upload range.
-    _length (int): The number of bytes in the upload range.
-    _component_number (int?): If a multipart operation, indicates the
-      component number.
-    _total_components (int?): If a multipart operation, indicates the total
-      number of components.
-  """
+    Args:
+      source_resource (resource_reference.FileObjectResource): Must contain
+        local filesystem path to upload object. Does not need to contain
+        metadata.
+      destination_resource (resource_reference.ObjectResource|UnknownResource):
+        Must contain the full object path. Directories will not be accepted.
+        Existing objects at the this location will be overwritten.
+      offset (int): The index of the first byte in the upload range.
+      length (int): The number of bytes in the upload range.
+      component_number (int|None): If a multipart operation, indicates the
+        component number.
+      total_components (int|None): If a multipart operation, indicates the total
+        number of components.
+      user_request_args (UserRequestArgs|None): Values for RequestConfig.
+    """
+    super(FilePartUploadTask,
+          self).__init__(source_resource, destination_resource, offset, length,
+                         component_number, total_components)
+    self._user_request_args = user_request_args
 
-  def _get_wrapped_stream(self, digesters, task_status_queue):
+  def _get_upload_stream(self, digesters, task_status_queue):
     if task_status_queue:
       progress_callback = progress_callbacks.FilesAndBytesProgressCallback(
           status_queue=task_status_queue,
@@ -92,7 +105,7 @@ class FilePartUploadTask(file_part_task.FilePartTask):
 
     source_stream = files.BinaryFileReader(
         self._source_resource.storage_url.object_name)
-    return file_part.FilePart(
+    return upload_stream.UploadStream(
         source_stream, self._offset, self._length, digesters=digesters,
         progress_callback=progress_callback)
 
@@ -123,7 +136,7 @@ class FilePartUploadTask(file_part_task.FilePartTask):
   def _existing_destination_is_valid(self, destination_resource):
     """Returns True if a completed temporary component can be reused."""
     digesters = self._get_digesters()
-    with self._get_wrapped_stream(digesters, task_status_queue=None) as stream:
+    with self._get_upload_stream(digesters, task_status_queue=None) as stream:
       stream.seek(0, whence=os.SEEK_END)  # Populates digesters.
 
     try:
@@ -143,10 +156,10 @@ class FilePartUploadTask(file_part_task.FilePartTask):
         destination_url,
         content_type=upload_util.get_content_type(self._source_resource),
         md5_hash=self._source_resource.md5_hash,
-        size=self._length)
+        size=self._length,
+        user_request_args=self._user_request_args)
 
-    with self._get_wrapped_stream(digesters,
-                                  task_status_queue) as upload_stream:
+    with self._get_upload_stream(digesters, task_status_queue) as source_stream:
       upload_strategy = upload_util.get_upload_strategy(api, self._length)
       if upload_strategy == cloud_api.UploadStrategy.RESUMABLE:
         tracker_file_path = tracker_file_util.get_tracker_file_path(
@@ -183,7 +196,7 @@ class FilePartUploadTask(file_part_task.FilePartTask):
 
         attempt_upload = functools.partial(
             api.upload_object,
-            upload_stream,
+            source_stream,
             self._destination_resource,
             request_config,
             serialization_data=serialization_data,
@@ -239,7 +252,7 @@ class FilePartUploadTask(file_part_task.FilePartTask):
             tracker_file_util.delete_tracker_file(tracker_file_path)
       else:
         destination_resource = api.upload_object(
-            upload_stream,
+            source_stream,
             self._destination_resource,
             request_config,
             upload_strategy=upload_strategy)

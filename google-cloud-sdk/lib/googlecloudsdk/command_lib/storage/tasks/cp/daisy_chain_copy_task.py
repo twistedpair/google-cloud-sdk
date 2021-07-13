@@ -337,17 +337,21 @@ class DaisyChainCopyTask(task.Task):
   location by keeping an in-memory buffer.
   """
 
-  def __init__(self, source_resource, destination_resource):
+  def __init__(self,
+               source_resource,
+               destination_resource,
+               user_request_args=None):
     """Initializes task.
 
     Args:
       source_resource (resource_reference.ObjectResource): Must
-          contain the full object path of existing object.
-          Directories will not be accepted.
+        contain the full object path of existing object.
+        Directories will not be accepted.
       destination_resource (resource_reference.UnknownResource): Must
-          contain the full object path. Object may not exist yet.
-          Existing objects at the this location will be overwritten.
-          Directories will not be accepted.
+        contain the full object path. Object may not exist yet.
+        Existing objects at the this location will be overwritten.
+        Directories will not be accepted.
+      user_request_args (UserRequestArgs|None): Values for RequestConfig.
     """
     super().__init__()
     if (not isinstance(source_resource.storage_url, storage_url.CloudUrl)
@@ -358,6 +362,7 @@ class DaisyChainCopyTask(task.Task):
 
     self._source_resource = source_resource
     self._destination_resource = destination_resource
+    self._user_request_args = user_request_args
     self.parallel_processing_key = (
         self._destination_resource.storage_url.url_string)
 
@@ -408,7 +413,8 @@ class DaisyChainCopyTask(task.Task):
     request_config = request_config_factory.get_request_config(
         self._destination_resource.storage_url,
         content_type=content_type,
-        size=self._source_resource.size)
+        size=self._source_resource.size,
+        user_request_args=self._user_request_args)
 
     try:
       upload_strategy = upload_util.get_upload_strategy(

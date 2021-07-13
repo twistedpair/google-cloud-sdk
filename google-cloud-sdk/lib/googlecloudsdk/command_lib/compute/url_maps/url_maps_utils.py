@@ -18,6 +18,9 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.api_lib.compute.operations import poller
+from googlecloudsdk.api_lib.util import waiter
+
 
 def ResolveUrlMapDefaultService(args, backend_service_arg, url_map_ref,
                                 resources):
@@ -67,3 +70,29 @@ def SendGetRequest(client, url_map_ref):
         client.messages.ComputeRegionUrlMapsGetRequest(**url_map_ref.AsDict()))
   return client.apitools_client.urlMaps.Get(
       client.messages.ComputeUrlMapsGetRequest(**url_map_ref.AsDict()))
+
+
+def WaitForOperation(resources, service, operation, url_map_ref, message):
+  """Waits for the URL map operation to finish.
+
+  Args:
+    resources: The resource parser.
+    service: apitools.base.py.base_api.BaseApiService, the service representing
+      the target of the operation.
+    operation: The operation to wait for.
+    url_map_ref: The URL map reference.
+    message: The message to show.
+
+  Returns:
+    The operation result.
+  """
+  params = {'project': url_map_ref.project}
+  if url_map_ref.Collection() == 'compute.regionUrlMaps':
+    collection = 'compute.regionOperations'
+    params['region'] = url_map_ref.region
+  else:
+    collection = 'compute.globalOperations'
+  operation_ref = resources.Parse(
+      operation.name, params=params, collection=collection)
+  operation_poller = poller.Poller(service, url_map_ref)
+  return waiter.WaitFor(operation_poller, operation_ref, message)

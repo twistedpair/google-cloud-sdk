@@ -19,7 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from apitools.base.py import list_pager
-from googlecloudsdk.api_lib.container.aws import util as api_util
+from googlecloudsdk.api_lib.container.gkemulticloud import util as api_util
 from googlecloudsdk.calliope import base
 
 NODEPOOLS_FORMAT = """\

@@ -95,6 +95,47 @@ class CancelWipeDeviceUserResponse(_messages.Message):
   deviceUser = _messages.MessageField('DeviceUser', 1)
 
 
+class CertificateInfo(_messages.Message):
+  r"""Stores information about a certificate.
+
+  Enums:
+    CertificateValidationStateValueValuesEnum: Validation state of this
+      certificate.
+
+  Fields:
+    certificateFingerprint: The encoded certificate fingerprint.
+    certificateThumbprint: The certificate thumbprint.
+    certificateValidationState: Validation state of this certificate.
+    issuer: The name of the issuer of this certificate.
+    serialNumber: Serial number of the certificate, Example: "123456789".
+    subject: The subject name of this certificate.
+    validityExpirationTime: Certificate not valid after at and after this
+      timestamp.
+    validityStartTime: Certificate not valid before this timestamp.
+  """
+
+  class CertificateValidationStateValueValuesEnum(_messages.Enum):
+    r"""Validation state of this certificate.
+
+    Values:
+      CERTIFICATE_VALIDATION_STATE_UNSPECIFIED: Default value.
+      VALIDATION_SUCCESSFUL: Certificate validation was successful.
+      VALIDATION_FAILED: Certificate validation failed.
+    """
+    CERTIFICATE_VALIDATION_STATE_UNSPECIFIED = 0
+    VALIDATION_SUCCESSFUL = 1
+    VALIDATION_FAILED = 2
+
+  certificateFingerprint = _messages.StringField(1)
+  certificateThumbprint = _messages.StringField(2)
+  certificateValidationState = _messages.EnumField('CertificateValidationStateValueValuesEnum', 3)
+  issuer = _messages.StringField(4)
+  serialNumber = _messages.StringField(5)
+  subject = _messages.StringField(6)
+  validityExpirationTime = _messages.StringField(7)
+  validityStartTime = _messages.StringField(8)
+
+
 class CheckTransitiveMembershipResponse(_messages.Message):
   r"""The response message for MembershipsService.CheckTransitiveMembership.
 
@@ -704,6 +745,8 @@ class Device(_messages.Message):
     enabledUsbDebugging: Output only. Whether USB debugging is enabled on
       device.
     encryptionState: Output only. Device encryption state.
+    endpointVerificationSpecificAttributes: Output only. Attributes specific
+      to Endpoint Verification (SecureConnect) devices.
     imei: Output only. IMEI number of device if GSM device; empty otherwise.
     kernelVersion: Output only. Kernel version of the device.
     lastSyncTime: Most recent time when device synced with this service.
@@ -828,22 +871,23 @@ class Device(_messages.Message):
   enabledDeveloperOptions = _messages.BooleanField(10)
   enabledUsbDebugging = _messages.BooleanField(11)
   encryptionState = _messages.EnumField('EncryptionStateValueValuesEnum', 12)
-  imei = _messages.StringField(13)
-  kernelVersion = _messages.StringField(14)
-  lastSyncTime = _messages.StringField(15)
-  managementState = _messages.EnumField('ManagementStateValueValuesEnum', 16)
-  manufacturer = _messages.StringField(17)
-  meid = _messages.StringField(18)
-  model = _messages.StringField(19)
-  name = _messages.StringField(20)
-  networkOperator = _messages.StringField(21)
-  osVersion = _messages.StringField(22)
-  otherAccounts = _messages.StringField(23, repeated=True)
-  ownerType = _messages.EnumField('OwnerTypeValueValuesEnum', 24)
-  releaseVersion = _messages.StringField(25)
-  securityPatchTime = _messages.StringField(26)
-  serialNumber = _messages.StringField(27)
-  wifiMacAddresses = _messages.StringField(28, repeated=True)
+  endpointVerificationSpecificAttributes = _messages.MessageField('EndpointVerificationSpecificAttributes', 13)
+  imei = _messages.StringField(14)
+  kernelVersion = _messages.StringField(15)
+  lastSyncTime = _messages.StringField(16)
+  managementState = _messages.EnumField('ManagementStateValueValuesEnum', 17)
+  manufacturer = _messages.StringField(18)
+  meid = _messages.StringField(19)
+  model = _messages.StringField(20)
+  name = _messages.StringField(21)
+  networkOperator = _messages.StringField(22)
+  osVersion = _messages.StringField(23)
+  otherAccounts = _messages.StringField(24, repeated=True)
+  ownerType = _messages.EnumField('OwnerTypeValueValuesEnum', 25)
+  releaseVersion = _messages.StringField(26)
+  securityPatchTime = _messages.StringField(27)
+  serialNumber = _messages.StringField(28)
+  wifiMacAddresses = _messages.StringField(29, repeated=True)
 
 
 class DeviceUser(_messages.Message):
@@ -999,6 +1043,17 @@ class DynamicGroupStatus(_messages.Message):
 
   status = _messages.EnumField('StatusValueValuesEnum', 1)
   statusTime = _messages.StringField(2)
+
+
+class EndpointVerificationSpecificAttributes(_messages.Message):
+  r"""Resource representing the Endpoint Verification specific attributes of a
+  Device.
+
+  Fields:
+    certificateInfo: Details of certificates reported by SecureConnect.
+  """
+
+  certificateInfo = _messages.MessageField('CertificateInfo', 1, repeated=True)
 
 
 class EntityKey(_messages.Message):

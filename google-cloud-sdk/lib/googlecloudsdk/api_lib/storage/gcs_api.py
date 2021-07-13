@@ -193,7 +193,7 @@ class GcsApi(cloud_api.CloudApi):
   }
 
   def __init__(self):
-    super().__init__()
+    super(GcsApi, self).__init__()
     self.client = core_apis.GetClientInstance('storage', 'v1')
     self.client.overwrite_transfer_urls_with_client_base = True
     self.messages = core_apis.GetMessagesModule('storage', 'v1')

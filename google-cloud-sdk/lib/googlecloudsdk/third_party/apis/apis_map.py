@@ -1633,6 +1633,14 @@ MAP = {
                 mtls_endpoint_override=''),
     },
     'networkconnectivity': {
+        'v1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.networkconnectivity.v1',
+                client_classpath='networkconnectivity_v1_client.NetworkconnectivityV1',
+                messages_modulepath='networkconnectivity_v1_messages',
+                default_version=False,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
         'v1alpha1':
             APIDef(
                 class_path='googlecloudsdk.third_party.apis.networkconnectivity.v1alpha1',
@@ -1819,6 +1827,14 @@ MAP = {
                 mtls_endpoint_override=''),
     },
     'policyanalyzer': {
+        'v1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.policyanalyzer.v1',
+                client_classpath='policyanalyzer_v1_client.PolicyanalyzerV1',
+                messages_modulepath='policyanalyzer_v1_messages',
+                default_version=False,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
         'v1beta1':
             APIDef(
                 class_path='googlecloudsdk.third_party.apis.policyanalyzer.v1beta1',

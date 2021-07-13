@@ -12,7 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Flags definition specifically for gcloud aiplatform custom-jobs."""
+"""Flags definition specifically for gcloud ai custom-jobs."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -26,6 +26,8 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.command_lib.ai import constants
 from googlecloudsdk.command_lib.ai import flags as shared_flags
+from googlecloudsdk.command_lib.ai import region_util
+from googlecloudsdk.command_lib.ai.custom_jobs import constants as custom_job_constants
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 
 _DISPLAY_NAME = base.Argument(
@@ -139,17 +141,18 @@ _WORKER_POOL_SPEC_BETA = base.Argument(
       message .
 
       Example:
-      --worker-pool-spec=machine-type=e2-standard-4,executor-image-uri=us-docker.pkg.dev/cloud-aiplatform/training/tf-cpu.2-4:latest,python-module=trainer.task
+      --worker-pool-spec=machine-type=e2-standard-4,executor-image-uri=us-docker.pkg.dev/vertex-ai/training/tf-cpu.2-4:latest,python-module=trainer.task
 
       `local-package-path, executor-image-uri, python-module|script`::::
       Specify these fields train using a pre-built container and Python code
       from a local path.
       In this case, the `--python-package-uris` flag is disallowed.
 
-      Example:
-      --worker-pool-spec=machine-type=e2-standard-4,replica-count=1,executor-image-uri=us-docker.pkg.dev/cloud-aiplatform/training/tf-cpu.2-4:latest,script=python-module=trainer.task,local-package-path=/usr/page/application
-      or
-      --worker-pool-spec=machine-type=e2-standard-4,replica-count=1,executor-image-uri=gcr.io/deeplearning-platform-release/tf-cpu:latest:latest,script=my_run.sh,local-package-path=/usr/jeff/application
+      Example using `python-module`:
+      --worker-pool-spec=machine-type=e2-standard-4,replica-count=1,executor-image-uri=us-docker.pkg.dev/vertex-ai/training/tf-cpu.2-4:latest,python-module=trainer.task,local-package-path=/usr/page/application
+
+      Example using `script`:
+      --worker-pool-spec=machine-type=e2-standard-4,replica-count=1,executor-image-uri=us-docker.pkg.dev/vertex-ai/training/tf-cpu.2-4:latest,script=my_run.sh,local-package-path=/usr/jeff/application
       """))
 
 _WORKER_POOL_SPEC_GA = base.Argument(
@@ -169,7 +172,7 @@ _WORKER_POOL_SPEC_GA = base.Argument(
       Define the worker pool configuration used by the custom job. You can
       specify multiple worker pool specs in order to create a custom job with
       multiple worker pools. For more details, please refer to
-      https://cloud.google.com/ai-platform-unified/docs/training/distributed-training#configuring_a_distributed_training_job
+      https://cloud.google.com/vertex-ai/docs/training/distributed-training#configuring_a_distributed_training_job
 
       The spec can contain the following fields, which are listed with
       corresponding fields in the WorkerPoolSpec API message:
@@ -203,7 +206,11 @@ _CUSTOM_JOB_ARGS = base.Argument(
 
 def AddCreateCustomJobFlags(parser, version):
   """Adds flags related to create a custom job."""
-  shared_flags.AddRegionResourceArg(parser, 'to create a custom job')
+  shared_flags.AddRegionResourceArg(
+      parser,
+      'to create a custom job',
+      prompt_func=region_util.GetPromptForRegionFunc(
+          custom_job_constants.REGIONS))
   shared_flags.TRAINING_SERVICE_ACCOUNT.AddToParser(parser)
   shared_flags.NETWORK.AddToParser(parser)
   shared_flags.AddKmsKeyResourceArg(parser, 'custom job')
@@ -223,27 +230,27 @@ def AddCreateCustomJobFlags(parser, version):
   worker_pool_spec_group.AddToParser(parser)
 
 
-def _GetCustomJobResourceSpec(resource_name='custom_job'):
-  return concepts.ResourceSpec(
-      constants.CUSTOM_JOB_COLLECTION,
-      resource_name=resource_name,
-      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
-      locationsId=shared_flags.RegionAttributeConfig(),
-      disable_auto_completers=False)
-
-
-def AddCustomJobResourceArg(parser, verb):
+def AddCustomJobResourceArg(parser, verb, regions=custom_job_constants.REGIONS):
   """Add a resource argument for a Vertex AI custom job.
 
   NOTE: Must be used only if it's the only resource arg in the command.
 
   Args:
     parser: the parser for the command.
-    verb: str, the verb to describe the resource, such as 'to update'.
+    verb: str, the verb to describe the job resource, such as 'to update'.
+    regions: list[str], the list of supported regions.
   """
+  job_resource_spec = concepts.ResourceSpec(
+      custom_job_constants.CUSTOM_JOB_COLLECTION,
+      resource_name='custom job',
+      locationsId=shared_flags.RegionAttributeConfig(
+          prompt_func=region_util.GetPromptForRegionFunc(regions)),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      disable_auto_completers=False)
+
   concept_parsers.ConceptParser.ForResource(
       'custom_job',
-      _GetCustomJobResourceSpec(),
+      job_resource_spec,
       'The custom job {}.'.format(verb),
       required=True).AddToParser(parser)
 
@@ -264,9 +271,8 @@ def AddLocalRunCustomJobFlags(parser):
       '--script',
       metavar='SCRIPT',
       help=textwrap.dedent("""
-      The relative path of the file to execute. Accepets a Python file,
-      IPYNB file, or arbitrary bash script. This path should be relative to the
-      `work_dir`.
+      The relative path of the file to execute. Accepets a Python file or an
+      arbitrary bash script. This path should be relative to the `work_dir`.
       """))
 
   # Flags for working directory.
@@ -309,7 +315,7 @@ def AddLocalRunCustomJobFlags(parser):
       help=textwrap.dedent("""
       URI or ID of the container image in either the Container Registry or local
       that will run the application.
-      See https://cloud.google.com/ai-platform-unified/docs/training/pre-built-containers
+      See https://cloud.google.com/vertex-ai/docs/training/pre-built-containers
       for available pre-built container images provided by Vertex AI for training.
       """))
 

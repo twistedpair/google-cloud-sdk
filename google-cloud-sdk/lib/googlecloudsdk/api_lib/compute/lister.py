@@ -434,21 +434,28 @@ def AddRegionsArg(parser, hidden=False):
 
 
 def AddMultiScopeListerFlags(parser, zonal=False, regional=False,
-                             global_=False):
+                             global_=False, zonal_deprecated=True,
+                             regional_deprecated=True):
   """Adds name, --regexp and scope flags as necessary."""
   AddBaseListerArgs(parser)
 
   scope = parser.add_mutually_exclusive_group()
-
+  zonal_deprecation_action = actions.DeprecationAction(
+      'zones',
+      warn='Flag `--zones` is deprecated. '
+           'Use `--filter="zone:( ZONE ... )"` instead.\n'
+           'For example '
+           '`--filter="zone:( europe-west1-b europe-west1-c )"`.')
+  regional_deprecation_action = actions.DeprecationAction(
+      'regions',
+      warn='Flag `--regions` is deprecated. '
+           'Use `--filter="region:( REGION ... )"` instead.\n'
+           'For example '
+           '`--filter="region:( europe-west1 europe-west2 )"`.')
   if zonal:
     scope.add_argument(
         '--zones',
-        action=actions.DeprecationAction(
-            'zones',
-            warn='Flag `--zones` is deprecated. '
-            'Use `--filter="zone:( ZONE ... )"` instead.\n'
-            'For example '
-            '`--filter="zone:( europe-west1-b europe-west1-c )"`.'),
+        action=zonal_deprecation_action if zonal_deprecated else None,
         metavar='ZONE',
         help=('If provided, only zonal resources are shown. '
               'If arguments are provided, only resources from the given '
@@ -457,12 +464,7 @@ def AddMultiScopeListerFlags(parser, zonal=False, regional=False,
   if regional:
     scope.add_argument(
         '--regions',
-        action=actions.DeprecationAction(
-            'regions',
-            warn='Flag `--regions` is deprecated. '
-            'Use `--filter="region:( REGION ... )"` instead.\n'
-            'For example '
-            '`--filter="region:( europe-west1 europe-west2 )"`.'),
+        action=regional_deprecation_action if regional_deprecated else None,
         metavar='REGION',
         help=('If provided, only regional resources are shown. '
               'If arguments are provided, only resources from the given '

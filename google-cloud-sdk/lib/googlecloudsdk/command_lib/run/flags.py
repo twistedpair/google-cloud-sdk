@@ -298,8 +298,16 @@ def AddCpuThrottlingFlag(parser):
   parser.add_argument(
       '--cpu-throttling',
       action=arg_parsers.StoreTrueFalseAction,
-      help='Whether to throttle the CPU when the container is not actively'
+      help='Whether to throttle the CPU when the container is not actively '
       'serving requests.')
+
+
+def AddConfidentialFlag(parser):
+  """Adds flag for deploying a Cloud Run service with Confidential mode."""
+  parser.add_argument(
+      '--confidential',
+      action=arg_parsers.StoreTrueFalseAction,
+      help='Enables confidential Cloud Run.')
 
 
 def AddDeployTagFlag(parser):
@@ -1365,6 +1373,9 @@ def GetServiceConfigurationChanges(args):
   if FlagIsExplicitlySet(args, 'cpu_throttling'):
     changes.append(
         config_changes.CpuThrottlingChange(throttling=args.cpu_throttling))
+  if FlagIsExplicitlySet(args, 'confidential'):
+    changes.append(
+        config_changes.ConfidentialChange(confidential=args.confidential))
 
   return changes
 

@@ -26,7 +26,7 @@ from googlecloudsdk.core.util import platforms
 import six
 
 # Python modules to install into virtual env environment
-MODULES = ['crcmod', 'grpcio', 'cryptography', 'google_crc32c']
+MODULES = ['crcmod', 'grpcio', 'cryptography', 'google_crc32c', 'certifi']
 
 # Enable file name.
 ENABLE_FILE = 'enabled'

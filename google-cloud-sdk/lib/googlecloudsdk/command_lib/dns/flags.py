@@ -396,6 +396,16 @@ CHANGES_FORMAT = 'table(id, startTime, status)'
 RESOURCERECORDSETS_FORMAT = 'table(name, type, ttl, rrdatas.list():label=DATA)'
 
 
+def GetResponsePolicyGkeClustersArg(required=False):
+  return base.Argument(
+      '--gkeclusters',
+      type=arg_parsers.ArgList(),
+      required=required,
+      metavar='GKECLUSTERS',
+      help='The comma-separated list of GKE cluster names to associate with '
+            'the response policy.')
+
+
 # Response Policy Rule Flags
 def GetResponsePolicyRulesBehaviorFlagMapper(messages):
   return arg_utils.ChoiceEnumMapper(

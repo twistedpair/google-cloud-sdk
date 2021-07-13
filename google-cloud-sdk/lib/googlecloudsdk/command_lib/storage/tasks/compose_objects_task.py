@@ -26,25 +26,31 @@ from googlecloudsdk.command_lib.storage.tasks import task
 class ComposeObjectsTask(task.Task):
   """Composes storage objects."""
 
-  def __init__(self, source_resources, destination_resource):
+  def __init__(self,
+               source_resources,
+               destination_resource,
+               user_request_args=None):
     """Initializes task.
 
     Args:
       source_resources (list[ObjectResource|UnknownResource]): The objects to
-          compose. This field accepts UnknownResources since it should allow
-          ComposeObjectsTasks to be initialized before the target objects have
-          been created.
+        compose. This field accepts UnknownResources since it should allow
+        ComposeObjectsTasks to be initialized before the target objects have
+        been created.
       destination_resource (resource_reference.UnknownResource): Metadata for
-          the resulting composite object.
+        the resulting composite object.
+      user_request_args (UserRequestArgs|None): Values for RequestConfig.
     """
     super().__init__()
     self._source_resources = source_resources
     self._destination_resource = destination_resource
+    self._user_request_args = user_request_args
 
   def execute(self, task_status_queue=None):
     del task_status_queue  # Unused.
     request_config = request_config_factory.get_request_config(
-        self._destination_resource.storage_url)
+        self._destination_resource.storage_url,
+        user_request_args=self._user_request_args)
 
     provider = self._destination_resource.storage_url.scheme
     api_factory.get_api(provider).compose_objects(self._source_resources,
@@ -55,4 +61,5 @@ class ComposeObjectsTask(task.Task):
     if not isinstance(other, ComposeObjectsTask):
       return NotImplemented
     return (self._source_resources == other._source_resources and
-            self._destination_resource == other._destination_resource)
+            self._destination_resource == other._destination_resource and
+            self._user_request_args == other._user_request_args)

@@ -345,6 +345,17 @@ class Aggregation(_messages.Message):
   perSeriesAligner = _messages.EnumField('PerSeriesAlignerValueValuesEnum', 4)
 
 
+class AlertChart(_messages.Message):
+  r"""A chart that displays alert policy data.
+
+  Fields:
+    name: Required. The resource name of the alert policy. The format is:
+      projects/[PROJECT_ID_OR_NUMBER]/alertPolicies/[ALERT_POLICY_ID]
+  """
+
+  name = _messages.StringField(1)
+
+
 class Axis(_messages.Message):
   r"""A chart axis.
 
@@ -1415,6 +1426,7 @@ class Widget(_messages.Message):
   present the component in the dashboard.
 
   Fields:
+    alertChart: A chart of alert policy data.
     blank: A blank space.
     scorecard: A scorecard summarizing time series data.
     text: A raw string or markdown displaying textual content.
@@ -1422,11 +1434,12 @@ class Widget(_messages.Message):
     xyChart: A chart of time series data.
   """
 
-  blank = _messages.MessageField('Empty', 1)
-  scorecard = _messages.MessageField('Scorecard', 2)
-  text = _messages.MessageField('Text', 3)
-  title = _messages.StringField(4)
-  xyChart = _messages.MessageField('XyChart', 5)
+  alertChart = _messages.MessageField('AlertChart', 1)
+  blank = _messages.MessageField('Empty', 2)
+  scorecard = _messages.MessageField('Scorecard', 3)
+  text = _messages.MessageField('Text', 4)
+  title = _messages.StringField(5)
+  xyChart = _messages.MessageField('XyChart', 6)
 
 
 class XyChart(_messages.Message):

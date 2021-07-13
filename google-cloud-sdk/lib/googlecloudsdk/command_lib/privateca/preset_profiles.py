@@ -220,6 +220,11 @@ _PRESET_PROFILES = {
 }
 
 
+def GetPresetProfileOptions():
+  """Returns the possible string options for the use-preset-profile flag."""
+  return sorted(_PRESET_PROFILES.keys())
+
+
 def GetPresetX509Parameters(profile_name):
   """Parses the profile name string into the corresponding API X509Parameters.
 

@@ -353,10 +353,12 @@ class ClusterMetrics(_messages.Message):
 
   Messages:
     HdfsMetricsValue: The HDFS metrics.
+    SparkMetricsValue: The Spark metrics.
     YarnMetricsValue: The YARN metrics.
 
   Fields:
     hdfsMetrics: The HDFS metrics.
+    sparkMetrics: The Spark metrics.
     yarnMetrics: The YARN metrics.
   """
 
@@ -374,6 +376,31 @@ class ClusterMetrics(_messages.Message):
 
     class AdditionalProperty(_messages.Message):
       r"""An additional property for a HdfsMetricsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.IntegerField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class SparkMetricsValue(_messages.Message):
+    r"""The Spark metrics.
+
+    Messages:
+      AdditionalProperty: An additional property for a SparkMetricsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type SparkMetricsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a SparkMetricsValue object.
 
       Fields:
         key: Name of the additional property.
@@ -411,7 +438,8 @@ class ClusterMetrics(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   hdfsMetrics = _messages.MessageField('HdfsMetricsValue', 1)
-  yarnMetrics = _messages.MessageField('YarnMetricsValue', 2)
+  sparkMetrics = _messages.MessageField('SparkMetricsValue', 2)
+  yarnMetrics = _messages.MessageField('YarnMetricsValue', 3)
 
 
 class ClusterOperation(_messages.Message):

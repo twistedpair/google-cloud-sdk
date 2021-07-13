@@ -39,12 +39,104 @@ class DatafusionV1beta1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.projects_locations_instances_dnsPeerings = self.ProjectsLocationsInstancesDnsPeeringsService(self)
     self.projects_locations_instances_namespaces = self.ProjectsLocationsInstancesNamespacesService(self)
     self.projects_locations_instances = self.ProjectsLocationsInstancesService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_versions = self.ProjectsLocationsVersionsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class ProjectsLocationsInstancesDnsPeeringsService(base_api.BaseApiService):
+    """Service class for the projects_locations_instances_dnsPeerings resource."""
+
+    _NAME = 'projects_locations_instances_dnsPeerings'
+
+    def __init__(self, client):
+      super(DatafusionV1beta1.ProjectsLocationsInstancesDnsPeeringsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Add(self, request, global_params=None):
+      r"""Add DNS peering on the given resource.
+
+      Args:
+        request: (DatafusionProjectsLocationsInstancesDnsPeeringsAddRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AddDnsPeeringResponse) The response message.
+      """
+      config = self.GetMethodConfig('Add')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Add.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}/dnsPeerings:add',
+        http_method='POST',
+        method_id='datafusion.projects.locations.instances.dnsPeerings.add',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1beta1/{+parent}/dnsPeerings:add',
+        request_field='addDnsPeeringRequest',
+        request_type_name='DatafusionProjectsLocationsInstancesDnsPeeringsAddRequest',
+        response_type_name='AddDnsPeeringResponse',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""List DNS peering for a given resource.
+
+      Args:
+        request: (DatafusionProjectsLocationsInstancesDnsPeeringsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListDnsPeeringsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}/dnsPeerings:list',
+        http_method='GET',
+        method_id='datafusion.projects.locations.instances.dnsPeerings.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1beta1/{+parent}/dnsPeerings:list',
+        request_field='',
+        request_type_name='DatafusionProjectsLocationsInstancesDnsPeeringsListRequest',
+        response_type_name='ListDnsPeeringsResponse',
+        supports_download=False,
+    )
+
+    def Remove(self, request, global_params=None):
+      r"""Remove DNS peering on the given resource.
+
+      Args:
+        request: (DatafusionProjectsLocationsInstancesDnsPeeringsRemoveRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RemoveDnsPeeringResponse) The response message.
+      """
+      config = self.GetMethodConfig('Remove')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Remove.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}/dnsPeerings:remove',
+        http_method='POST',
+        method_id='datafusion.projects.locations.instances.dnsPeerings.remove',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1beta1/{+parent}/dnsPeerings:remove',
+        request_field='removeDnsPeeringRequest',
+        request_type_name='DatafusionProjectsLocationsInstancesDnsPeeringsRemoveRequest',
+        response_type_name='RemoveDnsPeeringResponse',
+        supports_download=False,
+    )
 
   class ProjectsLocationsInstancesNamespacesService(base_api.BaseApiService):
     """Service class for the projects_locations_instances_namespaces resource."""

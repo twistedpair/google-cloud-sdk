@@ -770,7 +770,7 @@ def AddMigStatefulFlagsForInstanceConfigs(parser):
       help=stateful_disks_help,
   )
 
-  # Add stateful metdata args
+  # Add stateful metadata args
   stateful_metadata_argument_name = '--stateful-metadata'
   metadata_help_text = textwrap.dedent(
       STATEFUL_METADATA_HELP.format(
@@ -1019,6 +1019,16 @@ def ValidateMigStatefulIPFlagsForInstanceConfigs(args, for_update=False):
         flag_name='--remove-stateful-external-ips',
         ips_to_remove=args.remove_stateful_external_ips,
         ips_to_update=args.stateful_external_ip)
+
+
+def AddDescriptionFlag(parser, for_update=False):
+  """Add --description to the parser."""
+  parser.add_argument(
+      '--description',
+      help='An optional description for this group.' +
+      (' To clear the description, set the value to an empty string.'
+       if for_update
+       else ''))
 
 
 def AddMigUpdateStatefulFlags(parser):

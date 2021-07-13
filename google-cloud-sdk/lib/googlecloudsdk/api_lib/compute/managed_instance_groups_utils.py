@@ -1327,19 +1327,40 @@ def AddAutoscaledPropertyToMigs(migs, client, resources):
       client=client,
       resources=resources,
       fail_when_api_not_supported=False):
-    if 'autoscaler' in mig and mig['autoscaler'] is not None:
-      # status is present in autoscaler iff Autoscaler message has embedded
-      # StatusValueValuesEnum defined.
-      if (getattr(mig['autoscaler'], 'status', False) and mig['autoscaler']
-          .status == client.messages.Autoscaler.StatusValueValuesEnum.ERROR):
-        mig['autoscaled'] = 'yes (*)'
-        had_errors = True
-      else:
-        mig['autoscaled'] = 'yes'
-    else:
-      mig['autoscaled'] = 'no'
+    status = ResolveAutoscalingStatusForMig(client, mig)
+    if status == client.messages.Autoscaler.StatusValueValuesEnum.ERROR:
+      had_errors = True
     augmented_migs.append(mig)
   return (had_errors, augmented_migs)
+
+
+def ResolveAutoscalingStatusForMig(client, mig):
+  """Resolves 'autoscaled' property for MIG.
+
+  Uses 'autoscaler' property of a MIG to resolve 'autoscaled' property for
+  output.
+
+  Args:
+    client: a GCE client
+    mig: IGM resource as a dict
+
+  Returns:
+    Status of autoscaler if MIG is autoscaled. None otherwise.
+  """
+  if 'autoscaler' in mig and mig['autoscaler'] is not None:
+    # status is present in autoscaler iff Autoscaler message has embedded
+    # StatusValueValuesEnum defined.
+    if (hasattr(mig['autoscaler'], 'status') and mig['autoscaler'].status
+        == client.messages.Autoscaler.StatusValueValuesEnum.ERROR):
+      mig['autoscaled'] = 'yes (*)'
+      return mig['autoscaler'].status
+    else:
+      # Assume it to be ACTIVE
+      mig['autoscaled'] = 'yes'
+      return client.messages.Autoscaler.StatusValueValuesEnum.ACTIVE
+  else:
+    mig['autoscaled'] = 'no'
+    return None
 
 
 def _ComputeInstanceGroupSize(items, client, resources):

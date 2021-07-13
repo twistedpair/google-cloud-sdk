@@ -1090,6 +1090,14 @@
             "format": "int64"
           }
         },
+        "sparkMetrics": {
+          "description": "The Spark metrics.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string",
+            "format": "int64"
+          }
+        },
         "yarnMetrics": {
           "description": "The YARN metrics.",
           "type": "object",

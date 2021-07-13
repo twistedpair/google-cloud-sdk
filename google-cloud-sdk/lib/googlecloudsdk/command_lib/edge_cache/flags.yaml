@@ -21,8 +21,6 @@ origin:
   failover_origin:
     arg_name: failover-origin
     api_field: edgeCacheOrigin.failoverOrigin
-    type: googlecloudsdk.command_lib.util.hooks.types:Resource:collection=networkservices.projects.locations.edgeCacheOrigins
-    processor: googlecloudsdk.command_lib.util.hooks.processors:RelativeName
     help_text: |
       Origin resource to try when the current origin cannot be reached. After
       maxAttempts is reached, the configured failoverOrigin will be used to

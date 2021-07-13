@@ -516,11 +516,7 @@ def AddDiskArgs(parser,
   disk_device_name_help = _GetDiskDeviceNameHelp(
       container_mount_enabled=container_mount_enabled)
 
-  AddBootDiskArgs(parser)
-
-  if enable_kms:
-    kms_resource_args.AddKmsKeyResourceArg(
-        parser, 'disk', boot_disk_prefix=True)
+  AddBootDiskArgs(parser, enable_kms)
 
   disk_arg_spec = {
       'name': str,
@@ -573,7 +569,7 @@ def AddDiskArgs(parser,
       help=disk_help)
 
 
-def AddBootDiskArgs(parser):
+def AddBootDiskArgs(parser, enable_kms=False):
   """Adds boot disk args."""
   parser.add_argument(
       '--boot-disk-device-name',
@@ -619,6 +615,10 @@ def AddBootDiskArgs(parser):
       of I/O operations per second that the disk can handle. Value must be
       between 10,000 and 120,000.
       """)
+
+  if enable_kms:
+    kms_resource_args.AddKmsKeyResourceArg(parser, 'disk',
+                                           boot_disk_prefix=True)
 
 
 def AddCreateDiskArgs(parser,

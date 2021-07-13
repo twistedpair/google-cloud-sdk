@@ -2061,7 +2061,7 @@ class ApigeeV1(base_api.BaseApiClient):
           }
 
     def Credit(self, request, global_params=None):
-      r"""Credit the developer balance.
+      r"""Credits the account balance for the developer.
 
       Args:
         request: (ApigeeOrganizationsDevelopersBalanceCreditRequest) input message
@@ -2324,7 +2324,7 @@ class ApigeeV1(base_api.BaseApiClient):
     )
 
     def GetBalance(self, request, global_params=None):
-      r"""Get the balance associated with the developer.
+      r"""Gets the account balance for the developer.
 
       Args:
         request: (ApigeeOrganizationsDevelopersGetBalanceRequest) input message
@@ -2351,7 +2351,7 @@ class ApigeeV1(base_api.BaseApiClient):
     )
 
     def GetMonetizationConfig(self, request, global_params=None):
-      r"""Get monetization configuration for the developer.
+      r"""Gets the monetization configuration for the developer.
 
       Args:
         request: (ApigeeOrganizationsDevelopersGetMonetizationConfigRequest) input message
@@ -2405,7 +2405,7 @@ class ApigeeV1(base_api.BaseApiClient):
     )
 
     def SetDeveloperStatus(self, request, global_params=None):
-      r"""Sets the status of a developer. Valid values are `active` or `inactive`. A developer is `active` by default. If you set a developer's status to `inactive`, the API keys assigned to the developer apps are no longer valid even though the API keys are set to `approved`. Inactive developers can still sign in to the developer portal and create apps; however, any new API keys generated during app creation won't work. If successful, the API call returns the following HTTP status code: `204 No Content`.
+      r"""Sets the status of a developer. A developer is `active` by default. If you set a developer's status to `inactive`, the API keys assigned to the developer apps are no longer valid even though the API keys are set to `approved`. Inactive developers can still sign in to the developer portal and create apps; however, any new API keys generated during app creation won't work. To set the status of a developer, set the `action` query parameter to `active` or `inactive`, and the `Content-Type` header to `application/octet-stream`. If successful, the API call returns the following HTTP status code: `204 No Content`.
 
       Args:
         request: (ApigeeOrganizationsDevelopersSetDeveloperStatusRequest) input message
@@ -2459,7 +2459,7 @@ class ApigeeV1(base_api.BaseApiClient):
     )
 
     def UpdateMonetizationConfig(self, request, global_params=None):
-      r"""Update monetization configuration for the developer.
+      r"""Updates the monetization configuration for the developer.
 
       Args:
         request: (ApigeeOrganizationsDevelopersUpdateMonetizationConfigRequest) input message

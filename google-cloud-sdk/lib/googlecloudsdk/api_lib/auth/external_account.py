@@ -129,9 +129,6 @@ def CredentialsFromAdcDictGoogleAuth(external_config):
         'The credentials configuration has to correspond to either a '
         'URL-sourced, file-sourced or AWS external account credentials.')
 
-  # TODO(b/190738787): remove when google-auth updated, blocked by b/190751748.
-  _InjectProperties(creds, external_config)
-
   # Currently only 3PI workload identity pool credentials with service account
   # impersonation are supported.
   if not creds.service_account_email:
@@ -139,34 +136,3 @@ def CredentialsFromAdcDictGoogleAuth(external_config):
         'Workload identity pools without service account impersonation are not '
         'supported.')
   return creds
-
-
-def _InjectProperties(creds, external_config):
-  """Injects necessary external account related properties on the credentials.
-
-  This includes the configuration itself and the service account email if
-  available. These properties are already implemented in google-auth v1.31.0 but
-  blocked by b/190751748.
-
-  Args:
-    creds (google.auth.external_account.Credentials): The credentials where the
-      properties need to be injected.
-    external_config (Mapping): The configuration dictionary representing the
-      credentials.
-  """
-
-  # Set info property and service_account_email property.
-  # info property is used to facilitate serialization of the credentials.
-  creds.info = external_config
-  creds.service_account_email = None
-
-  if external_config.get('service_account_impersonation_url'):
-    # Update service_account_email if service account impersonation is used.
-    url = external_config.get('service_account_impersonation_url')
-    # Parse email from URL. The formal looks as follows:
-    # https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/name@project-id.iam.gserviceaccount.com:generateAccessToken
-    start_index = url.rfind('/')
-    end_index = url.find(':generateAccessToken')
-    if start_index != -1 and end_index != -1 and start_index < end_index:
-      start_index = start_index + 1
-      creds.service_account_email = url[start_index:end_index]

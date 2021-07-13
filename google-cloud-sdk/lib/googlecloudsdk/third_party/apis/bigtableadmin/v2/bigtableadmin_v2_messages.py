@@ -528,6 +528,38 @@ class BigtableadminProjectsInstancesClustersGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class BigtableadminProjectsInstancesClustersHotTabletsListRequest(_messages.Message):
+  r"""A BigtableadminProjectsInstancesClustersHotTabletsListRequest object.
+
+  Fields:
+    endTime: The end time to list hot tablets.
+    pageSize: Maximum number of results per page. A page_size that is empty or
+      zero lets the server choose the number of items to return. A page_size
+      which is strictly positive will return at most that many items. A
+      negative page_size will cause an error. Following the first request,
+      subsequent paginated calls do not need a page_size field. If a page_size
+      is set in subsequent calls, it must match the page_size given in the
+      first request.
+    pageToken: The value of `next_page_token` returned by a previous call.
+    parent: Required. The cluster name to list hot tablets. Value is in the
+      following form:
+      `projects/{project}/instances/{instance}/clusters/{cluster}`.
+    startTime: The start time to list hot tablets. The hot tablets in the
+      response will have start times between the requested start time and end
+      time. Start time defaults to Now if it is unset, and end time defaults
+      to Now - 24 hours if it is unset. The start time should be less than the
+      end time, and the maximum allowed time range between start time and end
+      time is 48 hours. Start time and end time should have values between Now
+      and Now - 14 days.
+  """
+
+  endTime = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+  startTime = _messages.StringField(5)
+
+
 class BigtableadminProjectsInstancesClustersListRequest(_messages.Message):
   r"""A BigtableadminProjectsInstancesClustersListRequest object.
 
@@ -1547,6 +1579,39 @@ class GetPolicyOptions(_messages.Message):
   requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
+class HotTablet(_messages.Message):
+  r"""A tablet is a defined by a start and end key and is explained in
+  https://cloud.google.com/bigtable/docs/overview#architecture and
+  https://cloud.google.com/bigtable/docs/performance#optimization. A Hot
+  tablet is a tablet that exhibits high average cpu usage during the time
+  interval from start time to end time.
+
+  Fields:
+    endKey: Tablet End Key (inclusive).
+    endTime: Output only. The end time of the hot tablet.
+    name: The unique name of the hot tablet. Values are of the form `projects/
+      {project}/instances/{instance}/clusters/{cluster}/hotTablets/[a-zA-Z0-9_
+      -]*`.
+    nodeCpuUsagePercent: Output only. The average CPU usage spent by a node on
+      this tablet over the start_time to end_time time range. The percentage
+      is the amount of CPU used by the node to serve the tablet, from 0%
+      (tablet was not interacted with) to 100% (the node spent all cycles
+      serving the hot tablet).
+    startKey: Tablet Start Key (inclusive).
+    startTime: Output only. The start time of the hot tablet.
+    tableName: Name of the table that contains the tablet. Values are of the
+      form `projects/{project}/instances/{instance}/tables/_a-zA-Z0-9*`.
+  """
+
+  endKey = _messages.StringField(1)
+  endTime = _messages.StringField(2)
+  name = _messages.StringField(3)
+  nodeCpuUsagePercent = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
+  startKey = _messages.StringField(5)
+  startTime = _messages.StringField(6)
+  tableName = _messages.StringField(7)
+
+
 class Instance(_messages.Message):
   r"""A collection of Bigtable Tables and the resources that serve them. All
   tables in an instance are served from all Clusters in the instance.
@@ -1716,6 +1781,24 @@ class ListClustersResponse(_messages.Message):
   clusters = _messages.MessageField('Cluster', 1, repeated=True)
   failedLocations = _messages.StringField(2, repeated=True)
   nextPageToken = _messages.StringField(3)
+
+
+class ListHotTabletsResponse(_messages.Message):
+  r"""Response message for BigtableInstanceAdmin.ListHotTablets.
+
+  Fields:
+    hotTablets: List of hot tablets in the tables of the requested cluster
+      that fall within the requested time range. Hot tablets are ordered by
+      node cpu usage percent. If there are multiple hot tablets that
+      correspond to the same tablet within a 15-minute interval, only the hot
+      tablet with the highest node cpu usage will be included in the response.
+    nextPageToken: Set if not all hot tablets could be returned in a single
+      response. Pass this value to `page_token` in another request to get the
+      next page of results.
+  """
+
+  hotTablets = _messages.MessageField('HotTablet', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
 
 
 class ListInstancesResponse(_messages.Message):

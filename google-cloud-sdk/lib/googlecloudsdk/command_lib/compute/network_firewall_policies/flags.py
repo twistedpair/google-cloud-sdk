@@ -58,23 +58,10 @@ def AddArgNetworkFirewallPolicyCreation(parser):
       '--description',
       help=('An optional, textual description for the network firewall'
             ' policy.'))
-  parser.add_argument(
-      '--project',
-      help=('Project in which network firewall policies is to be created'))
-
-
-def AddArgsListNetworkFirewallPolicy(parser):
-  """Adds the arguments for firewall policy list."""
-  parser.add_argument(
-      '--project',
-      help=('Project to list network firewall policies from'))
 
 
 def AddArgsUpdateNetworkFirewallPolicy(parser):
   """Adds the arguments  for firewall policy update."""
-  parser.add_argument(
-      '--project',
-      help=('Project in which the network firewall policy is to be updated.'))
   parser.add_argument(
       '--description',
       help=('An optional, textual description for the network firewall'

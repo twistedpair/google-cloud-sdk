@@ -119,7 +119,8 @@ def _get_full_bucket_metadata_string(resource):
   else:
     optional_retention_policy_line = ''
 
-  if resource.metadata.defaultEventBasedHold is not None:
+  if resource.metadata.defaultEventBasedHold:
+    # Boolean. Only show for True.
     optional_default_event_based_hold_line = (
         resource_util.get_padded_metadata_key_value_line(
             'Default Event-Based Hold',

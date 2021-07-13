@@ -68,8 +68,6 @@ You may view the status of your operation with the command
 
 DEFAULT_OPERATION_COLLECTION = 'aiplatform.projects.locations.operations'
 
-CUSTOM_JOB_COLLECTION = 'aiplatform.projects.locations.customJobs'
-
 ENDPOINTS_COLLECTION = 'aiplatform.projects.locations.endpoints'
 
 INDEX_ENDPOINTS_COLLECTION = 'aiplatform.projects.locations.indexEndpoints'

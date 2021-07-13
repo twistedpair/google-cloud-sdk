@@ -283,6 +283,18 @@ def HasSubsettingArgs(args):
   return args.IsSpecified('subsetting_policy')
 
 
+def HasSubsettingSubsetSizeArgs(args):
+  """Returns true if request requires a Subsetting.subset_size field.
+
+  Args:
+    args: The arguments passed to the gcloud command.
+
+  Returns:
+    True if request requires a Subsetting.subset_size field.
+  """
+  return args.IsSpecified('subsetting_subset_size')
+
+
 def HasCacheKeyPolicyArgsForUpdate(args):
   """Returns true if update request requires a CacheKeyPolicy message.
 
@@ -326,13 +338,14 @@ def GetCacheKeyPolicy(client, args, backend_service):
   return cache_key_policy
 
 
-def ApplySubsettingArgs(client, args, backend_service):
+def ApplySubsettingArgs(client, args, backend_service, use_subset_size):
   """Applies the Subsetting argument(s) to the specified backend service.
 
   Args:
     client: The client used by gcloud.
     args: The arguments passed to the gcloud command.
     backend_service: The backend service object.
+    use_subset_size: Should Subsetting.subset_size be used?
   """
   subsetting_args = {}
   add_subsetting = HasSubsettingArgs(args)
@@ -340,6 +353,8 @@ def ApplySubsettingArgs(client, args, backend_service):
     subsetting_args[
         'policy'] = client.messages.Subsetting.PolicyValueValuesEnum(
             args.subsetting_policy)
+    if use_subset_size and HasSubsettingSubsetSizeArgs(args):
+      subsetting_args['subsetSize'] = args.subsetting_subset_size
   if subsetting_args:
     backend_service.subsetting = client.messages.Subsetting(**subsetting_args)
 

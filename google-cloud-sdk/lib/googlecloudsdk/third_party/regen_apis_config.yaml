@@ -654,6 +654,9 @@ apis:
     v1:
       discovery_doc: healthcare_v1.json
       default: true
+      resources:
+        projects.locations.services.nlp:
+          path: projects/{projectsId}/locations/{locationsId}/services/nlp
   kubernetesedge:
     v1alpha1:
       discovery_doc: kubernetesedge_v1alpha1.json
@@ -826,6 +829,9 @@ apis:
   networkconnectivity:
     v1alpha1:
       discovery_doc: networkconnectivity_v1alpha1.json
+      default: true
+    v1:
+      discovery_doc: networkconnectivity_v1.json
   networkmanagement:
     v1:
       discovery_doc: networkmanagement_v1.json
@@ -876,6 +882,8 @@ apis:
           path: iam
       discovery_doc: policytroubleshooter_v2alpha1.json
   policyanalyzer:
+    v1:
+      discovery_doc: policyanalyzer_v1.json
     v1beta1:
       default: true
       discovery_doc: policyanalyzer_v1beta1.json

@@ -113,6 +113,15 @@ GLOBAL_REGIONAL_BACKEND_SERVICE_ARG = compute_flags.ResourceArgument(
     global_collection='compute.backendServices')
 
 
+GLOBAL_REGIONAL_BACKEND_SERVICE_NOT_REQUIRED_ARG = compute_flags.ResourceArgument(
+    name='backend_service_name',
+    required=False,
+    resource_name='backend service',
+    completer=BackendServicesCompleter,
+    regional_collection='compute.regionBackendServices',
+    global_collection='compute.backendServices')
+
+
 GLOBAL_REGIONAL_MULTI_BACKEND_SERVICE_ARG = compute_flags.ResourceArgument(
     name='backend_service_name',
     resource_name='backend service',
@@ -273,6 +282,18 @@ def AddConnectionTrackingPolicy(parser):
       help="""\
       Specifies how long to keep a connection tracking table entry while there
       is no matching traffic (in seconds).
+      """)
+
+
+def AddSubsettingSubsetSize(parser):
+  parser.add_argument(
+      '--subsetting-subset-size',
+      type=int,
+      help="""\
+      Number of backends per backend group assigned to each proxy instance
+      or each service mesh client. Can only be set if subsetting policy is
+      CONSISTENT_HASH_SUBSETTING and load balancing scheme is either
+      INTERNAL_MANAGED or INTERNAL_SELF_MANAGED.
       """)
 
 

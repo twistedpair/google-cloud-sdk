@@ -22432,6 +22432,34 @@
                   ],
                   "description": "Perform an online prediction."
                 },
+                "predictInternal": {
+                  "id": "aiplatform.projects.locations.endpoints.predictInternal",
+                  "path": "v1alpha1/{+endpoint}:predictInternal",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/endpoints/{endpointsId}:predictInternal",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "endpoint": {
+                      "description": "Required. The name of the Endpoint requested to serve the prediction. Format: `projects\/{project}\/locations\/{location}\/endpoints\/{endpoint}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/endpoints\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "endpoint"
+                  ],
+                  "request": {
+                    "$ref": "GoogleCloudAiplatformV1alpha1PredictRequest"
+                  },
+                  "response": {
+                    "$ref": "GoogleCloudAiplatformV1alpha1PredictResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Perform an online prediction."
+                },
                 "explain": {
                   "id": "aiplatform.projects.locations.endpoints.explain",
                   "path": "v1alpha1/{+endpoint}:explain",

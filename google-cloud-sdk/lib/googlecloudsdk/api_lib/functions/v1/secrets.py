@@ -19,9 +19,20 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import collections
+import re
 
 from googlecloudsdk.api_lib.functions.v1 import util
 import six
+
+
+_SECRET_VERSION_RESOURCE_PATTERN = re.compile(
+    '^projects/(?P<project>[^/]+)/secrets/(?P<secret>[^/]+)'
+    '/versions/(?P<version>[^/]+)$')
+
+
+def _GetSecretVersionResource(project, secret, version):
+  return 'projects/{project}/secrets/{secret}/versions/{version}'.format(
+      project=project or '*', secret=secret, version=version)
 
 
 def GetSecretsAsDict(function):
@@ -36,35 +47,52 @@ def GetSecretsAsDict(function):
   secrets_dict = {}
   if function.secretEnvironmentVariables:
     secrets_dict.update({
-        secret_env_var.key:
-        (secret_env_var.secret + ':' + secret_env_var.version)
-        for secret_env_var in function.secretEnvironmentVariables
+        sev.key: _GetSecretVersionResource(sev.projectId, sev.secret,
+                                           sev.version)
+        for sev in function.secretEnvironmentVariables
     })
   if function.secretVolumes:
     for secret_volume in function.secretVolumes:
       mount_path = secret_volume.mountPath
+      project = secret_volume.projectId
       secret = secret_volume.secret
       if secret_volume.versions:
         for version in secret_volume.versions:
-          secret_version = version.version
-          secret_file_path = version.path
-          secrets_config_key = mount_path + ':' + secret_file_path
-          secrets_config_value = secret + ':' + secret_version
+          secrets_config_key = mount_path + ':' + version.path
+          secrets_config_value = _GetSecretVersionResource(
+              project, secret, version.version)
           secrets_dict[secrets_config_key] = secrets_config_value
       else:
         secrets_config_key = mount_path + ':/' + secret
-        secrets_config_value = secret + ':latest'
+        secrets_config_value = _GetSecretVersionResource(
+            project, secret, 'latest')
         secrets_dict[secrets_config_key] = secrets_config_value
   return collections.OrderedDict(sorted(six.iteritems(secrets_dict)))
 
 
-def SecretEnvVarsToMessages(secret_env_vars_dict, project):
+def _ParseSecretRef(secret_ref):
+  """Splits a secret version resource into its components.
+
+  Args:
+    secret_ref: Secret version resource reference.
+
+  Returns:
+    A dict with entries for project, secret and version.
+  """
+  secret_ref_match = _SECRET_VERSION_RESOURCE_PATTERN.search(secret_ref)
+  return {
+      'project': secret_ref_match.group('project'),
+      'secret': secret_ref_match.group('secret'),
+      'version': secret_ref_match.group('version'),
+  }
+
+
+def SecretEnvVarsToMessages(secret_env_vars_dict):
   """Converts secrets from dict to cloud function SecretEnvVar message list.
 
   Args:
     secret_env_vars_dict: Secret environment variables configuration dict.
       Prefers a sorted ordered dict for consistency.
-    project: Project id of project that hosts the secret.
 
   Returns:
     A list of cloud function SecretEnvVar message.
@@ -73,24 +101,22 @@ def SecretEnvVarsToMessages(secret_env_vars_dict, project):
   messages = util.GetApiMessagesModule()
   for secret_env_var_key, secret_env_var_value in six.iteritems(
       secret_env_vars_dict):
-    secret = secret_env_var_value.split(':')[0]
-    version = secret_env_var_value.split(':')[1]
+    secret_ref = _ParseSecretRef(secret_env_var_value)
     secret_environment_variables.append(
         messages.SecretEnvVar(
             key=secret_env_var_key,
-            projectId=project,
-            secret=secret,
-            version=version))
+            projectId=secret_ref['project'],
+            secret=secret_ref['secret'],
+            version=secret_ref['version']))
   return secret_environment_variables
 
 
-def SecretVolumesToMessages(secret_volumes_dict, project):
+def SecretVolumesToMessages(secret_volumes_dict):
   """Converts secrets from dict to cloud function SecretVolume message list.
 
   Args:
     secret_volumes_dict: Secrets volumes configuration dict. Prefers a sorted
       ordered dict for consistency.
-    project: Project id of project that hosts the secret.
 
   Returns:
     A list of cloud function SecretVolume message.
@@ -102,16 +128,17 @@ def SecretVolumesToMessages(secret_volumes_dict, project):
       secret_volumes_dict):
     mount_path = secret_volume_key.split(':')[0]
     secret_file_path = secret_volume_key.split(':')[1]
-    secret = secret_volume_value.split(':')[0]
-    version = secret_volume_value.split(':')[1]
+    secret_ref = _ParseSecretRef(secret_volume_value)
     mount_path_to_secrets[mount_path].append({
         'path': secret_file_path,
-        'secret': secret,
-        'version': version
+        'project': secret_ref['project'],
+        'secret': secret_ref['secret'],
+        'version': secret_ref['version']
     })
   mount_path_to_secrets = collections.OrderedDict(
       sorted(six.iteritems(mount_path_to_secrets)))
   for mount_path, secret_path_values in six.iteritems(mount_path_to_secrets):
+    project = secret_path_values[0]['project']
     secret = secret_path_values[0]['secret']
     secret_version_messages = []
     for secret_path_value in secret_path_values:

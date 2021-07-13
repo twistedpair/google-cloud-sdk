@@ -2245,6 +2245,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def PredictInternal(self, request, global_params=None):
+      r"""Perform an online prediction.
+
+      Args:
+        request: (AiplatformProjectsLocationsEndpointsPredictInternalRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1PredictResponse) The response message.
+      """
+      config = self.GetMethodConfig('PredictInternal')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    PredictInternal.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/endpoints/{endpointsId}:predictInternal',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.endpoints.predictInternal',
+        ordered_params=['endpoint'],
+        path_params=['endpoint'],
+        query_params=[],
+        relative_path='v1beta1/{+endpoint}:predictInternal',
+        request_field='googleCloudAiplatformV1beta1PredictRequest',
+        request_type_name='AiplatformProjectsLocationsEndpointsPredictInternalRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1PredictResponse',
+        supports_download=False,
+    )
+
     def UndeployModel(self, request, global_params=None):
       r"""Undeploys a Model from an Endpoint, removing a DeployedModel from it, and freeing all resources it's using.
 
@@ -4292,6 +4319,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Delete(self, request, global_params=None):
+      r"""Deletes an Artifact.
+
+      Args:
+        request: (AiplatformProjectsLocationsMetadataStoresArtifactsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/metadataStores/{metadataStoresId}/artifacts/{artifactsId}',
+        http_method='DELETE',
+        method_id='aiplatform.projects.locations.metadataStores.artifacts.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['etag'],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsMetadataStoresArtifactsDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Retrieves a specific Artifact.
 
@@ -4687,6 +4741,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         request_field='googleCloudAiplatformV1beta1Execution',
         request_type_name='AiplatformProjectsLocationsMetadataStoresExecutionsCreateRequest',
         response_type_name='GoogleCloudAiplatformV1beta1Execution',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes an Execution.
+
+      Args:
+        request: (AiplatformProjectsLocationsMetadataStoresExecutionsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/metadataStores/{metadataStoresId}/executions/{executionsId}',
+        http_method='DELETE',
+        method_id='aiplatform.projects.locations.metadataStores.executions.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['etag'],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsMetadataStoresExecutionsDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 

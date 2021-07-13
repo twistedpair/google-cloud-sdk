@@ -277,8 +277,11 @@ class ComposerProjectsLocationsEnvironmentsPatchRequest(_messages.Message):
       version downgrade and must match the current image version's Composer
       major version and Airflow major and minor versions. Consult the Cloud
       Composer Version List for valid values. *
-      config.databaseConfig.machineType * Cloud SQL machine type used by
-      Airflow database. It has to be one of: db-n1-standard-2,
+      config.softwareConfig.schedulerCount * Horizontally scale the number of
+      schedulers in Airflow. A positive integer not greater than the number of
+      nodes must be provided in the `config.softwareConfig.schedulerCount`
+      field. * config.databaseConfig.machineType * Cloud SQL machine type used
+      by Airflow database. It has to be one of: db-n1-standard-2,
       db-n1-standard-4, db-n1-standard-8 or db-n1-standard-16. *
       config.webServerConfig.machineType * Machine type on which Airflow web
       server is running. It has to be one of: composer-n1-webserver-2,
@@ -797,7 +800,7 @@ class NodeConfig(_messages.Message):
       ["https://www.googleapis.com/auth/cloud-platform"]. Cannot be updated.
     serviceAccount: Optional. The Google Cloud Platform Service Account to be
       used by the workloads. If a service account is not specified, the
-      "default" Compute Engine service account is used. Cannot be updated .
+      "default" Compute Engine service account is used. Cannot be updated.
     subnetwork: Optional. The Compute Engine subnetwork to be used for machine
       communications, specified as a [relative resource
       name](/apis/design/resource_names#relative_resource_name). For example:

@@ -493,6 +493,10 @@ def MakeRequestsAndGetStatusPerInstanceFromOperation(client, requests,
             'status': 'FAIL'
         })
     else:
+      # Mimicking default logging in request_helper.
+      if operation.targetLink:
+        log.status.write('Updated [{0}].\n'.format(operation.targetLink))
+
       skipped_instances = ExtractSkippedInstancesAndCollectOtherWarnings(
           operation, warnings_to_collect)
 

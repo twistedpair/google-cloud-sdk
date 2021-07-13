@@ -28384,12 +28384,15 @@ class DeprecationStatus(_messages.Message):
       a warning indicating the deprecated resource and recommending its
       replacement. Operations which use OBSOLETE or DELETED resources will be
       rejected and result in an error.
-    stateOverride: The rollout policy of this deprecation. This policy is only
-      enforced by image family views. The rollout policy restricts the zones
-      where the associated resource is considered in a deprecated state. When
-      the rollout policy does not include the user specified zone, or if the
-      zone is rolled out, the associated resource is considered in a
-      deprecated state.
+    stateOverride: The rollout policy for this deprecation. This policy is
+      only enforced by image family views. The rollout policy restricts the
+      zones where the associated resource is considered in a deprecated state.
+      When the rollout policy does not include the user specified zone, or if
+      the zone is rolled out, the associated resource is considered in a
+      deprecated state.  The rollout policy for this deprecation is read-only,
+      except for allowlisted users. This field might not be configured. To
+      view the latest non-deprecated image in a specific zone, use the
+      imageFamilyViews.get method.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -35188,7 +35191,10 @@ class Image(_messages.Message):
       associated image family. The rollout policy restricts the zones where
       this image is accessible when using a zonal image family reference. When
       the rollout policy does not include the user specified zone, or if the
-      zone is rolled out, this image is accessible.
+      zone is rolled out, this image is accessible.  The rollout policy for
+      this image is read-only, except for allowlisted users. This field might
+      not be configured. To view the latest non-deprecated image in a specific
+      zone, use the imageFamilyViews.get method.
     satisfiesPzs: [Output Only] Reserved for future use.
     selfLink: [Output Only] Server-defined URL for the resource.
     selfLinkWithId: [Output Only] Server-defined URL for this resource's
@@ -41594,7 +41600,7 @@ class InterconnectMacsecPreSharedKey(_messages.Message):
       startTime can be in the future. If the keychain has a single key,
       startTime can be omitted. If the keychain has multiple keys, startTime
       is mandatory for each key. The start times of keys must be in increasing
-      order. The start times of two consecutive keys must be at least an hour
+      order. The start times of two consecutive keys must be at least 6 hours
       apart.
   """
 

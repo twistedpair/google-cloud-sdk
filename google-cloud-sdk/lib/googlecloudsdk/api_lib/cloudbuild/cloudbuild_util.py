@@ -222,7 +222,11 @@ def MessageToFieldPaths(msg):
       # Repeated field is initialized as an empty list.
       continue
     if v is not None:
-      name = resource_property.ConvertToSnakeCase(field.name)
+      # ConvertToSnakeCase produces private_poolv1_config.
+      if field.name == 'privatePoolV1Config':
+        name = 'private_pool_v1_config'
+      else:
+        name = resource_property.ConvertToSnakeCase(field.name)
       if hasattr(v, 'all_fields'):
         # message has sub-messages, constructing subpaths.
         for f in MessageToFieldPaths(v):

@@ -973,6 +973,11 @@
             "COMPROMISED",
             "UNCOMPROMISED"
           ]
+        },
+        "endpointVerificationSpecificAttributes": {
+          "description": "Output only. Attributes specific to Endpoint Verification (SecureConnect) devices.",
+          "readOnly": true,
+          "$ref": "EndpointVerificationSpecificAttributes"
         }
       }
     },
@@ -1008,6 +1013,71 @@
             "PROFILE_OWNER",
             "DEVICE_OWNER"
           ]
+        }
+      }
+    },
+    "EndpointVerificationSpecificAttributes": {
+      "id": "EndpointVerificationSpecificAttributes",
+      "description": "Resource representing the Endpoint Verification specific attributes of a Device.",
+      "type": "object",
+      "properties": {
+        "certificateInfo": {
+          "description": "Details of certificates reported by SecureConnect.",
+          "type": "array",
+          "items": {
+            "$ref": "CertificateInfo"
+          }
+        }
+      }
+    },
+    "CertificateInfo": {
+      "id": "CertificateInfo",
+      "description": "Stores information about a certificate.",
+      "type": "object",
+      "properties": {
+        "certificateFingerprint": {
+          "description": "The encoded certificate fingerprint.",
+          "type": "string"
+        },
+        "certificateThumbprint": {
+          "description": "The certificate thumbprint.",
+          "type": "string"
+        },
+        "certificateValidationState": {
+          "description": "Validation state of this certificate.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value.",
+            "Certificate validation was successful.",
+            "Certificate validation failed."
+          ],
+          "enum": [
+            "CERTIFICATE_VALIDATION_STATE_UNSPECIFIED",
+            "VALIDATION_SUCCESSFUL",
+            "VALIDATION_FAILED"
+          ]
+        },
+        "serialNumber": {
+          "description": "Serial number of the certificate, Example: \"123456789\".",
+          "type": "string"
+        },
+        "validityStartTime": {
+          "description": "Certificate not valid before this timestamp.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "validityExpirationTime": {
+          "description": "Certificate not valid after at and after this timestamp.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "issuer": {
+          "description": "The name of the issuer of this certificate.",
+          "type": "string"
+        },
+        "subject": {
+          "description": "The subject name of this certificate.",
+          "type": "string"
         }
       }
     },

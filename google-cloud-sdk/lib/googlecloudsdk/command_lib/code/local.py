@@ -123,8 +123,29 @@ class BuildpackBuilder(DataObject):
 
 
 class DockerfileBuilder(DataObject):
+  """Data for a request to build with an existing Dockerfile."""
 
+  # The 'dockerfile' attribute may be relative to the Settings.context dir or
+  # it may be an absolute path. Note that Settings.context is determined later
+  # than this instance is made, so it has to be passed into the methods below.
   NAMES = ('dockerfile',)
+
+  def DockerfileAbsPath(self, context):
+    return os.path.abspath(os.path.join(context, self.dockerfile))
+
+  def DockerfileRelPath(self, context):
+    return os.path.relpath(self.DockerfileAbsPath(context), context)
+
+  def Validate(self, context):
+    complete_path = self.DockerfileAbsPath(context)
+    if os.path.commonprefix([context, complete_path]) != context:
+      raise InvalidLocationError(
+          'Invalid Dockerfile path. Dockerfile must be located in the build '
+          'context directory.\n'
+          'Dockerfile: {0}\n'
+          'Build Context Directory: {1}'.format(complete_path, context))
+    if not os.path.exists(complete_path):
+      raise InvalidLocationError(complete_path + ' does not exist.')
 
 
 def _GaeBuilderPackagePath(runtime):
@@ -186,8 +207,7 @@ class Settings(DataObject):
     image = _DefaultImageName(service_name)
 
     dockerfile_arg_default = 'Dockerfile'
-    builder = DockerfileBuilder(
-        dockerfile=os.path.abspath(dockerfile_arg_default))
+    builder = DockerfileBuilder(dockerfile=dockerfile_arg_default)
 
     return cls(
         builder=builder,
@@ -205,8 +225,6 @@ class Settings(DataObject):
     knative_service = k8s_service.Service(message, RUN_MESSAGES_MODULE)
 
     replacements = {}
-    # Planned attributes in
-    # http://doc/1ah6LB9we-FSEhcBZ7_4XQlnOPClTyyQW_O3Q5WNUuJc#bookmark=id.j3st2l8a3s19
     try:
       [container] = knative_service.spec.template.spec.containers
     except ValueError:
@@ -220,7 +238,20 @@ class Settings(DataObject):
       replacements['credential'] = ServiceAccountSetting(
           name=service_account_name)
 
+    replacements.update(self._ResourceRequests(container))
+
     return self.replace(**replacements)
+
+  def _ResourceRequests(self, container):
+    if not container.resources or not container.resources.limits:
+      return {}
+    ret = {}
+    for prop in container.resources.limits.additionalProperties:
+      if prop.key == 'cpu':
+        ret['cpu'] = prop.value
+      if prop.key == 'memory':
+        ret['memory'] = prop.value
+    return ret
 
   def WithArgs(self, args):
     """Overrides settings with args and returns a new Settings object."""
@@ -263,8 +294,7 @@ class Settings(DataObject):
         context = replacements.get('context', self.context)
         replacements['builder'] = _GaeBuilder(context)
       elif args.IsKnownAndSpecified('dockerfile'):
-        replacements['builder'] = DockerfileBuilder(
-            dockerfile=os.path.abspath(args.dockerfile))
+        replacements['builder'] = DockerfileBuilder(dockerfile=args.dockerfile)
 
     if getattr(args, 'env_vars', None):
       replacements['env_vars'] = args.env_vars
@@ -275,22 +305,35 @@ class Settings(DataObject):
 
   def Validate(self):
     if isinstance(self.builder, DockerfileBuilder):
-      _CheckDockerfilePath(self.builder.dockerfile, self.context)
+      self.builder.Validate(self.context)
 
 
-def _ChooseExistingServiceYaml(arg):
-  """Rules for choosing a service.yaml file depending on SERVICE_CONFIG arg."""
+def _ChooseExistingServiceYaml(context, arg):
+  """Rules for choosing a service.yaml file depending on SERVICE_CONFIG arg.
+
+  The rules are meant to discover common filename variants like
+  'service.dev.yml' or 'staging-service.yaml'.
+
+  Args:
+    context: Build context dir. Could be '.'.
+    arg: User's path (relative to context or absolute) to a yaml file with a
+      knative Service description, or None.
+
+  Returns:
+    Absolute path to a yaml file, or None.
+  """
   if arg is not None:
-    if os.path.exists(arg):
-      return arg
-    raise ValueError("file '{}' not found".format(arg))
+    complete_abs_path = os.path.abspath(os.path.join(context, arg))
+    if os.path.exists(complete_abs_path):
+      return complete_abs_path
+    raise ValueError("file '{}' not found".format(complete_abs_path))
   for pattern in [
       '*service.dev.yaml',
       '*service.dev.yml',
       '*service.yaml',
       '*service.yml',
   ]:
-    matches = glob.glob(pattern)
+    matches = glob.glob(os.path.join(context, pattern))
     if matches:
       return sorted(matches)[0]
   return None
@@ -299,7 +342,9 @@ def _ChooseExistingServiceYaml(arg):
 def AssembleSettings(args):
   """Layer the default values, service.yaml values, and cmdline overrides."""
   settings = Settings.Defaults()
-  yaml_file = _ChooseExistingServiceYaml(getattr(args, 'service_config', None))
+  yaml_file = _ChooseExistingServiceYaml(
+      getattr(args, 'source', None) or os.path.curdir,
+      getattr(args, 'service_config', None))
   if yaml_file:
     settings = settings.WithServiceYaml(yaml_file)
   settings = settings.WithArgs(args)
@@ -308,7 +353,7 @@ def AssembleSettings(args):
 
 
 def _DefaultImageName(service_name):
-  """Computes a default iamge name."""
+  """Computes a default image name."""
   project_name = properties.VALUES.core.project.Get()
   if project_name:
     image = 'gcr.io/{project}/{service}'.format(
@@ -339,18 +384,6 @@ def _GaeBuilder(context):
   service_config = yaml_parsing.ServiceYamlInfo.FromFile(app_yaml_str)
   builder = _GaeBuilderPackagePath(service_config.parsed.runtime)
   return BuildpackBuilder(builder=builder, trust=True, devmode=False)
-
-
-def _CheckDockerfilePath(dockerfile, context):
-  if os.path.commonprefix([context, dockerfile]) != context:
-    raise InvalidLocationError(
-        'Invalid Dockerfile path. Dockerfile must be located in the build '
-        'context directory.\n'
-        'Dockerfile: {0}\n'
-        'Build Context Directory: {1}'.format(dockerfile, context))
-  if not os.path.exists(dockerfile):
-    raise InvalidLocationError(dockerfile + ' does not exist.')
-  return dockerfile
 
 
 _POD_TEMPLATE = """

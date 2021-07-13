@@ -119,16 +119,45 @@ def AddFunctionMemoryFlag(parser):
       memory limit unless you specify this flag.""")
 
 
-def AddFunctionTimeoutFlag(parser):
-  """Add flag for specifying function timeout to the parser."""
-  parser.add_argument(
-      '--timeout',
-      help="""\
+def ValidateV1TimeoutFlag(args):
+  if args.timeout and args.timeout > 540:
+    raise arg_parsers.ArgumentTypeError(
+        '--timeout: value must be less than or equal to 540s; received: {}s'
+        .format(args.timeout))
+
+
+def AddFunctionTimeoutFlag(parser, track=None):
+  """Add flag for specifying function timeout to the parser.
+
+  Args:
+    parser: the argparse parser for the command.
+    track: base.ReleaseTrack, calliope release track.
+
+  Returns:
+    None
+  """
+
+  ga_help_text = """\
       The function execution timeout, e.g. 30s for 30 seconds. Defaults to
       original value for existing function or 60 seconds for new functions.
       Cannot be more than 540s.
-      See $ gcloud topic datetimes for information on duration formats.""",
-      type=arg_parsers.Duration(lower_bound='1s', upper_bound='540s'))
+      See $ gcloud topic datetimes for information on duration formats."""
+
+  alpha_help_text = """\
+      The function execution timeout, e.g. 30s for 30 seconds. Defaults to
+      original value for existing function or 60 seconds for new functions.
+
+      For GCF v1 functions, cannot be more than 540s.
+
+      For GCF v2 functions, cannot be more than 3600s.
+
+      See $ gcloud topic datetimes for information on duration formats."""
+
+  parser.add_argument(
+      '--timeout',
+      help=ga_help_text
+      if track is not base.ReleaseTrack.ALPHA else alpha_help_text,
+      type=arg_parsers.Duration(lower_bound='1s'))
 
 
 def AddFunctionRetryFlag(parser):

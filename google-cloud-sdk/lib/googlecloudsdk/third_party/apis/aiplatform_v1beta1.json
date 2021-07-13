@@ -1986,6 +1986,10 @@
           "description": "Each read instance consists of exactly one read timestamp and one or more entity IDs identifying entities of the corresponding EntityTypes whose Features are requested. Each output instance contains Feature values of requested entities concatenated together as of the read time. An example read instance may be `foo_entity_id, bar_entity_id, 2020-01-01T10:00:00.123Z`. An example output instance may be `foo_entity_id, bar_entity_id, 2020-01-01T10:00:00.123Z, foo_entity_feature1_value, bar_entity_feature2_value`. Timestamp in each read instance must be millisecond-aligned. `csv_read_instances` are read instances stored in a plain-text CSV file. The header should be: [ENTITY_TYPE_ID1], [ENTITY_TYPE_ID2], ..., timestamp The columns can be in any order. Values in the timestamp column must use the RFC 3339 format, e.g. `2012-07-30T10:43:17.123Z`.",
           "$ref": "GoogleCloudAiplatformV1beta1CsvSource"
         },
+        "bigqueryReadInstances": {
+          "description": "Similar to csv_read_instances, but from BigQuery source.",
+          "$ref": "GoogleCloudAiplatformV1beta1BigQuerySource"
+        },
         "destination": {
           "description": "Required. Specifies output location and format.",
           "$ref": "GoogleCloudAiplatformV1beta1FeatureValueDestination"
@@ -22075,6 +22079,34 @@
                   ],
                   "description": "Perform an online prediction."
                 },
+                "predictInternal": {
+                  "id": "aiplatform.projects.locations.endpoints.predictInternal",
+                  "path": "v1beta1/{+endpoint}:predictInternal",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/endpoints/{endpointsId}:predictInternal",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "endpoint": {
+                      "description": "Required. The name of the Endpoint requested to serve the prediction. Format: `projects\/{project}\/locations\/{location}\/endpoints\/{endpoint}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/endpoints\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "endpoint"
+                  ],
+                  "request": {
+                    "$ref": "GoogleCloudAiplatformV1beta1PredictRequest"
+                  },
+                  "response": {
+                    "$ref": "GoogleCloudAiplatformV1beta1PredictResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Perform an online prediction."
+                },
                 "explain": {
                   "id": "aiplatform.projects.locations.endpoints.explain",
                   "path": "v1beta1/{+endpoint}:explain",
@@ -25920,6 +25952,36 @@
                       ],
                       "description": "Updates a stored Artifact."
                     },
+                    "delete": {
+                      "id": "aiplatform.projects.locations.metadataStores.artifacts.delete",
+                      "path": "v1beta1/{+name}",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/metadataStores/{metadataStoresId}/artifacts/{artifactsId}",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The resource name of the Artifact to delete. Format: projects\/{project}\/locations\/{location}\/metadataStores\/{metadatastore}\/artifacts\/{artifact}",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/metadataStores\/[^\/]+\/artifacts\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "etag": {
+                          "description": "Optional. The etag of the Artifact to delete. If this is provided, it must match the server's etag. Otherwise, the request will fail with a FAILED_PRECONDITION.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleLongrunningOperation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Deletes an Artifact."
+                    },
                     "queryArtifactLineageSubgraph": {
                       "id": "aiplatform.projects.locations.metadataStores.artifacts.queryArtifactLineageSubgraph",
                       "path": "v1beta1/{+artifact}:queryArtifactLineageSubgraph",
@@ -26105,14 +26167,14 @@
                       "httpMethod": "DELETE",
                       "parameters": {
                         "name": {
-                          "description": "Required. The resource name of the Context to retrieve. Format: projects\/{project}\/locations\/{location}\/metadataStores\/{metadatastore}\/contexts\/{context}",
+                          "description": "Required. The resource name of the Context to delete. Format: projects\/{project}\/locations\/{location}\/metadataStores\/{metadatastore}\/contexts\/{context}",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/metadataStores\/[^\/]+\/contexts\/[^\/]+$",
                           "location": "path",
                           "required": true,
                           "type": "string"
                         },
                         "force": {
-                          "description": "If set to true, any child resources of this Context will be deleted. (Otherwise, the request will fail with a FAILED_PRECONDITION error if the Context has any child resources, such as another Context, Artifact, or Execution).",
+                          "description": "The force deletion semantics is still undefined. Users should not use this field.",
                           "location": "query",
                           "type": "boolean"
                         },
@@ -26355,6 +26417,36 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Updates a stored Execution."
+                    },
+                    "delete": {
+                      "id": "aiplatform.projects.locations.metadataStores.executions.delete",
+                      "path": "v1beta1/{+name}",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/metadataStores/{metadataStoresId}/executions/{executionsId}",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The resource name of the Execution to delete. Format: projects\/{project}\/locations\/{location}\/metadataStores\/{metadatastore}\/executions\/{execution}",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/metadataStores\/[^\/]+\/executions\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "etag": {
+                          "description": "Optional. The etag of the Execution to delete. If this is provided, it must match the server's etag. Otherwise, the request will fail with a FAILED_PRECONDITION.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleLongrunningOperation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Deletes an Execution."
                     },
                     "addExecutionEvents": {
                       "id": "aiplatform.projects.locations.metadataStores.executions.addExecutionEvents",

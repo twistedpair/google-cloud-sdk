@@ -25014,6 +25014,15 @@ class DeprecationStatus(_messages.Message):
       a warning indicating the deprecated resource and recommending its
       replacement. Operations which use OBSOLETE or DELETED resources will be
       rejected and result in an error.
+    stateOverride: The rollout policy for this deprecation. This policy is
+      only enforced by image family views. The rollout policy restricts the
+      zones where the associated resource is considered in a deprecated state.
+      When the rollout policy does not include the user specified zone, or if
+      the zone is rolled out, the associated resource is considered in a
+      deprecated state.  The rollout policy for this deprecation is read-only,
+      except for allowlisted users. This field might not be configured. To
+      view the latest non-deprecated image in a specific zone, use the
+      imageFamilyViews.get method.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -25041,6 +25050,7 @@ class DeprecationStatus(_messages.Message):
   obsolete = _messages.StringField(3)
   replacement = _messages.StringField(4)
   state = _messages.EnumField('StateValueValuesEnum', 5)
+  stateOverride = _messages.MessageField('RolloutPolicy', 6)
 
 
 class Disk(_messages.Message):
@@ -30783,6 +30793,15 @@ class Image(_messages.Message):
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
     rawDisk: The parameters of the raw disk image.
+    rolloutOverride: A rollout policy to apply to this image. When specified,
+      the rollout policy overrides per-zone references to the image via the
+      associated image family. The rollout policy restricts the zones where
+      this image is accessible when using a zonal image family reference. When
+      the rollout policy does not include the user specified zone, or if the
+      zone is rolled out, this image is accessible.  The rollout policy for
+      this image is read-only, except for allowlisted users. This field might
+      not be configured. To view the latest non-deprecated image in a specific
+      zone, use the imageFamilyViews.get method.
     satisfiesPzs: [Output Only] Reserved for future use.
     selfLink: [Output Only] Server-defined URL for the resource.
     shieldedInstanceInitialState: Set the secure boot keys of shielded
@@ -30941,22 +30960,23 @@ class Image(_messages.Message):
   licenses = _messages.StringField(14, repeated=True)
   name = _messages.StringField(15)
   rawDisk = _messages.MessageField('RawDiskValue', 16)
-  satisfiesPzs = _messages.BooleanField(17)
-  selfLink = _messages.StringField(18)
-  shieldedInstanceInitialState = _messages.MessageField('InitialStateConfig', 19)
-  sourceDisk = _messages.StringField(20)
-  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 21)
-  sourceDiskId = _messages.StringField(22)
-  sourceImage = _messages.StringField(23)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 24)
-  sourceImageId = _messages.StringField(25)
-  sourceSnapshot = _messages.StringField(26)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 27)
-  sourceSnapshotId = _messages.StringField(28)
-  sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 29, default='RAW')
-  status = _messages.EnumField('StatusValueValuesEnum', 30)
-  storageLocations = _messages.StringField(31, repeated=True)
-  userLicenses = _messages.StringField(32, repeated=True)
+  rolloutOverride = _messages.MessageField('RolloutPolicy', 17)
+  satisfiesPzs = _messages.BooleanField(18)
+  selfLink = _messages.StringField(19)
+  shieldedInstanceInitialState = _messages.MessageField('InitialStateConfig', 20)
+  sourceDisk = _messages.StringField(21)
+  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 22)
+  sourceDiskId = _messages.StringField(23)
+  sourceImage = _messages.StringField(24)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 25)
+  sourceImageId = _messages.StringField(26)
+  sourceSnapshot = _messages.StringField(27)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 28)
+  sourceSnapshotId = _messages.StringField(29)
+  sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 30, default='RAW')
+  status = _messages.EnumField('StatusValueValuesEnum', 31)
+  storageLocations = _messages.StringField(32, repeated=True)
+  userLicenses = _messages.StringField(33, repeated=True)
 
 
 class ImageFamilyView(_messages.Message):
@@ -47015,6 +47035,60 @@ class ResourcePolicyWeeklyCycleDayOfWeek(_messages.Message):
   day = _messages.EnumField('DayValueValuesEnum', 1)
   duration = _messages.StringField(2)
   startTime = _messages.StringField(3)
+
+
+class RolloutPolicy(_messages.Message):
+  r"""A rollout policy configuration.
+
+  Messages:
+    LocationRolloutPoliciesValue: Location based rollout policies to apply to
+      the resource.  Currently only zone names are supported and must be
+      represented as valid URLs, like: zones/us-central1-a.  The value expects
+      an RFC3339 timestamp on or after which the update is considered rolled
+      out to the specified location.
+
+  Fields:
+    defaultRolloutTime: An optional RFC3339 timestamp on or after which the
+      update is considered rolled out to any zone that is not explicitly
+      stated.
+    locationRolloutPolicies: Location based rollout policies to apply to the
+      resource.  Currently only zone names are supported and must be
+      represented as valid URLs, like: zones/us-central1-a.  The value expects
+      an RFC3339 timestamp on or after which the update is considered rolled
+      out to the specified location.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LocationRolloutPoliciesValue(_messages.Message):
+    r"""Location based rollout policies to apply to the resource.  Currently
+    only zone names are supported and must be represented as valid URLs, like:
+    zones/us-central1-a.  The value expects an RFC3339 timestamp on or after
+    which the update is considered rolled out to the specified location.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        LocationRolloutPoliciesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        LocationRolloutPoliciesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LocationRolloutPoliciesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  defaultRolloutTime = _messages.StringField(1)
+  locationRolloutPolicies = _messages.MessageField('LocationRolloutPoliciesValue', 2)
 
 
 class Route(_messages.Message):

@@ -28,12 +28,17 @@ from googlecloudsdk.command_lib.app import create_util
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import http_encoding
 
-
+_LOCATION_LIST_FORMAT = '''table(
+     locationId:label="NAME",
+     name:label="FULL_NAME")'''
 _PUBSUB_MESSAGE_URL = 'type.googleapis.com/google.pubsub.v1.PubsubMessage'
+PROJECTS_COLLECTION = 'cloudscheduler.projects'
+LOCATIONS_COLLECTION = 'cloudscheduler.projects.locations'
 
 
 def _GetPubsubMessages():
@@ -66,6 +71,24 @@ def LogResumeSuccess(unused_response, unused_args):
 
 def _LogSuccessMessage(action):
   log.status.Print('Job has been {0}.'.format(action))
+
+
+def ParseProject():
+  return resources.REGISTRY.Parse(
+      properties.VALUES.core.project.GetOrFail(),
+      collection=PROJECTS_COLLECTION)
+
+
+def LocationsUriFunc(task):
+  return resources.REGISTRY.Parse(
+      task.name,
+      params={'projectId': properties.VALUES.core.project.GetOrFail()},
+      collection=LOCATIONS_COLLECTION).SelfLink()
+
+
+def AddListLocationsFormats(parser):
+  parser.display_info.AddFormat(_LOCATION_LIST_FORMAT)
+  parser.display_info.AddUriFunc(LocationsUriFunc)
 
 
 def ModifyCreateJobRequest(job_ref, args, create_job_req):

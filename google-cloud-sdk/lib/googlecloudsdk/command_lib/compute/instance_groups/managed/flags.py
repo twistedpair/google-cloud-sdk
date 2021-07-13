@@ -24,7 +24,7 @@ from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 
-DEFAULT_LIST_FORMAT = """\
+DEFAULT_CREATE_OR_LIST_FORMAT = """\
     table(
       name,
       location():label=LOCATION,

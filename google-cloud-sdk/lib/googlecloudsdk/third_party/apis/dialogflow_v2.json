@@ -3542,7 +3542,7 @@
           "type": "string"
         },
         "agentVersion": {
-          "description": "Required. The agent version loaded into this environment. Supported formats: - `projects\/\/agent\/versions\/` - `projects\/\/locations\/\/agent\/versions\/`",
+          "description": "Optional. The agent version loaded into this environment. Supported formats: - `projects\/\/agent\/versions\/` - `projects\/\/locations\/\/agent\/versions\/`",
           "type": "string"
         },
         "state": {

@@ -189,18 +189,13 @@ def _GetGapicClientClass(api_name, api_version, is_async=False):
     api_name: str, The API name (or the command surface name, if different).
     api_version: str, The version of the API.
     is_async: bool, If True, return the asyncio version of the gapic client.
-
-  Currently, we only support the logging v2 client.
   """
-  del api_name, api_version  # unused
-
-  # pylint: disable=g-import-not-at-top
-  if is_async:
-    from googlecloudsdk.third_party.gapic_wrappers.logging.v2 import async_client as client
-  else:
-    from googlecloudsdk.third_party.gapic_wrappers.logging.v2 import client
-
-  return client.LoggingClient
+  client_type = 'async_client' if is_async else 'client'
+  module_path = 'googlecloudsdk.third_party.gapic_wrappers.{0}.{1}.{2}'.format(
+      api_name, api_version, client_type)
+  client_class_name = '{0}Client'.format(api_name.capitalize())
+  module_obj = __import__(module_path, fromlist=[client_class_name])
+  return getattr(module_obj, client_class_name)
 
 
 def _GetGapicClientInstance(api_name, api_version, credentials,
@@ -244,15 +239,28 @@ def _GetGapicClientInstance(api_name, api_version, credentials,
                       mtls_enabled=mtls_enabled)
 
 
-def _GetMtlsEndpointIfEnabled(api_name, api_version, client_class=None):
-  """Returns mtls endpoint if mtls is enabled for the API."""
+def _GetMtlsEndpoint(api_name, api_version, client_class=None):
+  """Returns mtls endpoint."""
   client_class = client_class or _GetClientClass(api_name, api_version)
   api_def = _GetApiDef(api_name, api_version)
-  if api_def.enable_mtls:
-    # Services with mTLS enabled should have the mTLS endpoint either in
-    # mtls_endpoint_override in the API map or in the generated client.
-    # We have tests to guarantee that.
-    return api_def.mtls_endpoint_override or client_class.MTLS_BASE_URL
+  return api_def.mtls_endpoint_override or client_class.MTLS_BASE_URL
+
+
+def _MtlsAllowed(api_name, api_version):
+  """Checks if the api of the given version is in the mTLS allowlist.
+
+  gcloud maintains a client-side allowlist for the mTLS feature
+  (go/gcloud-rollout-mtls).
+
+  Args:
+    api_name: str, The API name.
+    api_version: str, The version of the API.
+
+  Returns:
+    True if the given service and version is in the mTLS allowlist.
+  """
+  api_def = _GetApiDef(api_name, api_version)
+  return api_def.enable_mtls
 
 
 def _GetEffectiveApiEndpoint(api_name, api_version, client_class=None):
@@ -262,9 +270,11 @@ def _GetEffectiveApiEndpoint(api_name, api_version, client_class=None):
   if endpoint_override:
     return endpoint_override
   client_class = client_class or _GetClientClass(api_name, api_version)
-  if properties.VALUES.context_aware.use_client_certificate.GetBool():
-    mtls_endpoint = _GetMtlsEndpointIfEnabled(api_name, api_version,
-                                              client_class)
+  if properties.VALUES.context_aware.always_use_mtls_endpoint.GetBool():
+    return _GetMtlsEndpoint(api_name, api_version, client_class)
+  if (properties.VALUES.context_aware.use_client_certificate.GetBool() and
+      _MtlsAllowed(api_name, api_version)):
+    mtls_endpoint = _GetMtlsEndpoint(api_name, api_version, client_class)
     if mtls_endpoint:
       return mtls_endpoint
   return client_class.BASE_URL

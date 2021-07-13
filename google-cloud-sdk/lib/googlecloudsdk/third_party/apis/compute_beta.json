@@ -4,7 +4,7 @@
  "id": "compute:beta",
  "name": "compute",
  "version": "beta",
- "revision": "20210624",
+ "revision": "20210625",
  "title": "Compute Engine API",
  "description": "Creates and runs virtual machines on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -4519,6 +4519,10 @@
       "",
       ""
      ]
+    },
+    "stateOverride": {
+     "$ref": "RolloutPolicy",
+     "description": "The rollout policy for this deprecation. This policy is only enforced by image family views. The rollout policy restricts the zones where the associated resource is considered in a deprecated state. When the rollout policy does not include the user specified zone, or if the zone is rolled out, the associated resource is considered in a deprecated state.\n\nThe rollout policy for this deprecation is read-only, except for allowlisted users. This field might not be configured. To view the latest non-deprecated image in a specific zone, use the imageFamilyViews.get method."
     }
    }
   },
@@ -9326,6 +9330,10 @@
        "description": "The full Google Cloud Storage URL where the disk image is stored.\n\nIn order to create an image, you must provide the full or partial URL of one of the following:  \n- The rawDisk.source URL  \n- The sourceDisk URL  \n- The sourceImage URL  \n- The sourceSnapshot URL"
       }
      }
+    },
+    "rolloutOverride": {
+     "$ref": "RolloutPolicy",
+     "description": "A rollout policy to apply to this image. When specified, the rollout policy overrides per-zone references to the image via the associated image family. The rollout policy restricts the zones where this image is accessible when using a zonal image family reference. When the rollout policy does not include the user specified zone, or if the zone is rolled out, this image is accessible.\n\nThe rollout policy for this image is read-only, except for allowlisted users. This field might not be configured. To view the latest non-deprecated image in a specific zone, use the imageFamilyViews.get method."
     },
     "satisfiesPzs": {
      "type": "boolean",
@@ -23373,6 +23381,24 @@
     "startTime": {
      "type": "string",
      "description": "Time within the window to start the operations. It must be in format \"HH:MM\", where HH : [00-23] and MM : [00-00] GMT."
+    }
+   }
+  },
+  "RolloutPolicy": {
+   "id": "RolloutPolicy",
+   "type": "object",
+   "description": "A rollout policy configuration.",
+   "properties": {
+    "defaultRolloutTime": {
+     "type": "string",
+     "description": "An optional RFC3339 timestamp on or after which the update is considered rolled out to any zone that is not explicitly stated."
+    },
+    "locationRolloutPolicies": {
+     "type": "object",
+     "description": "Location based rollout policies to apply to the resource.\n\nCurrently only zone names are supported and must be represented as valid URLs, like: zones/us-central1-a.\n\nThe value expects an RFC3339 timestamp on or after which the update is considered rolled out to the specified location.",
+     "additionalProperties": {
+      "type": "string"
+     }
     }
    }
   },

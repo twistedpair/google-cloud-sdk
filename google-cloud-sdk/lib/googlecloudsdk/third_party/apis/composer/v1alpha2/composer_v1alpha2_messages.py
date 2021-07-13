@@ -258,7 +258,9 @@ class ComposerProjectsLocationsEnvironmentsPatchRequest(_messages.Message):
       equal to 3 must be provided in the `config.nodeCount` field. Supported
       for Cloud Composer environments in versions
       composer-1.*.*-airflow-*.*.*. * config.webServerNetworkAccessControl *
-      Replace the environment's current WebServerNetworkAccessControl. *
+      Replace the environment's current WebServerNetworkAccessControl.
+      Supported for Cloud Composer environments in versions
+      composer-1.*.*-airflow-*.*.*. *
       config.softwareConfig.airflowConfigOverrides * Replace all Apache
       Airflow config overrides. If a replacement config overrides map is not
       included in `environment`, all config overrides are cleared. It is an
@@ -282,8 +284,11 @@ class ComposerProjectsLocationsEnvironmentsPatchRequest(_messages.Message):
       version downgrade and must match the current image version's Composer
       major version and Airflow major and minor versions. Consult the Cloud
       Composer Version List for valid values. *
-      config.databaseConfig.machineType * Cloud SQL machine type used by
-      Airflow database. It has to be one of: db-n1-standard-2,
+      config.softwareConfig.schedulerCount * Horizontally scale the number of
+      schedulers in Airflow. A positive integer not greater than the number of
+      nodes must be provided in the `config.softwareConfig.schedulerCount`
+      field. * config.databaseConfig.machineType * Cloud SQL machine type used
+      by Airflow database. It has to be one of: db-n1-standard-2,
       db-n1-standard-4, db-n1-standard-8 or db-n1-standard-16. Supported for
       Cloud Composer environments in versions composer-1.*.*-airflow-*.*.*. *
       config.webServerConfig.machineType * Machine type on which Airflow web
@@ -593,7 +598,8 @@ class EnvironmentConfig(_messages.Message):
       environments in versions composer-1.*.*-airflow-*.*.*.
     webServerNetworkAccessControl: Optional. The network-level access control
       policy for the Airflow web server. If unspecified, no network-level
-      access restrictions will be applied.
+      access restrictions will be applied. This field is supported for Cloud
+      Composer environments in versions composer-1.*.*-airflow-*.*.*.
     workloadsConfig: Optional. The workloads configuration settings for the
       GKE cluster associated with the Cloud Composer environment. The GKE
       cluster runs Airflow scheduler and workers workloads. This field is
@@ -839,8 +845,7 @@ class NodeConfig(_messages.Message):
       composer-1.*.*-airflow-*.*.*.
     serviceAccount: Optional. The Google Cloud Platform Service Account to be
       used by the workloads. If a service account is not specified, the
-      "default" Compute Engine service account is used. Cannot be updated for
-      Cloud Composer environments in versions composer-1.*.*-airflow-*.*.*.
+      "default" Compute Engine service account is used. Cannot be updated.
     subnetwork: Optional. The Compute Engine subnetwork to be used for machine
       communications, specified as a [relative resource
       name](/apis/design/resource_names#relative_resource_name). For example:
@@ -1489,6 +1494,8 @@ class WebServerConfig(_messages.Message):
 
 class WebServerNetworkAccessControl(_messages.Message):
   r"""Network-level access control policy for the Airflow web server.
+  Supported for Cloud Composer environments in versions
+  composer-1.*.*-airflow-*.*.*.
 
   Fields:
     allowedIpRanges: A collection of allowed IP ranges with descriptions.

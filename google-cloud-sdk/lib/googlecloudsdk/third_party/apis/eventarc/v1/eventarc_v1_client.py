@@ -39,11 +39,157 @@ class EventarcV1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.projects_locations_channels = self.ProjectsLocationsChannelsService(self)
     self.projects_locations_ingresses = self.ProjectsLocationsIngressesService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_triggers = self.ProjectsLocationsTriggersService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class ProjectsLocationsChannelsService(base_api.BaseApiService):
+    """Service class for the projects_locations_channels resource."""
+
+    _NAME = 'projects_locations_channels'
+
+    def __init__(self, client):
+      super(EventarcV1.ProjectsLocationsChannelsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Create a new channel in a particular project and location.
+
+      Args:
+        request: (EventarcProjectsLocationsChannelsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/channels',
+        http_method='POST',
+        method_id='eventarc.projects.locations.channels.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['channelId', 'validateOnly'],
+        relative_path='v1/{+parent}/channels',
+        request_field='channel',
+        request_type_name='EventarcProjectsLocationsChannelsCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Delete a single channel.
+
+      Args:
+        request: (EventarcProjectsLocationsChannelsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/channels/{channelsId}',
+        http_method='DELETE',
+        method_id='eventarc.projects.locations.channels.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['validateOnly'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='EventarcProjectsLocationsChannelsDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Get a single Channel.
+
+      Args:
+        request: (EventarcProjectsLocationsChannelsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Channel) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/channels/{channelsId}',
+        http_method='GET',
+        method_id='eventarc.projects.locations.channels.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='EventarcProjectsLocationsChannelsGetRequest',
+        response_type_name='Channel',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""List channels.
+
+      Args:
+        request: (EventarcProjectsLocationsChannelsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListChannelsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/channels',
+        http_method='GET',
+        method_id='eventarc.projects.locations.channels.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/channels',
+        request_field='',
+        request_type_name='EventarcProjectsLocationsChannelsListRequest',
+        response_type_name='ListChannelsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Update a single channel.
+
+      Args:
+        request: (EventarcProjectsLocationsChannelsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/channels/{channelsId}',
+        http_method='PATCH',
+        method_id='eventarc.projects.locations.channels.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask', 'validateOnly'],
+        relative_path='v1/{+name}',
+        request_field='channel',
+        request_type_name='EventarcProjectsLocationsChannelsPatchRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
 
   class ProjectsLocationsIngressesService(base_api.BaseApiService):
     """Service class for the projects_locations_ingresses resource."""

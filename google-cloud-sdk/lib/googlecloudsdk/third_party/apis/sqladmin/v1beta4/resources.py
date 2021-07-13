@@ -31,6 +31,13 @@ class Collections(enum.Enum):
       ['project', 'instance', 'id'],
       True
   )
+  CONNECT = (
+      'connect',
+      'projects/{project}/instances/{instance}/connectSettings',
+      {},
+      ['project', 'instance'],
+      True
+  )
   DATABASES = (
       'databases',
       'projects/{project}/instances/{instance}/databases/{database}',

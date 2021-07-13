@@ -128,13 +128,14 @@ class _BaseProgressTracker(six.with_metaclass(abc.ABCMeta, object)):
     self._old_signal_handler = None
     self._symbols = console_attr.GetConsoleAttr().GetProgressTrackerSymbols()
     self._no_spacing = no_spacing
+    self._is_tty = console_io.IsInteractive(error=True)
 
   @property
   def _autotick(self):
     return self.__autotick
 
   def _GetPrefix(self):
-    if self._detail_message_callback:
+    if self._is_tty and self._detail_message_callback:
       detail_message = self._detail_message_callback()
       if detail_message:
         if self._no_spacing:

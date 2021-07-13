@@ -443,7 +443,7 @@ compute:
     support_bulk_export: true
     support_single_export: true
   Backendservices:
-    asset_inventory_type: compute.googleapis.com/Backendservice
+    asset_inventory_type: compute.googleapis.com/BackendService
     krm_group: compute
     krm_kind: ComputeBackendService
     support_bulk_export: true
@@ -469,7 +469,7 @@ compute:
     support_bulk_export: true
     support_single_export: true
   Forwardingrules:
-    asset_inventory_type: compute.googleapis.com/Forwardingrule
+    asset_inventory_type: compute.googleapis.com/ForwardingRule
     krm_group: compute
     krm_kind: ComputeForwardingRule
     support_bulk_export: true
@@ -481,19 +481,19 @@ compute:
   Globalorganizationoperations: {}
   Globalpublicdelegatedprefixes: {}
   Healthchecks:
-    asset_inventory_type: compute.googleapis.com/Healthcheck
+    asset_inventory_type: compute.googleapis.com/HealthCheck
     krm_group: compute
     krm_kind: ComputeHealthCheck
     support_bulk_export: true
     support_single_export: true
   Httphealthchecks:
-    asset_inventory_type: compute.googleapis.com/Httphealthcheck
+    asset_inventory_type: compute.googleapis.com/HttpHealthCheck
     krm_group: compute
     krm_kind: ComputeHTTPHealthCheck
     support_bulk_export: true
     support_single_export: true
   Httpshealthchecks:
-    asset_inventory_type: compute.googleapis.com/Httpshealthcheck
+    asset_inventory_type: compute.googleapis.com/HttpsHealthCheck
     krm_group: compute
     krm_kind: ComputeHTTPSHealthCheck
     support_bulk_export: true
@@ -507,7 +507,7 @@ compute:
     support_single_export: true
   Instancegroupmanagers: {}
   Instancegroups:
-    asset_inventory_type: compute.googleapis.com/Instancegroup
+    asset_inventory_type: compute.googleapis.com/InstanceGroup
     krm_group: compute
     krm_kind: ComputeInstanceGroup
     support_bulk_export: true
@@ -519,7 +519,7 @@ compute:
     support_bulk_export: true
     support_single_export: true
   Instancetemplates:
-    asset_inventory_type: compute.googleapis.com/Instancetemplate
+    asset_inventory_type: compute.googleapis.com/InstanceTemplate
     krm_group: compute
     krm_kind: ComputeInstanceTemplate
     support_bulk_export: true
@@ -635,7 +635,7 @@ compute:
     support_bulk_export: true
     support_single_export: true
   Sslpolicies:
-    asset_inventory_type: compute.googleapis.com/Sslpolicy
+    asset_inventory_type: compute.googleapis.com/SslPolicy
     krm_group: compute
     krm_kind: ComputeSSLPolicy
     support_bulk_export: true
@@ -647,19 +647,19 @@ compute:
     support_bulk_export: true
     support_single_export: true
   Targetgrpcproxies:
-    asset_inventory_type: compute.googleapis.com/Targetgrpcproxy
+    asset_inventory_type: compute.googleapis.com/TargetGrpcProxy
     krm_group: compute
     krm_kind: ComputeTargetGRPCProxy
     support_bulk_export: true
     support_single_export: true
   Targethttpproxies:
-    asset_inventory_type: compute.googleapis.com/Targethttpproxy
+    asset_inventory_type: compute.googleapis.com/TargetHttpProxy
     krm_group: compute
     krm_kind: ComputeTargetHTTPProxy
     support_bulk_export: true
     support_single_export: true
   Targethttpsproxies:
-    asset_inventory_type: compute.googleapis.com/Targethttpsproxy
+    asset_inventory_type: compute.googleapis.com/TargetHttpsProxy
     krm_group: compute
     krm_kind: ComputeTargetHTTPSProxy
     support_bulk_export: true
@@ -671,7 +671,7 @@ compute:
     support_bulk_export: true
     support_single_export: true
   Targetpools:
-    asset_inventory_type: compute.googleapis.com/Targetpool
+    asset_inventory_type: compute.googleapis.com/TargetPool
     krm_group: compute
     krm_kind: ComputeTargetPool
     support_bulk_export: true
@@ -683,7 +683,7 @@ compute:
     support_bulk_export: true
     support_single_export: true
   Targettcpproxies:
-    asset_inventory_type: compute.googleapis.com/Targettcpproxy
+    asset_inventory_type: compute.googleapis.com/TargetTcpProxy
     krm_group: compute
     krm_kind: ComputeTargetTCPProxy
     support_bulk_export: true
@@ -695,7 +695,7 @@ compute:
     support_bulk_export: true
     support_single_export: true
   Urlmaps:
-    asset_inventory_type: compute.googleapis.com/Urlmap
+    asset_inventory_type: compute.googleapis.com/UrlMap
     krm_group: compute
     krm_kind: ComputeURLMap
     support_bulk_export: true

@@ -1066,6 +1066,22 @@ class AiplatformProjectsLocationsEndpointsPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class AiplatformProjectsLocationsEndpointsPredictInternalRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsEndpointsPredictInternalRequest object.
+
+  Fields:
+    endpoint: Required. The name of the Endpoint requested to serve the
+      prediction. Format:
+      `projects/{project}/locations/{location}/endpoints/{endpoint}`
+    googleCloudAiplatformV1beta1PredictRequest: A
+      GoogleCloudAiplatformV1beta1PredictRequest resource to be passed as the
+      request body.
+  """
+
+  endpoint = _messages.StringField(1, required=True)
+  googleCloudAiplatformV1beta1PredictRequest = _messages.MessageField('GoogleCloudAiplatformV1beta1PredictRequest', 2)
+
+
 class AiplatformProjectsLocationsEndpointsPredictRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsEndpointsPredictRequest object.
 
@@ -2353,6 +2369,23 @@ class AiplatformProjectsLocationsMetadataStoresArtifactsCreateRequest(_messages.
   parent = _messages.StringField(3, required=True)
 
 
+class AiplatformProjectsLocationsMetadataStoresArtifactsDeleteRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsMetadataStoresArtifactsDeleteRequest
+  object.
+
+  Fields:
+    etag: Optional. The etag of the Artifact to delete. If this is provided,
+      it must match the server's etag. Otherwise, the request will fail with a
+      FAILED_PRECONDITION.
+    name: Required. The resource name of the Artifact to delete. Format: proje
+      cts/{project}/locations/{location}/metadataStores/{metadatastore}/artifa
+      cts/{artifact}
+  """
+
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+
+
 class AiplatformProjectsLocationsMetadataStoresArtifactsGetRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsMetadataStoresArtifactsGetRequest object.
 
@@ -2525,13 +2558,11 @@ class AiplatformProjectsLocationsMetadataStoresContextsDeleteRequest(_messages.M
     etag: Optional. The etag of the Context to delete. If this is provided, it
       must match the server's etag. Otherwise, the request will fail with a
       FAILED_PRECONDITION.
-    force: If set to true, any child resources of this Context will be
-      deleted. (Otherwise, the request will fail with a FAILED_PRECONDITION
-      error if the Context has any child resources, such as another Context,
-      Artifact, or Execution).
-    name: Required. The resource name of the Context to retrieve. Format: proj
-      ects/{project}/locations/{location}/metadataStores/{metadatastore}/conte
-      xts/{context}
+    force: The force deletion semantics is still undefined. Users should not
+      use this field.
+    name: Required. The resource name of the Context to delete. Format: projec
+      ts/{project}/locations/{location}/metadataStores/{metadatastore}/context
+      s/{context}
   """
 
   etag = _messages.StringField(1)
@@ -2709,6 +2740,23 @@ class AiplatformProjectsLocationsMetadataStoresExecutionsCreateRequest(_messages
   executionId = _messages.StringField(1)
   googleCloudAiplatformV1beta1Execution = _messages.MessageField('GoogleCloudAiplatformV1beta1Execution', 2)
   parent = _messages.StringField(3, required=True)
+
+
+class AiplatformProjectsLocationsMetadataStoresExecutionsDeleteRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsMetadataStoresExecutionsDeleteRequest
+  object.
+
+  Fields:
+    etag: Optional. The etag of the Execution to delete. If this is provided,
+      it must match the server's etag. Otherwise, the request will fail with a
+      FAILED_PRECONDITION.
+    name: Required. The resource name of the Execution to delete. Format: proj
+      ects/{project}/locations/{location}/metadataStores/{metadatastore}/execu
+      tions/{execution}
+  """
+
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
 
 
 class AiplatformProjectsLocationsMetadataStoresExecutionsGetRequest(_messages.Message):
@@ -16429,6 +16477,8 @@ class GoogleCloudAiplatformV1beta1BatchReadFeatureValuesRequest(_messages.Messag
   Id: 6 -)
 
   Fields:
+    bigqueryReadInstances: Similar to csv_read_instances, but from BigQuery
+      source.
     csvReadInstances: Each read instance consists of exactly one read
       timestamp and one or more entity IDs identifying entities of the
       corresponding EntityTypes whose Features are requested. Each output
@@ -16456,10 +16506,11 @@ class GoogleCloudAiplatformV1beta1BatchReadFeatureValuesRequest(_messages.Messag
       source, the pass-through values will be passed as opaque bytes.
   """
 
-  csvReadInstances = _messages.MessageField('GoogleCloudAiplatformV1beta1CsvSource', 1)
-  destination = _messages.MessageField('GoogleCloudAiplatformV1beta1FeatureValueDestination', 2)
-  entityTypeSpecs = _messages.MessageField('GoogleCloudAiplatformV1beta1BatchReadFeatureValuesRequestEntityTypeSpec', 3, repeated=True)
-  passThroughFields = _messages.MessageField('GoogleCloudAiplatformV1beta1BatchReadFeatureValuesRequestPassThroughField', 4, repeated=True)
+  bigqueryReadInstances = _messages.MessageField('GoogleCloudAiplatformV1beta1BigQuerySource', 1)
+  csvReadInstances = _messages.MessageField('GoogleCloudAiplatformV1beta1CsvSource', 2)
+  destination = _messages.MessageField('GoogleCloudAiplatformV1beta1FeatureValueDestination', 3)
+  entityTypeSpecs = _messages.MessageField('GoogleCloudAiplatformV1beta1BatchReadFeatureValuesRequestEntityTypeSpec', 4, repeated=True)
+  passThroughFields = _messages.MessageField('GoogleCloudAiplatformV1beta1BatchReadFeatureValuesRequestPassThroughField', 5, repeated=True)
 
 
 class GoogleCloudAiplatformV1beta1BatchReadFeatureValuesRequestEntityTypeSpec(_messages.Message):

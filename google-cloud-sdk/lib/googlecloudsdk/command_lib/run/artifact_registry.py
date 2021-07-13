@@ -83,6 +83,9 @@ def ShouldCreateRepository(repo):
     log.error('Permission denied while accessing Artifact Registry. Artifact '
               'Registry access is required to deploy from source.')
     raise
+  except base_exceptions.HttpBadRequestError:
+    raise exceptions.ArgumentError(
+        'Selected region does not support source deploy yet.')
   except base_exceptions.HttpNotFoundError:
     message = ('Deploying from source requires an Artifact Registry repository '
                'to store build artifacts. A repository named [{name}] in '

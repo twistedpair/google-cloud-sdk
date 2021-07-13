@@ -155,6 +155,7 @@ def GetSourceFiles(upload_dir, skip_files_regex, has_explicit_skip_files,
         default_ignore_file=registry_entry,
         write_on_disk=True,
         gcloud_ignore_creation_predicate=lambda unused_dir: True,
+        ignore_file=ignore_file,
         include_gitignore=False)
     it = file_chooser.GetIncludedFiles(upload_dir, include_dirs=False)
   elif ignore_file:

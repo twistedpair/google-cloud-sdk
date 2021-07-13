@@ -86,9 +86,21 @@ def GetCancelBuildHandler(client, messages, build_ref):
     elif hasattr(build_ref, 'buildsId'):
       build_id = build_ref.buildsId
 
-    client.projects_builds.Cancel(
-        messages.CloudbuildProjectsBuildsCancelRequest(
-            projectId=project_id,
-            id=build_id))
+    location = None
+    if hasattr(build_ref, 'locationsId'):
+      location = build_ref.locationsId
+
+    if location is not None:
+      cancel_name = 'projects/{project}/locations/{location}/builds/{buildId}'
+      name = cancel_name.format(
+          project=project_id, location=location, buildId=build_id)
+      client.projects_locations_builds.Cancel(
+          messages.CancelBuildRequest(
+              name=name))
+    else:
+      client.projects_builds.Cancel(
+          messages.CloudbuildProjectsBuildsCancelRequest(
+              projectId=project_id, id=build_id))
+
     log.status.Print('Cancelled [{r}].'.format(r=six.text_type(build_ref)))
   return _CancelBuildHandler

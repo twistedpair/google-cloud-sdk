@@ -638,7 +638,7 @@ def TransformFlatten(r, show='', undefined='', separator=','):
           [six.text_type(k) for k in sorted(r)])
     elif show == 'values':
       r = separator.join(
-          [Flatten(v) for _, v in sorted(six.iteritems(r))])
+          [six.text_type(Flatten(v)) for _, v in sorted(six.iteritems(r))])
     else:
       r = separator.join(
           ['{k}={v}'.format(k=k, v=Flatten(v))

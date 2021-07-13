@@ -271,7 +271,7 @@
           }
         },
         "state": {
-          "description": "Output only. State of the resource.",
+          "description": "Output only. State of the resource. New values may be added to this enum when appropriate.",
           "readOnly": true,
           "type": "string",
           "enumDescriptions": [
@@ -292,11 +292,11 @@
           ]
         },
         "networkConfig": {
-          "description": "Required. Network configuration.",
+          "description": "Required. Network configuration of the private cloud. Caution: Do not remove VPC networks used by private clouds (`NetworkConfig.network`). Doing so removes your ability to access the private cloud.",
           "$ref": "NetworkConfig"
         },
         "managementCluster": {
-          "description": "Input only. The management cluster for this private cloud. This parameter is required during creation of private cloud to provide details for the default cluster.",
+          "description": "Input only. The management cluster for this private cloud. This field is required during creation of the private cloud to provide details for the default cluster. The following fields can't be changed after private cloud creation: `ManagementCluster.clusterId`, `ManagementCluster.nodeTypeId`.",
           "$ref": "ManagementCluster"
         },
         "description": {
@@ -335,7 +335,7 @@
           "type": "string"
         },
         "managementCidr": {
-          "description": "Required. Management CIDR used by VMWare management appliances.",
+          "description": "Required. Management CIDR used by VMware management appliances.",
           "type": "string"
         }
       }
@@ -435,7 +435,7 @@
       "type": "object",
       "properties": {
         "requestId": {
-          "description": "Optional. A request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes after the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+          "description": "Optional. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
           "type": "string"
         }
       }
@@ -617,7 +617,7 @@
       "type": "object",
       "properties": {
         "requestId": {
-          "description": "Optional. A request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+          "description": "Optional. A request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server guarantees that a request doesn't result in creation of duplicate commitments for at least 60 minutes. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
           "type": "string"
         }
       }
@@ -628,7 +628,7 @@
       "type": "object",
       "properties": {
         "requestId": {
-          "description": "Optional. A request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+          "description": "Optional. A request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server guarantees that a request doesn't result in creation of duplicate commitments for at least 60 minutes. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
           "type": "string"
         }
       }
@@ -1117,12 +1117,12 @@
                       "format": "int32"
                     },
                     "pageToken": {
-                      "description": "A page token, received from a previous `ListPrivateCloudsRequest` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListPrivateCloudsRequest` must match the call that provided the page token.",
+                      "description": "A page token, received from a previous `ListPrivateClouds` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListPrivateClouds` must match the call that provided the page token.",
                       "location": "query",
                       "type": "string"
                     },
                     "filter": {
-                      "description": "A filter expression that matches resources returned in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be `=`, `!=`, `>`, or `<`. For example, if you are filtering a list of private clouds, you can exclude the ones named `example-pc` by specifying `name != \"example-pc\"`. You can also filter nested fields. For example, you could specify `networkConfig.managementCidr = \"192.168.0.0\/24\"` to include private clouds only if they have a matching address in their network configuration. To filter on multiple expressions, provide each separate expression within parentheses. For example: ``` (name = \"example-pc\") (create_time > \"2021-04-12T08:15:10.40Z\") ``` By default, each expression is an `AND` expression. However, you can include `AND` and `OR` expressions explicitly. For example: ``` (name = \"private-cloud-1\") AND (create_time > \"2021-04-12T08:15:10.40Z\") OR (name = \"private-cloud-2\") ```",
+                      "description": "A filter expression that matches resources returned in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be `=`, `!=`, `>`, or `<`. For example, if you are filtering a list of private clouds, you can exclude the ones named `example-pc` by specifying `name != \"example-pc\"`. You can also filter nested fields. For example, you could specify `networkConfig.managementCidr = \"192.168.0.0\/24\"` to include private clouds only if they have a matching address in their network configuration. To filter on multiple expressions, provide each separate expression within parentheses. For example: ``` (name = \"example-pc\") (createTime > \"2021-04-12T08:15:10.40Z\") ``` By default, each expression is an `AND` expression. However, you can include `AND` and `OR` expressions explicitly. For example: ``` (name = \"private-cloud-1\") AND (createTime > \"2021-04-12T08:15:10.40Z\") OR (name = \"private-cloud-2\") ```",
                       "location": "query",
                       "type": "string"
                     },
@@ -1141,7 +1141,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Lists private clouds in a given project and location."
+                  "description": "Lists `PrivateCloud` resources in a given project and location."
                 },
                 "get": {
                   "id": "vmwareengine.projects.locations.privateClouds.get",
@@ -1166,7 +1166,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Gets details of a single private cloud."
+                  "description": "Retrieves a `PrivateCloud` resource by its resource name."
                 },
                 "create": {
                   "id": "vmwareengine.projects.locations.privateClouds.create",
@@ -1175,7 +1175,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The resource name of the location (region) to create the new private cloud in. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a`",
+                      "description": "Required. The resource name of the location to create the new private cloud in. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a`",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -1187,7 +1187,7 @@
                       "type": "string"
                     },
                     "requestId": {
-                      "description": "Optional. A request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                      "description": "Optional. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
                       "location": "query",
                       "type": "string"
                     },
@@ -1209,7 +1209,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Creates a new private cloud in a given project and location."
+                  "description": "Creates a new `PrivateCloud` resource in a given project and location. Creating a private cloud also creates a [management cluster](https:\/\/cloud.google.com\/vmware-engine\/docs\/concepts-vmware-components) for that private cloud. For the first private cloud created in the given VPC (`networkConfig.network`), VMware Engine creates a VPC peering with a service network."
                 },
                 "patch": {
                   "id": "vmwareengine.projects.locations.privateClouds.patch",
@@ -1225,13 +1225,13 @@
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "Required. Field mask is used to specify the fields to be overwritten in the `PrivateCloud` resource by the update. The fields specified in the `update_mask` are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
+                      "description": "Required. Field mask is used to specify the fields to be overwritten in the `PrivateCloud` resource by the update. The fields specified in `updateMask` are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"
                     },
                     "requestId": {
-                      "description": "Optional. A request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                      "description": "Optional. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
                       "location": "query",
                       "type": "string"
                     }
@@ -1248,7 +1248,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Updates the parameters of a single private cloud. Only fields specified in `update_mask` are applied."
+                  "description": "Modifies a `PrivateCloud` resource. Only the following fields can be updated: `labels`, `description`. Only fields specified in `updateMask` are applied."
                 },
                 "delete": {
                   "id": "vmwareengine.projects.locations.privateClouds.delete",
@@ -1264,12 +1264,12 @@
                       "type": "string"
                     },
                     "requestId": {
-                      "description": "Optional. A request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes after the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                      "description": "Optional. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
                       "location": "query",
                       "type": "string"
                     },
                     "force": {
-                      "description": "Optional. If set to true, cascade delete is enabled and all children of this private cloud resource will also be deleted. This will also delete mandatory management cluster. With this flag specified to false, private cloud will not be deleted due to management cluster child resource.",
+                      "description": "Optional. If set to true, cascade delete is enabled and all children of this private cloud resource are also deleted. When this flag is set to false, the private cloud will not be deleted if there are any children other than the management cluster. The management cluster is always deleted.",
                       "location": "query",
                       "type": "boolean"
                     }
@@ -1283,7 +1283,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Starts private cloud delayed deletion. The resource is deleted after system defined delay passes. Until then, deletion can be cancelled by using `UndeletePrivateCloud`."
+                  "description": "Marks a `PrivateCloud` resource for deletion. A `PrivateCloud` resource marked for deletion has `PrivateCloud.state` set to `DELETED` and `expireTime` set to the time when deletion is final and can no longer be reversed. When deletion is final, all private cloud resources are irreversibly removed and billing stops."
                 },
                 "undelete": {
                   "id": "vmwareengine.projects.locations.privateClouds.undelete",
@@ -1292,7 +1292,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
-                      "description": "Required. The resource name of the private cloud to undelete. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a\/privateClouds\/my-cloud`",
+                      "description": "Required. The resource name of the private cloud marked for deletion. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1-a\/privateClouds\/my-cloud`",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -1311,7 +1311,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Stops the private cloud deletion process started by `DeletePrivateCloud`."
+                  "description": "Unmarks a private cloud that was previously marked for deletion by `DeletePrivateCloud`. A `PrivateCloud` resource marked for deletion has `PrivateCloud.state` set to `DELETED` and `PrivateCloud.expireTime` set to the time when deletion can no longer be reversed."
                 },
                 "showNsxCredentials": {
                   "id": "vmwareengine.projects.locations.privateClouds.showNsxCredentials",
@@ -1536,7 +1536,7 @@
                           "type": "string"
                         },
                         "filter": {
-                          "description": "A filter expression that matches resources returned in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be `=`, `!=`, `>`, or `<`. For example, if you are filtering a list of clusters, you can exclude the ones named `example-cluster` by specifying `name != \"example-cluster\"`. You can also filter nested fields. For example, you could specify `autoscale_settings.cooldown_period_minutes = 2` to include clusters only if they have given cooldown period in autoscale policy. To filter on multiple expressions, provide each separate expression within parentheses. For example: ``` (name = \"example-cluster\") (node_count = \"3\") ``` By default, each expression is an `AND` expression. However, you can include `AND` and `OR` expressions explicitly. For example: ``` (name = \"example-cluster-1\") AND (create_time > \"2021-04-12T08:15:10.40Z\") OR (name = \"example-cluster-2\") ```",
+                          "description": "A filter expression that matches resources returned in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be `=`, `!=`, `>`, or `<`. For example, if you are filtering a list of clusters, you can exclude the ones named `example-cluster` by specifying `name != \"example-cluster\"`. You can also filter nested fields. For example, you could specify `autoscale_settings.cooldownPeriodMinutes = 2` to include clusters only if they have given a cooldown period in autoscale policy. To filter on multiple expressions, provide each separate expression within parentheses. For example: ``` (name = \"example-cluster\") (nodeCount = \"3\") ``` By default, each expression is an `AND` expression. However, you can include `AND` and `OR` expressions explicitly. For example: ``` (name = \"example-cluster-1\") AND (createTime > \"2021-04-12T08:15:10.40Z\") OR (name = \"example-cluster-2\") ```",
                           "location": "query",
                           "type": "string"
                         },
@@ -1555,7 +1555,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Lists clusters in a given private cloud."
+                      "description": "Lists `Cluster` resources in a given private cloud."
                     },
                     "get": {
                       "id": "vmwareengine.projects.locations.privateClouds.clusters.get",
@@ -1580,7 +1580,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Gets details of a single cluster."
+                      "description": "Retrieves a `Cluster` resource by its resource name."
                     },
                     "create": {
                       "id": "vmwareengine.projects.locations.privateClouds.clusters.create",
@@ -1601,7 +1601,7 @@
                           "type": "string"
                         },
                         "requestId": {
-                          "description": "Optional. A request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                          "description": "Optional. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
                           "location": "query",
                           "type": "string"
                         },
@@ -1623,7 +1623,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Creates a new cluster in a given project and location."
+                      "description": "Creates a new cluster in a given private cloud. Creating a new cluster provides additional nodes for use in the parent private cloud and requires sufficient [node quota](https:\/\/cloud.google.com\/vmware-engine\/quotas)."
                     },
                     "patch": {
                       "id": "vmwareengine.projects.locations.privateClouds.clusters.patch",
@@ -1639,13 +1639,13 @@
                           "type": "string"
                         },
                         "updateMask": {
-                          "description": "Required. Field mask is used to specify the fields to be overwritten in the `Cluster` resource by the update. The fields specified in the `update_mask` are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
+                          "description": "Required. Field mask is used to specify the fields to be overwritten in the `Cluster` resource by the update. The fields specified in the `updateMask` are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
                           "location": "query",
                           "type": "string",
                           "format": "google-fieldmask"
                         },
                         "requestId": {
-                          "description": "Optional. A request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                          "description": "Optional. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
                           "location": "query",
                           "type": "string"
                         },
@@ -1667,7 +1667,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Updates the parameters of a single cluster. Only fields specified in `update_mask` are applied."
+                      "description": "Modifies a `Cluster` resource. Only the following fields can be updated: `labels`, `nodeCount`. Only fields specified in `updateMask` are applied."
                     },
                     "delete": {
                       "id": "vmwareengine.projects.locations.privateClouds.clusters.delete",
@@ -1683,7 +1683,7 @@
                           "type": "string"
                         },
                         "requestId": {
-                          "description": "Optional. A request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes after the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                          "description": "Optional. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
                           "location": "query",
                           "type": "string"
                         }
@@ -1697,7 +1697,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Deletes a single cluster."
+                      "description": "Deletes a `Cluster` resource. To avoid unintended data loss, migrate or gracefully shut down any workloads running on the cluster before deletion."
                     },
                     "setIamPolicy": {
                       "id": "vmwareengine.projects.locations.privateClouds.clusters.setIamPolicy",

@@ -5,6 +5,135 @@ Copyright 2014-2021 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 348.0.0 (2021-07-13)
+
+### Cloud SDK
+
+* Added `--locked` flag to `gcloud compute images create`.
+
+### AI
+
+* Added more available regions to `gcloud ai custom-job`.
+
+### App Engine
+
+* Updated the Java SDK to version 1.9.90.
+  Please visit the following release notes for details:
+  <https://cloud.google.com/appengine/docs/java/release-notes>.
+
+### BigQuery
+
+* Added `--autoscale_budget_slot_hours` flag to mk and update to support
+  budget based reservation autoscaling.
+* Added flags: `--create_session` and `--session_id` to query to support session
+  creation and using existing sessions.
+* Added `--connection_property` flag to query to set connection properties.
+* Minor bug fixes.
+
+### Cloud Bigtable
+
+* Added support to cbt to drop all rows from a table.
+* Added --auth-token flag to use IAM Auth Token for requests.
+
+### Cloud Build
+
+* Promoted `gcloud builds worker-pools` command group to GA.
+
+### Cloud Composer
+
+* Added `gcloud beta composer environments list-packages` command. It lists all PyPI modules installed in an Airflow worker.
+
+### Cloud DNS
+
+* Added `--gkeclusters` to `gcloud beta dns response-policies create` to support binding GKE clusters to the response policy.
+* Added `--gkeclusters` to `gcloud beta dns response-policies update` to support updating response policy with GKE clusters.
+
+### Cloud Datastream
+
+* Modified output formatting for `gcloud beta datastream streams list` to include stream creation and update times.
+* Added `gcloud beta routes create` which
+  creates a datastream private connection route.
+* Added `gcloud beta routes delete` which
+  deletes a datastream private connection route.
+* Added `gcloud beta streams update` which
+  updates an existing datastream stream.
+
+### Cloud Key Management Service
+
+*   Added client-side request and response integrity verification to `gcloud kms
+    encrypt`, `gcloud kms decrypt`, `gcloud kms asymmetric-sign`, and
+    `gcloud kms asymmetric-decrypt`.
+    For more information about Cloud KMS's integrity verification API, visit
+    <https://cloud.google.com/kms/docs/data-integrity-guidelines>.
+*   Added `--skip-integrity-verification` flag to `gcloud kms encrypt`, `gcloud
+    kms decrypt`, `gcloud kms asymmetric-sign`, and
+    `gcloud kms asymmetric-decrypt`.
+
+### Cloud On Demand Scanning
+
+* Added `--additional-package-types=MAVEN` flag to scan Maven packages for vulnerabilities.
+*  Updated `local-extract` to version 1.2.0 in order to support the scanning of
+   CentOS and RHEL images.
+
+### Cloud Scheduler
+
+*   Added `gcloud scheduler locations` command group [ALPHA, BETA].
+    Commands in this group provide information for locations where Cloud
+    Scheduler is available.
+
+### Cloud Storage
+
+* Updated gsutil component to 4.65.
+
+### Compute Engine
+
+* Removed IPv6 support from `gcloud compute instances create-with-container` and `gcloud compute instance-templates create-with-container` until it's ready.
+* Added `--description` flag on `compute instance-groups managed update` to add possibility to update descriptions.
+* Changed the behavior of `gcloud compute url-maps import` to wait for the import operation to finish.
+* Added KMS args (`--boot-disk-kms-project`, `--boot-disk-kms-location`,
+  `--boot-disk-kms-keyring`, `--boot-disk-kms-key`, and
+  `kms-project`, `kms-location`, `kms-keyring`, `kms-key` properties of
+  `--create-disk`) to `gcloud compute instances bulk create` to allow specifying
+  a customer-managed encryption key.
+* Promoted `--request-headers-to-add` to beta for `gcloud compute security-policies rules create|update`.
+
+### Config Connector
+
+* Updated Google Cloud Config Connector to version 1.54.0.
+  See Config Connector Overview for more details [https://cloud.google.com/config-connector/docs/overview](https://cloud.google.com/config-connector/docs/overview).
+
+### Dataproc Metastore
+
+* Added the following alpha and beta commands to work with Dataproc Metastore service backups:
+  * `metastore services backups get-iam-policy`
+  * `metastore services backups set-iam-policy`
+  * `metastore services backups add-iam-policy-binding`
+  * `metastore services backups remove-iam-policy-binding`
+
+### GKE Hub
+
+* Fixed issue where `--config-membership` of
+  `gcloud container hub ingress enable` and
+  `gcloud container hub ingress update` did not properly handle full Membership
+  resource paths.
+
+### Kubernetes Engine
+
+* Added `--enable-identity-service` flag to alpha, beta.
+* Mark `--enable-gke-oidc` flag as deprecated.
+* Added `--security-group` to `gcloud container clusters create` and `gcloud container clusters update`. This flag is used to enable the Authenticator Groups Config for group authentication.
+
+### Miscellaneous
+
+* Fixed issue where special characters were improperly escaped during command
+  completion when using zsh or fish.
+  * The previous behavior can be restored by setting the environment variable
+    `_ARGCOMPLETE_SHELL` to 'bash'.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 347.0.0 (2021-06-29)
 
 ### Breaking Changes

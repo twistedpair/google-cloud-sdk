@@ -31,6 +31,7 @@ import time
 
 import dateutil
 from google.auth import exceptions as google_auth_exceptions
+from google.auth import external_account as google_auth_external_account
 import google.auth.compute_engine as google_auth_gce
 from googlecloudsdk.core import config
 from googlecloudsdk.core import context_aware
@@ -212,6 +213,11 @@ class InvalidCredentialFileException(Error):
     super(InvalidCredentialFileException, self).__init__(
         'Failed to load credential file: [{f}].  {message}'
         .format(f=f, message=six.text_type(e)))
+
+
+class UnsupportedCredentialsError(Error):
+  """Exception for when loading unsupported credentials fails."""
+  pass
 
 
 class AccountImpersonationError(Error):
@@ -704,6 +710,12 @@ def _LoadFromFileOverride(cred_file_override, scopes, use_google_auth):
       scopes = config.CLOUDSDK_SCOPES
     cred = google_auth_creds.with_scopes_if_required(cred, scopes)
 
+    if isinstance(cred, google_auth_external_account.Credentials):
+      if not cred.service_account_email:
+        raise UnsupportedCredentialsError(
+            'Workload identity pools without service account impersonation are '
+            'not supported.')
+
     # Set token_uri after scopes since token_uri needs to be explicitly
     # preserved when scopes are applied.
     token_uri_override = properties.VALUES.auth.token_host.Get()
@@ -947,6 +959,7 @@ def _RefreshGoogleAuth(credentials,
           token_format=gce_token_format,
           include_license=gce_include_license)
 
+    # id_token is None (not applicable) for external account credentials.
     if id_token:
       # '_id_token' is the field supported in google-auth natively. gcloud
       # keeps an additional field 'id_tokenb64' to store this information
@@ -1067,9 +1080,12 @@ def _RefreshServiceAccountIdTokenGoogleAuth(cred, request_client):
 def Store(credentials, account=None, scopes=None):
   """Store credentials according for an account address.
 
-  gcloud only stores user account credentials, service account credentials and
-  p12 service account credentials. GCE, IAM impersonation, and Devshell
-  credentials are generated in runtime.
+  gcloud only stores user account credentials, external account credentials,
+  service account credentials and p12 service account credentials. GCE, IAM
+  impersonation, and Devshell credentials are generated in runtime.
+  External account credentials do not contain any sensitive credentials. They
+  only provide hints on how to retrieve local external and exchange them for
+  Google access tokens.
 
   Args:
     credentials: oauth2client.client.Credentials or
@@ -1089,9 +1105,10 @@ def Store(credentials, account=None, scopes=None):
   else:
     cred_type = c_creds.CredentialTypeGoogleAuth.FromCredentials(credentials)
 
-  if cred_type.key not in [c_creds.USER_ACCOUNT_CREDS_NAME,
-                           c_creds.SERVICE_ACCOUNT_CREDS_NAME,
-                           c_creds.P12_SERVICE_ACCOUNT_CREDS_NAME]:
+  if cred_type.key not in [
+      c_creds.USER_ACCOUNT_CREDS_NAME, c_creds.EXTERNAL_ACCOUNT_CREDS_NAME,
+      c_creds.SERVICE_ACCOUNT_CREDS_NAME, c_creds.P12_SERVICE_ACCOUNT_CREDS_NAME
+  ]:
     return
 
   if not account:
@@ -1169,6 +1186,10 @@ def Revoke(account=None):
 
   rv = False
   try:
+    # External account credentials are not revocable. Currently service account
+    # impersonation is required with these credentials. So the existing logic
+    # will work for these credentials. The account ID will end with
+    # .gserviceaccount.com and revoke will be a no-op.
     if not account.endswith('.gserviceaccount.com'):
       RevokeCredentials(credentials)
       rv = True
@@ -1357,6 +1378,7 @@ class _LegacyGenerator(object):
     self.credentials = credentials
     if self._cred_type not in (c_creds.USER_ACCOUNT_CREDS_NAME,
                                c_creds.SERVICE_ACCOUNT_CREDS_NAME,
+                               c_creds.EXTERNAL_ACCOUNT_CREDS_NAME,
                                c_creds.P12_SERVICE_ACCOUNT_CREDS_NAME):
       raise c_creds.CredentialFileSaveError(
           'Unsupported credentials type {0}'.format(type(self.credentials)))
@@ -1412,6 +1434,10 @@ class _LegacyGenerator(object):
     # try to use it anyways. The rest of the credential files should be
     # recreated here.
     self.Clean()
+
+    # TODO(b/190119704): Legacy credentials path will be supported in later CLs.
+    if self._cred_type == c_creds.EXTERNAL_ACCOUNT_CREDS_NAME:
+      return
 
     # Generates credentials used by bq and gsutil.
     if self._cred_type == c_creds.P12_SERVICE_ACCOUNT_CREDS_NAME:

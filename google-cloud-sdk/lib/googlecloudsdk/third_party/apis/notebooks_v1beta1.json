@@ -7,14 +7,14 @@
   "version": "v1beta1",
   "revision": "0",
   "title": "Notebooks API",
-  "description": "AI Platform Notebooks API is used to manage notebook resources in Google Cloud.",
+  "description": "Notebooks API is used to manage notebook resources in Google Cloud.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {
     "x16": "http://www.google.com/images/icons/product/search-16.gif",
     "x32": "http://www.google.com/images/icons/product/search-32.gif"
    },
-  "documentationLink": "https://cloud.google.com/ai-platform/notebooks/docs/",
+  "documentationLink": "https://cloud.google.com/notebooks/docs/",
   "protocol": "rest",
   "rootUrl": "https://notebooks.googleapis.com/",
   "mtlsRootUrl": "https://notebooks.mtls.googleapis.com/",

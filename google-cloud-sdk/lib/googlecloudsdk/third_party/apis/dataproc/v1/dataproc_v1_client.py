@@ -1157,6 +1157,32 @@ class DataprocV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Repair(self, request, global_params=None):
+      r"""Repairs a cluster.
+
+      Args:
+        request: (DataprocProjectsRegionsClustersRepairRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Repair')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Repair.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='dataproc.projects.regions.clusters.repair',
+        ordered_params=['projectId', 'region', 'clusterName'],
+        path_params=['clusterName', 'projectId', 'region'],
+        query_params=[],
+        relative_path='v1/projects/{projectId}/regions/{region}/clusters/{clusterName}:repair',
+        request_field='repairClusterRequest',
+        request_type_name='DataprocProjectsRegionsClustersRepairRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def SetIamPolicy(self, request, global_params=None):
       r"""Sets the access control policy on the specified resource. Replaces any existing policy.Can return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED errors.
 

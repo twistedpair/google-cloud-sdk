@@ -589,13 +589,13 @@
           "type": "string"
         },
         "createTime": {
-          "description": "Output only. The time sql integration was created. Synthetic field is populated automatically by CCFE.",
+          "description": "Output only. The time sql integration was created.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
-          "description": "Output only. The time sql integration was updated. Synthetic field is populated automatically by CCFE.",
+          "description": "Output only. The time sql integration was updated.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"

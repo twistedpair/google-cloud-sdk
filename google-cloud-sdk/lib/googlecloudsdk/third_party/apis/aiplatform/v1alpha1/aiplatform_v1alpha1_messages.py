@@ -1055,6 +1055,22 @@ class AiplatformProjectsLocationsEndpointsPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class AiplatformProjectsLocationsEndpointsPredictInternalRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsEndpointsPredictInternalRequest object.
+
+  Fields:
+    endpoint: Required. The name of the Endpoint requested to serve the
+      prediction. Format:
+      `projects/{project}/locations/{location}/endpoints/{endpoint}`
+    googleCloudAiplatformV1alpha1PredictRequest: A
+      GoogleCloudAiplatformV1alpha1PredictRequest resource to be passed as the
+      request body.
+  """
+
+  endpoint = _messages.StringField(1, required=True)
+  googleCloudAiplatformV1alpha1PredictRequest = _messages.MessageField('GoogleCloudAiplatformV1alpha1PredictRequest', 2)
+
+
 class AiplatformProjectsLocationsEndpointsPredictRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsEndpointsPredictRequest object.
 

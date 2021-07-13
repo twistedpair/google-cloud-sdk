@@ -32,8 +32,6 @@ NAME = 'Python Compat'
 ALLOWED_RUNTIME_NAMES = ('python27', 'python-compat')
 PYTHON_RUNTIME_NAME = 'python27'
 
-# TODO(b/36055866): this generated app.yaml doesn't work because the compat
-# runtimes need a "handlers" section.  Query the user for this information.
 PYTHON_APP_YAML = textwrap.dedent("""\
     env: flex
     runtime: {runtime}

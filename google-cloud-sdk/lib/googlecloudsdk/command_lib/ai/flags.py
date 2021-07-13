@@ -383,17 +383,12 @@ def RegionAttributeConfig(prompt_func=region_util.PromptForRegion):
       name='region',
       help_text='Cloud region for the {resource}.',
       fallthroughs=[
+          deps.ArgFallthrough('--region'),
           deps.PropertyFallthrough(properties.VALUES.ai.region),
-          deps.Fallthrough(function=prompt_func, hint='region')
+          deps.Fallthrough(
+              function=prompt_func,
+              hint='choose one from the prompted list of available regions')
       ])
-
-
-def GetRegionResourceSpec(prompt_func=region_util.PromptForRegion):
-  return concepts.ResourceSpec(
-      'aiplatform.projects.locations',
-      resource_name='region',
-      locationsId=RegionAttributeConfig(prompt_func=prompt_func),
-      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
 
 
 def GetModelResourceSpec(resource_name='model',
@@ -414,14 +409,18 @@ def AddRegionResourceArg(parser, verb, prompt_func=region_util.PromptForRegion):
   Args:
     parser: the parser for the command.
     verb: str, the verb to describe the resource, such as 'to update'.
-    prompt_func: function, the function to prompt for region from list of
-      available regions which returns a string for the region selected. Default
-      is region_util.PromptForRegion which contains three regions,
-      'us-central1', 'europe-west4', and 'asia-east1'.
+    prompt_func: function, the function to prompt a list of available regions
+      and return a string of the region that is selected by user.
   """
+  region_resource_spec = concepts.ResourceSpec(
+      'aiplatform.projects.locations',
+      resource_name='region',
+      locationsId=RegionAttributeConfig(prompt_func=prompt_func),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
+
   concept_parsers.ConceptParser.ForResource(
       '--region',
-      GetRegionResourceSpec(prompt_func=prompt_func),
+      region_resource_spec,
       'Cloud region {}.'.format(verb),
       required=True).AddToParser(parser)
 

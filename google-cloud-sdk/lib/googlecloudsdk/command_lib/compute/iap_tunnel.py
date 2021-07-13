@@ -37,6 +37,7 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import http_proxy
 from googlecloudsdk.core import log
+from googlecloudsdk.core import properties
 from googlecloudsdk.core.credentials import creds
 from googlecloudsdk.core.credentials import store
 from googlecloudsdk.core.util import files
@@ -99,6 +100,91 @@ def AddProxyServerHelperArgs(parser):
   _AddBaseArgs(parser)
 
 
+def CreateSshTunnelArgs(args, track, instance_ref, external_interface):
+  """Construct an SshTunnelArgs from command line args and values.
+
+  Args:
+    args: The parsed commandline arguments. May or may not have had
+      AddSshTunnelArgs called.
+    track: ReleaseTrack, The currently running release track.
+    instance_ref: The target instance reference object.
+    external_interface: The external interface of target resource object, if
+      available, otherwise None.
+  Returns:
+    SshTunnelArgs or None if IAP Tunnel is disabled.
+  """
+  # If tunneling through IAP is not available, then abort.
+  if not hasattr(args, 'tunnel_through_iap'):
+    return None
+
+  # If set to connect directly to private IP address, then abort.
+  if getattr(args, 'internal_ip', False):
+    return None
+
+  if args.IsSpecified('tunnel_through_iap'):
+    # If IAP tunneling is explicitly disabled, then abort.
+    if not args.tunnel_through_iap:
+      return None
+  else:
+    # If no external interface is available, then default to using IAP
+    # tunneling and continue with code below.  Otherwise, abort.
+    if external_interface:
+      return None
+    log.status.Print('External IP address was not found; defaulting to using '
+                     'IAP tunneling.')
+
+  res = SshTunnelArgs()
+
+  res.track = track.prefix
+  res.project = instance_ref.project
+  res.zone = instance_ref.zone
+  res.instance = instance_ref.instance
+
+  _AddPassThroughArgs(args, res)
+
+  return res
+
+
+def CreateOnPremSshTunnelArgs(args, track, ip):
+  """Construct an SshTunnelArgs from command line args and values for on-prem.
+
+  Args:
+    args: The parsed commandline arguments. May or may not have had
+      AddSshTunnelArgs called.
+    track: ReleaseTrack, The currently running release track.
+    ip: The target IP address.
+  Returns:
+    SshTunnelArgs.
+  """
+  res = SshTunnelArgs()
+
+  res.track = track.prefix
+  res.project = properties.VALUES.core.project.GetOrFail()
+  res.region = args.region
+  res.network = args.network
+  res.instance = ip
+
+  _AddPassThroughArgs(args, res)
+
+  return res
+
+
+def _AddPassThroughArgs(args, ssh_tunnel_args):
+  """Adds any passthrough args to the SshTunnelArgs.
+
+  Args:
+    args: The parsed commandline arguments. May or may not have had
+      AddSshTunnelArgs called.
+    ssh_tunnel_args: SshTunnelArgs, The SSH tunnel args to update.
+  """
+  if args.IsSpecified('iap_tunnel_url_override'):
+    ssh_tunnel_args.pass_through_args.append(
+        '--iap-tunnel-url-override=' + args.iap_tunnel_url_override)
+  if args.iap_tunnel_insecure_disable_websocket_cert_check:
+    ssh_tunnel_args.pass_through_args.append(
+        '--iap-tunnel-insecure-disable-websocket-cert-check')
+
+
 class SshTunnelArgs(object):
   """A class to hold some options for IAP Tunnel SSH/SCP.
 
@@ -106,7 +192,9 @@ class SshTunnelArgs(object):
     track: str/None, the prefix of the track for the inner gcloud.
     project: str, the project id (string with dashes).
     zone: str, the zone name.
-    instance: str, the instance name.
+    instance: str, the instance name (or IP for on-prem).
+    region: str, the region name (on-prem only).
+    network: str, the network name (on-prem only).
     pass_through_args: [str], additional args to be passed to the inner gcloud.
   """
 
@@ -115,57 +203,9 @@ class SshTunnelArgs(object):
     self.project = ''
     self.zone = ''
     self.instance = ''
+    self.region = ''
+    self.network = ''
     self.pass_through_args = []
-
-  @staticmethod
-  def FromArgs(args, track, instance_ref, external_interface):
-    """Construct an SshTunnelArgs from command line args and values.
-
-    Args:
-      args: The parsed commandline arguments. May or may not have had
-        AddSshTunnelArgs called.
-      track: ReleaseTrack, The currently running release track.
-      instance_ref: The target instance reference object.
-      external_interface: The external interface of target resource object, if
-        available, otherwise None.
-    Returns:
-      SshTunnelArgs or None if IAP Tunnel is disabled.
-    """
-    # If tunneling through IAP is not available, then abort.
-    if not hasattr(args, 'tunnel_through_iap'):
-      return None
-
-    # If set to connect directly to private IP address, then abort.
-    if getattr(args, 'internal_ip', False):
-      return None
-
-    if args.IsSpecified('tunnel_through_iap'):
-      # If IAP tunneling is explicitly disabled, then abort.
-      if not args.tunnel_through_iap:
-        return None
-    else:
-      # If no external interface is available, then default to using IAP
-      # tunneling and continue with code below.  Otherwise, abort.
-      if external_interface:
-        return None
-      log.status.Print('External IP address was not found; defaulting to using '
-                       'IAP tunneling.')
-
-    res = SshTunnelArgs()
-
-    res.track = track.prefix
-    res.project = instance_ref.project
-    res.zone = instance_ref.zone
-    res.instance = instance_ref.instance
-
-    # The tunnel_through_iap attribute existed, so these must too.
-    if args.IsSpecified('iap_tunnel_url_override'):
-      res.pass_through_args.append(
-          '--iap-tunnel-url-override=' + args.iap_tunnel_url_override)
-    if args.iap_tunnel_insecure_disable_websocket_cert_check:
-      res.pass_through_args.append(
-          '--iap-tunnel-insecure-disable-websocket-cert-check')
-    return res
 
   def _Members(self):
     return (
@@ -173,6 +213,8 @@ class SshTunnelArgs(object):
         self.project,
         self.zone,
         self.instance,
+        self.region,
+        self.network,
         self.pass_through_args,
     )
 
@@ -448,9 +490,7 @@ class _BaseIapTunnelHelper(object):
     self._interface = interface
     self._port = port
 
-  def ConfigureForIP(self, zone, region, network, ip, port):
-    # TODO(b/190426150): Remove zone for IP-based connections.
-    self._zone = zone
+  def ConfigureForIP(self, region, network, ip, port):
     self._region = region
     self._network = network
     self._ip = ip

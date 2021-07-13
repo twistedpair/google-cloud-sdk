@@ -30,6 +30,14 @@ def ValidateDisplayName(display_name):
         'Display name can not be empty.')
 
 
+def ValidateRegion(region, available_regions=constants.SUPPORTED_REGION):
+  """Validates whether a given region is among the available ones."""
+  if region not in available_regions:
+    raise exceptions.InvalidArgumentException(
+        'region', 'Available values are [{}], but found [{}].'.format(
+            ', '.join(available_regions), region))
+
+
 def GetAndValidateKmsKey(args):
   """Parse CMEK resource arg, and check if the arg was partially specified."""
   if hasattr(args.CONCEPTS, 'kms_key'):

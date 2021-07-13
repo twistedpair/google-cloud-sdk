@@ -1156,21 +1156,30 @@ class CommandBuilder(object):
           .format(yaml_command_schema.REL_NAME_FORMAT_KEY), operation_ref))
       return operation
 
-    return self._WaitForOperation(
-        operation_ref, resource_ref, extract_resource_result, args=args)
+    poller = AsyncOperationPoller(
+        self.spec, resource_ref if extract_resource_result else None, args)
+    if poller.IsDone(operation):
+      return poller.GetResult(operation)
+
+    return self._WaitForOperationWithPoller(
+        poller, operation_ref, args=args)
+
+  def _WaitForOperationWithPoller(self, poller, operation_ref, args=None):
+    progress_string = self._Format(
+        'Waiting for operation [{{{}}}] to complete'.format(
+            yaml_command_schema.REL_NAME_FORMAT_KEY),
+        operation_ref)
+    display_name = (self._GetDisplayName(poller.resource_ref, args)
+                    if args else None)
+    return waiter.WaitFor(
+        poller, operation_ref,
+        self._Format(progress_string, poller.resource_ref, display_name))
 
   def _WaitForOperation(self, operation_ref, resource_ref,
                         extract_resource_result, args=None):
     poller = AsyncOperationPoller(
         self.spec, resource_ref if extract_resource_result else None, args)
-    progress_string = self._Format(
-        'Waiting for operation [{{{}}}] to complete'.format(
-            yaml_command_schema.REL_NAME_FORMAT_KEY),
-        operation_ref)
-    return waiter.WaitFor(
-        poller, operation_ref, self._Format(
-            progress_string, resource_ref,
-            self._GetDisplayName(resource_ref, args) if args else None))
+    return self._WaitForOperationWithPoller(poller, operation_ref, resource_ref)
 
   def _HandleResponse(self, response, args=None):
     """Process the API response.

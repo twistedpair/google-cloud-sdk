@@ -109,6 +109,70 @@ class ClientCallDetailsInterceptor(grpc.UnaryUnaryClientInterceptor,
                                request_iterator)
 
 
+class AsyncClientCallDetailsInterceptor(grpc.aio.UnaryUnaryClientInterceptor,
+                                        grpc.aio.UnaryStreamClientInterceptor,
+                                        grpc.aio.StreamUnaryClientInterceptor,
+                                        grpc.aio.StreamStreamClientInterceptor):
+  """Generic Async Client Interceptor that modifies the ClientCallDetails."""
+
+  def __init__(self, fn):
+    self._fn = fn
+
+  def intercept_call(self, continuation, client_call_details, request):
+    """Intercepts a RPC.
+
+    Args:
+      continuation: A function that proceeds with the invocation by
+        executing the next interceptor in chain or invoking the
+        actual RPC on the underlying Channel. It is the interceptor's
+        responsibility to call it if it decides to move the RPC forward.
+        The interceptor can use
+        `response_future = continuation(client_call_details, request)`
+        to continue with the RPC.
+      client_call_details: A ClientCallDetails object describing the
+        outgoing RPC.
+      request: The request value for the RPC.
+
+    Returns:
+        If the response is unary:
+          An object that is both a Call for the RPC and a Future.
+          In the event of RPC completion, the return Call-Future's
+          result value will be the response message of the RPC.
+          Should the event terminate with non-OK status, the returned
+          Call-Future's exception value will be an RpcError.
+
+        If the response is streaming:
+          An object that is both a Call for the RPC and an iterator of
+          response values. Drawing response values from the returned
+          Call-iterator may raise RpcError indicating termination of
+          the RPC with non-OK status.
+    """
+    new_details = self._fn(client_call_details)
+    return continuation(new_details, request)
+
+  async def intercept_unary_unary(self, continuation, client_call_details,
+                                  request):
+    """Intercepts a unary-unary invocation asynchronously."""
+    return self.intercept_call(continuation, client_call_details, request)
+
+  async def intercept_unary_stream(self, continuation, client_call_details,
+                                   request):
+    """Intercepts a unary-stream invocation."""
+    return self.intercept_call(continuation, client_call_details, request)
+
+  async def intercept_stream_unary(self, continuation, client_call_details,
+                                   request_iterator):
+    """Intercepts a stream-unary invocation asynchronously."""
+    return self.intercept_call(continuation, client_call_details,
+                               request_iterator)
+
+  async def intercept_stream_stream(self, continuation, client_call_details,
+                                    request_iterator):
+    """Intercepts a stream-stream invocation."""
+    return self.intercept_call(continuation, client_call_details,
+                               request_iterator)
+
+
 def ShouldRecoverFromAPIEnablement():
   """Returns a callback for checking API enablement errors."""
   state = {'already_prompted_to_enable': False,
@@ -269,10 +333,10 @@ class _ClientCallDetails(
   pass
 
 
-def HeaderAdderInterceptor(headers_func):
-  """Returns an interceptor that adds headers."""
+def _AddHeaders(headers_func):
+  """Returns a function that adds headers to client call details."""
+  headers = headers_func()
   def AddHeaders(client_call_details):
-    headers = headers_func()
     if not headers:
       return client_call_details
 
@@ -288,58 +352,82 @@ def HeaderAdderInterceptor(headers_func):
         client_call_details.credentials, client_call_details.wait_for_ready,
         client_call_details.compression)
     return new_client_call_details
+  return AddHeaders
 
-  return ClientCallDetailsInterceptor(AddHeaders)
+
+def HeaderAdderInterceptor(headers_func):
+  """Returns an interceptor that adds headers."""
+  return ClientCallDetailsInterceptor(_AddHeaders(headers_func))
+
+
+def AsyncHeaderAdderInterceptor(headers_func):
+  """Returns an interceptor that adds headers."""
+
+  return AsyncClientCallDetailsInterceptor(_AddHeaders(headers_func))
 
 
 IAM_AUTHORITY_SELECTOR_HEADER = 'x-goog-iam-authority-selector'
 IAM_AUTHORIZATION_TOKEN_HEADER = 'x-goog-iam-authorization-token'
 
 
+def _GetIAMAuthHeaders():
+  """Returns the IAM authorization headers to be used."""
+  headers = []
+
+  authority_selector = properties.VALUES.auth.authority_selector.Get()
+  if authority_selector:
+    headers.append((IAM_AUTHORITY_SELECTOR_HEADER, authority_selector))
+
+  authorization_token = None
+  authorization_token_file = (
+      properties.VALUES.auth.authorization_token_file.Get())
+  if authorization_token_file:
+    try:
+      authorization_token = files.ReadFileContents(authorization_token_file)
+    except files.Error as e:
+      raise Error(e)
+
+  if authorization_token:
+    headers.append((
+        IAM_AUTHORIZATION_TOKEN_HEADER,
+        authorization_token.strip()
+    ))
+  return headers
+
+
 def IAMAuthHeadersInterceptor():
   """Returns an interceptor that adds IAM headers."""
-  def GetIAMAuthHeaders():
-    headers = []
+  return HeaderAdderInterceptor(_GetIAMAuthHeaders)
 
-    authority_selector = properties.VALUES.auth.authority_selector.Get()
-    if authority_selector:
-      headers.append((IAM_AUTHORITY_SELECTOR_HEADER, authority_selector))
 
-    authorization_token = None
-    authorization_token_file = (
-        properties.VALUES.auth.authorization_token_file.Get())
-    if authorization_token_file:
-      try:
-        authorization_token = files.ReadFileContents(authorization_token_file)
-      except files.Error as e:
-        raise Error(e)
+def AsyncIAMAuthHeadersInterceptor():
+  """Returns an interceptor that adds IAM headers."""
+  return AsyncHeaderAdderInterceptor(_GetIAMAuthHeaders)
 
-    if authorization_token:
-      headers.append((
-          IAM_AUTHORIZATION_TOKEN_HEADER,
-          authorization_token.strip()
-      ))
-    return headers
 
-  return HeaderAdderInterceptor(GetIAMAuthHeaders)
+def _GetRequestReasonHeader():
+  """Returns the request reason headers to be used."""
+  headers = []
+  request_reason = properties.VALUES.core.request_reason.Get()
+  if request_reason:
+    headers.append(('x-goog-request-reason', request_reason))
+  return headers
 
 
 def RequestReasonInterceptor():
   """Returns an interceptor that adds a request reason header."""
-  def GetRequestReasonHeader():
-    headers = []
-    request_reason = properties.VALUES.core.request_reason.Get()
-    if request_reason:
-      headers.append(('x-goog-request-reason', request_reason))
-    return headers
-
-  return HeaderAdderInterceptor(GetRequestReasonHeader)
+  return HeaderAdderInterceptor(_GetRequestReasonHeader)
 
 
-def TimeoutInterceptor():
-  """Returns an interceptor that adds a timeout."""
+def AsyncRequestReasonInterceptor():
+  """Returns an interceptor that adds a request reason header."""
+  return AsyncHeaderAdderInterceptor(_GetRequestReasonHeader)
+
+
+def _AddTimeout():
+  """Returns a function that sets a timeout on client call details."""
+  timeout = properties.VALUES.core.http_timeout.GetInt()
   def AddTimeout(client_call_details):
-    timeout = properties.VALUES.core.http_timeout.GetInt()
     if not timeout:
       return client_call_details
 
@@ -348,8 +436,17 @@ def TimeoutInterceptor():
         client_call_details.credentials, client_call_details.wait_for_ready,
         client_call_details.compression)
     return new_client_call_details
+  return AddTimeout
 
-  return ClientCallDetailsInterceptor(AddTimeout)
+
+def TimeoutInterceptor():
+  """Returns an interceptor that adds a timeout."""
+  return ClientCallDetailsInterceptor(_AddTimeout())
+
+
+def AsyncTimeoutInterceptor():
+  """Returns an interceptor that adds a timeout."""
+  return AsyncClientCallDetailsInterceptor(_AddTimeout())
 
 
 class WrappedStreamingResponse(grpc.Call, grpc.Future):
@@ -757,11 +854,17 @@ def MakeAsyncTransport(client_class, credentials, address_override_func,
   transport_class = client_class.get_transport_class('grpc_asyncio')
   address = _GetAddress(client_class, address_override_func, mtls_enabled)
 
+  interceptors = []
+  interceptors.append(AsyncRequestReasonInterceptor())
+  interceptors.append(AsyncTimeoutInterceptor())
+  interceptors.append(AsyncIAMAuthHeadersInterceptor())
+
   channel = transport_class.create_channel(
       host=address,
       credentials=credentials,
       ssl_credentials=GetSSLCredentials(mtls_enabled),
-      options=MakeChannelOptions())
+      options=MakeChannelOptions(),
+      interceptors=interceptors)
 
   return transport_class(
       channel=channel,

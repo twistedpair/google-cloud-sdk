@@ -2399,6 +2399,16 @@ class _SectionContextAware(_Section):
                    'Run `gcloud topic client-certificate` for list of services '
                    'supporting this feature.'),
         default=False)
+    # Only for tests. It is valuable to test that the mTLS endpoints are serving
+    # without involving the policy enforcement. The mTLS endpoints are expected
+    # to behave identically to the regular endpoints without policy enforcement.
+    self.always_use_mtls_endpoint = self._AddBool(
+        'always_use_mtls_endpoint',
+        help_text='If True, use the mTLS endpoints regardless of the value of '
+                  'context_aware/use_client_certificate.',
+        default=False,
+        hidden=True
+    )
     self.auto_discovery_file_path = self._Add(
         'auto_discovery_file_path',
         validator=ExistingAbsoluteFilepathValidator,

@@ -22,6 +22,7 @@ import collections
 from googlecloudsdk.command_lib.deploy import deploy_util
 from googlecloudsdk.command_lib.deploy import exceptions
 from googlecloudsdk.command_lib.deploy import target_util
+from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 
@@ -34,8 +35,10 @@ API_VERSION_V1BETA1 = 'deploy.cloud.google.com/v1beta1'
 API_VERSION_BETA1 = 'cloudDeploy/beta1'
 DELIVERY_PIPELINE_LABEL = 'deliveryPipeline'
 DELIVERY_PIPELINE_FIELDS = ['description', 'serialPipeline']
-TARGET_FIELDS = ['description', 'requireApproval', 'gkeCluster']
-METADATA_FIELDS = ['name', 'annotations', 'labels']
+TARGET_FIELDS = [
+    'description', 'requireApproval', 'cluster', 'gkeCluster', 'gke'
+]
+METADATA_FIELDS = ['annotations', 'labels']
 
 
 def ParseDeployConfig(messages, manifests, region):
@@ -217,7 +220,7 @@ def _CreateDeliveryPipelineResource(messages, delivery_pipeline_name, project,
 
 
 def ProtoToManifest(resource, resource_ref, kind, fields):
-  """Convert a resource message to a cloud deploy resource manifest.
+  """Converts a resource message to a cloud deploy resource manifest.
 
   The manifest can be applied by 'deploy apply' command.
 
@@ -235,14 +238,24 @@ def ProtoToManifest(resource, resource_ref, kind, fields):
 
   for k in METADATA_FIELDS:
     v = getattr(resource, k)
+    # Skips the 'zero' values in the message.
     if v:
       manifest['metadata'][k] = v
+  # Sets the name to resource ID instead of the full name.
   manifest['metadata']['name'] = resource_ref.Name()
 
   for k in fields:
-    v = getattr(resource, k)
-    if v:
-      manifest[k] = v
+    try:
+      v = getattr(resource, k)
+      # Skips the 'zero' values in the message.
+      if v:
+        manifest[k] = v
+    except AttributeError:
+      # TODO(b/188524927) 'gkeCluster' will be removed at some point.
+      # try/except block and manifest_util_test.py can be removed when
+      # the migration is done.
+      log.debug('Field {} does not exist.'.format(k))
+
   if kind == TARGET_KIND_V1BETA1:
     pipeline_id = resource_ref.AsDict().get('deliveryPipelinesId')
     if pipeline_id:

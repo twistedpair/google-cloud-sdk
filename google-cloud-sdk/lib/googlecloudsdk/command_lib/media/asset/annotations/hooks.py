@@ -40,6 +40,9 @@ def ParseAnnotationRequest(ref, args, req):
   """Prepare the annotation for create and update requests."""
   del ref  # Unused
   messages = apis.GetMessagesModule('mediaasset', 'v1alpha')
+  # In update case, request's annotation is nill
+  if req.annotation is None:
+    req.annotation = encoding.DictToMessage({}, messages.Annotation)
   if args.IsKnownAndSpecified('labels'):
     req.annotation.labels = encoding.DictToMessage(
         args.labels, messages.Annotation.LabelsValue)

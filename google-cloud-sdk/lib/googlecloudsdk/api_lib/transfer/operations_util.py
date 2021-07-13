@@ -24,9 +24,14 @@ from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.command_lib.transfer import name_util
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.console import progress_tracker
 from googlecloudsdk.core.util import retry
 from googlecloudsdk.core.util import scaled_integer
+
+
+_LAST_RETRIAL = -1
+_UNKNOWN_VALUE = 'UNKNOWN'
 
 
 def _get_operation_to_poll(job_name, operation_name):
@@ -79,35 +84,49 @@ def block_until_done(job_name=None, operation_name=None):
     )
 
 
-def _call_api_get_and_print_progress(name):
+def _print_progress(operation, retryer_state):
   """Gets operation from API and prints its progress updating in-place."""
-  operation = api_get(name)
   metadata = encoding.MessageToDict(operation.metadata)
 
-  if ('counters' in metadata and 'bytesCopiedToSink' in metadata['counters'] and
-      'bytesFoundFromSource' in metadata['counters']):
-    copied_bytes = metadata['counters']['bytesCopiedToSink']
-    total_bytes = metadata['counters']['bytesFoundFromSource']
-    progress_percent = int(round(copied_bytes / total_bytes, 2) * 100)
+  if 'counters' in metadata:
+    skipped_bytes = int(metadata['counters'].get('bytesFromSourceSkippedBySync',
+                                                 0))
+    skipped_string = scaled_integer.FormatBinaryNumber(
+        skipped_bytes, decimal_places=1)
+
+    copied_bytes = int(metadata['counters'].get('bytesCopiedToSink', 0))
+    total_bytes = int(metadata['counters'].get('bytesFoundFromSource', 0))
+    if total_bytes:
+      progress_percent = int(round(copied_bytes / total_bytes, 2) * 100)
+    else:
+      progress_percent = 0
     progress_string = '{}% ({} of {})'.format(
         progress_percent,
-        scaled_integer.FormatBinaryNumber(copied_bytes, decimal_places=2),
-        scaled_integer.FormatBinaryNumber(total_bytes, decimal_places=2))
+        scaled_integer.FormatBinaryNumber(copied_bytes, decimal_places=1),
+        scaled_integer.FormatBinaryNumber(total_bytes, decimal_places=1))
+
   else:
-    progress_string = 'UNKNOWN'
+    progress_string = 'Progress: {}'.format(_UNKNOWN_VALUE)
+    skipped_string = _UNKNOWN_VALUE
 
   if 'errorBreakdowns' in metadata:
     error_count = sum(
-        [error['errorCount'] for error in metadata['errorBreakdowns']])
+        [int(error['errorCount']) for error in metadata['errorBreakdowns']])
   else:
     error_count = 0
 
-  log.status.Print(('Status: {} | Progress: {} | Errors: {}\r').format(
-      metadata['status'], progress_string, error_count))
-  return operation
+  spin_marks = console_attr.ProgressTrackerSymbolsAscii().spin_marks
+  if retryer_state.retrial == _LAST_RETRIAL:
+    spin_mark = ''
+  else:
+    spin_mark = spin_marks[retryer_state.retrial % len(spin_marks)]
+
+  log.status.write(('{} | {} | Skipped: {} | Errors: {} {}\r').format(
+      metadata['status'], progress_string, skipped_string, error_count,
+      spin_mark))
 
 
-def _print_progress(name):
+def _poll_progress(name):
   """Prints progress of operation and blocks until transfer is complete.
 
   Args:
@@ -116,11 +135,17 @@ def _print_progress(name):
   Returns:
     Apitools Operation object containing the completed operation's metadata.
   """
-  return retry.Retryer(jitter_ms=0).RetryOnResult(
-      _call_api_get_and_print_progress,
-      args=[name],
-      should_retry_if=_is_operation_in_progress,
-      sleep_ms=1000)
+  complete_operation = retry.Retryer(
+      jitter_ms=0, status_update_func=_print_progress).RetryOnResult(
+          api_get,
+          args=[name],
+          should_retry_if=_is_operation_in_progress,
+          sleep_ms=1000)
+  _print_progress(
+      complete_operation,
+      retry.RetryerState(
+          retrial=_LAST_RETRIAL, time_passed_ms=None, time_to_wait_ms=None))
+  return complete_operation
 
 
 def display_monitoring_view(name):
@@ -136,8 +161,8 @@ def display_monitoring_view(name):
   if 'startTime' in initial_metadata:
     log.status.Print('Start time: ' + initial_metadata['startTime'])
 
-  final_operation = _print_progress(initial_operation.name)
+  final_operation = _poll_progress(initial_operation.name)
   final_metadata = encoding.MessageToDict(final_operation.metadata)
 
   if 'endTime' in final_metadata:
-    log.status.Print('End time: ' + final_metadata['endTime'])
+    log.status.Print('\nEnd time: ' + final_metadata['endTime'])

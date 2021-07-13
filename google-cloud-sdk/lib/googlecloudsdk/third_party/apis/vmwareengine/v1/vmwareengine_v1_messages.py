@@ -491,7 +491,7 @@ class NetworkConfig(_messages.Message):
   to be done.
 
   Fields:
-    managementCidr: Required. Management CIDR used by VMWare management
+    managementCidr: Required. Management CIDR used by VMware management
       appliances.
     network: Required. The relative resource name of the consumer VPC network
       this private cloud is attached to. Specify the name in the following
@@ -764,7 +764,8 @@ class PrivateCloud(_messages.Message):
   r"""Private cloud resource.
 
   Enums:
-    StateValueValuesEnum: Output only. State of the resource.
+    StateValueValuesEnum: Output only. State of the resource. New values may
+      be added to this enum when appropriate.
 
   Messages:
     LabelsValue: Labels are a way to attach lightweight metadata to resources
@@ -800,22 +801,29 @@ class PrivateCloud(_messages.Message):
       map with the new label, all of the old labels will be removed (probably
       not what is desired).
     managementCluster: Input only. The management cluster for this private
-      cloud. This parameter is required during creation of private cloud to
-      provide details for the default cluster.
+      cloud. This field is required during creation of the private cloud to
+      provide details for the default cluster. The following fields can't be
+      changed after private cloud creation: `ManagementCluster.clusterId`,
+      `ManagementCluster.nodeTypeId`.
     name: Output only. The resource name of this private cloud. Resource names
       are schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. For example:
       `projects/my-project/locations/us-west1-a/privateClouds/my-cloud`
-    networkConfig: Required. Network configuration.
+    networkConfig: Required. Network configuration of the private cloud.
+      Caution: Do not remove VPC networks used by private clouds
+      (`NetworkConfig.network`). Doing so removes your ability to access the
+      private cloud.
     nsx: Output only. NSX appliance.
-    state: Output only. State of the resource.
+    state: Output only. State of the resource. New values may be added to this
+      enum when appropriate.
     updateTime: Output only. Last update time of this resource in RFC3339 text
       format.
     vcenter: Output only. Vcenter appliance.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. State of the resource.
+    r"""Output only. State of the resource. New values may be added to this
+    enum when appropriate.
 
     Values:
       STATE_UNSPECIFIED: The default value. This value should never be used.
@@ -886,14 +894,15 @@ class ResetNsxCredentialsRequest(_messages.Message):
   Fields:
     requestId: Optional. A request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server will
-      guarantee that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
+      to ignore the request if it has already been completed. The server
+      guarantees that a request doesn't result in creation of duplicate
+      commitments for at least 60 minutes. For example, consider a situation
+      where you make an initial request and the request times out. If you make
+      the request again with the same request ID, the server can check if
+      original operation with the same request ID was received, and if so,
+      will ignore the second request. This prevents clients from accidentally
+      creating duplicate commitments. The request ID must be a valid UUID with
+      the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
   """
 
@@ -906,14 +915,15 @@ class ResetVcenterCredentialsRequest(_messages.Message):
   Fields:
     requestId: Optional. A request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server will
-      guarantee that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
+      to ignore the request if it has already been completed. The server
+      guarantees that a request doesn't result in creation of duplicate
+      commitments for at least 60 minutes. For example, consider a situation
+      where you make an initial request and the request times out. If you make
+      the request again with the same request ID, the server can check if
+      original operation with the same request ID was received, and if so,
+      will ignore the second request. This prevents clients from accidentally
+      creating duplicate commitments. The request ID must be a valid UUID with
+      the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
   """
 
@@ -1079,16 +1089,8 @@ class UndeletePrivateCloudRequest(_messages.Message):
   r"""Request message for VmwareEngine.UndeletePrivateCloud
 
   Fields:
-    requestId: Optional. A request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server will
-      guarantee that for at least 60 minutes after the first request. For
-      example, consider a situation where you make an initial request and the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
+    requestId: Optional. The request ID must be a valid UUID with the
+      exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
   """
 
@@ -1304,16 +1306,8 @@ class VmwareengineProjectsLocationsPrivateCloudsClustersCreateRequest(_messages.
       conventions in https://cloud.google.com/apis/design/resource_names. For
       example: `projects/my-project/locations/us-west1-a/privateClouds/my-
       cloud`
-    requestId: Optional. A request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server will
-      guarantee that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
+    requestId: Optional. The request ID must be a valid UUID with the
+      exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
     validateOnly: Optional. When true, the request is validated only, but not
       executed.
@@ -1336,16 +1330,8 @@ class VmwareengineProjectsLocationsPrivateCloudsClustersDeleteRequest(_messages.
       https://cloud.google.com/apis/design/resource_names. For example:
       `projects/my-project/locations/us-west1-a/privateClouds/my-
       cloud/clusters/my-cluster`
-    requestId: Optional. A request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server will
-      guarantee that for at least 60 minutes after the first request. For
-      example, consider a situation where you make an initial request and the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
+    requestId: Optional. The request ID must be a valid UUID with the
+      exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
   """
 
@@ -1400,15 +1386,15 @@ class VmwareengineProjectsLocationsPrivateCloudsClustersListRequest(_messages.Me
       be `=`, `!=`, `>`, or `<`. For example, if you are filtering a list of
       clusters, you can exclude the ones named `example-cluster` by specifying
       `name != "example-cluster"`. You can also filter nested fields. For
-      example, you could specify `autoscale_settings.cooldown_period_minutes =
-      2` to include clusters only if they have given cooldown period in
+      example, you could specify `autoscale_settings.cooldownPeriodMinutes =
+      2` to include clusters only if they have given a cooldown period in
       autoscale policy. To filter on multiple expressions, provide each
       separate expression within parentheses. For example: ``` (name =
-      "example-cluster") (node_count = "3") ``` By default, each expression is
+      "example-cluster") (nodeCount = "3") ``` By default, each expression is
       an `AND` expression. However, you can include `AND` and `OR` expressions
       explicitly. For example: ``` (name = "example-cluster-1") AND
-      (create_time > "2021-04-12T08:15:10.40Z") OR (name = "example-
-      cluster-2") ```
+      (createTime > "2021-04-12T08:15:10.40Z") OR (name = "example-cluster-2")
+      ```
     orderBy: Sorts list results by a certain order. By default, returned
       results are ordered by `name` in ascending order. You can also sort
       results in descending order based on the `name` value using
@@ -1443,22 +1429,14 @@ class VmwareengineProjectsLocationsPrivateCloudsClustersPatchRequest(_messages.M
       https://cloud.google.com/apis/design/resource_names. For example:
       `projects/my-project/locations/us-west1-a/privateClouds/my-
       cloud/clusters/my-cluster`
-    requestId: Optional. A request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server will
-      guarantee that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
+    requestId: Optional. The request ID must be a valid UUID with the
+      exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
     updateMask: Required. Field mask is used to specify the fields to be
       overwritten in the `Cluster` resource by the update. The fields
-      specified in the `update_mask` are relative to the resource, not the
-      full request. A field will be overwritten if it is in the mask. If the
-      user does not provide a mask then all fields will be overwritten.
+      specified in the `updateMask` are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the user
+      does not provide a mask then all fields will be overwritten.
     validateOnly: Optional. When true, the request is validated only, but not
       executed.
   """
@@ -1507,8 +1485,8 @@ class VmwareengineProjectsLocationsPrivateCloudsCreateRequest(_messages.Message)
   r"""A VmwareengineProjectsLocationsPrivateCloudsCreateRequest object.
 
   Fields:
-    parent: Required. The resource name of the location (region) to create the
-      new private cloud in. Resource names are schemeless URIs that follow the
+    parent: Required. The resource name of the location to create the new
+      private cloud in. Resource names are schemeless URIs that follow the
       conventions in https://cloud.google.com/apis/design/resource_names. For
       example: `projects/my-project/locations/us-west1-a`
     privateCloud: A PrivateCloud resource to be passed as the request body.
@@ -1516,16 +1494,8 @@ class VmwareengineProjectsLocationsPrivateCloudsCreateRequest(_messages.Message)
       cloud to be created. This identifier must be unique among each
       `PrivateCloud` within the parent and becomes the final token in the name
       URI.
-    requestId: Optional. A request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server will
-      guarantee that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
+    requestId: Optional. The request ID must be a valid UUID with the
+      exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
     validateOnly: Optional. When true, the request is validated only, but not
       executed.
@@ -1543,24 +1513,16 @@ class VmwareengineProjectsLocationsPrivateCloudsDeleteRequest(_messages.Message)
 
   Fields:
     force: Optional. If set to true, cascade delete is enabled and all
-      children of this private cloud resource will also be deleted. This will
-      also delete mandatory management cluster. With this flag specified to
-      false, private cloud will not be deleted due to management cluster child
-      resource.
+      children of this private cloud resource are also deleted. When this flag
+      is set to false, the private cloud will not be deleted if there are any
+      children other than the management cluster. The management cluster is
+      always deleted.
     name: Required. The resource name of the private cloud to delete. Resource
       names are schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. For example:
       `projects/my-project/locations/us-west1-a/privateClouds/my-cloud`
-    requestId: Optional. A request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server will
-      guarantee that for at least 60 minutes after the first request. For
-      example, consider a situation where you make an initial request and the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
+    requestId: Optional. The request ID must be a valid UUID with the
+      exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
   """
 
@@ -1618,10 +1580,10 @@ class VmwareengineProjectsLocationsPrivateCloudsListRequest(_messages.Message):
       "192.168.0.0/24"` to include private clouds only if they have a matching
       address in their network configuration. To filter on multiple
       expressions, provide each separate expression within parentheses. For
-      example: ``` (name = "example-pc") (create_time >
+      example: ``` (name = "example-pc") (createTime >
       "2021-04-12T08:15:10.40Z") ``` By default, each expression is an `AND`
       expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (name = "private-cloud-1") AND (create_time
+      explicitly. For example: ``` (name = "private-cloud-1") AND (createTime
       > "2021-04-12T08:15:10.40Z") OR (name = "private-cloud-2") ```
     orderBy: Sorts list results by a certain order. By default, returned
       results are ordered by `name` in ascending order. You can also sort
@@ -1630,11 +1592,10 @@ class VmwareengineProjectsLocationsPrivateCloudsListRequest(_messages.Message):
     pageSize: The maximum number of private clouds to return in one page. The
       service may return fewer than this value. The maximum value is coerced
       to 25.
-    pageToken: A page token, received from a previous
-      `ListPrivateCloudsRequest` call. Provide this to retrieve the subsequent
-      page. When paginating, all other parameters provided to
-      `ListPrivateCloudsRequest` must match the call that provided the page
-      token.
+    pageToken: A page token, received from a previous `ListPrivateClouds`
+      call. Provide this to retrieve the subsequent page. When paginating, all
+      other parameters provided to `ListPrivateClouds` must match the call
+      that provided the page token.
     parent: Required. The resource name of the private cloud to be queried for
       clusters. Resource names are schemeless URIs that follow the conventions
       in https://cloud.google.com/apis/design/resource_names. For example:
@@ -1657,22 +1618,14 @@ class VmwareengineProjectsLocationsPrivateCloudsPatchRequest(_messages.Message):
       https://cloud.google.com/apis/design/resource_names. For example:
       `projects/my-project/locations/us-west1-a/privateClouds/my-cloud`
     privateCloud: A PrivateCloud resource to be passed as the request body.
-    requestId: Optional. A request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server will
-      guarantee that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
+    requestId: Optional. The request ID must be a valid UUID with the
+      exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
     updateMask: Required. Field mask is used to specify the fields to be
       overwritten in the `PrivateCloud` resource by the update. The fields
-      specified in the `update_mask` are relative to the resource, not the
-      full request. A field will be overwritten if it is in the mask. If the
-      user does not provide a mask then all fields will be overwritten.
+      specified in `updateMask` are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the user
+      does not provide a mask then all fields will be overwritten.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1784,9 +1737,9 @@ class VmwareengineProjectsLocationsPrivateCloudsUndeleteRequest(_messages.Messag
   r"""A VmwareengineProjectsLocationsPrivateCloudsUndeleteRequest object.
 
   Fields:
-    name: Required. The resource name of the private cloud to undelete.
-      Resource names are schemeless URIs that follow the conventions in
-      https://cloud.google.com/apis/design/resource_names. For example:
+    name: Required. The resource name of the private cloud marked for
+      deletion. Resource names are schemeless URIs that follow the conventions
+      in https://cloud.google.com/apis/design/resource_names. For example:
       `projects/my-project/locations/us-west1-a/privateClouds/my-cloud`
     undeletePrivateCloudRequest: A UndeletePrivateCloudRequest resource to be
       passed as the request body.

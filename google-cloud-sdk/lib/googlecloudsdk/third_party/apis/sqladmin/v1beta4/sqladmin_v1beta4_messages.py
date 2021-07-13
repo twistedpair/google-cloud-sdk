@@ -69,7 +69,8 @@ class BackupConfiguration(_messages.Message):
     enabled: Whether this configuration is enabled.
     kind: This is always *sql#backupConfiguration*.
     location: Location of the backup
-    pointInTimeRecoveryEnabled: Reserved for future use.
+    pointInTimeRecoveryEnabled: (Postgres only) Whether point in time recovery
+      is enabled.
     replicationLogArchivingEnabled: Reserved for future use.
     startTime: Start time for the daily backup configuration in UTC timezone
       in the 24 hour format - *HH:MM*.
@@ -288,7 +289,8 @@ class CloneContext(_messages.Message):
       clone.
     kind: This is always *sql#cloneContext*.
     pitrTimestampMs: Reserved for future use.
-    pointInTime: Reserved for future use.
+    pointInTime: Timestamp, if specified, identifies the time to which the
+      source instance is cloned.
   """
 
   binLogCoordinates = _messages.MessageField('BinLogCoordinates', 1)
@@ -296,6 +298,118 @@ class CloneContext(_messages.Message):
   kind = _messages.StringField(3)
   pitrTimestampMs = _messages.IntegerField(4)
   pointInTime = _messages.StringField(5)
+
+
+class ConnectSettings(_messages.Message):
+  r"""Connect settings retrieval response.
+
+  Enums:
+    BackendTypeValueValuesEnum: **SECOND_GEN**: Cloud SQL database instance.
+      **EXTERNAL**: A database server that is not managed by Google. This
+      property is read-only; use the **tier** property in the **settings**
+      object to determine the database type.
+    DatabaseVersionValueValuesEnum: The database engine type and version. The
+      **databaseVersion** field cannot be changed after instance creation.
+      MySQL instances: **MYSQL_8_0**, **MYSQL_5_7** (default), or
+      **MYSQL_5_6**. PostgreSQL instances: **POSTGRES_9_6**, **POSTGRES_10**,
+      **POSTGRES_11** or **POSTGRES_12** (default). SQL Server instances:
+      **SQLSERVER_2017_STANDARD** (default), **SQLSERVER_2017_ENTERPRISE**,
+      **SQLSERVER_2017_EXPRESS**, or **SQLSERVER_2017_WEB**.
+
+  Fields:
+    backendType: **SECOND_GEN**: Cloud SQL database instance. **EXTERNAL**: A
+      database server that is not managed by Google. This property is read-
+      only; use the **tier** property in the **settings** object to determine
+      the database type.
+    databaseVersion: The database engine type and version. The
+      **databaseVersion** field cannot be changed after instance creation.
+      MySQL instances: **MYSQL_8_0**, **MYSQL_5_7** (default), or
+      **MYSQL_5_6**. PostgreSQL instances: **POSTGRES_9_6**, **POSTGRES_10**,
+      **POSTGRES_11** or **POSTGRES_12** (default). SQL Server instances:
+      **SQLSERVER_2017_STANDARD** (default), **SQLSERVER_2017_ENTERPRISE**,
+      **SQLSERVER_2017_EXPRESS**, or **SQLSERVER_2017_WEB**.
+    ipAddresses: The assigned IP addresses for the instance.
+    kind: This is always `sql#connectSettings`.
+    serverCaCert: SSL configuration.
+  """
+
+  class BackendTypeValueValuesEnum(_messages.Enum):
+    r"""**SECOND_GEN**: Cloud SQL database instance. **EXTERNAL**: A database
+    server that is not managed by Google. This property is read-only; use the
+    **tier** property in the **settings** object to determine the database
+    type.
+
+    Values:
+      SQL_BACKEND_TYPE_UNSPECIFIED: This is an unknown backend type for
+        instance.
+      FIRST_GEN: V1 speckle instance.
+      SECOND_GEN: V2 speckle instance.
+      EXTERNAL: On premises instance.
+    """
+    SQL_BACKEND_TYPE_UNSPECIFIED = 0
+    FIRST_GEN = 1
+    SECOND_GEN = 2
+    EXTERNAL = 3
+
+  class DatabaseVersionValueValuesEnum(_messages.Enum):
+    r"""The database engine type and version. The **databaseVersion** field
+    cannot be changed after instance creation. MySQL instances: **MYSQL_8_0**,
+    **MYSQL_5_7** (default), or **MYSQL_5_6**. PostgreSQL instances:
+    **POSTGRES_9_6**, **POSTGRES_10**, **POSTGRES_11** or **POSTGRES_12**
+    (default). SQL Server instances: **SQLSERVER_2017_STANDARD** (default),
+    **SQLSERVER_2017_ENTERPRISE**, **SQLSERVER_2017_EXPRESS**, or
+    **SQLSERVER_2017_WEB**.
+
+    Values:
+      SQL_DATABASE_VERSION_UNSPECIFIED: This is an unknown database version.
+      MYSQL_5_1: The database version is MySQL 5.1.
+      MYSQL_5_5: The database version is MySQL 5.5.
+      MYSQL_5_6: The database version is MySQL 5.6.
+      MYSQL_5_7: The database version is MySQL 5.7.
+      POSTGRES_9_6: The database version is PostgreSQL 9.6.
+      POSTGRES_11: The database version is PostgreSQL 11.
+      SQLSERVER_2017_STANDARD: The database version is SQL Server 2017
+        Standard.
+      SQLSERVER_2017_ENTERPRISE: The database version is SQL Server 2017
+        Enterprise.
+      SQLSERVER_2017_EXPRESS: The database version is SQL Server 2017 Express.
+      SQLSERVER_2017_WEB: The database version is SQL Server 2017 Web.
+      POSTGRES_10: The database version is PostgreSQL 10.
+      POSTGRES_12: The database version is PostgreSQL 12.
+      MYSQL_8_0: The database version is MySQL 8.
+      POSTGRES_13: The database version is PostgreSQL 13.
+      SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
+        Standard.
+      SQLSERVER_2019_ENTERPRISE: The database version is SQL Server 2019
+        Enterprise.
+      SQLSERVER_2019_EXPRESS: The database version is SQL Server 2019 Express.
+      SQLSERVER_2019_WEB: The database version is SQL Server 2019 Web.
+    """
+    SQL_DATABASE_VERSION_UNSPECIFIED = 0
+    MYSQL_5_1 = 1
+    MYSQL_5_5 = 2
+    MYSQL_5_6 = 3
+    MYSQL_5_7 = 4
+    POSTGRES_9_6 = 5
+    POSTGRES_11 = 6
+    SQLSERVER_2017_STANDARD = 7
+    SQLSERVER_2017_ENTERPRISE = 8
+    SQLSERVER_2017_EXPRESS = 9
+    SQLSERVER_2017_WEB = 10
+    POSTGRES_10 = 11
+    POSTGRES_12 = 12
+    MYSQL_8_0 = 13
+    POSTGRES_13 = 14
+    SQLSERVER_2019_STANDARD = 15
+    SQLSERVER_2019_ENTERPRISE = 16
+    SQLSERVER_2019_EXPRESS = 17
+    SQLSERVER_2019_WEB = 18
+
+  backendType = _messages.EnumField('BackendTypeValueValuesEnum', 1)
+  databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 2)
+  ipAddresses = _messages.MessageField('IpMapping', 3, repeated=True)
+  kind = _messages.StringField(4)
+  serverCaCert = _messages.MessageField('SslCert', 5)
 
 
 class Database(_messages.Message):
@@ -1025,6 +1139,31 @@ class FlagsListResponse(_messages.Message):
 
   items = _messages.MessageField('Flag', 1, repeated=True)
   kind = _messages.StringField(2)
+
+
+class GenerateEphemeralCertRequest(_messages.Message):
+  r"""Ephemeral certificate creation request.
+
+  Fields:
+    access_token: Optional. Access token to include in the signed certificate.
+    public_key: PEM encoded public key to include in the signed certificate.
+    readTime: Optional. Optional snapshot read timestamp to trade freshness
+      for performance.
+  """
+
+  access_token = _messages.StringField(1)
+  public_key = _messages.StringField(2)
+  readTime = _messages.StringField(3)
+
+
+class GenerateEphemeralCertResponse(_messages.Message):
+  r"""Ephemeral certificate creation request.
+
+  Fields:
+    ephemeralCert: Generated cert
+  """
+
+  ephemeralCert = _messages.MessageField('SslCert', 1)
 
 
 class ImportContext(_messages.Message):
@@ -2058,6 +2197,36 @@ class SqlBackupRunsListRequest(_messages.Message):
   maxResults = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   project = _messages.StringField(4, required=True)
+
+
+class SqlConnectGenerateEphemeralRequest(_messages.Message):
+  r"""A SqlConnectGenerateEphemeralRequest object.
+
+  Fields:
+    generateEphemeralCertRequest: A GenerateEphemeralCertRequest resource to
+      be passed as the request body.
+    instance: Cloud SQL instance ID. This does not include the project ID.
+    project: Project ID of the project that contains the instance.
+  """
+
+  generateEphemeralCertRequest = _messages.MessageField('GenerateEphemeralCertRequest', 1)
+  instance = _messages.StringField(2, required=True)
+  project = _messages.StringField(3, required=True)
+
+
+class SqlConnectGetRequest(_messages.Message):
+  r"""A SqlConnectGetRequest object.
+
+  Fields:
+    instance: Cloud SQL instance ID. This does not include the project ID.
+    project: Project ID of the project that contains the instance.
+    readTime: Optional. Optional snapshot read timestamp to trade freshness
+      for performance.
+  """
+
+  instance = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  readTime = _messages.StringField(3)
 
 
 class SqlDatabasesDeleteRequest(_messages.Message):

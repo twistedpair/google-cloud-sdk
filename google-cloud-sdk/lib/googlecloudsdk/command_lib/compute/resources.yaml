@@ -43,6 +43,25 @@ commitment:
     attribute_name: commitment
     help: The name of the Google Compute Engine regional commitment.
 
+address:
+  name: address
+  collection: compute.addresses
+  attributes:
+  - *project
+  - *region
+  - parameter_name: address
+    attribute_name: address
+    help: The name of the Google Compute address.
+
+firewall_rule:
+  name: firewall_rule
+  collection: compute.firewalls
+  attributes:
+  - *project
+  - parameter_name: firewall
+    attribute_name: firewall
+    help: The name of the Google Compute firewall rule.
+
 disk:
   name: disk
   collection: compute.disks
@@ -52,6 +71,17 @@ disk:
   - parameter_name: disk
     attribute_name: disk
     help: The name of the Google Compute Engine disk.
+
+future_reservation:
+  name: future reservation
+  collection: compute.futureReservations
+  attributes:
+  - *project
+  - *zone
+  - &future_reservation
+    parameter_name: futureReservation
+    attribute_name: future_reservation
+    help: The name of the Google Compute Engine future reservation.
 
 image:
   name: image
@@ -150,3 +180,12 @@ resource_policy:
   - parameter_name: resourcePolicy
     attribute_name: resource_policy
     help: The name of the Google Compute Engine resource policy.
+
+ssl_policy:
+  name: ssl policy
+  collection: compute.sslPolicies
+  attributes:
+  - *project
+  - parameter_name: sslPolicy
+    attribute_name: ssl_policy
+    help: The name of the SSL policy.

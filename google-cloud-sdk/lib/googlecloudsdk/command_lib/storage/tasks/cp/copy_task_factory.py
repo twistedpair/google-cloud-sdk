@@ -26,13 +26,16 @@ from googlecloudsdk.command_lib.storage.tasks.cp import file_upload_task
 from googlecloudsdk.command_lib.storage.tasks.cp import intra_cloud_copy_task
 
 
-def get_copy_task(source_resource, destination_resource):
+def get_copy_task(source_resource,
+                  destination_resource,
+                  user_request_args=None):
   """Factory method that returns the correct copy task for the arguments.
 
   Args:
     source_resource (resource_reference.Resource): Reference to file to copy.
     destination_resource (resource_reference.Resource): Reference to
         destination to copy file to.
+    user_request_args (UserRequestArgs|None): Values for RequestConfig.
 
   Returns:
     Task object that can be executed to perform a copy.
@@ -56,13 +59,19 @@ def get_copy_task(source_resource, destination_resource):
 
   if (isinstance(source_url, storage_url.FileUrl)
       and isinstance(destination_url, storage_url.CloudUrl)):
-    return file_upload_task.FileUploadTask(source_resource,
-                                           destination_resource)
+    return file_upload_task.FileUploadTask(
+        source_resource,
+        destination_resource,
+        user_request_args=user_request_args)
 
   if (isinstance(source_url, storage_url.CloudUrl)
       and isinstance(destination_url, storage_url.CloudUrl)):
     if source_url.scheme != destination_url.scheme:
-      return daisy_chain_copy_task.DaisyChainCopyTask(source_resource,
-                                                      destination_resource)
-    return intra_cloud_copy_task.IntraCloudCopyTask(source_resource,
-                                                    destination_resource)
+      return daisy_chain_copy_task.DaisyChainCopyTask(
+          source_resource,
+          destination_resource,
+          user_request_args=user_request_args)
+    return intra_cloud_copy_task.IntraCloudCopyTask(
+        source_resource,
+        destination_resource,
+        user_request_args=user_request_args)

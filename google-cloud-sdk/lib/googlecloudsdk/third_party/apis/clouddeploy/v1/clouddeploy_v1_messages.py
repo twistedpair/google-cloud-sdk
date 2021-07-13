@@ -361,41 +361,6 @@ class ClouddeployProjectsLocationsDeliveryPipelinesReleasesCreateRequest(_messag
   validateOnly = _messages.BooleanField(5)
 
 
-class ClouddeployProjectsLocationsDeliveryPipelinesReleasesDeleteRequest(_messages.Message):
-  r"""A ClouddeployProjectsLocationsDeliveryPipelinesReleasesDeleteRequest
-  object.
-
-  Fields:
-    allowMissing: Optional. If set to true, then deleting an already deleted
-      or non-existing `DeliveryPipeline` will succeed.
-    etag: Optional. This checksum is computed by the server based on the value
-      of other fields, and may be sent on update and delete requests to ensure
-      the client has an up-to-date value before proceeding.
-    name: Required. The name of the `Release` to delete. Format is projects/{p
-      roject_id}/locations/{location_name}/deliveryPipelines/{pipeline_name}/r
-      elease/{release_name}.
-    requestId: Optional. A request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server will
-      guarantee that for at least 60 minutes after the first request. For
-      example, consider a situation where you make an initial request and the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
-      (00000000-0000-0000-0000-000000000000).
-    validateOnly: Optional. If set, validate the request and preview the
-      review, but do not actually post it.
-  """
-
-  allowMissing = _messages.BooleanField(1)
-  etag = _messages.StringField(2)
-  name = _messages.StringField(3, required=True)
-  requestId = _messages.StringField(4)
-  validateOnly = _messages.BooleanField(5)
-
-
 class ClouddeployProjectsLocationsDeliveryPipelinesReleasesGetRequest(_messages.Message):
   r"""A ClouddeployProjectsLocationsDeliveryPipelinesReleasesGetRequest
   object.
@@ -2363,6 +2328,7 @@ class Target(_messages.Message):
     etag: Optional. This checksum is computed by the server based on the value
       of other fields, and may be sent on update and delete requests to ensure
       the client has an up-to-date value before proceeding.
+    gke: Information specifying a GKE Cluster.
     gkeCluster: Information specifying a GKE Cluster.
     labels: Optional. Labels are attributes that can be set and used by both
       the user and by Cloud Deploy. Labels must meet the following
@@ -2442,13 +2408,14 @@ class Target(_messages.Message):
   createTime = _messages.StringField(4)
   description = _messages.StringField(5)
   etag = _messages.StringField(6)
-  gkeCluster = _messages.MessageField('GKECluster', 7)
-  labels = _messages.MessageField('LabelsValue', 8)
-  name = _messages.StringField(9)
-  requireApproval = _messages.BooleanField(10)
-  targetId = _messages.StringField(11)
-  uid = _messages.StringField(12)
-  updateTime = _messages.StringField(13)
+  gke = _messages.MessageField('GkeCluster', 7)
+  gkeCluster = _messages.MessageField('GKECluster', 8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  name = _messages.StringField(10)
+  requireApproval = _messages.BooleanField(11)
+  targetId = _messages.StringField(12)
+  uid = _messages.StringField(13)
+  updateTime = _messages.StringField(14)
 
 
 class TargetArtifact(_messages.Message):

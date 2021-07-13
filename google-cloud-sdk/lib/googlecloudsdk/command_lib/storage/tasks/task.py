@@ -34,6 +34,9 @@ from __future__ import unicode_literals
 import abc
 import collections
 import enum
+
+from googlecloudsdk.core.util import debug_output
+
 import six
 
 
@@ -112,3 +115,6 @@ class Task(six.with_metaclass(abc.ABCMeta, object)):
       An Output instance, or None.
     """
     pass
+
+  def __repr__(self):
+    return debug_output.generic_repr(self)

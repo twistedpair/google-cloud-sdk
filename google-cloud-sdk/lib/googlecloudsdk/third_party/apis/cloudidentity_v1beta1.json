@@ -2630,7 +2630,7 @@
               "type": "string"
             },
             "updateMask": {
-              "description": "Required. The fully-qualified names of fields to update. May only contain the following fields: `display_name`, `description`, `labels`.",
+              "description": "Required. The names of fields to update. May only contain the following fields: `display_name`, `description`, `labels`.",
               "location": "query",
               "type": "string",
               "format": "google-fieldmask"

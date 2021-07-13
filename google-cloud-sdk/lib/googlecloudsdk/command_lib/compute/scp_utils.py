@@ -141,7 +141,7 @@ class BaseScpHelper(ssh_utils.BaseSSHCLIHelper):
       options = self.GetConfig(ssh_utils.HostKeyAlias(instance),
                                args.strict_host_key_checking)
 
-    iap_tunnel_args = iap_tunnel.SshTunnelArgs.FromArgs(
+    iap_tunnel_args = iap_tunnel.CreateSshTunnelArgs(
         args, release_track, instance_ref,
         ssh_utils.GetExternalInterface(instance, no_raise=True))
 

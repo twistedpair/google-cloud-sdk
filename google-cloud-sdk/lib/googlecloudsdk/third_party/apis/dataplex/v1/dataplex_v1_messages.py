@@ -1382,7 +1382,7 @@ class GoogleCloudDataplexV1Lake(_messages.Message):
     description: Optional. Description of the lake.
     displayName: Optional. User friendly display name.
     labels: Optional. User-defined labels for the lake.
-    metastore: Required. Settings to manage metadata publishing to a Hive
+    metastore: Optional. Settings to manage metadata publishing to a Hive
       Metastore from the lake.
     name: Output only. The relative resource name of the lake, of the form:
       projects/{project_number}/locations/{location_id}/lakes/{lake_id}
@@ -1460,11 +1460,11 @@ class GoogleCloudDataplexV1LakeMetastore(_messages.Message):
   r"""Settings to manage metadata publishing to a Hive Metastore from a lake.
 
   Fields:
-    service: Optional. Immutable. A relative reference to the Dataproc
-      Metastore (https://cloud.google.com/dataproc-metastore/docs) service
-      instance into which metadata will be published. This is of the form:
+    service: Optional. A relative reference to the Dataproc Metastore
+      (https://cloud.google.com/dataproc-metastore/docs) service instance into
+      which metadata will be published. This is of the form:
       projects/{project_number}/locations/{location_id}/services/{service_id}
-      where the location matches the location of the lake.
+      where the project and location matches the those of the lake.
   """
 
   service = _messages.StringField(1)
