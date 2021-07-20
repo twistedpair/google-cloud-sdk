@@ -510,6 +510,10 @@
         "bootDiskKmsKey": {
           "description": " The Customer Managed Encryption Key used to encrypt the boot disk attached to each node in the node pool. This should be of the form projects\/[KEY_PROJECT_ID]\/locations\/[LOCATION]\/keyRings\/[RING_NAME]\/cryptoKeys\/[KEY_NAME]. For more information about protecting resources with Cloud KMS Keys please see: https:\/\/cloud.google.com\/compute\/docs\/disks\/customer-managed-encryption",
           "type": "string"
+        },
+        "gvnic": {
+          "description": "Enable or disable gvnic in the node pool.",
+          "$ref": "VirtualNIC"
         }
       }
     },
@@ -698,6 +702,17 @@
         "cpuCfsQuotaPeriod": {
           "description": "Set the CPU CFS quota period value 'cpu.cfs_period_us'. The string must be a sequence of decimal numbers, each with optional fraction and a unit suffix, such as \"300ms\". Valid time units are \"ns\", \"us\" (or \"\u00B5s\"), \"ms\", \"s\", \"m\", \"h\". The value must be a positive duration.",
           "type": "string"
+        }
+      }
+    },
+    "VirtualNIC": {
+      "id": "VirtualNIC",
+      "description": "Configuration of gVNIC feature.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Whether gVNIC features are enabled in the node pool.",
+          "type": "boolean"
         }
       }
     },
@@ -995,7 +1010,7 @@
           "format": "int32"
         },
         "maxNodeCount": {
-          "description": "Maximum number of nodes in the NodePool. Must be >= min_node_count. There has to enough quota to scale up the cluster.",
+          "description": "Maximum number of nodes in the NodePool. Must be >= min_node_count. There has to be enough quota to scale up the cluster.",
           "type": "integer",
           "format": "int32"
         },
@@ -1379,6 +1394,20 @@
           "items": {
             "$ref": "ResourceLimit"
           }
+        },
+        "autoscalingProfile": {
+          "description": "Defines autoscaling behaviour.",
+          "type": "string",
+          "enumDescriptions": [
+            "No change to autoscaling configuration.",
+            "Prioritize optimizing utilization of resources.",
+            "Use default (balanced) autoscaling configuration."
+          ],
+          "enum": [
+            "PROFILE_UNSPECIFIED",
+            "OPTIMIZE_UTILIZATION",
+            "BALANCED"
+          ]
         },
         "autoprovisioningNodePoolDefaults": {
           "description": "AutoprovisioningNodePoolDefaults contains defaults for a node pool created by NAP.",
@@ -2269,6 +2298,10 @@
         "kubeletConfig": {
           "description": "Node kubelet configs.",
           "$ref": "NodeKubeletConfig"
+        },
+        "gvnic": {
+          "description": "Enable or disable gvnic on the node pool.",
+          "$ref": "VirtualNIC"
         }
       }
     },

@@ -1113,7 +1113,7 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1LineItemChange(_messages.Mes
 
 
 class GoogleCloudCommerceConsumerProcurementV1alpha1LineItemInfo(_messages.Message):
-  r"""Line item information. Next Id: 14
+  r"""Line item information. Next Id: 15
 
   Messages:
     SystemPropertiesValue: Output only. System provided key value pairs.

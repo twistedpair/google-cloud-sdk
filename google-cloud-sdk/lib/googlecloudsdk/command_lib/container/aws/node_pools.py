@@ -103,6 +103,8 @@ class NodePoolsClient(object):
     config = self._AddAwsNodeConfig(nodepool)
     config.iamInstanceProfile = args.iam_instance_profile
     config.instanceType = args.instance_type
+    if args.security_group_ids:
+      config.securityGroupIds.extend(args.security_group_ids)
 
     root_volume = self._AddAwsNodePoolRootVolume(config)
     root_volume.sizeGib = args.root_volume_size

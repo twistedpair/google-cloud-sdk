@@ -348,7 +348,7 @@
           "type": "string"
         },
         "billing": {
-          "description": "Customer's billing structure",
+          "description": "Deprecated: This field will be ignored and should not be set. Customer's billing structure",
           "type": "string",
           "enumDescriptions": [
             "Unknown",

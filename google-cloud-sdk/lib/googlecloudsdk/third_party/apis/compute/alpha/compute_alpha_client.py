@@ -8043,6 +8043,32 @@ If the group is part of a backend service that has enabled connection draining, 
         supports_download=False,
     )
 
+    def GetMacsecConfig(self, request, global_params=None):
+      r"""Returns the interconnectMacsecConfig for the specified interconnect.
+
+      Args:
+        request: (ComputeInterconnectsGetMacsecConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InterconnectsGetMacsecConfigResponse) The response message.
+      """
+      config = self.GetMethodConfig('GetMacsecConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetMacsecConfig.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.interconnects.getMacsecConfig',
+        ordered_params=['project', 'interconnect'],
+        path_params=['interconnect', 'project'],
+        query_params=[],
+        relative_path='projects/{project}/global/interconnects/{interconnect}/getMacsecConfig',
+        request_field='',
+        request_type_name='ComputeInterconnectsGetMacsecConfigRequest',
+        response_type_name='InterconnectsGetMacsecConfigResponse',
+        supports_download=False,
+    )
+
     def Insert(self, request, global_params=None):
       r"""Creates a Interconnect in the specified project using the data included in the request.
 
@@ -16786,6 +16812,32 @@ For more information, see [Invalidating cached content](/cdn/docs/invalidating-c
         request_field='testPermissionsRequest',
         request_type_name='ComputeReservationsTestIamPermissionsRequest',
         response_type_name='TestPermissionsResponse',
+        supports_download=False,
+    )
+
+    def Update(self, request, global_params=None):
+      r"""Update share settings of the reservation.
+
+      Args:
+        request: (ComputeReservationsUpdateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='PATCH',
+        method_id='compute.reservations.update',
+        ordered_params=['project', 'zone', 'reservation'],
+        path_params=['project', 'reservation', 'zone'],
+        query_params=['paths', 'requestId'],
+        relative_path='projects/{project}/zones/{zone}/reservations/{reservation}',
+        request_field='reservationResource',
+        request_type_name='ComputeReservationsUpdateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

@@ -26,7 +26,7 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 
-PIPELINE_UPDATE_MASK = 'description,annotations,labels,serial_pipeline'
+PIPELINE_UPDATE_MASK = '*'
 DELIVERY_PIPELINE_KIND_BETA1 = 'delivery-pipeline'
 TARGET_KIND_BETA1 = 'target'
 DELIVERY_PIPELINE_KIND_V1BETA1 = 'DeliveryPipeline'

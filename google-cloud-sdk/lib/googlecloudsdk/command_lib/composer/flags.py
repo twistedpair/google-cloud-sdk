@@ -222,7 +222,9 @@ PYPI_PACKAGES_FLAG_GROUP_DESCRIPTION = (
     'Group of arguments for modifying the PyPI package configuration.')
 
 AUTOSCALING_FLAG_GROUP_DESCRIPTION = (
-    'Group of arguments for modifying GKE cluster autoscaling.')
+    'Group of arguments for setting workloads configuration in Composer 2.X '
+    'or greater (--scheduler-count flag is available for '
+    'Composer 1.X as well).')
 
 CLEAR_PYPI_PACKAGES_FLAG = base.Argument(
     '--clear-pypi-packages',
@@ -515,11 +517,10 @@ MAX_WORKERS = base.Argument(
 
 NUM_SCHEDULERS = base.Argument(
     '--scheduler-count',
-    hidden=True,
     type=int,
     default=None,
     help="""\
-    Number of schedulers in the Environment.
+    Number of schedulers, supported in the Environments with Airflow 2.0.1 and later.
     """)
 
 ENVIRONMENT_SIZE_BETA = arg_utils.ChoiceEnumMapper(
@@ -1104,7 +1105,7 @@ def AddAutoscalingUpdateFlagsToGroup(update_type_group, release_track):
   elif release_track == base.ReleaseTrack.ALPHA:
     ENVIRONMENT_SIZE_ALPHA.choice_arg.AddToParser(update_type_group)
   update_group = update_type_group.add_argument_group(
-      AUTOSCALING_FLAG_GROUP_DESCRIPTION, hidden=True)
+      AUTOSCALING_FLAG_GROUP_DESCRIPTION)
   SCHEDULER_CPU.AddToParser(update_group)
   WORKER_CPU.AddToParser(update_group)
   WEB_SERVER_CPU.AddToParser(update_group)
@@ -1116,6 +1117,8 @@ def AddAutoscalingUpdateFlagsToGroup(update_type_group, release_track):
   WEB_SERVER_STORAGE.AddToParser(update_group)
   MIN_WORKERS.AddToParser(update_group)
   MAX_WORKERS.AddToParser(update_group)
+  # Note: this flag is available for patching of both Composer 1.*.* and 2.*.*
+  # environments.
   NUM_SCHEDULERS.AddToParser(update_group)
 
 

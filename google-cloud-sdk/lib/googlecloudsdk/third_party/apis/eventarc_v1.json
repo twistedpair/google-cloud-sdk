@@ -256,6 +256,10 @@
             "type": "string"
           }
         },
+        "channel": {
+          "description": "Optional. The name of the channel associated with the trigger in `projects\/{project}\/locations\/{location}\/channels\/{channel}` format. You must provide a channel in order to receive events from Eventarc SaaS partners.",
+          "type": "string"
+        },
         "etag": {
           "description": "Output only. This checksum is computed by the server based on the value of other fields, and may be sent only on create requests to ensure the client has an up-to-date value before proceeding.",
           "readOnly": true,

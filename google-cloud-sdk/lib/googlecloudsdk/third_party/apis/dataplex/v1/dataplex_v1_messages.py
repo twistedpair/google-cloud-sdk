@@ -24,6 +24,27 @@ class DataplexProjectsLocationsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class DataplexProjectsLocationsLakesActionsListRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsLakesActionsListRequest object.
+
+  Fields:
+    pageSize: Optional. Maximum number of actions to return. The service may
+      return fewer than this value. If unspecified, at most 10 actions will be
+      returned. The maximum value is 1000; values above 1000 will be coerced
+      to 1000.
+    pageToken: Optional. Page token received from a previous ListLakeActions
+      call. Provide this to retrieve the subsequent page. When paginating, all
+      other parameters provided to ListLakeActions must match the call that
+      provided the page token.
+    parent: Required. The resource name of the parent lake:
+      projects/{project_number}/locations/{location_id}/lakes/{lake_id}
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class DataplexProjectsLocationsLakesContentGetIamPolicyRequest(_messages.Message):
   r"""A DataplexProjectsLocationsLakesContentGetIamPolicyRequest object.
 
@@ -339,6 +360,49 @@ class DataplexProjectsLocationsLakesTestIamPermissionsRequest(_messages.Message)
 
   googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
   resource = _messages.StringField(2, required=True)
+
+
+class DataplexProjectsLocationsLakesZonesActionsListRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsLakesZonesActionsListRequest object.
+
+  Fields:
+    pageSize: Optional. Maximum number of actions to return. The service may
+      return fewer than this value. If unspecified, at most 10 actions will be
+      returned. The maximum value is 1000; values above 1000 will be coerced
+      to 1000.
+    pageToken: Optional. Page token received from a previous ListZoneActions
+      call. Provide this to retrieve the subsequent page. When paginating, all
+      other parameters provided to ListZoneActions must match the call that
+      provided the page token.
+    parent: Required. The resource name of the parent zone: projects/{project_
+      number}/locations/{location_id}/lakes/{lake_id}/zones/{zone_id}
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class DataplexProjectsLocationsLakesZonesAssetsActionsListRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsLakesZonesAssetsActionsListRequest object.
+
+  Fields:
+    pageSize: Optional. Maximum number of actions to return. The service may
+      return fewer than this value. If unspecified, at most 10 actions will be
+      returned. The maximum value is 1000; values above 1000 will be coerced
+      to 1000.
+    pageToken: Optional. Page token received from a previous ListAssetActions
+      call. Provide this to retrieve the subsequent page. When paginating, all
+      other parameters provided to ListAssetActions must match the call that
+      provided the page token.
+    parent: Required. The resource name of the parent asset: projects/{project
+      _number}/locations/{location_id}/lakes/{lake_id}/zones/{zone_id}/assets/
+      {asset_id}
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class DataplexProjectsLocationsLakesZonesAssetsCreateRequest(_messages.Message):
@@ -756,6 +820,9 @@ class GoogleCloudDataplexV1Action(_messages.Message):
   Fields:
     category: The category of issue associated with the action.
     detectTime: The time that the issue was detected.
+    failedSecurityPolicyApply: Details for issues related to one or more
+      underlying assets having a failure propagating security policy to the
+      associated managed resource. Applicable to a lake or zone resource.
     incompatibleDataSchema: Details for issues related to incompatible schemas
       detected within data.
     invalidDataFormat: Details for issues related to invalid or unsupported
@@ -803,19 +870,32 @@ class GoogleCloudDataplexV1Action(_messages.Message):
 
   category = _messages.EnumField('CategoryValueValuesEnum', 1)
   detectTime = _messages.StringField(2)
-  incompatibleDataSchema = _messages.MessageField('GoogleCloudDataplexV1ActionIncompatibleDataSchema', 3)
-  invalidDataFormat = _messages.MessageField('GoogleCloudDataplexV1ActionInvalidDataFormat', 4)
-  invalidDataPartition = _messages.MessageField('GoogleCloudDataplexV1ActionInvalidDataPartition', 5)
-  invalidDiscoveryConfig = _messages.MessageField('GoogleCloudDataplexV1ActionInvalidDiscoveryConfig', 6)
-  invalidMetastore = _messages.MessageField('GoogleCloudDataplexV1ActionInvalidMetastore', 7)
-  invalidSecurityPolicy = _messages.MessageField('GoogleCloudDataplexV1ActionInvalidSecurityPolicy', 8)
-  issue = _messages.StringField(9)
-  locations = _messages.MessageField('GoogleCloudDataplexV1ActionLocation', 10, repeated=True)
-  missingData = _messages.MessageField('GoogleCloudDataplexV1ActionMissingData', 11)
-  missingMetastore = _messages.MessageField('GoogleCloudDataplexV1ActionMissingMetastore', 12)
-  missingResource = _messages.MessageField('GoogleCloudDataplexV1ActionMissingResource', 13)
-  unauthorizedDataset = _messages.MessageField('GoogleCloudDataplexV1ActionUnauthorizedDataset', 14)
-  unauthorizedResource = _messages.MessageField('GoogleCloudDataplexV1ActionUnauthorizedResource', 15)
+  failedSecurityPolicyApply = _messages.MessageField('GoogleCloudDataplexV1ActionFailedSecurityPolicyApply', 3)
+  incompatibleDataSchema = _messages.MessageField('GoogleCloudDataplexV1ActionIncompatibleDataSchema', 4)
+  invalidDataFormat = _messages.MessageField('GoogleCloudDataplexV1ActionInvalidDataFormat', 5)
+  invalidDataPartition = _messages.MessageField('GoogleCloudDataplexV1ActionInvalidDataPartition', 6)
+  invalidDiscoveryConfig = _messages.MessageField('GoogleCloudDataplexV1ActionInvalidDiscoveryConfig', 7)
+  invalidMetastore = _messages.MessageField('GoogleCloudDataplexV1ActionInvalidMetastore', 8)
+  invalidSecurityPolicy = _messages.MessageField('GoogleCloudDataplexV1ActionInvalidSecurityPolicy', 9)
+  issue = _messages.StringField(10)
+  locations = _messages.MessageField('GoogleCloudDataplexV1ActionLocation', 11, repeated=True)
+  missingData = _messages.MessageField('GoogleCloudDataplexV1ActionMissingData', 12)
+  missingMetastore = _messages.MessageField('GoogleCloudDataplexV1ActionMissingMetastore', 13)
+  missingResource = _messages.MessageField('GoogleCloudDataplexV1ActionMissingResource', 14)
+  unauthorizedDataset = _messages.MessageField('GoogleCloudDataplexV1ActionUnauthorizedDataset', 15)
+  unauthorizedResource = _messages.MessageField('GoogleCloudDataplexV1ActionUnauthorizedResource', 16)
+
+
+class GoogleCloudDataplexV1ActionFailedSecurityPolicyApply(_messages.Message):
+  r"""One or more underlying assets has a failure propagating security policy
+  to the associated managed resource. Applicable to a lake or zone resource.
+
+  Fields:
+    asset: Resource name of one of the assets with failing security policy
+      propagation.
+  """
+
+  asset = _messages.StringField(1)
 
 
 class GoogleCloudDataplexV1ActionIncompatibleDataSchema(_messages.Message):
@@ -1495,6 +1575,19 @@ class GoogleCloudDataplexV1LakeSecuritySpec(_messages.Message):
   ownerGroups = _messages.StringField(1, repeated=True)
   readerGroups = _messages.StringField(2, repeated=True)
   writerGroups = _messages.StringField(3, repeated=True)
+
+
+class GoogleCloudDataplexV1ListActionsResponse(_messages.Message):
+  r"""List actions response.
+
+  Fields:
+    actions: Actions under the given parent lake/zone/asset.
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+  """
+
+  actions = _messages.MessageField('GoogleCloudDataplexV1Action', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
 
 
 class GoogleCloudDataplexV1ListAssetsResponse(_messages.Message):

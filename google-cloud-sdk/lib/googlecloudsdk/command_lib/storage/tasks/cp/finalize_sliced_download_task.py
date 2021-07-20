@@ -81,11 +81,15 @@ class FinalizeSlicedDownloadTask(task.Task):
   def _clean_up_tracker_files(self):
     """Clean up master and component tracker files."""
     tracker_file_util.delete_download_tracker_files(
-        self._temporary_destination_resource.storage_url,
-        tracker_file_util.TrackerFileType.SLICED_DOWNLOAD)
+        self._temporary_destination_resource.storage_url)
 
   def execute(self, task_status_queue=None):
     """Validates and clean ups after sliced download."""
+    if task.Topic.ERROR in [
+        message.topic for message in self.received_messages
+    ]:
+      return
+
     if (properties.VALUES.storage.check_hashes.Get() !=
         properties.CheckHashes.NEVER.value and
         self._source_resource.crc32c_hash):
@@ -119,12 +123,9 @@ class FinalizeSlicedDownloadTask(task.Task):
               self._temporary_destination_resource.storage_url,
               self._source_resource.crc32c_hash, downloaded_file_hash_digest)
         except errors.HashMismatchError:
-          if task.Topic.ERROR not in [
-              message.topic for message in self.received_messages
-          ]:
-            os.remove(
-                self._temporary_destination_resource.storage_url.object_name)
-            self._clean_up_tracker_files()
+          os.remove(
+              self._temporary_destination_resource.storage_url.object_name)
+          self._clean_up_tracker_files()
           raise
 
     temporary_url = self._temporary_destination_resource.storage_url
@@ -139,4 +140,3 @@ class FinalizeSlicedDownloadTask(task.Task):
           self._final_destination_resource.storage_url.object_name)
 
     self._clean_up_tracker_files()
-

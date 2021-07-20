@@ -7,7 +7,7 @@
   "version": "v1",
   "revision": "0",
   "title": "GKE Multi-cloud API",
-  "description": "",
+  "description": " Anthos clusters on Azure provides a way to manage Kubernetes clusters that run on Azure infrastructure using the Anthos Multi-Cloud API. Combined with Connect, you can manage Kubernetes clusters on Google Cloud and Azure from the Google Cloud Console. When you create a cluster with Anthos clusters on Azure, Google creates the Azure resources needed and brings up a cluster on your behalf. You can deploy workloads to Anthos clusters on Azure using the API or the gcloud and kubectl command-line tools.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {
@@ -206,31 +206,31 @@
     },
     "GoogleCloudGkemulticloudV1AwsCluster": {
       "id": "GoogleCloudGkemulticloudV1AwsCluster",
-      "description": "A GKE cluster running on AWS.",
+      "description": "An Anthos cluster running on AWS.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "The resource name of this cluster.",
+          "description": "The name of this resource. Cluster names are formatted as `projects\/\/locations\/\/awsClusters\/`. See [Resource Names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for more details on GCP resource names.",
           "type": "string"
         },
         "description": {
-          "description": "A human readable description of this cluster.",
+          "description": "Optional. A human readable description of this cluster. Cannot be longer than 255 UTF-8 encoded bytes.",
           "type": "string"
         },
         "networking": {
-          "description": "Cluster-wide networking configuration.",
+          "description": "Required. Cluster-wide networking configuration.",
           "$ref": "GoogleCloudGkemulticloudV1AwsClusterNetworking"
         },
         "awsRegion": {
-          "description": "The AWS region where this cluster runs.",
+          "description": "Required. The AWS region where the cluster runs. Each Google Cloud region supports a subset of nearby AWS regions. You can call GetAwsServerConfig to list all supported AWS regions within a given Google Cloud region.",
           "type": "string"
         },
         "controlPlane": {
-          "description": "Configuration related to the cluster control plane.",
+          "description": "Required. Configuration related to the cluster control plane.",
           "$ref": "GoogleCloudGkemulticloudV1AwsControlPlane"
         },
         "authorization": {
-          "description": "Configuration related to the cluster RBAC settings.",
+          "description": "Required. Configuration related to the cluster RBAC settings.",
           "$ref": "GoogleCloudGkemulticloudV1AwsAuthorization"
         },
         "state": {
@@ -241,7 +241,7 @@
             "Not set.",
             "The PROVISIONING state indicates the cluster is being created.",
             "The RUNNING state indicates the cluster has been created and is fully usable.",
-            "The RECONCILING state indicates that the cluster is being reconciled.",
+            "The RECONCILING state indicates that some work is actively being done on the cluster, such as upgrading the control plane replicas.",
             "The STOPPING state indicates the cluster is being deleted.",
             "The ERROR state indicates the cluster is in a broken unrecoverable state.",
             "The DEGRADED state indicates the cluster requires user action to restore full functionality."
@@ -257,12 +257,12 @@
           ]
         },
         "endpoint": {
-          "description": "Output only. The DNS name of this cluster's API server.",
+          "description": "Output only. The endpoint of the cluster's API server.",
           "readOnly": true,
           "type": "string"
         },
         "uid": {
-          "description": "Output only. The unique identifier of the cluster.",
+          "description": "Output only. A globally unique identifier for the cluster.",
           "readOnly": true,
           "type": "string"
         },
@@ -284,11 +284,11 @@
           "format": "google-datetime"
         },
         "etag": {
-          "description": "This checksum is computed by the server based on the value of other fields, and may be sent on update and delete requests to ensure the client has an up-to-date value before proceeding. Allows clients to perform consistent read-modify-writes through optimistic concurrency control.",
+          "description": "Allows clients to perform consistent read-modify-writes through optimistic concurrency control. May be sent on update and delete requests to ensure the client has an up-to-date value before proceeding.",
           "type": "string"
         },
         "annotations": {
-          "description": "Annotations on the cluster. This field has the same restrictions as Kubernetes annotations. The total size of all keys and values combined is limited to 256k. Key can have 2 segments: prefix (optional) and name (required), separated by a slash (\/). Prefix must be a DNS subdomain. Name must be 63 characters or less, begin and end with alphanumerics, with dashes (-), underscores (_), dots (.), and alphanumerics between.",
+          "description": "Optional. Annotations on the cluster. This field has the same restrictions as Kubernetes annotations. The total size of all keys and values combined is limited to 256k. Key can have 2 segments: prefix (optional) and name (required), separated by a slash (\/). Prefix must be a DNS subdomain. Name must be 63 characters or less, begin and end with alphanumerics, with dashes (-), underscores (_), dots (.), and alphanumerics between.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -303,29 +303,29 @@
     },
     "GoogleCloudGkemulticloudV1AwsClusterNetworking": {
       "id": "GoogleCloudGkemulticloudV1AwsClusterNetworking",
-      "description": "ClusterNetworking defines cluster-wide networking configuration. GKE clusters on AWS run on a single VPC. This includes control plane and node pool nodes.",
+      "description": "ClusterNetworking defines cluster-wide networking configuration. Anthos clusters on AWS run on a single VPC. This includes control plane replicas and node pool nodes.",
       "type": "object",
       "properties": {
         "vpcId": {
-          "description": "The VPC associated with your cluster. All component clusters (i.e. control plane and node pools) run on a single vpc. This field cannot be changed after creation.",
+          "description": "Required. The VPC associated with the cluster. All component clusters (i.e. control plane and node pools) run on a single VPC. This field cannot be changed after creation.",
           "type": "string"
         },
         "podAddressCidrBlocks": {
-          "description": "All pods in the cluster are assigned an RFC1918 IPv4 address from these ranges. Only a single range is supported. This field cannot be changed after creation.",
+          "description": "Required. All pods in the cluster are assigned an RFC1918 IPv4 address from these ranges. Only a single range is supported. This field cannot be changed after creation.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "serviceAddressCidrBlocks": {
-          "description": "All services in the cluster are assigned an RFC1918 IPv4 address from these ranges. Only a single range is supported. This field cannot be changed after creation.",
+          "description": "Required. All services in the cluster are assigned an RFC1918 IPv4 address from these ranges. Only a single range is supported. This field cannot be changed after creation.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "serviceLoadBalancerSubnetIds": {
-          "description": "When creating Kubernetes services of type 'Load Balancer', the load balancer will be created in these subnets.",
+          "description": "Required. When creating Kubernetes services of type 'Load Balancer', the load balancer will be created in these subnets.",
           "type": "array",
           "items": {
             "type": "string"
@@ -339,56 +339,56 @@
       "type": "object",
       "properties": {
         "version": {
-          "description": "The kubernetes control plane version (e.g. 1.16.9-gke.12).",
+          "description": "Required. The Kubernetes version to run on control plane replicas (e.g. `1.19.10-gke.1000`). You can list all supported versions on a given Google Cloud region by calling GetAwsServerConfig.",
           "type": "string"
         },
         "instanceType": {
-          "description": "The AWS instance type.",
+          "description": "Optional. The AWS instance type. When unspecified, it defaults to `t3.medium`.",
           "type": "string"
         },
         "sshConfig": {
-          "description": "The SSH configuration.",
+          "description": "Optional. SSH configuration for how to access the underlying control plane machines.",
           "$ref": "GoogleCloudGkemulticloudV1AwsSshConfig"
         },
         "subnetIds": {
-          "description": "The list of subnets where control plane nodes will run. A node will be provisioned on each subnet.",
+          "description": "Required. The list of subnets where control plane replicas will run. A replica will be provisioned on each subnet and up to three values can be provided. Each subnet must be in a different AWS Availability Zone (AZ).",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "securityGroupIds": {
-          "description": "The IDs of additional security groups to add to control plane replicas. The manager will automatically create security groups with minimum rules needed for a functioning cluster.",
+          "description": "Optional. The IDs of additional security groups to add to control plane replicas. The Anthos Multi-Cloud API will automatically create and manage security groups with the minimum rules needed for a functioning cluster.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "iamInstanceProfile": {
-          "description": "The name of the AWS IAM role assigned to control plane replicas.",
+          "description": "Required. The name of the AWS IAM instance pofile to assign to each control plane replica.",
           "type": "string"
         },
         "rootVolume": {
-          "description": "Template for the root volume provisioned for control plane node instances. Volumes will be provisioned in the availability zone associated with the corresponding subnet.",
+          "description": "Optional. Configuration related to the root volume provisioned for each control plane replica. Volumes will be provisioned in the availability zone associated with the corresponding subnet. When unspecified, it defaults to 32 GiB with the GP2 volume type.",
           "$ref": "GoogleCloudGkemulticloudV1AwsVolumeTemplate"
         },
         "mainVolume": {
-          "description": "Template for the volume provisioned for etcd storage. Volumes will be provisioned in the availability zone associated with the corresponding subnet.",
+          "description": "Optional. Configuration related to the main volume provisioned for each control plane replica. The main volume is in charge of storing all of the cluster's etcd state. Volumes will be provisioned in the availability zone associated with the corresponding subnet. When unspecified, it defaults to 8 GiB with the GP2 volume type.",
           "$ref": "GoogleCloudGkemulticloudV1AwsVolumeTemplate"
         },
         "databaseEncryption": {
-          "description": "The ARN of the AWS KMS key used to encrypt cluster secrets.",
+          "description": "Required. The ARN of the AWS KMS key used to encrypt cluster secrets.",
           "$ref": "GoogleCloudGkemulticloudV1AwsDatabaseEncryption"
         },
         "tags": {
-          "description": "Key\/value metadata to assign to each underlying AWS resource. Specify at most 50 pairs containing alphanumerics, spaces, and symbols (.+-=_:@\/). Keys can be up to 127 Unicode characters. Values can be up to 255 Unicode characters.",
+          "description": "Optional. A set of AWS resource tags to propagate to all underlying managed AWS resources. Specify at most 50 pairs containing alphanumerics, spaces, and symbols (.+-=_:@\/). Keys can be up to 127 Unicode characters. Values can be up to 255 Unicode characters.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
           }
         },
         "awsServicesAuthentication": {
-          "description": "Authentication configuration for management of AWS resources.",
+          "description": "Required. Authentication configuration for management of AWS resources.",
           "$ref": "GoogleCloudGkemulticloudV1AwsServicesAuthentication"
         }
       }
@@ -399,7 +399,7 @@
       "type": "object",
       "properties": {
         "ec2KeyPair": {
-          "description": "The name of the EC2 key pair used to login into cluster machines.",
+          "description": "Required. The name of the EC2 key pair used to login into cluster machines.",
           "type": "string"
         }
       }
@@ -410,12 +410,12 @@
       "type": "object",
       "properties": {
         "sizeGib": {
-          "description": "The size of the volume, in GiBs.",
+          "description": "Optional. The size of the volume, in GiBs. When unspecified, a default value is provided. See the specific reference in the parent resource.",
           "type": "integer",
           "format": "int32"
         },
         "volumeType": {
-          "description": "Type of the EBS volume. Defaults to GP2 volume.",
+          "description": "Optional. Type of the EBS volume. When unspecified, it defaults to GP2 volume.",
           "type": "string",
           "enumDescriptions": [
             "Not set.",
@@ -429,12 +429,12 @@
           ]
         },
         "iops": {
-          "description": "The number of I\/O operations per second (IOPS) to provision for GP3 volume.",
+          "description": "Optional. The number of I\/O operations per second (IOPS) to provision for GP3 volume.",
           "type": "integer",
           "format": "int32"
         },
         "kmsKeyArn": {
-          "description": "Immutable. The ARN of the customer managed key (CMK) used to encrypt AWS EBS volumes. If not specified, the default Amazon managed key will be used.",
+          "description": "Optional. The Amazon Resource Name (ARN) of the Customer Managed Key (CMK) used to encrypt AWS EBS volumes. If not specified, the default Amazon managed key associated to the AWS region where this cluster runs will be used.",
           "type": "string"
         }
       }
@@ -445,7 +445,7 @@
       "type": "object",
       "properties": {
         "kmsKeyArn": {
-          "description": "The ARN of the AWS KMS key used to encrypt cluster secrets.",
+          "description": "Required. The ARN of the AWS KMS key used to encrypt cluster secrets.",
           "type": "string"
         }
       }
@@ -456,11 +456,11 @@
       "type": "object",
       "properties": {
         "roleArn": {
-          "description": "The Amazon Resource Name (ARN) of the role to assume when managing AWS resources on your account.",
+          "description": "Required. The Amazon Resource Name (ARN) of the role that the Anthos Multi-Cloud API will assume when managing AWS resources on your account.",
           "type": "string"
         },
         "roleSessionName": {
-          "description": "An identifier for the assumed role session. Optional. Defaults to 'multicloud-service-agent'.",
+          "description": "Optional. An identifier for the assumed role session. When unspecified, it defaults to `multicloud-service-agent`.",
           "type": "string"
         }
       }
@@ -471,7 +471,7 @@
       "type": "object",
       "properties": {
         "adminUsers": {
-          "description": "Users to perform operations as a cluster admin. A new ClusterRoleBinding will be created to grant the cluster-admin ClusterRole to the users. At most one user can be specified. For more info on RBAC, see https:\/\/kubernetes.io\/docs\/reference\/access-authn-authz\/rbac\/#user-facing-roles",
+          "description": "Required. Users to perform operations as a cluster admin. A managed ClusterRoleBinding will be created to grant the `cluster-admin` ClusterRole to the users. At most one user can be specified. For more info on RBAC, see https:\/\/kubernetes.io\/docs\/reference\/access-authn-authz\/rbac\/#user-facing-roles",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudGkemulticloudV1AwsClusterUser"
@@ -485,7 +485,7 @@
       "type": "object",
       "properties": {
         "username": {
-          "description": "The name of the user, e.g. my-gcp-id@gmail.com.",
+          "description": "Required. The name of the user, e.g. `my-gcp-id@gmail.com`.",
           "type": "string"
         }
       }
@@ -515,14 +515,14 @@
       "type": "object",
       "properties": {
         "awsClusters": {
-          "description": "The clusters from the specified parent resource.",
+          "description": "A list of AwsCluster resources in the specified GCP project and region region.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudGkemulticloudV1AwsCluster"
           }
         },
         "nextPageToken": {
-          "description": "A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "description": "Token to retrieve the next page of results, or empty if there are no more results in the list.",
           "type": "string"
         }
       }
@@ -540,27 +540,27 @@
     },
     "GoogleCloudGkemulticloudV1AwsNodePool": {
       "id": "GoogleCloudGkemulticloudV1AwsNodePool",
-      "description": "A GKE node pool running on AWS infrastructure.",
+      "description": "An Anthos node pool running on AWS.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "The resource name of this node pool.",
+          "description": "The name of this resource. Node pool names are formatted as `projects\/\/locations\/\/awsClusters\/\/awsNodePools\/`. For more details on Google Cloud resource names, see [Resource Names](https:\/\/cloud.google.com\/apis\/design\/resource_names)",
           "type": "string"
         },
         "version": {
-          "description": "The kubernetes version (e.g. 1.16.9-gke.12) running on this node pool.",
+          "description": "Required. The Kubernetes version to run on this node pool (e.g. `1.19.10-gke.1000`). You can list all supported versions on a given Google Cloud region by calling GetAwsServerConfig.",
           "type": "string"
         },
         "config": {
-          "description": "The node configuration of the pool.",
+          "description": "Required. The configuration of the node pool.",
           "$ref": "GoogleCloudGkemulticloudV1AwsNodeConfig"
         },
         "autoscaling": {
-          "description": "Autoscaler configuration for this NodePool.",
+          "description": "Required. Autoscaler configuration for this node pool.",
           "$ref": "GoogleCloudGkemulticloudV1AwsNodePoolAutoscaling"
         },
         "subnetId": {
-          "description": "The subnet where the node pool node run.",
+          "description": "Required. The subnet where the node pool node run.",
           "type": "string"
         },
         "state": {
@@ -587,7 +587,7 @@
           ]
         },
         "uid": {
-          "description": "Output only. The unique identifier of the node pool.",
+          "description": "Output only. A globally unique identifier for the node pool.",
           "readOnly": true,
           "type": "string"
         },
@@ -609,18 +609,18 @@
           "format": "google-datetime"
         },
         "etag": {
-          "description": "This checksum is computed by the server based on the value of other fields, and may be sent on update and delete requests to ensure the client has an up-to-date value before proceeding. Allows clients to perform consistent read-modify-writes through optimistic concurrency control.",
+          "description": "Allows clients to perform consistent read-modify-writes through optimistic concurrency control. May be sent on update and delete requests to ensure the client has an up-to-date value before proceeding.",
           "type": "string"
         },
         "annotations": {
-          "description": "Annotations on the node pool. This field has the same restrictions as Kubernetes annotations. The total size of all keys and values combined is limited to 256k. Key can have 2 segments: prefix (optional) and name (required), separated by a slash (\/). Prefix must be a DNS subdomain. Name must be 63 characters or less, begin and end with alphanumerics, with dashes (-), underscores (_), dots (.), and alphanumerics between.",
+          "description": "Optional. Annotations on the node pool. This field has the same restrictions as Kubernetes annotations. The total size of all keys and values combined is limited to 256k. Key can have 2 segments: prefix (optional) and name (required), separated by a slash (\/). Prefix must be a DNS subdomain. Name must be 63 characters or less, begin and end with alphanumerics, with dashes (-), underscores (_), dots (.), and alphanumerics between.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
           }
         },
         "maxPodsConstraint": {
-          "description": "The constraint on the maximum number of pods that can be run simultaneously on a node in the node pool.",
+          "description": "Required. The constraint on the maximum number of pods that can be run simultaneously on a node in the node pool.",
           "$ref": "GoogleCloudGkemulticloudV1MaxPodsConstraint"
         }
       }
@@ -631,44 +631,44 @@
       "type": "object",
       "properties": {
         "instanceType": {
-          "description": "The AWS instance type.",
+          "description": "Optional. The AWS instance type. When unspecified, it defaults to `t3.medium`.",
           "type": "string"
         },
         "rootVolume": {
-          "description": "Template for the root volume provisioned for node pool nodes. Volumes will be provisioned in the availability zone assigned to the node pool subnet.",
+          "description": "Optional. Template for the root volume provisioned for node pool nodes. Volumes will be provisioned in the availability zone assigned to the node pool subnet. When unspecified, it defaults to 32 GiB with the GP2 volume type.",
           "$ref": "GoogleCloudGkemulticloudV1AwsVolumeTemplate"
         },
         "taints": {
-          "description": "The initial taints assigned to nodes of this node pool.",
+          "description": "Optional. The initial taints assigned to nodes of this node pool.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudGkemulticloudV1AwsNodeTaint"
           }
         },
         "labels": {
-          "description": "The initial labels assigned to nodes of this node pool. An object containing a list of \"key\": value pairs. Example: { \"name\": \"wrench\", \"mass\": \"1.3kg\", \"count\": \"3\" }.",
+          "description": "Optional. The initial labels assigned to nodes of this node pool. An object containing a list of \"key\": value pairs. Example: { \"name\": \"wrench\", \"mass\": \"1.3kg\", \"count\": \"3\" }.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
           }
         },
         "tags": {
-          "description": "Key\/value metadata to assign to each underlying AWS resource. Specify at most 50 pairs containing alphanumerics, spaces, and symbols (.+-=_:@\/). Keys can be up to 127 Unicode characters. Values can be up to 255 Unicode characters.",
+          "description": "Optional. Key\/value metadata to assign to each underlying AWS resource. Specify at most 50 pairs containing alphanumerics, spaces, and symbols (.+-=_:@\/). Keys can be up to 127 Unicode characters. Values can be up to 255 Unicode characters.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
           }
         },
         "iamInstanceProfile": {
-          "description": "The name of the AWS IAM role assigned to nodes in the pool.",
+          "description": "Required. The name of the AWS IAM role assigned to nodes in the pool.",
           "type": "string"
         },
         "sshConfig": {
-          "description": "The SSH configuration.",
+          "description": "Optional. The SSH configuration.",
           "$ref": "GoogleCloudGkemulticloudV1AwsSshConfig"
         },
         "securityGroupIds": {
-          "description": "The IDs of additional security groups to add to nodes in this pool. The manager will automatically create security groups with minimum rules needed for a functioning cluster.",
+          "description": "Optional. The IDs of additional security groups to add to nodes in this pool. The manager will automatically create security groups with minimum rules needed for a functioning cluster.",
           "type": "array",
           "items": {
             "type": "string"
@@ -682,15 +682,15 @@
       "type": "object",
       "properties": {
         "key": {
-          "description": "Key for the taint.",
+          "description": "Required. Key for the taint.",
           "type": "string"
         },
         "value": {
-          "description": "Value for the taint.",
+          "description": "Required. Value for the taint.",
           "type": "string"
         },
         "effect": {
-          "description": "The taint effect.",
+          "description": "Required. The taint effect.",
           "type": "string",
           "enumDescriptions": [
             "Not set.",
@@ -713,12 +713,12 @@
       "type": "object",
       "properties": {
         "minNodeCount": {
-          "description": "Minimum number of nodes in the NodePool. Must be >= 1 and <= max_node_count.",
+          "description": "Required. Minimum number of nodes in the NodePool. Must be >= 1 and <= max_node_count.",
           "type": "integer",
           "format": "int32"
         },
         "maxNodeCount": {
-          "description": "Maximum number of nodes in the NodePool. Must be >= min_node_count.",
+          "description": "Required. Maximum number of nodes in the NodePool. Must be >= min_node_count.",
           "type": "integer",
           "format": "int32"
         }
@@ -730,7 +730,7 @@
       "type": "object",
       "properties": {
         "maxPodsPerNode": {
-          "description": "Constraint enforced on the max num of pods per node.",
+          "description": "Required. The maximum number of pods to schedule on a single node.",
           "type": "string",
           "format": "int64"
         }
@@ -742,14 +742,14 @@
       "type": "object",
       "properties": {
         "awsNodePools": {
-          "description": "The node pools from the specified parent resource.",
+          "description": "A list of AwsNodePool resources in the specified `AwsCluster`.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudGkemulticloudV1AwsNodePool"
           }
         },
         "nextPageToken": {
-          "description": "A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "description": "Token to retrieve the next page of results, or empty if there are no more results in the list.",
           "type": "string"
         }
       }
@@ -899,34 +899,34 @@
     },
     "GoogleCloudGkemulticloudV1AzureClient": {
       "id": "GoogleCloudGkemulticloudV1AzureClient",
-      "description": "AzureClient represents the configurations to connect Azure.",
+      "description": "`AzureClient` resources hold client authentication information needed by the Anthos Multi-Cloud API to manage Azure resources on your Azure subscription. When an AzureCluster is created, an `AzureClient` resource needs to be provided and all operations on Azure resources associated to that cluster will authenticate to Azure services using the given client. `AzureClient` resources are immutable and cannot be modified upon creation. Each `AzureClient` resource is bound to a single Azure Active Directory Application and tenant.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "The resource name of the Azure client.",
+          "description": "The name of this resource. `AzureClient` resource names are formatted as `projects\/\/locations\/\/azureClients\/`. See [Resource Names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for more details on Google Cloud resource names.",
           "type": "string"
         },
         "tenantId": {
-          "description": "The Azure Active Directory Tenant ID.",
+          "description": "Required. The Azure Active Directory Tenant ID.",
           "type": "string"
         },
         "applicationId": {
-          "description": "The Azure Active Directory application ID.",
+          "description": "Required. The Azure Active Directory Application ID.",
           "type": "string"
         },
         "certificate": {
-          "description": "Output only. Output Only. The PEM encoded x509 certificate.",
+          "description": "Output only. The PEM encoded x509 certificate.",
           "readOnly": true,
           "type": "string",
           "format": "byte"
         },
         "uid": {
-          "description": "Output only. Output Only. The unique identifier of the Azure client.",
+          "description": "Output only. A globally unique identifier for the client.",
           "readOnly": true,
           "type": "string"
         },
         "createTime": {
-          "description": "Output only. Output Only. The time at which this Azure client was created.",
+          "description": "Output only. The time at which this resource was created.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
@@ -935,57 +935,57 @@
     },
     "GoogleCloudGkemulticloudV1ListAzureClientsResponse": {
       "id": "GoogleCloudGkemulticloudV1ListAzureClientsResponse",
-      "description": "Response message for `Clusters.ListAzureClients` method.",
+      "description": "Response message for `AzureClusters.ListAzureClients` method.",
       "type": "object",
       "properties": {
         "azureClients": {
-          "description": "The Azure clients from the specified parent resource.",
+          "description": "A list of AzureClient resources in the specified Google Cloud project and region region.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudGkemulticloudV1AzureClient"
           }
         },
         "nextPageToken": {
-          "description": "A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "description": "Token to retrieve the next page of results, or empty if there are no more results in the list.",
           "type": "string"
         }
       }
     },
     "GoogleCloudGkemulticloudV1AzureCluster": {
       "id": "GoogleCloudGkemulticloudV1AzureCluster",
-      "description": "A GKE cluster running on Azure.",
+      "description": "An Anthos cluster running on Azure.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "The resource name of this cluster.",
+          "description": "The name of this resource. Cluster names are formatted as `projects\/\/locations\/\/azureClusters\/`. See [Resource Names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for more details on GCP resource names.",
           "type": "string"
         },
         "description": {
-          "description": "A human readable description of this cluster.",
+          "description": "Optional. A human readable description of this cluster. Cannot be longer than 255 UTF-8 encoded bytes.",
           "type": "string"
         },
         "azureRegion": {
-          "description": "The Azure region where the cluster runs.",
+          "description": "Required. The Azure region where the cluster runs. Each Google Cloud region supports a subset of nearby Azure regions. You can call GetAzureServerConfig to list all supported Azure regions within a given Google Cloud region.",
           "type": "string"
         },
         "resourceGroupId": {
-          "description": "The ARM ID of the resource group where the cluster resources are deployed. Example: \"\/subscriptions\/\/resourceGroups\/\"",
+          "description": "Required. The ARM ID of the resource group where the cluster resources are deployed. For example: `\/subscriptions\/\/resourceGroups\/`",
           "type": "string"
         },
         "azureClient": {
-          "description": "Name of the azure client that contains the configurations to connect Azure. Format: projects\/{project}\/locations\/{location}\/azureClients\/{client-id}",
+          "description": "Required. Name of the AzureClient that contains authentication configuration for how the Anthos Multi-Cloud API connects to Azure APIs. The `AzureClient` resource must reside on the same GCP project and region as the `AzureCluster`. `AzureClient` names are formatted as `projects\/\/locations\/\/azureClients\/`. See [Resource Names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for more details on Google Cloud resource names.",
           "type": "string"
         },
         "networking": {
-          "description": "Cluster-wide networking configuration.",
+          "description": "Required. Cluster-wide networking configuration.",
           "$ref": "GoogleCloudGkemulticloudV1AzureClusterNetworking"
         },
         "controlPlane": {
-          "description": "Configuration related to the cluster control plane.",
+          "description": "Required. Configuration related to the cluster control plane.",
           "$ref": "GoogleCloudGkemulticloudV1AzureControlPlane"
         },
         "authorization": {
-          "description": "Configuration related to the cluster RBAC settings.",
+          "description": "Required. Configuration related to the cluster RBAC settings.",
           "$ref": "GoogleCloudGkemulticloudV1AzureAuthorization"
         },
         "state": {
@@ -996,7 +996,7 @@
             "Not set.",
             "The PROVISIONING state indicates the cluster is being created.",
             "The RUNNING state indicates the cluster has been created and is fully usable.",
-            "The RECONCILING state indicates that the cluster is being reconciled.",
+            "The RECONCILING state indicates that some work is actively being done on the cluster, such as upgrading the control plane replicas.",
             "The STOPPING state indicates the cluster is being deleted.",
             "The ERROR state indicates the cluster is in a broken unrecoverable state.",
             "The DEGRADED state indicates the cluster requires user action to restore full functionality."
@@ -1017,7 +1017,7 @@
           "type": "string"
         },
         "uid": {
-          "description": "Output only. The unique identifier of the cluster.",
+          "description": "Output only. A globally unique identifier for the cluster.",
           "readOnly": true,
           "type": "string"
         },
@@ -1039,11 +1039,11 @@
           "format": "google-datetime"
         },
         "etag": {
-          "description": "This checksum is computed by the server based on the value of other fields, and may be sent on update and delete requests to ensure the client has an up-to-date value before proceeding. Allows clients to perform consistent read-modify-writes through optimistic concurrency control.",
+          "description": "Allows clients to perform consistent read-modify-writes through optimistic concurrency control. May be sent on update and delete requests to ensure the client has an up-to-date value before proceeding.",
           "type": "string"
         },
         "annotations": {
-          "description": "Annotations on the cluster. This field has the same restrictions as Kubernetes annotations. The total size of all keys and values combined is limited to 256k. Key can have 2 segments: prefix (optional) and name (required), separated by a slash (\/). Prefix must be a DNS subdomain. Name must be 63 characters or less, begin and end with alphanumerics, with dashes (-), underscores (_), dots (.), and alphanumerics between.",
+          "description": "Optional. Annotations on the cluster. This field has the same restrictions as Kubernetes annotations. The total size of all keys and values combined is limited to 256k. Keys can have 2 segments: prefix (optional) and name (required), separated by a slash (\/). Prefix must be a DNS subdomain. Name must be 63 characters or less, begin and end with alphanumerics, with dashes (-), underscores (_), dots (.), and alphanumerics between.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -1058,22 +1058,22 @@
     },
     "GoogleCloudGkemulticloudV1AzureClusterNetworking": {
       "id": "GoogleCloudGkemulticloudV1AzureClusterNetworking",
-      "description": "ClusterNetworking defines cluster-wide networking configuration.",
+      "description": "ClusterNetworking contains cluster-wide networking configuration.",
       "type": "object",
       "properties": {
         "virtualNetworkId": {
-          "description": "The ARM ID of the VNet associated with your cluster. All components in the cluster (i.e. control plane and node pools) run on a single VNet. Example: \"\/subscriptions\/d00494d6-6f3c-4280-bbb2-899e163d1d30\/resourceGroups\/anthos_cluster_gke4ywe\/providers\/Microsoft.Network\/virtualNetworks\/gke-vnet-gke4ywe\" This field cannot be changed after creation.",
+          "description": "Required. The Azure Resource Manager (ARM) ID of the VNet associated with your cluster. All components in the cluster (i.e. control plane and node pools) run on a single VNet. Example: `\/subscriptions\/\/resourceGroups\/\/providers\/Microsoft.Network\/virtualNetworks\/` This field cannot be changed after creation.",
           "type": "string"
         },
         "podAddressCidrBlocks": {
-          "description": "All pods in the cluster are assigned an RFC1918 IPv4 address from these ranges. Only a single range is supported. This field cannot be changed after creation.",
+          "description": "Required. The IP address range of the pods in this cluster, in CIDR notation (e.g. `10.96.0.0\/14`). All pods in the cluster get assigned a unique RFC1918 IPv4 address from these ranges. Only a single range is supported. This field cannot be changed after creation.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "serviceAddressCidrBlocks": {
-          "description": "All services in the cluster are assigned an RFC1918 IPv4 address from these ranges. Only a single range is supported. This field cannot be changed after creation.",
+          "description": "Required. The IP address range for services in this cluster, in CIDR notation (e.g. `10.96.0.0\/14`). All services in the cluster get assigned a unique RFC1918 IPv4 address from these ranges. Only a single range is supported. This field cannot be changed after creating a cluster.",
           "type": "array",
           "items": {
             "type": "string"
@@ -1087,27 +1087,27 @@
       "type": "object",
       "properties": {
         "version": {
-          "description": "The Kubernetes control plane version (e.g. 1.16.9-gke.12).",
+          "description": "Required. The Kubernetes version to run on control plane replicas (e.g. `1.19.10-gke.1000`). You can list all supported versions on a given Google Cloud region by calling GetAzureServerConfig.",
           "type": "string"
         },
         "subnetId": {
-          "description": "The ARM ID of the subnet where the control plane VMs are deployed. Example: \"\/subscriptions\/d00494d6-6f3c-4280-bbb2-899e163d1d30\/resourceGroups\/anthos_cluster_gkeust4\/providers\/Microsoft.Network\/virtualNetworks\/gke-vnet-gkeust4\/subnets\/default\"",
+          "description": "Required. The ARM ID of the subnet where the control plane VMs are deployed. Example: `\/subscriptions\/\/resourceGroups\/\/providers\/Microsoft.Network\/virtualNetworks\/\/subnets\/default`.",
           "type": "string"
         },
         "vmSize": {
-          "description": "The Azure VM size name. Example: Standard_DS2_v2. For available VM sizes, see https:\/\/docs.microsoft.com\/en-us\/azure\/virtual-machines\/vm-naming-conventions.",
+          "description": "Optional. The Azure VM size name. Example: `Standard_DS2_v2`. For available VM sizes, see https:\/\/docs.microsoft.com\/en-us\/azure\/virtual-machines\/vm-naming-conventions. When unspecified, it defaults to `Standard_DS2_v2`.",
           "type": "string"
         },
         "sshConfig": {
-          "description": "The SSH configuration.",
+          "description": "Required. SSH configuration for how to access the underlying control plane machines.",
           "$ref": "GoogleCloudGkemulticloudV1AzureSshConfig"
         },
         "rootVolume": {
-          "description": "Template for the volume provisioned for control plane VM storage.",
+          "description": "Optional. Configuration related to the root volume provisioned for each control plane replica. When unspecified, it defaults to 32-GiB Azure Disk.",
           "$ref": "GoogleCloudGkemulticloudV1AzureDiskTemplate"
         },
         "mainVolume": {
-          "description": "Template for the volume provisioned for etcd storage.",
+          "description": "Optional. Configuration related to the main volume provisioned for each control plane replica. The main volume is in charge of storing all of the cluster's etcd state. When unspecified, it defaults to a 8-GiB Azure Disk.",
           "$ref": "GoogleCloudGkemulticloudV1AzureDiskTemplate"
         },
         "azureServicesAuthentication": {
@@ -1115,11 +1115,11 @@
           "$ref": "GoogleCloudGkemulticloudV1AzureServicesAuthentication"
         },
         "databaseEncryption": {
-          "description": "Key information used to encrypt cluster secrets.",
+          "description": "Optional. Configuration related to application-layer secrets encryption.",
           "$ref": "GoogleCloudGkemulticloudV1AzureDatabaseEncryption"
         },
         "tags": {
-          "description": "Tags to apply on the Azure resources owned by the cluster.",
+          "description": "Optional. A set of tags to apply to all underlying control plane Azure resources.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -1133,18 +1133,18 @@
       "type": "object",
       "properties": {
         "authorizedKey": {
-          "description": "The SSH public key data for cluster machines. This accepts the authorized_keys file format used in OpenSSH according to the sshd(8) manual page.",
+          "description": "Required. The SSH public key data for VMs managed by Anthos. This accepts the authorized_keys file format used in OpenSSH according to the sshd(8) manual page.",
           "type": "string"
         }
       }
     },
     "GoogleCloudGkemulticloudV1AzureDiskTemplate": {
       "id": "GoogleCloudGkemulticloudV1AzureDiskTemplate",
-      "description": "Configuration template for Azure Disks.",
+      "description": "Configuration for Azure Disks.",
       "type": "object",
       "properties": {
         "sizeGib": {
-          "description": "The size of the disk, in GiBs.",
+          "description": "Optional. The size of the disk, in GiBs. When unspecified, a default value is provided. See the specific reference in the parent resource.",
           "type": "integer",
           "format": "int32"
         }
@@ -1156,7 +1156,7 @@
       "type": "object",
       "properties": {
         "subscription": {
-          "description": "The Azure subscription ID.",
+          "description": "The Azure Subscription ID.",
           "type": "string"
         },
         "aadTenant": {
@@ -1168,22 +1168,22 @@
           "type": "string"
         },
         "aadApplicationKeypairSecret": {
-          "description": "The resource name of the Secret in the format \"projects\/*\/secrets\/*\" for the authentication to the Azure Active Directory application. The latest SecretVersion is used.",
+          "description": "The resource name of the Secret in the format `projects\/*\/secrets\/*` for the authentication to the Azure Active Directory application. The latest SecretVersion is used.",
           "type": "string"
         }
       }
     },
     "GoogleCloudGkemulticloudV1AzureDatabaseEncryption": {
       "id": "GoogleCloudGkemulticloudV1AzureDatabaseEncryption",
-      "description": "Configuration related to application-layer secrets encryption.",
+      "description": "Configuration related to application-layer secrets encryption. Anthos clusters on Azure encrypts your Kubernetes data at rest in etcd using Azure Key Vault.",
       "type": "object",
       "properties": {
         "resourceGroupId": {
-          "description": "The ARM ID the of the resourcegroup containing BYO keyvault. Example: \"\/subscriptions\/d00494d6-6f3c-4280-bbb2-899e163d1d30\/resourceGroups\/anthos_cluster_gke1b4k\"",
+          "description": "Required. The ARM ID the of the Azure resource group containing the Azure Key Vault key. Example: `\/subscriptions\/\/resourceGroups\/`",
           "type": "string"
         },
         "kmsKeyIdentifier": {
-          "description": "The URL the of the byo key with its version. Example: \"https:\/\/controlplane-gke1b4k-kv.vault.azure.net\/keys\/kmskey-gke1b4k\/6e4e757da9dc4a38b2265fbca3ffb7bd\"",
+          "description": "Required. The URL the of the Azure Key Vault key (with its version) to use to encrypt \/ decrypt data. For example: `https:\/\/.vault.azure.net\/keys\/\/`",
           "type": "string"
         }
       }
@@ -1194,7 +1194,7 @@
       "type": "object",
       "properties": {
         "adminUsers": {
-          "description": "Users that can perform operations as a cluster admin. A new ClusterRoleBinding will be created to grant the cluster-admin ClusterRole to the users. At most one user can be specified. For more info on RBAC, see https:\/\/kubernetes.io\/docs\/reference\/access-authn-authz\/rbac\/#user-facing-roles",
+          "description": "Required. Users that can perform operations as a cluster admin. A new ClusterRoleBinding will be created to grant the cluster-admin ClusterRole to the users. At most one user can be specified. For more info on RBAC, see https:\/\/kubernetes.io\/docs\/reference\/access-authn-authz\/rbac\/#user-facing-roles",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudGkemulticloudV1AzureClusterUser"
@@ -1208,63 +1208,63 @@
       "type": "object",
       "properties": {
         "username": {
-          "description": "The name of the user, e.g. my-gcp-id@gmail.com.",
+          "description": "Required. The name of the user, e.g. `my-gcp-id@gmail.com`.",
           "type": "string"
         }
       }
     },
     "GoogleCloudGkemulticloudV1ListAzureClustersResponse": {
       "id": "GoogleCloudGkemulticloudV1ListAzureClustersResponse",
-      "description": "Response message for `Clusters.ListAzureClusters` method.",
+      "description": "Response message for `AzureClusters.ListAzureClusters` method.",
       "type": "object",
       "properties": {
         "azureClusters": {
-          "description": "The clusters from the specified parent resource.",
+          "description": "A list of AzureCluster resources in the specified GCP project and region region.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudGkemulticloudV1AzureCluster"
           }
         },
         "nextPageToken": {
-          "description": "A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "description": "Token to retrieve the next page of results, or empty if there are no more results in the list.",
           "type": "string"
         }
       }
     },
     "GoogleCloudGkemulticloudV1GetAzureClusterAdminKubeconfigResponse": {
       "id": "GoogleCloudGkemulticloudV1GetAzureClusterAdminKubeconfigResponse",
-      "description": "Response message for `Clusters.GetAzureClusterAdminKubeconfig` method.",
+      "description": "Response message for `AzureClusters.GetAzureClusterAdminKubeconfig` method.",
       "type": "object",
       "properties": {
         "kubeconfig": {
-          "description": "The admin kubeconfig. The generated client credentials expire after 20 hours.",
+          "description": "The generated kubeconfig file.",
           "type": "string"
         }
       }
     },
     "GoogleCloudGkemulticloudV1AzureNodePool": {
       "id": "GoogleCloudGkemulticloudV1AzureNodePool",
-      "description": "A GKE node pool running on Azure infrastructure.",
+      "description": "An Anthos node pool running on Azure.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "The resource name of this node pool.",
+          "description": "The name of this resource. Node pool names are formatted as `projects\/\/locations\/\/azureClusters\/\/azureNodePools\/`. For more details on Google Cloud resource names, see [Resource Names](https:\/\/cloud.google.com\/apis\/design\/resource_names)",
           "type": "string"
         },
         "version": {
-          "description": "The kubernetes version (e.g. 1.16.9-gke.12) running on this node pool.",
+          "description": "Required. The Kubernetes version (e.g. `1.19.10-gke.1000`) running on this node pool.",
           "type": "string"
         },
         "config": {
-          "description": "The node configuration of the pool.",
+          "description": "Required. The node configuration of the node pool.",
           "$ref": "GoogleCloudGkemulticloudV1AzureNodeConfig"
         },
         "subnetId": {
-          "description": "The ARM ID of the subnet where the node pool VMs run. Make sure it's a subnet under the virtual network in the cluster configuration.",
+          "description": "Required. The ARM ID of the subnet where the node pool VMs run. Make sure it's a subnet under the virtual network in the cluster configuration.",
           "type": "string"
         },
         "autoscaling": {
-          "description": "Autoscaler configuration for this NodePool.",
+          "description": "Required. Autoscaler configuration for this node pool.",
           "$ref": "GoogleCloudGkemulticloudV1AzureNodePoolAutoscaling"
         },
         "state": {
@@ -1291,12 +1291,12 @@
           ]
         },
         "uid": {
-          "description": "Output only. The unique identifier of the node pool.",
+          "description": "Output only. A globally unique identifier for the node pool.",
           "readOnly": true,
           "type": "string"
         },
         "reconciling": {
-          "description": "Output only. If set, there are currently changes in flight to the node pool.",
+          "description": "Output only. If set, there are currently pending changes to the node pool.",
           "readOnly": true,
           "type": "boolean"
         },
@@ -1313,60 +1313,64 @@
           "format": "google-datetime"
         },
         "etag": {
-          "description": "This checksum is computed by the server based on the value of other fields, and may be sent on update and delete requests to ensure the client has an up-to-date value before proceeding. Allows clients to perform consistent read-modify-writes through optimistic concurrency control.",
+          "description": "Allows clients to perform consistent read-modify-writes through optimistic concurrency control. May be sent on update and delete requests to ensure the client has an up-to-date value before proceeding.",
           "type": "string"
         },
         "annotations": {
-          "description": "Annotations on the node pool. This field has the same restrictions as Kubernetes annotations. The total size of all keys and values combined is limited to 256k. Key can have 2 segments: prefix (optional) and name (required), separated by a slash (\/). Prefix must be a DNS subdomain. Name must be 63 characters or less, begin and end with alphanumerics, with dashes (-), underscores (_), dots (.), and alphanumerics between.",
+          "description": "Optional. Annotations on the node pool. This field has the same restrictions as Kubernetes annotations. The total size of all keys and values combined is limited to 256k. Keys can have 2 segments: prefix (optional) and name (required), separated by a slash (\/). Prefix must be a DNS subdomain. Name must be 63 characters or less, begin and end with alphanumerics, with dashes (-), underscores (_), dots (.), and alphanumerics between.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
           }
         },
         "maxPodsConstraint": {
-          "description": "The constraint on the maximum number of pods that can be run simultaneously on a node in the node pool.",
+          "description": "Required. The constraint on the maximum number of pods that can be run simultaneously on a node in the node pool.",
           "$ref": "GoogleCloudGkemulticloudV1MaxPodsConstraint"
+        },
+        "azureAvailabilityZone": {
+          "description": "Optional. The Azure availability zone of the nodes in this nodepool. When unspecified, it defaults to `1`.",
+          "type": "string"
         }
       }
     },
     "GoogleCloudGkemulticloudV1AzureNodeConfig": {
       "id": "GoogleCloudGkemulticloudV1AzureNodeConfig",
-      "description": "Parameters that describe the nodes in a cluster.",
+      "description": "Parameters that describe the configuration of all node machines on a given node pool.",
       "type": "object",
       "properties": {
         "vmSize": {
-          "description": "The Azure VM size name. Example: Standard_DS2_v2. For available VM sizes, see https:\/\/docs.microsoft.com\/en-us\/azure\/virtual-machines\/vm-naming-conventions.",
+          "description": "Optional. The Azure VM size name. Example: `Standard_DS2_v2`. See [Supported VM sizes](\/anthos\/clusters\/docs\/azure\/reference\/supported-vms) for options. When unspecified, it defaults to `Standard_DS2_v2`.",
           "type": "string"
         },
         "rootVolume": {
-          "description": "Template for the volume provisioned for nodepool VMSS storage.",
+          "description": "Optional. Configuration related to the root volume provisioned for each node pool machine. When unspecified, it defaults to a 32-GiB Azure Disk.",
           "$ref": "GoogleCloudGkemulticloudV1AzureDiskTemplate"
         },
         "tags": {
-          "description": "Tags to apply on the node pool.",
+          "description": "Optional. A set of tags to apply to all underlying Azure resources for this node pool. This currently only includes Virtual Machine Scale Sets. Specify at most 50 pairs containing alphanumerics, spaces, and symbols (.+-=_:@\/). Keys can be up to 127 Unicode characters. Values can be up to 255 Unicode characters.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
           }
         },
         "sshConfig": {
-          "description": "The SSH configuration.",
+          "description": "Required. SSH configuration for how to access the node pool machines.",
           "$ref": "GoogleCloudGkemulticloudV1AzureSshConfig"
         }
       }
     },
     "GoogleCloudGkemulticloudV1AzureNodePoolAutoscaling": {
       "id": "GoogleCloudGkemulticloudV1AzureNodePoolAutoscaling",
-      "description": "AzureNodePoolAutoscaling contains information required by cluster autoscaler to adjust the size of the node pool to the current cluster usage.",
+      "description": "Configuration related to Kubernetes cluster autoscaler. The Kubernetes cluster autoscaler will automatically adjust the size of the node pool based on the cluster load.",
       "type": "object",
       "properties": {
         "minNodeCount": {
-          "description": "Minimum number of nodes in the NodePool. Must be >= 1 and <= max_node_count.",
+          "description": "Required. Minimum number of nodes in the node pool. Must be >= 1 and <= max_node_count.",
           "type": "integer",
           "format": "int32"
         },
         "maxNodeCount": {
-          "description": "Maximum number of nodes in the NodePool. Must be >= min_node_count.",
+          "description": "Required. Maximum number of nodes in the node pool. Must be >= min_node_count.",
           "type": "integer",
           "format": "int32"
         }
@@ -1374,18 +1378,18 @@
     },
     "GoogleCloudGkemulticloudV1ListAzureNodePoolsResponse": {
       "id": "GoogleCloudGkemulticloudV1ListAzureNodePoolsResponse",
-      "description": "Response message for `Clusters.ListAzureNodePools` method.",
+      "description": "Response message for `AzureClusters.ListAzureNodePools` method.",
       "type": "object",
       "properties": {
         "azureNodePools": {
-          "description": "The node pools from the specified parent resource.",
+          "description": "A list of AzureNodePool resources in the specified `AzureCluster`.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudGkemulticloudV1AzureNodePool"
           }
         },
         "nextPageToken": {
-          "description": "A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "description": "Token to retrieve the next page of results, or empty if there are no more results in the list.",
           "type": "string"
         }
       }
@@ -1456,11 +1460,11 @@
     },
     "GoogleCloudGkemulticloudV1AzureServerConfig": {
       "id": "GoogleCloudGkemulticloudV1AzureServerConfig",
-      "description": "AzureServerConfig is the configuration of GKE cluster on Azure.",
+      "description": "AzureServerConfig contains information about a Google Cloud location, such as supported Azure regions and Kubernetes versions.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "The resource name of the config.",
+          "description": "The `AzureServerConfig` resource name. `AzureServerConfig` names are formatted as `projects\/\/locations\/\/azureServerConfig`. See [Resource Names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for more details on GCP resource names.",
           "type": "string"
         },
         "validVersions": {
@@ -1481,11 +1485,40 @@
     },
     "GoogleCloudGkemulticloudV1AzureK8sVersionInfo": {
       "id": "GoogleCloudGkemulticloudV1AzureK8sVersionInfo",
-      "description": "Kubernetes version information of GKE cluster on Azure.",
+      "description": "Information about a supported Kubernetes version.",
       "type": "object",
       "properties": {
         "version": {
-          "description": "Kubernetes version name.",
+          "description": "A supported Kubernetes version (for example, `1.19.10-gke.1000`)",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudGkemulticloudV1OperationMetadata": {
+      "id": "GoogleCloudGkemulticloudV1OperationMetadata",
+      "description": "Metadata about a long-running operation.",
+      "type": "object",
+      "properties": {
+        "createTime": {
+          "description": "Output only. The time at which this operation was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "Output only. The time at which this operation was completed.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "target": {
+          "description": "Output only. The name of the resource associated to this operation.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "statusDetail": {
+          "description": "Output only. Human-readable status of the operation, if any.",
+          "readOnly": true,
           "type": "string"
         }
       }
@@ -1503,7 +1536,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "name": {
-                  "description": "Required. The name of the AWS server config to retrieve. Format: projects\/{project}\/locations\/{location}\/awsServerConfig",
+                  "description": "Required. The name of the AwsServerConfig resource to describe. `AwsServerConfig` names are formatted as `projects\/\/locations\/\/awsServerConfig`. See [Resource Names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for more details on Google Cloud resource names.",
                   "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/awsServerConfig$",
                   "location": "path",
                   "required": true,
@@ -1519,7 +1552,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Returns configuration info about the GKE cluster on AWS."
+              "description": "Returns information, such as supported AWS regions and Kubernetes versions, on a given Google Cloud location."
             },
             "getAzureServerConfig": {
               "id": "gkemulticloud.projects.locations.getAzureServerConfig",
@@ -1528,7 +1561,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "name": {
-                  "description": "Required. The name of the Azure server config to retrieve. Format: projects\/{project}\/locations\/{location}\/azureServerConfig",
+                  "description": "Required. The name of the AzureServerConfig resource to describe. `AzureServerConfig` names are formatted as `projects\/\/locations\/\/azureServerConfig`. See [Resource Names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for more details on Google Cloud resource names.",
                   "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/azureServerConfig$",
                   "location": "path",
                   "required": true,
@@ -1544,7 +1577,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Returns configuration info about the GKE cluster on Azure."
+              "description": "Returns information, such as supported Azure regions and Kubernetes versions, on a given Google Cloud location."
             }
           }
           ,
@@ -1681,14 +1714,14 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent resource where this cluster will be created. Format: projects\/{project}\/locations\/{location}",
+                      "description": "Required. The parent location where this AwsCluster resource will be created. Location names are formatted as `projects\/\/locations\/`. See [Resource Names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for more details on Google Cloud resource names.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "awsClusterId": {
-                      "description": "Required. The ID to use for the cluster, which will become the final component of the cluster's resource name. This value must be up to 40 characters, and valid characters are \/a-z-\/.",
+                      "description": "Required. A client provided ID the resource. Must be unique within the parent resource. The provided ID will be part of the AwsCluster resource name formatted as `projects\/\/locations\/\/awsClusters\/`. Valid characters are `\/a-z-\/`. Cannot be longer than 40 characters.",
                       "location": "query",
                       "type": "string"
                     },
@@ -1710,7 +1743,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Creates a new cluster."
+                  "description": "Creates a new AwsCluster resource on a given GCP project and region. If successful, the response contains a newly created Operation resource that can be described to track the status of the operation."
                 },
                 "patch": {
                   "id": "gkemulticloud.projects.locations.awsClusters.patch",
@@ -1719,7 +1752,7 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "The resource name of this cluster.",
+                      "description": "The name of this resource. Cluster names are formatted as `projects\/\/locations\/\/awsClusters\/`. See [Resource Names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for more details on GCP resource names.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/awsClusters\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -1731,7 +1764,7 @@
                       "type": "boolean"
                     },
                     "updateMask": {
-                      "description": "The list of fields to be updated.",
+                      "description": "Mask of fields to update. At least one path must be supplied in this field. The elements of the repeated paths field may only include these fields from AwsCluster: * `description`. * `annotations`.",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"
@@ -1749,7 +1782,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "update a specific cluster."
+                  "description": "Updates an AwsCluster."
                 },
                 "get": {
                   "id": "gkemulticloud.projects.locations.awsClusters.get",
@@ -1758,7 +1791,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. The name of the cluster to retrieve. Format: projects\/{project}\/locations\/{location}\/awsClusters\/{cluster}",
+                      "description": "Required. The name of the AwsCluster resource to describe. `AwsCluster` names are formatted as `projects\/\/locations\/\/awsClusters\/`. See [Resource Names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for more details on GCP resource names.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/awsClusters\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -1774,7 +1807,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Gets details of a specific cluster."
+                  "description": "Describes a specific AwsCluster resource."
                 },
                 "list": {
                   "id": "gkemulticloud.projects.locations.awsClusters.list",
@@ -1783,20 +1816,20 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent, which owns this collection of clusters. Format: projects\/{project}\/locations\/{location}",
+                      "description": "Required. The parent location which owns this collection of AwsCluster resources. Location names are formatted as `projects\/\/locations\/`. See [Resource Names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for more details on GCP resource names.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "pageSize": {
-                      "description": "The maximum number of clusters to return. The service may return fewer than this value. If unspecified, at most 50 clusters will be returned. The maximum value is 1000; values above 1000 will be coerced to 1000.",
+                      "description": "The maximum number of items to return. If not specified, a default value of 50 will be used by the service. Regardless of the pageSize value, the response may include a partial list and a caller should only rely on response's nextPageToken to determine if there are more instances left to be queried.",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"
                     },
                     "pageToken": {
-                      "description": "A page token, received from a previous `ListAwsClusters` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListAwsClusters` must match the call that provided the page token.",
+                      "description": "The `nextPageToken` value returned from a previous awsClusters.list request, if any.",
                       "location": "query",
                       "type": "string"
                     }
@@ -1810,7 +1843,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Lists all clusters under a given parent resource."
+                  "description": "Lists all AwsCluster resources on a given Google Cloud project and region."
                 },
                 "delete": {
                   "id": "gkemulticloud.projects.locations.awsClusters.delete",
@@ -1819,24 +1852,24 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "Required. The name of the cluster to delete. Format: projects\/{project}\/locations\/{location}\/awsClusters\/{cluster}",
+                      "description": "Required. The resource name the AwsCluster to delete. `AwsCluster` names are formatted as `projects\/\/locations\/\/awsClusters\/`. See [Resource Names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for more details on GCP resource names.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/awsClusters\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "validateOnly": {
-                      "description": "If set, only validate the request, but do not actually delete the cluster.",
+                      "description": "If set, only validate the request, but do not actually delete the resource.",
                       "location": "query",
                       "type": "boolean"
                     },
                     "allowMissing": {
-                      "description": "If set to true, and the AWS Cluster is not found, the request will succeed but no action will be taken on the server and return a completed LRO.",
+                      "description": "If set to true, and the AwsCluster resource is not found, the request will succeed but no action will be taken on the server and a completed Operation will be returned. Useful for idempotent deletion.",
                       "location": "query",
                       "type": "boolean"
                     },
                     "etag": {
-                      "description": "The current etag of the AWSCluster. If an etag is provided and does not match the current etag of the cluster, deletion will be blocked and an ABORTED error will be returned.",
+                      "description": "The current etag of the AwsCluster. Allows clients to perform deletions through optimistic concurrency control. If the provided etag does not match the current etag of the cluster, the request will fail and an ABORTED error will be returned.",
                       "location": "query",
                       "type": "string"
                     }
@@ -1850,7 +1883,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Deletes a specific cluster, including the Kubernetes control plane and all node pools."
+                  "description": "Deletes a specific AwsCluster resource. Fails if the cluster has one or more associated AwsNodePool resources. If successful, the response contains a newly created Operation resource that can be described to track the status of the operation."
                 },
                 "getAwsClusterAdminKubeconfig": {
                   "id": "gkemulticloud.projects.locations.awsClusters.getAwsClusterAdminKubeconfig",
@@ -1875,7 +1908,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Gets a kubeconfig file to authenticate as admin (system:masters) on a given AWS cluster. The returned kubeconfig files uses x509 certificates."
+                  "description": "Generates a kubeconfig file to connect to a given AwsCluster. The returned kubeconfig authenticates to k8s api-server as a generic admin user with username `kubernetes-admin` (as a member of the `system:masters` group) and is valid for 20 hours."
                 },
                 "getJwks": {
                   "id": "gkemulticloud.projects.locations.awsClusters.getJwks",
@@ -1914,14 +1947,14 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The parent resource where this node pool will be created. projects\/{project}\/locations\/{location}\/awsClusters\/{cluster}",
+                          "description": "Required. The AwsCluster resource where this node pool will be created. Location names are formatted as `projects\/\/locations\/`. See [Resource Names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for more details on Google Cloud resource names.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/awsClusters\/[^\/]+$",
                           "location": "path",
                           "required": true,
                           "type": "string"
                         },
                         "awsNodePoolId": {
-                          "description": "Required. The ID to use for the node pool, which will become the final component of the node pool's resource name. This value must be up to 40 characters, and valid characters are \/a-z-\/.",
+                          "description": "Required. A client provided ID the resource. Must be unique within the parent resource. The provided ID will be part of the AwsNodePool resource name formatted as `projects\/\/locations\/\/awsClusters\/\/awsNodePools\/`. Valid characters are `\/a-z-\/`. Cannot be longer than 40 characters.",
                           "location": "query",
                           "type": "string"
                         },
@@ -1943,7 +1976,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Created a new node pool, attached to a given cluster."
+                      "description": "Creates a new AwsNodePool, attached to a given AwsCluster. If successful, the response contains a newly created Operation resource that can be described to track the status of the operation."
                     },
                     "patch": {
                       "id": "gkemulticloud.projects.locations.awsClusters.awsNodePools.patch",
@@ -1952,19 +1985,19 @@
                       "httpMethod": "PATCH",
                       "parameters": {
                         "name": {
-                          "description": "The resource name of this node pool.",
+                          "description": "The name of this resource. Node pool names are formatted as `projects\/\/locations\/\/awsClusters\/\/awsNodePools\/`. For more details on Google Cloud resource names, see [Resource Names](https:\/\/cloud.google.com\/apis\/design\/resource_names)",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/awsClusters\/[^\/]+\/awsNodePools\/[^\/]+$",
                           "location": "path",
                           "required": true,
                           "type": "string"
                         },
                         "validateOnly": {
-                          "description": "If set, only validate the request, but do not actually update the node pool.",
+                          "description": "If set, only validate the request, but don't actually update the node pool.",
                           "location": "query",
                           "type": "boolean"
                         },
                         "updateMask": {
-                          "description": "Required. The list of fields to be updated.",
+                          "description": "Required. Mask of fields to update. At least one path must be supplied in this field. The elements of the repeated paths field may only include these fields from AzureNodePool: * `description`.",
                           "location": "query",
                           "type": "string",
                           "format": "google-fieldmask"
@@ -1982,7 +2015,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Update a specific node pool."
+                      "description": "Updates an AwsNodePool."
                     },
                     "get": {
                       "id": "gkemulticloud.projects.locations.awsClusters.awsNodePools.get",
@@ -1991,7 +2024,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "name": {
-                          "description": "Required. The name of the node pool to retrieve. Format: projects\/{project}\/locations\/{location}\/awsClusters\/{cluster}\/awsNodePools\/{nodepool}",
+                          "description": "Required. The name of the AwsNodePool resource to describe. `AwsNodePool` names are formatted as `projects\/\/locations\/\/awsClusters\/\/awsNodePools\/`. See [Resource Names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for more details on Google Cloud resource names.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/awsClusters\/[^\/]+\/awsNodePools\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -2007,7 +2040,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Gets details of a specific node pool."
+                      "description": "Describes a specific AwsNodePool resource."
                     },
                     "list": {
                       "id": "gkemulticloud.projects.locations.awsClusters.awsNodePools.list",
@@ -2016,20 +2049,20 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The parent, which owns this collection of node pools. Format: projects\/{project}\/locations\/{location}\/awsClusters\/{cluster-id}",
+                          "description": "Required. The parent `AwsCluster` which owns this collection of AwsNodePool resources. `AwsCluster` names are formatted as `projects\/\/locations\/\/awsClusters\/`. See [Resource Names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for more details on Google Cloud resource names.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/awsClusters\/[^\/]+$",
                           "location": "path",
                           "required": true,
                           "type": "string"
                         },
                         "pageSize": {
-                          "description": "The maximum number of node pools to return. The service may return fewer than this value. If unspecified, at most 50 node pools will be returned. The maximum value is 1000; values above 1000 will be coerced to 1000.",
+                          "description": "The maximum number of items to return. If not specified, a default value of 50 will be used by the service. Regardless of the pageSize value, the response may include a partial list and a caller should only rely on response's nextPageToken to determine if there are more instances left to be queried.",
                           "location": "query",
                           "type": "integer",
                           "format": "int32"
                         },
                         "pageToken": {
-                          "description": "A page token, received from a previous `ListAwsNodePools` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListAwsNodePools` must match the call that provided the page token.",
+                          "description": "The `nextPageToken` value returned from a previous awsNodePools.list request, if any.",
                           "location": "query",
                           "type": "string"
                         }
@@ -2043,7 +2076,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Lists all node pools under a given parent resource."
+                      "description": "Lists all AwsNodePool resources on a given AwsCluster."
                     },
                     "delete": {
                       "id": "gkemulticloud.projects.locations.awsClusters.awsNodePools.delete",
@@ -2052,7 +2085,7 @@
                       "httpMethod": "DELETE",
                       "parameters": {
                         "name": {
-                          "description": "Required. The name of the node pool to delete. Format: projects\/{project}\/locations\/{location}\/awsClusters\/{cluster}\/awsNodePools\/{nodepool}",
+                          "description": "Required. The resource name the AwsNodePool to delete. `AwsNodePool` names are formatted as `projects\/\/locations\/\/awsClusters\/\/awsNodePools\/`. See [Resource Names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for more details on Google Cloud resource names.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/awsClusters\/[^\/]+\/awsNodePools\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -2064,12 +2097,12 @@
                           "type": "boolean"
                         },
                         "allowMissing": {
-                          "description": "If set to true, and the AWS Node Pool is not found, the request will succeed but no action will be taken on the server and return a completed LRO.",
+                          "description": "If set to true, and the AwsNodePool resource is not found, the request will succeed but no action will be taken on the server and a completed Operation will be returned. Useful for idempotent deletion.",
                           "location": "query",
                           "type": "boolean"
                         },
                         "etag": {
-                          "description": "The current etag of the AWSNodePool. If an etag is provided and does not match the current etag of the nodepool, deletion will be blocked and an ABORTED error will be returned.",
+                          "description": "The current ETag of the AwsNodePool. Allows clients to perform deletions through optimistic concurrency control. If the provided ETag does not match the current etag of the node pool, the request will fail and an ABORTED error will be returned.",
                           "location": "query",
                           "type": "string"
                         }
@@ -2083,7 +2116,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Deletes a specific node pool."
+                      "description": "Deletes a specific AwsNodePool resource. If successful, the response contains a newly created Operation resource that can be described to track the status of the operation."
                     }
                   }
                 },
@@ -2127,14 +2160,14 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent resource where this Azure client will be created. Format: projects\/{project}\/locations\/{location}",
+                      "description": "Required. The parent location where this AzureClient resource will be created. Location names are formatted as `projects\/\/locations\/`. See [Resource Names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for more details on Google Cloud resource names.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "azureClientId": {
-                      "description": "Required. The ID to use for the Azure client, which will become the final component of the client's resource name. This value must be up to 40 characters, and valid characters are \/a-z-\/.",
+                      "description": "Required. A client provided ID the resource. Must be unique within the parent resource. The provided ID will be part of the AzureClient resource name formatted as `projects\/\/locations\/\/azureClients\/`. Valid characters are `\/a-z-\/`. Cannot be longer than 40 characters.",
                       "location": "query",
                       "type": "string"
                     },
@@ -2156,7 +2189,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Creates a new Azure client under the given parent resource."
+                  "description": "Creates a new AzureClient resource on a given Google Cloud project and region. `AzureClient` resources hold client authentication information needed by the Anthos Multicloud API to manage Azure resources on your Azure subscription on your behalf. If successful, the response contains a newly created Operation resource that can be described to track the status of the operation."
                 },
                 "get": {
                   "id": "gkemulticloud.projects.locations.azureClients.get",
@@ -2165,7 +2198,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. The name of the zure client to retrieve. Format: projects\/{project}\/locations\/{location}\/azureClients\/{client-id}",
+                      "description": "Required. The name of the AzureClient resource to describe. AzureClient names are formatted as `projects\/\/locations\/\/azureClients\/`. See [Resource Names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for more details on Google Cloud resource names.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/azureClients\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -2181,7 +2214,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Gets a specific Azure client."
+                  "description": "Describes a specific AzureClient resource."
                 },
                 "list": {
                   "id": "gkemulticloud.projects.locations.azureClients.list",
@@ -2190,20 +2223,20 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent, which owns this collection of Azure clients. Format: projects\/{project}\/locations\/{location}",
+                      "description": "Required. The parent location which owns this collection of AzureClient resources. Location names are formatted as `projects\/\/locations\/`. See [Resource Names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for more details on GCP resource names.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "pageSize": {
-                      "description": "The maximum number of Azure clients to return. The service may return fewer than this value. If unspecified, at most 50 Azure clients will be returned. The maximum value is 1000; values above 1000 will be coerced to 1000.",
+                      "description": "The maximum number of items to return. If not specified, a default value of 50 will be used by the service. Regardless of the pageSize value, the response may include a partial list and a caller should only rely on response's nextPageToken to determine if there are more instances left to be queried.",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"
                     },
                     "pageToken": {
-                      "description": "A page token, received from a previous `ListAzureClients` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListAzureClients` must match the call that provided the page token.",
+                      "description": "The `nextPageToken` value returned from a previous azureClients.list request, if any.",
                       "location": "query",
                       "type": "string"
                     }
@@ -2217,7 +2250,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Lists all Azure clients under a given parent resource."
+                  "description": "Lists all AzureClient resources on a given Google Cloud project and region."
                 },
                 "delete": {
                   "id": "gkemulticloud.projects.locations.azureClients.delete",
@@ -2226,19 +2259,19 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "Required. The name of the Azure clients to delete. Format: projects\/{project}\/locations\/{location}\/azureClients\/{client-id}",
+                      "description": "Required. The resource name the AzureClient to delete. AzureClient names are formatted as `projects\/\/locations\/\/azureClients\/`. See [Resource Names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for more details on Google Cloud resource names.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/azureClients\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "allowMissing": {
-                      "description": "If set to true, and the Azure Client is not found, the request will succeed but no action will be taken on the server and return a completed LRO.",
+                      "description": "If set to true, and the AzureClient resource is not found, the request will succeed but no action will be taken on the server and a completed Operation will be returned. Useful for idempotent deletion.",
                       "location": "query",
                       "type": "boolean"
                     },
                     "validateOnly": {
-                      "description": "If set, only validate the request, but do not actually delete the azure client.",
+                      "description": "If set, only validate the request, but do not actually delete the resource.",
                       "location": "query",
                       "type": "boolean"
                     }
@@ -2252,7 +2285,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Deletes a specific Azure client. If the Azure client is used by one or more clusters, the delete will be blocked and a FAILED_PRECONDITION error will be returned."
+                  "description": "Deletes a specific AzureClient resource. If the client is used by one or more clusters, deletion will fail and a `FAILED_PRECONDITION` error will be returned. If successful, the response contains a newly created Operation resource that can be described to track the status of the operation."
                 }
               }
             },
@@ -2265,14 +2298,14 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent resource where this cluster will be created. Format: projects\/{project}\/locations\/{location}",
+                      "description": "Required. The parent location where this AzureCluster resource will be created. Location names are formatted as `projects\/\/locations\/`. See [Resource Names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for more details on Google Cloud resource names.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "azureClusterId": {
-                      "description": "Required. The ID to use for the cluster, which will become the final component of the cluster's resource name. This value must be up to 40 characters, and valid characters are \/a-z-\/.",
+                      "description": "Required. A client provided ID the resource. Must be unique within the parent resource. The provided ID will be part of the AzureCluster resource name formatted as `projects\/\/locations\/\/azureClusters\/`. Valid characters are `\/a-z-\/`. Cannot be longer than 40 characters.",
                       "location": "query",
                       "type": "string"
                     },
@@ -2294,7 +2327,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Creates a new cluster."
+                  "description": "Creates a new AzureCluster resource on a given GCP project and region. If successful, the response contains a newly created Operation resource that can be described to track the status of the operation."
                 },
                 "patch": {
                   "id": "gkemulticloud.projects.locations.azureClusters.patch",
@@ -2303,7 +2336,7 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "The resource name of this cluster.",
+                      "description": "The name of this resource. Cluster names are formatted as `projects\/\/locations\/\/azureClusters\/`. See [Resource Names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for more details on GCP resource names.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/azureClusters\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -2315,7 +2348,7 @@
                       "type": "boolean"
                     },
                     "updateMask": {
-                      "description": "Required. The list of fields to be updated.",
+                      "description": "Required. Mask of fields to update. At least one path must be supplied in this field. The elements of the repeated paths field may only include these fields from AzureCluster: * `description`. * `azureClient`. * `control_plane.version`.",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"
@@ -2333,7 +2366,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Update a specific cluster."
+                  "description": "Updates an AzureCluster."
                 },
                 "get": {
                   "id": "gkemulticloud.projects.locations.azureClusters.get",
@@ -2342,7 +2375,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. The name of the cluster to retrieve. Format: projects\/{project}\/locations\/{location}\/azureClusters\/{cluster}",
+                      "description": "Required. The name of the AzureCluster resource to describe. `AzureCluster` names are formatted as `projects\/\/locations\/\/azureClusters\/`. See [Resource Names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for more details on GCP resource names.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/azureClusters\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -2358,7 +2391,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Gets details of a specific cluster."
+                  "description": "Describes a specific AzureCluster resource."
                 },
                 "list": {
                   "id": "gkemulticloud.projects.locations.azureClusters.list",
@@ -2367,20 +2400,20 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent, which owns this collection of clusters. Format: projects\/{project}\/locations{location}",
+                      "description": "Required. The parent location which owns this collection of AzureCluster resources. Location names are formatted as `projects\/\/locations\/`. See [Resource Names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for more details on GCP resource names.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "pageSize": {
-                      "description": "The maximum number of clusters to return. The service may return fewer than this value. If unspecified, at most 50 clusters will be returned. The maximum value is 1000; values above 1000 will be coerced to 1000.",
+                      "description": "The maximum number of items to return. If not specified, a default value of 50 will be used by the service. Regardless of the pageSize value, the response may include a partial list and a caller should only rely on response's nextPageToken to determine if there are more instances left to be queried.",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"
                     },
                     "pageToken": {
-                      "description": "A page token, received from a previous `ListAzureClusters` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListAzureClusters` must match the call that provided the page token.",
+                      "description": "The `nextPageToken` value returned from a previous azureClusters.list request, if any.",
                       "location": "query",
                       "type": "string"
                     }
@@ -2394,7 +2427,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Lists all clusters under a given parent resource."
+                  "description": "Lists all AzureCluster resources on a given Google Cloud project and region."
                 },
                 "getAzureClusterAdminKubeconfig": {
                   "id": "gkemulticloud.projects.locations.azureClusters.getAzureClusterAdminKubeconfig",
@@ -2403,7 +2436,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "azureCluster": {
-                      "description": "Required. The name of the cluster. Format: projects\/{project}\/locations\/{location}\/azureClusters\/{cluster}",
+                      "description": "Required. The name of the AzureCluster. AzureCluster names are formatted as `projects\/\/locations\/\/azureClusters\/`. See [Resource Names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for more details on GCP resource names.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/azureClusters\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -2419,7 +2452,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Gets a kubeconfig file to authenticate as admin (system:masters) on a given Azure cluster. The returned kubeconfig files uses x509 certificates."
+                  "description": "Generates a kubeconfig file to connect to a given AzureCluster. The returned kubeconfig authenticates to k8s api-server as a generic admin user with username `kubernetes-admin` (as a member of the `system:masters` group) and is valid for 20 hours."
                 },
                 "delete": {
                   "id": "gkemulticloud.projects.locations.azureClusters.delete",
@@ -2428,24 +2461,24 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "Required. The name of the cluster to delete. Format: projects\/{project}\/locations\/{location}\/azureClusters\/{cluster}",
+                      "description": "Required. The resource name the AzureCluster to delete. `AzureCluster` names are formatted as `projects\/\/locations\/\/azureClusters\/`. See [Resource Names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for more details on GCP resource names.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/azureClusters\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "allowMissing": {
-                      "description": "If set to true, and the Azure Cluster is not found, the request will succeed but no action will be taken on the server and return a completed LRO.",
+                      "description": "If set to true, and the AzureCluster resource is not found, the request will succeed but no action will be taken on the server and a completed Operation will be returned. Useful for idempotent deletion.",
                       "location": "query",
                       "type": "boolean"
                     },
                     "validateOnly": {
-                      "description": "If set, only validate the request, but do not actually delete the cluster.",
+                      "description": "If set, only validate the request, but do not actually delete the resource.",
                       "location": "query",
                       "type": "boolean"
                     },
                     "etag": {
-                      "description": "The current etag of the AzureCluster. If an etag is provided and does not match the current etag of the cluster, deletion will be blocked and an ABORTED error will be returned.",
+                      "description": "The current etag of the AzureCluster. Allows clients to perform deletions through optimistic concurrency control. If the provided etag does not match the current etag of the cluster, the request will fail and an ABORTED error will be returned.",
                       "location": "query",
                       "type": "string"
                     }
@@ -2459,7 +2492,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Deletes a specific cluster, including the Kubernetes control plane and all node pools."
+                  "description": "Deletes a specific AzureCluster resource. Fails if the cluster has one or more associated AzureNodePool resources. If successful, the response contains a newly created Operation resource that can be described to track the status of the operation."
                 },
                 "getJwks": {
                   "id": "gkemulticloud.projects.locations.azureClusters.getJwks",
@@ -2468,7 +2501,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "azureCluster": {
-                      "description": "Required. The AzureCluster, which owns the JsonWebKeys. Format: projects\/{project}\/locations\/{location}\/azureClusters\/{cluster}",
+                      "description": "Required. The AzureCluster, which owns the JsonWebKeys. Format: projects\/\/locations\/\/azureClusters\/",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/azureClusters\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -2498,14 +2531,14 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The parent resource where this node pool will be created. projects\/{project}\/locations\/{location}\/azureClusters\/{cluster}",
+                          "description": "Required. The AzureCluster resource where this node pool will be created. Location names are formatted as `projects\/\/locations\/`. See [Resource Names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for more details on Google Cloud resource names.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/azureClusters\/[^\/]+$",
                           "location": "path",
                           "required": true,
                           "type": "string"
                         },
                         "azureNodePoolId": {
-                          "description": "Required. The ID to use for the node pool, which will become the final component of the node pool's resource name. This value must be up to 40 characters, and valid characters are \/a-z-\/.",
+                          "description": "Required. A client provided ID the resource. Must be unique within the parent resource. The provided ID will be part of the AzureNodePool resource name formatted as `projects\/\/locations\/\/azureClusters\/\/azureNodePools\/`. Valid characters are `\/a-z-\/`. Cannot be longer than 40 characters.",
                           "location": "query",
                           "type": "string"
                         },
@@ -2527,7 +2560,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Created a new node pool, attached to a given cluster."
+                      "description": "Creates a new AzureNodePool, attached to a given AzureCluster. If successful, the response contains a newly created Operation resource that can be described to track the status of the operation."
                     },
                     "patch": {
                       "id": "gkemulticloud.projects.locations.azureClusters.azureNodePools.patch",
@@ -2536,7 +2569,7 @@
                       "httpMethod": "PATCH",
                       "parameters": {
                         "name": {
-                          "description": "The resource name of this node pool.",
+                          "description": "The name of this resource. Node pool names are formatted as `projects\/\/locations\/\/azureClusters\/\/azureNodePools\/`. For more details on Google Cloud resource names, see [Resource Names](https:\/\/cloud.google.com\/apis\/design\/resource_names)",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/azureClusters\/[^\/]+\/azureNodePools\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -2548,7 +2581,7 @@
                           "type": "boolean"
                         },
                         "updateMask": {
-                          "description": "Required. The list of fields to be updated.",
+                          "description": "Required. Mask of fields to update. At least one path must be supplied in this field. The elements of the repeated paths field may only include these fields from AzureNodePool: * `description`.",
                           "location": "query",
                           "type": "string",
                           "format": "google-fieldmask"
@@ -2566,7 +2599,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Update a specific node pool."
+                      "description": "Updates an AzureNodePool."
                     },
                     "get": {
                       "id": "gkemulticloud.projects.locations.azureClusters.azureNodePools.get",
@@ -2575,7 +2608,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "name": {
-                          "description": "Required. The name of the node pool to retrieve. Format: projects\/{project}\/locations\/{location}\/azureClusters\/{cluster}\/azureNodePools\/{nodepool}",
+                          "description": "Required. The name of the AzureNodePool resource to describe. `AzureNodePool` names are formatted as `projects\/\/locations\/\/azureClusters\/\/azureNodePools\/`. See [Resource Names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for more details on Google Cloud resource names.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/azureClusters\/[^\/]+\/azureNodePools\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -2591,7 +2624,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Gets details of a specific node pool."
+                      "description": "Describes a specific AzureNodePool resource."
                     },
                     "list": {
                       "id": "gkemulticloud.projects.locations.azureClusters.azureNodePools.list",
@@ -2600,20 +2633,20 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The parent, which owns this collection of node pools. Format: projects\/{project}\/locations\/{location}\/azureClusters\/{cluster-id}",
+                          "description": "Required. The parent `AzureCluster` which owns this collection of AzureNodePool resources. `AzureCluster` names are formatted as `projects\/\/locations\/\/azureClusters\/`. See [Resource Names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for more details on Google Cloud resource names.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/azureClusters\/[^\/]+$",
                           "location": "path",
                           "required": true,
                           "type": "string"
                         },
                         "pageSize": {
-                          "description": "The maximum number of node pools to return. The service may return fewer than this value. If unspecified, at most 50 node pools will be returned. The maximum value is 1000; values above 1000 will be coerced to 1000.",
+                          "description": "The maximum number of items to return. If not specified, a default value of 50 will be used by the service. Regardless of the pageSize value, the response may include a partial list and a caller should only rely on response's nextPageToken to determine if there are more instances left to be queried.",
                           "location": "query",
                           "type": "integer",
                           "format": "int32"
                         },
                         "pageToken": {
-                          "description": "A page token, received from a previous `ListAzureNodePools` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListAzureNodePools` must match the call that provided the page token.",
+                          "description": "The `nextPageToken` value returned from a previous azureNodePools.list request, if any.",
                           "location": "query",
                           "type": "string"
                         }
@@ -2627,7 +2660,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Lists all node pools under a given parent resource."
+                      "description": "Lists all AzureNodePool resources on a given AzureCluster."
                     },
                     "delete": {
                       "id": "gkemulticloud.projects.locations.azureClusters.azureNodePools.delete",
@@ -2636,7 +2669,7 @@
                       "httpMethod": "DELETE",
                       "parameters": {
                         "name": {
-                          "description": "Required. The name of the node pool to delete. Format: projects\/{project}\/locations\/{location}\/azureClusters\/{cluster}\/azureNodePools\/{nodepool}",
+                          "description": "Required. The resource name the AzureNodePool to delete. `AzureNodePool` names are formatted as `projects\/\/locations\/\/azureClusters\/\/azureNodePools\/`. See [Resource Names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for more details on Google Cloud resource names.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/azureClusters\/[^\/]+\/azureNodePools\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -2648,12 +2681,12 @@
                           "type": "boolean"
                         },
                         "allowMissing": {
-                          "description": "If set to true, and the Azure node pool is not found, the request will succeed but no action will be taken on the server and return a completed LRO.",
+                          "description": "If set to true, and the AzureNodePool resource is not found, the request will succeed but no action will be taken on the server and a completed Operation will be returned. Useful for idempotent deletion.",
                           "location": "query",
                           "type": "boolean"
                         },
                         "etag": {
-                          "description": "The current etag of the AzureNodePool. If an etag is provided and does not match the current etag of the nodepool, deletion will be blocked and an ABORTED error will be returned.",
+                          "description": "The current ETag of the AzureNodePool. Allows clients to perform deletions through optimistic concurrency control. If the provided ETag does not match the current etag of the node pool, the request will fail and an ABORTED error will be returned.",
                           "location": "query",
                           "type": "string"
                         }
@@ -2667,7 +2700,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Deletes a specific node pool."
+                      "description": "Deletes a specific AzureNodePool resource. If successful, the response contains a newly created Operation resource that can be described to track the status of the operation."
                     }
                   }
                 },
@@ -2680,7 +2713,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "azureCluster": {
-                          "description": "Required. The AzureCluster, which owns the OIDC discovery document. Format: projects\/{project}\/locations\/{location}\/azureClusters\/{cluster}",
+                          "description": "Required. The AzureCluster, which owns the OIDC discovery document. Format: projects\/\/locations\/\/azureClusters\/",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/azureClusters\/[^\/]+$",
                           "location": "path",
                           "required": true,

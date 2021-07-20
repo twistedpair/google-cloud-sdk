@@ -4427,6 +4427,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Purge(self, request, global_params=None):
+      r"""Purges Artifacts.
+
+      Args:
+        request: (AiplatformProjectsLocationsMetadataStoresArtifactsPurgeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Purge')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Purge.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/metadataStores/{metadataStoresId}/artifacts:purge',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.metadataStores.artifacts.purge',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1beta1/{+parent}/artifacts:purge',
+        request_field='googleCloudAiplatformV1beta1PurgeArtifactsRequest',
+        request_type_name='AiplatformProjectsLocationsMetadataStoresArtifactsPurgeRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
     def QueryArtifactLineageSubgraph(self, request, global_params=None):
       r"""Retrieves lineage of an Artifact represented through Artifacts and Executions connected by Event edges and returned as a LineageSubgraph.
 
@@ -4653,6 +4680,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Purge(self, request, global_params=None):
+      r"""Purges Contexts.
+
+      Args:
+        request: (AiplatformProjectsLocationsMetadataStoresContextsPurgeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Purge')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Purge.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/metadataStores/{metadataStoresId}/contexts:purge',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.metadataStores.contexts.purge',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1beta1/{+parent}/contexts:purge',
+        request_field='googleCloudAiplatformV1beta1PurgeContextsRequest',
+        request_type_name='AiplatformProjectsLocationsMetadataStoresContextsPurgeRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
     def QueryContextLineageSubgraph(self, request, global_params=None):
       r"""Retrieves Artifacts and Executions within the specified Context, connected by Event edges and returned as a LineageSubgraph.
 
@@ -4849,6 +4903,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         request_field='googleCloudAiplatformV1beta1Execution',
         request_type_name='AiplatformProjectsLocationsMetadataStoresExecutionsPatchRequest',
         response_type_name='GoogleCloudAiplatformV1beta1Execution',
+        supports_download=False,
+    )
+
+    def Purge(self, request, global_params=None):
+      r"""Purges Executions.
+
+      Args:
+        request: (AiplatformProjectsLocationsMetadataStoresExecutionsPurgeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Purge')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Purge.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/metadataStores/{metadataStoresId}/executions:purge',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.metadataStores.executions.purge',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1beta1/{+parent}/executions:purge',
+        request_field='googleCloudAiplatformV1beta1PurgeExecutionsRequest',
+        request_type_name='AiplatformProjectsLocationsMetadataStoresExecutionsPurgeRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 

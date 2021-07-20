@@ -27,7 +27,6 @@ from googlecloudsdk.api_lib.sql import api_util
 from googlecloudsdk.api_lib.sql import constants
 from googlecloudsdk.api_lib.sql import exceptions as sql_exceptions
 from googlecloudsdk.api_lib.util import apis
-from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import config
 from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import log
@@ -94,7 +93,7 @@ def _GetCloudSqlProxyPath():
           'Using cloud_sql_proxy found at [{path}]'.format(path=proxy_path))
       return proxy_path
     else:
-      raise exceptions.ToolException(
+      raise sql_exceptions.SqlProxyNotFound(
           'A Cloud SQL Proxy SDK root could not be found. Please check your '
           'installation.')
   return os.path.join(sdk_bin_path, 'cloud_sql_proxy')
@@ -164,7 +163,7 @@ def StartCloudSqlProxy(instance, port, seconds_to_timeout=10):
 
   Raises:
     CloudSqlProxyError: An error starting the Cloud SQL Proxy.
-    ToolException: An error finding a Cloud SQL Proxy installation.
+    SqlProxyNotFound: An error finding a Cloud SQL Proxy installation.
   """
   command_path = _GetCloudSqlProxyPath()
 

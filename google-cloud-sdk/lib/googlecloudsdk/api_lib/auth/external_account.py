@@ -68,14 +68,19 @@ def GetExternalAccountCredentialsConfig(filename):
   content = files.ReadFileContents(filename)
   try:
     content_json = json.loads(content)
-    if content_json.get('type') == _EXTERNAL_ACCOUNT_TYPE:
-      return content_json
-    else:
-      return None
   except ValueError as e:
     # File has to be in JSON format.
     raise BadCredentialFileException('Could not read json file {0}: {1}'.format(
         filename, e))
+  if IsExternalAccountConfig(content_json):
+    return content_json
+  else:
+    return None
+
+
+def IsExternalAccountConfig(content_json):
+  """Returns whether a JSON content corresponds to an external account cred."""
+  return (content_json or {}).get('type') == _EXTERNAL_ACCOUNT_TYPE
 
 
 def CredentialsFromAdcDictGoogleAuth(external_config):

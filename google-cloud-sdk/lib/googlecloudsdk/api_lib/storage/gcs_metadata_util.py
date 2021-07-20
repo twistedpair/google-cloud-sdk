@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 import copy
 
+from googlecloudsdk.api_lib.storage import request_config_factory
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage.resources import gcs_resource_reference
@@ -165,3 +166,33 @@ def get_object_resource_from_metadata(metadata):
       metadata=metadata,
       metageneration=metadata.metageneration,
       size=metadata.size)
+
+
+def update_object_metadata_from_request_config(object_metadata, request_config):
+  """Sets Apitools Object fields based on RequestValue metadata."""
+  if request_config.cache_control is not None:
+    object_metadata.cacheControl = request_config.cache_control
+  if request_config.content_disposition is not None:
+    object_metadata.contentDisposition = request_config.content_disposition
+  if request_config.content_encoding is not None:
+    object_metadata.contentEncoding = request_config.content_encoding
+  if request_config.content_language is not None:
+    object_metadata.contentLanguage = request_config.content_language
+  if request_config.custom_time is not None:
+    object_metadata.customTime = request_config.custom_time
+  if request_config.md5_hash is not None:
+    object_metadata.md5Hash = request_config.md5_hash
+
+  if (request_config.content_type != request_config_factory.DEFAULT_CONTENT_TYPE
+      or object_metadata.contentType is None):
+    object_metadata.contentType = request_config.content_type
+
+  if request_config.custom_metadata:
+    messages = apis.GetMessagesModule('storage', 'v1')
+
+    if not object_metadata.metadata:
+      object_metadata.metadata = messages.Object.MetadataValue()
+    for key, value in request_config.custom_metadata.items():
+      object_metadata.metadata.additionalProperties.append(
+          messages.Object.MetadataValue.AdditionalProperty(
+              key=key, value=value))

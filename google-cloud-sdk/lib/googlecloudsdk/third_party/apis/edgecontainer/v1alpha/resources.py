@@ -18,7 +18,7 @@ import enum
 
 
 BASE_URL = 'https://edgecontainer.googleapis.com/v1alpha/'
-DOCS_URL = ''
+DOCS_URL = 'https://cloud.google.com/edge-cloud'
 
 
 class Collections(enum.Enum):

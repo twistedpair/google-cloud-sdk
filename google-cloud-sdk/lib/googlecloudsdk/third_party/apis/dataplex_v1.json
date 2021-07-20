@@ -446,6 +446,10 @@
         "invalidMetastore": {
           "description": "Details for issues related to metadata publishing to Dataproc Metastore caused by issues in the metastore service instance, e.g., wrong metastore configuration.",
           "$ref": "GoogleCloudDataplexV1ActionInvalidMetastore"
+        },
+        "failedSecurityPolicyApply": {
+          "description": "Details for issues related to one or more underlying assets having a failure propagating security policy to the associated managed resource. Applicable to a lake or zone resource.",
+          "$ref": "GoogleCloudDataplexV1ActionFailedSecurityPolicyApply"
         }
       }
     },
@@ -560,6 +564,17 @@
       "properties": {
       }
     },
+    "GoogleCloudDataplexV1ActionFailedSecurityPolicyApply": {
+      "id": "GoogleCloudDataplexV1ActionFailedSecurityPolicyApply",
+      "description": "One or more underlying assets has a failure propagating security policy to the associated managed resource. Applicable to a lake or zone resource.",
+      "type": "object",
+      "properties": {
+        "asset": {
+          "description": "Resource name of one of the assets with failing security policy propagation.",
+          "type": "string"
+        }
+      }
+    },
     "GoogleCloudDataplexV1ListLakesResponse": {
       "id": "GoogleCloudDataplexV1ListLakesResponse",
       "description": "List lakes response.",
@@ -582,6 +597,24 @@
           "items": {
             "type": "string"
           }
+        }
+      }
+    },
+    "GoogleCloudDataplexV1ListActionsResponse": {
+      "id": "GoogleCloudDataplexV1ListActionsResponse",
+      "description": "List actions response.",
+      "type": "object",
+      "properties": {
+        "actions": {
+          "description": "Actions under the given parent lake\/zone\/asset.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudDataplexV1Action"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results, or empty if there are no more results in the list.",
+          "type": "string"
         }
       }
     },
@@ -2225,6 +2258,46 @@
               }
               ,
               "resources": {
+                "actions": {
+                  "methods": {
+                    "list": {
+                      "id": "dataplex.projects.locations.lakes.actions.list",
+                      "path": "v1/{+parent}/actions",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/actions",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The resource name of the parent lake: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id}",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/lakes\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "Optional. Maximum number of actions to return. The service may return fewer than this value. If unspecified, at most 10 actions will be returned. The maximum value is 1000; values above 1000 will be coerced to 1000.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "Optional. Page token received from a previous ListLakeActions call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to ListLakeActions must match the call that provided the page token.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "GoogleCloudDataplexV1ListActionsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Lists action resources in a lake."
+                    }
+                  }
+                },
                 "zones": {
                   "methods": {
                     "create": {
@@ -2518,6 +2591,46 @@
                   }
                   ,
                   "resources": {
+                    "actions": {
+                      "methods": {
+                        "list": {
+                          "id": "dataplex.projects.locations.lakes.zones.actions.list",
+                          "path": "v1/{+parent}/actions",
+                          "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/zones/{zonesId}/actions",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "parent": {
+                              "description": "Required. The resource name of the parent zone: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id}\/zones\/{zone_id}",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/lakes\/[^\/]+\/zones\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            },
+                            "pageSize": {
+                              "description": "Optional. Maximum number of actions to return. The service may return fewer than this value. If unspecified, at most 10 actions will be returned. The maximum value is 1000; values above 1000 will be coerced to 1000.",
+                              "location": "query",
+                              "type": "integer",
+                              "format": "int32"
+                            },
+                            "pageToken": {
+                              "description": "Optional. Page token received from a previous ListZoneActions call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to ListZoneActions must match the call that provided the page token.",
+                              "location": "query",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "parent"
+                          ],
+                          "response": {
+                            "$ref": "GoogleCloudDataplexV1ListActionsResponse"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Lists action resources in a zone."
+                        }
+                      }
+                    },
                     "assets": {
                       "methods": {
                         "create": {
@@ -2807,6 +2920,49 @@
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
                           "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a NOT_FOUND error.Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
+                        }
+                      }
+                      ,
+                      "resources": {
+                        "actions": {
+                          "methods": {
+                            "list": {
+                              "id": "dataplex.projects.locations.lakes.zones.assets.actions.list",
+                              "path": "v1/{+parent}/actions",
+                              "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/zones/{zonesId}/assets/{assetsId}/actions",
+                              "httpMethod": "GET",
+                              "parameters": {
+                                "parent": {
+                                  "description": "Required. The resource name of the parent asset: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id}\/zones\/{zone_id}\/assets\/{asset_id}",
+                                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/lakes\/[^\/]+\/zones\/[^\/]+\/assets\/[^\/]+$",
+                                  "location": "path",
+                                  "required": true,
+                                  "type": "string"
+                                },
+                                "pageSize": {
+                                  "description": "Optional. Maximum number of actions to return. The service may return fewer than this value. If unspecified, at most 10 actions will be returned. The maximum value is 1000; values above 1000 will be coerced to 1000.",
+                                  "location": "query",
+                                  "type": "integer",
+                                  "format": "int32"
+                                },
+                                "pageToken": {
+                                  "description": "Optional. Page token received from a previous ListAssetActions call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to ListAssetActions must match the call that provided the page token.",
+                                  "location": "query",
+                                  "type": "string"
+                                }
+                              },
+                              "parameterOrder": [
+                                "parent"
+                              ],
+                              "response": {
+                                "$ref": "GoogleCloudDataplexV1ListActionsResponse"
+                              },
+                              "scopes": [
+                                "https://www.googleapis.com/auth/cloud-platform"
+                              ],
+                              "description": "Lists action resources in an asset."
+                            }
+                          }
                         }
                       }
                     }

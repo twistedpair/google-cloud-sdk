@@ -45,14 +45,6 @@ import six.moves.http_client
 
 _DEPLOY_WAIT_NOTICE = 'Deploying function (may take a while - up to 2 minutes)'
 
-_ENTRY_POINT_NAME_RE = re.compile(
-    r'^(?=.{1,128}$)[_a-zA-Z0-9]+(?:\.[_a-zA-Z0-9]+)*$')
-_ENTRY_POINT_NAME_ERROR = (
-    'Entry point name must contain only Latin letters (lower- or '
-    'upper-case), digits, dot (.) and underscore (_), and must be at most 128 '
-    'characters long. It can neither begin nor end with a dot (.), '
-    'nor contain two consecutive dots (..).')
-
 _FUNCTION_NAME_RE = re.compile(r'^[A-Za-z](?:[-_A-Za-z0-9]{0,61}[A-Za-z0-9])?$')
 _FUNCTION_NAME_ERROR = (
     'Function name must contain only lower case Latin letters, digits and a '
@@ -179,20 +171,6 @@ def ValidateFunctionNameOrRaise(name):
   """
   return _ValidateArgumentByRegexOrRaise(name, _FUNCTION_NAME_RE,
                                          _FUNCTION_NAME_ERROR)
-
-
-def ValidateEntryPointNameOrRaise(entry_point):
-  """Checks if a entry point name provided by user is valid.
-
-  Args:
-    entry_point: Entry point name provided by user.
-  Returns:
-    Entry point name.
-  Raises:
-    ArgumentTypeError: If the entry point name provided by user is not valid.
-  """
-  return _ValidateArgumentByRegexOrRaise(entry_point, _ENTRY_POINT_NAME_RE,
-                                         _ENTRY_POINT_NAME_ERROR)
 
 
 def ValidateAndStandarizeBucketUriOrRaise(bucket):

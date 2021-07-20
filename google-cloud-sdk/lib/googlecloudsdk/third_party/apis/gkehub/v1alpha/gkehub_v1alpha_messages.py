@@ -921,8 +921,8 @@ class Feature(_messages.Message):
       Feature. If this Feature does not support any per-Membership
       configuration, this field may be unused. The keys indicate which
       Membership the configuration is for, in the form:
-      projects/{p}/locations/{l}/memberships/{m} Where {p} is the project, {l}
-      is a valid location and {m} is a valid Membership in this project at
+      `projects/{p}/locations/{l}/memberships/{m}` Where {p} is the project,
+      {l} is a valid location and {m} is a valid Membership in this project at
       that location. {p} WILL match the Feature's project. {p} will always be
       returned as the project number, but the project ID is also accepted
       during input. If the same Membership is specified in the map twice
@@ -933,7 +933,7 @@ class Feature(_messages.Message):
     MembershipStatesValue: Output only. Membership-specific Feature status. If
       this Feature does report any per-Membership status, this field may be
       unused. The keys indicate which Membership the state is for, in the
-      form: projects/{p}/locations/{l}/memberships/{m} Where {p} is the
+      form: `projects/{p}/locations/{l}/memberships/{m}` Where {p} is the
       project number, {l} is a valid location and {m} is a valid Membership in
       this project at that location. {p} MUST match the Feature's project
       number.
@@ -946,8 +946,8 @@ class Feature(_messages.Message):
       Feature. If this Feature does not support any per-Membership
       configuration, this field may be unused. The keys indicate which
       Membership the configuration is for, in the form:
-      projects/{p}/locations/{l}/memberships/{m} Where {p} is the project, {l}
-      is a valid location and {m} is a valid Membership in this project at
+      `projects/{p}/locations/{l}/memberships/{m}` Where {p} is the project,
+      {l} is a valid location and {m} is a valid Membership in this project at
       that location. {p} WILL match the Feature's project. {p} will always be
       returned as the project number, but the project ID is also accepted
       during input. If the same Membership is specified in the map twice
@@ -958,7 +958,7 @@ class Feature(_messages.Message):
     membershipStates: Output only. Membership-specific Feature status. If this
       Feature does report any per-Membership status, this field may be unused.
       The keys indicate which Membership the state is for, in the form:
-      projects/{p}/locations/{l}/memberships/{m} Where {p} is the project
+      `projects/{p}/locations/{l}/memberships/{m}` Where {p} is the project
       number, {l} is a valid location and {m} is a valid Membership in this
       project at that location. {p} MUST match the Feature's project number.
     name: Output only. The full, unique name of this Feature resource in the
@@ -999,7 +999,7 @@ class Feature(_messages.Message):
     r"""Optional. Membership-specific configuration for this Feature. If this
     Feature does not support any per-Membership configuration, this field may
     be unused. The keys indicate which Membership the configuration is for, in
-    the form: projects/{p}/locations/{l}/memberships/{m} Where {p} is the
+    the form: `projects/{p}/locations/{l}/memberships/{m}` Where {p} is the
     project, {l} is a valid location and {m} is a valid Membership in this
     project at that location. {p} WILL match the Feature's project. {p} will
     always be returned as the project number, but the project ID is also
@@ -1035,7 +1035,7 @@ class Feature(_messages.Message):
     r"""Output only. Membership-specific Feature status. If this Feature does
     report any per-Membership status, this field may be unused. The keys
     indicate which Membership the state is for, in the form:
-    projects/{p}/locations/{l}/memberships/{m} Where {p} is the project
+    `projects/{p}/locations/{l}/memberships/{m}` Where {p} is the project
     number, {l} is a valid location and {m} is a valid Membership in this
     project at that location. {p} MUST match the Feature's project number.
 

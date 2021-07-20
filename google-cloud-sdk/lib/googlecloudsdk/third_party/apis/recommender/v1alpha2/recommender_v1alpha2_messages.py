@@ -758,13 +758,42 @@ class GoogleCloudRecommenderV1alpha2Recommendation(_messages.Message):
 class GoogleCloudRecommenderV1alpha2RecommendationContent(_messages.Message):
   r"""Contains what resources are changing and how they are changing.
 
+  Messages:
+    OverviewValue: Condensed overview information about the recommendation.
+
   Fields:
     operationGroups: Operations to one or more Google Cloud resources grouped
       in such a way that, all operations within one group are expected to be
       performed atomically and in an order.
+    overview: Condensed overview information about the recommendation.
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class OverviewValue(_messages.Message):
+    r"""Condensed overview information about the recommendation.
+
+    Messages:
+      AdditionalProperty: An additional property for a OverviewValue object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a OverviewValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   operationGroups = _messages.MessageField('GoogleCloudRecommenderV1alpha2OperationGroup', 1, repeated=True)
+  overview = _messages.MessageField('OverviewValue', 2)
 
 
 class GoogleCloudRecommenderV1alpha2RecommendationInsightReference(_messages.Message):

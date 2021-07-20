@@ -49,11 +49,12 @@ def NetworkFirewallPolicyArgument(required=False, plural=False, operation=None):
       custom_plural='firewall policies',
       short_help='name of the network firewall policy to {0}.'.format(
           operation),
-      global_collection='compute.networkFirewallPolicies')
+      global_collection='compute.networkFirewallPolicies',
+      regional_collection='compute.regionNetworkFirewallPolicies')
 
 
 def AddArgNetworkFirewallPolicyCreation(parser):
-  """Adds the arguments for network firewall policy creaton."""
+  """Adds the arguments for network firewall policy creation."""
   parser.add_argument(
       '--description',
       help=('An optional, textual description for the network firewall'
@@ -280,3 +281,12 @@ def AddNewPriority(parser, operation=None):
       '--new-priority',
       help=('New priority for the rule to {}. Valid in [0, 65535]. '.format(
           operation)))
+
+
+def AddArgsCloneRules(parser):
+  """Adds the argument for network firewall policy clone rules."""
+  parser.add_argument(
+      '--source-firewall-policy',
+      required=True,
+      help=('Name of the source network firewall policy to copy '
+            'the rules from.'))

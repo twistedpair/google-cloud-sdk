@@ -69,13 +69,17 @@ class DeleteTemporaryComponentsTask(task.Task):
 
     delete_tasks = []
     for component_tracker_path in component_tracker_paths:
-      _, _, component_number = component_tracker_path.rpartition('_')
-      component_resource = copy_component_util.get_temporary_component_resource(
-          self._source_resource, self._destination_resource,
-          self._random_prefix, component_id=component_number)
+      tracker_data = tracker_file_util.read_resumable_upload_tracker_file(
+          component_tracker_path)
+      if tracker_data.complete:
+        _, _, component_number = component_tracker_path.rpartition('_')
+        component_resource = (
+            copy_component_util.get_temporary_component_resource(
+                self._source_resource, self._destination_resource,
+                self._random_prefix, component_id=component_number))
 
-      delete_tasks.append(delete_object_task.DeleteObjectTask(
-          component_resource.storage_url))
+        delete_tasks.append(delete_object_task.DeleteObjectTask(
+            component_resource.storage_url))
       os.remove(component_tracker_path)
 
     return task.Output(additional_task_iterators=[delete_tasks], messages=None)

@@ -60,3 +60,7 @@ class CloudSqlProxyError(Error):
 
 class InvalidStateError(Error):
   """An error raised when a Cloud SQL resource is in an invalid state."""
+
+
+class SqlProxyNotFound(Error):
+  """An error raised when no sql proxy found."""

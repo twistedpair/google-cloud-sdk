@@ -313,6 +313,10 @@ class BuildOptions(_messages.Message):
     logging: Option to specify the logging mode, which determines if and where
       build logs are stored.
     machineType: Compute Engine machine type on which to run the build.
+    pool: Optional. Specification for execution on a `WorkerPool`. See
+      [running builds in a private
+      pool](https://cloud.google.com/build/docs/private-pools/run-builds-in-
+      private-pool) for more information.
     requestedVerifyOption: Requested verifiability options.
     secretEnv: A list of global environment variables, which are encrypted
       using a Cloud Key Management Service crypto key. These values must be
@@ -330,9 +334,7 @@ class BuildOptions(_messages.Message):
       build step. Using a global volume in a build with only one step is not
       valid as it is indicative of a build request with an incorrect
       configuration.
-    workerPool: Option to specify a `WorkerPool` for the build. Format:
-      projects/{project}/locations/{location}/workerPools/{workerPool} This
-      field is in beta and is available only to restricted users.
+    workerPool: This field deprecated; please use `pool.name` instead.
   """
 
   class LogStreamingOptionValueValuesEnum(_messages.Enum):
@@ -429,12 +431,13 @@ class BuildOptions(_messages.Message):
   logStreamingOption = _messages.EnumField('LogStreamingOptionValueValuesEnum', 4)
   logging = _messages.EnumField('LoggingValueValuesEnum', 5)
   machineType = _messages.EnumField('MachineTypeValueValuesEnum', 6)
-  requestedVerifyOption = _messages.EnumField('RequestedVerifyOptionValueValuesEnum', 7)
-  secretEnv = _messages.StringField(8, repeated=True)
-  sourceProvenanceHash = _messages.EnumField('SourceProvenanceHashValueListEntryValuesEnum', 9, repeated=True)
-  substitutionOption = _messages.EnumField('SubstitutionOptionValueValuesEnum', 10)
-  volumes = _messages.MessageField('Volume', 11, repeated=True)
-  workerPool = _messages.StringField(12)
+  pool = _messages.MessageField('PoolOption', 7)
+  requestedVerifyOption = _messages.EnumField('RequestedVerifyOptionValueValuesEnum', 8)
+  secretEnv = _messages.StringField(9, repeated=True)
+  sourceProvenanceHash = _messages.EnumField('SourceProvenanceHashValueListEntryValuesEnum', 10, repeated=True)
+  substitutionOption = _messages.EnumField('SubstitutionOptionValueValuesEnum', 11)
+  volumes = _messages.MessageField('Volume', 12, repeated=True)
+  workerPool = _messages.StringField(13)
 
 
 class BuildStep(_messages.Message):
@@ -654,6 +657,36 @@ class CloudbuildProjectsLocationsWorkerPoolsPatchRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
   updateMask = _messages.StringField(2)
   workerPool = _messages.MessageField('WorkerPool', 3)
+
+
+class CreateWorkerPoolOperationMetadata(_messages.Message):
+  r"""Metadata for the `CreateWorkerPool` operation.
+
+  Fields:
+    completeTime: Time the operation was completed.
+    createTime: Time the operation was created.
+    workerPool: The resource name of the `WorkerPool` to create. Format:
+      `projects/{project}/locations/{location}/workerPools/{worker_pool}`.
+  """
+
+  completeTime = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  workerPool = _messages.StringField(3)
+
+
+class DeleteWorkerPoolOperationMetadata(_messages.Message):
+  r"""Metadata for the `DeleteWorkerPool` operation.
+
+  Fields:
+    completeTime: Time the operation was completed.
+    createTime: Time the operation was created.
+    workerPool: The resource name of the `WorkerPool` being deleted. Format:
+      `projects/{project}/locations/{location}/workerPools/{worker_pool}`.
+  """
+
+  completeTime = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  workerPool = _messages.StringField(3)
 
 
 class Empty(_messages.Message):
@@ -1025,6 +1058,22 @@ class Operation(_messages.Message):
   metadata = _messages.MessageField('MetadataValue', 3)
   name = _messages.StringField(4)
   response = _messages.MessageField('ResponseValue', 5)
+
+
+class PoolOption(_messages.Message):
+  r"""Details about how a build should be executed on a `WorkerPool`. See
+  [running builds in a private
+  pool](https://cloud.google.com/build/docs/private-pools/run-builds-in-
+  private-pool) for more information.
+
+  Fields:
+    name: The `WorkerPool` resource to execute the build on. You must have
+      `cloudbuild.workerpools.use` on the project hosting the WorkerPool.
+      Format
+      projects/{project}/locations/{location}/workerPools/{workerPoolId}
+  """
+
+  name = _messages.StringField(1)
 
 
 class RepoSource(_messages.Message):
@@ -1450,7 +1499,8 @@ class StorageSource(_messages.Message):
     generation: Google Cloud Storage generation for the object. If the
       generation is omitted, the latest generation will be used.
     object: Google Cloud Storage object containing the source. This object
-      must be a gzipped archive file (`.tar.gz`) containing source to build.
+      must be a zipped (`.zip`) or gzipped archive file (`.tar.gz`) containing
+      source to build.
   """
 
   bucket = _messages.StringField(1)
@@ -1489,6 +1539,21 @@ class TimeSpan(_messages.Message):
 
   endTime = _messages.StringField(1)
   startTime = _messages.StringField(2)
+
+
+class UpdateWorkerPoolOperationMetadata(_messages.Message):
+  r"""Metadata for the `UpdateWorkerPool` operation.
+
+  Fields:
+    completeTime: Time the operation was completed.
+    createTime: Time the operation was created.
+    workerPool: The resource name of the `WorkerPool` being updated. Format:
+      `projects/{project}/locations/{location}/workerPools/{worker_pool}`.
+  """
+
+  completeTime = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  workerPool = _messages.StringField(3)
 
 
 class Volume(_messages.Message):

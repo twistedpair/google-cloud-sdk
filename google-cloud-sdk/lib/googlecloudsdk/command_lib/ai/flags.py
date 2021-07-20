@@ -176,7 +176,6 @@ def GetEndpointNetworkArg():
       '--network',
       required=False,
       default=None,
-      hidden=True,
       help="""The full name of the Google Compute Engine network to which the endpoint should be peered."""
   )
 

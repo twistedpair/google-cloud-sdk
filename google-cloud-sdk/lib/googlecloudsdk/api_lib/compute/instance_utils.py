@@ -205,7 +205,8 @@ def CreateServiceAccountMessages(messages, scopes, service_account):
           'removed. Use --scopes [SCOPE,...] --service-account ACCOUNT '
           'instead.')
     else:
-      raise calliope_exceptions.ToolException(
+      raise calliope_exceptions.InvalidArgumentException(
+          '--scopes',
           '[{0}] is an illegal value for [--scopes]. Values must be of the '
           'form [SCOPE].'.format(scope))
 

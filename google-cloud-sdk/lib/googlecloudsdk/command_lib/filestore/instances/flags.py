@@ -39,7 +39,7 @@ INSTANCES_LIST_FORMAT = """\
       createTime.date()
     )"""
 
-INSTANCES_LIST_FORMAT_ALPHA = """\
+INSTANCES_LIST_FORMAT_ALPHA_BETA = """\
     table(
       name.basename():label=INSTANCE_NAME:sort=1,
       name.segment(3):label=LOCATION,
@@ -50,7 +50,6 @@ INSTANCES_LIST_FORMAT_ALPHA = """\
       state,
       createTime.date()
     )"""
-
 
 NETWORK_ARG_SPEC = {
     'name': str,
@@ -123,7 +122,8 @@ def GetTierArg(messages, api_version):
   Returns:
     the choice arg.
   """
-  if api_version == filestore_client.ALPHA_API_VERSION:
+  if ((api_version == filestore_client.ALPHA_API_VERSION) or
+      (api_version == filestore_client.BETA_API_VERSION)):
     tier_arg = (
         arg_utils.ChoiceEnumMapper(
             '--tier',
@@ -146,32 +146,6 @@ def GetTierArg(messages, api_version):
                 'ENTERPRISE':
                     ('enterprise', """ENTERPRISE instances offer the features\
                     and availability needed for mission-critical workloads."""),
-                'HIGH_SCALE_SSD': (
-                    'high-scale-ssd',
-                    """NFS storage system with expanded capacity and performance\
-                    scaling capabilities.""")
-            },
-            default='BASIC_HDD'))
-  elif api_version == filestore_client.BETA_API_VERSION:
-    tier_arg = (
-        arg_utils.ChoiceEnumMapper(
-            '--tier',
-            messages.Instance.TierValueValuesEnum,
-            help_str="""The service tier for the Cloud Filestore instance.
-         For more details, see:
-         https://cloud.google.com/filestore/docs/instance-tiers """,
-            custom_mappings={
-                'STANDARD':
-                    ('standard',
-                     """Standard Filestore instance, An alias for BASIC_HDD.
-                     Use BASIC_HDD instead whenever possible."""),
-                'PREMIUM': ('premium',
-                            """Premium Filestore instance, An alias for BASIC_SSD.
-                            Use BASIC_SSD instead whenever possible."""),
-                'BASIC_HDD':
-                    ('basic-hdd', 'Performant NFS storage system using HDD.'),
-                'BASIC_SSD':
-                    ('basic-ssd', 'Performant NFS storage system using SSD.'),
                 'HIGH_SCALE_SSD': (
                     'high-scale-ssd',
                     """NFS storage system with expanded capacity and performance\
@@ -424,7 +398,8 @@ def AddInstanceCreateArgs(parser, api_version):
   ]).AddToParser(parser)
   AddDescriptionArg(parser)
   AddLocationArg(parser)
-  if api_version == filestore_client.ALPHA_API_VERSION:
+  if ((api_version == filestore_client.ALPHA_API_VERSION) or
+      (api_version == filestore_client.BETA_API_VERSION)):
     AddRegionArg(parser)
   AddAsyncFlag(parser)
   labels_util.AddCreateLabelsFlags(parser)
@@ -446,7 +421,8 @@ def AddInstanceUpdateArgs(parser, api_version):
   ]).AddToParser(parser)
   AddDescriptionArg(parser)
   AddLocationArg(parser)
-  if api_version == filestore_client.ALPHA_API_VERSION:
+  if ((api_version == filestore_client.ALPHA_API_VERSION) or
+      (api_version == filestore_client.BETA_API_VERSION)):
     AddRegionArg(parser)
   AddAsyncFlag(parser)
   labels_util.AddUpdateLabelsFlags(parser)

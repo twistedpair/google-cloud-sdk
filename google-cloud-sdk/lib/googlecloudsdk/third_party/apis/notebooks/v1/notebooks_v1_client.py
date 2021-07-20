@@ -1124,6 +1124,33 @@ class NotebooksV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ReportEvent(self, request, global_params=None):
+      r"""Report and process a runtime event.
+
+      Args:
+        request: (NotebooksProjectsLocationsRuntimesReportEventRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('ReportEvent')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ReportEvent.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/runtimes/{runtimesId}:reportEvent',
+        http_method='POST',
+        method_id='notebooks.projects.locations.runtimes.reportEvent',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:reportEvent',
+        request_field='reportRuntimeEventRequest',
+        request_type_name='NotebooksProjectsLocationsRuntimesReportEventRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Reset(self, request, global_params=None):
       r"""Resets a Managed Notebook Runtime.
 

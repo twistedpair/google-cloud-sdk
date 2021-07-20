@@ -704,7 +704,7 @@ def GetDefaultSshUsername(warn_on_account_user=False):
   return user
 
 
-def _MetadataHasOsloginEnable(metadata):
+def MetadataHasOsloginEnable(metadata):
   """Return true if the metadata has 'oslogin-enable' set and 'true'.
 
   Args:
@@ -756,12 +756,12 @@ def CheckForOsloginAndGetUser(instance, project, requested_user, public_key,
   use_oslogin = False
   oslogin_enabled = None
   if instance is not None:
-    oslogin_enabled = _MetadataHasOsloginEnable(instance.metadata)
+    oslogin_enabled = MetadataHasOsloginEnable(instance.metadata)
   elif instance_enable_oslogin:
     oslogin_enabled = instance_enable_oslogin
   if oslogin_enabled is None:
     project_metadata = project.commonInstanceMetadata
-    oslogin_enabled = _MetadataHasOsloginEnable(project_metadata)
+    oslogin_enabled = MetadataHasOsloginEnable(project_metadata)
 
   if not oslogin_enabled:
     return requested_user, use_oslogin

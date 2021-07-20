@@ -25,10 +25,10 @@ import boto3
 import botocore
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.api_lib.storage import errors
+from googlecloudsdk.api_lib.storage import s3_metadata_util
 from googlecloudsdk.command_lib.storage import errors as command_errors
 from googlecloudsdk.command_lib.storage import hash_util
 from googlecloudsdk.command_lib.storage import storage_url
-from googlecloudsdk.command_lib.storage.resources import resource_reference
 from googlecloudsdk.command_lib.storage.resources import s3_resource_reference
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
@@ -44,7 +44,9 @@ BOTO3_CLIENT_LOCK = threading.Lock()
 
 def _raise_if_not_found_error(error, resource_name):
   if error.response.get('ResponseMetadata', {}).get('HTTPStatusCode') == 404:
-    raise errors.NotFoundError('Not found: {}'.format(resource_name))
+    # TODO(b/193464904): Remove the hardcoded error message here after
+    # refactoring the errors module.
+    raise errors.NotFoundError('{} not found: 404.'.format(resource_name))
 
 
 def _catch_client_error_raise_s3_api_error(format_str=None):
@@ -65,108 +67,14 @@ def _catch_client_error_raise_s3_api_error(format_str=None):
       format_str=format_str)
 
 
-_GCS_TO_S3_PREDEFINED_ACL_TRANSLATION_DICT = {
-    'authenticatedRead': 'authenticated-read',
-    'bucketOwnerFullControl': 'bucket-owner-full-control',
-    'bucketOwnerRead': 'bucket-owner-read',
-    'private': 'private',
-    'publicRead': 'public-read',
-    'publicReadWrite': 'public-read-write'
-}
-
-
-def _translate_predefined_acl_string_to_s3(predefined_acl_string):
-  """Translates Apitools predefined ACL enum key (as string) to S3 equivalent.
-
-  Args:
-    predefined_acl_string (str): Value representing user permissions.
-
-  Returns:
-    Translated ACL string.
-
-  Raises:
-    ValueError: Predefined ACL translation could not be found.
-  """
-  if predefined_acl_string not in _GCS_TO_S3_PREDEFINED_ACL_TRANSLATION_DICT:
-    raise ValueError('Could not translate predefined_acl_string {} to'
-                     ' AWS-accepted ACL.'.format(predefined_acl_string))
-  return _GCS_TO_S3_PREDEFINED_ACL_TRANSLATION_DICT[predefined_acl_string]
-
-
-def _get_object_url_from_s3_response(object_dict,
-                                     bucket_name,
-                                     object_name=None):
-  """Creates storage_url.CloudUrl from S3 API response.
-
-  Args:
-    object_dict (dict): Dictionary representing S3 API response.
-    bucket_name (str): Bucket to include in URL.
-    object_name (str | None): Object to include in URL.
-
-  Returns:
-    storage_url.CloudUrl populated with data.
-  """
-  return storage_url.CloudUrl(
-      scheme=storage_url.ProviderPrefix.S3,
-      bucket_name=bucket_name,
-      object_name=object_name,
-      generation=object_dict.get('VersionId'))
-
-
-def _get_object_resource_from_s3_response(object_dict,
-                                          bucket_name,
-                                          object_name=None):
-  """Creates resource_reference.S3ObjectResource from S3 API response.
-
-  Args:
-    object_dict (dict): Dictionary representing S3 API response.
-    bucket_name (str): Bucket response is relevant to.
-    object_name (str | None): Object if relevant to query.
-
-  Returns:
-    resource_reference.S3ObjectResource populated with data.
-  """
-  object_url = _get_object_url_from_s3_response(
-      object_dict, bucket_name, object_name or object_dict['Key'])
-  etag = None
-  if 'ETag' in object_dict:
-    etag = object_dict['ETag']
-  elif 'CopyObjectResult' in object_dict:
-    etag = object_dict['CopyObjectResult']['ETag']
-  size = object_dict.get('Size')
-  if size is None:
-    size = object_dict.get('ContentLength')
-
-  return s3_resource_reference.S3ObjectResource(
-      object_url,
-      content_type=object_dict.get('ContentType'),
-      etag=etag,
-      metadata=object_dict,
-      size=size)
-
-
-def _get_prefix_resource_from_s3_response(prefix_dict, bucket_name):
-  """Creates resource_reference.PrefixResource from S3 API response.
-
-  Args:
-    prefix_dict (dict): The S3 API response representing a prefix.
-    bucket_name (str): Bucket for the prefix.
-
-  Returns:
-    A resource_reference.PrefixResource instance.
-  """
-  prefix = prefix_dict['Prefix']
-  return resource_reference.PrefixResource(
-      storage_url.CloudUrl(
-          scheme=storage_url.ProviderPrefix.S3,
-          bucket_name=bucket_name,
-          object_name=prefix),
-      prefix=prefix)
-
-
 # pylint:disable=abstract-method
 class S3Api(cloud_api.CloudApi):
   """S3 Api client."""
+
+  capabilities = {
+      # Boto3 implements its own unskippable validation.
+      cloud_api.Capability.CLIENT_SIDE_HASH_VALIDATION,
+  }
 
   def __init__(self):
     # Using a lock since the boto3.client creation is not thread-safe.
@@ -389,10 +297,11 @@ class S3Api(cloud_api.CloudApi):
                 generation=object_dict.get('VersionId'),
                 fields_scope=fields_scope)
           else:
-            yield _get_object_resource_from_s3_response(object_dict,
-                                                        bucket_name)
+            yield s3_metadata_util.get_object_resource_from_s3_response(
+                object_dict, bucket_name)
         for prefix_dict in page.get('CommonPrefixes', []):
-          yield _get_prefix_resource_from_s3_response(prefix_dict, bucket_name)
+          yield s3_metadata_util.get_prefix_resource_from_s3_response(
+              prefix_dict, bucket_name)
     except botocore.exceptions.ClientError as error:
       core_exceptions.reraise(errors.S3ApiError(error))
 
@@ -413,14 +322,12 @@ class S3Api(cloud_api.CloudApi):
     kwargs = {'Bucket': destination_resource.storage_url.bucket_name,
               'Key': destination_resource.storage_url.object_name,
               'CopySource': source_kwargs}
-
-    if request_config.predefined_acl_string:
-      kwargs['ACL'] = _translate_predefined_acl_string_to_s3(
-          request_config.predefined_acl_string)
+    kwargs.update(
+        s3_metadata_util.get_metadata_dict_from_request_config(request_config))
 
     response = self.client.copy_object(**kwargs)
-    return _get_object_resource_from_s3_response(response, kwargs['Bucket'],
-                                                 kwargs['Key'])
+    return s3_metadata_util.get_object_resource_from_s3_response(
+        response, kwargs['Bucket'], kwargs['Key'])
 
     # TODO(b/161900052): Implement resumable copies.
 
@@ -551,8 +458,8 @@ class S3Api(cloud_api.CloudApi):
       except botocore.exceptions.ClientError as error:
         object_dict['ACL'] = errors.S3ApiError(error)
 
-    return _get_object_resource_from_s3_response(object_dict, bucket_name,
-                                                 object_name)
+    return s3_metadata_util.get_object_resource_from_s3_response(
+        object_dict, bucket_name, object_name)
 
   def _upload_using_managed_transfer_utility(self, source_stream,
                                              destination_resource, extra_args):
@@ -605,7 +512,7 @@ class S3Api(cloud_api.CloudApi):
     }
     kwargs.update(extra_args)
     response = self.client.put_object(**kwargs)
-    return _get_object_resource_from_s3_response(
+    return s3_metadata_util.get_object_resource_from_s3_response(
         response, destination_resource.storage_url.bucket_name,
         destination_resource.storage_url.object_name)
 
@@ -627,14 +534,8 @@ class S3Api(cloud_api.CloudApi):
 
     # All fields common to both put_object and upload_fileobj are added
     # to the extra_args dict.
-    extra_args = {}
-
-    if request_config.content_type:
-      extra_args['ContentType'] = request_config.content_type
-
-    if request_config.predefined_acl_string:
-      extra_args['ACL'] = _translate_predefined_acl_string_to_s3(
-          request_config.predefined_acl_string)
+    extra_args = s3_metadata_util.get_metadata_dict_from_request_config(
+        request_config)
 
     if request_config.md5_hash:
       # The upload_fileobj method can perform multipart uploads, so it cannot
@@ -649,7 +550,7 @@ class S3Api(cloud_api.CloudApi):
                 url=destination_resource.storage_url.url_string,
                 maxsize=MAX_PUT_OBJECT_SIZE,
                 filesize=request_config.size))
-      extra_args['ContentMD5'] = request_config.md5_hash
+
       return self._upload_using_put_object(source_stream, destination_resource,
                                            extra_args)
     else:

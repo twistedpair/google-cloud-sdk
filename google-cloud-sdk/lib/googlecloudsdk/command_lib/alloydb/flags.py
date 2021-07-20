@@ -142,16 +142,17 @@ def AddInstance(parser):
       help='AlloyDB instance ID')
 
 
-def AddInstanceType(parser):
+def AddInstanceType(parser, required=True):
   """Adds an --instance-type flag to parser.
 
   Args:
     parser: argparse.Parser: Parser object for command line inputs.
+    required: Whether or not --instance-type is required.
   """
   parser.add_argument(
       '--instance-type',
       type=str,
-      required=True,
+      required=required,
       choices={
           'PRIMARY': 'PRIMARY instances support read and write operations.',
           'READ': 'READ instances support read operations only. Each read '
@@ -181,15 +182,16 @@ def AddMemory(parser):
             'desired, and the `--tier` flag must be omitted.'))
 
 
-def AddReadPoolSize(parser):
+def AddReadPoolSize(parser, required=True):
   """Adds a --read-pool-size flag to parser.
 
   Args:
     parser: argparse.Parser: Parser object for command line inputs.
+    required: Whether or not --read-pool-size is required.
   """
   parser.add_argument(
       '--read-pool-size',
-      required=True,
+      required=required,
       type=int,
       help='Read pool size.')
 

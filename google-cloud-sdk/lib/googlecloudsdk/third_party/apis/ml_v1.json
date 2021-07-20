@@ -711,7 +711,7 @@
           ]
         },
         "priority": {
-          "description": "Optional. Job scheduling will be based on this priority. A 32 bit integer [-1000, 1000], the bigger the number, the higher the priority. Default to 0 if not set. If there are multiple jobs requesting same type of accelerators, the high priority job will be scheduled prior to ones with low priority.",
+          "description": "Optional. Job scheduling will be based on this priority, which in the range [0, 1000]. The bigger the number, the higher the priority. Default to 0 if not set. If there are multiple jobs requesting same type of accelerators, the high priority job will be scheduled prior to ones with low priority.",
           "type": "integer",
           "format": "int32"
         }

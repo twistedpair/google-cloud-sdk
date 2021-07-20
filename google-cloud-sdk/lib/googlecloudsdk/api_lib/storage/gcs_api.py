@@ -67,9 +67,13 @@ MINIMUM_PROGRESS_CALLBACK_THRESHOLD = 512 * KB
 # https://cloud.google.com/storage/docs/json_api/v1/objects/compose
 MAX_OBJECTS_PER_COMPOSE_CALL = 32
 
-_ERROR_TRANSLATION = [(apitools_exceptions.HttpNotFoundError,
-                       cloud_errors.GcsNotFoundError),
-                      (apitools_exceptions.HttpError, cloud_errors.GcsApiError)]
+_ERROR_TRANSLATION = [
+    (apitools_exceptions.HttpNotFoundError, cloud_errors.GcsNotFoundError),
+    (apitools_exceptions.HttpError, cloud_errors.GcsApiError),
+    (apitools_exceptions.StreamExhausted,
+     cloud_errors.ResumableUploadAbortError),
+    (apitools_exceptions.TransferError, cloud_errors.ResumableUploadAbortError),
+]
 
 
 def _catch_http_error_raise_gcs_api_error(format_str=None):
@@ -513,6 +517,8 @@ class GcsApi(cloud_api.CloudApi):
       if source_resource.metadata:
         gcs_metadata_util.copy_select_object_metadata(source_resource.metadata,
                                                       destination_metadata)
+    gcs_metadata_util.update_object_metadata_from_request_config(
+        destination_metadata, request_config)
 
     if request_config.max_bytes_per_call:
       max_bytes_per_call = request_config.max_bytes_per_call
@@ -535,7 +541,8 @@ class GcsApi(cloud_api.CloudApi):
 
     tracker_file_path = tracker_file_util.get_tracker_file_path(
         destination_resource.storage_url,
-        tracker_file_util.TrackerFileType.REWRITE, source_resource.storage_url)
+        tracker_file_util.TrackerFileType.REWRITE,
+        source_url=source_resource.storage_url)
     rewrite_parameters_hash = tracker_file_util.hash_gcs_rewrite_parameters_for_tracker_file(
         source_resource,
         destination_resource,
@@ -570,11 +577,14 @@ class GcsApi(cloud_api.CloudApi):
 
       if rewrite_response.done:
         break
-      elif not resume_rewrite_token:
+
+      if not resume_rewrite_token:
         resume_rewrite_token = rewrite_response.rewriteToken
-        tracker_file_util.write_rewrite_tracker_file(
-            tracker_file_path, rewrite_parameters_hash,
-            rewrite_response.rewriteToken)
+        if source_resource.size >= scaled_integer.ParseInteger(
+            properties.VALUES.storage.resumable_threshold.Get()):
+          tracker_file_util.write_rewrite_tracker_file(
+              tracker_file_path, rewrite_parameters_hash,
+              rewrite_response.rewriteToken)
 
     tracker_file_util.delete_tracker_file(tracker_file_path)
     return gcs_metadata_util.get_object_resource_from_metadata(

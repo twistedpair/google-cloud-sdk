@@ -30,6 +30,7 @@ import six
 MEDIA_ASSET_API = 'mediaasset'
 OPERATIONS_COLLECTION = 'mediaasset.projects.locations.operations'
 PARENT_TEMPLATE = 'projects/{}/locations/{}'
+ASSET_TYPE_PARENT_TEMPLATE = 'projects/{}/locations/{}/assetTypes/{}'
 ASSET_PARENT_TEMPLATE = 'projects/{}/locations/{}/assetTypes/{}/assets/{}'
 ANNOTATION_PARENT_TEMPLATE = ASSET_PARENT_TEMPLATE + '/annotationSets/{}'
 
@@ -53,6 +54,10 @@ def GetLocation(args):
 
 def GetParentTemplate(project, location):
   return PARENT_TEMPLATE.format(project, location)
+
+
+def GetAssetTypeParentTemplate(project, location, asset_type):
+  return ASSET_TYPE_PARENT_TEMPLATE.format(project, location, asset_type)
 
 
 def GetAssetParentTemplate(project, location, asset_type, asset):

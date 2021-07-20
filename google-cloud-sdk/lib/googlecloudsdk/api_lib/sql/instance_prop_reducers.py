@@ -22,6 +22,7 @@ import argparse
 import datetime
 from googlecloudsdk.api_lib.sql import api_util as common_api_util
 from googlecloudsdk.api_lib.sql import constants
+from googlecloudsdk.api_lib.sql import exceptions as sql_exceptions
 from googlecloudsdk.api_lib.sql import instances as api_util
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions
@@ -120,7 +121,7 @@ def BackupConfiguration(sql_messages,
     if (backup_location is not None or backup_start_time or
         retained_backups_count is not None or
         retained_transaction_log_days is not None):
-      raise exceptions.ToolException(
+      raise sql_exceptions.ArgumentError(
           'Argument --no-backup not allowed with --backup-location, '
           '--backup-start-time, --retained-backups-count, or '
           '--retained-transaction-log-days')
@@ -136,7 +137,7 @@ def BackupConfiguration(sql_messages,
   # i.e, have binlog or pitr.
   if (retained_transaction_log_days and not backup_config.binaryLogEnabled and
       not backup_config.pointInTimeRecoveryEnabled):
-    raise exceptions.ToolException(
+    raise sql_exceptions.ArgumentError(
         'Argument --retained-transaction-log-days only valid when '
         'transaction logs are enabled. To enable transaction logs, use '
         '--enable-bin-log for MySQL, and use --enable-point-in-time-recovery '

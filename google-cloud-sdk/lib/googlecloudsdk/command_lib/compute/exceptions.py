@@ -39,3 +39,15 @@ class UpdatePropertyError(ComputeError):
 
 class ValidationError(ComputeError):
   """YAML data does not match the schema."""
+
+
+class DuplicateError(ComputeError):
+  """Duplicate param error."""
+
+
+class FailedPromptError(ComputeError):
+  """Prompt failure."""
+
+
+class InvalidResourceError(ComputeError):
+  """Invalid resource URI."""

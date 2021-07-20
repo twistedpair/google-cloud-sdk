@@ -488,6 +488,11 @@ class Deployment(_messages.Message):
       revisions/{revision}`
     name: Resource name of the deployment. Format:
       `projects/{project}/locations/{location}/deployments/{deployment}`
+    reconcileTimeout: Optional. How long apply attempt should wait for
+      resource reconciliation on the Config Controller cluster to complete. If
+      unset, the Deployment will be ACTIVE as soon as resources are applied
+      successfully to the cluster and final resource actuation status will
+      need to be polled on asynchronously.
     state: Output only. Current state of the deployment.
     stateDetail: Output only. Additional information regarding the current
       state.
@@ -578,9 +583,10 @@ class Deployment(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 5)
   latestRevision = _messages.StringField(6)
   name = _messages.StringField(7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
-  stateDetail = _messages.StringField(9)
-  updateTime = _messages.StringField(10)
+  reconcileTimeout = _messages.StringField(8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  stateDetail = _messages.StringField(10)
+  updateTime = _messages.StringField(11)
 
 
 class Empty(_messages.Message):
@@ -1075,6 +1081,11 @@ class Revision(_messages.Message):
       revisions/{revision}`
     pipelineResults: Output only. Locations of outputs from kpt pipeline
       execution.
+    reconcileTimeout: Optional. How long apply attempt should wait for
+      resource reconciliation on the Config Controller cluster to complete. If
+      unset, the Revision will be APPLIED as soon as resources are applied
+      successfully to the cluster and final resource actuation status will
+      need to be polled on asynchronously.
     state: Output only. Current state of the revision.
     stateDetail: Output only. Additional information regarding the current
       state.
@@ -1149,9 +1160,10 @@ class Revision(_messages.Message):
   errorCode = _messages.EnumField('ErrorCodeValueValuesEnum', 5)
   name = _messages.StringField(6)
   pipelineResults = _messages.MessageField('PipelineResults', 7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
-  stateDetail = _messages.StringField(9)
-  updateTime = _messages.StringField(10)
+  reconcileTimeout = _messages.StringField(8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  stateDetail = _messages.StringField(10)
+  updateTime = _messages.StringField(11)
 
 
 class SetIamPolicyRequest(_messages.Message):

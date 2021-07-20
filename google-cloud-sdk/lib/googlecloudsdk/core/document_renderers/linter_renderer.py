@@ -54,6 +54,8 @@ class LinterRenderer(text_renderer.TextRenderer):
                      'DESCRIPTION': self._analyze_description}
     self._heading = ''
     self._prev_heading = ''
+    self._example_errors = False
+    self._has_example_section = False
     self.example = False
     self.command_name = ''
     self.name_section = ''
@@ -155,6 +157,7 @@ class LinterRenderer(text_renderer.TextRenderer):
           'The examples section is not formatted properly. This is likely due '
           'to indentation. Please make sure the section is aligned with the '
           'heading and not indented.')
+      self._example_errors = True
 
   def Finish(self):
     if self._buffer.getvalue() and self._prev_heading:
@@ -166,6 +169,8 @@ class LinterRenderer(text_renderer.TextRenderer):
       self._add_failure(
           self._check_name('EXAMPLES', 'PRESENT'),
           'You have not included an example in the Examples section.')
+    elif self._has_example_section and not self._example_errors:
+      self._add_no_errors_summary('EXAMPLES')
     for element in self.findings:
       if self.findings[element]:
         self._file_out.write(
@@ -263,6 +268,7 @@ class LinterRenderer(text_renderer.TextRenderer):
       self._add_no_errors_summary('NAME')
 
   def _analyze_examples(self, section):
+    self._has_example_section = True
     if not self.command_metadata.is_group:
       has_errors = self.check_for_personal_pronouns('EXAMPLES', section)
 
@@ -299,9 +305,7 @@ class LinterRenderer(text_renderer.TextRenderer):
                 list_contents))
       else:
         self._add_success(check_name)
-
-      if not has_errors:
-        self._add_no_errors_summary('EXAMPLES')
+      self._example_errors = has_errors
 
   def _analyze_description(self, section):
     has_errors = (self.check_for_personal_pronouns('DESCRIPTION', section),

@@ -252,20 +252,23 @@ def delete_tracker_file(tracker_file_path):
     os.remove(tracker_file_path)
 
 
-def delete_download_tracker_files(destination_url, tracker_file_type):
+def delete_download_tracker_files(destination_url):
   """Deletes all tracker files for an object download.
+
+  Deletes files for different strategies in case download was interrupted and
+  resumed with a different strategy. Prevents orphaned tracker files.
 
   Args:
     destination_url (storage_url.StorageUrl): Describes the destination file.
-    tracker_file_type (TrackerFileType): Used for getting path to tracker file.
   """
-  if tracker_file_type is TrackerFileType.SLICED_DOWNLOAD:
-    tracker_files = _get_sliced_download_tracker_file_paths(destination_url)
-    for tracker_file in tracker_files:
-      delete_tracker_file(tracker_file)
-  else:
-    delete_tracker_file(
-        get_tracker_file_path(destination_url, tracker_file_type))
+  sliced_download_tracker_files = _get_sliced_download_tracker_file_paths(
+      destination_url)
+  for tracker_file in sliced_download_tracker_files:
+    delete_tracker_file(tracker_file)
+
+  # Resumable download tracker file.
+  delete_tracker_file(
+      get_tracker_file_path(destination_url, TrackerFileType.DOWNLOAD))
 
 
 def hash_gcs_rewrite_parameters_for_tracker_file(
@@ -304,6 +307,7 @@ def hash_gcs_rewrite_parameters_for_tracker_file(
   """
   mandatory_parameters = (source_object_resource.storage_url.bucket_name,
                           source_object_resource.storage_url.object_name,
+                          source_object_resource.etag,
                           destination_object_resource.storage_url.bucket_name,
                           destination_object_resource.storage_url.object_name)
   if not all(mandatory_parameters):
@@ -327,6 +331,7 @@ def hash_gcs_rewrite_parameters_for_tracker_file(
 
 def _write_tracker_file(tracker_file_path, data):
   """Creates a tracker file, storing the input data."""
+  log.debug('Writing tracker file to {}.'.format(tracker_file_path))
   try:
     file_descriptor = os.open(tracker_file_path,
                               os.O_WRONLY | os.O_CREAT | os.O_TRUNC, 0o600)
@@ -557,11 +562,7 @@ def read_or_create_download_tracker_file(source_object_resource,
     if tracker_file:
       tracker_file.close()
 
-  # Remove corrupt tracker files.
-  delete_download_tracker_files(destination_url, tracker_file_type)
-
-  log.debug('No matching tracker file for {}. Creating...'.format(
-      download_name_for_logger))
+  log.debug('No matching tracker file for {}.'.format(download_name_for_logger))
   if tracker_file_type is TrackerFileType.DOWNLOAD:
     _write_tracker_file(tracker_file_path, source_object_resource.etag + '\n')
   elif tracker_file_type is TrackerFileType.DOWNLOAD_COMPONENT:

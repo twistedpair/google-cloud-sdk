@@ -154,7 +154,7 @@ SOURCE_SNAPSHOT_ARG = compute_flags.ResourceArgument(
 )
 
 
-def AddCommonArgs(parser):
+def AddCommonArgs(parser, support_user_licenses=False):
   """Add common image creation args."""
   parser.add_argument(
       '--description',
@@ -166,6 +166,15 @@ def AddCommonArgs(parser):
             'specifying a family will cause the latest non-deprecated image '
             'in the family to be used.')
   )
+
+  if support_user_licenses:
+    parser.add_argument(
+        '--user-licenses',
+        type=arg_parsers.ArgList(),
+        metavar='LICENSE',
+        help=(
+            'URI for the license resource. For multiple licenses, you can provide a comma-separated list of URIs.'
+        ))
 
   parser.add_argument(
       '--licenses',

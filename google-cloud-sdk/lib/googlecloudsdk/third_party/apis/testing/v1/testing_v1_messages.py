@@ -262,6 +262,10 @@ class AndroidRoboTest(_messages.Message):
   virtual or physical Android Device, finding culprits and crashes as it goes.
   Next tag: 30
 
+  Enums:
+    RoboModeValueValuesEnum: The mode in which Robo should run. Most clients
+      should allow the server to populate this field automatically.
+
   Fields:
     appApk: The APK for the application under test.
     appBundle: A multi-apk app bundle for the application under test.
@@ -276,6 +280,8 @@ class AndroidRoboTest(_messages.Message):
     roboDirectives: A set of directives Robo should apply during the crawl.
       This allows users to customize the crawl. For example, the username and
       password for a test account can be provided.
+    roboMode: The mode in which Robo should run. Most clients should allow the
+      server to populate this field automatically.
     roboScript: A JSON file with a sequence of actions Robo should perform as
       a prologue for the crawl.
     startingIntents: The intents used to launch the app for the crawl. If none
@@ -284,6 +290,20 @@ class AndroidRoboTest(_messages.Message):
       activity must be provided explicitly).
   """
 
+  class RoboModeValueValuesEnum(_messages.Enum):
+    r"""The mode in which Robo should run. Most clients should allow the
+    server to populate this field automatically.
+
+    Values:
+      ROBO_MODE_UNSPECIFIED: LINT.IfChange This means that the server should
+        choose the mode. Recommended.
+      ROBO_VERSION_1: Runs Robo in UIAutomator-only mode without app resigning
+      ROBO_VERSION_2: Runs Robo in standard Espresso with UIAutomator fallback
+    """
+    ROBO_MODE_UNSPECIFIED = 0
+    ROBO_VERSION_1 = 1
+    ROBO_VERSION_2 = 2
+
   appApk = _messages.MessageField('FileReference', 1)
   appBundle = _messages.MessageField('AppBundle', 2)
   appInitialActivity = _messages.StringField(3)
@@ -291,8 +311,9 @@ class AndroidRoboTest(_messages.Message):
   maxDepth = _messages.IntegerField(5, variant=_messages.Variant.INT32)
   maxSteps = _messages.IntegerField(6, variant=_messages.Variant.INT32)
   roboDirectives = _messages.MessageField('RoboDirective', 7, repeated=True)
-  roboScript = _messages.MessageField('FileReference', 8)
-  startingIntents = _messages.MessageField('RoboStartingIntent', 9, repeated=True)
+  roboMode = _messages.EnumField('RoboModeValueValuesEnum', 8)
+  roboScript = _messages.MessageField('FileReference', 9)
+  startingIntents = _messages.MessageField('RoboStartingIntent', 10, repeated=True)
 
 
 class AndroidRuntimeConfiguration(_messages.Message):

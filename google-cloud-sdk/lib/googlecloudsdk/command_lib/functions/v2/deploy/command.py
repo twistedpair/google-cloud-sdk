@@ -484,13 +484,13 @@ def _SetInvokerPermissions(args, function, is_new_function):
     if allow_unauthenticated:
       operations.AddOrRemoveIamPolicyBinding(
           service_ref_k8s,
-          True,  # Add the binding
+          add_binding=True,
           member=serverless_operations.ALLOW_UNAUTH_POLICY_BINDING_MEMBER,
           role=serverless_operations.ALLOW_UNAUTH_POLICY_BINDING_ROLE)
     elif not is_new_function:
       operations.AddOrRemoveIamPolicyBinding(
           service_ref_k8s,
-          False,  # Remove the binding
+          add_binding=False,
           member=serverless_operations.ALLOW_UNAUTH_POLICY_BINDING_MEMBER,
           role=serverless_operations.ALLOW_UNAUTH_POLICY_BINDING_ROLE)
 

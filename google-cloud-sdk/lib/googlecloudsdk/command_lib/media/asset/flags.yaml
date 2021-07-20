@@ -32,3 +32,10 @@ annotation-data-file:
   required: true
   help_text: |-
     File path to a file contains annotation data in JSON format.
+
+asset-config-file:
+  arg_name: asset-config-file
+  required: false
+  type: "googlecloudsdk.calliope.arg_parsers:FileContents:"
+  help_text: |-
+    File path to an asset content file in JSON format.

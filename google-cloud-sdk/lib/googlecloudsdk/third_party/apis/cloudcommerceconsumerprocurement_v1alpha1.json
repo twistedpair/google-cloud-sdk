@@ -370,7 +370,7 @@
     },
     "GoogleCloudCommerceConsumerProcurementV1alpha1LineItemInfo": {
       "id": "GoogleCloudCommerceConsumerProcurementV1alpha1LineItemInfo",
-      "description": "Line item information. Next Id: 14",
+      "description": "Line item information. Next Id: 15",
       "type": "object",
       "properties": {
         "productExternalName": {

@@ -19,22 +19,23 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import base
 
 _WP_CONFIG_LINK = 'https://cloud.google.com/build/docs/private-pools/worker-pool-config-file-schema'
 
 _CREATE_FILE_DESC = ('A file that contains the configuration for the'
-                     ' worker pool to be created. See %s for options.'
-                     % _WP_CONFIG_LINK)
+                     ' worker pool to be created. See %s for options.' %
+                     _WP_CONFIG_LINK)
 _UPDATE_FILE_DESC = ('A file that contains updates to the configuration for'
-                     ' the worker pool. See %s for options.'
-                     % _WP_CONFIG_LINK)
+                     ' the worker pool. See %s for options.' % _WP_CONFIG_LINK)
 
 
-def AddWorkerpoolArgs(parser, update=False):
+def AddWorkerpoolArgs(parser, release_track, update=False):
   """Set up all the argparse flags for creating or updating a workerpool.
 
   Args:
     parser: An argparse.ArgumentParser-like object.
+    release_track: A base.ReleaseTrack-like object.
     update: If true, use the version of the flags for updating a workerpool.
       Otherwise, use the version for creating a workerpool.
 
@@ -68,6 +69,7 @@ projects/{network_project}/global/networks/{network_name}.
 
 If not specified, the workers are not peered to any network.
 """)
+
   worker_flags = flags.add_argument_group(
       'Configuration to be used for creating workers in the worker pool:')
   worker_flags.add_argument(
@@ -85,36 +87,69 @@ Size of the disk attached to the worker.
 
 If not given, Cloud Build will use a standard disk size.
 """)
+
   worker_flags.add_argument(
       '--no-external-ip',
+      hidden=release_track == base.ReleaseTrack.GA,
       action='store_true',
       help="""\
 If set, workers in the worker pool are created without an external IP address.
 
 If the worker pool is within a VPC Service Control perimeter, use this flag.
 """)
+
+  if release_track == base.ReleaseTrack.GA:
+    if update:
+      egress_flags = flags.add_mutually_exclusive_group()
+      egress_flags.add_argument(
+          '--no-public-egress',
+          action='store_true',
+          help="""\
+If set, workers in the worker pool are created without an external IP address.
+
+If the worker pool is within a VPC Service Control perimeter, use this flag.
+    """)
+
+      egress_flags.add_argument(
+          '--public-egress',
+          action='store_true',
+          help="""\
+If set, workers in the worker pool are created with an external IP address.
+  """)
+    else:
+      flags.add_argument(
+          '--no-public-egress',
+          action='store_true',
+          help="""\
+If set, workers in the worker pool are created without an external IP address.
+
+If the worker pool is within a VPC Service Control perimeter, use this flag.
+""")
+
   return parser
 
 
-def AddWorkerpoolCreateArgs(parser):
+def AddWorkerpoolCreateArgs(parser, release_track):
   """Set up all the argparse flags for creating a workerpool.
 
   Args:
     parser: An argparse.ArgumentParser-like object.
+    release_track: A base.ReleaseTrack-like object.
 
   Returns:
     The parser argument with workerpool flags added in.
   """
-  return AddWorkerpoolArgs(parser, update=False)
+  return AddWorkerpoolArgs(parser, release_track, update=False)
 
 
-def AddWorkerpoolUpdateArgs(parser):
+def AddWorkerpoolUpdateArgs(parser, release_track):
   """Set up all the argparse flags for updating a workerpool.
 
   Args:
     parser: An argparse.ArgumentParser-like object.
+    release_track: A base.ReleaseTrack-like object.
 
   Returns:
     The parser argument with workerpool flags added in.
   """
-  return AddWorkerpoolArgs(parser, update=True)
+  return AddWorkerpoolArgs(parser, release_track, update=True)

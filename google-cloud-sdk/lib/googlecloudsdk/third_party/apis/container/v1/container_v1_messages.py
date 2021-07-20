@@ -550,22 +550,39 @@ class ClusterAutoscaling(_messages.Message):
   Cluster Autoscaler to automatically adjust the size of the cluster and
   create/delete node pools based on the current needs.
 
+  Enums:
+    AutoscalingProfileValueValuesEnum: Defines autoscaling behaviour.
+
   Fields:
     autoprovisioningLocations: The list of Google Compute Engine
       [zones](https://cloud.google.com/compute/docs/zones#available) in which
       the NodePool's nodes can be created by NAP.
     autoprovisioningNodePoolDefaults: AutoprovisioningNodePoolDefaults
       contains defaults for a node pool created by NAP.
+    autoscalingProfile: Defines autoscaling behaviour.
     enableNodeAutoprovisioning: Enables automatic node pool creation and
       deletion.
     resourceLimits: Contains global constraints regarding minimum and maximum
       amount of resources in the cluster.
   """
 
+  class AutoscalingProfileValueValuesEnum(_messages.Enum):
+    r"""Defines autoscaling behaviour.
+
+    Values:
+      PROFILE_UNSPECIFIED: No change to autoscaling configuration.
+      OPTIMIZE_UTILIZATION: Prioritize optimizing utilization of resources.
+      BALANCED: Use default (balanced) autoscaling configuration.
+    """
+    PROFILE_UNSPECIFIED = 0
+    OPTIMIZE_UTILIZATION = 1
+    BALANCED = 2
+
   autoprovisioningLocations = _messages.StringField(1, repeated=True)
   autoprovisioningNodePoolDefaults = _messages.MessageField('AutoprovisioningNodePoolDefaults', 2)
-  enableNodeAutoprovisioning = _messages.BooleanField(3)
-  resourceLimits = _messages.MessageField('ResourceLimit', 4, repeated=True)
+  autoscalingProfile = _messages.EnumField('AutoscalingProfileValueValuesEnum', 3)
+  enableNodeAutoprovisioning = _messages.BooleanField(4)
+  resourceLimits = _messages.MessageField('ResourceLimit', 5, repeated=True)
 
 
 class ClusterUpdate(_messages.Message):
@@ -2073,6 +2090,7 @@ class NodeConfig(_messages.Message):
     diskType: Type of the disk attached to each node (e.g. 'pd-standard', 'pd-
       ssd' or 'pd-balanced') If unspecified, the default disk type is 'pd-
       standard'
+    gvnic: Enable or disable gvnic in the node pool.
     imageType: The image type to use for this node. Note that for a given
       image type, the latest version of it will be used.
     kubeletConfig: Node kubelet configs.
@@ -2230,25 +2248,26 @@ class NodeConfig(_messages.Message):
   bootDiskKmsKey = _messages.StringField(2)
   diskSizeGb = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   diskType = _messages.StringField(4)
-  imageType = _messages.StringField(5)
-  kubeletConfig = _messages.MessageField('NodeKubeletConfig', 6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  linuxNodeConfig = _messages.MessageField('LinuxNodeConfig', 8)
-  localSsdCount = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  machineType = _messages.StringField(10)
-  metadata = _messages.MessageField('MetadataValue', 11)
-  minCpuPlatform = _messages.StringField(12)
-  nodeGroup = _messages.StringField(13)
-  nodeImageConfig = _messages.MessageField('CustomImageConfig', 14)
-  oauthScopes = _messages.StringField(15, repeated=True)
-  preemptible = _messages.BooleanField(16)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 17)
-  sandboxConfig = _messages.MessageField('SandboxConfig', 18)
-  serviceAccount = _messages.StringField(19)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 20)
-  tags = _messages.StringField(21, repeated=True)
-  taints = _messages.MessageField('NodeTaint', 22, repeated=True)
-  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 23)
+  gvnic = _messages.MessageField('VirtualNIC', 5)
+  imageType = _messages.StringField(6)
+  kubeletConfig = _messages.MessageField('NodeKubeletConfig', 7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  linuxNodeConfig = _messages.MessageField('LinuxNodeConfig', 9)
+  localSsdCount = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  machineType = _messages.StringField(11)
+  metadata = _messages.MessageField('MetadataValue', 12)
+  minCpuPlatform = _messages.StringField(13)
+  nodeGroup = _messages.StringField(14)
+  nodeImageConfig = _messages.MessageField('CustomImageConfig', 15)
+  oauthScopes = _messages.StringField(16, repeated=True)
+  preemptible = _messages.BooleanField(17)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 18)
+  sandboxConfig = _messages.MessageField('SandboxConfig', 19)
+  serviceAccount = _messages.StringField(20)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 21)
+  tags = _messages.StringField(22, repeated=True)
+  taints = _messages.MessageField('NodeTaint', 23, repeated=True)
+  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 24)
 
 
 class NodeKubeletConfig(_messages.Message):
@@ -2404,7 +2423,7 @@ class NodePoolAutoscaling(_messages.Message):
     autoprovisioned: Can this node pool be deleted automatically.
     enabled: Is autoscaling enabled for this node pool.
     maxNodeCount: Maximum number of nodes in the NodePool. Must be >=
-      min_node_count. There has to enough quota to scale up the cluster.
+      min_node_count. There has to be enough quota to scale up the cluster.
     minNodeCount: Minimum number of nodes in the NodePool. Must be >= 1 and <=
       max_node_count.
   """
@@ -3716,6 +3735,7 @@ class UpdateNodePoolRequest(_messages.Message):
   Fields:
     clusterId: Deprecated. The name of the cluster to upgrade. This field has
       been deprecated and replaced by the name field.
+    gvnic: Enable or disable gvnic on the node pool.
     image: The desired name of the image name to use for this node. This is
       used to create clusters using a custom image.
     imageProject: The project containing the desired image to use for this
@@ -3755,19 +3775,20 @@ class UpdateNodePoolRequest(_messages.Message):
   """
 
   clusterId = _messages.StringField(1)
-  image = _messages.StringField(2)
-  imageProject = _messages.StringField(3)
-  imageType = _messages.StringField(4)
-  kubeletConfig = _messages.MessageField('NodeKubeletConfig', 5)
-  linuxNodeConfig = _messages.MessageField('LinuxNodeConfig', 6)
-  locations = _messages.StringField(7, repeated=True)
-  name = _messages.StringField(8)
-  nodePoolId = _messages.StringField(9)
-  nodeVersion = _messages.StringField(10)
-  projectId = _messages.StringField(11)
-  upgradeSettings = _messages.MessageField('UpgradeSettings', 12)
-  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 13)
-  zone = _messages.StringField(14)
+  gvnic = _messages.MessageField('VirtualNIC', 2)
+  image = _messages.StringField(3)
+  imageProject = _messages.StringField(4)
+  imageType = _messages.StringField(5)
+  kubeletConfig = _messages.MessageField('NodeKubeletConfig', 6)
+  linuxNodeConfig = _messages.MessageField('LinuxNodeConfig', 7)
+  locations = _messages.StringField(8, repeated=True)
+  name = _messages.StringField(9)
+  nodePoolId = _messages.StringField(10)
+  nodeVersion = _messages.StringField(11)
+  projectId = _messages.StringField(12)
+  upgradeSettings = _messages.MessageField('UpgradeSettings', 13)
+  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 14)
+  zone = _messages.StringField(15)
 
 
 class UpgradeAvailableEvent(_messages.Message):
@@ -3948,6 +3969,16 @@ class VerticalPodAutoscaling(_messages.Message):
 
   Fields:
     enabled: Enables vertical pod autoscaling.
+  """
+
+  enabled = _messages.BooleanField(1)
+
+
+class VirtualNIC(_messages.Message):
+  r"""Configuration of gVNIC feature.
+
+  Fields:
+    enabled: Whether gVNIC features are enabled in the node pool.
   """
 
   enabled = _messages.BooleanField(1)

@@ -1269,6 +1269,10 @@ class Trigger(_messages.Message):
       used to group resources.
 
   Fields:
+    channel: Optional. The name of the channel associated with the trigger in
+      `projects/{project}/locations/{location}/channels/{channel}` format. You
+      must provide a channel in order to receive events from Eventarc SaaS
+      partners.
     createTime: Output only. The creation time.
     destination: Required. Destination specifies where the events should be
       sent to.
@@ -1330,16 +1334,17 @@ class Trigger(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  createTime = _messages.StringField(1)
-  destination = _messages.MessageField('Destination', 2)
-  etag = _messages.StringField(3)
-  eventFilters = _messages.MessageField('EventFilter', 4, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  serviceAccount = _messages.StringField(7)
-  transport = _messages.MessageField('Transport', 8)
-  uid = _messages.StringField(9)
-  updateTime = _messages.StringField(10)
+  channel = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  destination = _messages.MessageField('Destination', 3)
+  etag = _messages.StringField(4)
+  eventFilters = _messages.MessageField('EventFilter', 5, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  serviceAccount = _messages.StringField(8)
+  transport = _messages.MessageField('Transport', 9)
+  uid = _messages.StringField(10)
+  updateTime = _messages.StringField(11)
 
 
 encoding.AddCustomJsonFieldMapping(

@@ -40,6 +40,11 @@ class NotFoundError(CloudApiError):
   pass
 
 
+class ResumableUploadAbortError(CloudApiError):
+  """Raised when a resumable upload needs to be restarted."""
+  pass
+
+
 class GcsNotFoundError(GcsApiError, NotFoundError):
   """Error raised when the requested GCS resource does not exist.
 

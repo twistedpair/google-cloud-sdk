@@ -196,7 +196,6 @@ def ProcessingUnits(required=False):
   return base.Argument(
       '--processing-units',
       required=required,
-      hidden=True,
       type=int,
       help='Number of processing units for the instance.')
 

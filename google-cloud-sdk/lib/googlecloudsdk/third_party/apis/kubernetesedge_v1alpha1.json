@@ -492,7 +492,7 @@
     },
     "ListVpnConnectionsResponse": {
       "id": "ListVpnConnectionsResponse",
-      "description": "List of VPN connections in a site.",
+      "description": "List of VPN connections in a location.",
       "type": "object",
       "properties": {
         "vpnConnections": {
@@ -566,7 +566,7 @@
           "type": "string"
         },
         "vpc": {
-          "description": "The canonical VPC name to connect to. It is in the form of projects\/{project}\/locations\/{location}\/vpcs\/{vpc}.",
+          "description": "The network ID of VPC to connect to.",
           "type": "string"
         },
         "enableHighAvailability": {

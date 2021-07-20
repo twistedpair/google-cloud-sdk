@@ -835,7 +835,7 @@ def AddMigStatefulIPsFlagsForInstanceConfigs(parser):
   )
 
 
-def AddCreateInstancesFlags(parser):
+def AddCreateInstancesFlags(parser, add_stateful_ips=False):
   """Adding stateful flags for creating and updating instance configs."""
   parser.add_argument(
       '--instance',
@@ -867,6 +867,41 @@ def AddCreateInstancesFlags(parser):
       help=textwrap.dedent(
           STATEFUL_METADATA_HELP.format(
               argument_name=stateful_metadata_argument_name)))
+
+  if add_stateful_ips:
+    stateful_ips_help_text_template = textwrap.dedent(
+        STATEFUL_IPS_HELP_BASE +
+        STATEFUL_IPS_HELP_TEMPLATE +
+        STATEFUL_IP_ADDRESS_ARG_HELP +
+        STATEFUL_IP_AUTO_DELETE_ARG_HELP)
+
+    stateful_internal_ip_flag_name = '--stateful-internal-ip'
+    parser.add_argument(
+        stateful_internal_ip_flag_name,
+        type=arg_parsers.ArgDict(
+            spec={
+                'interface-name': str,
+                'address': str,
+                'auto-delete': AutoDeleteFlag.ValidatorWithFlagName(
+                    stateful_internal_ip_flag_name)
+            }),
+        action='append',
+        help=stateful_ips_help_text_template.format(ip_type='internal'),
+    )
+
+    stateful_external_ip_flag_name = '--stateful-external-ip'
+    parser.add_argument(
+        stateful_external_ip_flag_name,
+        type=arg_parsers.ArgDict(
+            spec={
+                'interface-name': str,
+                'address': str,
+                'auto-delete': AutoDeleteFlag.ValidatorWithFlagName(
+                    stateful_external_ip_flag_name)
+            }),
+        action='append',
+        help=stateful_ips_help_text_template.format(ip_type='external'),
+    )
 
 
 def AddMigStatefulUpdateInstanceFlag(parser):

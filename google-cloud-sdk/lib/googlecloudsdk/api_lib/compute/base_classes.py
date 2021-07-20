@@ -37,8 +37,8 @@ from googlecloudsdk.api_lib.compute import scope_prompter
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
-from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.command_lib.compute import completers
+from googlecloudsdk.command_lib.compute import exceptions as compute_exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core import yaml
@@ -201,7 +201,7 @@ class BaseLister(base.ListCommand, BaseCommand):
         ref = self.resources.Parse(name)
 
         if ref.Collection() not in allowed_collections:
-          raise calliope_exceptions.ToolException(
+          raise compute_exceptions.InvalidResourceError(
               'Resource URI must be of type {0}. Received [{1}].'.format(
                   ' or '.join('[{0}]'.format(collection)
                               for collection in allowed_collections),

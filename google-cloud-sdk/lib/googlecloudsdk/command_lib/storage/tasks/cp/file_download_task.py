@@ -46,12 +46,6 @@ from googlecloudsdk.core.util import scaled_integer
 TEMPORARY_FILE_SUFFIX = '_.gstmp'
 
 
-_NO_HASH_CHECK_ERROR = """
-google-crc32c not installed, so hashing will be slow. Install google-crc32c or
-change the "storage/check_hashes" config setting.
-"""
-
-
 def _get_hash_check_warning_base():
   # Create the text in a function so that we can test it easily.
   google_crc32c_install_steps = hash_util.get_google_crc32c_install_command()
@@ -61,7 +55,7 @@ def _get_hash_check_warning_base():
       binary is not installed, and Python hash computation will likely
       throttle performance. You can change this by installing the binary
       {crc32c_steps}or
-      modifying the "storage/check_hashes config setting.""".format(
+      modifying the "storage/check_hashes" config setting.""".format(
           crc32c_steps='by running "{}" '.format(google_crc32c_install_steps)
           if google_crc32c_install_steps else ''))
 
@@ -70,6 +64,7 @@ _HASH_CHECK_WARNING_BASE = _get_hash_check_warning_base()
 _NO_HASH_CHECK_WARNING = _HASH_CHECK_WARNING_BASE.format(
     'will not be validated')
 _SLOW_HASH_CHECK_WARNING = _HASH_CHECK_WARNING_BASE.format('may be slow')
+_NO_HASH_CHECK_ERROR = _HASH_CHECK_WARNING_BASE.format('was skipped')
 
 
 def _get_digester(algorithm, resource, should_log_warning=True):
@@ -153,6 +148,13 @@ class FileDownloadTask(task.Task):
     self._temporary_destination_resource = (
         self._get_temporary_destination_resource())
 
+    if (self._source_resource.size and
+        self._source_resource.size >= scaled_integer.ParseInteger(
+            properties.VALUES.storage.resumable_threshold.Get())):
+      self._strategy = cloud_api.DownloadStrategy.RESUMABLE
+    else:
+      self._strategy = cloud_api.DownloadStrategy.ONE_SHOT
+
     self.parallel_processing_key = (
         self._destination_resource.storage_url.url_string)
 
@@ -183,6 +185,7 @@ class FileDownloadTask(task.Task):
               length=length,
               component_number=i,
               total_components=len(component_offsets_and_lengths),
+              strategy=self._strategy,
               digesters=digesters))
 
     finalize_sliced_download_task_list = [
@@ -206,45 +209,53 @@ class FileDownloadTask(task.Task):
       os.remove(self._destination_resource.storage_url.object_name)
 
     if _should_perform_sliced_download(self._source_resource):
+      download_component_task_list, finalize_sliced_download_task_list = (
+          self._get_sliced_download_tasks())
+
+      _, found_tracker_file = (
+          tracker_file_util.read_or_create_download_tracker_file(
+              self._source_resource,
+              self._temporary_destination_resource.storage_url,
+              total_components=len(download_component_task_list),
+          ))
+      if found_tracker_file:
+        log.debug('Resuming sliced download with {} components.'.format(
+            len(download_component_task_list)))
+      else:
+        if self._temporary_destination_resource.storage_url.exists():
+          # Component count may have changed, invalidating earlier download.
+          os.remove(
+              self._temporary_destination_resource.storage_url.object_name)
+        log.debug('Launching sliced download with {} components.'.format(
+            len(download_component_task_list)))
+
       copy_component_util.create_file_if_needed(
           self._source_resource, self._temporary_destination_resource)
-      download_component_task_list, finalize_sliced_download_task_list = self._get_sliced_download_tasks(
-      )
 
-      tracker_file_util.read_or_create_download_tracker_file(
-          self._source_resource,
-          self._temporary_destination_resource.storage_url,
-          total_components=len(download_component_task_list),
-      )
-      log.debug('Launching sliced download with {} components.'.format(
-          len(download_component_task_list)))
       return task.Output(
           additional_task_iterators=[
               download_component_task_list,
               finalize_sliced_download_task_list,
           ],
           messages=None)
-    else:
-      if (self._source_resource.size and
-          self._source_resource.size >= scaled_integer.ParseInteger(
-              properties.VALUES.storage.resumable_threshold.Get())):
-        strategy = cloud_api.DownloadStrategy.RESUMABLE
-      else:
-        strategy = cloud_api.DownloadStrategy.ONE_SHOT
 
-      digesters = _get_digester(hash_util.HashAlgorithm.MD5,
-                                self._source_resource)
+    digesters = _get_digester(hash_util.HashAlgorithm.MD5,
+                              self._source_resource)
 
-      file_part_download_task.FilePartDownloadTask(
-          self._source_resource,
-          self._temporary_destination_resource,
-          offset=0,
-          length=self._source_resource.size,
-          strategy=strategy,
-          digesters=digesters).execute(task_status_queue=task_status_queue)
+    file_part_download_task.FilePartDownloadTask(
+        self._source_resource,
+        self._temporary_destination_resource,
+        offset=0,
+        length=self._source_resource.size,
+        strategy=self._strategy,
+        digesters=digesters).execute(task_status_queue=task_status_queue)
 
-      temporary_url = self._temporary_destination_resource.storage_url
-      if os.path.exists(temporary_url.object_name):
-        os.rename(
-            temporary_url.object_name,
-            self._destination_resource.storage_url.object_name)
+    temporary_url = self._temporary_destination_resource.storage_url
+    if os.path.exists(temporary_url.object_name):
+      os.rename(temporary_url.object_name,
+                self._destination_resource.storage_url.object_name)
+
+    # For sliced download, cleanup is done in the finalized sliced download task
+    # We perform cleanup here for all other types in case some corrupt files
+    # were left behind.
+    tracker_file_util.delete_download_tracker_files(temporary_url)

@@ -421,7 +421,7 @@
           }
         },
         "enableGvnic": {
-          "description": "Enable or disable gvnic on this cluster. This field is not yet used.",
+          "description": "To be deprecated TODO(b\/192680711), replaced with NodeConfig.Gvnic = 29",
           "type": "boolean"
         },
         "master": {
@@ -591,6 +591,10 @@
         "advancedMachineFeatures": {
           "description": "Advanced features for the Compute Engine VM.",
           "$ref": "AdvancedMachineFeatures"
+        },
+        "gvnic": {
+          "description": "Enable or disable gvnic on the node pool.",
+          "$ref": "VirtualNIC"
         }
       }
     },
@@ -838,6 +842,17 @@
           "description": "The number of threads per physical core. To disable simultaneous multithreading (SMT) set this to 1. If unset, the maximum number of threads supported per core by the underlying processor is assumed.",
           "type": "string",
           "format": "int64"
+        }
+      }
+    },
+    "VirtualNIC": {
+      "id": "VirtualNIC",
+      "description": "Configuration of gVNIC feature.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Whether gVNIC features are enabled in the node pool.",
+          "type": "boolean"
         }
       }
     },
@@ -1219,7 +1234,7 @@
           "format": "int32"
         },
         "maxNodeCount": {
-          "description": "Maximum number of nodes in the NodePool. Must be >= min_node_count. There has to enough quota to scale up the cluster.",
+          "description": "Maximum number of nodes in the NodePool. Must be >= min_node_count. There has to be enough quota to scale up the cluster.",
           "type": "integer",
           "format": "int32"
         },
@@ -2888,7 +2903,7 @@
           "$ref": "ILBSubsettingConfig"
         },
         "desiredEnableGvnic": {
-          "description": "Enable or disable gvnic on this cluster. This field is not yet used.",
+          "description": "To be deprecated TODO(b\/192680711), replaced with UpdateNodePoolRequest.Gvnic = 29",
           "type": "boolean"
         },
         "desiredDatapathProvider": {
@@ -3131,6 +3146,10 @@
         "gcfsConfig": {
           "description": "GCFS config.",
           "$ref": "GcfsConfig"
+        },
+        "gvnic": {
+          "description": "Enable or disable gvnic on the node pool.",
+          "$ref": "VirtualNIC"
         }
       }
     },

@@ -374,7 +374,10 @@ class Instance(object):
                                                'flag'.format(tf_version))
 
     if use_dl_image:
-      return 'tf-{}-{}-gpu'.format(parsed.major, parsed.minor)
+      if parsed.major == 2:
+        return 'tf2-{}-{}-cpu'.format(parsed.major, parsed.minor)
+      else:
+        return 'tf-{}-{}-cpu'.format(parsed.major, parsed.minor)
 
     # From TF 2.4, image family format uses patch format by default,
     # e.g.: `tf-2-4-0` for TF version 2.4
@@ -383,9 +386,12 @@ class Instance(object):
 
     return 'tf-{}-{}'.format(parsed.major, parsed.minor)
 
-  def ResolveImageFromTensorflowVersion(self, tf_version, project,
-                                        use_dl_image):
+  def ResolveImageFromTensorflowVersion(self, tf_version, use_dl_image):
     """Queries GCE to find the right image for the given TF version."""
+    project = 'ml-images'
+    if use_dl_image:
+      project = 'deeplearning-platform-release'
+
     image_family = self._ImageFamilyFromTensorflowVersion(
         tf_version, use_dl_image)
     request = self.messages.ComputeImagesGetFromFamilyRequest(
@@ -400,6 +406,7 @@ class Instance(object):
                         disk_size,
                         preemptible,
                         network,
+                        use_with_notebook,
                         source_image=None):
     """Builds an instance spec to be used for Instance creation."""
 
@@ -422,6 +429,12 @@ class Instance(object):
     metadata = [self.messages.Metadata.ItemsValueListEntry(
         key='ctpu',
         value=name)]
+
+    if use_with_notebook:
+      metadata.append(
+          self.messages.Metadata.ItemsValueListEntry(
+              key='proxy-mode', value='project_editors'))
+
     service_account = self.messages.ServiceAccount(
         email='default',
         scopes=[
@@ -451,14 +464,14 @@ class Instance(object):
         operation.selfLink, collection='compute.zoneOperations')
 
   def Create(self, name, zone, machine_type, disk_size, preemptible, gce_image,
-             network):
+             network, use_with_notebook):
     """Issue request to create an Instance."""
     request = self.messages.ComputeInstancesInsertRequest(
         project=properties.VALUES.core.project.Get(required=True),
         zone=zone,
         instance=self.BuildInstanceSpec(
             name, zone, machine_type, disk_size, preemptible, network,
-            gce_image))
+            use_with_notebook, gce_image))
     operation = self.client.instances.Insert(request)
     return self._GetComputeZoneOperationRef(operation)
 

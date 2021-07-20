@@ -236,71 +236,72 @@ class ComposerProjectsLocationsEnvironmentsPatchRequest(_messages.Message):
       `updateMask` would contain the path
       "config.softwareConfig.pypiPackages", and the patch environment would be
       the following: { "config":{ "softwareConfig":{ "pypiPackages":{
-      "botocore":"==1.7.14" } } } } *Note:* Only the following fields can be
-      updated: * config.softwareConfig.pypiPackages * Replace all custom
+      "botocore":"==1.7.14" } } } } **Note:** Only the following fields can be
+      updated: * `config.softwareConfig.pypiPackages` * Replace all custom
       custom PyPI packages. If a replacement package map is not included in
       `environment`, all custom PyPI packages are cleared. It is an error to
       provide both this mask and a mask specifying an individual package. *
-      config.softwareConfig.pypiPackages.packagename * Update the custom PyPI
-      package packagename, preserving other packages. To delete the package,
-      include it in `updateMask`, and omit the mapping for it in
+      `config.softwareConfig.pypiPackages.`packagename * Update the custom
+      PyPI package *packagename*, preserving other packages. To delete the
+      package, include it in `updateMask`, and omit the mapping for it in
       `environment.config.softwareConfig.pypiPackages`. It is an error to
       provide both a mask of this form and the
-      "config.softwareConfig.pypiPackages" mask. * labels * Replace all
+      `config.softwareConfig.pypiPackages` mask. * `labels` * Replace all
       environment labels. If a replacement labels map is not included in
       `environment`, all labels are cleared. It is an error to provide both
       this mask and a mask specifying one or more individual labels. *
-      labels.labelName * Set the label named labelName, while preserving other
-      labels. To delete the label, include it in `updateMask` and omit its
-      mapping in `environment.labels`. It is an error to provide both a mask
-      of this form and the "labels" mask. * config.nodeCount * Horizontally
-      scale the number of nodes in the environment. An integer greater than or
-      equal to 3 must be provided in the `config.nodeCount` field. Supported
-      for Cloud Composer environments in versions
-      composer-1.*.*-airflow-*.*.*. * config.webServerNetworkAccessControl *
-      Replace the environment's current WebServerNetworkAccessControl.
+      `labels.`labelName * Set the label named *labelName*, while preserving
+      other labels. To delete the label, include it in `updateMask` and omit
+      its mapping in `environment.labels`. It is an error to provide both a
+      mask of this form and the `labels` mask. * `config.nodeCount` *
+      Horizontally scale the number of nodes in the environment. An integer
+      greater than or equal to 3 must be provided in the `config.nodeCount`
+      field. Supported for Cloud Composer environments in versions
+      composer-1.*.*-airflow-*.*.*. * `config.webServerNetworkAccessControl` *
+      Replace the environment's current `WebServerNetworkAccessControl`.
       Supported for Cloud Composer environments in versions
       composer-1.*.*-airflow-*.*.*. *
-      config.softwareConfig.airflowConfigOverrides * Replace all Apache
+      `config.softwareConfig.airflowConfigOverrides` * Replace all Apache
       Airflow config overrides. If a replacement config overrides map is not
       included in `environment`, all config overrides are cleared. It is an
       error to provide both this mask and a mask specifying one or more
       individual config overrides. *
-      config.softwareConfig.airflowConfigOverrides.section- name * Override
-      the Apache Airflow config property name in the section named section,
-      preserving other properties. To delete the property override, include it
-      in `updateMask` and omit its mapping in
+      `config.softwareConfig.airflowConfigOverrides.`section-name * Override
+      the Apache Airflow config property *name* in the section named
+      *section*, preserving other properties. To delete the property override,
+      include it in `updateMask` and omit its mapping in
       `environment.config.softwareConfig.airflowConfigOverrides`. It is an
       error to provide both a mask of this form and the
-      "config.softwareConfig.airflowConfigOverrides" mask. *
-      config.softwareConfig.envVariables * Replace all environment variables.
-      If a replacement environment variable map is not included in
+      `config.softwareConfig.airflowConfigOverrides` mask. *
+      `config.softwareConfig.envVariables` * Replace all environment
+      variables. If a replacement environment variable map is not included in
       `environment`, all custom environment variables are cleared. It is an
       error to provide both this mask and a mask specifying one or more
-      individual environment variables. * config.softwareConfig.imageVersion *
-      Upgrade the version of the environment in-place. Refer to
+      individual environment variables. * `config.softwareConfig.imageVersion`
+      * Upgrade the version of the environment in-place. Refer to
       `SoftwareConfig.image_version` for information on how to format the new
       image version. Additionally, the new image version cannot effect a
       version downgrade and must match the current image version's Composer
-      major version and Airflow major and minor versions. Consult the Cloud
-      Composer Version List for valid values. *
-      config.softwareConfig.schedulerCount * Horizontally scale the number of
-      schedulers in Airflow. A positive integer not greater than the number of
-      nodes must be provided in the `config.softwareConfig.schedulerCount`
-      field. * config.databaseConfig.machineType * Cloud SQL machine type used
-      by Airflow database. It has to be one of: db-n1-standard-2,
+      major version and Airflow major and minor versions. Consult the [Cloud
+      Composer Version List](https://cloud.google.com/composer/docs/concepts/v
+      ersioning/composer-versions) for valid values. *
+      `config.softwareConfig.schedulerCount` * Horizontally scale the number
+      of schedulers in Airflow. A positive integer not greater than the number
+      of nodes must be provided in the `config.softwareConfig.schedulerCount`
+      field. * `config.databaseConfig.machineType` * Cloud SQL machine type
+      used by Airflow database. It has to be one of: db-n1-standard-2,
       db-n1-standard-4, db-n1-standard-8 or db-n1-standard-16. Supported for
       Cloud Composer environments in versions composer-1.*.*-airflow-*.*.*. *
-      config.webServerConfig.machineType * Machine type on which Airflow web
+      `config.webServerConfig.machineType` * Machine type on which Airflow web
       server is running. It has to be one of: composer-n1-webserver-2,
       composer-n1-webserver-4 or composer-n1-webserver-8. Supported for Cloud
       Composer environments in versions composer-1.*.*-airflow-*.*.*. *
-      config.maintenanceWindow * Maintenance window during which Cloud
-      Composer components may be under maintenance. * config.workloadsConfig *
-      The workloads configuration settings for the GKE cluster associated with
-      the Cloud Composer environment. Supported for Cloud Composer
+      `config.maintenanceWindow` * Maintenance window during which Cloud
+      Composer components may be under maintenance. * `config.workloadsConfig`
+      * The workloads configuration settings for the GKE cluster associated
+      with the Cloud Composer environment. Supported for Cloud Composer
       environments in versions composer-2.*.*-airflow-*.*.* and newer. *
-      config.environmentSize * The size of the Cloud Composer environment.
+      `config.environmentSize` * The size of the Cloud Composer environment.
       Supported for Cloud Composer environments in versions
       composer-2.*.*-airflow-*.*.* and newer.
   """
@@ -444,7 +445,8 @@ class Empty(_messages.Message):
 
 class EncryptionConfig(_messages.Message):
   r"""The encryption options for the Cloud Composer environment and its
-  dependencies.
+  dependencies. Supported for Cloud Composer environments in versions
+  composer-1.*.*-airflow-*.*.*.
 
   Fields:
     kmsKeyName: Optional. Customer-managed Encryption Key available through
@@ -570,7 +572,9 @@ class EnvironmentConfig(_messages.Message):
       supported for Cloud Composer environments in versions
       composer-1.*.*-airflow-*.*.*.
     encryptionConfig: Optional. The encryption options for the Cloud Composer
-      environment and its dependencies. Cannot be updated.
+      environment and its dependencies. Cannot be updated. This field is
+      supported for Cloud Composer environments in versions
+      composer-1.*.*-airflow-*.*.*.
     environmentSize: Optional. The size of the Cloud Composer environment.
       This field is supported for Cloud Composer environments in versions
       composer-2.*.*-airflow-*.*.* and newer.
@@ -785,6 +789,13 @@ class NodeConfig(_messages.Message):
       is 20GB. If unspecified, defaults to 100GB. Cannot be updated. This
       field is supported for Cloud Composer environments in versions
       composer-1.*.*-airflow-*.*.*.
+    enableIpMasqAgent: Optional. Deploys 'ip-masq-agent' daemon set in the GKE
+      cluster and defines nonMasqueradeCIDRs equals to pod IP range so IP
+      masquerading is used for all destination addresses, except between pods
+      traffic. Users may configure the nonMasqueradeCIDRs IP ranges by
+      changing the ConfigMap manually. See:
+      https://cloud.google.com/kubernetes-engine/docs/how-to/ip-masquerade-
+      agent
     ipAllocationPolicy: Optional. The IPAllocationPolicy fields for the GKE
       cluster.
     location: Optional. The Compute Engine [zone](/compute/docs/regions-zones)
@@ -862,15 +873,16 @@ class NodeConfig(_messages.Message):
   """
 
   diskSizeGb = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  ipAllocationPolicy = _messages.MessageField('IPAllocationPolicy', 2)
-  location = _messages.StringField(3)
-  machineType = _messages.StringField(4)
-  maxPodsPerNode = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  network = _messages.StringField(6)
-  oauthScopes = _messages.StringField(7, repeated=True)
-  serviceAccount = _messages.StringField(8)
-  subnetwork = _messages.StringField(9)
-  tags = _messages.StringField(10, repeated=True)
+  enableIpMasqAgent = _messages.BooleanField(2)
+  ipAllocationPolicy = _messages.MessageField('IPAllocationPolicy', 3)
+  location = _messages.StringField(4)
+  machineType = _messages.StringField(5)
+  maxPodsPerNode = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  network = _messages.StringField(7)
+  oauthScopes = _messages.StringField(8, repeated=True)
+  serviceAccount = _messages.StringField(9)
+  subnetwork = _messages.StringField(10)
+  tags = _messages.StringField(11, repeated=True)
 
 
 class Operation(_messages.Message):

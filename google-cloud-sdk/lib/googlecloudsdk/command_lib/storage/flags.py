@@ -43,7 +43,11 @@ def add_object_metadata_flags(parser):
       help='Information on how content should be displayed.')
   parser.add_argument(
       '--content-encoding', help='How content is encoded (e.g. "gzip").')
-  parser.add_argument('--content-md5', help='MD5 digest to use for validation.')
+  parser.add_argument(
+      '--content-md5',
+      help=('Manually set a MD5 hash digest for the contents of an upload'
+            ' file. Cannot be used when uploading multiple files. The custom'
+            ' digest will forwarded to the cloud provider for validation.'))
   parser.add_argument(
       '--content-language', help='Content\'s language (e.g. "en" = "English).')
   parser.add_argument(
@@ -51,13 +55,15 @@ def add_object_metadata_flags(parser):
       help='Type of data contained in content (e.g. "text/html").')
   parser.add_argument(
       '--custom-headers',
+      metavar='CUSTOM_HEADERS',
       type=arg_parsers.ArgDict(),
       help='Custom HTTP headers for AWS that will be prepended with "x-aws-".')
   parser.add_argument(
       '--custom-metadata',
+      metavar='CUSTOM_METADATA',
       type=arg_parsers.ArgDict(),
       help='Custom metadata fields set by user.')
   parser.add_argument(
       '--custom-time',
       type=arg_parsers.Datetime.Parse,
-      help='Custom time user can set for GCS objects in RFC 3339 format.')
+      help='Custom time for Google Cloud Storage objects in RFC 3339 format.')

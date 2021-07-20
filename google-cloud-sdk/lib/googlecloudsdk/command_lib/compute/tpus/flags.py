@@ -175,7 +175,9 @@ def AddDeepLearningImagesFlag(parser):
       default=False,
       help="""\
       Use Deep Learning VM Images (see docs - https://cloud.google.com/deep-learning-vm/) instead
-        of TPU-specific machine images. Defaults to TPU-specific images.
+      of TPU-specific machine images. Defaults to TPU-specific images. This
+      value is set to true automatically if the --use-with-notebook flag is
+      set to true.
       """)
 
 
@@ -235,6 +237,20 @@ def AddMachineTypeArgs(parser):
       list of available machine types, run 'gcloud compute
       machine-types list'. If unspecified, the default type is n1-standard-1.
       """)
+
+
+def AddUseWithNotebook(parser):
+  return parser.add_argument(
+      '--use-with-notebook',
+      action='store_true',
+      required=False,
+      default=False,
+      help="""\
+      Allow Compute Engine VM to be recognized by Cloud AI Notebooks. This
+      automatically sets the content of the flag --use-dl-images flag to be
+      true.
+      """
+      )
 
 
 def AddNetworkArgs(parser, help_text_override=None):

@@ -332,7 +332,7 @@
     },
     "BundlesConfig": {
       "id": "BundlesConfig",
-      "description": "Configuration for the bundles that can be enabled on the KrmApiHost. Bundles not ready for public consumption must have a visibility label. e.g: YakimaConfig yakima_config = 2 [(google.api.field_visibility).restriction = \"GOOGLE_INTERNAL, YAKIMA_TRUSTED_TESTER, GCLOUD_TESTER\"];",
+      "description": "Configuration for the bundles that can be enabled on the KrmApiHost. Bundles not ready for public consumption must have a visibility label. e.g.: YakimaConfig yakima_config = 2 [(google.api.field_visibility).restriction = \"GOOGLE_INTERNAL, YAKIMA_TRUSTED_TESTER, GCLOUD_TESTER\"];",
       "type": "object",
       "properties": {
         "anthosSseConfig": {
@@ -409,6 +409,26 @@
         "masterIpv4CidrBlock": {
           "description": "The \/28 network that the masters will use.",
           "type": "string"
+        },
+        "manBlock": {
+          "description": "Master Authorized Network. Allows access to the k8s master from this block.",
+          "type": "string"
+        },
+        "clusterCidrBlock": {
+          "description": "The IP address range for the cluster pod IPs. Set to blank to have a range chosen with the default size. Set to \/netmask (e.g. \/14) to have a range chosen with a specific netmask. Set to a CIDR notation (e.g. 10.96.0.0\/14) from the RFC-1918 private networks (e.g. 10.0.0.0\/8, 172.16.0.0\/12, 192.168.0.0\/16) to pick a specific range to use.",
+          "type": "string"
+        },
+        "servicesCidrBlock": {
+          "description": "The IP address range for the cluster service IPs. Set to blank to have a range chosen with the default size. Set to \/netmask (e.g. \/14) to have a range chosen with a specific netmask. Set to a CIDR notation (e.g. 10.96.0.0\/14) from the RFC-1918 private networks (e.g. 10.0.0.0\/8, 172.16.0.0\/12, 192.168.0.0\/16) to pick a specific range to use.",
+          "type": "string"
+        },
+        "clusterNamedRange": {
+          "description": "The name of the existing secondary range in the cluster's subnetwork to use for pod IP addresses. Alternatively, cluster_cidr_block can be used to automatically create a GKE-managed one.",
+          "type": "string"
+        },
+        "servicesNamedRange": {
+          "description": "The name of the existing secondary range in the cluster's subnetwork to use for service ClusterIPs. Alternatively, services_cidr_block can be used to automatically create a GKE-managed one.",
+          "type": "string"
         }
       }
     },
@@ -423,6 +443,26 @@
         },
         "masterIpv4CidrBlock": {
           "description": "The \/28 network that the masters will use.",
+          "type": "string"
+        },
+        "manBlock": {
+          "description": "Master Authorized Network. Allows access to the k8s master from this block.",
+          "type": "string"
+        },
+        "clusterCidrBlock": {
+          "description": "The IP address range for the cluster pod IPs. Set to blank to have a range chosen with the default size. Set to \/netmask (e.g. \/14) to have a range chosen with a specific netmask. Set to a CIDR notation (e.g. 10.96.0.0\/14) from the RFC-1918 private networks (e.g. 10.0.0.0\/8, 172.16.0.0\/12, 192.168.0.0\/16) to pick a specific range to use.",
+          "type": "string"
+        },
+        "servicesCidrBlock": {
+          "description": "The IP address range for the cluster service IPs. Set to blank to have a range chosen with the default size. Set to \/netmask (e.g. \/14) to have a range chosen with a specific netmask. Set to a CIDR notation (e.g. 10.96.0.0\/14) from the RFC-1918 private networks (e.g. 10.0.0.0\/8, 172.16.0.0\/12, 192.168.0.0\/16) to pick a specific range to use.",
+          "type": "string"
+        },
+        "clusterNamedRange": {
+          "description": "The name of the existing secondary range in the cluster's subnetwork to use for pod IP addresses. Alternatively, cluster_cidr_block can be used to automatically create a GKE-managed one.",
+          "type": "string"
+        },
+        "servicesNamedRange": {
+          "description": "The name of the existing secondary range in the cluster's subnetwork to use for service ClusterIPs. Alternatively, services_cidr_block can be used to automatically create a GKE-managed one.",
           "type": "string"
         }
       }

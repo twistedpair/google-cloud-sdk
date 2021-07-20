@@ -61,6 +61,7 @@ VALID_ALGORITHMS_MAP = {
     PURPOSE_ENUM.ASYMMETRIC_SIGN: [
         'ec-sign-p256-sha256',
         'ec-sign-p384-sha384',
+        'ec-sign-secp256k1-sha256',
         'rsa-sign-pss-2048-sha256',
         'rsa-sign-pss-3072-sha256',
         'rsa-sign-pss-4096-sha256',

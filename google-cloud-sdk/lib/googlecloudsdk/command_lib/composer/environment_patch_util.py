@@ -78,7 +78,8 @@ def Patch(env_resource,
         env_resource.RelativeName(), six.text_type(e)))
 
 
-def ConstructPatch(env_ref=None,
+def ConstructPatch(is_composer_v1,
+                   env_ref=None,
                    node_count=None,
                    update_pypi_packages_from_file=None,
                    clear_pypi_packages=None,
@@ -117,6 +118,8 @@ def ConstructPatch(env_ref=None,
   """Constructs an environment patch.
 
   Args:
+    is_composer_v1: boolean representing if patch request is for Composer
+      1.*.* Environment.
     env_ref: resource argument, Environment resource argument for environment
       being updated.
     node_count: int, the desired node count
@@ -234,10 +237,11 @@ def ConstructPatch(env_ref=None,
   if web_server_machine_type:
     return _ConstructWebServerMachineTypePatch(
         web_server_machine_type, release_track=release_track)
-  if (scheduler_cpu or worker_cpu or web_server_cpu or scheduler_memory_gb or
-      worker_memory_gb or web_server_memory_gb or scheduler_storage_gb or
-      worker_storage_gb or web_server_storage_gb or min_workers or
-      max_workers or scheduler_count):
+  if not is_composer_v1 and (scheduler_cpu or worker_cpu or web_server_cpu or
+                             scheduler_memory_gb or worker_memory_gb or
+                             web_server_memory_gb or scheduler_storage_gb or
+                             worker_storage_gb or web_server_storage_gb or
+                             min_workers or max_workers or scheduler_count):
     return _ConstructAutoscalingPatch(
         scheduler_cpu=scheduler_cpu,
         worker_cpu=worker_cpu,
@@ -258,6 +262,9 @@ def ConstructPatch(env_ref=None,
         maintenance_window_end,
         maintenance_window_recurrence,
         release_track=release_track)
+  if is_composer_v1 and scheduler_count:
+    return _ConstructSoftwareConfigurationSchedulerCountPatch(
+        scheduler_count=scheduler_count, release_track=release_track)
   raise command_util.Error(
       'Cannot update Environment with no update type specified.')
 
@@ -650,3 +657,23 @@ def _ConstructMaintenanceWindowPatch(maintenance_window_start,
   config = messages.EnvironmentConfig(maintenanceWindow=window_value)
 
   return 'config.maintenance_window', messages.Environment(config=config)
+
+
+def _ConstructSoftwareConfigurationSchedulerCountPatch(
+    scheduler_count, release_track=base.ReleaseTrack.GA):
+  """Constructs a patch for updating scheduler count for Composer 1.*.*.
+
+  Args:
+    scheduler_count: number of schedulers.
+    release_track: base.ReleaseTrack, the release track of command. Will dictate
+      which Composer client library will be used.
+
+  Returns:
+    (str, Environment), the field mask and environment to use for update.
+  """
+  messages = api_util.GetMessagesModule(release_track=release_track)
+
+  return 'config.software_config.scheduler_count', messages.Environment(
+      config=messages.EnvironmentConfig(
+          softwareConfig=messages.SoftwareConfig(
+              schedulerCount=scheduler_count)))

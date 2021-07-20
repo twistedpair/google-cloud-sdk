@@ -57,6 +57,13 @@ class NetworkFirewallPolicy(object):
                 replaceExistingAssociation=replace_existing_association,
                 project=self.ref.project))
 
+  def _MakeCloneRulesRequestTuple(self, source_firewall_policy):
+    return (self._client.networkFirewallPolicies, 'CloneRules',
+            self._messages.ComputeNetworkFirewallPoliciesCloneRulesRequest(
+                firewallPolicy=self.ref.Name(),
+                sourceFirewallPolicy=source_firewall_policy,
+                project=self.ref.project))
+
   def _MakeCreateRequestTuple(self, firewall_policy):
     return (self._client.networkFirewallPolicies, 'Insert',
             self._messages.ComputeNetworkFirewallPoliciesInsertRequest(
@@ -91,6 +98,18 @@ class NetworkFirewallPolicy(object):
                 firewallPolicy=self.ref.Name(),
                 firewallPolicyResource=firewall_policy,
                 project=self.ref.project))
+
+  def CloneRules(self,
+                 source_firewall_policy=None,
+                 only_generate_request=False):
+    """Sends request to clone all the rules from another firewall policy."""
+    requests = [
+        self._MakeCloneRulesRequestTuple(
+            source_firewall_policy=source_firewall_policy)
+    ]
+    if not only_generate_request:
+      return self._compute_client.MakeRequests(requests)
+    return requests
 
   def Create(self, firewall_policy=None, only_generate_request=False):
     """Sends request to create a network firewall policy."""

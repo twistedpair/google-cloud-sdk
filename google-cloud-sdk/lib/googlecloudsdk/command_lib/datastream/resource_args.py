@@ -276,12 +276,28 @@ def AddStreamResourceArg(parser, verb, required=True):
       help="""\
           Path to a YAML (or JSON) file containing the configuration for Oracle Source Config.
 
-          The JSON file is formatted as follows:
+          The JSON file is formatted as follows, with snake_case field naming:
 
           ```
             {
               "allowlist": {},
-              "rejectlist": {"oracle_schemas":[{"schema_name":"SAMPLE"}]}
+              "rejectlist": {
+                "oracle_schemas": [
+                  {
+                    "schema_name": "SAMPLE",
+                    "oracle_tables": [
+                      {
+                        "table_name": "SAMPLE_TABLE",
+                        "oracle_columns": [
+                          {
+                            "column_name": "COL",
+                          }
+                        ]
+                      }
+                    ]
+                  }
+                ]
+              }
             }
           ```
        """
@@ -291,12 +307,28 @@ def AddStreamResourceArg(parser, verb, required=True):
       help="""\
           Path to a YAML (or JSON) file containing the configuration for Mysql Source Config.
 
-          The JSON file is formatted as follows:
+          The JSON file is formatted as follows, with snake_case field naming:
 
           ```
             {
               "allowlist": {},
-              "rejectlist": {"mysql_databases":[{"database_name":"sample"}]}
+              "rejectlist":  {
+                "mysql_databases": [
+                    {
+                      "database_name":"sample_database",
+                      "mysql_tables": [
+                        {
+                          "table_name": "sample_table",
+                          "mysql_columns": [
+                            {
+                              "column_name": "sample_column",
+                            }
+                           ]
+                        }
+                      ]
+                    }
+                  ]
+                }
             }
           ```
        """

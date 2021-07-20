@@ -422,6 +422,10 @@ class Database(_messages.Message):
   Fields:
     createTime: Output only. If exists, the time at which the database
       creation started.
+    defaultLeader: Output only. The read-write region which contains the
+      database's leader replicas. This is the same as the value of
+      default_leader database option set using DatabaseAdmin.CreateDatabase or
+      DatabaseAdmin.UpdateDatabaseDdl. If not explicitly set, this is empty.
     earliestVersionTime: Output only. Earliest timestamp at which older
       versions of the data can be read. This value is continuously updated by
       Cloud Spanner and becomes stale the moment it is queried. If you are
@@ -473,13 +477,14 @@ class Database(_messages.Message):
     READY_OPTIMIZING = 3
 
   createTime = _messages.StringField(1)
-  earliestVersionTime = _messages.StringField(2)
-  encryptionConfig = _messages.MessageField('EncryptionConfig', 3)
-  encryptionInfo = _messages.MessageField('EncryptionInfo', 4, repeated=True)
-  name = _messages.StringField(5)
-  restoreInfo = _messages.MessageField('RestoreInfo', 6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
-  versionRetentionPeriod = _messages.StringField(8)
+  defaultLeader = _messages.StringField(2)
+  earliestVersionTime = _messages.StringField(3)
+  encryptionConfig = _messages.MessageField('EncryptionConfig', 4)
+  encryptionInfo = _messages.MessageField('EncryptionInfo', 5, repeated=True)
+  name = _messages.StringField(6)
+  restoreInfo = _messages.MessageField('RestoreInfo', 7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  versionRetentionPeriod = _messages.StringField(9)
 
 
 class Delete(_messages.Message):
@@ -1162,6 +1167,8 @@ class InstanceConfig(_messages.Message):
 
   Fields:
     displayName: The name of this instance configuration as it appears in UIs.
+    leaderOptions: Allowed values of the "default_leader" schema option for
+      databases in instances that use this instance configuration.
     name: A unique identifier for the instance configuration. Values are of
       the form `projects//instanceConfigs/a-z*`
     replicas: The geographic placement of nodes in this instance configuration
@@ -1169,8 +1176,9 @@ class InstanceConfig(_messages.Message):
   """
 
   displayName = _messages.StringField(1)
-  name = _messages.StringField(2)
-  replicas = _messages.MessageField('ReplicaInfo', 3, repeated=True)
+  leaderOptions = _messages.StringField(2, repeated=True)
+  name = _messages.StringField(3)
+  replicas = _messages.MessageField('ReplicaInfo', 4, repeated=True)
 
 
 class KeyRange(_messages.Message):
@@ -2488,6 +2496,7 @@ class RequestOptions(_messages.Message):
       CommitRequest). Legal characters for `request_tag` values are all
       printable characters (ASCII 32 - 126) and the length of a request_tag is
       limited to 50 characters. Values that exceed this limit are truncated.
+      Any leading underscore (_) characters will be removed from the string.
     transactionTag: A tag used for statistics collection about this
       transaction. Both request_tag and transaction_tag can be specified for a
       read or query that belongs to a transaction. The value of
@@ -2496,7 +2505,8 @@ class RequestOptions(_messages.Message):
       transaction_tag will be ignored. Legal characters for `transaction_tag`
       values are all printable characters (ASCII 32 - 126) and the length of a
       transaction_tag is limited to 50 characters. Values that exceed this
-      limit are truncated.
+      limit are truncated. Any leading underscore (_) characters will be
+      removed from the string.
   """
 
   class PriorityValueValuesEnum(_messages.Enum):

@@ -2581,6 +2581,22 @@
             "DELETING",
             "UPDATING"
           ]
+        },
+        "releaseChannel": {
+          "description": "Release channel influences the timing and frequency of new updates to the Apigee runtimes instances of the organization. It can be either STABLE, REGULAR, or RAPID. It can be selected during creation of the Organization and it can also be updated later on. Each channel has its own combination of release frequency and stability expectations. The RAPID channel will get updates early and more often. The REGULAR channel will get updates after being validated in the RAPID channel for some time. The STABLE channel will get updates after being validated in the REGULAR channel for some time.",
+          "type": "string",
+          "enumDescriptions": [
+            "Release channel not specified.",
+            "Stable release channel.",
+            "Regular release channel.",
+            "Rapid release channel."
+          ],
+          "enum": [
+            "RELEASE_CHANNEL_UNSPECIFIED",
+            "STABLE",
+            "REGULAR",
+            "RAPID"
+          ]
         }
       }
     },
@@ -6107,6 +6123,40 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Lists the names of all API proxies in an organization. The names returned correspond to the names defined in the configuration files for each API proxy."
+            },
+            "patch": {
+              "id": "apigee.organizations.apis.patch",
+              "path": "v1/{+name}",
+              "flatPath": "v1/organizations/{organizationsId}/apis/{apisId}",
+              "httpMethod": "PATCH",
+              "parameters": {
+                "name": {
+                  "description": "Required. API proxy to update in the following format: `organizations\/{org}\/apis\/{api}`",
+                  "pattern": "^organizations\/[^\/]+\/apis\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "updateMask": {
+                  "description": "Required. The list of fields to update.",
+                  "location": "query",
+                  "type": "string",
+                  "format": "google-fieldmask"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "GoogleCloudApigeeV1ApiProxy"
+              },
+              "response": {
+                "$ref": "GoogleCloudApigeeV1ApiProxy"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Updates an existing API proxy."
             },
             "get": {
               "id": "apigee.organizations.apis.get",

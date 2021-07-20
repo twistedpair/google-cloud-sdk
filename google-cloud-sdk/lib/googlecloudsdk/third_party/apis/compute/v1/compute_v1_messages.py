@@ -563,20 +563,13 @@ class AccessConfig(_messages.Message):
 
 
 class Address(_messages.Message):
-  r"""Use global external addresses for GFE-based external HTTP(S) load
-  balancers in Premium Tier.  Use global internal addresses for reserved
-  peering network range.  Use regional external addresses for the following
-  resources:  - External IP addresses for VM instances - Regional external
-  forwarding rules - Cloud NAT external IP addresses - GFE based LBs in
-  Standard Tier - Network LBs in Premium or Standard Tier - Cloud VPN gateways
-  (both Classic and HA)  Use regional internal IP addresses for subnet IP
-  ranges (primary and secondary). This includes:  - Internal IP addresses for
-  VM instances - Alias IP ranges of VM instances (/32 only) - Regional
-  internal forwarding rules - Internal TCP/UDP load balancer addresses -
-  Internal HTTP(S) load balancer addresses - Cloud DNS inbound forwarding IP
-  addresses  For more information, see  Reserving a static external IP
-  address.  (== resource_for {$api_version}.addresses ==) (== resource_for
-  {$api_version}.globalAddresses ==)
+  r"""Represents an IP Address resource.  Google Compute Engine has two IP
+  Address resources:  * [Global (external and internal)](https://cloud.google.
+  com/compute/docs/reference/rest/{$api_version}/globalAddresses) * [Regional
+  (external and internal)](https://cloud.google.com/compute/docs/reference/res
+  t/{$api_version}/addresses)  For more information, see  Reserving a static
+  external IP address.  (== resource_for {$api_version}.addresses ==) (==
+  resource_for {$api_version}.globalAddresses ==)
 
   Enums:
     AddressTypeValueValuesEnum: The type of address to reserve, either
@@ -586,24 +579,28 @@ class Address(_messages.Message):
       a global address.
     NetworkTierValueValuesEnum: This signifies the networking tier used for
       configuring this address and can only take the following values: PREMIUM
-      or STANDARD. Global forwarding rules can only be Premium Tier. Regional
-      forwarding rules can be either Premium or Standard Tier. Standard Tier
-      addresses applied to regional forwarding rules can be used with any
-      external load balancer. Regional forwarding rules in Premium Tier can
-      only be used with a network load balancer.  If this field is not
+      or STANDARD. Internal IP addresses are always Premium Tier; global
+      external IP addresses are always Premium Tier; regional external IP
+      addresses can be either Standard or Premium Tier.  If this field is not
       specified, it is assumed to be PREMIUM.
     PurposeValueValuesEnum: The purpose of this resource, which can be one of
-      the following values:   - `GCE_ENDPOINT` for addresses that are used by
-      VM instances, alias IP ranges, internal load balancers, and similar
-      resources.  - `DNS_RESOLVER` for a DNS resolver address in a subnetwork
-      - `VPC_PEERING` for addresses that are reserved for VPC peer networks.
-      - `NAT_AUTO` for addresses that are external IP addresses automatically
-      reserved for Cloud NAT.  - `IPSEC_INTERCONNECT` for addresses created
-      from a private IP range that are reserved for a VLAN attachment in an
-      IPsec-encrypted Cloud Interconnect configuration. These addresses are
-      regional resources. Not currently available publicly.  -
-      `SHARED_LOADBALANCER_VIP` for an internal IP address that is assigned to
-      multiple internal forwarding rules.
+      the following values:   - GCE_ENDPOINT for addresses that are used by VM
+      instances, alias IP ranges, load balancers, and similar resources.  -
+      DNS_RESOLVER for a DNS resolver address in a subnetwork for a Cloud DNS
+      inbound forwarder IP addresses (regional internal IP address in a subnet
+      of a VPC network)  - VPC_PEERING for global internal IP addresses used
+      for  private services access allocated ranges.  - NAT_AUTO for the
+      regional external IP addresses used by Cloud NAT when allocating
+      addresses using <a href="https://cloud.google.com/nat/docs/ports-and-
+      addresses#addresses" automatic NAT IP address allocation.  -
+      IPSEC_INTERCONNECT for addresses created from a private IP range that
+      are reserved for a VLAN attachment in an IPsec-encrypted Cloud
+      Interconnect configuration. These addresses are regional resources. Not
+      currently available publicly.  - `SHARED_LOADBALANCER_VIP` for an
+      internal IP address that is assigned to multiple internal forwarding
+      rules.  - `PRIVATE_SERVICE_CONNECT` for a private network address that
+      is used to configure Private Service Connect. Only global internal
+      addresses can use this purpose.
     StatusValueValuesEnum: [Output Only] The status of the address, which can
       be one of RESERVING, RESERVED, or IN_USE. An address that is RESERVING
       is currently in the process of being reserved. A RESERVED address is
@@ -627,33 +624,37 @@ class Address(_messages.Message):
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
-      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?`. The first character
-      must be a lowercase letter, and all following characters (except for the
-      last character) must be a dash, lowercase letter, or digit. The last
+      regular expression [a-z]([-a-z0-9]*[a-z0-9])?. The first character must
+      be a lowercase letter, and all following characters (except for the last
+      character) must be a dash, lowercase letter, or digit. The last
       character must be a lowercase letter or digit.
     network: The URL of the network in which to reserve the address. This
       field can only be used with INTERNAL type with the VPC_PEERING purpose.
     networkTier: This signifies the networking tier used for configuring this
       address and can only take the following values: PREMIUM or STANDARD.
-      Global forwarding rules can only be Premium Tier. Regional forwarding
-      rules can be either Premium or Standard Tier. Standard Tier addresses
-      applied to regional forwarding rules can be used with any external load
-      balancer. Regional forwarding rules in Premium Tier can only be used
-      with a network load balancer.  If this field is not specified, it is
+      Internal IP addresses are always Premium Tier; global external IP
+      addresses are always Premium Tier; regional external IP addresses can be
+      either Standard or Premium Tier.  If this field is not specified, it is
       assumed to be PREMIUM.
     prefixLength: The prefix length if the resource represents an IP range.
     purpose: The purpose of this resource, which can be one of the following
-      values:   - `GCE_ENDPOINT` for addresses that are used by VM instances,
-      alias IP ranges, internal load balancers, and similar resources.  -
-      `DNS_RESOLVER` for a DNS resolver address in a subnetwork  -
-      `VPC_PEERING` for addresses that are reserved for VPC peer networks.  -
-      `NAT_AUTO` for addresses that are external IP addresses automatically
-      reserved for Cloud NAT.  - `IPSEC_INTERCONNECT` for addresses created
-      from a private IP range that are reserved for a VLAN attachment in an
-      IPsec-encrypted Cloud Interconnect configuration. These addresses are
-      regional resources. Not currently available publicly.  -
-      `SHARED_LOADBALANCER_VIP` for an internal IP address that is assigned to
-      multiple internal forwarding rules.
+      values:   - GCE_ENDPOINT for addresses that are used by VM instances,
+      alias IP ranges, load balancers, and similar resources.  - DNS_RESOLVER
+      for a DNS resolver address in a subnetwork for a Cloud DNS  inbound
+      forwarder IP addresses (regional internal IP address in a subnet of a
+      VPC network)  - VPC_PEERING for global internal IP addresses used for
+      private services access allocated ranges.  - NAT_AUTO for the regional
+      external IP addresses used by Cloud NAT when allocating addresses using
+      <a href="https://cloud.google.com/nat/docs/ports-and-
+      addresses#addresses" automatic NAT IP address allocation.  -
+      IPSEC_INTERCONNECT for addresses created from a private IP range that
+      are reserved for a VLAN attachment in an IPsec-encrypted Cloud
+      Interconnect configuration. These addresses are regional resources. Not
+      currently available publicly.  - `SHARED_LOADBALANCER_VIP` for an
+      internal IP address that is assigned to multiple internal forwarding
+      rules.  - `PRIVATE_SERVICE_CONNECT` for a private network address that
+      is used to configure Private Service Connect. Only global internal
+      addresses can use this purpose.
     region: [Output Only] The URL of the region where a regional address
       resides. For regional addresses, you must specify the region as a path
       parameter in the HTTP request URL. This field is not applicable to
@@ -700,12 +701,10 @@ class Address(_messages.Message):
 
   class NetworkTierValueValuesEnum(_messages.Enum):
     r"""This signifies the networking tier used for configuring this address
-    and can only take the following values: PREMIUM or STANDARD. Global
-    forwarding rules can only be Premium Tier. Regional forwarding rules can
-    be either Premium or Standard Tier. Standard Tier addresses applied to
-    regional forwarding rules can be used with any external load balancer.
-    Regional forwarding rules in Premium Tier can only be used with a network
-    load balancer.  If this field is not specified, it is assumed to be
+    and can only take the following values: PREMIUM or STANDARD. Internal IP
+    addresses are always Premium Tier; global external IP addresses are always
+    Premium Tier; regional external IP addresses can be either Standard or
+    Premium Tier.  If this field is not specified, it is assumed to be
     PREMIUM.
 
     Values:
@@ -717,16 +716,22 @@ class Address(_messages.Message):
 
   class PurposeValueValuesEnum(_messages.Enum):
     r"""The purpose of this resource, which can be one of the following
-    values:   - `GCE_ENDPOINT` for addresses that are used by VM instances,
-    alias IP ranges, internal load balancers, and similar resources.  -
-    `DNS_RESOLVER` for a DNS resolver address in a subnetwork  - `VPC_PEERING`
-    for addresses that are reserved for VPC peer networks.  - `NAT_AUTO` for
-    addresses that are external IP addresses automatically reserved for Cloud
-    NAT.  - `IPSEC_INTERCONNECT` for addresses created from a private IP range
-    that are reserved for a VLAN attachment in an IPsec-encrypted Cloud
-    Interconnect configuration. These addresses are regional resources. Not
-    currently available publicly.  - `SHARED_LOADBALANCER_VIP` for an internal
-    IP address that is assigned to multiple internal forwarding rules.
+    values:   - GCE_ENDPOINT for addresses that are used by VM instances,
+    alias IP ranges, load balancers, and similar resources.  - DNS_RESOLVER
+    for a DNS resolver address in a subnetwork for a Cloud DNS  inbound
+    forwarder IP addresses (regional internal IP address in a subnet of a VPC
+    network)  - VPC_PEERING for global internal IP addresses used for  private
+    services access allocated ranges.  - NAT_AUTO for the regional external IP
+    addresses used by Cloud NAT when allocating addresses using <a
+    href="https://cloud.google.com/nat/docs/ports-and-addresses#addresses"
+    automatic NAT IP address allocation.  - IPSEC_INTERCONNECT for addresses
+    created from a private IP range that are reserved for a VLAN attachment in
+    an IPsec-encrypted Cloud Interconnect configuration. These addresses are
+    regional resources. Not currently available publicly.  -
+    `SHARED_LOADBALANCER_VIP` for an internal IP address that is assigned to
+    multiple internal forwarding rules.  - `PRIVATE_SERVICE_CONNECT` for a
+    private network address that is used to configure Private Service Connect.
+    Only global internal addresses can use this purpose.
 
     Values:
       DNS_RESOLVER: <no description>
@@ -22434,6 +22439,14 @@ class CustomerEncryptionKey(_messages.Message):
       service account is used.
     rawKey: Specifies a 256-bit customer-supplied encryption key, encoded in
       RFC 4648 base64 to either encrypt or decrypt this resource.
+    rsaEncryptedKey: Specifies an RFC 4648 base64 encoded, RSA-wrapped
+      2048-bit customer-supplied encryption key to either encrypt or decrypt
+      this resource.  The key must meet the following requirements before you
+      can provide it to Compute Engine:   - The key is wrapped using a RSA
+      public key certificate provided by Google.  - After being wrapped, the
+      key must be encoded in RFC 4648 base64 encoding.  Gets the RSA public
+      key certificate provided by Google at: https://cloud-
+      certs.storage.googleapis.com/google-cloud-csek-ingress.pem
     sha256: [Output only] The RFC 4648 base64 encoded SHA-256 hash of the
       customer-supplied encryption key that protects this resource.
   """
@@ -22441,7 +22454,8 @@ class CustomerEncryptionKey(_messages.Message):
   kmsKeyName = _messages.StringField(1)
   kmsKeyServiceAccount = _messages.StringField(2)
   rawKey = _messages.StringField(3)
-  sha256 = _messages.StringField(4)
+  rsaEncryptedKey = _messages.StringField(4)
+  sha256 = _messages.StringField(5)
 
 
 class CustomerEncryptionKeyProtectedDisk(_messages.Message):
@@ -24959,10 +24973,10 @@ class FirewallPolicyRuleMatcher(_messages.Message):
 
   Fields:
     destIpRanges: CIDR IP address range. Maximum number of destination CIDR IP
-      ranges allowed is 256.
+      ranges allowed is 5000.
     layer4Configs: Pairs of IP protocols and ports that the rule should match.
     srcIpRanges: CIDR IP address range. Maximum number of source CIDR IP
-      ranges allowed is 256.
+      ranges allowed is 5000.
   """
 
   destIpRanges = _messages.StringField(1, repeated=True)
@@ -26312,9 +26326,11 @@ class HealthCheck(_messages.Message):
   either regional or global health checks (`compute.v1.regionHealthChecks` or
   `compute.v1.HealthChecks`).  External HTTP(S), TCP proxy, and SSL proxy load
   balancers as well as managed instance group auto-healing must use global
-  health checks (`compute.v1.HealthChecks`).  Network load balancers must use
-  legacy HTTP health checks (httpHealthChecks).  For more information, see
-  Health checks overview.
+  health checks (`compute.v1.HealthChecks`).  Backend service-based network
+  load balancers must use regional health checks
+  (`compute.v1.regionHealthChecks`).  Target pool-based network load balancers
+  must use legacy HTTP health checks (`compute.v1.httpHealthChecks`).  For
+  more information, see Health checks overview.
 
   Enums:
     TypeValueValuesEnum: Specifies the type of the healthCheck, either TCP,
@@ -27382,9 +27398,12 @@ class HttpHeaderOption(_messages.Message):
 
 
 class HttpHealthCheck(_messages.Message):
-  r"""Represents a legacy HTTP Health Check resource.  Legacy health checks
-  are required by network load balancers. For more information, read Health
-  Check Concepts.
+  r"""Represents a legacy HTTP Health Check resource.  Legacy HTTP health
+  checks are now only required by target pool-based network load balancers.
+  For all other load balancers, including backend service-based network load
+  balancers, and for managed instance group auto-healing, you must use modern
+  (non-legacy) health checks.  For more information, see Health checks
+  overview.
 
   Fields:
     checkIntervalSec: How often (in seconds) to send a health check. The
@@ -27899,9 +27918,13 @@ class HttpRouteRuleMatch(_messages.Message):
 
 
 class HttpsHealthCheck(_messages.Message):
-  r"""Represents a legacy HTTPS Health Check resource.  Legacy health checks
-  are required by network load balancers. For more information, read Health
-  Check Concepts.
+  r"""Represents a legacy HTTPS Health Check resource.  Legacy HTTPS health
+  checks have been deprecated. If you are using a target pool-based network
+  load balancer, you must use a legacy HTTP (not HTTPS) health check. For all
+  other load balancers, including backend service-based network load
+  balancers, and for managed instance group auto-healing, you must use modern
+  (non-legacy) health checks.  For more information, see Health checks
+  overview.
 
   Fields:
     checkIntervalSec: How often (in seconds) to send a health check. The
@@ -29227,8 +29250,7 @@ class InstanceGroupManager(_messages.Message):
     currentActions: [Output Only] The list of instance actions and the number
       of instances in this managed instance group that are scheduled for each
       of those actions.
-    description: An optional description of this resource. Provide this
-      property when you create the resource.
+    description: An optional description of this resource.
     distributionPolicy: Policy specifying the intended distribution of managed
       instances across zones in a regional managed instance group.
     fingerprint: Fingerprint of this resource. This field may be used in
@@ -40179,10 +40201,12 @@ class PublicDelegatedPrefix(_messages.Message):
       ANNOUNCED: <no description>
       DELETING: <no description>
       INITIALIZING: <no description>
+      READY_TO_ANNOUNCE: <no description>
     """
     ANNOUNCED = 0
     DELETING = 1
     INITIALIZING = 2
+    READY_TO_ANNOUNCE = 3
 
   creationTimestamp = _messages.StringField(1)
   description = _messages.StringField(2)
@@ -52593,7 +52617,7 @@ class UsageExportLocation(_messages.Message):
       https://storage.googleapis.com/ in front of it, such as gs://example-
       bucket.
     reportNamePrefix: An optional prefix for the name of the usage report
-      object stored in bucketName. If not supplied, defaults to usage. The
+      object stored in bucketName. If not supplied, defaults to usage_gce. The
       report is stored as a CSV file named report_name_prefix_gce_YYYYMMDD.csv
       where YYYYMMDD is the day of the usage according to Pacific Time. If you
       supply a prefix, it should conform to Cloud Storage object naming

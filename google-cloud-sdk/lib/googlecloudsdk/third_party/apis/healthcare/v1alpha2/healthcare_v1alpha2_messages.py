@@ -581,7 +581,8 @@ class Consent(_messages.Message):
     r"""Required. Indicates the current state of this Consent.
 
     Values:
-      STATE_UNSPECIFIED: No state specified.
+      STATE_UNSPECIFIED: No state specified. Treated as ACTIVE only at the
+        time of resource creation.
       ACTIVE: The Consent is active and is considered when evaluating a user's
         consent on resources.
       ARCHIVED: When a Consent is updated, the current version is archived and
@@ -784,7 +785,8 @@ class CryptoHashConfig(_messages.Message):
   Fields:
     cryptoKey: An AES 128/192/256 bit key. Causes the hash to be computed
       based on this key. A default key is generated for each Deidentify
-      operation and is used when crypto_key is not specified.
+      operation and is used when neither `crypto_key` nor `kms_wrapped` is
+      specified. Must not be set if `kms_wrapped` is set.
   """
 
   cryptoKey = _messages.BytesField(1)
@@ -818,8 +820,8 @@ class DateShiftConfig(_messages.Message):
   Fields:
     cryptoKey: An AES 128/192/256 bit key. Causes the shift to be computed
       based on this key and the patient ID. A default key is generated for
-      each de-identification operation and is used when crypto_key is not
-      specified.
+      each de-identification operation and is used when neither `crypto_key`
+      nor `kms_wrapped` is specified. Must not be set if `kms_wrapped` is set.
   """
 
   cryptoKey = _messages.BytesField(1)
@@ -1393,15 +1395,19 @@ class ExportResourcesRequest(_messages.Message):
     bigqueryDestination: The BigQuery output destination. The Cloud Healthcare
       Service Agent requires two IAM roles on the BigQuery location:
       `roles/bigquery.dataEditor` and `roles/bigquery.jobUser`. The output is
-      one BigQuery table per resource type. Note that unlike in
-      FhirStore.StreamConfig.BigQueryDestination, BigQuery views will not be
-      created by ExportResources.
+      one BigQuery table per resource type. Unlike when setting
+      `BigQueryDestination` for `StreamConfig`, `ExportResources` does not
+      create BigQuery views.
     gcsDestination: The Cloud Storage output destination. The Healthcare
       Service Agent account requires the `roles/storage.objectAdmin` role on
       the Cloud Storage location. The exported outputs are organized by FHIR
-      resource types. The server creates one object per resource type. Each
-      object contains newline delimited JSON, and each line is a FHIR
-      resource.
+      resource types. The server creates one or more objects per resource type
+      depending on the volume of the resources exported. When there is only
+      one object per resource type, the object name is in the form of
+      `{operation_id}_{resource_type}`. When there are multiple objects for a
+      given resource type, the object names are in the form of
+      `{operation_id}_{resource_type}-{index}-of-{total}`. Each object
+      contains newline delimited JSON, and each line is a FHIR resource.
   """
 
   bigqueryDestination = _messages.MessageField('GoogleCloudHealthcareV1alpha2FhirBigQueryDestination', 1)

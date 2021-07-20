@@ -1545,7 +1545,7 @@ class NetworkConfig(_messages.Message):
     the connect mode defaults to DIRECT_PEERING.
 
     Values:
-      CONNECT_MODE_UNSPECIFIED: Not set.
+      CONNECT_MODE_UNSPECIFIED: ConnectMode not set.
       DIRECT_PEERING: Connect via direct peering to the Filestore service.
       PRIVATE_SERVICE_ACCESS: Connect to your Filestore instance using Private
         Service Access. Private services access provides an IP address range

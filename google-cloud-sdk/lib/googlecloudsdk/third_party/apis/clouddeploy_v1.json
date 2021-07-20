@@ -361,7 +361,7 @@
           "type": "boolean"
         },
         "missingTargets": {
-          "description": "The list of Target names that are missing. For example, projects\/{project_id}\/locations\/{location_name}\/deliveryPipelines\/{pipeline_name}\/targets\/{target_name}.",
+          "description": "The list of Target names that are missing. For example, projects\/{project_id}\/locations\/{location_name}\/targets\/{target_name}.",
           "type": "array",
           "items": {
             "type": "string"
@@ -669,10 +669,6 @@
       "description": "Description of an a image to use during Skaffold rendering.",
       "type": "object",
       "properties": {
-        "imageName": {
-          "description": "Image name in Skaffold configuration.",
-          "type": "string"
-        },
         "image": {
           "description": "Image name in Skaffold configuration.",
           "type": "string"
@@ -707,10 +703,6 @@
       "description": "The request object used by `PromoteRelease`.",
       "type": "object",
       "properties": {
-        "toTarget": {
-          "description": "Optional. The name of the `Target` to which we are promoting the Release.",
-          "type": "string"
-        },
         "destinationTarget": {
           "description": "Optional. The name of the `Target` to which we are promoting the Release.",
           "type": "string"
@@ -944,11 +936,6 @@
         },
         "failureReason": {
           "description": "Output only. Reason the build failed. Empty if the build succeeded.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "deployBuild": {
-          "description": "Output only. The resource name of the Cloud Build `Build` object that is used to deploy the Rollout. Format is `projects\/{project}\/locations\/{location}\/builds\/{build}`.",
           "readOnly": true,
           "type": "string"
         },
@@ -1825,7 +1812,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The `DeliveryPipeline` which owns this collection of `Target` objects.",
+                          "description": "Required. The parent, which owns this collection of targets. Format must be projects\/{project_id}\/locations\/{location_name}.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deliveryPipelines\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -1871,7 +1858,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "name": {
-                          "description": "Required. Name of the `Target`. Format must be projects\/{project_id}\/locations\/{location_name}\/deliveryPipelines\/{pipeline_name}\/targets\/{target_name}.",
+                          "description": "Required. Name of the `Target`. Format must be projects\/{project_id}\/locations\/{location_name}\/targets\/{target_name}.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deliveryPipelines\/[^\/]+\/targets\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -1896,7 +1883,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The parent collection in which the `Target` should be created. Format should be projects\/{project_id}\/locations\/{location_name}\/deliveryPipelines\/{pipeline_name}.",
+                          "description": "Required. The parent collection in which the `Target` should be created. Format should be projects\/{project_id}\/locations\/{location_name}.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deliveryPipelines\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -1988,7 +1975,7 @@
                       "httpMethod": "DELETE",
                       "parameters": {
                         "name": {
-                          "description": "Required. The name of the `Target` to delete. Format should be projects\/{project_id}\/locations\/{location_name}\/deliveryPipelines\/{pipeline_name}\/targets\/{target_name}.",
+                          "description": "Required. The name of the `Target` to delete. Format should be projects\/{project_id}\/locations\/{location_name}\/targets\/{target_name}.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deliveryPipelines\/[^\/]+\/targets\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -2025,34 +2012,6 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Deletes a single Target."
-                    },
-                    "testIamPermissions": {
-                      "id": "clouddeploy.projects.locations.deliveryPipelines.targets.testIamPermissions",
-                      "path": "v1/{+resource}:testIamPermissions",
-                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/deliveryPipelines/{deliveryPipelinesId}/targets/{targetsId}:testIamPermissions",
-                      "httpMethod": "POST",
-                      "parameters": {
-                        "resource": {
-                          "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deliveryPipelines\/[^\/]+\/targets\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "resource"
-                      ],
-                      "request": {
-                        "$ref": "TestIamPermissionsRequest"
-                      },
-                      "response": {
-                        "$ref": "TestIamPermissionsResponse"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
                     }
                   }
                 },
@@ -2199,34 +2158,6 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Promotes a Release in the Delivery Pipeline."
-                    },
-                    "testIamPermissions": {
-                      "id": "clouddeploy.projects.locations.deliveryPipelines.releases.testIamPermissions",
-                      "path": "v1/{+resource}:testIamPermissions",
-                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/deliveryPipelines/{deliveryPipelinesId}/releases/{releasesId}:testIamPermissions",
-                      "httpMethod": "POST",
-                      "parameters": {
-                        "resource": {
-                          "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deliveryPipelines\/[^\/]+\/releases\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "resource"
-                      ],
-                      "request": {
-                        "$ref": "TestIamPermissionsRequest"
-                      },
-                      "response": {
-                        "$ref": "TestIamPermissionsResponse"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
                     }
                   }
                   ,
@@ -2374,34 +2305,6 @@
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
                           "description": "Creates a new Rollout in a given project and location."
-                        },
-                        "testIamPermissions": {
-                          "id": "clouddeploy.projects.locations.deliveryPipelines.releases.rollouts.testIamPermissions",
-                          "path": "v1/{+resource}:testIamPermissions",
-                          "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/deliveryPipelines/{deliveryPipelinesId}/releases/{releasesId}/rollouts/{rolloutsId}:testIamPermissions",
-                          "httpMethod": "POST",
-                          "parameters": {
-                            "resource": {
-                              "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
-                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/deliveryPipelines\/[^\/]+\/releases\/[^\/]+\/rollouts\/[^\/]+$",
-                              "location": "path",
-                              "required": true,
-                              "type": "string"
-                            }
-                          },
-                          "parameterOrder": [
-                            "resource"
-                          ],
-                          "request": {
-                            "$ref": "TestIamPermissionsRequest"
-                          },
-                          "response": {
-                            "$ref": "TestIamPermissionsResponse"
-                          },
-                          "scopes": [
-                            "https://www.googleapis.com/auth/cloud-platform"
-                          ],
-                          "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
                         }
                       }
                     }
@@ -2418,7 +2321,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The `DeliveryPipeline` which owns this collection of `Target` objects.",
+                      "description": "Required. The parent, which owns this collection of targets. Format must be projects\/{project_id}\/locations\/{location_name}.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -2464,7 +2367,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. Name of the `Target`. Format must be projects\/{project_id}\/locations\/{location_name}\/deliveryPipelines\/{pipeline_name}\/targets\/{target_name}.",
+                      "description": "Required. Name of the `Target`. Format must be projects\/{project_id}\/locations\/{location_name}\/targets\/{target_name}.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/targets\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -2489,7 +2392,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The parent collection in which the `Target` should be created. Format should be projects\/{project_id}\/locations\/{location_name}\/deliveryPipelines\/{pipeline_name}.",
+                      "description": "Required. The parent collection in which the `Target` should be created. Format should be projects\/{project_id}\/locations\/{location_name}.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -2581,7 +2484,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "Required. The name of the `Target` to delete. Format should be projects\/{project_id}\/locations\/{location_name}\/deliveryPipelines\/{pipeline_name}\/targets\/{target_name}.",
+                      "description": "Required. The name of the `Target` to delete. Format should be projects\/{project_id}\/locations\/{location_name}\/targets\/{target_name}.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/targets\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -2618,6 +2521,93 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Deletes a single shared Target."
+                },
+                "setIamPolicy": {
+                  "id": "clouddeploy.projects.locations.targets.setIamPolicy",
+                  "path": "v1/{+resource}:setIamPolicy",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/targets/{targetsId}:setIamPolicy",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/targets\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "request": {
+                    "$ref": "SetIamPolicyRequest"
+                  },
+                  "response": {
+                    "$ref": "Policy"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors."
+                },
+                "getIamPolicy": {
+                  "id": "clouddeploy.projects.locations.targets.getIamPolicy",
+                  "path": "v1/{+resource}:getIamPolicy",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/targets/{targetsId}:getIamPolicy",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/targets\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "options.requestedPolicyVersion": {
+                      "description": "Optional. The policy format version to be returned. Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected. Requests for policies with any conditional bindings must specify version 3. Policies without any conditional bindings may specify any valid value or leave the field unset. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "response": {
+                    "$ref": "Policy"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set."
+                },
+                "testIamPermissions": {
+                  "id": "clouddeploy.projects.locations.targets.testIamPermissions",
+                  "path": "v1/{+resource}:testIamPermissions",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/targets/{targetsId}:testIamPermissions",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/targets\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "request": {
+                    "$ref": "TestIamPermissionsRequest"
+                  },
+                  "response": {
+                    "$ref": "TestIamPermissionsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
                 }
               }
             }

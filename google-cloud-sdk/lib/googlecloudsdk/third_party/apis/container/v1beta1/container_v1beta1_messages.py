@@ -375,8 +375,8 @@ class Cluster(_messages.Message):
       pods that can be run simultaneously on a node in the node pool of this
       cluster. Only honored if cluster created with IP Alias support.
     description: An optional description of this cluster.
-    enableGvnic: Enable or disable gvnic on this cluster. This field is not
-      yet used.
+    enableGvnic: To be deprecated TODO(b/192680711), replaced with
+      NodeConfig.Gvnic = 29
     enableKubernetesAlpha: Kubernetes alpha features are enabled on this
       cluster. This includes alpha API groups (e.g. v1beta1) and features that
       may not be production ready in the kubernetes version of the master and
@@ -766,8 +766,8 @@ class ClusterUpdate(_messages.Message):
     desiredDefaultSnatStatus: The desired status of whether to disable default
       sNAT for this cluster.
     desiredDnsConfig: DNSConfig contains clusterDNS config for this cluster.
-    desiredEnableGvnic: Enable or disable gvnic on this cluster. This field is
-      not yet used.
+    desiredEnableGvnic: To be deprecated TODO(b/192680711), replaced with
+      UpdateNodePoolRequest.Gvnic = 29
     desiredGcfsConfig: The desired GCFS config for the cluster
     desiredGkeOidcConfig: Security message for security related configuration
     desiredIdentityServiceConfig: The desired Identity Service component
@@ -2772,6 +2772,7 @@ class NodeConfig(_messages.Message):
     ephemeralStorageConfig: Parameters for the ephemeral storage filesystem.
       If unspecified, ephemeral storage is backed by the boot disk.
     gcfsConfig: GCFS (Google Container File System) configs.
+    gvnic: Enable or disable gvnic on the node pool.
     imageType: The image type to use for this node. Note that for a given
       image type, the latest version of it will be used.
     kubeletConfig: Node kubelet configs.
@@ -2932,25 +2933,26 @@ class NodeConfig(_messages.Message):
   diskType = _messages.StringField(5)
   ephemeralStorageConfig = _messages.MessageField('EphemeralStorageConfig', 6)
   gcfsConfig = _messages.MessageField('GcfsConfig', 7)
-  imageType = _messages.StringField(8)
-  kubeletConfig = _messages.MessageField('NodeKubeletConfig', 9)
-  labels = _messages.MessageField('LabelsValue', 10)
-  linuxNodeConfig = _messages.MessageField('LinuxNodeConfig', 11)
-  localSsdCount = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  machineType = _messages.StringField(13)
-  metadata = _messages.MessageField('MetadataValue', 14)
-  minCpuPlatform = _messages.StringField(15)
-  nodeGroup = _messages.StringField(16)
-  nodeImageConfig = _messages.MessageField('CustomImageConfig', 17)
-  oauthScopes = _messages.StringField(18, repeated=True)
-  preemptible = _messages.BooleanField(19)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 20)
-  sandboxConfig = _messages.MessageField('SandboxConfig', 21)
-  serviceAccount = _messages.StringField(22)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 23)
-  tags = _messages.StringField(24, repeated=True)
-  taints = _messages.MessageField('NodeTaint', 25, repeated=True)
-  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 26)
+  gvnic = _messages.MessageField('VirtualNIC', 8)
+  imageType = _messages.StringField(9)
+  kubeletConfig = _messages.MessageField('NodeKubeletConfig', 10)
+  labels = _messages.MessageField('LabelsValue', 11)
+  linuxNodeConfig = _messages.MessageField('LinuxNodeConfig', 12)
+  localSsdCount = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  machineType = _messages.StringField(14)
+  metadata = _messages.MessageField('MetadataValue', 15)
+  minCpuPlatform = _messages.StringField(16)
+  nodeGroup = _messages.StringField(17)
+  nodeImageConfig = _messages.MessageField('CustomImageConfig', 18)
+  oauthScopes = _messages.StringField(19, repeated=True)
+  preemptible = _messages.BooleanField(20)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 21)
+  sandboxConfig = _messages.MessageField('SandboxConfig', 22)
+  serviceAccount = _messages.StringField(23)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 24)
+  tags = _messages.StringField(25, repeated=True)
+  taints = _messages.MessageField('NodeTaint', 26, repeated=True)
+  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 27)
 
 
 class NodeConfigDefaults(_messages.Message):
@@ -3231,7 +3233,7 @@ class NodePoolAutoscaling(_messages.Message):
     autoprovisioned: Can this node pool be deleted automatically.
     enabled: Is autoscaling enabled for this node pool.
     maxNodeCount: Maximum number of nodes in the NodePool. Must be >=
-      min_node_count. There has to enough quota to scale up the cluster.
+      min_node_count. There has to be enough quota to scale up the cluster.
     minNodeCount: Minimum number of nodes in the NodePool. Must be >= 1 and <=
       max_node_count.
   """
@@ -4670,6 +4672,7 @@ class UpdateNodePoolRequest(_messages.Message):
     clusterId: Required. Deprecated. The name of the cluster to upgrade. This
       field has been deprecated and replaced by the name field.
     gcfsConfig: GCFS config.
+    gvnic: Enable or disable gvnic on the node pool.
     image: The desired name of the image name to use for this node. This is
       used to create clusters using a custom image.
     imageProject: The project containing the desired image to use for this
@@ -4723,23 +4726,24 @@ class UpdateNodePoolRequest(_messages.Message):
 
   clusterId = _messages.StringField(1)
   gcfsConfig = _messages.MessageField('GcfsConfig', 2)
-  image = _messages.StringField(3)
-  imageProject = _messages.StringField(4)
-  imageType = _messages.StringField(5)
-  kubeletConfig = _messages.MessageField('NodeKubeletConfig', 6)
-  labels = _messages.MessageField('NodeLabels', 7)
-  linuxNodeConfig = _messages.MessageField('LinuxNodeConfig', 8)
-  locations = _messages.StringField(9, repeated=True)
-  name = _messages.StringField(10)
-  nodeNetworkConfig = _messages.MessageField('NodeNetworkConfig', 11)
-  nodePoolId = _messages.StringField(12)
-  nodeVersion = _messages.StringField(13)
-  projectId = _messages.StringField(14)
-  tags = _messages.MessageField('NetworkTags', 15)
-  taints = _messages.MessageField('NodeTaints', 16)
-  upgradeSettings = _messages.MessageField('UpgradeSettings', 17)
-  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 18)
-  zone = _messages.StringField(19)
+  gvnic = _messages.MessageField('VirtualNIC', 3)
+  image = _messages.StringField(4)
+  imageProject = _messages.StringField(5)
+  imageType = _messages.StringField(6)
+  kubeletConfig = _messages.MessageField('NodeKubeletConfig', 7)
+  labels = _messages.MessageField('NodeLabels', 8)
+  linuxNodeConfig = _messages.MessageField('LinuxNodeConfig', 9)
+  locations = _messages.StringField(10, repeated=True)
+  name = _messages.StringField(11)
+  nodeNetworkConfig = _messages.MessageField('NodeNetworkConfig', 12)
+  nodePoolId = _messages.StringField(13)
+  nodeVersion = _messages.StringField(14)
+  projectId = _messages.StringField(15)
+  tags = _messages.MessageField('NetworkTags', 16)
+  taints = _messages.MessageField('NodeTaints', 17)
+  upgradeSettings = _messages.MessageField('UpgradeSettings', 18)
+  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 19)
+  zone = _messages.StringField(20)
 
 
 class UpgradeAvailableEvent(_messages.Message):
@@ -4935,6 +4939,16 @@ class VerticalPodAutoscaling(_messages.Message):
 
   enableExperimentalFeatures = _messages.BooleanField(1)
   enabled = _messages.BooleanField(2)
+
+
+class VirtualNIC(_messages.Message):
+  r"""Configuration of gVNIC feature.
+
+  Fields:
+    enabled: Whether gVNIC features are enabled in the node pool.
+  """
+
+  enabled = _messages.BooleanField(1)
 
 
 class WindowsVersion(_messages.Message):

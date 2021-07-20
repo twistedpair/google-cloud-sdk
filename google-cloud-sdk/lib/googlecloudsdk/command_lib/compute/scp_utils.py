@@ -69,6 +69,7 @@ class BaseScpHelper(ssh_utils.BaseSSHCLIHelper):
   def RunScp(self,
              compute_holder,
              args,
+             on_prem=False,
              port=None,
              recursive=False,
              compress=False,
@@ -82,6 +83,7 @@ class BaseScpHelper(ssh_utils.BaseSSHCLIHelper):
     Args:
       compute_holder: The ComputeApiHolder.
       args: argparse.Namespace, the args the command was invoked with.
+      on_prem: bool, Whether to connect to an on-prem IP.
       port: str or None, Port number to use for SSH connection.
       recursive: bool, Whether to use recursive copying using -R flag.
       compress: bool, Whether to use compression.
@@ -97,6 +99,7 @@ class BaseScpHelper(ssh_utils.BaseSSHCLIHelper):
     """
     if release_track is None:
       release_track = base.ReleaseTrack.GA
+
     super(BaseScpHelper, self).Run(args)
 
     dst = ssh.FileReference.FromPath(args.destination)
@@ -110,47 +113,52 @@ class BaseScpHelper(ssh_utils.BaseSSHCLIHelper):
       for src in srcs:
         src.remote = remote
 
-    instance_ref = instance_flags.SSH_INSTANCE_RESOLVER.ResolveResources(
-        [remote.host],
-        compute_scope.ScopeEnum.ZONE,
-        args.zone,
-        compute_holder.resources,
-        scope_lister=instance_flags.GetInstanceZoneScopeLister(
-            compute_holder.client))[0]
-    instance = self.GetInstance(compute_holder.client, instance_ref)
-    project = self.GetProject(compute_holder.client, instance_ref.project)
     expiration, expiration_micros = ssh_utils.GetSSHKeyExpirationFromArgs(args)
-
-    if remote.user:
-      username_requested = True
-    else:
-      username_requested = False
-      remote.user = ssh.GetDefaultSshUsername(warn_on_account_user=True)
-    if args.plain:
-      use_oslogin = False
-    else:
-      public_key = self.keys.GetPublicKey().ToEntry(include_comment=True)
-      remote.user, use_oslogin = ssh.CheckForOsloginAndGetUser(
-          instance, project, remote.user, public_key, expiration_micros,
-          release_track, username_requested=username_requested)
-
     identity_file = None
     options = None
-    if not args.plain:
-      identity_file = self.keys.key_file
-      options = self.GetConfig(ssh_utils.HostKeyAlias(instance),
-                               args.strict_host_key_checking)
 
-    iap_tunnel_args = iap_tunnel.CreateSshTunnelArgs(
-        args, release_track, instance_ref,
-        ssh_utils.GetExternalInterface(instance, no_raise=True))
-
-    if iap_tunnel_args:
-      remote.host = ssh_utils.HostKeyAlias(instance)
-    elif ip_type is ip.IpTypeEnum.INTERNAL:
-      remote.host = ssh_utils.GetInternalIPAddress(instance)
+    if on_prem:
+      iap_tunnel_args = iap_tunnel.CreateOnPremSshTunnelArgs(
+          args, release_track, remote.host)
     else:
-      remote.host = ssh_utils.GetExternalIPAddress(instance)
+      instance_ref = instance_flags.SSH_INSTANCE_RESOLVER.ResolveResources(
+          [remote.host],
+          compute_scope.ScopeEnum.ZONE,
+          args.zone,
+          compute_holder.resources,
+          scope_lister=instance_flags.GetInstanceZoneScopeLister(
+              compute_holder.client))[0]
+      instance = self.GetInstance(compute_holder.client, instance_ref)
+      project = self.GetProject(compute_holder.client, instance_ref.project)
+
+      if remote.user:
+        username_requested = True
+      else:
+        username_requested = False
+        remote.user = ssh.GetDefaultSshUsername(warn_on_account_user=True)
+      if args.plain:
+        use_oslogin = False
+      else:
+        public_key = self.keys.GetPublicKey().ToEntry(include_comment=True)
+        remote.user, use_oslogin = ssh.CheckForOsloginAndGetUser(
+            instance, project, remote.user, public_key, expiration_micros,
+            release_track, username_requested=username_requested)
+
+      if not args.plain:
+        identity_file = self.keys.key_file
+        options = self.GetConfig(ssh_utils.HostKeyAlias(instance),
+                                 args.strict_host_key_checking)
+
+      iap_tunnel_args = iap_tunnel.CreateSshTunnelArgs(
+          args, release_track, instance_ref,
+          ssh_utils.GetExternalInterface(instance, no_raise=True))
+
+      if iap_tunnel_args:
+        remote.host = ssh_utils.HostKeyAlias(instance)
+      elif ip_type is ip.IpTypeEnum.INTERNAL:
+        remote.host = ssh_utils.GetInternalIPAddress(instance)
+      else:
+        remote.host = ssh_utils.GetExternalIPAddress(instance)
 
     cmd = ssh.SCPCommand(
         srcs, dst, identity_file=identity_file, options=options,

@@ -20,7 +20,7 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.compute import request_helper
 from googlecloudsdk.api_lib.compute import utils
-from googlecloudsdk.calliope import exceptions as calliope_exceptions
+from googlecloudsdk.command_lib.compute import exceptions
 from googlecloudsdk.core.console import console_io
 
 
@@ -98,4 +98,4 @@ class RegionResourceFetcher(object):
 
     final_message = ' '.join(prompts)
     if not console_io.PromptContinue(message=final_message):
-      raise calliope_exceptions.ToolException('Creation aborted by user.')
+      raise exceptions.AbortedError('Creation aborted by user.')

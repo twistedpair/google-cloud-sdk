@@ -20,7 +20,7 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.clouddeploy import client_util
 
-TARGET_UPDATE_MASK = 'description,annotations,labels,approval_required,gke_cluster'
+TARGET_UPDATE_MASK = '*'
 
 
 class TargetsClient(object):

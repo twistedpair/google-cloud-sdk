@@ -26,6 +26,7 @@ from googlecloudsdk.command_lib.storage import storage_url
 class Capability(enum.Enum):
   """Used to track API capabilities relevant to logic in tasks."""
   COMPOSE_OBJECTS = 'COMPOSE_OBJECTS'
+  CLIENT_SIDE_HASH_VALIDATION = 'CLIENT_SIDE_HASH_VALIDATION'
   RESUMABLE_UPLOAD = 'RESUMABLE_UPLOAD'
   SLICED_DOWNLOAD = 'SLICED_DOWNLOAD'
 

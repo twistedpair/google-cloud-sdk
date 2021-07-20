@@ -34,7 +34,6 @@ class AsymmetricDecryptRequest(_messages.Message):
       for reasons of compatibility across different languages. However, it is
       a non-negative integer, which will never exceed 2^32-1, and can be
       safely downconverted to uint32 in languages that support this type.
-      NOTE: This field is in Beta.
   """
 
   ciphertext = _messages.BytesField(1)
@@ -61,8 +60,7 @@ class AsymmetricDecryptResponse(_messages.Message):
       checksum. Note: This field is defined as int64 for reasons of
       compatibility across different languages. However, it is a non-negative
       integer, which will never exceed 2^32-1, and can be safely downconverted
-      to uint32 in languages that support this type. NOTE: This field is in
-      Beta.
+      to uint32 in languages that support this type.
     protectionLevel: The ProtectionLevel of the CryptoKeyVersion used in
       decryption.
     verifiedCiphertextCrc32c: Integrity verification field. A flag indicating
@@ -73,7 +71,6 @@ class AsymmetricDecryptResponse(_messages.Message):
       not delivered to KeyManagementService. If you've set
       AsymmetricDecryptRequest.ciphertext_crc32c but this field is still
       false, discard the response and perform a limited number of retries.
-      NOTE: This field is in Beta.
   """
 
   class ProtectionLevelValueValuesEnum(_messages.Enum):
@@ -115,7 +112,6 @@ class AsymmetricSignRequest(_messages.Message):
       for reasons of compatibility across different languages. However, it is
       a non-negative integer, which will never exceed 2^32-1, and can be
       safely downconverted to uint32 in languages that support this type.
-      NOTE: This field is in Beta.
   """
 
   digest = _messages.MessageField('Digest', 1)
@@ -132,7 +128,6 @@ class AsymmetricSignResponse(_messages.Message):
   Fields:
     name: The resource name of the CryptoKeyVersion used for signing. Check
       this field to verify that the intended resource was used for signing.
-      NOTE: This field is in Beta.
     protectionLevel: The ProtectionLevel of the CryptoKeyVersion used for
       signing.
     signature: The created signature.
@@ -146,8 +141,7 @@ class AsymmetricSignResponse(_messages.Message):
       checksum. Note: This field is defined as int64 for reasons of
       compatibility across different languages. However, it is a non-negative
       integer, which will never exceed 2^32-1, and can be safely downconverted
-      to uint32 in languages that support this type. NOTE: This field is in
-      Beta.
+      to uint32 in languages that support this type.
     verifiedDigestCrc32c: Integrity verification field. A flag indicating
       whether AsymmetricSignRequest.digest_crc32c was received by
       KeyManagementService and used for the integrity verification of the
@@ -155,8 +149,7 @@ class AsymmetricSignResponse(_messages.Message):
       AsymmetricSignRequest.digest_crc32c was left unset or that it was not
       delivered to KeyManagementService. If you've set
       AsymmetricSignRequest.digest_crc32c but this field is still false,
-      discard the response and perform a limited number of retries. NOTE: This
-      field is in Beta.
+      discard the response and perform a limited number of retries.
   """
 
   class ProtectionLevelValueValuesEnum(_messages.Enum):
@@ -1298,7 +1291,7 @@ class DecryptRequest(_messages.Message):
       as int64 for reasons of compatibility across different languages.
       However, it is a non-negative integer, which will never exceed 2^32-1,
       and can be safely downconverted to uint32 in languages that support this
-      type. NOTE: This field is in Beta.
+      type.
     ciphertext: Required. The encrypted data originally returned in
       EncryptResponse.ciphertext.
     ciphertextCrc32c: Optional. An optional CRC32C checksum of the
@@ -1312,8 +1305,7 @@ class DecryptRequest(_messages.Message):
       of the CRC32C checksum. Note: This field is defined as int64 for reasons
       of compatibility across different languages. However, it is a non-
       negative integer, which will never exceed 2^32-1, and can be safely
-      downconverted to uint32 in languages that support this type. NOTE: This
-      field is in Beta.
+      downconverted to uint32 in languages that support this type.
   """
 
   additionalAuthenticatedData = _messages.BytesField(1)
@@ -1344,7 +1336,6 @@ class DecryptResponse(_messages.Message):
       int64 for reasons of compatibility across different languages. However,
       it is a non-negative integer, which will never exceed 2^32-1, and can be
       safely downconverted to uint32 in languages that support this type.
-      NOTE: This field is in Beta.
     protectionLevel: The ProtectionLevel of the CryptoKeyVersion used in
       decryption.
     usedPrimary: Whether the Decryption was performed using the primary key
@@ -1413,7 +1404,7 @@ class EncryptRequest(_messages.Message):
       as int64 for reasons of compatibility across different languages.
       However, it is a non-negative integer, which will never exceed 2^32-1,
       and can be safely downconverted to uint32 in languages that support this
-      type. NOTE: This field is in Beta.
+      type.
     plaintext: Required. The data to encrypt. Must be no larger than 64KiB.
       The maximum size depends on the key version's protection_level. For
       SOFTWARE keys, the plaintext must be no larger than 64KiB. For HSM keys,
@@ -1430,8 +1421,7 @@ class EncryptRequest(_messages.Message):
       of the CRC32C checksum. Note: This field is defined as int64 for reasons
       of compatibility across different languages. However, it is a non-
       negative integer, which will never exceed 2^32-1, and can be safely
-      downconverted to uint32 in languages that support this type. NOTE: This
-      field is in Beta.
+      downconverted to uint32 in languages that support this type.
   """
 
   additionalAuthenticatedData = _messages.BytesField(1)
@@ -1459,7 +1449,7 @@ class EncryptResponse(_messages.Message):
       This field is defined as int64 for reasons of compatibility across
       different languages. However, it is a non-negative integer, which will
       never exceed 2^32-1, and can be safely downconverted to uint32 in
-      languages that support this type. NOTE: This field is in Beta.
+      languages that support this type.
     name: The resource name of the CryptoKeyVersion used in encryption. Check
       this field to verify that the intended resource was used for encryption.
     protectionLevel: The ProtectionLevel of the CryptoKeyVersion used in
@@ -1473,7 +1463,7 @@ class EncryptResponse(_messages.Message):
       that it was not delivered to KeyManagementService. If you've set
       EncryptRequest.additional_authenticated_data_crc32c but this field is
       still false, discard the response and perform a limited number of
-      retries. NOTE: This field is in Beta.
+      retries.
     verifiedPlaintextCrc32c: Integrity verification field. A flag indicating
       whether EncryptRequest.plaintext_crc32c was received by
       KeyManagementService and used for the integrity verification of the
@@ -1481,8 +1471,7 @@ class EncryptResponse(_messages.Message):
       EncryptRequest.plaintext_crc32c was left unset or that it was not
       delivered to KeyManagementService. If you've set
       EncryptRequest.plaintext_crc32c but this field is still false, discard
-      the response and perform a limited number of retries. NOTE: This field
-      is in Beta.
+      the response and perform a limited number of retries.
   """
 
   class ProtectionLevelValueValuesEnum(_messages.Enum):

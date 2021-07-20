@@ -509,7 +509,7 @@
           "type": "string"
         },
         "object": {
-          "description": "Google Cloud Storage object containing the source. This object must be a gzipped archive file (`.tar.gz`) containing source to build.",
+          "description": "Google Cloud Storage object containing the source. This object must be a zipped (`.zip`) or gzipped archive file (`.tar.gz`) containing source to build.",
           "type": "string"
         },
         "generation": {
@@ -971,8 +971,12 @@
           ]
         },
         "workerPool": {
-          "description": "Option to specify a `WorkerPool` for the build. Format: projects\/{project}\/locations\/{location}\/workerPools\/{workerPool} This field is in beta and is available only to restricted users.",
+          "description": "This field deprecated; please use `pool.name` instead.",
           "type": "string"
+        },
+        "pool": {
+          "description": "Optional. Specification for execution on a `WorkerPool`. See [running builds in a private pool](https:\/\/cloud.google.com\/build\/docs\/private-pools\/run-builds-in-private-pool) for more information.",
+          "$ref": "PoolOption"
         },
         "logging": {
           "description": "Option to specify the logging mode, which determines if and where build logs are stored.",
@@ -1014,6 +1018,17 @@
           "items": {
             "$ref": "Volume"
           }
+        }
+      }
+    },
+    "PoolOption": {
+      "id": "PoolOption",
+      "description": "Details about how a build should be executed on a `WorkerPool`. See [running builds in a private pool](https:\/\/cloud.google.com\/build\/docs\/private-pools\/run-builds-in-private-pool) for more information.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The `WorkerPool` resource to execute the build on. You must have `cloudbuild.workerpools.use` on the project hosting the WorkerPool. Format projects\/{project}\/locations\/{location}\/workerPools\/{workerPoolId}",
+          "type": "string"
         }
       }
     },
@@ -1115,6 +1130,69 @@
             "WARNING",
             "ALERT"
           ]
+        }
+      }
+    },
+    "CreateWorkerPoolOperationMetadata": {
+      "id": "CreateWorkerPoolOperationMetadata",
+      "description": "Metadata for the `CreateWorkerPool` operation.",
+      "type": "object",
+      "properties": {
+        "workerPool": {
+          "description": "The resource name of the `WorkerPool` to create. Format: `projects\/{project}\/locations\/{location}\/workerPools\/{worker_pool}`.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Time the operation was created.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "completeTime": {
+          "description": "Time the operation was completed.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "UpdateWorkerPoolOperationMetadata": {
+      "id": "UpdateWorkerPoolOperationMetadata",
+      "description": "Metadata for the `UpdateWorkerPool` operation.",
+      "type": "object",
+      "properties": {
+        "workerPool": {
+          "description": "The resource name of the `WorkerPool` being updated. Format: `projects\/{project}\/locations\/{location}\/workerPools\/{worker_pool}`.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Time the operation was created.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "completeTime": {
+          "description": "Time the operation was completed.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "DeleteWorkerPoolOperationMetadata": {
+      "id": "DeleteWorkerPoolOperationMetadata",
+      "description": "Metadata for the `DeleteWorkerPool` operation.",
+      "type": "object",
+      "properties": {
+        "workerPool": {
+          "description": "The resource name of the `WorkerPool` being deleted. Format: `projects\/{project}\/locations\/{location}\/workerPools\/{worker_pool}`.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Time the operation was created.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "completeTime": {
+          "description": "Time the operation was completed.",
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },

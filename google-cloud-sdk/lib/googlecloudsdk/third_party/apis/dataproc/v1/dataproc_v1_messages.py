@@ -791,8 +791,8 @@ class ClusterStatus(_messages.Message):
         use.
       ERROR: The cluster encountered an error. It is not ready for use.
       ERROR_DUE_TO_UPDATE: The cluster has encountered an error while being
-        updated. Jobs can still be submitted to the cluster, but it can no
-        longer be updated.
+        updated. Jobs can be submitted to the cluster, but the cluster cannot
+        be updated.
       DELETING: The cluster is being deleted. It cannot be used.
       UPDATING: The cluster is being updated. It continues to accept and
         process jobs.
@@ -4285,8 +4285,8 @@ class RuntimeInfo(_messages.Message):
   Fields:
     endpoints: Output only. Map of remote access endpoints (such as web
       interfaces and APIs) to their URIs.
-    outputUri: Output only. A URI pointing to the location of the stdout of
-      the workload's main process.
+    outputUri: Output only. A URI pointing to the location of the stdout and
+      stderr of the workload.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')

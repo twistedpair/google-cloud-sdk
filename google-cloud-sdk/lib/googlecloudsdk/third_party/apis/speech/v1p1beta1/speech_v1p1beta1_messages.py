@@ -29,9 +29,9 @@ class CreateCustomClassRequest(_messages.Message):
 
   Fields:
     customClass: Required. The custom class to create.
-    customClassId: The ID to use for the custom class, which will become the
-      final component of the custom class' resource name. This value should be
-      4-63 characters, and valid characters are /a-z-/.
+    customClassId: Required. The ID to use for the custom class, which will
+      become the final component of the custom class' resource name. This
+      value should be 4-63 characters, and valid characters are /a-z-/.
   """
 
   customClass = _messages.MessageField('CustomClass', 1)
@@ -43,9 +43,9 @@ class CreatePhraseSetRequest(_messages.Message):
 
   Fields:
     phraseSet: Required. The phrase set to create.
-    phraseSetId: The ID to use for the phrase set, which will become the final
-      component of the phrase set's resource name. This value should be 4-63
-      characters, and valid characters are /a-z-/.
+    phraseSetId: Required. The ID to use for the phrase set, which will become
+      the final component of the phrase set's resource name. This value should
+      be 4-63 characters, and valid characters are /a-z-/.
   """
 
   phraseSet = _messages.MessageField('PhraseSet', 1)

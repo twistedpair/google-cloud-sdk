@@ -378,7 +378,6 @@ def AddEntryPointFlag(parser):
   """Add flag for specifying entry point to the parser."""
   parser.add_argument(
       '--entry-point',
-      type=api_util.ValidateEntryPointNameOrRaise,
       help="""\
       Name of a Google Cloud Function (as defined in source code) that will
       be executed. Defaults to the resource name suffix, if not specified. For

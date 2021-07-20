@@ -19,7 +19,6 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import exceptions
-
 from googlecloudsdk.command_lib.compute.reservations import util as reservation_util
 
 

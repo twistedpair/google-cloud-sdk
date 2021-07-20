@@ -4141,7 +4141,7 @@ class HealthcareV1beta1(base_api.BaseApiClient):
           }
 
     def AnalyzeEntities(self, request, global_params=None):
-      r"""Analyze heathcare entity in a document. Its response includes the recognized entity mentions and the relationships between them. AnalyzeEntities uses context aware models to detect entities.
+      r"""Analyze heathcare entity in a document. Its response includes the recognized entity mentions and the relationships between them. AnalyzeEntities uses context aware models to detect entities. This method can only analyze documents written in English.
 
       Args:
         request: (HealthcareProjectsLocationsServicesNlpAnalyzeEntitiesRequest) input message

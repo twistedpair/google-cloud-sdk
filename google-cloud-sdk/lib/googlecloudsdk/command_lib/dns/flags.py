@@ -377,6 +377,114 @@ def GetResourceRecordSetsRrdatasArg(required=False):
       'on the type and class of the resource record.')
 
 
+def GetResourceRecordSetsRrdatasArgGroup():
+  """Returns arg group for rrdatas flags.
+
+  This group is defined with required=True and mutex=True, meaning that exactly
+  one of these two arg configurations must be specified:
+    --rrdatas
+    --routing_policy_type AND --routing_policy_data
+  """
+  # Declare optional routing policy group. If group specified, must contain
+  # both routing_policy_type and routing_policy_data args.
+  policy_group = base.ArgumentGroup(
+      required=False,
+      help='Routing policy arguments. If you specify one of --routing_policy_data or --routing_policy_type, you must specify both.'
+  )
+  policy_group.AddArgument(
+      GetResourceRecordSetsRoutingPolicyTypeArg(required=True))
+  policy_group.AddArgument(
+      GetResourceRecordSetsRoutingPolicyDataArg(required=True))
+
+  rrdatas_group = base.ArgumentGroup(
+      required=True,
+      mutex=True,
+      help='Resource record sets arguments. Can specify either --rrdatas or both --routing_policy_data and --routing_policy_type.'
+  )
+  rrdatas_group.AddArgument(GetResourceRecordSetsRrdatasArg(required=False))
+  rrdatas_group.AddArgument(policy_group)
+
+  return rrdatas_group
+
+
+def GetResourceRecordSetsRoutingPolicyTypeArg(required=False):
+  return base.Argument(
+      '--routing_policy_type',
+      metavar='ROUTING_POLICY_TYPE',
+      required=required,
+      choices=['GEO', 'WRR'],
+      help='Indicates what type of routing policy is being specified. As of '
+      'this time, this field can take on either "WRR" for weighted round '
+      'robin, or "GEO" for geo location. This field cannot be modified - once '
+      'a policy has chosen a type, the only way to change it is to delete the '
+      'policy and add a new one with the different type.')
+
+
+def GetResourceRecordSetsRoutingPolicyDataArg(required=False):
+  """Returns --routing_policy_data command line arg value."""
+
+  def RoutingPolicyDataArgType(routing_policy_data_value):
+    """Converts --routing_policy_data flag value to a list of policy data items.
+
+    Args:
+      routing_policy_data_value: String value specified in the
+        --routing_policy_data flag.
+
+    Returns:
+      A list of policy data items in the format below:
+
+    [
+        { 'key': <routing_policy_data_key1>, 'rrdatas': <IP address list> },
+        { 'key': <routing_policy_data_key2>, 'rrdatas': <IP address list> },
+        ...
+    ]
+
+    Where <routing_policy_data_key> is either a weight or location name,
+    depending on whether the user specified --routing_policy_type == WRR or
+    --routing_policy_type == GEO, respectively. We keep
+    <routing_policy_data_key> a string value, even in the case of weights
+    (which will eventually be interpereted as floats). This is to keep this
+    flag type generic between WRR and GEO types.
+    """
+    routing_policy_data = []
+
+    # Grab each policy data item, split by ';'
+    policy_items = routing_policy_data_value.split(';')
+    for policy_item in policy_items:
+      # Grab key and value from policy_item, split by ':'
+      key_value_split = policy_item.split('=')
+
+      # Ensure that there is only one key and value from the string split on ':'
+      if len(key_value_split) != 2:
+        raise arg_parsers.ArgumentTypeError(
+            'Must specify exactly one "=" inside each policy data item')
+      key = key_value_split[0]
+      value = key_value_split[1]
+
+      # Grab list of IPs from value, split by ','
+      ip_list = value.split(',')
+      routing_policy_data.append({'key': key, 'rrdatas': ip_list})
+
+    return routing_policy_data
+
+  return base.Argument(
+      '--routing_policy_data',
+      metavar='ROUTING_POLICY_DATA',
+      required=required,
+      type=RoutingPolicyDataArgType,
+      help='The routing policy data supports one of two formats below, '
+      'depending on the choice of routing_policy_type.\n\n'
+      'For --routing_policy_type = "WRR" this flag indicates the weighted '
+      'round robin policy data. The field accepts a semicolon-delimited list '
+      'of the format "${weight_percent}:${rrdata},${rrdata}". Specify weight '
+      'as a non-negative number (0 is allowed). Ratio of traffic '
+      'routed to the target is calculated from the ratio of individual weight '
+      'over the total across all weights.\n\n'
+      'For --routing_policy_type = "GEO" this flag indicates the geo-locations '
+      'policy data. The field accepts a semicolon-delimited list of the format '
+      '"${region}:${rrdata},${rrdata}".')
+
+
 # Response Policy Flags
 def GetResponsePolicyDescriptionArg(required=False):
   return base.Argument(

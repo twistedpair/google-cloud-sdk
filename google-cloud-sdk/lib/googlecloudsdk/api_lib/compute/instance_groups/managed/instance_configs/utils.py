@@ -133,3 +133,76 @@ def MakePreservedStateMetadataMapEntry(messages, key, value):
   """Make a map entry for metadata field in preservedState message."""
   return messages.PreservedState.MetadataValue.AdditionalProperty(
       key=key, value=value)
+
+
+def _MakePreservedStateIPAutoDelete(messages, auto_delete_str):
+  auto_delete_map = {
+      'never':
+          messages.PreservedStatePreservedNetworkIp
+          .AutoDeleteValueValuesEnum.NEVER,
+      'on-permanent-instance-deletion':
+          messages.PreservedStatePreservedNetworkIp
+          .AutoDeleteValueValuesEnum.ON_PERMANENT_INSTANCE_DELETION,
+  }
+  return auto_delete_map[auto_delete_str]
+
+
+def _MakePreservedStateIPAddress(messages,
+                                 ip_address_literal=None,
+                                 ip_address_url=None):
+  """Construct a preserved state IP message."""
+  if ip_address_literal is None and ip_address_url is None:
+    raise ValueError(
+        """
+        For a stateful network IP you must specify either the IP or the
+        address. But the per-instance configuration specifies none.
+        """)
+  elif ip_address_literal is not None and ip_address_url is not None:
+    raise ValueError(
+        """
+        For a stateful network IP you must specify either the IP or the
+        address. But the per-instance configuration specifies both.
+        """)
+  elif ip_address_literal is not None:
+    return messages.PreservedStatePreservedNetworkIpIpAddress(
+        literal=ip_address_literal)
+  else:
+    return messages.PreservedStatePreservedNetworkIpIpAddress(
+        address=ip_address_url)
+
+
+def _MakePreservedStateNetworkIP(messages,
+                                 auto_delete_str,
+                                 ip_address_literal,
+                                 ip_address_url):
+  return messages.PreservedStatePreservedNetworkIp(
+      autoDelete=_MakePreservedStateIPAutoDelete(messages, auto_delete_str),
+      ipAddress=_MakePreservedStateIPAddress(messages,
+                                             ip_address_literal,
+                                             ip_address_url))
+
+
+def MakePreservedStateInternalIPMapEntry(messages,
+                                         interface_name,
+                                         auto_delete_str='never',
+                                         ip_address_literal=None,
+                                         ip_address_url=None):
+  return messages.PreservedState.InternalIPsValue.AdditionalProperty(
+      key=interface_name,
+      value=_MakePreservedStateNetworkIP(messages,
+                                         auto_delete_str,
+                                         ip_address_literal,
+                                         ip_address_url))
+
+
+def MakePreservedStateExternalIPMapEntry(messages,
+                                         interface_name,
+                                         auto_delete_str='never',
+                                         ip_address_literal=None,
+                                         ip_address_url=None):
+  return messages.PreservedState.ExternalIPsValue.AdditionalProperty(
+      key=interface_name,
+      value=_MakePreservedStateNetworkIP(messages,
+                                         auto_delete_str,
+                                         ip_address_literal,
+                                         ip_address_url))

@@ -564,11 +564,13 @@
           "type": "string",
           "enumDescriptions": [
             "The type of the database dump is unknown.",
-            "Database dump is a MySQL dump file."
+            "Database dump is a MySQL dump file.",
+            "Database dump contains Avro files."
           ],
           "enum": [
             "TYPE_UNSPECIFIED",
-            "MYSQL"
+            "MYSQL",
+            "AVRO"
           ]
         }
       }
@@ -738,16 +740,22 @@
           "description": "A Cloud Storage object or folder URI that specifies the source from which to import metadata. It must begin with gs:\/\/.",
           "type": "string"
         },
+        "sourceDatabase": {
+          "description": "The name of the source database.",
+          "type": "string"
+        },
         "type": {
           "description": "Optional. The type of the database dump. If unspecified, defaults to MYSQL.",
           "type": "string",
           "enumDescriptions": [
             "The type of the database dump is unknown.",
-            "Database dump is a MySQL dump file."
+            "Database dump is a MySQL dump file.",
+            "Database dump contains Avro files."
           ],
           "enum": [
             "TYPE_UNSPECIFIED",
-            "MYSQL"
+            "MYSQL",
+            "AVRO"
           ]
         }
       }
@@ -770,11 +778,13 @@
           "type": "string",
           "enumDescriptions": [
             "The type of the database dump is unknown.",
-            "Database dump is a MySQL dump file."
+            "Database dump is a MySQL dump file.",
+            "Database dump contains Avro files."
           ],
           "enum": [
             "TYPE_UNSPECIFIED",
-            "MYSQL"
+            "MYSQL",
+            "AVRO"
           ]
         }
       }
@@ -863,14 +873,16 @@
             "The backup is being created.",
             "The backup is being deleted.",
             "The backup is active and ready to use.",
-            "The backup failed."
+            "The backup failed.",
+            "The backup is being restored."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
             "CREATING",
             "DELETING",
             "ACTIVE",
-            "FAILED"
+            "FAILED",
+            "RESTORING"
           ]
         },
         "serviceRevision": {
@@ -1913,6 +1925,65 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Deletes a single backup."
+                    },
+                    "setIamPolicy": {
+                      "id": "metastore.projects.locations.services.backups.setIamPolicy",
+                      "path": "v1/{+resource}:setIamPolicy",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/services/{servicesId}/backups/{backupsId}:setIamPolicy",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "resource": {
+                          "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/services\/[^\/]+\/backups\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "resource"
+                      ],
+                      "request": {
+                        "$ref": "SetIamPolicyRequest"
+                      },
+                      "response": {
+                        "$ref": "Policy"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Sets the access control policy on the specified resource. Replaces any existing policy.Can return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED errors."
+                    },
+                    "getIamPolicy": {
+                      "id": "metastore.projects.locations.services.backups.getIamPolicy",
+                      "path": "v1/{+resource}:getIamPolicy",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/services/{servicesId}/backups/{backupsId}:getIamPolicy",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "resource": {
+                          "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/services\/[^\/]+\/backups\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "options.requestedPolicyVersion": {
+                          "description": "Optional. The policy format version to be returned.Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected.Requests for policies with any conditional bindings must specify version 3. Policies without any conditional bindings may specify any valid value or leave the field unset.To learn which resources support conditions in their IAM policies, see the IAM documentation (https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        }
+                      },
+                      "parameterOrder": [
+                        "resource"
+                      ],
+                      "response": {
+                        "$ref": "Policy"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set."
                     }
                   }
                 }

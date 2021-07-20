@@ -167,6 +167,10 @@
           "items": {
             "type": "string"
           }
+        },
+        "includePublicTagTemplates": {
+          "description": "Optional. If `true`, include public tag templates in the search results. By default, they are included only if you have explicit permissions on them to view them. For example, if you are the owner. Other scope fields, for example, ``include_org_ids``, still restrict the returned public tag templates and at least one of them is required.",
+          "type": "boolean"
         }
       }
     },
@@ -361,6 +365,7 @@
             "An entry type for a set of files or objects. For example, a Cloud Storage fileset.",
             "A group of servers that work together. For example, a Kafka cluster.",
             "A database.",
+            "Output only. Connection to a data source. For example, a BigQuery connection.",
             "Output only. Routine, for example, a BigQuery routine.",
             "A service, for example, a Dataproc Metastore service."
           ],
@@ -372,6 +377,7 @@
             "FILESET",
             "CLUSTER",
             "DATABASE",
+            "DATA_SOURCE_CONNECTION",
             "ROUTINE",
             "SERVICE"
           ]
@@ -425,6 +431,10 @@
           "description": "Specification that applies to a table resource. Valid only for entries with the `TABLE` type.",
           "$ref": "GoogleCloudDatacatalogV1DatabaseTableSpec"
         },
+        "dataSourceConnectionSpec": {
+          "description": "Specification that applies to a data source connection. Valid only for entries with the `DATA_SOURCE_CONNECTION` type.",
+          "$ref": "GoogleCloudDatacatalogV1DataSourceConnectionSpec"
+        },
         "routineSpec": {
           "description": "Specification that applies to a user-defined function or procedure. Valid only for entries with the `ROUTINE` type.",
           "$ref": "GoogleCloudDatacatalogV1RoutineSpec"
@@ -449,6 +459,13 @@
           "description": "Output only. Resource usage statistics.",
           "readOnly": true,
           "$ref": "GoogleCloudDatacatalogV1UsageSignal"
+        },
+        "labels": {
+          "description": "Cloud labels attached to the entry. In Data Catalog, you can create and modify labels attached only to custom entries. Synced entries have unmodifiable labels that come from the source system.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         },
         "dataSource": {
           "description": "Output only. Physical location of the entry.",
@@ -645,6 +662,73 @@
             "TABLE_TYPE_UNSPECIFIED",
             "NATIVE",
             "EXTERNAL"
+          ]
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1DataSourceConnectionSpec": {
+      "id": "GoogleCloudDatacatalogV1DataSourceConnectionSpec",
+      "description": "Specification that applies to a data source connection. Valid only for entries with the `DATA_SOURCE_CONNECTION` type.",
+      "type": "object",
+      "properties": {
+        "bigqueryConnectionSpec": {
+          "description": "Fields specific to BigQuery connections.",
+          "$ref": "GoogleCloudDatacatalogV1BigQueryConnectionSpec"
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1BigQueryConnectionSpec": {
+      "id": "GoogleCloudDatacatalogV1BigQueryConnectionSpec",
+      "description": "Specification for the BigQuery connection.",
+      "type": "object",
+      "properties": {
+        "connectionType": {
+          "description": "The type of the BigQuery connection.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified type.",
+            "Cloud SQL connection."
+          ],
+          "enum": [
+            "CONNECTION_TYPE_UNSPECIFIED",
+            "CLOUD_SQL"
+          ]
+        },
+        "cloudSql": {
+          "description": "Specification for the BigQuery connection to a Cloud SQL instance.",
+          "$ref": "GoogleCloudDatacatalogV1CloudSqlBigQueryConnectionSpec"
+        },
+        "hasCredential": {
+          "description": "True if there are credentials attached to the BigQuery connection; false otherwise.",
+          "type": "boolean"
+        }
+      }
+    },
+    "GoogleCloudDatacatalogV1CloudSqlBigQueryConnectionSpec": {
+      "id": "GoogleCloudDatacatalogV1CloudSqlBigQueryConnectionSpec",
+      "description": "Specification for the BigQuery connection to a Cloud SQL instance.",
+      "type": "object",
+      "properties": {
+        "instanceId": {
+          "description": "Cloud SQL instance ID in the format of `project:location:instance`.",
+          "type": "string"
+        },
+        "database": {
+          "description": "Database name.",
+          "type": "string"
+        },
+        "type": {
+          "description": "Type of the Cloud SQL database.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified database type.",
+            "Cloud SQL for PostgreSQL.",
+            "Cloud SQL for MySQL."
+          ],
+          "enum": [
+            "DATABASE_TYPE_UNSPECIFIED",
+            "POSTGRES",
+            "MYSQL"
           ]
         }
       }
@@ -973,6 +1057,10 @@
           "description": "Display name for this template. Defaults to an empty string. The name must contain only Unicode letters, numbers (0-9), underscores (_), dashes (-), spaces ( ), and can't start or end with spaces. The maximum length is 200 characters.",
           "type": "string"
         },
+        "isPubliclyReadable": {
+          "description": "Indicates whether this is a public tag template. Every user has view access to a *public* tag template by default. This means that: * Every user can use this tag template to tag an entry. * If an entry is tagged using the tag template, the tag is always shown in the response to ``ListTags`` called on the entry. * To get the template using the GetTagTemplate method, you need view access either on the project or the organization the tag template resides in but no other permission is needed. * Operations on the tag template other than viewing (for example, editing IAM policies) follow standard IAM structures. Tags created with a public tag template are referred to as public tags. You can search for a public tag by value with a simple search query instead of using a ``tag:`` predicate. Public tag templates may not appear in search results depending on scope, see: include_public_tag_templates",
+          "type": "boolean"
+        },
         "fields": {
           "description": "Required. Map of tag template field IDs to the settings for the field. This map is an exhaustive list of the allowed fields. The map must contain at least one field and at most 500 fields. The keys to this map are tag template field IDs. The IDs have the following limitations: * Can contain uppercase and lowercase letters, numbers (0-9) and underscores (_). * Must be at least 1 character and at most 64 characters long. * Must start with a letter or underscore.",
           "type": "object",
@@ -1027,14 +1115,16 @@
             "A double precision number.",
             "An UTF-8 string.",
             "A boolean value.",
-            "A timestamp."
+            "A timestamp.",
+            "A Richtext description."
           ],
           "enum": [
             "PRIMITIVE_TYPE_UNSPECIFIED",
             "DOUBLE",
             "STRING",
             "BOOL",
-            "TIMESTAMP"
+            "TIMESTAMP",
+            "RICHTEXT"
           ]
         },
         "enumType": {
@@ -1150,6 +1240,10 @@
         "enumValue": {
           "description": "The value of a tag field with an enum type. This value must be one of the allowed values listed in this enum.",
           "$ref": "GoogleCloudDatacatalogV1TagFieldEnumValue"
+        },
+        "richtextValue": {
+          "description": "The value of a tag field with a rich text type. The maximum length is 10 MiB as this value holds HTML descriptions including encoded images. The maximum length of the text without images is 100 KiB.",
+          "type": "string"
         },
         "order": {
           "description": "Output only. The order of this field with respect to other fields in this tag. Can be set by Tag. For example, a higher value can indicate a more important field. The value can be negative. Multiple fields can have the same order, and field orders within a tag don't have to be sequential.",

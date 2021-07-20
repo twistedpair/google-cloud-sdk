@@ -55,9 +55,36 @@ def CreateRecordSetFromArgs(args, api_version='v1'):
   record_set.name = util.AppendTrailingDot(args.name)
   record_set.ttl = args.ttl
   record_set.type = args.type
-  record_set.rrdatas = args.rrdatas
-  if rd_type is rdatatype.TXT or rd_type is rdatatype.SPF:
-    record_set.rrdatas = [
-        import_util.QuotedText(datum) for datum in args.rrdatas
-    ]
+
+  if args.rrdatas:
+    record_set.rrdatas = args.rrdatas
+    if rd_type is rdatatype.TXT or rd_type is rdatatype.SPF:
+      record_set.rrdatas = [
+          import_util.QuotedText(datum) for datum in args.rrdatas
+      ]
+
+  elif args.routing_policy_type == 'WRR':
+    record_set.routingPolicy = messages.RRSetRoutingPolicy(
+        wrr=messages.RRSetRoutingPolicyWrrPolicy(items=[]))
+    for policy_item in args.routing_policy_data:
+      if rd_type is rdatatype.TXT or rd_type is rdatatype.SPF:
+        policy_item['rrdatas'] = [
+            import_util.QuotedText(datum) for datum in policy_item['rrdatas']
+        ]
+      record_set.routingPolicy.wrr.items.append(
+          messages.RRSetRoutingPolicyWrrPolicyWrrPolicyItem(
+              weight=float(policy_item['key']), rrdatas=policy_item['rrdatas']))
+
+  elif args.routing_policy_type == 'GEO':
+    record_set.routingPolicy = messages.RRSetRoutingPolicy(
+        geo=messages.RRSetRoutingPolicyGeoPolicy(items=[]))
+    for policy_item in args.routing_policy_data:
+      if rd_type is rdatatype.TXT or rd_type is rdatatype.SPF:
+        policy_item['rrdatas'] = [
+            import_util.QuotedText(datum) for datum in policy_item['rrdatas']
+        ]
+      record_set.routingPolicy.geo.items.append(
+          messages.RRSetRoutingPolicyGeoPolicyGeoPolicyItem(
+              location=policy_item['key'], rrdatas=policy_item['rrdatas']))
+
   return record_set

@@ -90,3 +90,9 @@ hl7v2_store:
     parameter_name: hl7V2StoresId
     attribute_name: hl7v2_store
     help: Cloud Healthcare Hl7v2 Store
+
+nlp:
+  name: nlp
+  collection: healthcare.projects.locations.services.nlp
+  attributes:
+  - *location

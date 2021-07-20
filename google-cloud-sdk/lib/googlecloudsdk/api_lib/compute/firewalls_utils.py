@@ -24,7 +24,8 @@ import enum
 
 from googlecloudsdk.api_lib.compute import exceptions
 from googlecloudsdk.calliope import arg_parsers
-from googlecloudsdk.calliope import exceptions as calliope_exceptions
+from googlecloudsdk.command_lib.compute import exceptions as compute_exceptions
+
 
 ALLOWED_METAVAR = 'PROTOCOL[:PORT[-PORT]]'
 LEGAL_SPECS = re.compile(
@@ -405,7 +406,7 @@ def ParseRules(rules, message_classes, action=ActionType.ALLOW):
   for spec in rules or []:
     match = LEGAL_SPECS.match(spec)
     if not match:
-      raise calliope_exceptions.ToolException(
+      raise compute_exceptions.ArgumentError(
           'Firewall rules must be of the form {0}; received [{1}].'
           .format(ALLOWED_METAVAR, spec))
     if match.group('ports'):

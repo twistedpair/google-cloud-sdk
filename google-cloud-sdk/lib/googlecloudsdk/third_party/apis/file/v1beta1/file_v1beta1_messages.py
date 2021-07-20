@@ -67,6 +67,8 @@ class Backup(_messages.Message):
         performance backed by SSD.
       HIGH_SCALE_SSD: HIGH_SCALE instances offer expanded capacity and
         performance scaling capabilities.
+      ENTERPRISE: ENTERPRISE instances offer the features and availability
+        needed for mission-critical workloads.
     """
     TIER_UNSPECIFIED = 0
     STANDARD = 1
@@ -74,6 +76,7 @@ class Backup(_messages.Message):
     BASIC_HDD = 3
     BASIC_SSD = 4
     HIGH_SCALE_SSD = 5
+    ENTERPRISE = 6
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The backup state.
@@ -1086,6 +1089,8 @@ class Instance(_messages.Message):
         performance backed by SSD.
       HIGH_SCALE_SSD: HIGH_SCALE instances offer expanded capacity and
         performance scaling capabilities.
+      ENTERPRISE: ENTERPRISE instances offer the features and availability
+        needed for mission-critical workloads.
     """
     TIER_UNSPECIFIED = 0
     STANDARD = 1
@@ -1093,6 +1098,7 @@ class Instance(_messages.Message):
     BASIC_HDD = 3
     BASIC_SSD = 4
     HIGH_SCALE_SSD = 5
+    ENTERPRISE = 6
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1371,9 +1377,13 @@ class NetworkConfig(_messages.Message):
   r"""Network configuration for the instance.
 
   Enums:
+    ConnectModeValueValuesEnum: The network connect mode of the Filestore
+      instance. If not provided, the connect mode defaults to DIRECT_PEERING.
     ModesValueListEntryValuesEnum:
 
   Fields:
+    connectMode: The network connect mode of the Filestore instance. If not
+      provided, the connect mode defaults to DIRECT_PEERING.
     ipAddresses: Output only. IPv4 addresses in the format {octet 1}.{octet
       2}.{octet 3}.{octet 4} or IPv6 addresses in the format {block 1}:{block
       2}:{block 3}:{block 4}:{block 5}:{block 6}:{block 7}:{block 8}.
@@ -1382,14 +1392,36 @@ class NetworkConfig(_messages.Message):
     network: The name of the Google Compute Engine [VPC
       network](/compute/docs/networks-and-firewalls#networks) to which the
       instance is connected.
-    reservedIpRange: A /29 CIDR block for Basic or a /23 CIDR block for High
-      Scale in one of the [internal IP address
+    reservedIpRange: Optional, reserved_ip_range can have one of the following
+      two types of values. * CIDR range value when using DIRECT_PEERING
+      connect mode. * [Named Address
+      Range](https://cloud.google.com/compute/docs/ip-addresses/reserve-
+      static-internal-ip-address) when using PRIVATE_SERVICE_ACCESS connect
+      mode. For both cases, the range value (direct CIDR value or the range
+      value with which the named range was created) must be a /29 CIDR block
+      for Basic tier or a /23 CIDR block for High Scale or Enterprise tier in
+      one of the [internal IP address
       ranges](https://www.arin.net/knowledge/address_filters.html) that
       identifies the range of IP addresses reserved for this instance. For
       example, 10.0.0.0/29 or 192.168.0.0/23. The range you specify can't
       overlap with either existing subnets or assigned IP address ranges for
       other Cloud Filestore instances in the selected VPC network.
   """
+
+  class ConnectModeValueValuesEnum(_messages.Enum):
+    r"""The network connect mode of the Filestore instance. If not provided,
+    the connect mode defaults to DIRECT_PEERING.
+
+    Values:
+      CONNECT_MODE_UNSPECIFIED: ConnectMode not set.
+      DIRECT_PEERING: Connect via direct peering to the Filestore service.
+      PRIVATE_SERVICE_ACCESS: Connect to your Filestore instance using Private
+        Service Access. Private services access provides an IP address range
+        for multiple Google Cloud services, including Filestore.
+    """
+    CONNECT_MODE_UNSPECIFIED = 0
+    DIRECT_PEERING = 1
+    PRIVATE_SERVICE_ACCESS = 2
 
   class ModesValueListEntryValuesEnum(_messages.Enum):
     r"""ModesValueListEntryValuesEnum enum type.
@@ -1401,10 +1433,11 @@ class NetworkConfig(_messages.Message):
     ADDRESS_MODE_UNSPECIFIED = 0
     MODE_IPV4 = 1
 
-  ipAddresses = _messages.StringField(1, repeated=True)
-  modes = _messages.EnumField('ModesValueListEntryValuesEnum', 2, repeated=True)
-  network = _messages.StringField(3)
-  reservedIpRange = _messages.StringField(4)
+  connectMode = _messages.EnumField('ConnectModeValueValuesEnum', 1)
+  ipAddresses = _messages.StringField(2, repeated=True)
+  modes = _messages.EnumField('ModesValueListEntryValuesEnum', 3, repeated=True)
+  network = _messages.StringField(4)
+  reservedIpRange = _messages.StringField(5)
 
 
 class NfsExportOptions(_messages.Message):

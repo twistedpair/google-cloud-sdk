@@ -2457,6 +2457,21 @@ class AiplatformProjectsLocationsMetadataStoresArtifactsPatchRequest(_messages.M
   updateMask = _messages.StringField(4)
 
 
+class AiplatformProjectsLocationsMetadataStoresArtifactsPurgeRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsMetadataStoresArtifactsPurgeRequest object.
+
+  Fields:
+    googleCloudAiplatformV1beta1PurgeArtifactsRequest: A
+      GoogleCloudAiplatformV1beta1PurgeArtifactsRequest resource to be passed
+      as the request body.
+    parent: Required. The metadata store to purge Artifacts from. Format:
+      projects/{project}/locations/{location}/metadataStores/{metadatastore}
+  """
+
+  googleCloudAiplatformV1beta1PurgeArtifactsRequest = _messages.MessageField('GoogleCloudAiplatformV1beta1PurgeArtifactsRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
 class AiplatformProjectsLocationsMetadataStoresArtifactsQueryArtifactLineageSubgraphRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsMetadataStoresArtifactsQueryArtifactLineage
   SubgraphRequest object.
@@ -2639,6 +2654,21 @@ class AiplatformProjectsLocationsMetadataStoresContextsPatchRequest(_messages.Me
   googleCloudAiplatformV1beta1Context = _messages.MessageField('GoogleCloudAiplatformV1beta1Context', 2)
   name = _messages.StringField(3, required=True)
   updateMask = _messages.StringField(4)
+
+
+class AiplatformProjectsLocationsMetadataStoresContextsPurgeRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsMetadataStoresContextsPurgeRequest object.
+
+  Fields:
+    googleCloudAiplatformV1beta1PurgeContextsRequest: A
+      GoogleCloudAiplatformV1beta1PurgeContextsRequest resource to be passed
+      as the request body.
+    parent: Required. The metadata store to purge Contexts from. Format:
+      projects/{project}/locations/{location}/metadataStores/{metadatastore}
+  """
+
+  googleCloudAiplatformV1beta1PurgeContextsRequest = _messages.MessageField('GoogleCloudAiplatformV1beta1PurgeContextsRequest', 1)
+  parent = _messages.StringField(2, required=True)
 
 
 class AiplatformProjectsLocationsMetadataStoresContextsQueryContextLineageSubgraphRequest(_messages.Message):
@@ -2830,6 +2860,22 @@ class AiplatformProjectsLocationsMetadataStoresExecutionsPatchRequest(_messages.
   googleCloudAiplatformV1beta1Execution = _messages.MessageField('GoogleCloudAiplatformV1beta1Execution', 2)
   name = _messages.StringField(3, required=True)
   updateMask = _messages.StringField(4)
+
+
+class AiplatformProjectsLocationsMetadataStoresExecutionsPurgeRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsMetadataStoresExecutionsPurgeRequest
+  object.
+
+  Fields:
+    googleCloudAiplatformV1beta1PurgeExecutionsRequest: A
+      GoogleCloudAiplatformV1beta1PurgeExecutionsRequest resource to be passed
+      as the request body.
+    parent: Required. The metadata store to purge Executions from. Format:
+      projects/{project}/locations/{location}/metadataStores/{metadatastore}
+  """
+
+  googleCloudAiplatformV1beta1PurgeExecutionsRequest = _messages.MessageField('GoogleCloudAiplatformV1beta1PurgeExecutionsRequest', 1)
+  parent = _messages.StringField(2, required=True)
 
 
 class AiplatformProjectsLocationsMetadataStoresExecutionsQueryExecutionInputsAndOutputsRequest(_messages.Message):
@@ -6876,6 +6922,8 @@ class GoogleCloudAiplatformInternalMachineSpec(_messages.Message):
       NVIDIA_TESLA_P4: Nvidia Tesla P4 GPU.
       NVIDIA_TESLA_T4: Nvidia Tesla T4 GPU.
       NVIDIA_TESLA_A100: Nvidia Tesla A100 GPU.
+      TPU_V2: TPU v2.
+      TPU_V3: TPU v3.
     """
     ACCELERATOR_TYPE_UNSPECIFIED = 0
     NVIDIA_TESLA_K80 = 1
@@ -6884,6 +6932,8 @@ class GoogleCloudAiplatformInternalMachineSpec(_messages.Message):
     NVIDIA_TESLA_P4 = 4
     NVIDIA_TESLA_T4 = 5
     NVIDIA_TESLA_A100 = 6
+    TPU_V2 = 7
+    TPU_V3 = 8
 
   acceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   acceleratorType = _messages.EnumField('AcceleratorTypeValueValuesEnum', 2)
@@ -8795,6 +8845,8 @@ class GoogleCloudAiplatformUiMachineSpec(_messages.Message):
       NVIDIA_TESLA_P4: Nvidia Tesla P4 GPU.
       NVIDIA_TESLA_T4: Nvidia Tesla T4 GPU.
       NVIDIA_TESLA_A100: Nvidia Tesla A100 GPU.
+      TPU_V2: TPU v2.
+      TPU_V3: TPU v3.
     """
     ACCELERATOR_TYPE_UNSPECIFIED = 0
     NVIDIA_TESLA_K80 = 1
@@ -8803,6 +8855,8 @@ class GoogleCloudAiplatformUiMachineSpec(_messages.Message):
     NVIDIA_TESLA_P4 = 4
     NVIDIA_TESLA_T4 = 5
     NVIDIA_TESLA_A100 = 6
+    TPU_V2 = 7
+    TPU_V3 = 8
 
   acceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   acceleratorType = _messages.EnumField('AcceleratorTypeValueValuesEnum', 2)
@@ -10693,6 +10747,8 @@ class GoogleCloudAiplatformV1MachineSpec(_messages.Message):
       NVIDIA_TESLA_P4: Nvidia Tesla P4 GPU.
       NVIDIA_TESLA_T4: Nvidia Tesla T4 GPU.
       NVIDIA_TESLA_A100: Nvidia Tesla A100 GPU.
+      TPU_V2: TPU v2.
+      TPU_V3: TPU v3.
     """
     ACCELERATOR_TYPE_UNSPECIFIED = 0
     NVIDIA_TESLA_K80 = 1
@@ -10701,6 +10757,8 @@ class GoogleCloudAiplatformV1MachineSpec(_messages.Message):
     NVIDIA_TESLA_P4 = 4
     NVIDIA_TESLA_T4 = 5
     NVIDIA_TESLA_A100 = 6
+    TPU_V2 = 7
+    TPU_V3 = 8
 
   acceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   acceleratorType = _messages.EnumField('AcceleratorTypeValueValuesEnum', 2)
@@ -13934,10 +13992,12 @@ class GoogleCloudAiplatformV1alpha1DeployIndexOperationMetadata(_messages.Messag
   r"""Runtime operation information for IndexEndpointService.DeployIndex.
 
   Fields:
+    deployedIndexId: The unique index id specified by user
     genericMetadata: The operation generic information.
   """
 
-  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1alpha1GenericOperationMetadata', 1)
+  deployedIndexId = _messages.StringField(1)
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1alpha1GenericOperationMetadata', 2)
 
 
 class GoogleCloudAiplatformV1alpha1DeployIndexResponse(_messages.Message):
@@ -17578,10 +17638,12 @@ class GoogleCloudAiplatformV1beta1DeployIndexOperationMetadata(_messages.Message
   r"""Runtime operation information for IndexEndpointService.DeployIndex.
 
   Fields:
+    deployedIndexId: The unique index id specified by user
     genericMetadata: The operation generic information.
   """
 
-  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 1)
+  deployedIndexId = _messages.StringField(1)
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 2)
 
 
 class GoogleCloudAiplatformV1beta1DeployIndexRequest(_messages.Message):
@@ -17734,6 +17796,13 @@ class GoogleCloudAiplatformV1beta1DeployedIndex(_messages.Message):
     privateEndpoints: Output only. Provides paths for users to send requests
       directly to the deployed index services running on Cloud via private
       services access. This field is populated if network is configured.
+    reservedIpRanges: Optional. A list of reserved ip ranges under the VPC
+      network that can be used for this DeployedIndex. If set, we will deploy
+      the index within the provided ip ranges. Otherwise, the index might be
+      deployed to any ip ranges under the provided VPC network. The value
+      sohuld be the name of the address
+      (https://cloud.google.com/compute/docs/reference/rest/v1/addresses)
+      Example: 'vertex-ai-ip-range'.
   """
 
   automaticResources = _messages.MessageField('GoogleCloudAiplatformV1beta1AutomaticResources', 1)
@@ -17745,6 +17814,7 @@ class GoogleCloudAiplatformV1beta1DeployedIndex(_messages.Message):
   index = _messages.StringField(7)
   indexSyncTime = _messages.StringField(8)
   privateEndpoints = _messages.MessageField('GoogleCloudAiplatformV1beta1IndexPrivateEndpoints', 9)
+  reservedIpRanges = _messages.StringField(10, repeated=True)
 
 
 class GoogleCloudAiplatformV1beta1DeployedIndexAuthConfig(_messages.Message):
@@ -20839,6 +20909,8 @@ class GoogleCloudAiplatformV1beta1MachineSpec(_messages.Message):
       NVIDIA_TESLA_P4: Nvidia Tesla P4 GPU.
       NVIDIA_TESLA_T4: Nvidia Tesla T4 GPU.
       NVIDIA_TESLA_A100: Nvidia Tesla A100 GPU.
+      TPU_V2: TPU v2.
+      TPU_V3: TPU v3.
     """
     ACCELERATOR_TYPE_UNSPECIFIED = 0
     NVIDIA_TESLA_K80 = 1
@@ -20847,6 +20919,8 @@ class GoogleCloudAiplatformV1beta1MachineSpec(_messages.Message):
     NVIDIA_TESLA_P4 = 4
     NVIDIA_TESLA_T4 = 5
     NVIDIA_TESLA_A100 = 6
+    TPU_V2 = 7
+    TPU_V3 = 8
 
   acceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   acceleratorType = _messages.EnumField('AcceleratorTypeValueValuesEnum', 2)
@@ -22885,6 +22959,51 @@ class GoogleCloudAiplatformV1beta1PrivateEndpoints(_messages.Message):
   explainHttpUri = _messages.StringField(1)
   healthHttpUri = _messages.StringField(2)
   predictHttpUri = _messages.StringField(3)
+
+
+class GoogleCloudAiplatformV1beta1PurgeArtifactsRequest(_messages.Message):
+  r"""Request message for MetadataService.PurgeArtifacts.
+
+  Fields:
+    filter: Required. A required filter matching the Artifacts to be purged.
+      E.g., update_time <= 2020-11-19T11:30:00-04:00.
+    force: Optional. Flag to indicate to actually perform the purge. If
+      `force` is set to false, the method will return a sample of Artifact
+      names that would be deleted.
+  """
+
+  filter = _messages.StringField(1)
+  force = _messages.BooleanField(2)
+
+
+class GoogleCloudAiplatformV1beta1PurgeContextsRequest(_messages.Message):
+  r"""Request message for MetadataService.PurgeContexts.
+
+  Fields:
+    filter: Required. A required filter matching the Contexts to be purged.
+      E.g., update_time <= 2020-11-19T11:30:00-04:00.
+    force: Optional. Flag to indicate to actually perform the purge. If
+      `force` is set to false, the method will return a sample of Context
+      names that would be deleted.
+  """
+
+  filter = _messages.StringField(1)
+  force = _messages.BooleanField(2)
+
+
+class GoogleCloudAiplatformV1beta1PurgeExecutionsRequest(_messages.Message):
+  r"""Request message for MetadataService.PurgeExecutions.
+
+  Fields:
+    filter: Required. A required filter matching the Executions to be purged.
+      E.g., update_time <= 2020-11-19T11:30:00-04:00.
+    force: Optional. Flag to indicate to actually perform the purge. If
+      `force` is set to false, the method will return a sample of Execution
+      names that would be deleted.
+  """
+
+  filter = _messages.StringField(1)
+  force = _messages.BooleanField(2)
 
 
 class GoogleCloudAiplatformV1beta1PythonPackageSpec(_messages.Message):

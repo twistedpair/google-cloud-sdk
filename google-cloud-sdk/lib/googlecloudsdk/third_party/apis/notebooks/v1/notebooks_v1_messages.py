@@ -245,6 +245,32 @@ class Environment(_messages.Message):
   vmImage = _messages.MessageField('VmImage', 7)
 
 
+class Event(_messages.Message):
+  r"""The definition of an Event for a managed / semi-managed notebook
+  instance.
+
+  Enums:
+    TypeValueValuesEnum: Event type.
+
+  Fields:
+    reportTime: Event report time.
+    type: Event type.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Event type.
+
+    Values:
+      EVENT_TYPE_UNSPECIFIED: Event is not specified.
+      IDLE: The instance / runtime is idle
+    """
+    EVENT_TYPE_UNSPECIFIED = 0
+    IDLE = 1
+
+  reportTime = _messages.StringField(1)
+  type = _messages.EnumField('TypeValueValuesEnum', 2)
+
+
 class Execution(_messages.Message):
   r"""The definition of a single executed notebook.
 
@@ -314,7 +340,8 @@ class ExecutionTemplate(_messages.Message):
 
   Enums:
     ScaleTierValueValuesEnum: Required. Scale tier of the hardware used for
-      notebook execution.
+      notebook execution. DEPRECATED Will be discontinued. As right now only
+      CUSTOM is supported.
 
   Messages:
     LabelsValue: Labels for execution. If execution is scheduled, a field
@@ -363,7 +390,8 @@ class ExecutionTemplate(_messages.Message):
       and pass them here in an YAML file. Ex:
       gs://notebook_user/scheduled_notebooks/sentiment_notebook_params.yaml
     scaleTier: Required. Scale tier of the hardware used for notebook
-      execution.
+      execution. DEPRECATED Will be discontinued. As right now only CUSTOM is
+      supported.
     serviceAccount: The email address of a service account to use when running
       the execution. You must have the `iam.serviceAccounts.actAs` permission
       for the specified service account.
@@ -371,6 +399,7 @@ class ExecutionTemplate(_messages.Message):
 
   class ScaleTierValueValuesEnum(_messages.Enum):
     r"""Required. Scale tier of the hardware used for notebook execution.
+    DEPRECATED Will be discontinued. As right now only CUSTOM is supported.
 
     Values:
       SCALE_TIER_UNSPECIFIED: Unspecified Scale Tier.
@@ -1759,6 +1788,20 @@ class NotebooksProjectsLocationsRuntimesListRequest(_messages.Message):
   parent = _messages.StringField(3, required=True)
 
 
+class NotebooksProjectsLocationsRuntimesReportEventRequest(_messages.Message):
+  r"""A NotebooksProjectsLocationsRuntimesReportEventRequest object.
+
+  Fields:
+    name: Required. Format:
+      `projects/{project_id}/locations/{location}/runtimes/{runtime_id}`
+    reportRuntimeEventRequest: A ReportRuntimeEventRequest resource to be
+      passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  reportRuntimeEventRequest = _messages.MessageField('ReportRuntimeEventRequest', 2)
+
+
 class NotebooksProjectsLocationsRuntimesResetRequest(_messages.Message):
   r"""A NotebooksProjectsLocationsRuntimesResetRequest object.
 
@@ -2148,6 +2191,20 @@ class ReportInstanceInfoRequest(_messages.Message):
   vmId = _messages.StringField(2)
 
 
+class ReportRuntimeEventRequest(_messages.Message):
+  r"""Request for reporting a Managed Notebook Event.
+
+  Fields:
+    event: Required. The Event to be reported.
+    vmId: Required. The VM hardware token for authenticating the VM.
+      https://cloud.google.com/compute/docs/instances/verifying-instance-
+      identity
+  """
+
+  event = _messages.MessageField('Event', 1)
+  vmId = _messages.StringField(2)
+
+
 class ResetInstanceRequest(_messages.Message):
   r"""Request for reseting a notebook instance"""
 
@@ -2417,7 +2474,7 @@ class RuntimeSoftwareConfig(_messages.Message):
     idleShutdown: Runtime will automatically shutdown after
       idle_shutdown_time. Default: False
     idleShutdownTimeout: Time in minutes to wait before shuting down runtime.
-      Default: 90 minutes
+      Default: 30 minutes
     installGpuDriver: Install Nvidia Driver automatically.
     notebookUpgradeSchedule: Cron expression in UTC timezone, used to schedule
       instance auto upgrade. Please follow the [cron
@@ -2482,6 +2539,7 @@ class Schedule(_messages.Message):
         retry CloudScheduler.UpdateJob until a successful response is
         received.
       INITIALIZING: The schedule resource is being created.
+      DELETING: The schedule resource is being deleted.
     """
     STATE_UNSPECIFIED = 0
     ENABLED = 1
@@ -2489,6 +2547,7 @@ class Schedule(_messages.Message):
     DISABLED = 3
     UPDATE_FAILED = 4
     INITIALIZING = 5
+    DELETING = 6
 
   createTime = _messages.StringField(1)
   cronSchedule = _messages.StringField(2)

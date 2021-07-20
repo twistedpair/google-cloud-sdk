@@ -24,6 +24,16 @@ DOCS_URL = 'https://cloud.google.com/monitoring/api/'
 class Collections(enum.Enum):
   """Collections for all supported apis."""
 
+  OPERATIONS = (
+      'operations',
+      '{+name}',
+      {
+          '':
+              'operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS = (
       'projects',
       'projects/{projectsId}',

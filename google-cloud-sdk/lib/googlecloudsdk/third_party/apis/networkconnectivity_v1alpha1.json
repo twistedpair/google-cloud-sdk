@@ -7,7 +7,7 @@
   "version": "v1alpha1",
   "revision": "0",
   "title": "Network Connectivity API",
-  "description": "The Network Connectivity API will be home to various services which provide information pertaining to network connectivity.",
+  "description": "The Network Connectivity API provides access to Network Connectivity Center.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {

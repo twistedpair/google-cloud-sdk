@@ -900,7 +900,7 @@ class DialogflowV2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Returns the list of all non-draft environments of the specified agent.
+      r"""Returns the list of all non-default environments of the specified agent.
 
       Args:
         request: (DialogflowProjectsAgentEnvironmentsListRequest) input message
@@ -927,7 +927,7 @@ class DialogflowV2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the specified agent environment. This method allows you to deploy new agent versions into the environment. When an environment is pointed to a new agent version by setting `environment.agent_version`, the environment is temporarily set to the `LOADING` state. During that time, the environment keeps on serving the previous version of the agent. After the new agent version is done loading, the environment is set back to the `RUNNING` state. You can use "-" as Environment ID in environment name to update version in "draft" environment. WARNING: this will negate all recent changes to draft and can't be undone. You may want to save the draft to a version before calling this function.
+      r"""Updates the specified agent environment. This method allows you to deploy new agent versions into the environment. When an environment is pointed to a new agent version by setting `environment.agent_version`, the environment is temporarily set to the `LOADING` state. During that time, the environment continues serving the previous version of the agent. After the new agent version is done loading, the environment is set back to the `RUNNING` state. You can use "-" as Environment ID in environment name to update an agent version in the default environment. WARNING: this will negate all recent changes to the draft agent and can't be undone. You may want to save the draft agent to a version before calling this method.
 
       Args:
         request: (DialogflowProjectsAgentEnvironmentsPatchRequest) input message
@@ -3894,7 +3894,7 @@ class DialogflowV2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Returns the list of all non-draft environments of the specified agent.
+      r"""Returns the list of all non-default environments of the specified agent.
 
       Args:
         request: (DialogflowProjectsLocationsAgentEnvironmentsListRequest) input message
@@ -3921,7 +3921,7 @@ class DialogflowV2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the specified agent environment. This method allows you to deploy new agent versions into the environment. When an environment is pointed to a new agent version by setting `environment.agent_version`, the environment is temporarily set to the `LOADING` state. During that time, the environment keeps on serving the previous version of the agent. After the new agent version is done loading, the environment is set back to the `RUNNING` state. You can use "-" as Environment ID in environment name to update version in "draft" environment. WARNING: this will negate all recent changes to draft and can't be undone. You may want to save the draft to a version before calling this function.
+      r"""Updates the specified agent environment. This method allows you to deploy new agent versions into the environment. When an environment is pointed to a new agent version by setting `environment.agent_version`, the environment is temporarily set to the `LOADING` state. During that time, the environment continues serving the previous version of the agent. After the new agent version is done loading, the environment is set back to the `RUNNING` state. You can use "-" as Environment ID in environment name to update an agent version in the default environment. WARNING: this will negate all recent changes to the draft agent and can't be undone. You may want to save the draft agent to a version before calling this method.
 
       Args:
         request: (DialogflowProjectsLocationsAgentEnvironmentsPatchRequest) input message

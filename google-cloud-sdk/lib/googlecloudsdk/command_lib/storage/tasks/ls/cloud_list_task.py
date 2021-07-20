@@ -342,7 +342,8 @@ class CloudListTask(task.Task):
         wildcard_iterator.CloudWildcardIterator(
             self._cloud_url,
             all_versions=self._all_versions,
-            fields_scope=fields_scope))
+            fields_scope=fields_scope,
+            get_bucket_metadata=self._buckets_flag))
 
     if resources.is_empty():
       raise errors.InvalidUrlError('One or more URLs matched no objects.')

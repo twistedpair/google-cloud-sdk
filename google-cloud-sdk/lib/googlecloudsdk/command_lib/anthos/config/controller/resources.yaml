@@ -49,3 +49,21 @@ instance-list:
   attributes:
   - *project
   - *location-list
+
+operation:
+  name: operation
+  collection: krmapihosting.projects.locations.operations
+  attributes:
+  - *location
+  - &operation:
+    parameter_name: operationsId
+    attribute_name: operation
+    help: The name of the Anthos Config Controller operation.
+  disable_auto_completers: false
+
+operation-list:
+  name: operation-list
+  collection: krmapihosting.projects.locations
+  attributes:
+  - *project
+  - *location-list

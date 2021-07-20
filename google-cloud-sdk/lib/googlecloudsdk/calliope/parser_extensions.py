@@ -440,7 +440,8 @@ class ArgumentParser(argparse.ArgumentParser):
         continue
       # Strip the flag value if any from the suggestion.
       flag = arg.split('=')[0]
-      if flag.startswith('--'):
+      value = arg.split('=')[1] if len(arg.split('=')) > 1 else None
+      if flag.startswith('--') or value:
         suggestion = suggester.GetSuggestion(flag)
         arg = self._AddLocations(arg)
       else:

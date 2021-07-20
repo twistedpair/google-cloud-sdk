@@ -22,7 +22,7 @@ import abc
 from googlecloudsdk.api_lib.compute import exceptions
 from googlecloudsdk.api_lib.compute import lister
 from googlecloudsdk.api_lib.compute import utils
-from googlecloudsdk.calliope import exceptions as calliope_exceptions
+from googlecloudsdk.command_lib.compute import exceptions as compute_exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import console_io
@@ -144,7 +144,7 @@ class ScopePrompter(six.with_metaclass(abc.ABCMeta, object)):
     def RaiseOnPromptFailure():
       """Call this to raise an exn when prompt cannot read from input stream."""
       phrases = ('one of ', 'flags') if len(flag_names) > 1 else ('', 'flag')
-      raise calliope_exceptions.ToolException(
+      raise compute_exceptions.FailedPromptError(
           'Unable to prompt. Specify {0}the [{1}] {2}.'.format(
               phrases[0], ', '.join(flag_names), phrases[1]))
 

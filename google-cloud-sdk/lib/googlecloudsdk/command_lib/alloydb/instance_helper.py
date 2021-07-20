@@ -23,7 +23,7 @@ from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.core import properties
 
 
-def ConstructRequestFromArgs(client, alloydb_messages, project_ref, args):
+def ConstructCreateRequestFromArgs(client, alloydb_messages, project_ref, args):
   """Validates command line input arguments and passes parent's resources.
 
   Args:
@@ -73,6 +73,47 @@ def ConstructRequestFromArgs(client, alloydb_messages, project_ref, args):
           parent=project_ref.RelativeName()))
 
 
+def ConstructPatchRequestFromArgs(alloydb_messages, instance_ref, args):
+  """Validates command line input arguments and passes parent's resources.
+
+  Args:
+    alloydb_messages: Messages module for the API client.
+    instance_ref: parent resource path of the resource being updated
+    args: Command line input arguments.
+
+  Returns:
+    Fully-constructed request to update an AlloyDB instance.
+  """
+  instance_resource = alloydb_messages.Instance()
+
+  # set availability-type if provided
+  instance_resource.availabilityType = _ParseAvailabilityType(
+      alloydb_messages, args.availability_type)
+  instance_resource.name = instance_ref.RelativeName()
+
+  instance_resource.tier = reducers.MachineType(args.tier, args.memory,
+                                                args.cpu)
+  instance_resource.databaseFlags = labels_util.ParseCreateArgs(
+      args,
+      alloydb_messages.Instance.DatabaseFlagsValue,
+      labels_dest='database_flags')
+  instance_resource.gceZone = args.zone
+  instance_resource.networkConfig = _ParseNetworkConfig(alloydb_messages,
+                                                        args.assign_ip)
+  if args.read_pool_size:
+    instance_resource.readPoolConfig = alloydb_messages.ReadPoolConfig(
+        readPoolSize=args.read_pool_size)
+
+  # TODO(b/185795425): Need better understanding of use cases before adding
+  # instance_resource.networkConfig
+  #   sslRequired (--require-ssl)
+  # instance_resource.labels (--labels)
+  return (
+      alloydb_messages.AlloydbProjectsLocationsClustersInstancesPatchRequest(
+          instance=instance_resource,
+          name=instance_ref.RelativeName()))
+
+
 def _ParseAvailabilityType(alloydb_messages, availability_type):
   if availability_type:
     return alloydb_messages.Instance.AvailabilityTypeValueValuesEnum.lookup_by_name(
@@ -81,8 +122,10 @@ def _ParseAvailabilityType(alloydb_messages, availability_type):
 
 
 def _ParseInstanceType(alloydb_messages, instance_type):
-  return alloydb_messages.Instance.InstanceTypeValueValuesEnum.lookup_by_name(
-      instance_type.upper())
+  if instance_type:
+    return alloydb_messages.Instance.InstanceTypeValueValuesEnum.lookup_by_name(
+        instance_type.upper())
+  return None
 
 
 def _ParseNetworkConfig(alloydb_messages, assign_ip):

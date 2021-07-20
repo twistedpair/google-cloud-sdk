@@ -79,3 +79,11 @@ def AddRoleSessionName(parser):
   parser.add_argument(
       "--role-session-name",
       help="Identifier for the assumed role session.")
+
+
+def AddSecurityGroupIds(parser, noun):
+  parser.add_argument(
+      "--security-group-ids",
+      type=arg_parsers.ArgList(),
+      metavar="SECURITY_GROUP_ID",
+      help="IDs of additional security groups to add to {}.".format(noun))

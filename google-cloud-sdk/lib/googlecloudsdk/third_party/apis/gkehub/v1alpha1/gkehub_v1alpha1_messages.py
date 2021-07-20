@@ -1783,17 +1783,20 @@ class MultiClusterIngressFeatureSpec(_messages.Message):
   MultiClusterIngress feature.
 
   Enums:
-    BillingValueValuesEnum: Customer's billing structure
+    BillingValueValuesEnum: Deprecated: This field will be ignored and should
+      not be set. Customer's billing structure
 
   Fields:
-    billing: Customer's billing structure
+    billing: Deprecated: This field will be ignored and should not be set.
+      Customer's billing structure
     configMembership: Fully-qualified member name which hosts the
       MultiClusterIngress CRD. Example member name: `projects/foo-
       proj/locations/global/memberships/bar`
   """
 
   class BillingValueValuesEnum(_messages.Enum):
-    r"""Customer's billing structure
+    r"""Deprecated: This field will be ignored and should not be set.
+    Customer's billing structure
 
     Values:
       BILLING_UNSPECIFIED: Unknown

@@ -53,8 +53,10 @@ def contains_wildcard(url_string):
   return bool(WILDCARD_REGEX.search(url_string))
 
 
-def get_wildcard_iterator(
-    url_str, all_versions=False, fields_scope=cloud_api.FieldsScope.NO_ACL):
+def get_wildcard_iterator(url_str,
+                          all_versions=False,
+                          fields_scope=cloud_api.FieldsScope.NO_ACL,
+                          get_bucket_metadata=False):
   """Instantiate a WildcardIterator for the given URL string.
 
   Args:
@@ -63,12 +65,19 @@ def get_wildcard_iterator(
         matching the wildcard.  If false, yields just the live object version.
     fields_scope (cloud_api.FieldsScope): Determines amount of metadata
         returned by API.
+    get_bucket_metadata (bool): If true, perform a bucket GET request when
+        fetching bucket resources
+
   Returns:
     A WildcardIterator object.
   """
   url = storage_url.storage_url_from_string(url_str)
   if isinstance(url, storage_url.CloudUrl):
-    return CloudWildcardIterator(url, all_versions, fields_scope)
+    return CloudWildcardIterator(
+        url,
+        all_versions,
+        fields_scope,
+        get_bucket_metadata=get_bucket_metadata)
   elif isinstance(url, storage_url.FileUrl):
     return FileWildcardIterator(url)
   else:
@@ -145,8 +154,11 @@ class FileWildcardIterator(WildcardIterator):
 class CloudWildcardIterator(WildcardIterator):
   """Class to iterate over Cloud Storage strings containing wildcards."""
 
-  def __init__(
-      self, url, all_versions=False, fields_scope=cloud_api.FieldsScope.NO_ACL):
+  def __init__(self,
+               url,
+               all_versions=False,
+               fields_scope=cloud_api.FieldsScope.NO_ACL,
+               get_bucket_metadata=False):
     """Instantiates an iterator that matches the wildcard URL.
 
     Args:
@@ -155,12 +167,15 @@ class CloudWildcardIterator(WildcardIterator):
           matching the wildcard.  If false, yields just the live object version.
       fields_scope (cloud_api.FieldsScope): Determines amount of metadata
           returned by API.
+      get_bucket_metadata (bool): If true, perform a bucket GET request when
+          fetching bucket resources
     """
     super(CloudWildcardIterator, self).__init__()
     url = _compress_url_wildcards(url)
     self._url = url
     self._all_versions = all_versions
     self._fields_scope = fields_scope
+    self._get_bucket_metadata = get_bucket_metadata
     self._client = api_factory.get_api(url.scheme)
 
     if url.url_string.endswith(url.delimiter):
@@ -337,7 +352,7 @@ class CloudWildcardIterator(WildcardIterator):
     """
     if contains_wildcard(self._url.bucket_name):
       return self._expand_bucket_wildcards(self._url.bucket_name)
-    elif self._url.is_bucket():
+    elif self._url.is_bucket() and self._get_bucket_metadata:
       return [
           self._client.get_bucket(self._url.bucket_name, self._fields_scope)
       ]

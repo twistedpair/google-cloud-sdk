@@ -29,6 +29,10 @@ def UpdateBackupV1Beta(ref, args, request):
   return _UpdateBackup(ref, args, request, api_version='v1beta')
 
 
+def UpdateBackupV1(ref, args, request):
+  return _UpdateBackup(ref, args, request, api_version='v1')
+
+
 def _UpdateBackup(ref, args, request, api_version):
   """Returns a modified create request with the `backup` field updated.
 

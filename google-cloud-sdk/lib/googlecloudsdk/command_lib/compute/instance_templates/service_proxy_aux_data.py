@@ -69,3 +69,11 @@ export SERVICE_PROXY_AGENT_DIRECTORY=$(mktemp -d)
 sudo gsutil cp ${{SERVICE_PROXY_AGENT_BUCKET}} ${{SERVICE_PROXY_AGENT_DIRECTORY}}
 sudo tar -xzf ${{SERVICE_PROXY_AGENT_DIRECTORY}}/${{ARCHIVE_NAME}} -C ${{SERVICE_PROXY_AGENT_DIRECTORY}}
 ${{SERVICE_PROXY_AGENT_DIRECTORY}}/service-proxy-agent/service-proxy-agent-bootstrap.sh"""
+
+startup_script_for_asm_service_proxy_installer = """#! /bin/bash
+INSTALLER_BUCKET=$(curl http://metadata.google.internal/computeMetadata/v1/instance/attributes/gce-service-proxy-installer-bucket -H Metadata-Flavor:Google)
+export INSTALLER_DIRECTORY=$(mktemp -d)
+sudo gsutil cp ${INSTALLER_BUCKET} ${INSTALLER_DIRECTORY}
+INSTALLER_NAME=$(basename ${INSTALLER_BUCKET})
+sudo tar -xzf ${INSTALLER_DIRECTORY}/${INSTALLER_NAME} -C ${INSTALLER_DIRECTORY}
+sudo ${INSTALLER_DIRECTORY}/installer/installer"""

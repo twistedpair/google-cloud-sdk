@@ -14278,6 +14278,32 @@ For more information, see [Invalidating cached content](/cdn/docs/invalidating-c
         supports_download=False,
     )
 
+    def Update(self, request, global_params=None):
+      r"""Update share settings of the reservation.
+
+      Args:
+        request: (ComputeReservationsUpdateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='PATCH',
+        method_id='compute.reservations.update',
+        ordered_params=['project', 'zone', 'reservation'],
+        path_params=['project', 'reservation', 'zone'],
+        query_params=['paths', 'requestId'],
+        relative_path='projects/{project}/zones/{zone}/reservations/{reservation}',
+        request_field='reservationResource',
+        request_type_name='ComputeReservationsUpdateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class ResourcePoliciesService(base_api.BaseApiService):
     """Service class for the resourcePolicies resource."""
 

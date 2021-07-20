@@ -414,7 +414,8 @@ class CacheKeyPolicy(_messages.Message):
       cache key. - Header names must be valid HTTP RFC 7230 header field
       values. - Header field names are case insensitive - You may specify up
       to five header names. - To include the HTTP method, use ":method" Refer
-      to the documentation for the allowed list of header names. range of
+      to the documentation for the allowed list of header names. Note that
+      specifying several headers, and/or headers that have a large range of
       values (e.g. per-user) will dramatically impact the cache hit rate, and
       may result in a higher eviction rate and reduced performance. You may
       specify up to 5 header names.
@@ -1079,6 +1080,8 @@ class MatchRule(_messages.Message):
       original URL. fullPathMatch must begin with a /. The value must be
       between 1 and 1024 characters (inclusive). Exactly one of prefixMatch,
       fullPathMatch, or pathTemplateMatch must be specified.
+    ignoreCase: Optional. Specifies that prefixMatch and fullPathMatch matches
+      are case sensitive. The default value is false.
     pathTemplateMatch: Optional. For satisfying the matchRule condition, the
       path of the request must match the wildcard pattern specified in
       pathTemplateMatch after removing any query parameters and anchor that
@@ -1098,9 +1101,10 @@ class MatchRule(_messages.Message):
   """
 
   fullPathMatch = _messages.StringField(1)
-  pathTemplateMatch = _messages.StringField(2)
-  prefixMatch = _messages.StringField(3)
-  queryParameterMatches = _messages.MessageField('QueryParameterMatcher', 4, repeated=True)
+  ignoreCase = _messages.BooleanField(2)
+  pathTemplateMatch = _messages.StringField(3)
+  prefixMatch = _messages.StringField(4)
+  queryParameterMatches = _messages.MessageField('QueryParameterMatcher', 5, repeated=True)
 
 
 class NetworkservicesProjectsLocationsEdgeCacheKeysetsCreateRequest(_messages.Message):

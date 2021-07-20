@@ -563,20 +563,13 @@ class AccessConfig(_messages.Message):
 
 
 class Address(_messages.Message):
-  r"""Use global external addresses for GFE-based external HTTP(S) load
-  balancers in Premium Tier.  Use global internal addresses for reserved
-  peering network range.  Use regional external addresses for the following
-  resources:  - External IP addresses for VM instances - Regional external
-  forwarding rules - Cloud NAT external IP addresses - GFE based LBs in
-  Standard Tier - Network LBs in Premium or Standard Tier - Cloud VPN gateways
-  (both Classic and HA)  Use regional internal IP addresses for subnet IP
-  ranges (primary and secondary). This includes:  - Internal IP addresses for
-  VM instances - Alias IP ranges of VM instances (/32 only) - Regional
-  internal forwarding rules - Internal TCP/UDP load balancer addresses -
-  Internal HTTP(S) load balancer addresses - Cloud DNS inbound forwarding IP
-  addresses  For more information, see  Reserving a static external IP
-  address.  (== resource_for {$api_version}.addresses ==) (== resource_for
-  {$api_version}.globalAddresses ==)
+  r"""Represents an IP Address resource.  Google Compute Engine has two IP
+  Address resources:  * [Global (external and internal)](https://cloud.google.
+  com/compute/docs/reference/rest/{$api_version}/globalAddresses) * [Regional
+  (external and internal)](https://cloud.google.com/compute/docs/reference/res
+  t/{$api_version}/addresses)  For more information, see  Reserving a static
+  external IP address.  (== resource_for {$api_version}.addresses ==) (==
+  resource_for {$api_version}.globalAddresses ==)
 
   Enums:
     AddressTypeValueValuesEnum: The type of address to reserve, either
@@ -586,24 +579,28 @@ class Address(_messages.Message):
       a global address.
     NetworkTierValueValuesEnum: This signifies the networking tier used for
       configuring this address and can only take the following values: PREMIUM
-      or STANDARD. Global forwarding rules can only be Premium Tier. Regional
-      forwarding rules can be either Premium or Standard Tier. Standard Tier
-      addresses applied to regional forwarding rules can be used with any
-      external load balancer. Regional forwarding rules in Premium Tier can
-      only be used with a network load balancer.  If this field is not
+      or STANDARD. Internal IP addresses are always Premium Tier; global
+      external IP addresses are always Premium Tier; regional external IP
+      addresses can be either Standard or Premium Tier.  If this field is not
       specified, it is assumed to be PREMIUM.
     PurposeValueValuesEnum: The purpose of this resource, which can be one of
-      the following values:   - `GCE_ENDPOINT` for addresses that are used by
-      VM instances, alias IP ranges, internal load balancers, and similar
-      resources.  - `DNS_RESOLVER` for a DNS resolver address in a subnetwork
-      - `VPC_PEERING` for addresses that are reserved for VPC peer networks.
-      - `NAT_AUTO` for addresses that are external IP addresses automatically
-      reserved for Cloud NAT.  - `IPSEC_INTERCONNECT` for addresses created
-      from a private IP range that are reserved for a VLAN attachment in an
-      IPsec-encrypted Cloud Interconnect configuration. These addresses are
-      regional resources. Not currently available publicly.  -
-      `SHARED_LOADBALANCER_VIP` for an internal IP address that is assigned to
-      multiple internal forwarding rules.
+      the following values:   - GCE_ENDPOINT for addresses that are used by VM
+      instances, alias IP ranges, load balancers, and similar resources.  -
+      DNS_RESOLVER for a DNS resolver address in a subnetwork for a Cloud DNS
+      inbound forwarder IP addresses (regional internal IP address in a subnet
+      of a VPC network)  - VPC_PEERING for global internal IP addresses used
+      for  private services access allocated ranges.  - NAT_AUTO for the
+      regional external IP addresses used by Cloud NAT when allocating
+      addresses using <a href="https://cloud.google.com/nat/docs/ports-and-
+      addresses#addresses" automatic NAT IP address allocation.  -
+      IPSEC_INTERCONNECT for addresses created from a private IP range that
+      are reserved for a VLAN attachment in an IPsec-encrypted Cloud
+      Interconnect configuration. These addresses are regional resources. Not
+      currently available publicly.  - `SHARED_LOADBALANCER_VIP` for an
+      internal IP address that is assigned to multiple internal forwarding
+      rules.  - `PRIVATE_SERVICE_CONNECT` for a private network address that
+      is used to configure Private Service Connect. Only global internal
+      addresses can use this purpose.
     StatusValueValuesEnum: [Output Only] The status of the address, which can
       be one of RESERVING, RESERVED, or IN_USE. An address that is RESERVING
       is currently in the process of being reserved. A RESERVED address is
@@ -643,33 +640,37 @@ class Address(_messages.Message):
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
-      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?`. The first character
-      must be a lowercase letter, and all following characters (except for the
-      last character) must be a dash, lowercase letter, or digit. The last
+      regular expression [a-z]([-a-z0-9]*[a-z0-9])?. The first character must
+      be a lowercase letter, and all following characters (except for the last
+      character) must be a dash, lowercase letter, or digit. The last
       character must be a lowercase letter or digit.
     network: The URL of the network in which to reserve the address. This
       field can only be used with INTERNAL type with the VPC_PEERING purpose.
     networkTier: This signifies the networking tier used for configuring this
       address and can only take the following values: PREMIUM or STANDARD.
-      Global forwarding rules can only be Premium Tier. Regional forwarding
-      rules can be either Premium or Standard Tier. Standard Tier addresses
-      applied to regional forwarding rules can be used with any external load
-      balancer. Regional forwarding rules in Premium Tier can only be used
-      with a network load balancer.  If this field is not specified, it is
+      Internal IP addresses are always Premium Tier; global external IP
+      addresses are always Premium Tier; regional external IP addresses can be
+      either Standard or Premium Tier.  If this field is not specified, it is
       assumed to be PREMIUM.
     prefixLength: The prefix length if the resource represents an IP range.
     purpose: The purpose of this resource, which can be one of the following
-      values:   - `GCE_ENDPOINT` for addresses that are used by VM instances,
-      alias IP ranges, internal load balancers, and similar resources.  -
-      `DNS_RESOLVER` for a DNS resolver address in a subnetwork  -
-      `VPC_PEERING` for addresses that are reserved for VPC peer networks.  -
-      `NAT_AUTO` for addresses that are external IP addresses automatically
-      reserved for Cloud NAT.  - `IPSEC_INTERCONNECT` for addresses created
-      from a private IP range that are reserved for a VLAN attachment in an
-      IPsec-encrypted Cloud Interconnect configuration. These addresses are
-      regional resources. Not currently available publicly.  -
-      `SHARED_LOADBALANCER_VIP` for an internal IP address that is assigned to
-      multiple internal forwarding rules.
+      values:   - GCE_ENDPOINT for addresses that are used by VM instances,
+      alias IP ranges, load balancers, and similar resources.  - DNS_RESOLVER
+      for a DNS resolver address in a subnetwork for a Cloud DNS  inbound
+      forwarder IP addresses (regional internal IP address in a subnet of a
+      VPC network)  - VPC_PEERING for global internal IP addresses used for
+      private services access allocated ranges.  - NAT_AUTO for the regional
+      external IP addresses used by Cloud NAT when allocating addresses using
+      <a href="https://cloud.google.com/nat/docs/ports-and-
+      addresses#addresses" automatic NAT IP address allocation.  -
+      IPSEC_INTERCONNECT for addresses created from a private IP range that
+      are reserved for a VLAN attachment in an IPsec-encrypted Cloud
+      Interconnect configuration. These addresses are regional resources. Not
+      currently available publicly.  - `SHARED_LOADBALANCER_VIP` for an
+      internal IP address that is assigned to multiple internal forwarding
+      rules.  - `PRIVATE_SERVICE_CONNECT` for a private network address that
+      is used to configure Private Service Connect. Only global internal
+      addresses can use this purpose.
     region: [Output Only] The URL of the region where a regional address
       resides. For regional addresses, you must specify the region as a path
       parameter in the HTTP request URL. This field is not applicable to
@@ -716,12 +717,10 @@ class Address(_messages.Message):
 
   class NetworkTierValueValuesEnum(_messages.Enum):
     r"""This signifies the networking tier used for configuring this address
-    and can only take the following values: PREMIUM or STANDARD. Global
-    forwarding rules can only be Premium Tier. Regional forwarding rules can
-    be either Premium or Standard Tier. Standard Tier addresses applied to
-    regional forwarding rules can be used with any external load balancer.
-    Regional forwarding rules in Premium Tier can only be used with a network
-    load balancer.  If this field is not specified, it is assumed to be
+    and can only take the following values: PREMIUM or STANDARD. Internal IP
+    addresses are always Premium Tier; global external IP addresses are always
+    Premium Tier; regional external IP addresses can be either Standard or
+    Premium Tier.  If this field is not specified, it is assumed to be
     PREMIUM.
 
     Values:
@@ -733,16 +732,22 @@ class Address(_messages.Message):
 
   class PurposeValueValuesEnum(_messages.Enum):
     r"""The purpose of this resource, which can be one of the following
-    values:   - `GCE_ENDPOINT` for addresses that are used by VM instances,
-    alias IP ranges, internal load balancers, and similar resources.  -
-    `DNS_RESOLVER` for a DNS resolver address in a subnetwork  - `VPC_PEERING`
-    for addresses that are reserved for VPC peer networks.  - `NAT_AUTO` for
-    addresses that are external IP addresses automatically reserved for Cloud
-    NAT.  - `IPSEC_INTERCONNECT` for addresses created from a private IP range
-    that are reserved for a VLAN attachment in an IPsec-encrypted Cloud
-    Interconnect configuration. These addresses are regional resources. Not
-    currently available publicly.  - `SHARED_LOADBALANCER_VIP` for an internal
-    IP address that is assigned to multiple internal forwarding rules.
+    values:   - GCE_ENDPOINT for addresses that are used by VM instances,
+    alias IP ranges, load balancers, and similar resources.  - DNS_RESOLVER
+    for a DNS resolver address in a subnetwork for a Cloud DNS  inbound
+    forwarder IP addresses (regional internal IP address in a subnet of a VPC
+    network)  - VPC_PEERING for global internal IP addresses used for  private
+    services access allocated ranges.  - NAT_AUTO for the regional external IP
+    addresses used by Cloud NAT when allocating addresses using <a
+    href="https://cloud.google.com/nat/docs/ports-and-addresses#addresses"
+    automatic NAT IP address allocation.  - IPSEC_INTERCONNECT for addresses
+    created from a private IP range that are reserved for a VLAN attachment in
+    an IPsec-encrypted Cloud Interconnect configuration. These addresses are
+    regional resources. Not currently available publicly.  -
+    `SHARED_LOADBALANCER_VIP` for an internal IP address that is assigned to
+    multiple internal forwarding rules.  - `PRIVATE_SERVICE_CONNECT` for a
+    private network address that is used to configure Private Service Connect.
+    Only global internal addresses can use this purpose.
 
     Values:
       DNS_RESOLVER: <no description>
@@ -19854,6 +19859,36 @@ class ComputeReservationsTestIamPermissionsRequest(_messages.Message):
   zone = _messages.StringField(4, required=True)
 
 
+class ComputeReservationsUpdateRequest(_messages.Message):
+  r"""A ComputeReservationsUpdateRequest object.
+
+  Fields:
+    paths: The set of field mask paths.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed.  For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments.  The request
+      ID must be a valid UUID with the exception that zero UUID is not
+      supported (00000000-0000-0000-0000-000000000000).
+    reservation: Name of the reservation to update.
+    reservationResource: A Reservation resource to be passed as the request
+      body.
+    zone: Name of the zone for this request.
+  """
+
+  paths = _messages.StringField(1, repeated=True)
+  project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  reservation = _messages.StringField(4, required=True)
+  reservationResource = _messages.MessageField('Reservation', 5)
+  zone = _messages.StringField(6, required=True)
+
+
 class ComputeResourcePoliciesAggregatedListRequest(_messages.Message):
   r"""A ComputeResourcePoliciesAggregatedListRequest object.
 
@@ -27533,10 +27568,10 @@ class FirewallPolicyRuleMatcher(_messages.Message):
 
   Fields:
     destIpRanges: CIDR IP address range. Maximum number of destination CIDR IP
-      ranges allowed is 256.
+      ranges allowed is 5000.
     layer4Configs: Pairs of IP protocols and ports that the rule should match.
     srcIpRanges: CIDR IP address range. Maximum number of source CIDR IP
-      ranges allowed is 256.
+      ranges allowed is 5000.
   """
 
   destIpRanges = _messages.StringField(1, repeated=True)
@@ -28888,9 +28923,11 @@ class HealthCheck(_messages.Message):
   either regional or global health checks (`compute.v1.regionHealthChecks` or
   `compute.v1.HealthChecks`).  External HTTP(S), TCP proxy, and SSL proxy load
   balancers as well as managed instance group auto-healing must use global
-  health checks (`compute.v1.HealthChecks`).  Network load balancers must use
-  legacy HTTP health checks (httpHealthChecks).  For more information, see
-  Health checks overview.
+  health checks (`compute.v1.HealthChecks`).  Backend service-based network
+  load balancers must use regional health checks
+  (`compute.v1.regionHealthChecks`).  Target pool-based network load balancers
+  must use legacy HTTP health checks (`compute.v1.httpHealthChecks`).  For
+  more information, see Health checks overview.
 
   Enums:
     TypeValueValuesEnum: Specifies the type of the healthCheck, either TCP,
@@ -30012,9 +30049,12 @@ class HttpHeaderOption(_messages.Message):
 
 
 class HttpHealthCheck(_messages.Message):
-  r"""Represents a legacy HTTP Health Check resource.  Legacy health checks
-  are required by network load balancers. For more information, read Health
-  Check Concepts.
+  r"""Represents a legacy HTTP Health Check resource.  Legacy HTTP health
+  checks are now only required by target pool-based network load balancers.
+  For all other load balancers, including backend service-based network load
+  balancers, and for managed instance group auto-healing, you must use modern
+  (non-legacy) health checks.  For more information, see Health checks
+  overview.
 
   Fields:
     checkIntervalSec: How often (in seconds) to send a health check. The
@@ -30545,9 +30585,13 @@ class HttpRouteRuleMatch(_messages.Message):
 
 
 class HttpsHealthCheck(_messages.Message):
-  r"""Represents a legacy HTTPS Health Check resource.  Legacy health checks
-  are required by network load balancers. For more information, read Health
-  Check Concepts.
+  r"""Represents a legacy HTTPS Health Check resource.  Legacy HTTPS health
+  checks have been deprecated. If you are using a target pool-based network
+  load balancer, you must use a legacy HTTP (not HTTPS) health check. For all
+  other load balancers, including backend service-based network load
+  balancers, and for managed instance group auto-healing, you must use modern
+  (non-legacy) health checks.  For more information, see Health checks
+  overview.
 
   Fields:
     checkIntervalSec: How often (in seconds) to send a health check. The
@@ -31938,8 +31982,7 @@ class InstanceGroupManager(_messages.Message):
     currentActions: [Output Only] The list of instance actions and the number
       of instances in this managed instance group that are scheduled for each
       of those actions.
-    description: An optional description of this resource. Provide this
-      property when you create the resource.
+    description: An optional description of this resource.
     distributionPolicy: Policy specifying the intended distribution of managed
       instances across zones in a regional managed instance group.
     failoverAction: The action to perform in case of zone failure. Only one
@@ -32781,9 +32824,17 @@ class InstanceGroupManagersDeleteInstancesRequest(_messages.Message):
   Fields:
     instances: The URLs of one or more instances to delete. This can be a full
       URL or a partial URL, such as zones/[ZONE]/instances/[INSTANCE_NAME].
+    skipInstancesOnValidationError: Specifies whether the request should
+      proceed despite the inclusion of instances that are not members of the
+      group or that are already in the process of being deleted or abandoned.
+      If this field is set to `false` and such an instance is specified in the
+      request, the operation fails. The operation always fails if the request
+      contains a malformed instance URL or a reference to an instance that
+      exists in a zone or region other than the group's zone or region.
   """
 
   instances = _messages.StringField(1, repeated=True)
+  skipInstancesOnValidationError = _messages.BooleanField(2)
 
 
 class InstanceGroupManagersDeletePerInstanceConfigsReq(_messages.Message):
@@ -43557,10 +43608,12 @@ class PublicDelegatedPrefix(_messages.Message):
       ANNOUNCED: <no description>
       DELETING: <no description>
       INITIALIZING: <no description>
+      READY_TO_ANNOUNCE: <no description>
     """
     ANNOUNCED = 0
     DELETING = 1
     INITIALIZING = 2
+    READY_TO_ANNOUNCE = 3
 
   creationTimestamp = _messages.StringField(1)
   description = _messages.StringField(2)
@@ -45070,9 +45123,17 @@ class RegionInstanceGroupManagersDeleteInstancesRequest(_messages.Message):
   Fields:
     instances: The URLs of one or more instances to delete. This can be a full
       URL or a partial URL, such as zones/[ZONE]/instances/[INSTANCE_NAME].
+    skipInstancesOnValidationError: Specifies whether the request should
+      proceed despite the inclusion of instances that are not members of the
+      group or that are already in the process of being deleted or abandoned.
+      If this field is set to `false` and such an instance is specified in the
+      request, the operation fails. The operation always fails if the request
+      contains a malformed instance URL or a reference to an instance that
+      exists in a zone or region other than the group's zone or region.
   """
 
   instances = _messages.StringField(1, repeated=True)
+  skipInstancesOnValidationError = _messages.BooleanField(2)
 
 
 class RegionInstanceGroupManagersListErrorsResponse(_messages.Message):
@@ -48968,8 +49029,13 @@ class SecurityPolicy(_messages.Message):
 
   Enums:
     TypeValueValuesEnum: The type indicates the intended use of the security
-      policy. CLOUD_ARMOR policies apply to backend services. FIREWALL
-      policies apply to organizations.
+      policy. CLOUD_ARMOR - Cloud Armor backend security policies can be
+      configured to filter incoming HTTP requests targeting backend services.
+      They filter requests before they hit the origin servers.
+      CLOUD_ARMOR_EDGE - Cloud Armor edge security policies can be configured
+      to filter incoming HTTP requests targeting backend services (including
+      Cloud CDN-enabled) as well as backend buckets (GCS). They filter
+      requests before the request is served from Google?s cache.
 
   Messages:
     LabelsValue: Labels for this resource. These can only be added or modified
@@ -49034,14 +49100,24 @@ class SecurityPolicy(_messages.Message):
     selfLinkWithId: [Output Only] Server-defined URL for this resource with
       the resource id.
     type: The type indicates the intended use of the security policy.
-      CLOUD_ARMOR policies apply to backend services. FIREWALL policies apply
-      to organizations.
+      CLOUD_ARMOR - Cloud Armor backend security policies can be configured to
+      filter incoming HTTP requests targeting backend services. They filter
+      requests before they hit the origin servers. CLOUD_ARMOR_EDGE - Cloud
+      Armor edge security policies can be configured to filter incoming HTTP
+      requests targeting backend services (including Cloud CDN-enabled) as
+      well as backend buckets (GCS). They filter requests before the request
+      is served from Google?s cache.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""The type indicates the intended use of the security policy.
-    CLOUD_ARMOR policies apply to backend services. FIREWALL policies apply to
-    organizations.
+    CLOUD_ARMOR - Cloud Armor backend security policies can be configured to
+    filter incoming HTTP requests targeting backend services. They filter
+    requests before they hit the origin servers. CLOUD_ARMOR_EDGE - Cloud
+    Armor edge security policies can be configured to filter incoming HTTP
+    requests targeting backend services (including Cloud CDN-enabled) as well
+    as backend buckets (GCS). They filter requests before the request is
+    served from Google?s cache.
 
     Values:
       CLOUD_ARMOR: <no description>
@@ -49511,9 +49587,19 @@ class SecurityPolicyRuleRateLimitOptions(_messages.Message):
 
   Enums:
     EnforceOnKeyValueValuesEnum: Determines the key to enforce the
-      threshold_rps limit on. If key is "IP", each IP has this limit enforced
-      separately, whereas "ALL_IPs" means a single limit is applied to all
-      requests matching this rule.
+      rate_limit_threshold on. Possible values are: ?ALL? -- A single rate
+      limit threshold is applied to all the requests matching this rule. This
+      is the default value if this field 'enforce_on_key' is not configured.
+      ?ALL_IPS? -- This definition, equivalent to "ALL", has been depprecated.
+      ?IP? -- The source IP address of the request is the key. Each IP has
+      this limit enforced separately. ?HTTP_HEADER? -- The value of the HTTP
+      Header whose name is configured under ?enforce_on_key_name?. The key
+      value is truncated to the first 128 bytes of the Header value. If no
+      such header is present in the request, the key type defaults to ?ALL?.
+      ?XFF_IP? -- The first IP address (i.e. the originating client IP
+      address) specified in the list of IPs under X-Forwarded-For HTTP Header.
+      If no such header is present or the value is not a valid IP, the key
+      type defaults to ?ALL?.
 
   Fields:
     banDurationSec: Can only be specified if the action for the rule is
@@ -49526,10 +49612,23 @@ class SecurityPolicyRuleRateLimitOptions(_messages.Message):
       the 'rate_limit_threshold' also exceed this 'ban_threshold'.
     conformAction: Action to take for requests that are under the configured
       rate limit threshold. Valid option is "allow" only.
-    enforceOnKey: Determines the key to enforce the threshold_rps limit on. If
-      key is "IP", each IP has this limit enforced separately, whereas
-      "ALL_IPs" means a single limit is applied to all requests matching this
-      rule.
+    enforceOnKey: Determines the key to enforce the rate_limit_threshold on.
+      Possible values are: ?ALL? -- A single rate limit threshold is applied
+      to all the requests matching this rule. This is the default value if
+      this field 'enforce_on_key' is not configured. ?ALL_IPS? -- This
+      definition, equivalent to "ALL", has been depprecated. ?IP? -- The
+      source IP address of the request is the key. Each IP has this limit
+      enforced separately. ?HTTP_HEADER? -- The value of the HTTP Header whose
+      name is configured under ?enforce_on_key_name?. The key value is
+      truncated to the first 128 bytes of the Header value. If no such header
+      is present in the request, the key type defaults to ?ALL?. ?XFF_IP? --
+      The first IP address (i.e. the originating client IP address) specified
+      in the list of IPs under X-Forwarded-For HTTP Header. If no such header
+      is present or the value is not a valid IP, the key type defaults to
+      ?ALL?.
+    enforceOnKeyName: Rate limit key name applicable only for the following
+      key types: HTTP_HEADER -- Name of the HTTP Header whose value is taken
+      as the key value.
     exceedAction: When a request is denied, returns the HTTP response code
       specified. Valid options are "deny()" where valid values for status are
       403, 404, 429, and 502.
@@ -49537,23 +49636,40 @@ class SecurityPolicyRuleRateLimitOptions(_messages.Message):
   """
 
   class EnforceOnKeyValueValuesEnum(_messages.Enum):
-    r"""Determines the key to enforce the threshold_rps limit on. If key is
-    "IP", each IP has this limit enforced separately, whereas "ALL_IPs" means
-    a single limit is applied to all requests matching this rule.
+    r"""Determines the key to enforce the rate_limit_threshold on. Possible
+    values are: ?ALL? -- A single rate limit threshold is applied to all the
+    requests matching this rule. This is the default value if this field
+    'enforce_on_key' is not configured. ?ALL_IPS? -- This definition,
+    equivalent to "ALL", has been depprecated. ?IP? -- The source IP address
+    of the request is the key. Each IP has this limit enforced separately.
+    ?HTTP_HEADER? -- The value of the HTTP Header whose name is configured
+    under ?enforce_on_key_name?. The key value is truncated to the first 128
+    bytes of the Header value. If no such header is present in the request,
+    the key type defaults to ?ALL?. ?XFF_IP? -- The first IP address (i.e. the
+    originating client IP address) specified in the list of IPs under
+    X-Forwarded-For HTTP Header. If no such header is present or the value is
+    not a valid IP, the key type defaults to ?ALL?.
 
     Values:
+      ALL: <no description>
       ALL_IPS: <no description>
+      HTTP_HEADER: <no description>
       IP: <no description>
+      XFF_IP: <no description>
     """
-    ALL_IPS = 0
-    IP = 1
+    ALL = 0
+    ALL_IPS = 1
+    HTTP_HEADER = 2
+    IP = 3
+    XFF_IP = 4
 
   banDurationSec = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   banThreshold = _messages.MessageField('SecurityPolicyRuleRateLimitOptionsThreshold', 2)
   conformAction = _messages.StringField(3)
   enforceOnKey = _messages.EnumField('EnforceOnKeyValueValuesEnum', 4)
-  exceedAction = _messages.StringField(5)
-  rateLimitThreshold = _messages.MessageField('SecurityPolicyRuleRateLimitOptionsThreshold', 6)
+  enforceOnKeyName = _messages.StringField(5)
+  exceedAction = _messages.StringField(6)
+  rateLimitThreshold = _messages.MessageField('SecurityPolicyRuleRateLimitOptionsThreshold', 7)
 
 
 class SecurityPolicyRuleRateLimitOptionsThreshold(_messages.Message):
@@ -49711,8 +49827,6 @@ class ServiceAttachment(_messages.Message):
       forwarding rules.
     consumerAcceptLists: Projects that are allowed to connect to this service
       attachment.
-    consumerForwardingRules: [Output Only] An array of forwarding rules for
-      all the consumers connected to this service attachment.
     consumerRejectLists: Projects that are not allowed to connect to this
       service attachment. The project can be specified using its id or number.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
@@ -49774,21 +49888,20 @@ class ServiceAttachment(_messages.Message):
   connectedEndpoints = _messages.MessageField('ServiceAttachmentConnectedEndpoint', 1, repeated=True)
   connectionPreference = _messages.EnumField('ConnectionPreferenceValueValuesEnum', 2)
   consumerAcceptLists = _messages.MessageField('ServiceAttachmentConsumerProjectLimit', 3, repeated=True)
-  consumerForwardingRules = _messages.MessageField('ServiceAttachmentConsumerForwardingRule', 4, repeated=True)
-  consumerRejectLists = _messages.StringField(5, repeated=True)
-  creationTimestamp = _messages.StringField(6)
-  description = _messages.StringField(7)
-  enableProxyProtocol = _messages.BooleanField(8)
-  fingerprint = _messages.BytesField(9)
-  id = _messages.IntegerField(10, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(11, default='compute#serviceAttachment')
-  name = _messages.StringField(12)
-  natSubnets = _messages.StringField(13, repeated=True)
-  producerForwardingRule = _messages.StringField(14)
-  pscServiceAttachmentId = _messages.MessageField('Uint128', 15)
-  region = _messages.StringField(16)
-  selfLink = _messages.StringField(17)
-  targetService = _messages.StringField(18)
+  consumerRejectLists = _messages.StringField(4, repeated=True)
+  creationTimestamp = _messages.StringField(5)
+  description = _messages.StringField(6)
+  enableProxyProtocol = _messages.BooleanField(7)
+  fingerprint = _messages.BytesField(8)
+  id = _messages.IntegerField(9, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(10, default='compute#serviceAttachment')
+  name = _messages.StringField(11)
+  natSubnets = _messages.StringField(12, repeated=True)
+  producerForwardingRule = _messages.StringField(13)
+  pscServiceAttachmentId = _messages.MessageField('Uint128', 14)
+  region = _messages.StringField(15)
+  selfLink = _messages.StringField(16)
+  targetService = _messages.StringField(17)
 
 
 class ServiceAttachmentAggregatedList(_messages.Message):
@@ -49956,8 +50069,6 @@ class ServiceAttachmentConnectedEndpoint(_messages.Message):
 
   Fields:
     endpoint: The url of a connected endpoint.
-    forwardingRule: The url of a consumer forwarding rule. [Deprecated] Do not
-      use.
     pscConnectionId: The PSC connection id of the connected endpoint.
     status: The status of a connected endpoint to this service attachment.
   """
@@ -49979,41 +50090,6 @@ class ServiceAttachmentConnectedEndpoint(_messages.Message):
     STATUS_UNSPECIFIED = 4
 
   endpoint = _messages.StringField(1)
-  forwardingRule = _messages.StringField(2)
-  pscConnectionId = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
-  status = _messages.EnumField('StatusValueValuesEnum', 4)
-
-
-class ServiceAttachmentConsumerForwardingRule(_messages.Message):
-  r"""[Output Only] A consumer forwarding rule connected to this service
-  attachment. [Deprecated] Do not use.
-
-  Enums:
-    StatusValueValuesEnum: The status of the forwarding rule.
-
-  Fields:
-    forwardingRule: The url of a consumer forwarding rule.
-    pscConnectionId: The PSC connection id of the PSC Forwarding Rule.
-    status: The status of the forwarding rule.
-  """
-
-  class StatusValueValuesEnum(_messages.Enum):
-    r"""The status of the forwarding rule.
-
-    Values:
-      ACCEPTED: <no description>
-      CLOSED: <no description>
-      PENDING: <no description>
-      REJECTED: <no description>
-      STATUS_UNSPECIFIED: <no description>
-    """
-    ACCEPTED = 0
-    CLOSED = 1
-    PENDING = 2
-    REJECTED = 3
-    STATUS_UNSPECIFIED = 4
-
-  forwardingRule = _messages.StringField(1)
   pscConnectionId = _messages.IntegerField(2, variant=_messages.Variant.UINT64)
   status = _messages.EnumField('StatusValueValuesEnum', 3)
 
@@ -57058,7 +57134,7 @@ class UsageExportLocation(_messages.Message):
       https://storage.googleapis.com/ in front of it, such as gs://example-
       bucket.
     reportNamePrefix: An optional prefix for the name of the usage report
-      object stored in bucketName. If not supplied, defaults to usage. The
+      object stored in bucketName. If not supplied, defaults to usage_gce. The
       report is stored as a CSV file named report_name_prefix_gce_YYYYMMDD.csv
       where YYYYMMDD is the day of the usage according to Pacific Time. If you
       supply a prefix, it should conform to Cloud Storage object naming

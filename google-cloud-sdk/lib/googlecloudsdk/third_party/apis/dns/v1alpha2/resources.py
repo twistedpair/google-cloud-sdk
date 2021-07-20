@@ -66,8 +66,8 @@ class Collections(enum.Enum):
       ['project'],
       True
   )
-  PROJECTS_MANAGEDZONES_RRSETS = (
-      'projects.managedZones.rrsets',
+  RESOURCERECORDSETS = (
+      'resourceRecordSets',
       'projects/{project}/managedZones/{managedZone}/rrsets/{name}/{type}',
       {},
       ['project', 'managedZone', 'name', 'type'],

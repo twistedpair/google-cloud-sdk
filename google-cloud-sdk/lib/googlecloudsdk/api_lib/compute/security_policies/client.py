@@ -20,8 +20,6 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 
-import six
-
 
 class SecurityPolicy(object):
   """Abstracts SecurityPolicy resource."""
@@ -135,7 +133,7 @@ class SecurityPolicyRule(object):
                 securityPolicy=self.ref.securityPolicy))
 
   def _MakeCreateRequestTuple(self, src_ip_ranges, expression, action,
-                              description, preview, redirect_target,
+                              description, preview, redirect_options,
                               rate_limit_options, request_headers_to_add):
     """Generates a SecurityPolicies AddRule request.
 
@@ -145,8 +143,8 @@ class SecurityPolicyRule(object):
       action: The action to enforce on match.
       description: The description of the rule.
       preview: If true, the action will not be enforced.
-      redirect_target: The URL to which traffic is routed when the rule action
-        is set to "redirect".
+      redirect_options: Parameters defining the redirect action, such as
+        redirect type and redirect target.
       rate_limit_options: The rate limiting behavior for this rule.
       request_headers_to_add: A list of headers to add to requests that match
         this rule.
@@ -170,8 +168,8 @@ class SecurityPolicyRule(object):
         action=self._ConvertAction(action),
         match=matcher,
         preview=preview)
-    if redirect_target is not None:
-      security_policy_rule.redirectTarget = six.text_type(redirect_target)
+    if redirect_options is not None:
+      security_policy_rule.redirectOptions = redirect_options
     if request_headers_to_add is not None:
       security_policy_rule.headerAction = self._ConvertRequestHeadersToAdd(
           request_headers_to_add)
@@ -186,7 +184,7 @@ class SecurityPolicyRule(object):
                 securityPolicy=self.ref.securityPolicy))
 
   def _MakePatchRequestTuple(self, src_ip_ranges, expression, action,
-                             description, preview, redirect_target,
+                             description, preview, redirect_options,
                              rate_limit_options, request_headers_to_add):
     """Generates a SecurityPolicies PatchRule request.
 
@@ -196,8 +194,8 @@ class SecurityPolicyRule(object):
       action: The action to enforce on match.
       description: The description of the rule.
       preview: If true, the action will not be enforced.
-      redirect_target: The URL to which traffic is routed when the rule action
-        is set to "redirect".
+      redirect_options: Parameters defining the redirect action, such as
+        redirect type and redirect target.
       rate_limit_options: The rate limiting behavior for this rule.
       request_headers_to_add: A list of headers to add to requests that match
         this rule.
@@ -222,8 +220,8 @@ class SecurityPolicyRule(object):
         action=self._ConvertAction(action),
         match=matcher,
         preview=preview)
-    if redirect_target is not None:
-      security_policy_rule.redirectTarget = six.text_type(redirect_target)
+    if redirect_options is not None:
+      security_policy_rule.redirectOptions = redirect_options
     if request_headers_to_add is not None:
       security_policy_rule.headerAction = self._ConvertRequestHeadersToAdd(
           request_headers_to_add)
@@ -275,14 +273,14 @@ class SecurityPolicyRule(object):
              action=None,
              description=None,
              preview=False,
-             redirect_target=None,
+             redirect_options=None,
              rate_limit_options=None,
              request_headers_to_add=None,
              only_generate_request=False):
     """Make and optionally send a request to Create a security policy rule."""
     requests = [
         self._MakeCreateRequestTuple(src_ip_ranges, expression, action,
-                                     description, preview, redirect_target,
+                                     description, preview, redirect_options,
                                      rate_limit_options, request_headers_to_add)
     ]
     if not only_generate_request:
@@ -295,14 +293,14 @@ class SecurityPolicyRule(object):
             action=None,
             description=None,
             preview=None,
-            redirect_target=None,
+            redirect_options=None,
             rate_limit_options=None,
             request_headers_to_add=None,
             only_generate_request=False):
     """Make and optionally send a request to Patch a security policy rule."""
     requests = [
         self._MakePatchRequestTuple(src_ip_ranges, expression, action,
-                                    description, preview, redirect_target,
+                                    description, preview, redirect_options,
                                     rate_limit_options, request_headers_to_add)
     ]
     if not only_generate_request:

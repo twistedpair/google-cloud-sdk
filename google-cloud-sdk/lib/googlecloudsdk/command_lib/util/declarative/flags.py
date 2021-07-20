@@ -20,7 +20,9 @@ from __future__ import unicode_literals
 
 import os
 
+
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import base as calliope_base
 from googlecloudsdk.command_lib.util.declarative.clients import client_base
 from googlecloudsdk.core.util import files
 
@@ -135,3 +137,38 @@ def _GetBulkExportParentGroup(parser,
   group.add_argument('--project', help=project_help)
   group.add_argument('--folder', type=str, help=folder_help)
   return group
+
+
+def AddTerraformGenerateImportArgs(parser):
+  """Arguments for resource-config terraform generate-import command."""
+  input_path_help = (
+      'Path to a Terrafrom formatted (.tf) resource file or directory of files '
+      'exported via. `gcloud alpha resource-config bulk-export` or '
+      'resource surface specific `config export` command.')
+  input_path = calliope_base.Argument('INPUT_PATH',
+                                      type=files.ExpandHomeAndVars,
+                                      help=input_path_help)
+
+  output_args = calliope_base.ArgumentGroup(
+      category='OUTPUT DESTINATION',
+      mutex=True,
+      help='Specify the destination of the generated script.')
+
+  output_args.AddArgument(calliope_base.Argument(
+      '--output-file',
+      required=False,
+      type=files.ExpandHomeAndVars,
+      help=('Specify the full path path for generated import script. If '
+            'not set, a default filename of the form '
+            '`terraform_import_YYYYMMDD-HH-MM-SS.sh|cmd` will be generated.')))
+  output_args.AddArgument(calliope_base.Argument(
+      '--output-dir',
+      required=False,
+      type=files.ExpandHomeAndVars,
+      help=('Specify the output directory only for the generated import script.'
+            ' If specified directory does not exists it will be created. '
+            'Generated script will have a default name of the form '
+            '`terraform_import_YYYYMMDD-HH-MM-SS.sh|cmd`')))
+  input_path.AddToParser(parser)
+  output_args.AddToParser(parser)
+

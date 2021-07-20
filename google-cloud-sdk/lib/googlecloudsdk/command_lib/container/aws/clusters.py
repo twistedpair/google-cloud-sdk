@@ -113,6 +113,8 @@ class Client(object):
     cp.awsServicesAuthentication = self._CreateAwsServicesAuthentication(
         args.role_arn, args.role_session_name)
     cp.sshConfig = self._CreateAwsSshConfig(args.ssh_ec2_key_pair)
+    if args.security_group_ids:
+      cp.securityGroupIds.extend(args.security_group_ids)
 
     net = self._AddAwsNetworking(c)
     net.vpcId = args.vpc_id

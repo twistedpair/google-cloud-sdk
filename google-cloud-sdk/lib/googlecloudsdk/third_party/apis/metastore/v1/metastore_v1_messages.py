@@ -105,12 +105,14 @@ class Backup(_messages.Message):
       DELETING: The backup is being deleted.
       ACTIVE: The backup is active and ready to use.
       FAILED: The backup failed.
+      RESTORING: The backup is being restored.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
     DELETING = 2
     ACTIVE = 3
     FAILED = 4
+    RESTORING = 5
 
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
@@ -187,6 +189,7 @@ class DatabaseDump(_messages.Message):
     databaseType: The type of the database.
     gcsUri: A Cloud Storage object or folder URI that specifies the source
       from which to import metadata. It must begin with gs://.
+    sourceDatabase: The name of the source database.
     type: Optional. The type of the database dump. If unspecified, defaults to
       MYSQL.
   """
@@ -208,13 +211,16 @@ class DatabaseDump(_messages.Message):
     Values:
       TYPE_UNSPECIFIED: The type of the database dump is unknown.
       MYSQL: Database dump is a MySQL dump file.
+      AVRO: Database dump contains Avro files.
     """
     TYPE_UNSPECIFIED = 0
     MYSQL = 1
+    AVRO = 2
 
   databaseType = _messages.EnumField('DatabaseTypeValueValuesEnum', 1)
   gcsUri = _messages.StringField(2)
-  type = _messages.EnumField('TypeValueValuesEnum', 3)
+  sourceDatabase = _messages.StringField(3)
+  type = _messages.EnumField('TypeValueValuesEnum', 4)
 
 
 class Empty(_messages.Message):
@@ -257,9 +263,11 @@ class ExportMetadataRequest(_messages.Message):
     Values:
       TYPE_UNSPECIFIED: The type of the database dump is unknown.
       MYSQL: Database dump is a MySQL dump file.
+      AVRO: Database dump contains Avro files.
     """
     TYPE_UNSPECIFIED = 0
     MYSQL = 1
+    AVRO = 2
 
   databaseDumpType = _messages.EnumField('DatabaseDumpTypeValueValuesEnum', 1)
   destinationGcsFolder = _messages.StringField(2)
@@ -613,9 +621,11 @@ class MetadataExport(_messages.Message):
     Values:
       TYPE_UNSPECIFIED: The type of the database dump is unknown.
       MYSQL: Database dump is a MySQL dump file.
+      AVRO: Database dump contains Avro files.
     """
     TYPE_UNSPECIFIED = 0
     MYSQL = 1
+    AVRO = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The current state of the export.
@@ -830,6 +840,27 @@ class MetastoreProjectsLocationsServicesBackupsDeleteRequest(_messages.Message):
   requestId = _messages.StringField(2)
 
 
+class MetastoreProjectsLocationsServicesBackupsGetIamPolicyRequest(_messages.Message):
+  r"""A MetastoreProjectsLocationsServicesBackupsGetIamPolicyRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The policy format version to be
+      returned.Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected.Requests for policies with any conditional
+      bindings must specify version 3. Policies without any conditional
+      bindings may specify any valid value or leave the field unset.To learn
+      which resources support conditions in their IAM policies, see the IAM
+      documentation (https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
 class MetastoreProjectsLocationsServicesBackupsGetRequest(_messages.Message):
   r"""A MetastoreProjectsLocationsServicesBackupsGetRequest object.
 
@@ -871,6 +902,21 @@ class MetastoreProjectsLocationsServicesBackupsListRequest(_messages.Message):
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
+
+
+class MetastoreProjectsLocationsServicesBackupsSetIamPolicyRequest(_messages.Message):
+  r"""A MetastoreProjectsLocationsServicesBackupsSetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
 
 
 class MetastoreProjectsLocationsServicesCreateRequest(_messages.Message):

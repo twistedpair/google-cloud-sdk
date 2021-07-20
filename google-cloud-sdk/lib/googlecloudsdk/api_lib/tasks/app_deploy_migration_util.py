@@ -671,6 +671,7 @@ def DeployQueuesYamlFile(
       return self._relative_path
 
   queue_yaml = config.parsed
+  resume_paused_queues = queue_yaml.resume_paused_queues != 'False'
   queues_client = tasks_api.queues
   queues_not_present_in_yaml = set(all_queues_in_db_dict.keys())
 
@@ -699,16 +700,17 @@ def DeployQueuesYamlFile(
     cur_queue_object = all_queues_in_db_dict.get(queue.name, None)
     cloud_task_args = _PopulateCloudTasksArgs(queue, cur_queue_object,
                                               expected_args)
-
     rate_to_set = cloud_task_args.GetValue('max_dispatches_per_second')
+
     if (
+        resume_paused_queues and
         cur_queue_object and
         (rate_to_set or queue.mode == constants.PULL_QUEUE) and
         cur_queue_object.state in (cur_queue_object.state.DISABLED,
                                    cur_queue_object.state.PAUSED)
     ):
-      # Resume queue if it exists, was previously disabled/paused and the
-      # new rate > 0
+      # Resume queue if it exists, was previously disabled/paused, the new
+      # rate > 0 and if there is no global flag to skip resuming paused queues.
       queues_client.Resume(queue_ref)
     elif (
         cur_queue_object and

@@ -771,6 +771,8 @@ def AutoscalerForMig(mig_name, autoscalers, location, scope_type):
   Returns:
     Autoscaler object for autoscaling the given Instance Group Manager or None
     when such Autoscaler does not exist.
+  Raises:
+    InvalidArgumentError: if more than one autoscaler provided
   """
   autoscalers = AutoscalersForMigs(
       [(mig_name, scope_type, location)], autoscalers)
@@ -781,7 +783,7 @@ def AutoscalerForMig(mig_name, autoscalers, location, scope_type):
     if len(autoscalers) == 1:
       return autoscalers[0]
     else:
-      raise calliope_exceptions.ToolException(
+      raise InvalidArgumentError(
           'More than one Autoscaler with given target.')
   return None
 
@@ -1262,10 +1264,12 @@ def ValidateVersions(igm_info, new_versions, resources, force=False):
     force: if true, we allow any combination of instance templates, as long as
     they are different. If false, only the following transitions are allowed: X
       -> Y, X -> (X, Y), (X, Y) -> X, (X, Y) -> Y, (X, Y) -> (X, Y)
+  Raises:
+     InvalidArgumentError: if provided arguments are not complete or invalid.
   """
   if (len(new_versions) == 2 and
       new_versions[0].instanceTemplate == new_versions[1].instanceTemplate):
-    raise calliope_exceptions.ToolException(
+    raise InvalidArgumentError(
         'Provided instance templates must be different.')
   if force:
     return
@@ -1283,7 +1287,7 @@ def ValidateVersions(igm_info, new_versions, resources, force=False):
         resources.ParseURL(igm_info.instanceTemplate).RelativeName()
     ]
   else:
-    raise calliope_exceptions.ToolException(
+    raise InvalidArgumentError(
         'Either versions or instance template must be specified for '
         'managed instance group.')
 
@@ -1294,7 +1298,7 @@ def ValidateVersions(igm_info, new_versions, resources, force=False):
 
   version_count = len(_GetInstanceTemplatesSet(igm_templates, new_templates))
   if version_count > 2:
-    raise calliope_exceptions.ToolException(
+    raise InvalidArgumentError(
         'Update inconsistent with current state. '
         'The only allowed transitions between versions are: '
         'X -> Y, X -> (X, Y), (X, Y) -> X, (X, Y) -> Y, (X, Y) -> (X, Y). '

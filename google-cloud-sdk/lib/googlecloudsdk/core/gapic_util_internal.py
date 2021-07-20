@@ -23,9 +23,9 @@ import os
 import time
 
 from google.api_core import bidi
-import google.api_core.gapic_v1.client_info
 from googlecloudsdk.api_lib.util import api_enablement
 from googlecloudsdk.calliope import base
+from googlecloudsdk.core import config
 from googlecloudsdk.core import context_aware
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
@@ -315,13 +315,10 @@ class BidiRpc(bidi.ResumableBidiRpc):
             yield. This is useful if an initial request is needed to start the
             stream.
     """
-    client_info = google.api_core.gapic_v1.client_info.ClientInfo(
-        user_agent=core_transport.MakeUserAgentString())
     super(BidiRpc, self).__init__(
         start_rpc,
         initial_request=initial_request,
-        should_recover=ShouldRecover(client.credentials),
-        metadata=[client_info.to_grpc_metadata()])
+        should_recover=ShouldRecover(client.credentials))
 
 
 class _ClientCallDetails(
@@ -422,6 +419,22 @@ def RequestReasonInterceptor():
 def AsyncRequestReasonInterceptor():
   """Returns an interceptor that adds a request reason header."""
   return AsyncHeaderAdderInterceptor(_GetRequestReasonHeader)
+
+
+def _GetUserAgentHeader():
+  """Returns the user agent headers to be used."""
+  user_agent = core_transport.MakeUserAgentString()
+  return [('user-agent', config.CLOUDSDK_USER_AGENT + ' ' + user_agent)]
+
+
+def UserAgentInterceptor():
+  """Returns an interceptor that adds a user agent header."""
+  return HeaderAdderInterceptor(_GetUserAgentHeader)
+
+
+def AsyncUserAgentInterceptor():
+  """Returns an interceptor that adds a user agent header."""
+  return AsyncHeaderAdderInterceptor(_GetUserAgentHeader)
 
 
 def _AddTimeout():
@@ -832,6 +845,7 @@ def MakeTransport(client_class, credentials, address_override_func,
 
   interceptors = []
   interceptors.append(RequestReasonInterceptor())
+  interceptors.append(UserAgentInterceptor())
   interceptors.append(TimeoutInterceptor())
   interceptors.append(IAMAuthHeadersInterceptor())
   interceptors.append(RPCDurationReporterInterceptor())
@@ -843,9 +857,7 @@ def MakeTransport(client_class, credentials, address_override_func,
   channel = grpc.intercept_channel(channel, *interceptors)
   return transport_class(
       channel=channel,
-      host=address,
-      client_info=google.api_core.gapic_v1.client_info.ClientInfo(
-          user_agent=core_transport.MakeUserAgentString()))
+      host=address)
 
 
 def MakeAsyncTransport(client_class, credentials, address_override_func,
@@ -856,6 +868,7 @@ def MakeAsyncTransport(client_class, credentials, address_override_func,
 
   interceptors = []
   interceptors.append(AsyncRequestReasonInterceptor())
+  interceptors.append(AsyncUserAgentInterceptor())
   interceptors.append(AsyncTimeoutInterceptor())
   interceptors.append(AsyncIAMAuthHeadersInterceptor())
 
@@ -868,7 +881,5 @@ def MakeAsyncTransport(client_class, credentials, address_override_func,
 
   return transport_class(
       channel=channel,
-      host=address,
-      client_info=google.api_core.gapic_v1.client_info.ClientInfo(
-          user_agent=core_transport.MakeUserAgentString()))
+      host=address)
 

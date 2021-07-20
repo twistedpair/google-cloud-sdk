@@ -1309,3 +1309,11 @@ def PrivatizeFile(path):
     # EnvironmentError is parent of IOError, OSError and WindowsError.
     # Raised when file does not exist or can't be opened/read.
     raise Error('Unable to create private file [{0}]: {1}'.format(path, e))
+
+
+def FilteredFileReader(file_path, regex):
+  """Read all lines from a text file matching regex."""
+  with FileReader(file_path) as f:
+    for line in f:
+      if regex.match(line):
+        yield line

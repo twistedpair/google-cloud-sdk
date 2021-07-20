@@ -1176,8 +1176,7 @@ def _ConvertGoogleAuthCredentialsToADC(credentials):
         'private_key': credentials.private_key,
         'client_id': credentials.client_id
     }
-  if creds_type == CredentialTypeGoogleAuth.EXTERNAL_ACCOUNT and hasattr(
-      credentials, 'info'):
+  if creds_type == CredentialTypeGoogleAuth.EXTERNAL_ACCOUNT:
     return credentials.info
   raise ADCError('Cannot convert credentials of type {} to application '
                  'default credentials.'.format(type(credentials)))

@@ -114,7 +114,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a new backup run on demand. This method is applicable only to Second Generation instances.
+      r"""Creates a new backup run on demand.
 
       Args:
         request: (SqlBackupRunsInsertRequest) input message
@@ -404,7 +404,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
           }
 
     def List(self, request, global_params=None):
-      r"""List all available database flags for Cloud SQL instances.
+      r"""Lists all available database flags for Cloud SQL instances.
 
       Args:
         request: (SqlFlagsListRequest) input message
@@ -570,7 +570,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
     )
 
     def Failover(self, request, global_params=None):
-      r"""Failover the instance to its failover replica instance. Using this operation might cause your instance to restart.
+      r"""Initiates a manual failover of a high availability (HA) primary instance to a standby instance, which becomes the primary instance. Users are then rerouted to the new primary. For more information, see the Overview of high availability page in the Cloud SQL documentation. If using Legacy HA (MySQL only), this causes the instance to failover to its failover replica instance.
 
       Args:
         request: (SqlInstancesFailoverRequest) input message

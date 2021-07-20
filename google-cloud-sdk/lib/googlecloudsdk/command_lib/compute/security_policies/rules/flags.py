@@ -92,12 +92,25 @@ def AddPreview(parser, default):
       help='If specified, the action will not be enforced.')
 
 
-def AddRedirectTarget(parser):
-  """Adds redirect-target argument to the argparse."""
+def AddRedirectOptions(parser):
+  """Adds redirect action related argument to the argparse."""
+  redirect_type = ['google-recaptcha', 'external-302']
+  parser.add_argument(
+      '--redirect-type',
+      choices=redirect_type,
+      type=lambda x: x.lower(),
+      help="""\
+      Type for the redirect action. Default to ``external-302'' if unspecified
+      while --redirect-target is given.
+      """)
+
   parser.add_argument(
       '--redirect-target',
-      help=('The URL to which traffic is routed when the rule action is set to'
-            ' "redirect".'))
+      help="""\
+      URL target for the redirect action. Must be specified if the redirect
+      type is ``external-302''. Cannot be specified if the redirect type is
+      ``google-recaptcha''.
+      """)
 
 
 def AddRateLimitOptions(parser):

@@ -39,15 +39,55 @@ class DataplexV1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.projects_locations_lakes_actions = self.ProjectsLocationsLakesActionsService(self)
     self.projects_locations_lakes_content = self.ProjectsLocationsLakesContentService(self)
     self.projects_locations_lakes_environments = self.ProjectsLocationsLakesEnvironmentsService(self)
     self.projects_locations_lakes_tasks = self.ProjectsLocationsLakesTasksService(self)
+    self.projects_locations_lakes_zones_actions = self.ProjectsLocationsLakesZonesActionsService(self)
+    self.projects_locations_lakes_zones_assets_actions = self.ProjectsLocationsLakesZonesAssetsActionsService(self)
     self.projects_locations_lakes_zones_assets = self.ProjectsLocationsLakesZonesAssetsService(self)
     self.projects_locations_lakes_zones = self.ProjectsLocationsLakesZonesService(self)
     self.projects_locations_lakes = self.ProjectsLocationsLakesService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class ProjectsLocationsLakesActionsService(base_api.BaseApiService):
+    """Service class for the projects_locations_lakes_actions resource."""
+
+    _NAME = 'projects_locations_lakes_actions'
+
+    def __init__(self, client):
+      super(DataplexV1.ProjectsLocationsLakesActionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists action resources in a lake.
+
+      Args:
+        request: (DataplexProjectsLocationsLakesActionsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1ListActionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/actions',
+        http_method='GET',
+        method_id='dataplex.projects.locations.lakes.actions.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/actions',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsLakesActionsListRequest',
+        response_type_name='GoogleCloudDataplexV1ListActionsResponse',
+        supports_download=False,
+    )
 
   class ProjectsLocationsLakesContentService(base_api.BaseApiService):
     """Service class for the projects_locations_lakes_content resource."""
@@ -319,6 +359,80 @@ class DataplexV1(base_api.BaseApiClient):
         request_field='googleIamV1TestIamPermissionsRequest',
         request_type_name='DataplexProjectsLocationsLakesTasksTestIamPermissionsRequest',
         response_type_name='GoogleIamV1TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsLakesZonesActionsService(base_api.BaseApiService):
+    """Service class for the projects_locations_lakes_zones_actions resource."""
+
+    _NAME = 'projects_locations_lakes_zones_actions'
+
+    def __init__(self, client):
+      super(DataplexV1.ProjectsLocationsLakesZonesActionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists action resources in a zone.
+
+      Args:
+        request: (DataplexProjectsLocationsLakesZonesActionsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1ListActionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/zones/{zonesId}/actions',
+        http_method='GET',
+        method_id='dataplex.projects.locations.lakes.zones.actions.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/actions',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsLakesZonesActionsListRequest',
+        response_type_name='GoogleCloudDataplexV1ListActionsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsLakesZonesAssetsActionsService(base_api.BaseApiService):
+    """Service class for the projects_locations_lakes_zones_assets_actions resource."""
+
+    _NAME = 'projects_locations_lakes_zones_assets_actions'
+
+    def __init__(self, client):
+      super(DataplexV1.ProjectsLocationsLakesZonesAssetsActionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists action resources in an asset.
+
+      Args:
+        request: (DataplexProjectsLocationsLakesZonesAssetsActionsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1ListActionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/zones/{zonesId}/assets/{assetsId}/actions',
+        http_method='GET',
+        method_id='dataplex.projects.locations.lakes.zones.assets.actions.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/actions',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsLakesZonesAssetsActionsListRequest',
+        response_type_name='GoogleCloudDataplexV1ListActionsResponse',
         supports_download=False,
     )
 

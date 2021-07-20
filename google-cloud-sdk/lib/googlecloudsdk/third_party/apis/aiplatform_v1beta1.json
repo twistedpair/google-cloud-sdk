@@ -759,7 +759,9 @@
             "Nvidia Tesla V100 GPU.",
             "Nvidia Tesla P4 GPU.",
             "Nvidia Tesla T4 GPU.",
-            "Nvidia Tesla A100 GPU."
+            "Nvidia Tesla A100 GPU.",
+            "TPU v2.",
+            "TPU v3."
           ],
           "enum": [
             "ACCELERATOR_TYPE_UNSPECIFIED",
@@ -768,7 +770,9 @@
             "NVIDIA_TESLA_V100",
             "NVIDIA_TESLA_P4",
             "NVIDIA_TESLA_T4",
-            "NVIDIA_TESLA_A100"
+            "NVIDIA_TESLA_A100",
+            "TPU_V2",
+            "TPU_V3"
           ]
         },
         "acceleratorCount": {
@@ -2357,6 +2361,13 @@
         "deployedIndexAuthConfig": {
           "description": "Optional. If set, the authentication is enabled for the private endpoint.",
           "$ref": "GoogleCloudAiplatformV1beta1DeployedIndexAuthConfig"
+        },
+        "reservedIpRanges": {
+          "description": "Optional. A list of reserved ip ranges under the VPC network that can be used for this DeployedIndex. If set, we will deploy the index within the provided ip ranges. Otherwise, the index might be deployed to any ip ranges under the provided VPC network. The value sohuld be the name of the address (https:\/\/cloud.google.com\/compute\/docs\/reference\/rest\/v1\/addresses) Example: 'vertex-ai-ip-range'.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -4654,6 +4665,21 @@
         }
       }
     },
+    "GoogleCloudAiplatformV1beta1PurgeArtifactsRequest": {
+      "id": "GoogleCloudAiplatformV1beta1PurgeArtifactsRequest",
+      "description": "Request message for MetadataService.PurgeArtifacts.",
+      "type": "object",
+      "properties": {
+        "filter": {
+          "description": "Required. A required filter matching the Artifacts to be purged. E.g., update_time <= 2020-11-19T11:30:00-04:00.",
+          "type": "string"
+        },
+        "force": {
+          "description": "Optional. Flag to indicate to actually perform the purge. If `force` is set to false, the method will return a sample of Artifact names that would be deleted.",
+          "type": "boolean"
+        }
+      }
+    },
     "GoogleCloudAiplatformV1beta1Context": {
       "id": "GoogleCloudAiplatformV1beta1Context",
       "description": "Instance of a general context.",
@@ -4736,6 +4762,21 @@
         "nextPageToken": {
           "description": "A token, which can be sent as ListContextsRequest.page_token to retrieve the next page. If this field is not populated, there are no subsequent pages.",
           "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1PurgeContextsRequest": {
+      "id": "GoogleCloudAiplatformV1beta1PurgeContextsRequest",
+      "description": "Request message for MetadataService.PurgeContexts.",
+      "type": "object",
+      "properties": {
+        "filter": {
+          "description": "Required. A required filter matching the Contexts to be purged. E.g., update_time <= 2020-11-19T11:30:00-04:00.",
+          "type": "string"
+        },
+        "force": {
+          "description": "Optional. Flag to indicate to actually perform the purge. If `force` is set to false, the method will return a sample of Context names that would be deleted.",
+          "type": "boolean"
         }
       }
     },
@@ -4955,6 +4996,21 @@
         "nextPageToken": {
           "description": "A token, which can be sent as ListExecutionsRequest.page_token to retrieve the next page. If this field is not populated, there are no subsequent pages.",
           "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1PurgeExecutionsRequest": {
+      "id": "GoogleCloudAiplatformV1beta1PurgeExecutionsRequest",
+      "description": "Request message for MetadataService.PurgeExecutions.",
+      "type": "object",
+      "properties": {
+        "filter": {
+          "description": "Required. A required filter matching the Executions to be purged. E.g., update_time <= 2020-11-19T11:30:00-04:00.",
+          "type": "string"
+        },
+        "force": {
+          "description": "Optional. Flag to indicate to actually perform the purge. If `force` is set to false, the method will return a sample of Execution names that would be deleted.",
+          "type": "boolean"
         }
       }
     },
@@ -7986,7 +8042,9 @@
             "Nvidia Tesla V100 GPU.",
             "Nvidia Tesla P4 GPU.",
             "Nvidia Tesla T4 GPU.",
-            "Nvidia Tesla A100 GPU."
+            "Nvidia Tesla A100 GPU.",
+            "TPU v2.",
+            "TPU v3."
           ],
           "enum": [
             "ACCELERATOR_TYPE_UNSPECIFIED",
@@ -7995,7 +8053,9 @@
             "NVIDIA_TESLA_V100",
             "NVIDIA_TESLA_P4",
             "NVIDIA_TESLA_T4",
-            "NVIDIA_TESLA_A100"
+            "NVIDIA_TESLA_A100",
+            "TPU_V2",
+            "TPU_V3"
           ]
         },
         "acceleratorCount": {
@@ -10421,7 +10481,9 @@
             "Nvidia Tesla V100 GPU.",
             "Nvidia Tesla P4 GPU.",
             "Nvidia Tesla T4 GPU.",
-            "Nvidia Tesla A100 GPU."
+            "Nvidia Tesla A100 GPU.",
+            "TPU v2.",
+            "TPU v3."
           ],
           "enum": [
             "ACCELERATOR_TYPE_UNSPECIFIED",
@@ -10430,7 +10492,9 @@
             "NVIDIA_TESLA_V100",
             "NVIDIA_TESLA_P4",
             "NVIDIA_TESLA_T4",
-            "NVIDIA_TESLA_A100"
+            "NVIDIA_TESLA_A100",
+            "TPU_V2",
+            "TPU_V3"
           ]
         },
         "acceleratorCount": {
@@ -13071,6 +13135,10 @@
         "genericMetadata": {
           "description": "The operation generic information.",
           "$ref": "GoogleCloudAiplatformV1alpha1GenericOperationMetadata"
+        },
+        "deployedIndexId": {
+          "description": "The unique index id specified by user",
+          "type": "string"
         }
       }
     },
@@ -14598,6 +14666,10 @@
         "genericMetadata": {
           "description": "The operation generic information.",
           "$ref": "GoogleCloudAiplatformV1beta1GenericOperationMetadata"
+        },
+        "deployedIndexId": {
+          "description": "The unique index id specified by user",
+          "type": "string"
         }
       }
     },
@@ -17591,7 +17663,9 @@
             "Nvidia Tesla V100 GPU.",
             "Nvidia Tesla P4 GPU.",
             "Nvidia Tesla T4 GPU.",
-            "Nvidia Tesla A100 GPU."
+            "Nvidia Tesla A100 GPU.",
+            "TPU v2.",
+            "TPU v3."
           ],
           "enum": [
             "ACCELERATOR_TYPE_UNSPECIFIED",
@@ -17600,7 +17674,9 @@
             "NVIDIA_TESLA_V100",
             "NVIDIA_TESLA_P4",
             "NVIDIA_TESLA_T4",
-            "NVIDIA_TESLA_A100"
+            "NVIDIA_TESLA_A100",
+            "TPU_V2",
+            "TPU_V3"
           ]
         },
         "acceleratorCount": {
@@ -25982,6 +26058,34 @@
                       ],
                       "description": "Deletes an Artifact."
                     },
+                    "purge": {
+                      "id": "aiplatform.projects.locations.metadataStores.artifacts.purge",
+                      "path": "v1beta1/{+parent}/artifacts:purge",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/metadataStores/{metadataStoresId}/artifacts:purge",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The metadata store to purge Artifacts from. Format: projects\/{project}\/locations\/{location}\/metadataStores\/{metadatastore}",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/metadataStores\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "GoogleCloudAiplatformV1beta1PurgeArtifactsRequest"
+                      },
+                      "response": {
+                        "$ref": "GoogleLongrunningOperation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Purges Artifacts."
+                    },
                     "queryArtifactLineageSubgraph": {
                       "id": "aiplatform.projects.locations.metadataStores.artifacts.queryArtifactLineageSubgraph",
                       "path": "v1beta1/{+artifact}:queryArtifactLineageSubgraph",
@@ -26194,6 +26298,34 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Deletes a stored Context."
+                    },
+                    "purge": {
+                      "id": "aiplatform.projects.locations.metadataStores.contexts.purge",
+                      "path": "v1beta1/{+parent}/contexts:purge",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/metadataStores/{metadataStoresId}/contexts:purge",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The metadata store to purge Contexts from. Format: projects\/{project}\/locations\/{location}\/metadataStores\/{metadatastore}",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/metadataStores\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "GoogleCloudAiplatformV1beta1PurgeContextsRequest"
+                      },
+                      "response": {
+                        "$ref": "GoogleLongrunningOperation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Purges Contexts."
                     },
                     "addContextArtifactsAndExecutions": {
                       "id": "aiplatform.projects.locations.metadataStores.contexts.addContextArtifactsAndExecutions",
@@ -26447,6 +26579,34 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Deletes an Execution."
+                    },
+                    "purge": {
+                      "id": "aiplatform.projects.locations.metadataStores.executions.purge",
+                      "path": "v1beta1/{+parent}/executions:purge",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/metadataStores/{metadataStoresId}/executions:purge",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The metadata store to purge Executions from. Format: projects\/{project}\/locations\/{location}\/metadataStores\/{metadatastore}",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/metadataStores\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "GoogleCloudAiplatformV1beta1PurgeExecutionsRequest"
+                      },
+                      "response": {
+                        "$ref": "GoogleLongrunningOperation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Purges Executions."
                     },
                     "addExecutionEvents": {
                       "id": "aiplatform.projects.locations.metadataStores.executions.addExecutionEvents",

@@ -891,8 +891,10 @@ class Documentation(_messages.Message):
       service name from the yaml file) is not suitable. This can be seen in
       any fully specified service urls as well as sections that show a base
       that other urls are relative to.
-    summary: A short summary of what the service does. Can only be provided by
-      plain text.
+    summary: A short description of what the service does. The summary must be
+      plain text. It becomes the overview of the service displayed in Google
+      Cloud Console. NOTE: This field is equivalent to the standard field
+      `description`.
   """
 
   documentationRootUrl = _messages.StringField(1)
@@ -909,9 +911,12 @@ class DocumentationRule(_messages.Message):
   Fields:
     deprecationDescription: Deprecation description of the selected
       element(s). It can be provided if an element is marked as `deprecated`.
-    description: Description of the selected API(s).
-    selector: The selector is a comma-separated list of patterns. Each pattern
-      is a qualified name of the element which may end in "*", indicating a
+    description: The description is the comment in front of the selected proto
+      element, such as a message, a method, a 'service' definition, or a
+      field.
+    selector: The selector is a comma-separated list of patterns for any
+      element such as a method, a field, an enum value. Each pattern is a
+      qualified name of the element which may end in "*", indicating a
       wildcard. Wildcards are only allowed at the end and for a whole
       component of the qualified name, i.e. "foo.*" is ok, but not "foo.b*" or
       "foo.*.bar". A wildcard will match one or more components. To specify a
@@ -2608,7 +2613,8 @@ class Page(_messages.Message):
 
   Fields:
     content: The Markdown content of the page. You can use (== include {path}
-      ==) to include content from a Markdown file.
+      ==) to include content from a Markdown file. The content can be used to
+      produce the documentation page such as HTML format page.
     name: The name of the page. It will be used as an identity of the page to
       generate URI of the page, text of the link to this page in navigation,
       etc. The full page name (start from the root page name to this page
@@ -3401,7 +3407,8 @@ class Service(_messages.Message):
     enums: A list of all enum types included in this API service. Enums
       referenced directly or indirectly by the `apis` are automatically
       included. Enums which are not referenced but shall be included should be
-      listed here by name. Example: enums: - name: google.someapi.v1.SomeEnum
+      listed here by name by the configuration author. Example: enums: - name:
+      google.someapi.v1.SomeEnum
     http: HTTP configuration.
     id: A unique ID for a specific instance of this message, typically
       assigned by the client for tracking purpose. Must be no longer than 63
@@ -3428,12 +3435,14 @@ class Service(_messages.Message):
       that these types are not needed by user-defined APIs. Therefore, they
       will not show up in the generated discovery doc. This field should only
       be used to define system APIs in ESF.
-    title: The product title for this service.
+    title: The product title for this service, it is the name displayed in
+      Google Cloud Console.
     types: A list of all proto message types included in this API service.
       Types referenced directly or indirectly by the `apis` are automatically
       included. Messages which are not referenced but shall be included, such
       as types used by the `google.protobuf.Any` type, should be listed here
-      by name. Example: types: - name: google.protobuf.Int32
+      by name by the configuration author. Example: types: - name:
+      google.protobuf.Int32
     usage: Configuration controlling usage of this service.
   """
 

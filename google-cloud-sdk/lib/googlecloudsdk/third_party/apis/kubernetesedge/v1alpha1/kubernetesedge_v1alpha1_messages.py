@@ -942,7 +942,7 @@ class ListSitesResponse(_messages.Message):
 
 
 class ListVpnConnectionsResponse(_messages.Message):
-  r"""List of VPN connections in a site.
+  r"""List of VPN connections in a location.
 
   Fields:
     nextPageToken: A token to retrieve next page of results.
@@ -1571,8 +1571,7 @@ class VpnConnection(_messages.Message):
       used.
     updateTime: Output only. The time when the VPN connection was last
       updated.
-    vpc: The canonical VPC name to connect to. It is in the form of
-      projects/{project}/locations/{location}/vpcs/{vpc}.
+    vpc: The network ID of VPC to connect to.
   """
 
   class BgpRoutingModeValueValuesEnum(_messages.Enum):

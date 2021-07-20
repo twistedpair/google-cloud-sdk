@@ -737,7 +737,7 @@
           "type": "boolean"
         },
         "idleShutdownTimeout": {
-          "description": "Time in minutes to wait before shuting down runtime. Default: 90 minutes",
+          "description": "Time in minutes to wait before shuting down runtime. Default: 30 minutes",
           "type": "integer",
           "format": "int32"
         },
@@ -804,6 +804,45 @@
       "description": "Request for reseting a Managed Notebook Runtime.",
       "type": "object",
       "properties": {
+      }
+    },
+    "ReportRuntimeEventRequest": {
+      "id": "ReportRuntimeEventRequest",
+      "description": "Request for reporting a Managed Notebook Event.",
+      "type": "object",
+      "properties": {
+        "vmId": {
+          "description": "Required. The VM hardware token for authenticating the VM. https:\/\/cloud.google.com\/compute\/docs\/instances\/verifying-instance-identity",
+          "type": "string"
+        },
+        "event": {
+          "description": "Required. The Event to be reported.",
+          "$ref": "Event"
+        }
+      }
+    },
+    "Event": {
+      "id": "Event",
+      "description": "The definition of an Event for a managed \/ semi-managed notebook instance.",
+      "type": "object",
+      "properties": {
+        "reportTime": {
+          "description": "Event report time.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "type": {
+          "description": "Event type.",
+          "type": "string",
+          "enumDescriptions": [
+            "Event is not specified.",
+            "The instance \/ runtime is idle"
+          ],
+          "enum": [
+            "EVENT_TYPE_UNSPECIFIED",
+            "IDLE"
+          ]
+        }
       }
     },
     "ListInstancesResponse": {
@@ -1652,7 +1691,8 @@
             "The job is paused by the user. It will not execute. A user can intentionally pause the job using PauseJobRequest.",
             "The job is disabled by the system due to error. The user cannot directly set a job to be disabled.",
             "The job state resulting from a failed CloudScheduler.UpdateJob operation. To recover a job from this state, retry CloudScheduler.UpdateJob until a successful response is received.",
-            "The schedule resource is being created."
+            "The schedule resource is being created.",
+            "The schedule resource is being deleted."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
@@ -1660,7 +1700,8 @@
             "PAUSED",
             "DISABLED",
             "UPDATE_FAILED",
-            "INITIALIZING"
+            "INITIALIZING",
+            "DELETING"
           ]
         },
         "cronSchedule": {
@@ -1703,7 +1744,7 @@
       "type": "object",
       "properties": {
         "scaleTier": {
-          "description": "Required. Scale tier of the hardware used for notebook execution.",
+          "description": "Required. Scale tier of the hardware used for notebook execution. DEPRECATED Will be discontinued. As right now only CUSTOM is supported.",
           "type": "string",
           "enumDescriptions": [
             "Unspecified Scale Tier.",
@@ -2487,6 +2528,34 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Resets a Managed Notebook Runtime."
+                },
+                "reportEvent": {
+                  "id": "notebooks.projects.locations.runtimes.reportEvent",
+                  "path": "v1/{+name}:reportEvent",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/runtimes/{runtimesId}:reportEvent",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Format: `projects\/{project_id}\/locations\/{location}\/runtimes\/{runtime_id}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/runtimes\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "ReportRuntimeEventRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Report and process a runtime event."
                 }
               }
             },

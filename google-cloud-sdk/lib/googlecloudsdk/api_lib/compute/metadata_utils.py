@@ -23,7 +23,7 @@ import copy
 from googlecloudsdk.api_lib.compute import constants
 from googlecloudsdk.api_lib.compute import exceptions
 from googlecloudsdk.calliope import arg_parsers
-from googlecloudsdk.calliope import exceptions as calliope_exceptions
+from googlecloudsdk.command_lib.compute import exceptions as compute_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core.util import files
 
@@ -137,7 +137,7 @@ def ConstructMetadataDict(metadata=None, metadata_from_file=None):
   new_metadata_dict = copy.deepcopy(metadata)
   for key, file_path in six.iteritems(metadata_from_file):
     if key in new_metadata_dict:
-      raise calliope_exceptions.ToolException(
+      raise compute_exceptions.DuplicateError(
           'Encountered duplicate metadata key [{0}].'.format(key))
     new_metadata_dict[key] = files.ReadFileContents(file_path)
   return new_metadata_dict

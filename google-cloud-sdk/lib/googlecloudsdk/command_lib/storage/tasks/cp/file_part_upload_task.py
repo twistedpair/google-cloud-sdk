@@ -209,6 +209,14 @@ class FilePartUploadTask(file_part_task.FilePartTask):
           del exc_traceback  # Unused.
           if not (exc_type is api_errors.NotFoundError or
                   getattr(exc_value, 'status_code', None) == 410):
+
+            if exc_type is api_errors.ResumableUploadAbortError:
+              tracker_file_util.delete_tracker_file(tracker_file_path)
+
+            # Otherwise the error is probably a persistent network issue
+            # that is already retried by API clients, so we'll keep the tracker
+            # file to allow the user to retry the upload in a separate run.
+
             return False
 
           tracker_file_util.delete_tracker_file(tracker_file_path)

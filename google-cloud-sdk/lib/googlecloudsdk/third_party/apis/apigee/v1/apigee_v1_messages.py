@@ -409,6 +409,22 @@ class ApigeeOrganizationsApisListRequest(_messages.Message):
   parent = _messages.StringField(3, required=True)
 
 
+class ApigeeOrganizationsApisPatchRequest(_messages.Message):
+  r"""A ApigeeOrganizationsApisPatchRequest object.
+
+  Fields:
+    googleCloudApigeeV1ApiProxy: A GoogleCloudApigeeV1ApiProxy resource to be
+      passed as the request body.
+    name: Required. API proxy to update in the following format:
+      `organizations/{org}/apis/{api}`
+    updateMask: Required. The list of fields to update.
+  """
+
+  googleCloudApigeeV1ApiProxy = _messages.MessageField('GoogleCloudApigeeV1ApiProxy', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
 class ApigeeOrganizationsApisRevisionsDeleteRequest(_messages.Message):
   r"""A ApigeeOrganizationsApisRevisionsDeleteRequest object.
 
@@ -6596,6 +6612,15 @@ class GoogleCloudApigeeV1Organization(_messages.Message):
   Enums:
     BillingTypeValueValuesEnum: Billing type of the Apigee organization. See
       [Apigee pricing](https://cloud.google.com/apigee/pricing).
+    ReleaseChannelValueValuesEnum: Release channel influences the timing and
+      frequency of new updates to the Apigee runtimes instances of the
+      organization. It can be either STABLE, REGULAR, or RAPID. It can be
+      selected during creation of the Organization and it can also be updated
+      later on. Each channel has its own combination of release frequency and
+      stability expectations. The RAPID channel will get updates early and
+      more often. The REGULAR channel will get updates after being validated
+      in the RAPID channel for some time. The STABLE channel will get updates
+      after being validated in the REGULAR channel for some time.
     RuntimeTypeValueValuesEnum: Required. Runtime type of the Apigee
       organization based on the Apigee subscription purchased.
     StateValueValuesEnum: Output only. State of the organization. Values other
@@ -6649,6 +6674,15 @@ class GoogleCloudApigeeV1Organization(_messages.Message):
     projectId: Output only. Project ID associated with the Apigee
       organization.
     properties: Properties defined in the Apigee organization profile.
+    releaseChannel: Release channel influences the timing and frequency of new
+      updates to the Apigee runtimes instances of the organization. It can be
+      either STABLE, REGULAR, or RAPID. It can be selected during creation of
+      the Organization and it can also be updated later on. Each channel has
+      its own combination of release frequency and stability expectations. The
+      RAPID channel will get updates early and more often. The REGULAR channel
+      will get updates after being validated in the RAPID channel for some
+      time. The STABLE channel will get updates after being validated in the
+      REGULAR channel for some time.
     runtimeDatabaseEncryptionKeyName: Cloud KMS key name used for encrypting
       the data that is stored and replicated across runtime instances. Update
       is not allowed after the organization is created. Required when
@@ -6684,6 +6718,28 @@ class GoogleCloudApigeeV1Organization(_messages.Message):
     SUBSCRIPTION = 1
     EVALUATION = 2
     PAYG = 3
+
+  class ReleaseChannelValueValuesEnum(_messages.Enum):
+    r"""Release channel influences the timing and frequency of new updates to
+    the Apigee runtimes instances of the organization. It can be either
+    STABLE, REGULAR, or RAPID. It can be selected during creation of the
+    Organization and it can also be updated later on. Each channel has its own
+    combination of release frequency and stability expectations. The RAPID
+    channel will get updates early and more often. The REGULAR channel will
+    get updates after being validated in the RAPID channel for some time. The
+    STABLE channel will get updates after being validated in the REGULAR
+    channel for some time.
+
+    Values:
+      RELEASE_CHANNEL_UNSPECIFIED: Release channel not specified.
+      STABLE: Stable release channel.
+      REGULAR: Regular release channel.
+      RAPID: Rapid release channel.
+    """
+    RELEASE_CHANNEL_UNSPECIFIED = 0
+    STABLE = 1
+    REGULAR = 2
+    RAPID = 3
 
   class RuntimeTypeValueValuesEnum(_messages.Enum):
     r"""Required. Runtime type of the Apigee organization based on the Apigee
@@ -6764,11 +6820,12 @@ class GoogleCloudApigeeV1Organization(_messages.Message):
   name = _messages.StringField(14)
   projectId = _messages.StringField(15)
   properties = _messages.MessageField('GoogleCloudApigeeV1Properties', 16)
-  runtimeDatabaseEncryptionKeyName = _messages.StringField(17)
-  runtimeType = _messages.EnumField('RuntimeTypeValueValuesEnum', 18)
-  state = _messages.EnumField('StateValueValuesEnum', 19)
-  subscriptionType = _messages.EnumField('SubscriptionTypeValueValuesEnum', 20)
-  type = _messages.EnumField('TypeValueValuesEnum', 21)
+  releaseChannel = _messages.EnumField('ReleaseChannelValueValuesEnum', 17)
+  runtimeDatabaseEncryptionKeyName = _messages.StringField(18)
+  runtimeType = _messages.EnumField('RuntimeTypeValueValuesEnum', 19)
+  state = _messages.EnumField('StateValueValuesEnum', 20)
+  subscriptionType = _messages.EnumField('SubscriptionTypeValueValuesEnum', 21)
+  type = _messages.EnumField('TypeValueValuesEnum', 22)
 
 
 class GoogleCloudApigeeV1OrganizationProjectMapping(_messages.Message):

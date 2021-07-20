@@ -147,15 +147,13 @@ class BuildArtifact(_messages.Message):
 
   Fields:
     image: Image name in Skaffold configuration.
-    imageName: Image name in Skaffold configuration.
     tag: Image tag to use. This will generally be the full path to an image,
       such as "gcr.io/my-project/busybox:1.2.3" or "gcr.io/my-
       project/busybox@sha256:abc123".
   """
 
   image = _messages.StringField(1)
-  imageName = _messages.StringField(2)
-  tag = _messages.StringField(3)
+  tag = _messages.StringField(2)
 
 
 class CancelOperationRequest(_messages.Message):
@@ -509,38 +507,6 @@ class ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsListRequest(_
   parent = _messages.StringField(5, required=True)
 
 
-class ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsTestIamPermissionsRequest(_messages.Message):
-  r"""A ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsTestIamPe
-  rmissionsRequest object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
-    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
-      passed as the request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
-
-
-class ClouddeployProjectsLocationsDeliveryPipelinesReleasesTestIamPermissionsRequest(_messages.Message):
-  r"""A ClouddeployProjectsLocationsDeliveryPipelinesReleasesTestIamPermission
-  sRequest object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
-    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
-      passed as the request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
-
-
 class ClouddeployProjectsLocationsDeliveryPipelinesSetIamPolicyRequest(_messages.Message):
   r"""A ClouddeployProjectsLocationsDeliveryPipelinesSetIamPolicyRequest
   object.
@@ -563,8 +529,8 @@ class ClouddeployProjectsLocationsDeliveryPipelinesTargetsCreateRequest(_message
 
   Fields:
     parent: Required. The parent collection in which the `Target` should be
-      created. Format should be projects/{project_id}/locations/{location_name
-      }/deliveryPipelines/{pipeline_name}.
+      created. Format should be
+      projects/{project_id}/locations/{location_name}.
     requestId: Optional. A request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
@@ -599,9 +565,8 @@ class ClouddeployProjectsLocationsDeliveryPipelinesTargetsDeleteRequest(_message
     etag: Optional. This checksum is computed by the server based on the value
       of other fields, and may be sent on update and delete requests to ensure
       the client has an up-to-date value before proceeding.
-    name: Required. The name of the `Target` to delete. Format should be proje
-      cts/{project_id}/locations/{location_name}/deliveryPipelines/{pipeline_n
-      ame}/targets/{target_name}.
+    name: Required. The name of the `Target` to delete. Format should be
+      projects/{project_id}/locations/{location_name}/targets/{target_name}.
     requestId: Optional. A request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
@@ -628,9 +593,8 @@ class ClouddeployProjectsLocationsDeliveryPipelinesTargetsGetRequest(_messages.M
   r"""A ClouddeployProjectsLocationsDeliveryPipelinesTargetsGetRequest object.
 
   Fields:
-    name: Required. Name of the `Target`. Format must be projects/{project_id}
-      /locations/{location_name}/deliveryPipelines/{pipeline_name}/targets/{ta
-      rget_name}.
+    name: Required. Name of the `Target`. Format must be
+      projects/{project_id}/locations/{location_name}/targets/{target_name}.
   """
 
   name = _messages.StringField(1, required=True)
@@ -652,8 +616,8 @@ class ClouddeployProjectsLocationsDeliveryPipelinesTargetsListRequest(_messages.
     pageToken: Optional. A page token, received from a previous `ListTargets`
       call. Provide this to retrieve the subsequent page. When paginating, all
       other provided parameters match the call that provided the page token.
-    parent: Required. The `DeliveryPipeline` which owns this collection of
-      `Target` objects.
+    parent: Required. The parent, which owns this collection of targets.
+      Format must be projects/{project_id}/locations/{location_name}.
   """
 
   filter = _messages.StringField(1)
@@ -700,22 +664,6 @@ class ClouddeployProjectsLocationsDeliveryPipelinesTargetsPatchRequest(_messages
   target = _messages.MessageField('Target', 4)
   updateMask = _messages.StringField(5)
   validateOnly = _messages.BooleanField(6)
-
-
-class ClouddeployProjectsLocationsDeliveryPipelinesTargetsTestIamPermissionsRequest(_messages.Message):
-  r"""A ClouddeployProjectsLocationsDeliveryPipelinesTargetsTestIamPermissions
-  Request object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
-    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
-      passed as the request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class ClouddeployProjectsLocationsDeliveryPipelinesTestIamPermissionsRequest(_messages.Message):
@@ -828,8 +776,8 @@ class ClouddeployProjectsLocationsTargetsCreateRequest(_messages.Message):
 
   Fields:
     parent: Required. The parent collection in which the `Target` should be
-      created. Format should be projects/{project_id}/locations/{location_name
-      }/deliveryPipelines/{pipeline_name}.
+      created. Format should be
+      projects/{project_id}/locations/{location_name}.
     requestId: Optional. A request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
@@ -863,9 +811,8 @@ class ClouddeployProjectsLocationsTargetsDeleteRequest(_messages.Message):
     etag: Optional. This checksum is computed by the server based on the value
       of other fields, and may be sent on update and delete requests to ensure
       the client has an up-to-date value before proceeding.
-    name: Required. The name of the `Target` to delete. Format should be proje
-      cts/{project_id}/locations/{location_name}/deliveryPipelines/{pipeline_n
-      ame}/targets/{target_name}.
+    name: Required. The name of the `Target` to delete. Format should be
+      projects/{project_id}/locations/{location_name}/targets/{target_name}.
     requestId: Optional. A request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
@@ -888,13 +835,33 @@ class ClouddeployProjectsLocationsTargetsDeleteRequest(_messages.Message):
   validateOnly = _messages.BooleanField(5)
 
 
+class ClouddeployProjectsLocationsTargetsGetIamPolicyRequest(_messages.Message):
+  r"""A ClouddeployProjectsLocationsTargetsGetIamPolicyRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The policy format version to be
+      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected. Requests for policies with any conditional
+      bindings must specify version 3. Policies without any conditional
+      bindings may specify any valid value or leave the field unset. To learn
+      which resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
 class ClouddeployProjectsLocationsTargetsGetRequest(_messages.Message):
   r"""A ClouddeployProjectsLocationsTargetsGetRequest object.
 
   Fields:
-    name: Required. Name of the `Target`. Format must be projects/{project_id}
-      /locations/{location_name}/deliveryPipelines/{pipeline_name}/targets/{ta
-      rget_name}.
+    name: Required. Name of the `Target`. Format must be
+      projects/{project_id}/locations/{location_name}/targets/{target_name}.
   """
 
   name = _messages.StringField(1, required=True)
@@ -915,8 +882,8 @@ class ClouddeployProjectsLocationsTargetsListRequest(_messages.Message):
     pageToken: Optional. A page token, received from a previous `ListTargets`
       call. Provide this to retrieve the subsequent page. When paginating, all
       other provided parameters match the call that provided the page token.
-    parent: Required. The `DeliveryPipeline` which owns this collection of
-      `Target` objects.
+    parent: Required. The parent, which owns this collection of targets.
+      Format must be projects/{project_id}/locations/{location_name}.
   """
 
   filter = _messages.StringField(1)
@@ -962,6 +929,36 @@ class ClouddeployProjectsLocationsTargetsPatchRequest(_messages.Message):
   target = _messages.MessageField('Target', 4)
   updateMask = _messages.StringField(5)
   validateOnly = _messages.BooleanField(6)
+
+
+class ClouddeployProjectsLocationsTargetsSetIamPolicyRequest(_messages.Message):
+  r"""A ClouddeployProjectsLocationsTargetsSetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class ClouddeployProjectsLocationsTargetsTestIamPermissionsRequest(_messages.Message):
+  r"""A ClouddeployProjectsLocationsTargetsTestIamPermissionsRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class Config(_messages.Message):
@@ -1618,8 +1615,6 @@ class PromoteReleaseRequest(_messages.Message):
       Values must conform to the regexp: [a-zA-Z0-9_-]{0,63} Both keys and
       values are additionally constrained to be <= 128 bytes in size.
     rolloutId: Optional. The ID to assign to the generated `Rollout`.
-    toTarget: Optional. The name of the `Target` to which we are promoting the
-      Release.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -1683,7 +1678,6 @@ class PromoteReleaseRequest(_messages.Message):
   destinationTarget = _messages.StringField(2)
   labels = _messages.MessageField('LabelsValue', 3)
   rolloutId = _messages.StringField(4)
-  toTarget = _messages.StringField(5)
 
 
 class PromoteReleaseResponse(_messages.Message):
@@ -1971,9 +1965,6 @@ class Rollout(_messages.Message):
     approvalState: Output only. Approval state of the `Rollout`.
     approveTime: Output only. Time at which the `Rollout` was approved.
     createTime: Output only. Time at which the `Rollout` was created.
-    deployBuild: Output only. The resource name of the Cloud Build `Build`
-      object that is used to deploy the Rollout. Format is
-      `projects/{project}/locations/{location}/builds/{build}`.
     deployEndTime: Output only. Time at which the `Rollout` finished
       deploying.
     deployStartTime: Output only. Time at which the `Rollout` started
@@ -2109,20 +2100,19 @@ class Rollout(_messages.Message):
   approvalState = _messages.EnumField('ApprovalStateValueValuesEnum', 2)
   approveTime = _messages.StringField(3)
   createTime = _messages.StringField(4)
-  deployBuild = _messages.StringField(5)
-  deployEndTime = _messages.StringField(6)
-  deployStartTime = _messages.StringField(7)
-  deployingBuild = _messages.StringField(8)
-  description = _messages.StringField(9)
-  enqueueTime = _messages.StringField(10)
-  etag = _messages.StringField(11)
-  failureReason = _messages.StringField(12)
-  labels = _messages.MessageField('LabelsValue', 13)
-  name = _messages.StringField(14)
-  state = _messages.EnumField('StateValueValuesEnum', 15)
-  target = _messages.StringField(16)
-  targetId = _messages.StringField(17)
-  uid = _messages.StringField(18)
+  deployEndTime = _messages.StringField(5)
+  deployStartTime = _messages.StringField(6)
+  deployingBuild = _messages.StringField(7)
+  description = _messages.StringField(8)
+  enqueueTime = _messages.StringField(9)
+  etag = _messages.StringField(10)
+  failureReason = _messages.StringField(11)
+  labels = _messages.MessageField('LabelsValue', 12)
+  name = _messages.StringField(13)
+  state = _messages.EnumField('StateValueValuesEnum', 14)
+  target = _messages.StringField(15)
+  targetId = _messages.StringField(16)
+  uid = _messages.StringField(17)
 
 
 class SerialPipeline(_messages.Message):
@@ -2441,9 +2431,8 @@ class TargetsPresentCondition(_messages.Message):
   the Delivery Pipeline that do not actually exist.
 
   Fields:
-    missingTargets: The list of Target names that are missing. For example, pr
-      ojects/{project_id}/locations/{location_name}/deliveryPipelines/{pipelin
-      e_name}/targets/{target_name}.
+    missingTargets: The list of Target names that are missing. For example,
+      projects/{project_id}/locations/{location_name}/targets/{target_name}.
     status: True if there aren't any missing Targets.
     updateTime: Last time the condition was updated.
   """

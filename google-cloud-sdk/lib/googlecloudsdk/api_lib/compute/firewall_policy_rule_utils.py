@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 import re
 
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
+from googlecloudsdk.command_lib.compute import  exceptions
 
 ALLOWED_METAVAR = 'PROTOCOL[:PORT[-PORT]]'
 LEGAL_SPECS = re.compile(
@@ -41,7 +42,7 @@ def ParseLayer4Configs(layer4_conifigs, message_classes):
   for spec in layer4_conifigs or []:
     match = LEGAL_SPECS.match(spec)
     if not match:
-      raise calliope_exceptions.ToolException(
+      raise exceptions.ArgumentError(
           'Organization firewall policy rules must be of the form {0}; '
           'received [{1}].'.format(ALLOWED_METAVAR, spec))
     if match.group('ports'):

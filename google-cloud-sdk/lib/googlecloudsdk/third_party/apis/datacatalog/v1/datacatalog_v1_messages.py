@@ -1035,6 +1035,35 @@ class GetPolicyOptions(_messages.Message):
   requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
+class GoogleCloudDatacatalogV1BigQueryConnectionSpec(_messages.Message):
+  r"""Specification for the BigQuery connection.
+
+  Enums:
+    ConnectionTypeValueValuesEnum: The type of the BigQuery connection.
+
+  Fields:
+    cloudSql: Specification for the BigQuery connection to a Cloud SQL
+      instance.
+    connectionType: The type of the BigQuery connection.
+    hasCredential: True if there are credentials attached to the BigQuery
+      connection; false otherwise.
+  """
+
+  class ConnectionTypeValueValuesEnum(_messages.Enum):
+    r"""The type of the BigQuery connection.
+
+    Values:
+      CONNECTION_TYPE_UNSPECIFIED: Unspecified type.
+      CLOUD_SQL: Cloud SQL connection.
+    """
+    CONNECTION_TYPE_UNSPECIFIED = 0
+    CLOUD_SQL = 1
+
+  cloudSql = _messages.MessageField('GoogleCloudDatacatalogV1CloudSqlBigQueryConnectionSpec', 1)
+  connectionType = _messages.EnumField('ConnectionTypeValueValuesEnum', 2)
+  hasCredential = _messages.BooleanField(3)
+
+
 class GoogleCloudDatacatalogV1BigQueryDateShardedSpec(_messages.Message):
   r"""Specification for a group of BigQuery tables with the `[prefix]YYYYMMDD`
   name pattern. For more information, see [Introduction to partitioned tables]
@@ -1097,6 +1126,36 @@ class GoogleCloudDatacatalogV1BigQueryTableSpec(_messages.Message):
   tableSourceType = _messages.EnumField('TableSourceTypeValueValuesEnum', 1)
   tableSpec = _messages.MessageField('GoogleCloudDatacatalogV1TableSpec', 2)
   viewSpec = _messages.MessageField('GoogleCloudDatacatalogV1ViewSpec', 3)
+
+
+class GoogleCloudDatacatalogV1CloudSqlBigQueryConnectionSpec(_messages.Message):
+  r"""Specification for the BigQuery connection to a Cloud SQL instance.
+
+  Enums:
+    TypeValueValuesEnum: Type of the Cloud SQL database.
+
+  Fields:
+    database: Database name.
+    instanceId: Cloud SQL instance ID in the format of
+      `project:location:instance`.
+    type: Type of the Cloud SQL database.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Type of the Cloud SQL database.
+
+    Values:
+      DATABASE_TYPE_UNSPECIFIED: Unspecified database type.
+      POSTGRES: Cloud SQL for PostgreSQL.
+      MYSQL: Cloud SQL for MySQL.
+    """
+    DATABASE_TYPE_UNSPECIFIED = 0
+    POSTGRES = 1
+    MYSQL = 2
+
+  database = _messages.StringField(1)
+  instanceId = _messages.StringField(2)
+  type = _messages.EnumField('TypeValueValuesEnum', 3)
 
 
 class GoogleCloudDatacatalogV1ClusterSpec(_messages.Message):
@@ -1175,6 +1234,17 @@ class GoogleCloudDatacatalogV1DataSource(_messages.Message):
   service = _messages.EnumField('ServiceValueValuesEnum', 2)
 
 
+class GoogleCloudDatacatalogV1DataSourceConnectionSpec(_messages.Message):
+  r"""Specification that applies to a data source connection. Valid only for
+  entries with the `DATA_SOURCE_CONNECTION` type.
+
+  Fields:
+    bigqueryConnectionSpec: Fields specific to BigQuery connections.
+  """
+
+  bigqueryConnectionSpec = _messages.MessageField('GoogleCloudDatacatalogV1BigQueryConnectionSpec', 1)
+
+
 class GoogleCloudDatacatalogV1DataStreamSpec(_messages.Message):
   r"""Additional specification of a data stream.
 
@@ -1229,6 +1299,11 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
       value is allowed. All other entries created in Data Catalog must use the
       `user_specified_type`.
 
+  Messages:
+    LabelsValue: Cloud labels attached to the entry. In Data Catalog, you can
+      create and modify labels attached only to custom entries. Synced entries
+      have unmodifiable labels that come from the source system.
+
   Fields:
     bigqueryDateShardedSpec: Specification for a group of BigQuery tables with
       the `[prefix]YYYYMMDD` name pattern. For more information, see
@@ -1240,6 +1315,9 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
     clusterSpec: Additional specification of a cluster. Present only on the
       entries that represent clusters.
     dataSource: Output only. Physical location of the entry.
+    dataSourceConnectionSpec: Specification that applies to a data source
+      connection. Valid only for entries with the `DATA_SOURCE_CONNECTION`
+      type.
     dataStreamSpec: Additional specification of a non-Pub/Sub data stream.
     databaseTableSpec: Specification that applies to a table resource. Valid
       only for entries with the `TABLE` type.
@@ -1267,6 +1345,9 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
     integratedSystem: Output only. Indicates the entry's source system that
       Data Catalog integrates with, such as BigQuery, Pub/Sub, or Dataproc
       Metastore.
+    labels: Cloud labels attached to the entry. In Data Catalog, you can
+      create and modify labels attached only to custom entries. Synced entries
+      have unmodifiable labels that come from the source system.
     linkedResource: The resource this metadata entry refers to. For Google
       Cloud Platform resources, `linked_resource` is the [Full Resource Name]
       (https://cloud.google.com/apis/design/resource_names#full_resource_name)
@@ -1344,6 +1425,8 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
       CLUSTER: A group of servers that work together. For example, a Kafka
         cluster.
       DATABASE: A database.
+      DATA_SOURCE_CONNECTION: Output only. Connection to a data source. For
+        example, a BigQuery connection.
       ROUTINE: Output only. Routine, for example, a BigQuery routine.
       SERVICE: A service, for example, a Dataproc Metastore service.
     """
@@ -1354,29 +1437,58 @@ class GoogleCloudDatacatalogV1Entry(_messages.Message):
     FILESET = 4
     CLUSTER = 5
     DATABASE = 6
-    ROUTINE = 7
-    SERVICE = 8
+    DATA_SOURCE_CONNECTION = 7
+    ROUTINE = 8
+    SERVICE = 9
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Cloud labels attached to the entry. In Data Catalog, you can create
+    and modify labels attached only to custom entries. Synced entries have
+    unmodifiable labels that come from the source system.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   bigqueryDateShardedSpec = _messages.MessageField('GoogleCloudDatacatalogV1BigQueryDateShardedSpec', 1)
   bigqueryTableSpec = _messages.MessageField('GoogleCloudDatacatalogV1BigQueryTableSpec', 2)
   clusterSpec = _messages.MessageField('GoogleCloudDatacatalogV1ClusterSpec', 3)
   dataSource = _messages.MessageField('GoogleCloudDatacatalogV1DataSource', 4)
-  dataStreamSpec = _messages.MessageField('GoogleCloudDatacatalogV1DataStreamSpec', 5)
-  databaseTableSpec = _messages.MessageField('GoogleCloudDatacatalogV1DatabaseTableSpec', 6)
-  description = _messages.StringField(7)
-  displayName = _messages.StringField(8)
-  fullyQualifiedName = _messages.StringField(9)
-  gcsFilesetSpec = _messages.MessageField('GoogleCloudDatacatalogV1GcsFilesetSpec', 10)
-  integratedSystem = _messages.EnumField('IntegratedSystemValueValuesEnum', 11)
-  linkedResource = _messages.StringField(12)
-  name = _messages.StringField(13)
-  routineSpec = _messages.MessageField('GoogleCloudDatacatalogV1RoutineSpec', 14)
-  schema = _messages.MessageField('GoogleCloudDatacatalogV1Schema', 15)
-  sourceSystemTimestamps = _messages.MessageField('GoogleCloudDatacatalogV1SystemTimestamps', 16)
-  type = _messages.EnumField('TypeValueValuesEnum', 17)
-  usageSignal = _messages.MessageField('GoogleCloudDatacatalogV1UsageSignal', 18)
-  userSpecifiedSystem = _messages.StringField(19)
-  userSpecifiedType = _messages.StringField(20)
+  dataSourceConnectionSpec = _messages.MessageField('GoogleCloudDatacatalogV1DataSourceConnectionSpec', 5)
+  dataStreamSpec = _messages.MessageField('GoogleCloudDatacatalogV1DataStreamSpec', 6)
+  databaseTableSpec = _messages.MessageField('GoogleCloudDatacatalogV1DatabaseTableSpec', 7)
+  description = _messages.StringField(8)
+  displayName = _messages.StringField(9)
+  fullyQualifiedName = _messages.StringField(10)
+  gcsFilesetSpec = _messages.MessageField('GoogleCloudDatacatalogV1GcsFilesetSpec', 11)
+  integratedSystem = _messages.EnumField('IntegratedSystemValueValuesEnum', 12)
+  labels = _messages.MessageField('LabelsValue', 13)
+  linkedResource = _messages.StringField(14)
+  name = _messages.StringField(15)
+  routineSpec = _messages.MessageField('GoogleCloudDatacatalogV1RoutineSpec', 16)
+  schema = _messages.MessageField('GoogleCloudDatacatalogV1Schema', 17)
+  sourceSystemTimestamps = _messages.MessageField('GoogleCloudDatacatalogV1SystemTimestamps', 18)
+  type = _messages.EnumField('TypeValueValuesEnum', 19)
+  usageSignal = _messages.MessageField('GoogleCloudDatacatalogV1UsageSignal', 20)
+  userSpecifiedSystem = _messages.StringField(21)
+  userSpecifiedType = _messages.StringField(22)
 
 
 class GoogleCloudDatacatalogV1EntryGroup(_messages.Message):
@@ -1433,12 +1545,14 @@ class GoogleCloudDatacatalogV1FieldType(_messages.Message):
       STRING: An UTF-8 string.
       BOOL: A boolean value.
       TIMESTAMP: A timestamp.
+      RICHTEXT: A Richtext description.
     """
     PRIMITIVE_TYPE_UNSPECIFIED = 0
     DOUBLE = 1
     STRING = 2
     BOOL = 3
     TIMESTAMP = 4
+    RICHTEXT = 5
 
   enumType = _messages.MessageField('GoogleCloudDatacatalogV1FieldTypeEnumType', 1)
   primitiveType = _messages.EnumField('PrimitiveTypeValueValuesEnum', 2)
@@ -1907,6 +2021,12 @@ class GoogleCloudDatacatalogV1SearchCatalogRequestScope(_messages.Message):
     includeProjectIds: The list of project IDs to search within. For more
       information on the distinction between project names, IDs, and numbers,
       see [Projects](/docs/overview/#projects).
+    includePublicTagTemplates: Optional. If `true`, include public tag
+      templates in the search results. By default, they are included only if
+      you have explicit permissions on them to view them. For example, if you
+      are the owner. Other scope fields, for example, ``include_org_ids``,
+      still restrict the returned public tag templates and at least one of
+      them is required.
     restrictedLocations: Optional. The list of locations to search within. If
       empty, all locations are searched. Returns an error if any location in
       the list isn't one of the [Supported
@@ -1921,7 +2041,8 @@ class GoogleCloudDatacatalogV1SearchCatalogRequestScope(_messages.Message):
   includeGcpPublicDatasets = _messages.BooleanField(1)
   includeOrgIds = _messages.StringField(2, repeated=True)
   includeProjectIds = _messages.StringField(3, repeated=True)
-  restrictedLocations = _messages.StringField(4, repeated=True)
+  includePublicTagTemplates = _messages.BooleanField(4)
+  restrictedLocations = _messages.StringField(5, repeated=True)
 
 
 class GoogleCloudDatacatalogV1SearchCatalogResponse(_messages.Message):
@@ -2185,6 +2306,9 @@ class GoogleCloudDatacatalogV1TagField(_messages.Message):
       a more important field. The value can be negative. Multiple fields can
       have the same order, and field orders within a tag don't have to be
       sequential.
+    richtextValue: The value of a tag field with a rich text type. The maximum
+      length is 10 MiB as this value holds HTML descriptions including encoded
+      images. The maximum length of the text without images is 100 KiB.
     stringValue: The value of a tag field with a string type. The maximum
       length is 2000 UTF-8 characters.
     timestampValue: The value of a tag field with a timestamp type.
@@ -2195,8 +2319,9 @@ class GoogleCloudDatacatalogV1TagField(_messages.Message):
   doubleValue = _messages.FloatField(3)
   enumValue = _messages.MessageField('GoogleCloudDatacatalogV1TagFieldEnumValue', 4)
   order = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  stringValue = _messages.StringField(6)
-  timestampValue = _messages.StringField(7)
+  richtextValue = _messages.StringField(6)
+  stringValue = _messages.StringField(7)
+  timestampValue = _messages.StringField(8)
 
 
 class GoogleCloudDatacatalogV1TagFieldEnumValue(_messages.Message):
@@ -2239,6 +2364,20 @@ class GoogleCloudDatacatalogV1TagTemplate(_messages.Message):
       * Can contain uppercase and lowercase letters, numbers (0-9) and
       underscores (_). * Must be at least 1 character and at most 64
       characters long. * Must start with a letter or underscore.
+    isPubliclyReadable: Indicates whether this is a public tag template. Every
+      user has view access to a *public* tag template by default. This means
+      that: * Every user can use this tag template to tag an entry. * If an
+      entry is tagged using the tag template, the tag is always shown in the
+      response to ``ListTags`` called on the entry. * To get the template
+      using the GetTagTemplate method, you need view access either on the
+      project or the organization the tag template resides in but no other
+      permission is needed. * Operations on the tag template other than
+      viewing (for example, editing IAM policies) follow standard IAM
+      structures. Tags created with a public tag template are referred to as
+      public tags. You can search for a public tag by value with a simple
+      search query instead of using a ``tag:`` predicate. Public tag templates
+      may not appear in search results depending on scope, see:
+      include_public_tag_templates
     name: The resource name of the tag template in URL format. Note: The tag
       template itself and its child resources might not be stored in the
       location specified in its name.
@@ -2276,7 +2415,8 @@ class GoogleCloudDatacatalogV1TagTemplate(_messages.Message):
 
   displayName = _messages.StringField(1)
   fields = _messages.MessageField('FieldsValue', 2)
-  name = _messages.StringField(3)
+  isPubliclyReadable = _messages.BooleanField(3)
+  name = _messages.StringField(4)
 
 
 class GoogleCloudDatacatalogV1TagTemplateField(_messages.Message):

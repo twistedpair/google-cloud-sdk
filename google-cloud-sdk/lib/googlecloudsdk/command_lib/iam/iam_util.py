@@ -131,7 +131,7 @@ class IamPolicyBindingIncompleteError(IamPolicyBindingInvalidError):
   """Raised when the specified IAM policy binding is incomplete."""
 
 
-def _AddMemberFlag(parser, verb, hide_special_member_types, required=True):
+def AddMemberFlag(parser, verb, hide_special_member_types, required=True):
   """Create --member flag and add to parser."""
   help_str = ("""\
 The member {verb}. Should be of the form `user|group|serviceAccount:email` or
@@ -335,7 +335,7 @@ def AddArgsForAddIamPolicyBinding(parser,
       required=True,
       completer=role_completer,
       help=help_text)
-  _AddMemberFlag(parser, 'to add the binding for', hide_special_member_types)
+  AddMemberFlag(parser, 'to add the binding for', hide_special_member_types)
   if add_condition:
     _AddConditionFlagsForAddBindingToIamPolicy(parser)
 
@@ -365,7 +365,7 @@ def AddArgsForRemoveIamPolicyBinding(parser,
       required=True,
       completer=role_completer,
       help='The role to remove the member from.')
-  _AddMemberFlag(parser, 'to remove the binding for', hide_special_member_types)
+  AddMemberFlag(parser, 'to remove the binding for', hide_special_member_types)
   if add_condition:
     _AddConditionFlagsForRemoveBindingFromIamPolicy(
         parser, condition_completer=condition_completer)

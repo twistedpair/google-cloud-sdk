@@ -1,0 +1,67 @@
+project:
+  name: project
+  collection: dataplex.projects
+  attributes:
+  - &project
+    parameter_name: projectsId
+    attribute_name: project
+    help: |
+      The Cloud project name to use.
+    property: core/project
+
+location:
+  name: location
+  collection: dataplex.projects.locations
+  disable_auto_completers: false
+  attributes:
+  - *project
+  - &location
+    parameter_name: locationsId
+    attribute_name: location
+    help: |
+      The location of the Dataplex service.
+
+lake:
+  name: lake
+  collection: dataplex.projects.locations.lakes
+  request_id_field: lakeId
+  disable_auto_completers: false
+  attributes:
+  - *project
+  - *location
+  - &lake
+    parameter_name: lakesId
+    attribute_name: lake
+    help: |
+      The lake_id for the Lake Resource of the Dataplex service.
+
+zone:
+  name: zone
+  collection: dataplex.projects.locations.lakes.zones
+  request_id_field: zoneId
+  disable_auto_completers: false
+  attributes:
+  - *project
+  - *location
+  - *lake
+  - &zone
+    parameter_name: zonesId
+    attribute_name: zone
+    help: |
+      The zone_id for the Lake Resource of the Dataplex service.
+
+asset:
+  name: asset
+  collection: dataplex.projects.locations.lakes.zones.assets
+  request_id_field: assetId
+  disable_auto_completers: false
+  attributes:
+  - *project
+  - *location
+  - *lake
+  - *zone
+  - &asset
+    parameter_name: assetsId
+    attribute_name: asset
+    help: |
+      The asset_id for the Lake Resource of the Dataplex service.

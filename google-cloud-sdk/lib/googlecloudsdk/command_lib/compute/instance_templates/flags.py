@@ -185,14 +185,16 @@ def AddMeshArgs(parser, hide_arguments=False):
           required_keys=['gke-cluster', 'workload']),
       hidden=hide_arguments,
       help="""\
-      Configures the instance template to allow the created VMs to join an Anthos Service Mesh.
+      Controls whether the Anthos Service Mesh service proxy (Envoy) and agent are installed and configured on the VM.
+      "cloud-platform" scope is enabled automatically to allow the service proxy to be started.
+      Do not use the `--no-scopes` flag.
 
-      *gke-cluster*::: Required. The location/name of the GKE cluster. The location can be a zone or
-          a region, e.g `us-central1-a/my-cluster`.
+      *gke-cluster*::: The location/name of the GKE cluster. The location can be a zone or a
+          region, e.g. ``us-central1-a/my-cluster''.
 
-      *workload*::: Required. The workload identifier of the VM workload. In a GKE cluster, it is
+      *workload*::: The workload identifier of the VM. In a GKE cluster, it is
           the identifier namespace/name of the `WorkloadGroup` custom resource representing the VM
-          workload, e.g.`foo/my-workload`.
+          workload, e.g. ``foo/my-workload''.
       """)
 
 

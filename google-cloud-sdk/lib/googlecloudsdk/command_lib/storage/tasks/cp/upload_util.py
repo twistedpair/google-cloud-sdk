@@ -20,14 +20,21 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import mimetypes
+import os
 import subprocess
+import threading
 
+from googlecloudsdk.api_lib.storage import api_factory
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.api_lib.storage import request_config_factory
 from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import hash_util
+from googlecloudsdk.command_lib.storage import progress_callbacks
+from googlecloudsdk.command_lib.storage import upload_stream
+from googlecloudsdk.command_lib.storage.tasks import task_status
 from googlecloudsdk.command_lib.storage.tasks.rm import delete_object_task
 from googlecloudsdk.core import properties
+from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
 from googlecloudsdk.core.util import scaled_integer
 
@@ -92,6 +99,85 @@ def get_content_type(file_resource):
   if content_type:
     return content_type
   return request_config_factory.DEFAULT_CONTENT_TYPE
+
+
+def get_digesters(source_resource, destination_resource):
+  """Gets appropriate hash objects for upload validation.
+
+  Args:
+    source_resource (resource_reference.ObjectResource): The upload source.
+    destination_resource (resource_reference.FileObjectResource): The upload
+      destination.
+
+  Returns:
+    A dict[hash_util.HashAlgorithm, hash object], the values of which should be
+    updated with uploaded bytes.
+  """
+  provider = destination_resource.storage_url.scheme
+  capabilities = api_factory.get_capabilities(provider)
+  check_hashes = properties.CheckHashes(
+      properties.VALUES.storage.check_hashes.Get())
+
+  if (source_resource.md5_hash or
+      cloud_api.Capability.CLIENT_SIDE_HASH_VALIDATION in capabilities or
+      check_hashes == properties.CheckHashes.NEVER):
+    return {}
+  return {hash_util.HashAlgorithm.MD5: hash_util.get_md5()}
+
+
+def get_stream(source_resource,
+               length,
+               offset=0,
+               digesters=None,
+               task_status_queue=None,
+               destination_resource=None,
+               component_number=None,
+               total_components=None):
+  """Gets a stream to use for an upload.
+
+  Args:
+    source_resource (resource_reference.FileObjectResource): Contains a path to
+      the source file.
+    length (int): The total number of bytes to be uploaded.
+    offset (int): The position of the first byte to be uploaded.
+    digesters (dict[hash_util.HashAlgorithm, hash object]): Hash objects to be
+      populated as bytes are read.
+    task_status_queue (multiprocessing.Queue|None): Used for sending progress
+      messages. If None, no messages will be generated or sent.
+    destination_resource (resource_reference.ObjectResource): The upload
+      destination. Used for progress reports, and should be specified if
+      task_status_queue is.
+    component_number (int|None): Identifies a component in composite uploads.
+    total_components (int|None): The total number of components used in a
+      composite upload.
+
+  Returns:
+    An UploadStream wrapping the file specified by source_resource.
+  """
+  if task_status_queue:
+    progress_callback = progress_callbacks.FilesAndBytesProgressCallback(
+        status_queue=task_status_queue,
+        offset=offset,
+        length=length,
+        source_url=source_resource.storage_url,
+        destination_url=destination_resource.storage_url,
+        component_number=component_number,
+        total_components=total_components,
+        operation_name=task_status.OperationName.UPLOADING,
+        process_id=os.getpid(),
+        thread_id=threading.get_ident(),
+    )
+  else:
+    progress_callback = None
+
+  source_stream = files.BinaryFileReader(
+      source_resource.storage_url.object_name)
+  return upload_stream.UploadStream(
+      source_stream,
+      offset,
+      length,
+      digesters=digesters,
+      progress_callback=progress_callback)
 
 
 def validate_uploaded_object(digesters, uploaded_resource, task_status_queue):

@@ -163,7 +163,7 @@ class _BaseTriggersClient(object):
         updateMask=update_mask)
     return self._service.Patch(patch_req)
 
-  def WaitFor(self, operation, operation_type, trigger_ref):
+  def WaitFor(self, operation, operation_type, trigger_ref, loading_msg=''):
     """Waits until the given long-running operation is complete.
 
     Args:
@@ -171,6 +171,8 @@ class _BaseTriggersClient(object):
       operation_type: str, the type of operation (Creating, Updating or
         Deleting).
       trigger_ref: Resource, the Trigger to reference.
+      loading_msg: str, the message prompt to the user for a long-running
+        operation.
 
     Returns:
       The long-running operation's response.
@@ -184,6 +186,8 @@ class _BaseTriggersClient(object):
     message = ('{} trigger [{}] in project [{}], '
                'location [{}]').format(operation_type, trigger_name,
                                        project_name, location_name)
+    if loading_msg:
+      message = '{}, {}'.format(message, loading_msg)
     return waiter.WaitFor(poller, operation_ref, message)
 
 

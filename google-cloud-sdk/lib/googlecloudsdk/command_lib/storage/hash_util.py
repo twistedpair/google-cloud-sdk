@@ -87,8 +87,9 @@ def get_hash_from_file_stream(file_stream,
   """
   if hash_algorithm == HashAlgorithm.MD5:
     hash_object = get_md5()
+  elif hash_algorithm == HashAlgorithm.CRC32C:
+    hash_object = crc32c.get_crc32c()
   else:
-    # TODO(b/172048376): Add crc32c.
     return
 
   if start:

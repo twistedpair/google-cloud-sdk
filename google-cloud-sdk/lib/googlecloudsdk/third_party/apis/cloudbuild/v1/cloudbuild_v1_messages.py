@@ -573,9 +573,9 @@ class BuildOptions(_messages.Message):
       build logs are stored.
     machineType: Compute Engine machine type on which to run the build.
     pool: Optional. Specification for execution on a `WorkerPool`. See
-      [running builds in a custom worker
-      pool](https://cloud.google.com/build/docs/custom-workers/run-builds-in-
-      custom-worker-pool) for more information.
+      [running builds in a private
+      pool](https://cloud.google.com/build/docs/private-pools/run-builds-in-
+      private-pool) for more information.
     requestedVerifyOption: Requested verifiability options.
     secretEnv: A list of global environment variables, which are encrypted
       using a Cloud Key Management Service crypto key. These values must be
@@ -2796,9 +2796,8 @@ class NetworkConfig(_messages.Message):
       Must be in the format `projects/{project}/global/networks/{network}`,
       where `{project}` is a project number, such as `12345`, and `{network}`
       is the name of a VPC network in the project. See [Understanding network
-      configuration options](https://cloud.google.com/cloud-build/docs/custom-
-      workers/set-up-custom-worker-pool-
-      environment#understanding_the_network_configuration_options)
+      configuration options](https://cloud.google.com/build/docs/private-
+      pools/set-up-private-pool-environment)
   """
 
   class EgressOptionValueValuesEnum(_messages.Enum):
@@ -3068,9 +3067,9 @@ class Operation(_messages.Message):
 
 class PoolOption(_messages.Message):
   r"""Details about how a build should be executed on a `WorkerPool`. See
-  [running builds in a custom worker
-  pool](https://cloud.google.com/build/docs/custom-workers/run-builds-in-
-  custom-worker-pool) for more information.
+  [running builds in a private
+  pool](https://cloud.google.com/build/docs/private-pools/run-builds-in-
+  private-pool) for more information.
 
   Fields:
     name: The `WorkerPool` resource to execute the build on. You must have
@@ -3807,13 +3806,13 @@ class WorkerConfig(_messages.Message):
 
   Fields:
     diskSizeGb: Size of the disk attached to the worker, in GB. See [Worker
-      pool config file](https://cloud.google.com/cloud-build/docs/custom-
-      workers/worker-pool-config-file). Specify a value of up to 1000. If `0`
-      is specified, Cloud Build will use a standard disk size.
+      pool config file](https://cloud.google.com/build/docs/private-
+      pools/worker-pool-config-file-schema). Specify a value of up to 1000. If
+      `0` is specified, Cloud Build will use a standard disk size.
     machineType: Machine type of a worker, such as `e2-medium`. See [Worker
-      pool config file](https://cloud.google.com/cloud-build/docs/custom-
-      workers/worker-pool-config-file). If left blank, Cloud Build will use a
-      sensible default.
+      pool config file](https://cloud.google.com/build/docs/private-
+      pools/worker-pool-config-file-schema). If left blank, Cloud Build will
+      use a sensible default.
   """
 
   diskSizeGb = _messages.IntegerField(1)
@@ -3828,9 +3827,9 @@ class WorkerPool(_messages.Message):
   create and use a `WorkerPool` to run your builds. Private `WorkerPool`s give
   your builds access to any single VPC network that you administer, including
   any on-prem resources connected to that VPC network. For an overview of
-  custom worker pools, see [Custom workers
-  overview](https://cloud.google.com/cloud-build/docs/custom-workers/custom-
-  workers-overview).
+  private pools, see [Private pools
+  overview](https://cloud.google.com/build/docs/private-pools/private-pools-
+  overview).
 
   Enums:
     StateValueValuesEnum: Output only. `WorkerPool` state.

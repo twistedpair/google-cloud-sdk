@@ -419,7 +419,8 @@ class CacheKeyPolicy(_messages.Message):
       cache key. - Header names must be valid HTTP RFC 7230 header field
       values. - Header field names are case insensitive - You may specify up
       to five header names. - To include the HTTP method, use ":method" Refer
-      to the documentation for the allowed list of header names. range of
+      to the documentation for the allowed list of header names. Note that
+      specifying several headers, and/or headers that have a large range of
       values (e.g. per-user) will dramatically impact the cache hit rate, and
       may result in a higher eviction rate and reduced performance. You may
       specify up to 5 header names.
@@ -1402,14 +1403,480 @@ class HttpRoute(_messages.Message):
   a Router resource.
 
   Fields:
+    createTime: Output only. The timestamp when the resource was created.
     description: Optional. A free-text description of the resource. Max length
       1024 characters.
+    hostnames: Required. Hostnames define a set of hosts that should match
+      against the HTTP host header to select a HttpRoute to process the
+      request. Hostname is the fully qualified domain name of a network host,
+      as defined by RFC 3986. Wildcard hosts are supported in prefix form or
+      suffix form.
     name: Required. Name of the HttpRoute resource. It matches pattern
       `projects/*/locations/global/httpRoutes/http_route_name>`.
+    rules: Required. Rules that define how traffic is routed and handled.
+    updateTime: Output only. The timestamp when the resource was updated.
   """
 
-  description = _messages.StringField(1)
-  name = _messages.StringField(2)
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  hostnames = _messages.StringField(3, repeated=True)
+  name = _messages.StringField(4)
+  rules = _messages.MessageField('HttpRouteRouteRule', 5, repeated=True)
+  updateTime = _messages.StringField(6)
+
+
+class HttpRouteCorsPolicy(_messages.Message):
+  r"""The Specification for allowing client side cross-origin requests.
+
+  Fields:
+    allowCredentials: In response to a preflight request, setting this to true
+      indicates that the actual request can include user credentials. This
+      translates to the Access-Control-Allow-Credentials header. Default value
+      is false.
+    allowHeaders: Specifies the content for Access-Control-Allow-Headers
+      header.
+    allowMethods: Specifies the content for Access-Control-Allow-Methods
+      header.
+    allowOriginRegexes: Specifies the regular expression patterns that match
+      allowed origins. For regular expression grammar, please see
+      https://github.com/google/re2/wiki/Syntax.
+    allowOrigins: Specifies the list of origins that will be allowed to do
+      CORS requests. An origin is allowed if it matches either an item in
+      allow_origins or an item in allow_origin_regexes.
+    disabled: If true, the CORS policy is disabled. The default value is
+      false, which indicates that the CORS policy is in effect.
+    exposeHeaders: Specifies the content for Access-Control-Expose-Headers
+      header.
+    maxAge: Specifies how long result of a preflight request can be cached in
+      seconds. This translates to the Access-Control-Max-Age header.
+  """
+
+  allowCredentials = _messages.BooleanField(1)
+  allowHeaders = _messages.StringField(2, repeated=True)
+  allowMethods = _messages.StringField(3, repeated=True)
+  allowOriginRegexes = _messages.StringField(4, repeated=True)
+  allowOrigins = _messages.StringField(5, repeated=True)
+  disabled = _messages.BooleanField(6)
+  exposeHeaders = _messages.StringField(7, repeated=True)
+  maxAge = _messages.StringField(8)
+
+
+class HttpRouteDestination(_messages.Message):
+  r"""Specifications of a destination to which the request should be routed
+  to.
+
+  Fields:
+    serviceName: The URL of a BackendService to route traffic to.
+    weight: Specifies the proportion of requests forwareded to the backend
+      referenced by the service_name field. This is computed as:
+      weight/Sum(weights in destinations) Weights in all destinations should
+      sum up to 100.
+  """
+
+  serviceName = _messages.StringField(1)
+  weight = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class HttpRouteFaultInjectionPolicy(_messages.Message):
+  r"""The specification for fault injection introduced into traffic to test
+  the resiliency of clients to destination service failure. As part of fault
+  injection, when clients send requests to a destination, delays can be
+  introduced by client proxy on a percentage of requests before sending those
+  requests to the destination service. Similarly requests can be aborted by
+  client proxy for a percentage of requests.
+
+  Fields:
+    abort: The specification for aborting to client requests.
+    delay: The specification for injecting delay to client requests.
+  """
+
+  abort = _messages.MessageField('HttpRouteFaultInjectionPolicyAbort', 1)
+  delay = _messages.MessageField('HttpRouteFaultInjectionPolicyDelay', 2)
+
+
+class HttpRouteFaultInjectionPolicyAbort(_messages.Message):
+  r"""Specification of how client requests are aborted as part of fault
+  injection before being sent to a destination.
+
+  Fields:
+    httpStatus: The HTTP status code used to abort the request. The value must
+      be between 200 and 599 inclusive.
+    percentage: The percentage of traffic which will be aborted. The value
+      must be between [0, 100]
+  """
+
+  httpStatus = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  percentage = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class HttpRouteFaultInjectionPolicyDelay(_messages.Message):
+  r"""Specification of how client requests are delayed as part of fault
+  injection before being sent to a destination.
+
+  Fields:
+    fixedDelay: Specify a fixed delay before forwarding the request.
+    percentage: The percentage of traffic on which delay will be injected. The
+      value must be between [0, 100]
+  """
+
+  fixedDelay = _messages.StringField(1)
+  percentage = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class HttpRouteHeaderMatch(_messages.Message):
+  r"""Specifies how to select a route rule based on HTTP request headers.
+
+  Fields:
+    exactMatch: The value of the header should match exactly the content of
+      exact_match.
+    header: The name of the HTTP header to match against.
+    invertMatch: If specified, the match result will be inverted before
+      checking. Default value is set to false.
+    prefixMatch: The value of the header must start with the contents of
+      prefix_match.
+    presentMatch: A header with header_name must exist. The match takes place
+      whether or not the header has a value.
+    rangeMatch: If specified, the rule will match if the request header value
+      is within the range.
+    regexMatch: The value of the header must match the regular expression
+      specified in regex_match. For regular expression grammar, please see:
+      https://github.com/google/re2/wiki/Syntax
+    suffixMatch: The value of the header must end with the contents of
+      suffix_match.
+  """
+
+  exactMatch = _messages.StringField(1)
+  header = _messages.StringField(2)
+  invertMatch = _messages.BooleanField(3)
+  prefixMatch = _messages.StringField(4)
+  presentMatch = _messages.BooleanField(5)
+  rangeMatch = _messages.MessageField('HttpRouteHeaderMatchIntegerRange', 6)
+  regexMatch = _messages.StringField(7)
+  suffixMatch = _messages.StringField(8)
+
+
+class HttpRouteHeaderMatchIntegerRange(_messages.Message):
+  r"""Represents an integer value range.
+
+  Fields:
+    end: End of the range (exclusive)
+    start: Start of the range (inclusive)
+  """
+
+  end = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  start = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class HttpRouteHeaderModifier(_messages.Message):
+  r"""The specification for modifying HTTP header in HTTP request and HTTP
+  response.
+
+  Messages:
+    AddValue: Add the headers with given map where key is the name of the
+      header, value is the value of the header.
+    SetValue: Completely overwrite/replace the headers with given map where
+      key is the name of the header, value is the value of the header.
+
+  Fields:
+    add: Add the headers with given map where key is the name of the header,
+      value is the value of the header.
+    remove: Remove headers (matching by header names) specified in the list.
+    set: Completely overwrite/replace the headers with given map where key is
+      the name of the header, value is the value of the header.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AddValue(_messages.Message):
+    r"""Add the headers with given map where key is the name of the header,
+    value is the value of the header.
+
+    Messages:
+      AdditionalProperty: An additional property for a AddValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type AddValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AddValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class SetValue(_messages.Message):
+    r"""Completely overwrite/replace the headers with given map where key is
+    the name of the header, value is the value of the header.
+
+    Messages:
+      AdditionalProperty: An additional property for a SetValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type SetValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a SetValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  add = _messages.MessageField('AddValue', 1)
+  remove = _messages.StringField(2, repeated=True)
+  set = _messages.MessageField('SetValue', 3)
+
+
+class HttpRouteQueryParameterMatch(_messages.Message):
+  r"""Specifications to match a query parameter in the request.
+
+  Fields:
+    exactMatch: The value of the query parameter must exactly match the
+      contents of exact_match. Only one of exact_match, regex_match, or
+      present_match must be set.
+    presentMatch: Specifies that the QueryParameterMatcher matches is request
+      cotains query parameter, irrespective of whether the parameter has a
+      value or not. Only one of exact_match, regex_match, or present_match
+      must be set.
+    queryParameter: The name of the query parameter to match.
+    regexMatch: The value of the query parameter must match the regular
+      expression specified by regex_match. For regular expression grammar,
+      please see https://github.com/google/re2/wiki/Syntax Only one of
+      exact_match, regex_match, or present_match must be set.
+  """
+
+  exactMatch = _messages.StringField(1)
+  presentMatch = _messages.BooleanField(2)
+  queryParameter = _messages.StringField(3)
+  regexMatch = _messages.StringField(4)
+
+
+class HttpRouteRedirect(_messages.Message):
+  r"""The specification for redirecting traffic.
+
+  Enums:
+    ResponseCodeValueValuesEnum: The HTTP Status code to use for the redirect.
+
+  Fields:
+    hostRedirect: The host that will be used in the redirect response instead
+      of the one that was supplied in the request.
+    httpsRedirect: If set to true, the URL scheme in the redirected request is
+      set to https. If set to false, the URL scheme of the redirected request
+      will remain the same as that of the request. The default is set to
+      false.
+    pathRedirect: The path that will be used in the redirect response instead
+      of the one that was supplied in the request. path_redirect can not be
+      supplied together with prefix_redirect. Supply one alone or neither. If
+      neither is supplied, the path of the original request will be used for
+      the redirect.
+    prefixRewrite: Indicates that during redirection, the matched prefix (or
+      path) should be swapped with this value. This option allows URLs be
+      dynamically created based on the request.
+    responseCode: The HTTP Status code to use for the redirect.
+    stripQuery: if set to true, any accompanying query portion of the original
+      URL is removed prior to redirecting the request. If set to false, the
+      query portion of the original URL is retained. The default is set to
+      false.
+  """
+
+  class ResponseCodeValueValuesEnum(_messages.Enum):
+    r"""The HTTP Status code to use for the redirect.
+
+    Values:
+      RESPONSE_CODE_UNSPECIFIED: Default value
+      MOVED_PERMANENTLY_DEFAULT: Corresponds to 301.
+      FOUND: Corresponds to 302.
+      SEE_OTHER: Corresponds to 303.
+      TEMPORARY_REDIRECT: Corresponds to 307. In this case, the request method
+        will be retained.
+      PERMANENT_REDIRECT: Corresponds to 308. In this case, the request method
+        will be retained.
+    """
+    RESPONSE_CODE_UNSPECIFIED = 0
+    MOVED_PERMANENTLY_DEFAULT = 1
+    FOUND = 2
+    SEE_OTHER = 3
+    TEMPORARY_REDIRECT = 4
+    PERMANENT_REDIRECT = 5
+
+  hostRedirect = _messages.StringField(1)
+  httpsRedirect = _messages.BooleanField(2)
+  pathRedirect = _messages.StringField(3)
+  prefixRewrite = _messages.StringField(4)
+  responseCode = _messages.EnumField('ResponseCodeValueValuesEnum', 5)
+  stripQuery = _messages.BooleanField(6)
+
+
+class HttpRouteRequestMirrorPolicy(_messages.Message):
+  r"""Specifies the policy on how requests are shadowed to a separate mirrored
+  destination service. The proxy does not wait for responses from the shadow
+  service. Prior to sending traffic to the shadow service, the host/authority
+  header is suffixed with -shadow.
+
+  Fields:
+    destination: The destination the requests will be mirrored to. The weight
+      of the destination will be ignored.
+  """
+
+  destination = _messages.MessageField('HttpRouteDestination', 1)
+
+
+class HttpRouteRetryPolicy(_messages.Message):
+  r"""The specifications for retries.
+
+  Fields:
+    numRetries: Specifies the allowed number of retries. This number must be >
+      0. If not specified, default to 1.
+    perTryTimeout: Specifies a non-zero timeout per retry attempt.
+    retryConditions: Specifies one or more conditions when this retry policy
+      applies. Valid values are: 5xx: Proxy will attempt a retry if the
+      destination service responds with any 5xx response code, of if the
+      destination service does not respond at all, example: disconnect, reset,
+      read timeout, connection failure and refused streams. gateway-error:
+      Similar to 5xx, but only applies to response codes 502, 503, 504. reset:
+      Proxy will attempt a retry if the destination service does not respond
+      at all (disconnect/reset/read timeout) connect-failure: Proxy will retry
+      on failures connecting to destination for example due to connection
+      timeouts. retriable-4xx: Proxy will retry fro retriable 4xx response
+      codes. Currently the only retriable error supported is 409. refused-
+      stream: Proxy will retry if the destination resets the stream with a
+      REFUSED_STREAM error code. This reset type indicates that it is safe to
+      retry.
+  """
+
+  numRetries = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  perTryTimeout = _messages.StringField(2)
+  retryConditions = _messages.StringField(3, repeated=True)
+
+
+class HttpRouteRouteAction(_messages.Message):
+  r"""The specifications for routing traffic and applying associated policies.
+
+  Fields:
+    corsPolicy: The specification for allowing client side cross-origin
+      requests.
+    destinations: The destination to which traffic should be forwarded. Only
+      one of destinations, redirect, original_destination can be set.
+    faultInjectionPolicy: The specification for fault injection introduced
+      into traffic to test the resiliency of clients to backend service
+      failure. As part of fault injection, when clients send requests to a
+      backend service, delays can be introduced on a percentage of requests
+      before sending those requests to the backend service. Similarly requests
+      from clients can be aborted for a percentage of requests. timeout and
+      retry_policy will be ignored by clients that are configured with a
+      fault_injection_policy
+    originalDestination: If true, the matched traffic will use the destination
+      ip and port of the original connection (as it was not processed by
+      proxy) as the destination of the request. Only one of destinations,
+      redirect, original_destination can be set.
+    redirect: If set, the request is directed as configured by this field.
+      Only one of destinations, redirect, original_destination can be set.
+    requestHeaderModifier: The specification for modifying the headers of a
+      matching request prior to delivery of the request to the destination.
+    requestMirrorPolicy: Specifies the policy on how requests intended for the
+      routes destination are shadowed to a separate mirrored destination.
+      Proxy will not wait for the shadow destination to respond before
+      returning the response. Prior to sending traffic to the shadow service,
+      the host/authority header is suffixed with -shadow.
+    responseHeaderModifier: The specification for modifying the headers of a
+      response prior to sending the response back to the client.
+    retryPolicy: Specifies the retry policy associated with this route.
+    timeout: Specifies the timeout for selected route. Timeout is computed
+      from the time the request has been fully processed (i.e. end of stream)
+      up until the response has been completely processed. Timeout includes
+      all retries.
+    urlRewrite: The specification for rewrite URL before forwarding requests
+      to the destination.
+  """
+
+  corsPolicy = _messages.MessageField('HttpRouteCorsPolicy', 1)
+  destinations = _messages.MessageField('HttpRouteDestination', 2, repeated=True)
+  faultInjectionPolicy = _messages.MessageField('HttpRouteFaultInjectionPolicy', 3)
+  originalDestination = _messages.BooleanField(4)
+  redirect = _messages.MessageField('HttpRouteRedirect', 5)
+  requestHeaderModifier = _messages.MessageField('HttpRouteHeaderModifier', 6)
+  requestMirrorPolicy = _messages.MessageField('HttpRouteRequestMirrorPolicy', 7)
+  responseHeaderModifier = _messages.MessageField('HttpRouteHeaderModifier', 8)
+  retryPolicy = _messages.MessageField('HttpRouteRetryPolicy', 9)
+  timeout = _messages.StringField(10)
+  urlRewrite = _messages.MessageField('HttpRouteURLRewrite', 11)
+
+
+class HttpRouteRouteMatch(_messages.Message):
+  r"""RouteMatch defines specifications used to match requests. If multiple
+  match types are set, this RouteMatch will match if ALL type of matches are
+  matched.
+
+  Fields:
+    fullPathMatch: The HTTP request path value should exactly match this
+      value. Only one of full_path_match, prefix_match, or regex_match should
+      be used.
+    headers: Specifies a list of HTTP request headers to match against. ALL of
+      the supplied headers must be matched.
+    ignoreCase: Specifies if prefix_match and full_path_match matches are case
+      sensitive. The default value is false.
+    prefixMatch: The HTTP request path value must begin with specified
+      prefix_match. prefix_match must begin with a /. Only one of
+      full_path_match, prefix_match, or regex_match should be used.
+    queryParameters: Specifies a list of query parameters to match against.
+      ALL of the query parameters must be matched.
+    regexMatch: The HTTP request path value must satisfy the regular
+      expression specified by regex_match after removing any query parameters
+      and anchor supplied with the original URL. For regular expression
+      grammar, please see https://github.com/google/re2/wiki/Syntax Only one
+      of full_path_match, prefix_match, or regex_match should be used.
+  """
+
+  fullPathMatch = _messages.StringField(1)
+  headers = _messages.MessageField('HttpRouteHeaderMatch', 2, repeated=True)
+  ignoreCase = _messages.BooleanField(3)
+  prefixMatch = _messages.StringField(4)
+  queryParameters = _messages.MessageField('HttpRouteQueryParameterMatch', 5, repeated=True)
+  regexMatch = _messages.StringField(6)
+
+
+class HttpRouteRouteRule(_messages.Message):
+  r"""Specifies how to match traffic and how to route traffic when traffic is
+  matched.
+
+  Fields:
+    action: The detailed rule defining how to route matched traffic.
+    matches: A list of matches define conditions used for matching the rule
+      against incoming HTTP requests. Each match is independent, i.e. this
+      rule will be matched if ANY one of the matches is satisfied.
+  """
+
+  action = _messages.MessageField('HttpRouteRouteAction', 1)
+  matches = _messages.MessageField('HttpRouteRouteMatch', 2, repeated=True)
+
+
+class HttpRouteURLRewrite(_messages.Message):
+  r"""The specification for modifying the URL of the request, prior to
+  forwarding the request to the destination.
+
+  Fields:
+    hostRewrite: Prior to forwarding the request to the selected destination,
+      the requests host header is replaced by this value.
+    pathPrefixRewrite: Prior to forwarding the request to the selected
+      destination, the matching portion of the requests path is replaced by
+      this value.
+  """
+
+  hostRewrite = _messages.StringField(1)
+  pathPrefixRewrite = _messages.StringField(2)
 
 
 class InvalidateCacheRequest(_messages.Message):
@@ -1781,6 +2248,8 @@ class MatchRule(_messages.Message):
       original URL. fullPathMatch must begin with a /. The value must be
       between 1 and 1024 characters (inclusive). Exactly one of prefixMatch,
       fullPathMatch, or pathTemplateMatch must be specified.
+    ignoreCase: Optional. Specifies that prefixMatch and fullPathMatch matches
+      are case sensitive. The default value is false.
     pathTemplateMatch: Optional. For satisfying the matchRule condition, the
       path of the request must match the wildcard pattern specified in
       pathTemplateMatch after removing any query parameters and anchor that
@@ -1800,9 +2269,10 @@ class MatchRule(_messages.Message):
   """
 
   fullPathMatch = _messages.StringField(1)
-  pathTemplateMatch = _messages.StringField(2)
-  prefixMatch = _messages.StringField(3)
-  queryParameterMatches = _messages.MessageField('QueryParameterMatcher', 4, repeated=True)
+  ignoreCase = _messages.BooleanField(2)
+  pathTemplateMatch = _messages.StringField(3)
+  prefixMatch = _messages.StringField(4)
+  queryParameterMatches = _messages.MessageField('QueryParameterMatcher', 5, repeated=True)
 
 
 class MetadataLabelMatcher(_messages.Message):
@@ -2843,7 +3313,6 @@ class NetworkservicesProjectsLocationsHttpRoutesCreateRequest(_messages.Message)
   Fields:
     httpRoute: A HttpRoute resource to be passed as the request body.
     httpRouteId: Required. Short name of the HttpRoute resource to be created.
-      E.g. TODO(Add an example).
     parent: Required. The parent resource of the HttpRoute. Must be in the
       format `projects/*/locations/global`.
   """

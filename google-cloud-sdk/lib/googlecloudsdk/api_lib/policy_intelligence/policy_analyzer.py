@@ -19,12 +19,21 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.calliope import base
 
 _API_NAME = 'policyanalyzer'
-_API_VERSION = 'v1beta1'
+
+_API_VERSION_V1BETA1 = 'v1beta1'
+_API_VERSION_V1 = 'v1'
 
 
-def GetClientAndMessages():
-  client = apis.GetClientInstance(_API_NAME, _API_VERSION)
-  messages = apis.GetMessagesModule(_API_NAME, _API_VERSION)
-  return client, messages
+def GetClientAndMessages(release_track):
+  if release_track == base.ReleaseTrack.BETA:
+    # BETA maps to v1beta1.
+    return apis.GetClientInstance(_API_NAME,
+                                  _API_VERSION_V1BETA1), apis.GetMessagesModule(
+                                      _API_NAME, _API_VERSION_V1BETA1)
+  # GA and other release tracks map to v1
+  return apis.GetClientInstance(_API_NAME,
+                                _API_VERSION_V1), apis.GetMessagesModule(
+                                    _API_NAME, _API_VERSION_V1)

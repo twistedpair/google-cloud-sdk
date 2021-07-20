@@ -400,6 +400,10 @@
             "CANARY",
             "STABLE"
           ]
+        },
+        "encryptionConfig": {
+          "description": "Immutable. Information used to configure the Dataproc Metastore service to encrypt customer data at rest. Cannot be updated.",
+          "$ref": "EncryptionConfig"
         }
       }
     },
@@ -657,6 +661,17 @@
         }
       }
     },
+    "EncryptionConfig": {
+      "id": "EncryptionConfig",
+      "description": "Encryption settings for the service.",
+      "type": "object",
+      "properties": {
+        "kmsKey": {
+          "description": "The fully qualified customer provided Cloud KMS key name to use for customer data encryption, in the following form:projects\/{project_number}\/locations\/{location_id}\/keyRings\/{key_ring_id}\/cryptoKeys\/{crypto_key_id}.",
+          "type": "string"
+        }
+      }
+    },
     "ListMetadataImportsResponse": {
       "id": "ListMetadataImportsResponse",
       "description": "Response message for DataprocMetastore.ListMetadataImports.",
@@ -892,14 +907,16 @@
             "The backup is being created.",
             "The backup is being deleted.",
             "The backup is active and ready to use.",
-            "The backup failed."
+            "The backup failed.",
+            "The backup is being restored."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
             "CREATING",
             "DELETING",
             "ACTIVE",
-            "FAILED"
+            "FAILED",
+            "RESTORING"
           ]
         },
         "serviceRevision": {

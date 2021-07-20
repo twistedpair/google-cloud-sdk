@@ -1040,6 +1040,10 @@
           "description": "Optional. For satisfying the matchRule condition, the path of the request must match the wildcard pattern specified in pathTemplateMatch after removing any query parameters and anchor that may be part of the original URL. pathTemplateMatch must be between 1 and 255 characters (inclusive). The pattern specified by pathTemplateMatch may have at most 5 wildcard operators and at most 5 variable captures in total. Exactly one of prefixMatch, fullPathMatch, or pathTemplateMatch must be specified.",
           "type": "string"
         },
+        "ignoreCase": {
+          "description": "Optional. Specifies that prefixMatch and fullPathMatch matches are case sensitive. The default value is false.",
+          "type": "boolean"
+        },
         "queryParameterMatches": {
           "description": "Optional. Specifies a list of query parameter match criteria, all of which must match corresponding query parameters in the request. You may specify up to 5 query parameters to match on.",
           "type": "array",
@@ -1262,7 +1266,7 @@
           }
         },
         "includedHeaderNames": {
-          "description": "Optional. Names of HTTP request headers to include in cache keys. The value of the header field will be used as part of the cache key. - Header names must be valid HTTP RFC 7230 header field values. - Header field names are case insensitive - You may specify up to five header names. - To include the HTTP method, use \":method\" Refer to the documentation for the allowed list of header names. range of values (e.g. per-user) will dramatically impact the cache hit rate, and may result in a higher eviction rate and reduced performance. You may specify up to 5 header names.",
+          "description": "Optional. Names of HTTP request headers to include in cache keys. The value of the header field will be used as part of the cache key. - Header names must be valid HTTP RFC 7230 header field values. - Header field names are case insensitive - You may specify up to five header names. - To include the HTTP method, use \":method\" Refer to the documentation for the allowed list of header names. Note that specifying several headers, and\/or headers that have a large range of values (e.g. per-user) will dramatically impact the cache hit rate, and may result in a higher eviction rate and reduced performance. You may specify up to 5 header names.",
           "type": "array",
           "items": {
             "type": "string"
@@ -1849,6 +1853,465 @@
         "description": {
           "description": "Optional. A free-text description of the resource. Max length 1024 characters.",
           "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. The timestamp when the resource was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The timestamp when the resource was updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "hostnames": {
+          "description": "Required. Hostnames define a set of hosts that should match against the HTTP host header to select a HttpRoute to process the request. Hostname is the fully qualified domain name of a network host, as defined by RFC 3986. Wildcard hosts are supported in prefix form or suffix form.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "rules": {
+          "description": "Required. Rules that define how traffic is routed and handled.",
+          "type": "array",
+          "items": {
+            "$ref": "HttpRouteRouteRule"
+          }
+        }
+      }
+    },
+    "HttpRouteRouteRule": {
+      "id": "HttpRouteRouteRule",
+      "description": "Specifies how to match traffic and how to route traffic when traffic is matched.",
+      "type": "object",
+      "properties": {
+        "matches": {
+          "description": "A list of matches define conditions used for matching the rule against incoming HTTP requests. Each match is independent, i.e. this rule will be matched if ANY one of the matches is satisfied.",
+          "type": "array",
+          "items": {
+            "$ref": "HttpRouteRouteMatch"
+          }
+        },
+        "action": {
+          "description": "The detailed rule defining how to route matched traffic.",
+          "$ref": "HttpRouteRouteAction"
+        }
+      }
+    },
+    "HttpRouteRouteMatch": {
+      "id": "HttpRouteRouteMatch",
+      "description": "RouteMatch defines specifications used to match requests. If multiple match types are set, this RouteMatch will match if ALL type of matches are matched.",
+      "type": "object",
+      "properties": {
+        "fullPathMatch": {
+          "description": "The HTTP request path value should exactly match this value. Only one of full_path_match, prefix_match, or regex_match should be used.",
+          "type": "string"
+        },
+        "prefixMatch": {
+          "description": "The HTTP request path value must begin with specified prefix_match. prefix_match must begin with a \/. Only one of full_path_match, prefix_match, or regex_match should be used.",
+          "type": "string"
+        },
+        "regexMatch": {
+          "description": "The HTTP request path value must satisfy the regular expression specified by regex_match after removing any query parameters and anchor supplied with the original URL. For regular expression grammar, please see https:\/\/github.com\/google\/re2\/wiki\/Syntax Only one of full_path_match, prefix_match, or regex_match should be used.",
+          "type": "string"
+        },
+        "ignoreCase": {
+          "description": "Specifies if prefix_match and full_path_match matches are case sensitive. The default value is false.",
+          "type": "boolean"
+        },
+        "headers": {
+          "description": "Specifies a list of HTTP request headers to match against. ALL of the supplied headers must be matched.",
+          "type": "array",
+          "items": {
+            "$ref": "HttpRouteHeaderMatch"
+          }
+        },
+        "queryParameters": {
+          "description": "Specifies a list of query parameters to match against. ALL of the query parameters must be matched.",
+          "type": "array",
+          "items": {
+            "$ref": "HttpRouteQueryParameterMatch"
+          }
+        }
+      }
+    },
+    "HttpRouteHeaderMatch": {
+      "id": "HttpRouteHeaderMatch",
+      "description": "Specifies how to select a route rule based on HTTP request headers.",
+      "type": "object",
+      "properties": {
+        "exactMatch": {
+          "description": "The value of the header should match exactly the content of exact_match.",
+          "type": "string"
+        },
+        "regexMatch": {
+          "description": "The value of the header must match the regular expression specified in regex_match. For regular expression grammar, please see: https:\/\/github.com\/google\/re2\/wiki\/Syntax",
+          "type": "string"
+        },
+        "prefixMatch": {
+          "description": "The value of the header must start with the contents of prefix_match.",
+          "type": "string"
+        },
+        "presentMatch": {
+          "description": "A header with header_name must exist. The match takes place whether or not the header has a value.",
+          "type": "boolean"
+        },
+        "suffixMatch": {
+          "description": "The value of the header must end with the contents of suffix_match.",
+          "type": "string"
+        },
+        "rangeMatch": {
+          "description": "If specified, the rule will match if the request header value is within the range.",
+          "$ref": "HttpRouteHeaderMatchIntegerRange"
+        },
+        "header": {
+          "description": "The name of the HTTP header to match against.",
+          "type": "string"
+        },
+        "invertMatch": {
+          "description": "If specified, the match result will be inverted before checking. Default value is set to false.",
+          "type": "boolean"
+        }
+      }
+    },
+    "HttpRouteHeaderMatchIntegerRange": {
+      "id": "HttpRouteHeaderMatchIntegerRange",
+      "description": "Represents an integer value range.",
+      "type": "object",
+      "properties": {
+        "start": {
+          "description": "Start of the range (inclusive)",
+          "type": "integer",
+          "format": "int32"
+        },
+        "end": {
+          "description": "End of the range (exclusive)",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "HttpRouteQueryParameterMatch": {
+      "id": "HttpRouteQueryParameterMatch",
+      "description": "Specifications to match a query parameter in the request.",
+      "type": "object",
+      "properties": {
+        "exactMatch": {
+          "description": "The value of the query parameter must exactly match the contents of exact_match. Only one of exact_match, regex_match, or present_match must be set.",
+          "type": "string"
+        },
+        "regexMatch": {
+          "description": "The value of the query parameter must match the regular expression specified by regex_match. For regular expression grammar, please see https:\/\/github.com\/google\/re2\/wiki\/Syntax Only one of exact_match, regex_match, or present_match must be set.",
+          "type": "string"
+        },
+        "presentMatch": {
+          "description": "Specifies that the QueryParameterMatcher matches is request cotains query parameter, irrespective of whether the parameter has a value or not. Only one of exact_match, regex_match, or present_match must be set.",
+          "type": "boolean"
+        },
+        "queryParameter": {
+          "description": "The name of the query parameter to match.",
+          "type": "string"
+        }
+      }
+    },
+    "HttpRouteRouteAction": {
+      "id": "HttpRouteRouteAction",
+      "description": "The specifications for routing traffic and applying associated policies.",
+      "type": "object",
+      "properties": {
+        "destinations": {
+          "description": "The destination to which traffic should be forwarded. Only one of destinations, redirect, original_destination can be set.",
+          "type": "array",
+          "items": {
+            "$ref": "HttpRouteDestination"
+          }
+        },
+        "redirect": {
+          "description": "If set, the request is directed as configured by this field. Only one of destinations, redirect, original_destination can be set.",
+          "$ref": "HttpRouteRedirect"
+        },
+        "originalDestination": {
+          "description": "If true, the matched traffic will use the destination ip and port of the original connection (as it was not processed by proxy) as the destination of the request. Only one of destinations, redirect, original_destination can be set.",
+          "type": "boolean"
+        },
+        "faultInjectionPolicy": {
+          "description": "The specification for fault injection introduced into traffic to test the resiliency of clients to backend service failure. As part of fault injection, when clients send requests to a backend service, delays can be introduced on a percentage of requests before sending those requests to the backend service. Similarly requests from clients can be aborted for a percentage of requests. timeout and retry_policy will be ignored by clients that are configured with a fault_injection_policy",
+          "$ref": "HttpRouteFaultInjectionPolicy"
+        },
+        "requestHeaderModifier": {
+          "description": "The specification for modifying the headers of a matching request prior to delivery of the request to the destination.",
+          "$ref": "HttpRouteHeaderModifier"
+        },
+        "responseHeaderModifier": {
+          "description": "The specification for modifying the headers of a response prior to sending the response back to the client.",
+          "$ref": "HttpRouteHeaderModifier"
+        },
+        "urlRewrite": {
+          "description": "The specification for rewrite URL before forwarding requests to the destination.",
+          "$ref": "HttpRouteURLRewrite"
+        },
+        "timeout": {
+          "description": "Specifies the timeout for selected route. Timeout is computed from the time the request has been fully processed (i.e. end of stream) up until the response has been completely processed. Timeout includes all retries.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "retryPolicy": {
+          "description": "Specifies the retry policy associated with this route.",
+          "$ref": "HttpRouteRetryPolicy"
+        },
+        "requestMirrorPolicy": {
+          "description": "Specifies the policy on how requests intended for the routes destination are shadowed to a separate mirrored destination. Proxy will not wait for the shadow destination to respond before returning the response. Prior to sending traffic to the shadow service, the host\/authority header is suffixed with -shadow.",
+          "$ref": "HttpRouteRequestMirrorPolicy"
+        },
+        "corsPolicy": {
+          "description": "The specification for allowing client side cross-origin requests.",
+          "$ref": "HttpRouteCorsPolicy"
+        }
+      }
+    },
+    "HttpRouteDestination": {
+      "id": "HttpRouteDestination",
+      "description": "Specifications of a destination to which the request should be routed to.",
+      "type": "object",
+      "properties": {
+        "serviceName": {
+          "description": "The URL of a BackendService to route traffic to.",
+          "type": "string"
+        },
+        "weight": {
+          "description": "Specifies the proportion of requests forwareded to the backend referenced by the service_name field. This is computed as: weight\/Sum(weights in destinations) Weights in all destinations should sum up to 100.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "HttpRouteRedirect": {
+      "id": "HttpRouteRedirect",
+      "description": "The specification for redirecting traffic.",
+      "type": "object",
+      "properties": {
+        "hostRedirect": {
+          "description": "The host that will be used in the redirect response instead of the one that was supplied in the request.",
+          "type": "string"
+        },
+        "pathRedirect": {
+          "description": "The path that will be used in the redirect response instead of the one that was supplied in the request. path_redirect can not be supplied together with prefix_redirect. Supply one alone or neither. If neither is supplied, the path of the original request will be used for the redirect.",
+          "type": "string"
+        },
+        "prefixRewrite": {
+          "description": "Indicates that during redirection, the matched prefix (or path) should be swapped with this value. This option allows URLs be dynamically created based on the request.",
+          "type": "string"
+        },
+        "responseCode": {
+          "description": "The HTTP Status code to use for the redirect.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value",
+            "Corresponds to 301.",
+            "Corresponds to 302.",
+            "Corresponds to 303.",
+            "Corresponds to 307. In this case, the request method will be retained.",
+            "Corresponds to 308. In this case, the request method will be retained."
+          ],
+          "enum": [
+            "RESPONSE_CODE_UNSPECIFIED",
+            "MOVED_PERMANENTLY_DEFAULT",
+            "FOUND",
+            "SEE_OTHER",
+            "TEMPORARY_REDIRECT",
+            "PERMANENT_REDIRECT"
+          ]
+        },
+        "httpsRedirect": {
+          "description": "If set to true, the URL scheme in the redirected request is set to https. If set to false, the URL scheme of the redirected request will remain the same as that of the request. The default is set to false.",
+          "type": "boolean"
+        },
+        "stripQuery": {
+          "description": "if set to true, any accompanying query portion of the original URL is removed prior to redirecting the request. If set to false, the query portion of the original URL is retained. The default is set to false.",
+          "type": "boolean"
+        }
+      }
+    },
+    "HttpRouteFaultInjectionPolicy": {
+      "id": "HttpRouteFaultInjectionPolicy",
+      "description": "The specification for fault injection introduced into traffic to test the resiliency of clients to destination service failure. As part of fault injection, when clients send requests to a destination, delays can be introduced by client proxy on a percentage of requests before sending those requests to the destination service. Similarly requests can be aborted by client proxy for a percentage of requests.",
+      "type": "object",
+      "properties": {
+        "delay": {
+          "description": "The specification for injecting delay to client requests.",
+          "$ref": "HttpRouteFaultInjectionPolicyDelay"
+        },
+        "abort": {
+          "description": "The specification for aborting to client requests.",
+          "$ref": "HttpRouteFaultInjectionPolicyAbort"
+        }
+      }
+    },
+    "HttpRouteFaultInjectionPolicyDelay": {
+      "id": "HttpRouteFaultInjectionPolicyDelay",
+      "description": "Specification of how client requests are delayed as part of fault injection before being sent to a destination.",
+      "type": "object",
+      "properties": {
+        "fixedDelay": {
+          "description": "Specify a fixed delay before forwarding the request.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "percentage": {
+          "description": "The percentage of traffic on which delay will be injected. The value must be between [0, 100]",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "HttpRouteFaultInjectionPolicyAbort": {
+      "id": "HttpRouteFaultInjectionPolicyAbort",
+      "description": "Specification of how client requests are aborted as part of fault injection before being sent to a destination.",
+      "type": "object",
+      "properties": {
+        "httpStatus": {
+          "description": "The HTTP status code used to abort the request. The value must be between 200 and 599 inclusive.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "percentage": {
+          "description": "The percentage of traffic which will be aborted. The value must be between [0, 100]",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "HttpRouteHeaderModifier": {
+      "id": "HttpRouteHeaderModifier",
+      "description": "The specification for modifying HTTP header in HTTP request and HTTP response.",
+      "type": "object",
+      "properties": {
+        "set": {
+          "description": "Completely overwrite\/replace the headers with given map where key is the name of the header, value is the value of the header.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "add": {
+          "description": "Add the headers with given map where key is the name of the header, value is the value of the header.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "remove": {
+          "description": "Remove headers (matching by header names) specified in the list.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "HttpRouteURLRewrite": {
+      "id": "HttpRouteURLRewrite",
+      "description": "The specification for modifying the URL of the request, prior to forwarding the request to the destination.",
+      "type": "object",
+      "properties": {
+        "pathPrefixRewrite": {
+          "description": "Prior to forwarding the request to the selected destination, the matching portion of the requests path is replaced by this value.",
+          "type": "string"
+        },
+        "hostRewrite": {
+          "description": "Prior to forwarding the request to the selected destination, the requests host header is replaced by this value.",
+          "type": "string"
+        }
+      }
+    },
+    "HttpRouteRetryPolicy": {
+      "id": "HttpRouteRetryPolicy",
+      "description": "The specifications for retries.",
+      "type": "object",
+      "properties": {
+        "retryConditions": {
+          "description": "Specifies one or more conditions when this retry policy applies. Valid values are: 5xx: Proxy will attempt a retry if the destination service responds with any 5xx response code, of if the destination service does not respond at all, example: disconnect, reset, read timeout, connection failure and refused streams. gateway-error: Similar to 5xx, but only applies to response codes 502, 503, 504. reset: Proxy will attempt a retry if the destination service does not respond at all (disconnect\/reset\/read timeout) connect-failure: Proxy will retry on failures connecting to destination for example due to connection timeouts. retriable-4xx: Proxy will retry fro retriable 4xx response codes. Currently the only retriable error supported is 409. refused-stream: Proxy will retry if the destination resets the stream with a REFUSED_STREAM error code. This reset type indicates that it is safe to retry.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "numRetries": {
+          "description": "Specifies the allowed number of retries. This number must be > 0. If not specified, default to 1.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "perTryTimeout": {
+          "description": "Specifies a non-zero timeout per retry attempt.",
+          "type": "string",
+          "format": "google-duration"
+        }
+      }
+    },
+    "HttpRouteRequestMirrorPolicy": {
+      "id": "HttpRouteRequestMirrorPolicy",
+      "description": "Specifies the policy on how requests are shadowed to a separate mirrored destination service. The proxy does not wait for responses from the shadow service. Prior to sending traffic to the shadow service, the host\/authority header is suffixed with -shadow.",
+      "type": "object",
+      "properties": {
+        "destination": {
+          "description": "The destination the requests will be mirrored to. The weight of the destination will be ignored.",
+          "$ref": "HttpRouteDestination"
+        }
+      }
+    },
+    "HttpRouteCorsPolicy": {
+      "id": "HttpRouteCorsPolicy",
+      "description": "The Specification for allowing client side cross-origin requests.",
+      "type": "object",
+      "properties": {
+        "allowOrigins": {
+          "description": "Specifies the list of origins that will be allowed to do CORS requests. An origin is allowed if it matches either an item in allow_origins or an item in allow_origin_regexes.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "allowOriginRegexes": {
+          "description": "Specifies the regular expression patterns that match allowed origins. For regular expression grammar, please see https:\/\/github.com\/google\/re2\/wiki\/Syntax.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "allowMethods": {
+          "description": "Specifies the content for Access-Control-Allow-Methods header.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "allowHeaders": {
+          "description": "Specifies the content for Access-Control-Allow-Headers header.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "exposeHeaders": {
+          "description": "Specifies the content for Access-Control-Expose-Headers header.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "maxAge": {
+          "description": "Specifies how long result of a preflight request can be cached in seconds. This translates to the Access-Control-Max-Age header.",
+          "type": "string"
+        },
+        "allowCredentials": {
+          "description": "In response to a preflight request, setting this to true indicates that the actual request can include user credentials. This translates to the Access-Control-Allow-Credentials header. Default value is false.",
+          "type": "boolean"
+        },
+        "disabled": {
+          "description": "If true, the CORS policy is disabled. The default value is false, which indicates that the CORS policy is in effect.",
+          "type": "boolean"
         }
       }
     },
@@ -4563,7 +5026,7 @@
                       "type": "string"
                     },
                     "httpRouteId": {
-                      "description": "Required. Short name of the HttpRoute resource to be created. E.g. TODO(Add an example).",
+                      "description": "Required. Short name of the HttpRoute resource to be created.",
                       "location": "query",
                       "type": "string"
                     }

@@ -110,6 +110,13 @@ def SecurityPolicyFromFile(input_file, messages, file_format):
       security_policy_rule.redirectTarget = rule['redirectTarget']
     if 'ruleNumber' in rule:
       security_policy_rule.ruleNumber = int(rule['ruleNumber'])
+    if 'redirectOptions' in rule:
+      redirect_options = rule['redirectOptions']
+      security_policy_rule.redirectOptions = (
+          messages.SecurityPolicyRuleRedirectOptions(
+              type=messages.SecurityPolicyRedirectOptions.TypeValueValuesEnum(
+                  redirect_options['type']),
+              target=redirect_options['target']))
     if 'rateLimitOptions' in rule:
       rate_limit_options = rule['rateLimitOptions']
       security_policy_rule.rateLimitOptions = (
@@ -284,3 +291,36 @@ def _ConvertExceedAction(action):
 
 def _ConvertEnforceOnKey(enforce_on_key):
   return {'ip': 'IP', 'all-ips': 'ALL_IPS'}.get(enforce_on_key, enforce_on_key)
+
+
+def CreateRedirectOptions(client, args):
+  """Returns a SecurityPolicyRuleRedirectOptions message."""
+
+  messages = client.messages
+  redirect_options = messages.SecurityPolicyRuleRedirectOptions()
+  is_updated = False
+
+  if args.IsSpecified('redirect_type'):
+    redirect_options.type = (
+        messages.SecurityPolicyRuleRedirectOptions.TypeValueValuesEnum(
+            _ConvertRedirectType(args.redirect_type)))
+    is_updated = True
+
+  # If --redirect-target is given while --redirect-type is unspecified, type
+  # is implicitly set to be EXTERNAL_302.
+  if args.IsSpecified('redirect_target'):
+    redirect_options.target = args.redirect_target
+    if redirect_options.type is None:
+      redirect_options.type = (
+          messages.SecurityPolicyRuleRedirectOptions.TypeValueValuesEnum
+          .EXTERNAL_302)
+    is_updated = True
+
+  return redirect_options if is_updated else None
+
+
+def _ConvertRedirectType(redirect_type):
+  return {
+      'google-recaptcha': 'GOOGLE_RECAPTCHA',
+      'external-302': 'EXTERNAL_302'
+  }.get(redirect_type, redirect_type)

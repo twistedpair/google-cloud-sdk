@@ -1123,6 +1123,33 @@ class ApigeeV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Patch(self, request, global_params=None):
+      r"""Updates an existing API proxy.
+
+      Args:
+        request: (ApigeeOrganizationsApisPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1ApiProxy) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/apis/{apisId}',
+        http_method='PATCH',
+        method_id='apigee.organizations.apis.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='googleCloudApigeeV1ApiProxy',
+        request_type_name='ApigeeOrganizationsApisPatchRequest',
+        response_type_name='GoogleCloudApigeeV1ApiProxy',
+        supports_download=False,
+    )
+
   class OrganizationsAppsService(base_api.BaseApiService):
     """Service class for the organizations_apps resource."""
 

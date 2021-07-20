@@ -258,7 +258,7 @@ def _CreateNodeConfig(messages, flags):
   return config
 
 
-def _CreateConfig(messages, flags):
+def _CreateConfig(messages, flags, is_composer_v1):
   """Creates environment config from parameters, returns None if config is empty."""
   node_config = _CreateNodeConfig(messages, flags)
   if not (node_config or flags.node_count or flags.kms_key or
@@ -293,7 +293,7 @@ def _CreateConfig(messages, flags):
           flags.environment_size)
   if (flags.image_version or flags.env_variables or
       flags.airflow_config_overrides or flags.python_version or
-      flags.airflow_executor_type):
+      flags.airflow_executor_type or flags.scheduler_count and is_composer_v1):
     config.softwareConfig = messages.SoftwareConfig()
     if flags.image_version:
       config.softwareConfig.imageVersion = flags.image_version
@@ -310,6 +310,8 @@ def _CreateConfig(messages, flags):
       config.softwareConfig.airflowExecutorType = ConvertToTypeEnum(
           messages.SoftwareConfig.AirflowExecutorTypeValueValuesEnum,
           flags.airflow_executor_type)
+    if flags.scheduler_count and is_composer_v1:
+      config.softwareConfig.schedulerCount = flags.scheduler_count
 
   if flags.maintenance_window_start:
     assert flags.maintenance_window_end, 'maintenance_window_end is missing'
@@ -359,7 +361,8 @@ def _CreateConfig(messages, flags):
   if flags.web_server_machine_type:
     config.webServerConfig = messages.WebServerConfig(
         machineType=flags.web_server_machine_type)
-  if (flags.scheduler_cpu or flags.worker_cpu or flags.web_server_cpu or
+  if not is_composer_v1 and (
+      flags.scheduler_cpu or flags.worker_cpu or flags.web_server_cpu or
       flags.scheduler_memory_gb or flags.worker_memory_gb or
       flags.web_server_memory_gb or flags.scheduler_storage_gb or
       flags.worker_storage_gb or flags.web_server_storage_gb or
@@ -384,12 +387,14 @@ def _CreateConfig(messages, flags):
   return config
 
 
-def Create(environment_ref, flags):
+def Create(environment_ref, flags, is_composer_v1):
   """Calls the Composer Environments.Create method.
 
   Args:
     environment_ref: Resource, the Composer environment resource to create.
     flags: CreateEnvironmentFlags, the flags provided for environment creation.
+    is_composer_v1: boolean representing if creation request is for Composer
+    1.*.* image versions.
 
   Returns:
     Operation: the operation corresponding to the creation of the environment
@@ -397,7 +402,7 @@ def Create(environment_ref, flags):
   messages = api_util.GetMessagesModule(release_track=flags.release_track)
   # Builds environment message and attaches the configuration
   environment = messages.Environment(name=environment_ref.RelativeName())
-  environment.config = _CreateConfig(messages, flags)
+  environment.config = _CreateConfig(messages, flags, is_composer_v1)
 
   if flags.labels:
     environment.labels = api_util.DictToMessage(

@@ -22,8 +22,6 @@ from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.command_lib.compute import ssh_troubleshooter
 from googlecloudsdk.core import log
 
-ISSUE_FOUND = '1 issue found'
-
 _API_COMPUTE_CLIENT_NAME = 'compute'
 _API_CLIENT_VERSION_V1 = 'v1'
 
@@ -59,7 +57,7 @@ class VPCTroubleshooter(ssh_troubleshooter.SshTroubleshooter):
     self._CheckDefaultSSHPort()
     if self.iap_tunnel_args:
       self._CheckIAPTunneling()
-    log.status.Print('VPC setting: %s issue(s) found.' % self.issue_count)
+    log.status.Print('VPC setting: %s issue(s) found.\n' % self.issue_count)
     for result in self.results:
       log.status.Print(result)
     return
@@ -70,11 +68,11 @@ class VPCTroubleshooter(ssh_troubleshooter.SshTroubleshooter):
       if self._HasValidateIAPTunnelingRule(firewall):
         return
     self.issue_count += 1
-    self.results.append(ISSUE_FOUND)
     self.results.append(
         'There is an issue with IAP port forwarding. Make sure the IAP '
         'firewall rule is valid.\n'
-        'Help for IAP port forwarding: https://cloud.google.com/iap/docs/using-tcp-forwarding\n')  # pylint: disable=line-too-long
+        'Help for IAP port forwarding: '
+        'https://cloud.google.com/iap/docs/using-tcp-forwarding\n')
     return
 
   def _CheckDefaultSSHPort(self):
@@ -83,13 +81,14 @@ class VPCTroubleshooter(ssh_troubleshooter.SshTroubleshooter):
       if self._HasSSHProtocalAndPort(firewall):
         return
     self.issue_count += 1
-    self.results.append(ISSUE_FOUND)
     self.results.append(
         'If the default firewall rule is defined for the project, SSH '
         'connections to all VMs are allowed. If the VM has a custom network '
         'firewall rule, make sure it is valid.\n'
-        'Help for default firewall rule: https://cloud.google.com/vpc/docs/vpc#default-network\n'  # pylint: disable=line-too-long
-        'Help for custom firewall rule: https://cloud.google.com/network-connectivity/docs/vpn/how-to/configuring-firewall-rules?hl=it\n')  # pylint: disable=line-too-long
+        'Help for default firewall rule: '
+        'https://cloud.google.com/vpc/docs/vpc#default-network\n'
+        'Help for custom firewall rule: '
+        'https://cloud.google.com/network-connectivity/docs/vpn/how-to/configuring-firewall-rules?hl=it\n')  # pylint: disable=line-too-long
     self.results.append(
         "If you need to investigate further, enable the VM's serial console. "
         "Then connect through the VM serial port, find the SSH server's listen "

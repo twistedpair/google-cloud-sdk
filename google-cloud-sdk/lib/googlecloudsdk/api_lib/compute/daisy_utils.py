@@ -123,6 +123,26 @@ CLOUD_BUILD_REGIONS = (
     'us-west1',
 )
 
+# Mapping from GCS regions that are either not named the same ('eu') or don't
+# exist in Artifact Registry
+GCS_TO_AR_REGIONS = {
+    # Different names for same regions
+    'eu': 'europe',
+
+    # Dual-regions not supported by Artifact Registry
+    'nam4': 'us-central1',
+    'eur4': 'europe-west4',
+    'asia1': 'asia-northeast1',
+}
+
+# Mapping from Artifact registry to Cloud Build regions. This is needed for
+# Artifact Registry multi-regions which don't exist in regionalized Cloud Build.
+AR_TO_CLOUD_BUILD_REGIONS = {
+    'us': 'us-central1',
+    'europe': 'europe-west4',
+    'asia': 'asia-east1',
+}
+
 # Used for unit testing as api_tools mocks can only assert on exact matches
 bucket_random_suffix_override = None
 
@@ -598,7 +618,7 @@ def RunImageImport(args,
   del release_track  # Unused argument
 
   AppendArg(import_args, 'client_version', config.CLOUD_SDK_VERSION)
-  builder_region = _GetImageImportRegion(args)
+  builder_region = _GetBuilderRegion(_GetImageImportRegion, args)
   builder = _GetBuilder(_IMAGE_IMPORT_BUILDER_EXECUTABLE, docker_image_tag,
                         builder_region)
   return RunImageCloudBuild(args, builder, import_args, tags, output_filter,
@@ -607,15 +627,21 @@ def RunImageImport(args,
                             build_region=builder_region)
 
 
-def _GetBuilderRegion(release_track, region_getter, args):
-  # Returns a region to run a Cloud build in for alpha and beta. None for ga.
-  region = None
-  if release_track != 'ga':
-    # Use regionalized wrapper image for Alpha and Beta
-    try:
-      region = region_getter(args)
-    except HttpError:
-      region = None
+def _GetBuilderRegion(region_getter, args=None):
+  """Returns a region to run a Cloud build in.
+
+  Args:
+    region_getter: function that returns a region to run build in
+    args: args for region_getter
+  Returns: Cloud Build region
+  """
+  if args:
+    region = region_getter(args)
+  else:
+    region = region_getter()
+
+  if region in GCS_TO_AR_REGIONS:
+    region = GCS_TO_AR_REGIONS[region]
   return region
 
 
@@ -656,11 +682,6 @@ def _GetRegionalizedBuilder(executable, region, docker_image_tag):
   """
   if not region:
     return ''
-
-  # eu/europe is the only mismatch in region naming between Artifact registry
-  # and GCS
-  if region == 'eu':
-    region = 'europe'
 
   regionalized_builder = _REGIONALIZED_BUILDER_DOCKER_PATTERN.format(
       executable=executable,
@@ -729,7 +750,10 @@ def RunOnestepImageImport(args,
   Raises:
     FailedBuildException: If the build is completed and not 'SUCCESS'.
   """
-  builder_region = _GetBuilderRegion(release_track, _GetImageImportRegion, args)
+  # TODO (b/191234695)
+  del release_track  # Unused argument
+
+  builder_region = _GetBuilderRegion(_GetImageImportRegion, args)
   builder = _GetBuilder(_IMAGE_ONESTEP_IMPORT_BUILDER_EXECUTABLE,
                         docker_image_tag, builder_region)
   return RunImageCloudBuild(args, builder, import_args, tags, output_filter,
@@ -742,7 +766,6 @@ def RunImageExport(args,
                    tags,
                    output_filter,
                    release_track,  # pylint:disable=unused-argument
-                                   # TODO (b/191234695)
                    docker_image_tag=_DEFAULT_BUILDER_VERSION):
   """Run a build over gce_vm_image_export on Google Cloud Builder.
 
@@ -765,9 +788,11 @@ def RunImageExport(args,
   Raises:
     FailedBuildException: If the build is completed and not 'SUCCESS'.
   """
+  # TODO (b/191234695)
+  del release_track  # Unused argument
 
   AppendArg(export_args, 'client_version', config.CLOUD_SDK_VERSION)
-  builder_region = _GetImageExportRegion(args)
+  builder_region = _GetBuilderRegion(_GetImageExportRegion, args)
   builder = _GetBuilder(_IMAGE_EXPORT_BUILDER_EXECUTABLE, docker_image_tag,
                         builder_region)
   return RunImageCloudBuild(args, builder, export_args, tags, output_filter,
@@ -898,6 +923,9 @@ def _RunCloudBuild(args,
                                                        gcs_log_ref.object))
     else:
       build_config.logsBucket = 'gs://{0}'.format(gcs_log_ref.bucket)
+
+  if build_region and build_region in AR_TO_CLOUD_BUILD_REGIONS:
+    build_region = AR_TO_CLOUD_BUILD_REGIONS[build_region]
 
   # Start the build.
   if build_region and build_region in CLOUD_BUILD_REGIONS:
@@ -1046,7 +1074,7 @@ def RunInstanceOVFImportBuild(
   build_tags = ['gce-daisy', 'gce-ovf-import']
 
   backoff = lambda elapsed: 2 if elapsed < 30 else 15
-  builder_region = _GetInstanceImportRegion()
+  builder_region = _GetBuilderRegion(_GetInstanceImportRegion)
   builder = _GetBuilder(_OVF_IMPORT_BUILDER_EXECUTABLE, args.docker_image_tag,
                         builder_region)
   return _RunCloudBuild(
@@ -1145,8 +1173,7 @@ def RunMachineImageOVFImportBuild(args, output_filter, release_track):
   build_tags = ['gce-daisy', 'gce-ovf-machine-image-import']
 
   backoff = lambda elapsed: 2 if elapsed < 30 else 15
-  builder_region = _GetBuilderRegion(release_track,
-                                     _GetMachineImageImportRegion, args)
+  builder_region = _GetBuilderRegion(_GetMachineImageImportRegion, args)
   builder = _GetBuilder(_OVF_IMPORT_BUILDER_EXECUTABLE, args.docker_image_tag,
                         builder_region)
 
@@ -1222,6 +1249,9 @@ def RunOsUpgradeBuild(args, output_filter, instance_uri, release_track):
   Raises:
     FailedBuildException: If the build is completed and not 'SUCCESS'.
   """
+  # TODO (b/191234695)
+  del release_track  # Unused argument
+
   project_id = projects_util.ParseProject(
       properties.VALUES.core.project.GetOrFail())
 
@@ -1250,7 +1280,7 @@ def RunOsUpgradeBuild(args, output_filter, instance_uri, release_track):
   AppendArg(os_upgrade_args, 'client-version', config.CLOUD_SDK_VERSION)
 
   build_tags = ['gce-os-upgrade']
-  builder_region = _GetBuilderRegion(release_track, _GetOSUpgradeRegion, args)
+  builder_region = _GetBuilderRegion(_GetOSUpgradeRegion, args)
   builder = _GetBuilder(_OS_UPGRADE_BUILDER_EXECUTABLE, args.docker_image_tag,
                         builder_region)
   return _RunCloudBuild(args, builder, os_upgrade_args, build_tags,

@@ -268,21 +268,10 @@ class InstallationInfo(object):
           '\n  '.join(self.additional_repos)))
 
     if self.components:
-      core_version = self.components.get('core', '')
-      component_strs = []
-      for name, value in six.iteritems(self.components):
-        # We want the alpha and beta component dates to match the core date.
-        # Otherwise the alpha and beta dates correspond to the last update to
-        # the respective files, not the gcloud release tracks. Users
-        # are confused thinking it is the alpha and beta tracks, which are
-        # actually included in the core update. (b/155661579)
-        if core_version and (name == 'alpha' or name == 'beta'):
-          component_strs.append('{0}: [{1}]'.format(name, core_version))
-        else:
-          component_strs.append('{0}: [{1}]'.format(name, value))
-
+      components = ['{0}: [{1}]'.format(name, value) for name, value in
+                    six.iteritems(self.components)]
       out.write('Installed Components:\n  {0}\n'.format(
-          '\n  '.join(component_strs)))
+          '\n  '.join(components)))
 
     out.write('System PATH: [{0}]\n'.format(os.pathsep.join(self.path)))
     out.write('Python PATH: [{0}]\n'.format(os.pathsep.join(self.python_path)))

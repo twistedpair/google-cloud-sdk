@@ -147,9 +147,8 @@ class BackupRun(_messages.Message):
     description: The description of this run, only applicable to on-demand
       backups.
     diskEncryptionConfiguration: Encryption configuration specific to a
-      backup. Applies only to Second Generation instances.
-    diskEncryptionStatus: Encryption status specific to a backup. Applies only
-      to Second Generation instances.
+      backup.
+    diskEncryptionStatus: Encryption status specific to a backup.
     endTime: The time the backup operation completed in UTC timezone in RFC
       3339 format, for example *2012-11-15T16:19:00.094Z*.
     enqueuedTime: The time the run was enqueued in UTC timezone in RFC 3339
@@ -447,9 +446,9 @@ class DatabaseFlags(_messages.Message):
 
   Fields:
     name: The name of the flag. These flags are passed at instance startup, so
-      include both server options and system variables for MySQL. Flags are
-      specified with underscores, not hyphens. For more information, see
-      Configuring Database Flags in the Cloud SQL documentation.
+      include both server options and system variables. Flags are specified
+      with underscores, not hyphens. For more information, see Configuring
+      Database Flags in the Cloud SQL documentation.
     value: The value of the flag. Booleans are set to *on* for true and *off*
       for false. This field must be omitted if the flag doesn't take a value.
   """
@@ -470,7 +469,9 @@ class DatabaseInstance(_messages.Message):
       *databaseVersion* field cannot be changed after instance creation. MySQL
       instances: *MYSQL_8_0*, *MYSQL_5_7* (default), or *MYSQL_5_6*.
       PostgreSQL instances: *POSTGRES_9_6*, *POSTGRES_10*, *POSTGRES_11*,
-      *POSTGRES_12*, or *POSTGRES_13* (default). SQL Server instances:
+      *POSTGRES_12*, *POSTGRES_13* (default). SQL Server instances:
+      *SQLSERVER_2019_STANDARD*, *SQLSERVER_2019_ENTERPRISE*,
+      *SQLSERVER_2019_EXPRESS*, or *SQLSERVER_2019_WEB*,
       *SQLSERVER_2017_STANDARD* (default), *SQLSERVER_2017_ENTERPRISE*,
       *SQLSERVER_2017_EXPRESS*, or *SQLSERVER_2017_WEB*.
     InstanceTypeValueValuesEnum: The instance type. This can be one of the
@@ -489,8 +490,7 @@ class DatabaseInstance(_messages.Message):
     SuspensionReasonValueListEntryValuesEnum:
 
   Messages:
-    FailoverReplicaValue: The name and status of the failover replica. This
-      property is applicable only to Second Generation instances.
+    FailoverReplicaValue: The name and status of the failover replica.
 
   Fields:
     backendType:  *SECOND_GEN*: Cloud SQL database instance. *EXTERNAL*: A
@@ -507,17 +507,17 @@ class DatabaseInstance(_messages.Message):
       *databaseVersion* field cannot be changed after instance creation. MySQL
       instances: *MYSQL_8_0*, *MYSQL_5_7* (default), or *MYSQL_5_6*.
       PostgreSQL instances: *POSTGRES_9_6*, *POSTGRES_10*, *POSTGRES_11*,
-      *POSTGRES_12*, or *POSTGRES_13* (default). SQL Server instances:
+      *POSTGRES_12*, *POSTGRES_13* (default). SQL Server instances:
+      *SQLSERVER_2019_STANDARD*, *SQLSERVER_2019_ENTERPRISE*,
+      *SQLSERVER_2019_EXPRESS*, or *SQLSERVER_2019_WEB*,
       *SQLSERVER_2017_STANDARD* (default), *SQLSERVER_2017_ENTERPRISE*,
       *SQLSERVER_2017_EXPRESS*, or *SQLSERVER_2017_WEB*.
     diskEncryptionConfiguration: Disk encryption configuration specific to an
-      instance. Applies only to Second Generation instances.
+      instance.
     diskEncryptionStatus: Disk encryption status specific to an instance.
-      Applies only to Second Generation instances.
     etag: This field is deprecated and will be removed from a future version
       of the API. Use the *settings.settingsVersion* field instead.
-    failoverReplica: The name and status of the failover replica. This
-      property is applicable only to Second Generation instances.
+    failoverReplica: The name and status of the failover replica.
     gceZone: The Compute Engine zone that the instance is currently serving
       from. This value could be different from the zone that was specified
       when the instance was created if the instance has failed over to its
@@ -599,9 +599,11 @@ class DatabaseInstance(_messages.Message):
     r"""The database engine type and version. The *databaseVersion* field
     cannot be changed after instance creation. MySQL instances: *MYSQL_8_0*,
     *MYSQL_5_7* (default), or *MYSQL_5_6*. PostgreSQL instances:
-    *POSTGRES_9_6*, *POSTGRES_10*, *POSTGRES_11*, *POSTGRES_12*, or
-    *POSTGRES_13* (default). SQL Server instances: *SQLSERVER_2017_STANDARD*
-    (default), *SQLSERVER_2017_ENTERPRISE*, *SQLSERVER_2017_EXPRESS*, or
+    *POSTGRES_9_6*, *POSTGRES_10*, *POSTGRES_11*, *POSTGRES_12*, *POSTGRES_13*
+    (default). SQL Server instances: *SQLSERVER_2019_STANDARD*,
+    *SQLSERVER_2019_ENTERPRISE*, *SQLSERVER_2019_EXPRESS*, or
+    *SQLSERVER_2019_WEB*, *SQLSERVER_2017_STANDARD* (default),
+    *SQLSERVER_2017_ENTERPRISE*, *SQLSERVER_2017_EXPRESS*, or
     *SQLSERVER_2017_WEB*.
 
     Values:
@@ -719,8 +721,7 @@ class DatabaseInstance(_messages.Message):
     KMS_KEY_ISSUE = 4
 
   class FailoverReplicaValue(_messages.Message):
-    r"""The name and status of the failover replica. This property is
-    applicable only to Second Generation instances.
+    r"""The name and status of the failover replica.
 
     Fields:
       available: The availability status of the failover replica. A false
@@ -729,8 +730,7 @@ class DatabaseInstance(_messages.Message):
         true.
       name: The name of the failover replica. If specified at instance
         creation, a failover replica is created for the instance. The name
-        doesn't include the project ID. This property is applicable only to
-        Second Generation instances.
+        doesn't include the project ID.
     """
 
     available = _messages.BooleanField(1)
@@ -810,13 +810,12 @@ class DemoteMasterContext(_messages.Message):
     replicaConfiguration: Configuration specific to read-replicas replicating
       from the on-premises primary instance.
     verifyGtidConsistency: Verify GTID consistency for demote operation.
-      Default value: *True*. Second Generation instances only. Setting this
-      flag to false enables you to bypass GTID consistency check between on-
-      premises primary instance and Cloud SQL instance during the demotion
-      operation but also exposes you to the risk of future replication
-      failures. Change the value only if you know the reason for the GTID
-      divergence and are confident that doing so will not cause any
-      replication issues.
+      Default value: *True*. Setting this flag to false enables you to bypass
+      GTID consistency check between on-premises primary instance and Cloud
+      SQL instance during the demotion operation but also exposes you to the
+      risk of future replication failures. Change the value only if you know
+      the reason for the GTID divergence and are confident that doing so will
+      not cause any replication issues.
   """
 
   kind = _messages.StringField(1)
@@ -1037,7 +1036,7 @@ class Flag(_messages.Message):
     name: This is the name of the flag. Flag names always use underscores, not
       hyphens, for example: *max_allowed_packet*
     requiresRestart: Indicates whether changing this flag will trigger a
-      database restart. Only applicable to Second Generation instances.
+      database restart.
     type: The type of the flag. Flags are typed to being *BOOLEAN*, *STRING*,
       *INTEGER* or *NONE*. *NONE* is used for flags which do not take a value,
       such as *skip_grant_tables*.
@@ -1266,8 +1265,8 @@ class InsightsConfig(_messages.Message):
 
   Fields:
     queryInsightsEnabled: Whether Query Insights feature is enabled.
-    queryPlansPerMinute: Number of query plans generated by Insights per
-      minute. Default is 5. Changing this will restart the database.
+    queryPlansPerMinute: Number of query execution plans captured by Insights
+      per minute for all queries combined. Default is 5.
     queryStringLength: Maximum query length stored in bytes. Default value:
       1024 bytes. Range: 256-4500 bytes. Query length more than this field
       value will be truncated to this value. When unset, query length will be
@@ -1961,8 +1960,7 @@ class Settings(_messages.Message):
       Postgres.
     ipConfiguration: The settings for IP Management. This allows to enable or
       disable the instance IP and manage which external networks can connect
-      to the instance. The IPv4 address cannot be disabled for Second
-      Generation instances.
+      to the instance. The IPv4 address cannot be disabled.
     kind: This is always *sql#settings*.
     locationPreference: The location preference settings. This allows the
       instance to be located as near as possible to either an App Engine app
@@ -2142,7 +2140,7 @@ class SqlBackupRunsDeleteRequest(_messages.Message):
   r"""A SqlBackupRunsDeleteRequest object.
 
   Fields:
-    id: The ID of the Backup Run to delete. To find a Backup Run ID, use the
+    id: The ID of the backup run to delete. To find a backup run ID, use the
       list method.
     instance: Cloud SQL instance ID. This does not include the project ID.
     project: Project ID of the project that contains the instance.
@@ -2157,7 +2155,7 @@ class SqlBackupRunsGetRequest(_messages.Message):
   r"""A SqlBackupRunsGetRequest object.
 
   Fields:
-    id: The ID of this Backup Run.
+    id: The ID of this backup run.
     instance: Cloud SQL instance ID. This does not include the project ID.
     project: Project ID of the project that contains the instance.
   """

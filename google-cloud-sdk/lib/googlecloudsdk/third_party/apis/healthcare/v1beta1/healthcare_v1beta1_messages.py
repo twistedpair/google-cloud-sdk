@@ -663,7 +663,8 @@ class Consent(_messages.Message):
     r"""Required. Indicates the current state of this Consent.
 
     Values:
-      STATE_UNSPECIFIED: No state specified.
+      STATE_UNSPECIFIED: No state specified. Treated as ACTIVE only at the
+        time of resource creation.
       ACTIVE: The Consent is active and is considered when evaluating a user's
         consent on resources.
       ARCHIVED: When a Consent is updated, the current version is archived and
@@ -1633,9 +1634,9 @@ class ExportResourcesRequest(_messages.Message):
     bigqueryDestination: The BigQuery output destination. The Cloud Healthcare
       Service Agent requires two IAM roles on the BigQuery location:
       `roles/bigquery.dataEditor` and `roles/bigquery.jobUser`. The output is
-      one BigQuery table per resource type. Note that unlike in
-      FhirStore.StreamConfig.BigQueryDestination, BigQuery views will not be
-      created by ExportResources.
+      one BigQuery table per resource type. Unlike when setting
+      `BigQueryDestination` for `StreamConfig`, `ExportResources` does not
+      create BigQuery views.
     gcsDestination: The Cloud Storage output destination. The Cloud Healthcare
       Service Agent requires the `roles/storage.objectAdmin` Cloud IAM roles
       on the Cloud Storage location. The exported outputs are organized by

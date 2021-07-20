@@ -51,11 +51,11 @@ class DeleteBucketTask(task.Task):
     except Exception as e:
       # pylint:enable=broad-except
       if 'not empty' in str(e):
-        log.error(
-            type(e)('Bucket is not empty. To delete all objects and then delete'
-                    ' bucket, use: gcloud storage rm -r'))
+        raise type(e)(
+            'Bucket is not empty. To delete all objects and then delete'
+            ' bucket, use: gcloud storage rm -r')
       else:
-        log.error(e)
+        raise
 
   def __eq__(self, other):
     if not isinstance(other, DeleteBucketTask):

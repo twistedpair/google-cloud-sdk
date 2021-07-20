@@ -3533,7 +3533,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. The unique identifier of this agent environment. Supported formats: - `projects\/\/agent\/environments\/` - `projects\/\/locations\/\/agent\/environments\/`",
+          "description": "Output only. The unique identifier of this agent environment. Supported formats: - `projects\/\/agent\/environments\/` - `projects\/\/locations\/\/agent\/environments\/` The environment ID for the default environment is `-`.",
           "readOnly": true,
           "type": "string"
         },
@@ -3627,7 +3627,7 @@
       "type": "object",
       "properties": {
         "parent": {
-          "description": "Output only. The name of the environment this history is for. Supported formats: - `projects\/\/agent\/environments\/` - `projects\/\/locations\/\/agent\/environments\/`",
+          "description": "Output only. The name of the environment this history is for. Supported formats: - `projects\/\/agent\/environments\/` - `projects\/\/locations\/\/agent\/environments\/` The environment ID for the default environment is `-`.",
           "readOnly": true,
           "type": "string"
         },
@@ -10955,7 +10955,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/dialogflow"
                       ],
-                      "description": "Returns the list of all non-draft environments of the specified agent."
+                      "description": "Returns the list of all non-default environments of the specified agent."
                     },
                     "get": {
                       "id": "dialogflow.projects.locations.agent.environments.get",
@@ -10964,7 +10964,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "name": {
-                          "description": "Required. The name of the environment. Supported formats: - `projects\/\/agent\/environments\/` - `projects\/\/locations\/\/agent\/environments\/`",
+                          "description": "Required. The name of the environment. Supported formats: - `projects\/\/agent\/environments\/` - `projects\/\/locations\/\/agent\/environments\/` The environment ID for the default environment is `-`.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/agent\/environments\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -11024,7 +11024,7 @@
                       "httpMethod": "PATCH",
                       "parameters": {
                         "name": {
-                          "description": "Output only. The unique identifier of this agent environment. Supported formats: - `projects\/\/agent\/environments\/` - `projects\/\/locations\/\/agent\/environments\/`",
+                          "description": "Output only. The unique identifier of this agent environment. Supported formats: - `projects\/\/agent\/environments\/` - `projects\/\/locations\/\/agent\/environments\/` The environment ID for the default environment is `-`.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/agent\/environments\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -11037,7 +11037,7 @@
                           "format": "google-fieldmask"
                         },
                         "allowLoadToDraftAndDiscardChanges": {
-                          "description": "Optional. This field is used to prevent accidental overwrite of the draft environment, which is an operation that cannot be undone. To confirm that the caller desires this overwrite, this field must be explicitly set to true when updating the draft environment (environment ID = `-`).",
+                          "description": "Optional. This field is used to prevent accidental overwrite of the default environment, which is an operation that cannot be undone. To confirm that the caller desires this overwrite, this field must be explicitly set to true when updating the default environment (environment ID = `-`).",
                           "location": "query",
                           "type": "boolean"
                         }
@@ -11055,7 +11055,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/dialogflow"
                       ],
-                      "description": "Updates the specified agent environment. This method allows you to deploy new agent versions into the environment. When an environment is pointed to a new agent version by setting `environment.agent_version`, the environment is temporarily set to the `LOADING` state. During that time, the environment keeps on serving the previous version of the agent. After the new agent version is done loading, the environment is set back to the `RUNNING` state. You can use \"-\" as Environment ID in environment name to update version in \"draft\" environment. WARNING: this will negate all recent changes to draft and can't be undone. You may want to save the draft to a version before calling this function."
+                      "description": "Updates the specified agent environment. This method allows you to deploy new agent versions into the environment. When an environment is pointed to a new agent version by setting `environment.agent_version`, the environment is temporarily set to the `LOADING` state. During that time, the environment continues serving the previous version of the agent. After the new agent version is done loading, the environment is set back to the `RUNNING` state. You can use \"-\" as Environment ID in environment name to update an agent version in the default environment. WARNING: this will negate all recent changes to the draft agent and can't be undone. You may want to save the draft agent to a version before calling this method."
                     },
                     "delete": {
                       "id": "dialogflow.projects.locations.agent.environments.delete",
@@ -11064,7 +11064,7 @@
                       "httpMethod": "DELETE",
                       "parameters": {
                         "name": {
-                          "description": "Required. The name of the environment to delete. \/ Format: - `projects\/\/agent\/environments\/` - `projects\/\/locations\/\/agent\/environments\/`",
+                          "description": "Required. The name of the environment to delete. \/ Format: - `projects\/\/agent\/environments\/` - `projects\/\/locations\/\/agent\/environments\/` The environment ID for the default environment is `-`.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/agent\/environments\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -11090,7 +11090,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The name of the environment to retrieve history for. Supported formats: - `projects\/\/agent\/environments\/` - `projects\/\/locations\/\/agent\/environments\/`",
+                          "description": "Required. The name of the environment to retrieve history for. Supported formats: - `projects\/\/agent\/environments\/` - `projects\/\/locations\/\/agent\/environments\/` The environment ID for the default environment is `-`.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/agent\/environments\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -14002,7 +14002,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/dialogflow"
                   ],
-                  "description": "Returns the list of all non-draft environments of the specified agent."
+                  "description": "Returns the list of all non-default environments of the specified agent."
                 },
                 "get": {
                   "id": "dialogflow.projects.agent.environments.get",
@@ -14011,7 +14011,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. The name of the environment. Supported formats: - `projects\/\/agent\/environments\/` - `projects\/\/locations\/\/agent\/environments\/`",
+                      "description": "Required. The name of the environment. Supported formats: - `projects\/\/agent\/environments\/` - `projects\/\/locations\/\/agent\/environments\/` The environment ID for the default environment is `-`.",
                       "pattern": "^projects\/[^\/]+\/agent\/environments\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -14071,7 +14071,7 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "Output only. The unique identifier of this agent environment. Supported formats: - `projects\/\/agent\/environments\/` - `projects\/\/locations\/\/agent\/environments\/`",
+                      "description": "Output only. The unique identifier of this agent environment. Supported formats: - `projects\/\/agent\/environments\/` - `projects\/\/locations\/\/agent\/environments\/` The environment ID for the default environment is `-`.",
                       "pattern": "^projects\/[^\/]+\/agent\/environments\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -14084,7 +14084,7 @@
                       "format": "google-fieldmask"
                     },
                     "allowLoadToDraftAndDiscardChanges": {
-                      "description": "Optional. This field is used to prevent accidental overwrite of the draft environment, which is an operation that cannot be undone. To confirm that the caller desires this overwrite, this field must be explicitly set to true when updating the draft environment (environment ID = `-`).",
+                      "description": "Optional. This field is used to prevent accidental overwrite of the default environment, which is an operation that cannot be undone. To confirm that the caller desires this overwrite, this field must be explicitly set to true when updating the default environment (environment ID = `-`).",
                       "location": "query",
                       "type": "boolean"
                     }
@@ -14102,7 +14102,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/dialogflow"
                   ],
-                  "description": "Updates the specified agent environment. This method allows you to deploy new agent versions into the environment. When an environment is pointed to a new agent version by setting `environment.agent_version`, the environment is temporarily set to the `LOADING` state. During that time, the environment keeps on serving the previous version of the agent. After the new agent version is done loading, the environment is set back to the `RUNNING` state. You can use \"-\" as Environment ID in environment name to update version in \"draft\" environment. WARNING: this will negate all recent changes to draft and can't be undone. You may want to save the draft to a version before calling this function."
+                  "description": "Updates the specified agent environment. This method allows you to deploy new agent versions into the environment. When an environment is pointed to a new agent version by setting `environment.agent_version`, the environment is temporarily set to the `LOADING` state. During that time, the environment continues serving the previous version of the agent. After the new agent version is done loading, the environment is set back to the `RUNNING` state. You can use \"-\" as Environment ID in environment name to update an agent version in the default environment. WARNING: this will negate all recent changes to the draft agent and can't be undone. You may want to save the draft agent to a version before calling this method."
                 },
                 "delete": {
                   "id": "dialogflow.projects.agent.environments.delete",
@@ -14111,7 +14111,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "Required. The name of the environment to delete. \/ Format: - `projects\/\/agent\/environments\/` - `projects\/\/locations\/\/agent\/environments\/`",
+                      "description": "Required. The name of the environment to delete. \/ Format: - `projects\/\/agent\/environments\/` - `projects\/\/locations\/\/agent\/environments\/` The environment ID for the default environment is `-`.",
                       "pattern": "^projects\/[^\/]+\/agent\/environments\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -14137,7 +14137,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The name of the environment to retrieve history for. Supported formats: - `projects\/\/agent\/environments\/` - `projects\/\/locations\/\/agent\/environments\/`",
+                      "description": "Required. The name of the environment to retrieve history for. Supported formats: - `projects\/\/agent\/environments\/` - `projects\/\/locations\/\/agent\/environments\/` The environment ID for the default environment is `-`.",
                       "pattern": "^projects\/[^\/]+\/agent\/environments\/[^\/]+$",
                       "location": "path",
                       "required": true,

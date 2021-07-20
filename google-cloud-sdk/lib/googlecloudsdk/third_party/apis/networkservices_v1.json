@@ -714,6 +714,10 @@
           "description": "Optional. For satisfying the matchRule condition, the path of the request must match the wildcard pattern specified in pathTemplateMatch after removing any query parameters and anchor that may be part of the original URL. pathTemplateMatch must be between 1 and 255 characters (inclusive). The pattern specified by pathTemplateMatch may have at most 5 wildcard operators and at most 5 variable captures in total. Exactly one of prefixMatch, fullPathMatch, or pathTemplateMatch must be specified.",
           "type": "string"
         },
+        "ignoreCase": {
+          "description": "Optional. Specifies that prefixMatch and fullPathMatch matches are case sensitive. The default value is false.",
+          "type": "boolean"
+        },
         "queryParameterMatches": {
           "description": "Optional. Specifies a list of query parameter match criteria, all of which must match corresponding query parameters in the request. You may specify up to 5 query parameters to match on.",
           "type": "array",
@@ -932,7 +936,7 @@
           }
         },
         "includedHeaderNames": {
-          "description": "Optional. Names of HTTP request headers to include in cache keys. The value of the header field will be used as part of the cache key. - Header names must be valid HTTP RFC 7230 header field values. - Header field names are case insensitive - You may specify up to five header names. - To include the HTTP method, use \":method\" Refer to the documentation for the allowed list of header names. range of values (e.g. per-user) will dramatically impact the cache hit rate, and may result in a higher eviction rate and reduced performance. You may specify up to 5 header names.",
+          "description": "Optional. Names of HTTP request headers to include in cache keys. The value of the header field will be used as part of the cache key. - Header names must be valid HTTP RFC 7230 header field values. - Header field names are case insensitive - You may specify up to five header names. - To include the HTTP method, use \":method\" Refer to the documentation for the allowed list of header names. Note that specifying several headers, and\/or headers that have a large range of values (e.g. per-user) will dramatically impact the cache hit rate, and may result in a higher eviction rate and reduced performance. You may specify up to 5 header names.",
           "type": "array",
           "items": {
             "type": "string"

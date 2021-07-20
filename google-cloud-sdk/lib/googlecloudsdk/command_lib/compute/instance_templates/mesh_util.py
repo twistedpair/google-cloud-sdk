@@ -32,17 +32,35 @@ from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.util import files
 
-EXPANSION_GATEWAY_NAME = 'istio-eastwestgateway'
-SERVICE_PROXY_BUCKET_NAME = (
+_EXPANSION_GATEWAY_NAME = 'istio-eastwestgateway'
+_SERVICE_PROXY_BUCKET_NAME = (
     'gs://gce-service-proxy/service-proxy-agent/releases/'
     'service-proxy-agent-asm-{}-stable.tgz')
+_SERVICE_PROXY_INSTALLER_BUCKET_NAME = (
+    'gs://gce-service-proxy/service-proxy-agent-installer/'
+    'releases/installer.tgz')
 
-ISTIO_CANONICAL_SERVICE_NAME_LABEL = 'service.istio.io/canonical-name'
-ISTIO_CANONICAL_SERVICE_REVISION_LABEL = 'service.istio.io/canonical-revision'
-KUBERNETES_APP_NAME_LABEL = 'app.kubernetes.io/name'
-KUBERNETES_APP_VERSION_LABEL = 'app.kubernetes.io/version'
+_ISTIO_CANONICAL_SERVICE_NAME_LABEL = 'service.istio.io/canonical-name'
+_ISTIO_CANONICAL_SERVICE_REVISION_LABEL = 'service.istio.io/canonical-revision'
+_KUBERNETES_APP_NAME_LABEL = 'app.kubernetes.io/name'
+_KUBERNETES_APP_VERSION_LABEL = 'app.kubernetes.io/version'
 
-ISTIO_DISCOVERY_PORT = '15012'
+_ISTIO_DISCOVERY_PORT = '15012'
+
+# Allow non-prod meshconfig to be used.
+_MESHCONFIG_PATTERN = r'meshconfig(.*).googleapis.com(.*)'
+_WORKLOAD_PATTERN = r'(.*)\/(.*)'
+# Allow non-prod GKE Hub memberships to be specified.
+_GKEHUB_PATTERN = r'\/\/gkehub(.*).googleapis.com\/(.*)'
+_ASM_VERSION_PATTERN = r':(.*)-'
+
+ServiceProxyMetadataArgs = collections.namedtuple('ServiceProxyMetadataArgs', [
+    'asm_version', 'project_id', 'expansionagateway_ip',
+    'service_proxy_api_server', 'identity_provider', 'service_account',
+    'asm_proxy_config', 'mcp_env_config', 'trust_domain', 'mesh_id', 'network',
+    'asm_labels', 'workload_name', 'workload_namespace', 'canonical_service',
+    'canonical_revision', 'asm_revision', 'root_cert'
+])
 
 
 def ParseWorkload(workload):
@@ -57,8 +75,7 @@ def ParseWorkload(workload):
   Raises:
     Error: if the workload value is invalid.
   """
-  workload_pattern = r'(.*)\/(.*)'
-  workload_match = re.search(workload_pattern, workload)
+  workload_match = re.search(_WORKLOAD_PATTERN, workload)
   if workload_match:
     return workload_match.group(1), workload_match.group(2)
   raise exceptions.Error(
@@ -66,7 +83,7 @@ def ParseWorkload(workload):
       'namespace/name.'.format(workload))
 
 
-def ParseMembershipName(owner_id):
+def _ParseMembershipName(owner_id):
   """Get membership name from an owner id value.
 
   Args:
@@ -80,16 +97,14 @@ def ParseMembershipName(owner_id):
   Raises:
     Error: if the membership name cannot be parsed.
   """
-  # Allow non-prod GKE Hub memberships to be specified.
-  gkehub_pattern = r'\/\/gkehub(.*).googleapis.com\/(.*)'
-  membership_match = re.search(gkehub_pattern, owner_id)
+  membership_match = re.search(_GKEHUB_PATTERN, owner_id)
   if membership_match:
     return membership_match.group(2)
   raise exceptions.Error(
       'value owner_id: {} is invalid.'.format(owner_id))
 
 
-def GetVMIdentityProvider(membership_manifest, workload_namespace):
+def _GetVMIdentityProvider(membership_manifest, workload_namespace):
   """Get the identity provider for the VMs.
 
   Args:
@@ -111,14 +126,14 @@ def GetVMIdentityProvider(membership_manifest, workload_namespace):
     raise exceptions.Error(
         'Invalid membership from the cluster {}'.format(membership_manifest), e)
 
-  owner_id = GetNestedKeyFromManifest(
+  owner_id = _GetNestedKeyFromManifest(
       membership_data, 'spec', 'owner', 'id')
   if not owner_id:
     raise ClusterError('Invalid membership does not have an owner id. Please '
                        'make sure your cluster is correctly registered and '
                        'retry.')
 
-  membership_name = ParseMembershipName(owner_id)
+  membership_name = _ParseMembershipName(owner_id)
   membership = api_util.GetMembership(membership_name)
   if not membership.uniqueId:
     raise exceptions.Error('Invalid membership {} does not have a unique_Id '
@@ -128,7 +143,7 @@ def GetVMIdentityProvider(membership_manifest, workload_namespace):
   return '{}@google@{}'.format(membership.uniqueId, workload_namespace)
 
 
-def RetrieveProxyConfig(mesh_config):
+def _RetrieveProxyConfig(mesh_config):
   """Retrieve proxy config from a mesh config.
 
   Args:
@@ -146,7 +161,7 @@ def RetrieveProxyConfig(mesh_config):
   return proxy_config
 
 
-def RetrieveTrustDomain(mesh_config):
+def _RetrieveTrustDomain(mesh_config):
   """Retrieve trust domain from a mesh config.
 
   Args:
@@ -164,7 +179,7 @@ def RetrieveTrustDomain(mesh_config):
   return trust_domain
 
 
-def RetrieveMeshId(mesh_config):
+def _RetrieveMeshId(mesh_config):
   """Retrieve mesh id from a mesh config.
 
   Args:
@@ -173,7 +188,7 @@ def RetrieveMeshId(mesh_config):
   Returns:
     mesh_id: The mesh id from the mesh config.
   """
-  proxy_config = RetrieveProxyConfig(mesh_config)
+  proxy_config = _RetrieveProxyConfig(mesh_config)
 
   try:
     mesh_id = proxy_config['meshId']
@@ -184,7 +199,45 @@ def RetrieveMeshId(mesh_config):
   return mesh_id
 
 
-def GetWorkloadLabels(workload_manifest):
+def _IsMCP(mesh_config):
+  """Check if ASM control plane is managed.
+
+  Args:
+    mesh_config: A mesh config from the cluster.
+
+  Returns:
+    True if the control plane is MCP, otherwise False.
+  """
+  discovery_address = _GetDiscoveryAddress(mesh_config)
+
+  meshconfig_match = re.search(_MESHCONFIG_PATTERN, discovery_address)
+  if meshconfig_match:
+    return True
+  return False
+
+
+def _GetDiscoveryAddress(mesh_config):
+  """Get the discovery address used in the ASM installation.
+
+  Args:
+    mesh_config: A mesh config from the cluster.
+
+  Returns:
+    The discovery address.
+  """
+  proxy_config = _RetrieveProxyConfig(mesh_config)
+
+  try:
+    discovery_address = proxy_config['discoveryAddress']
+  except KeyError:
+    raise exceptions.Error(
+        'Discovery address cannot be found for the control plane of the Anthos '
+        'Service Mesh.')
+
+  return discovery_address
+
+
+def _GetWorkloadLabels(workload_manifest):
   """Get the workload labels from a workload manifest.
 
   Args:
@@ -205,13 +258,13 @@ def GetWorkloadLabels(workload_manifest):
     raise exceptions.Error(
         'Invalid workload from the cluster {}'.format(workload_data), e)
 
-  workload_labels = GetNestedKeyFromManifest(workload_data, 'spec', 'metadata',
-                                             'labels')
+  workload_labels = _GetNestedKeyFromManifest(workload_data, 'spec', 'metadata',
+                                              'labels')
 
   return workload_labels
 
 
-def GetCanonicalServiceName(workload_name, workload_manifest):
+def _GetCanonicalServiceName(workload_name, workload_manifest):
   """Get the canonical service name of the workload.
 
   Args:
@@ -221,12 +274,12 @@ def GetCanonicalServiceName(workload_name, workload_manifest):
   Returns:
     The canonical service name of the workload.
   """
-  workload_labels = GetWorkloadLabels(workload_manifest)
+  workload_labels = _GetWorkloadLabels(workload_manifest)
 
-  return ExtractCanonicalServiceName(workload_labels, workload_name)
+  return _ExtractCanonicalServiceName(workload_labels, workload_name)
 
 
-def GetCanonicalServiceRevision(workload_manifest):
+def _GetCanonicalServiceRevision(workload_manifest):
   """Get the canonical service revision of the workload.
 
   Args:
@@ -235,12 +288,12 @@ def GetCanonicalServiceRevision(workload_manifest):
   Returns:
     The canonical service revision of the workload.
   """
-  workload_labels = GetWorkloadLabels(workload_manifest)
+  workload_labels = _GetWorkloadLabels(workload_manifest)
 
-  return ExtractCanonicalServiceRevision(workload_labels)
+  return _ExtractCanonicalServiceRevision(workload_labels)
 
 
-def ExtractCanonicalServiceName(workload_labels, workload_name):
+def _ExtractCanonicalServiceName(workload_labels, workload_name):
   """Get the canonical service name of the workload.
 
   Args:
@@ -253,11 +306,11 @@ def ExtractCanonicalServiceName(workload_labels, workload_name):
   if not workload_labels:
     return workload_name
 
-  svc = workload_labels.get(ISTIO_CANONICAL_SERVICE_NAME_LABEL)
+  svc = workload_labels.get(_ISTIO_CANONICAL_SERVICE_NAME_LABEL)
   if svc:
     return svc
 
-  svc = workload_labels.get(KUBERNETES_APP_NAME_LABEL)
+  svc = workload_labels.get(_KUBERNETES_APP_NAME_LABEL)
   if svc:
     return svc
 
@@ -268,7 +321,7 @@ def ExtractCanonicalServiceName(workload_labels, workload_name):
   return workload_name
 
 
-def ExtractCanonicalServiceRevision(workload_labels):
+def _ExtractCanonicalServiceRevision(workload_labels):
   """Get the canonical service revision of the workload.
 
   Args:
@@ -280,11 +333,11 @@ def ExtractCanonicalServiceRevision(workload_labels):
   if not workload_labels:
     return 'latest'
 
-  rev = workload_labels.get(ISTIO_CANONICAL_SERVICE_REVISION_LABEL)
+  rev = workload_labels.get(_ISTIO_CANONICAL_SERVICE_REVISION_LABEL)
   if rev:
     return rev
 
-  rev = workload_labels.get(KUBERNETES_APP_VERSION_LABEL)
+  rev = workload_labels.get(_KUBERNETES_APP_VERSION_LABEL)
   if rev:
     return rev
 
@@ -306,7 +359,7 @@ def VerifyWorkloadSetup(workload_manifest):
     raise exceptions.Error(
         'Invalid workload from the cluster {}'.format(workload_manifest), e)
 
-  identity_provider_value = GetNestedKeyFromManifest(
+  identity_provider_value = _GetNestedKeyFromManifest(
       workload_data, 'spec', 'metadata', 'annotations',
       'security.cloud.google.com/IdentityProvider')
   if identity_provider_value != 'google':
@@ -327,8 +380,8 @@ def RetrieveWorkloadRevision(namespace_manifest):
     raise exceptions.Error(
         'Invalid namespace from the cluster {}'.format(namespace_manifest), e)
 
-  workload_revision = GetNestedKeyFromManifest(namespace_data, 'metadata',
-                                               'labels', 'istio.io/rev')
+  workload_revision = _GetNestedKeyFromManifest(namespace_data, 'metadata',
+                                                'labels', 'istio.io/rev')
   if not workload_revision:
     raise WorkloadError('Workload namespace does not have an Anthos Service '
                         'Mesh revision label. Please make sure the namespace '
@@ -337,7 +390,7 @@ def RetrieveWorkloadRevision(namespace_manifest):
   return workload_revision
 
 
-def RetrieveWorkloadServiceAccount(workload_manifest):
+def _RetrieveWorkloadServiceAccount(workload_manifest):
   """Retrieve the service account used for the workload."""
   if not workload_manifest:
     raise WorkloadError('Cannot verify an empty workload from the cluster')
@@ -348,79 +401,109 @@ def RetrieveWorkloadServiceAccount(workload_manifest):
     raise exceptions.Error(
         'Invalid workload from the cluster {}'.format(workload_manifest), e)
 
-  service_account = GetNestedKeyFromManifest(workload_data, 'spec', 'template',
-                                             'serviceAccount')
+  service_account = _GetNestedKeyFromManifest(workload_data, 'spec', 'template',
+                                              'serviceAccount')
   return service_account
 
 
-def ConfigureInstanceTemplate(args, kube_client, project_id, network_resource,
-                              workload_namespace, workload_name,
-                              workload_manifest, namespace_manifest,
-                              membership_manifest, expansionagateway_ip,
-                              root_cert):
-  """Configure the provided instance template args with ASM metadata."""
-  identity_provider = GetVMIdentityProvider(membership_manifest,
-                                            workload_namespace)
+def _RetrieveServiceProxyMetadata(is_mcp, kube_client, project_id,
+                                  network_resource, workload_namespace,
+                                  workload_name, workload_manifest,
+                                  membership_manifest, asm_revision,
+                                  mesh_config):
+  """Retrieve the necessary metadata to configure the service proxy."""
 
-  asm_revision = RetrieveWorkloadRevision(namespace_manifest)
+  if is_mcp:
+    asm_version = None
+    expansionagateway_ip = None
+    root_cert = None
+    service_proxy_api_server = _GetDiscoveryAddress(mesh_config)
+    env_config = kube_client.RetrieveEnvConfig(asm_revision)
+  else:
+    asm_version = kube_client.RetrieveASMVersion(asm_revision)
+    expansionagateway_ip = kube_client.RetrieveExpansionGatewayIP()
+    root_cert = kube_client.RetrieveKubernetesRootCert()
+    service_proxy_api_server = '{}:{}'.format(expansionagateway_ip,
+                                              _ISTIO_DISCOVERY_PORT)
+    env_config = None
 
-  service_account = RetrieveWorkloadServiceAccount(workload_manifest)
+  identity_provider = _GetVMIdentityProvider(membership_manifest,
+                                             workload_namespace)
 
-  asm_version = kube_client.RetrieveASMVersion(asm_revision)
+  service_account = _RetrieveWorkloadServiceAccount(workload_manifest)
 
-  mesh_config = kube_client.RetrieveMeshConfig(asm_revision)
+  asm_proxy_config = _RetrieveProxyConfig(mesh_config)
 
-  asm_proxy_config = RetrieveProxyConfig(mesh_config)
+  trust_domain = _RetrieveTrustDomain(mesh_config)
 
-  trust_domain = RetrieveTrustDomain(mesh_config)
-
-  mesh_id = RetrieveMeshId(mesh_config)
+  mesh_id = _RetrieveMeshId(mesh_config)
 
   network = network_resource.split('/')[-1]
 
-  canonical_service = GetCanonicalServiceName(workload_name, workload_manifest)
+  asm_labels = _GetWorkloadLabels(workload_manifest)
 
-  canonical_revision = GetCanonicalServiceRevision(workload_manifest)
+  canonical_service = _GetCanonicalServiceName(workload_name, workload_manifest)
 
-  asm_labels = GetWorkloadLabels(workload_manifest)
-  if asm_labels is None:
+  canonical_revision = _GetCanonicalServiceRevision(workload_manifest)
+
+  return ServiceProxyMetadataArgs(
+      asm_version, project_id, expansionagateway_ip, service_proxy_api_server,
+      identity_provider, service_account, asm_proxy_config, env_config,
+      trust_domain, mesh_id, network, asm_labels, workload_name,
+      workload_namespace, canonical_service, canonical_revision, asm_revision,
+      root_cert)
+
+
+def _ModifyInstanceTemplate(args, is_mcp, metadata_args):
+  """Modify the instance template to include the service proxy metadata."""
+
+  if metadata_args.asm_labels:
+    asm_labels = metadata_args.asm_labels
+  else:
     asm_labels = collections.OrderedDict()
 
-  asm_labels[ISTIO_CANONICAL_SERVICE_NAME_LABEL] = canonical_service
-  asm_labels[ISTIO_CANONICAL_SERVICE_REVISION_LABEL] = canonical_revision
+  asm_labels[
+      _ISTIO_CANONICAL_SERVICE_NAME_LABEL] = metadata_args.canonical_service
+  asm_labels[
+      _ISTIO_CANONICAL_SERVICE_REVISION_LABEL] = metadata_args.canonical_revision
 
   asm_labels_string = json.dumps(asm_labels)
 
   service_proxy_config = collections.OrderedDict()
   service_proxy_config['mode'] = 'ON'
+
   service_proxy_config['proxy-spec'] = {
-      'network': network,
-      'api-server': '{}:{}'.format(expansionagateway_ip, ISTIO_DISCOVERY_PORT),
+      'network': metadata_args.network,
+      'api-server': metadata_args.service_proxy_api_server,
       'log-level': 'info',
   }
+
   service_proxy_config['service'] = {}
 
-  if 'proxyMetadata' not in asm_proxy_config:
-    asm_proxy_config['proxyMetadata'] = {}
+  proxy_config = metadata_args.asm_proxy_config
+  if 'proxyMetadata' not in proxy_config:
+    proxy_config['proxyMetadata'] = collections.OrderedDict()
+  else:
+    proxy_config['proxyMetadata'] = collections.OrderedDict(
+        proxy_config['proxyMetadata'])
 
-  proxy_metadata = asm_proxy_config['proxyMetadata']
-  proxy_metadata['ISTIO_META_WORKLOAD_NAME'] = workload_name
-  proxy_metadata['ISTIO_META_ISTIO_VERSION'] = asm_version
-  proxy_metadata['POD_NAMESPACE'] = workload_namespace
+  proxy_metadata = proxy_config['proxyMetadata']
+  proxy_metadata['ISTIO_META_WORKLOAD_NAME'] = metadata_args.workload_name
+  proxy_metadata['POD_NAMESPACE'] = metadata_args.workload_namespace
   proxy_metadata['USE_TOKEN_FOR_CSR'] = 'true'
   proxy_metadata['ISTIO_META_DNS_CAPTURE'] = 'true'
-  proxy_metadata['ISTIO_META_AUTO_REGISTER_GROUP'] = workload_name
-  proxy_metadata['SERVICE_ACCOUNT'] = service_account
-  proxy_metadata['CREDENTIAL_IDENTITY_PROVIDER'] = identity_provider
-  proxy_metadata['ASM_REVISION'] = asm_revision
-  proxy_metadata['TRUST_DOMAIN'] = trust_domain
-  proxy_metadata['ISTIO_META_MESH_ID'] = mesh_id
-  proxy_metadata['ISTIO_META_NETWORK'] = '{}-{}'.format(project_id, network)
-  proxy_metadata['CANONICAL_SERVICE'] = canonical_service
-  proxy_metadata['CANONICAL_REVISION'] = canonical_revision
+  proxy_metadata['ISTIO_META_AUTO_REGISTER_GROUP'] = metadata_args.workload_name
+  proxy_metadata['SERVICE_ACCOUNT'] = metadata_args.service_account
+  proxy_metadata[
+      'CREDENTIAL_IDENTITY_PROVIDER'] = metadata_args.identity_provider
+  proxy_metadata['ASM_REVISION'] = metadata_args.asm_revision
+  proxy_metadata['TRUST_DOMAIN'] = metadata_args.trust_domain
+  proxy_metadata['ISTIO_META_MESH_ID'] = metadata_args.mesh_id
+  proxy_metadata['ISTIO_META_NETWORK'] = '{}-{}'.format(
+      metadata_args.project_id, metadata_args.network)
+  proxy_metadata['CANONICAL_SERVICE'] = metadata_args.canonical_service
+  proxy_metadata['CANONICAL_REVISION'] = metadata_args.canonical_revision
   proxy_metadata['ISTIO_METAJSON_LABELS'] = asm_labels_string
-
-  service_proxy_config['asm-config'] = asm_proxy_config
 
   gce_software_declaration = collections.OrderedDict()
   service_proxy_agent_recipe = collections.OrderedDict()
@@ -428,36 +511,68 @@ def ConfigureInstanceTemplate(args, kube_client, project_id, network_resource,
   service_proxy_agent_recipe['name'] = 'install-gce-service-proxy-agent'
   service_proxy_agent_recipe['desired_state'] = 'INSTALLED'
 
-  service_proxy_agent_recipe['installSteps'] = [{
-      'scriptRun': {
-          'script':
-              service_proxy_aux_data.startup_script_for_asm_service_proxy
-              .format(
-                  ingress_ip=expansionagateway_ip, asm_revision=asm_revision)
-      }
-  }]
+  if is_mcp:
+    service_proxy_agent_recipe['installSteps'] = [{
+        'scriptRun': {
+            'script':
+                service_proxy_aux_data
+                .startup_script_for_asm_service_proxy_installer
+        }
+    }]
+    proxy_metadata.update(metadata_args.mcp_env_config)
+    if 'gce-service-proxy-installer-bucket' not in args.metadata:
+      args.metadata['gce-service-proxy-installer-bucket'] = (
+          _SERVICE_PROXY_INSTALLER_BUCKET_NAME)
+  else:
+    service_proxy_agent_recipe['installSteps'] = [{
+        'scriptRun': {
+            'script':
+                service_proxy_aux_data.startup_script_for_asm_service_proxy
+                .format(
+                    ingress_ip=metadata_args.expansionagateway_ip,
+                    asm_revision=metadata_args.asm_revision)
+        }
+    }]
+    proxy_metadata['ISTIO_META_ISTIO_VERSION'] = metadata_args.asm_version
+    args.metadata['rootcert'] = metadata_args.root_cert
+    if 'gce-service-proxy-agent-bucket' not in args.metadata:
+      args.metadata[
+          'gce-service-proxy-agent-bucket'] = _SERVICE_PROXY_BUCKET_NAME.format(
+              metadata_args.asm_version)
 
   gce_software_declaration['softwareRecipes'] = [service_proxy_agent_recipe]
 
-  args.metadata['gce-software-declaration'] = json.dumps(
-      gce_software_declaration)
+  service_proxy_config['asm-config'] = proxy_config
 
-  args.metadata['rootcert'] = root_cert
-  if 'gce-service-proxy-agent-bucket' not in args.metadata:
-    args.metadata[
-        'gce-service-proxy-agent-bucket'] = SERVICE_PROXY_BUCKET_NAME.format(
-            asm_version)
   args.metadata['enable-osconfig'] = 'true'
   args.metadata['enable-guest-attributes'] = 'true'
-  args.metadata['gce-service-proxy'] = json.dumps(service_proxy_config)
+  args.metadata['gce-software-declaration'] = json.dumps(
+      gce_software_declaration)
+  args.metadata['gce-service-proxy'] = json.dumps(
+      service_proxy_config, sort_keys=True)
 
   if args.labels is None:
     args.labels = collections.OrderedDict()
-  args.labels['asm_service_name'] = canonical_service
-  args.labels['asm_service_namespace'] = workload_namespace
-  args.labels['mesh_id'] = mesh_id
+  args.labels['asm_service_name'] = metadata_args.canonical_service
+  args.labels['asm_service_namespace'] = metadata_args.workload_namespace
+  args.labels['mesh_id'] = metadata_args.mesh_id
   # For ASM VM usage tracking.
   args.labels['gce-service-proxy'] = 'asm-istiod'
+
+
+def ConfigureInstanceTemplate(args, kube_client, project_id, network_resource,
+                              workload_namespace, workload_name,
+                              workload_manifest, membership_manifest,
+                              asm_revision, mesh_config):
+  """Configure the provided instance template args with ASM metadata."""
+  is_mcp = _IsMCP(mesh_config)
+
+  service_proxy_metadata_args = _RetrieveServiceProxyMetadata(
+      is_mcp, kube_client, project_id, network_resource, workload_namespace,
+      workload_name, workload_manifest, membership_manifest, asm_revision,
+      mesh_config)
+
+  _ModifyInstanceTemplate(args, is_mcp, service_proxy_metadata_args)
 
 
 class KubernetesClient(object):
@@ -647,7 +762,7 @@ class KubernetesClient(object):
   def ExpansionGatewayDeploymentExists(self):
     """Verifies if the ASM Expansion Gateway deployment exists."""
     _, err = self._RunKubectl(
-        ['get', 'deploy', EXPANSION_GATEWAY_NAME, '-n', 'istio-system'], None)
+        ['get', 'deploy', _EXPANSION_GATEWAY_NAME, '-n', 'istio-system'], None)
     if err:
       if 'NotFound' in err:
         return False
@@ -658,7 +773,7 @@ class KubernetesClient(object):
   def ExpansionGatewayServiceExists(self):
     """Verifies if the ASM Expansion Gateway service exists."""
     _, err = self._RunKubectl(
-        ['get', 'service', EXPANSION_GATEWAY_NAME, '-n', 'istio-system'], None)
+        ['get', 'service', _EXPANSION_GATEWAY_NAME, '-n', 'istio-system'], None)
     if err:
       if 'NotFound' in err:
         return False
@@ -672,16 +787,16 @@ class KubernetesClient(object):
       raise ClusterError(
           'The gateway {} deployment is not found in the cluster. Please '
           'install Anthos Service Mesh with VM support and retry.'.format(
-              EXPANSION_GATEWAY_NAME))
+              _EXPANSION_GATEWAY_NAME))
 
     if not self.ExpansionGatewayServiceExists():
       raise ClusterError(
           'The gateway {} service is not found in the cluster. Please '
           'install Anthos Service Mesh with VM support and retry.'.format(
-              EXPANSION_GATEWAY_NAME))
+              _EXPANSION_GATEWAY_NAME))
 
     out, err = self._RunKubectl([
-        'get', 'svc', EXPANSION_GATEWAY_NAME, '-n', 'istio-system', '-o',
+        'get', 'svc', _EXPANSION_GATEWAY_NAME, '-n', 'istio-system', '-o',
         'jsonpath={.status.loadBalancer.ingress[0].ip}'
     ], None)
     if err:
@@ -711,39 +826,77 @@ class KubernetesClient(object):
     ], None)
     if err:
       if 'NotFound' in err:
-        return None
+        raise ClusterError(
+            'Anthos Service Mesh revision {} is not found in '
+            'the cluster. Please install Anthos Service Mesh and '
+            'try again.'.format(revision))
       raise exceptions.Error(
-          'Error retrieving Anthos Service Mesh version: {}'.format(err))
+          'Error retrieving the version of Anthos Service Mesh: {}'.format(err))
 
     if not image:
-      raise ClusterError('Anthos Service Mesh revision {} is not found in the '
-                         'cluster. Please install Anthos Service Mesh and try '
-                         'again.'.format(revision))
+      raise ClusterError('Anthos Service Mesh revision {} does not have an '
+                         'image property. Please re-install Anthos Service '
+                         'Mesh.'.format(revision))
 
-    asm_version_pattern = r':(.*)-'
-    version_match = re.search(asm_version_pattern, image)
+    version_match = re.search(_ASM_VERSION_PATTERN, image)
     if version_match:
       return version_match.group(1)
     raise exceptions.Error(
         'Value image: {} is invalid.'.format(image))
 
+  def RetrieveEnvConfig(self, revision):
+    """Retrieves the env-* config map for MCP."""
+    if revision == 'default':
+      env_config_name = 'env'
+    else:
+      env_config_name = 'env-{}'.format(revision)
+
+    out, err = self._RunKubectl(
+        ['get', 'configmap', env_config_name, '-n', 'istio-system',
+         '-o', 'jsonpath={.data}'], None)
+    if err:
+      if 'NotFound' in err:
+        raise ClusterError(
+            'Managed Control Plane revision {} is not found in '
+            'the cluster. Please install Managed Control Plane and '
+            'try again.'.format(revision))
+      raise exceptions.Error(
+          'Error retrieving the config map {} from the cluster: {}'.format(
+              env_config_name, err))
+
+    try:
+      env_config = yaml.load(out)
+    except yaml.Error:
+      raise exceptions.Error(
+          'Invalid config map from the cluster: {}'.format(out))
+
+    return env_config
+
   def RetrieveMeshConfig(self, revision):
     """Retrieves the MeshConfig for the ASM revision."""
+    if revision == 'default':
+      mesh_config_name = 'istio'
+    else:
+      mesh_config_name = 'istio-{}'.format(revision)
+
     out, err = self._RunKubectl(
-        ['get', 'configmap', 'istio-{}'.format(revision), '-n', 'istio-system',
+        ['get', 'configmap', mesh_config_name, '-n', 'istio-system',
          '-o', 'jsonpath={.data.mesh}'], None)
     if err:
       if 'NotFound' in err:
-        return None
+        raise ClusterError(
+            'Anthos Service Mesh revision {} is not found in '
+            'the cluster. Please install Anthos Service Mesh and '
+            'try again.'.format(revision))
       raise exceptions.Error(
           'Error retrieving the mesh config from the cluster: {}'.format(
               err))
 
     try:
       mesh_config = yaml.load(out)
-    except yaml.Error as e:
+    except yaml.Error:
       raise exceptions.Error(
-          'Invalid mesh config from the cluster {}'.format(out), e)
+          'Invalid mesh config from the cluster: {}'.format(out))
 
     return mesh_config
 
@@ -780,7 +933,7 @@ class KubernetesClient(object):
     ) if returncode != 0 else None
 
 
-def GetNestedKeyFromManifest(manifest, *keys):
+def _GetNestedKeyFromManifest(manifest, *keys):
   """Get the value of a key path from a dict.
 
   Args:

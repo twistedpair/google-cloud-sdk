@@ -1505,6 +1505,9 @@ class LogView(_messages.Message):
       resource.type = "gce_instance" AND LOG_ID("stdout")
     name: The resource name of the view. For example "projects/my-project-
       id/locations/my-location/buckets/my-bucket-id/views/my-view
+    schema: Output only. Describes the schema of the logs stored in the bucket
+      that are accessible via this view. This field is only populated for
+      views in analytics-enabled buckets.
     updateTime: Output only. The last update timestamp of the view.
   """
 
@@ -1512,7 +1515,8 @@ class LogView(_messages.Message):
   description = _messages.StringField(2)
   filter = _messages.StringField(3)
   name = _messages.StringField(4)
-  updateTime = _messages.StringField(5)
+  schema = _messages.MessageField('TableSchema', 5)
+  updateTime = _messages.StringField(6)
 
 
 class LoggingBillingAccountsBucketsGetRequest(_messages.Message):
@@ -5833,14 +5837,14 @@ class WriteLogEntriesRequest(_messages.Message):
       their own values, the entries earlier in the list will sort before the
       entries later in the list. See the entries.list method.Log entries with
       timestamps that are more than the logs retention period
-      (https://cloud.google.com/logging/quota-policy) in the past or more than
-      24 hours in the future will not be available when calling entries.list.
+      (https://cloud.google.com/logging/quotas) in the past or more than 24
+      hours in the future will not be available when calling entries.list.
       However, those log entries can still be exported with LogSinks
       (https://cloud.google.com/logging/docs/api/tasks/exporting-logs).To
       improve throughput and to avoid exceeding the quota limit
-      (https://cloud.google.com/logging/quota-policy) for calls to
-      entries.write, you should try to include several log entries in this
-      list, rather than calling this method for each individual log entry.
+      (https://cloud.google.com/logging/quotas) for calls to entries.write,
+      you should try to include several log entries in this list, rather than
+      calling this method for each individual log entry.
     labels: Optional. Default labels that are added to the labels field of all
       log entries in entries. If a log entry already has a label with the same
       key as a label in this parameter, then the log entry's label is not

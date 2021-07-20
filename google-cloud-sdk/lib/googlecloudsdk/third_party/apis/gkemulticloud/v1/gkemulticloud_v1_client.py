@@ -61,7 +61,7 @@ class GkemulticloudV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Created a new node pool, attached to a given cluster.
+      r"""Creates a new AwsNodePool, attached to a given AwsCluster. If successful, the response contains a newly created Operation resource that can be described to track the status of the operation.
 
       Args:
         request: (GkemulticloudProjectsLocationsAwsClustersAwsNodePoolsCreateRequest) input message
@@ -88,7 +88,7 @@ class GkemulticloudV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a specific node pool.
+      r"""Deletes a specific AwsNodePool resource. If successful, the response contains a newly created Operation resource that can be described to track the status of the operation.
 
       Args:
         request: (GkemulticloudProjectsLocationsAwsClustersAwsNodePoolsDeleteRequest) input message
@@ -115,7 +115,7 @@ class GkemulticloudV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a specific node pool.
+      r"""Describes a specific AwsNodePool resource.
 
       Args:
         request: (GkemulticloudProjectsLocationsAwsClustersAwsNodePoolsGetRequest) input message
@@ -142,7 +142,7 @@ class GkemulticloudV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists all node pools under a given parent resource.
+      r"""Lists all AwsNodePool resources on a given AwsCluster.
 
       Args:
         request: (GkemulticloudProjectsLocationsAwsClustersAwsNodePoolsListRequest) input message
@@ -169,7 +169,7 @@ class GkemulticloudV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Update a specific node pool.
+      r"""Updates an AwsNodePool.
 
       Args:
         request: (GkemulticloudProjectsLocationsAwsClustersAwsNodePoolsPatchRequest) input message
@@ -243,7 +243,7 @@ class GkemulticloudV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new cluster.
+      r"""Creates a new AwsCluster resource on a given GCP project and region. If successful, the response contains a newly created Operation resource that can be described to track the status of the operation.
 
       Args:
         request: (GkemulticloudProjectsLocationsAwsClustersCreateRequest) input message
@@ -270,7 +270,7 @@ class GkemulticloudV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a specific cluster, including the Kubernetes control plane and all node pools.
+      r"""Deletes a specific AwsCluster resource. Fails if the cluster has one or more associated AwsNodePool resources. If successful, the response contains a newly created Operation resource that can be described to track the status of the operation.
 
       Args:
         request: (GkemulticloudProjectsLocationsAwsClustersDeleteRequest) input message
@@ -297,7 +297,7 @@ class GkemulticloudV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a specific cluster.
+      r"""Describes a specific AwsCluster resource.
 
       Args:
         request: (GkemulticloudProjectsLocationsAwsClustersGetRequest) input message
@@ -324,7 +324,7 @@ class GkemulticloudV1(base_api.BaseApiClient):
     )
 
     def GetAwsClusterAdminKubeconfig(self, request, global_params=None):
-      r"""Gets a kubeconfig file to authenticate as admin (system:masters) on a given AWS cluster. The returned kubeconfig files uses x509 certificates.
+      r"""Generates a kubeconfig file to connect to a given AwsCluster. The returned kubeconfig authenticates to k8s api-server as a generic admin user with username `kubernetes-admin` (as a member of the `system:masters` group) and is valid for 20 hours.
 
       Args:
         request: (GkemulticloudProjectsLocationsAwsClustersGetAwsClusterAdminKubeconfigRequest) input message
@@ -378,7 +378,7 @@ class GkemulticloudV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists all clusters under a given parent resource.
+      r"""Lists all AwsCluster resources on a given Google Cloud project and region.
 
       Args:
         request: (GkemulticloudProjectsLocationsAwsClustersListRequest) input message
@@ -405,7 +405,7 @@ class GkemulticloudV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""update a specific cluster.
+      r"""Updates an AwsCluster.
 
       Args:
         request: (GkemulticloudProjectsLocationsAwsClustersPatchRequest) input message
@@ -442,7 +442,7 @@ class GkemulticloudV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new Azure client under the given parent resource.
+      r"""Creates a new AzureClient resource on a given Google Cloud project and region. `AzureClient` resources hold client authentication information needed by the Anthos Multicloud API to manage Azure resources on your Azure subscription on your behalf. If successful, the response contains a newly created Operation resource that can be described to track the status of the operation.
 
       Args:
         request: (GkemulticloudProjectsLocationsAzureClientsCreateRequest) input message
@@ -469,7 +469,7 @@ class GkemulticloudV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a specific Azure client. If the Azure client is used by one or more clusters, the delete will be blocked and a FAILED_PRECONDITION error will be returned.
+      r"""Deletes a specific AzureClient resource. If the client is used by one or more clusters, deletion will fail and a `FAILED_PRECONDITION` error will be returned. If successful, the response contains a newly created Operation resource that can be described to track the status of the operation.
 
       Args:
         request: (GkemulticloudProjectsLocationsAzureClientsDeleteRequest) input message
@@ -496,7 +496,7 @@ class GkemulticloudV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets a specific Azure client.
+      r"""Describes a specific AzureClient resource.
 
       Args:
         request: (GkemulticloudProjectsLocationsAzureClientsGetRequest) input message
@@ -523,7 +523,7 @@ class GkemulticloudV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists all Azure clients under a given parent resource.
+      r"""Lists all AzureClient resources on a given Google Cloud project and region.
 
       Args:
         request: (GkemulticloudProjectsLocationsAzureClientsListRequest) input message
@@ -560,7 +560,7 @@ class GkemulticloudV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Created a new node pool, attached to a given cluster.
+      r"""Creates a new AzureNodePool, attached to a given AzureCluster. If successful, the response contains a newly created Operation resource that can be described to track the status of the operation.
 
       Args:
         request: (GkemulticloudProjectsLocationsAzureClustersAzureNodePoolsCreateRequest) input message
@@ -587,7 +587,7 @@ class GkemulticloudV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a specific node pool.
+      r"""Deletes a specific AzureNodePool resource. If successful, the response contains a newly created Operation resource that can be described to track the status of the operation.
 
       Args:
         request: (GkemulticloudProjectsLocationsAzureClustersAzureNodePoolsDeleteRequest) input message
@@ -614,7 +614,7 @@ class GkemulticloudV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a specific node pool.
+      r"""Describes a specific AzureNodePool resource.
 
       Args:
         request: (GkemulticloudProjectsLocationsAzureClustersAzureNodePoolsGetRequest) input message
@@ -641,7 +641,7 @@ class GkemulticloudV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists all node pools under a given parent resource.
+      r"""Lists all AzureNodePool resources on a given AzureCluster.
 
       Args:
         request: (GkemulticloudProjectsLocationsAzureClustersAzureNodePoolsListRequest) input message
@@ -668,7 +668,7 @@ class GkemulticloudV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Update a specific node pool.
+      r"""Updates an AzureNodePool.
 
       Args:
         request: (GkemulticloudProjectsLocationsAzureClustersAzureNodePoolsPatchRequest) input message
@@ -742,7 +742,7 @@ class GkemulticloudV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new cluster.
+      r"""Creates a new AzureCluster resource on a given GCP project and region. If successful, the response contains a newly created Operation resource that can be described to track the status of the operation.
 
       Args:
         request: (GkemulticloudProjectsLocationsAzureClustersCreateRequest) input message
@@ -769,7 +769,7 @@ class GkemulticloudV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a specific cluster, including the Kubernetes control plane and all node pools.
+      r"""Deletes a specific AzureCluster resource. Fails if the cluster has one or more associated AzureNodePool resources. If successful, the response contains a newly created Operation resource that can be described to track the status of the operation.
 
       Args:
         request: (GkemulticloudProjectsLocationsAzureClustersDeleteRequest) input message
@@ -796,7 +796,7 @@ class GkemulticloudV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a specific cluster.
+      r"""Describes a specific AzureCluster resource.
 
       Args:
         request: (GkemulticloudProjectsLocationsAzureClustersGetRequest) input message
@@ -823,7 +823,7 @@ class GkemulticloudV1(base_api.BaseApiClient):
     )
 
     def GetAzureClusterAdminKubeconfig(self, request, global_params=None):
-      r"""Gets a kubeconfig file to authenticate as admin (system:masters) on a given Azure cluster. The returned kubeconfig files uses x509 certificates.
+      r"""Generates a kubeconfig file to connect to a given AzureCluster. The returned kubeconfig authenticates to k8s api-server as a generic admin user with username `kubernetes-admin` (as a member of the `system:masters` group) and is valid for 20 hours.
 
       Args:
         request: (GkemulticloudProjectsLocationsAzureClustersGetAzureClusterAdminKubeconfigRequest) input message
@@ -877,7 +877,7 @@ class GkemulticloudV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists all clusters under a given parent resource.
+      r"""Lists all AzureCluster resources on a given Google Cloud project and region.
 
       Args:
         request: (GkemulticloudProjectsLocationsAzureClustersListRequest) input message
@@ -904,7 +904,7 @@ class GkemulticloudV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Update a specific cluster.
+      r"""Updates an AzureCluster.
 
       Args:
         request: (GkemulticloudProjectsLocationsAzureClustersPatchRequest) input message
@@ -1059,7 +1059,7 @@ class GkemulticloudV1(base_api.BaseApiClient):
           }
 
     def GetAwsServerConfig(self, request, global_params=None):
-      r"""Returns configuration info about the GKE cluster on AWS.
+      r"""Returns information, such as supported AWS regions and Kubernetes versions, on a given Google Cloud location.
 
       Args:
         request: (GkemulticloudProjectsLocationsGetAwsServerConfigRequest) input message
@@ -1086,7 +1086,7 @@ class GkemulticloudV1(base_api.BaseApiClient):
     )
 
     def GetAzureServerConfig(self, request, global_params=None):
-      r"""Returns configuration info about the GKE cluster on Azure.
+      r"""Returns information, such as supported Azure regions and Kubernetes versions, on a given Google Cloud location.
 
       Args:
         request: (GkemulticloudProjectsLocationsGetAzureServerConfigRequest) input message

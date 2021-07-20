@@ -96,6 +96,14 @@ DEFAULT_LIST_FORMAT = """\
       status
     )"""
 
+IPV6_INFO_LIST_FORMAT = """\
+table(
+            name,
+            zone.basename(),
+            networkInterfaces[].stackType.notnull().list(),
+            networkInterfaces[].ipv6AccessConfigs[0].externalIpv6.notnull().list():label=EXTERNAL_IPV6,
+            networkInterfaces[].ipv6Address.notnull().list():label=INTERNAL_IPV6)"""
+
 INSTANCE_ARG = compute_flags.ResourceArgument(
     resource_name='instance',
     name='instance_name',

@@ -55,6 +55,10 @@ class MissingPermissionOnQuotaProjectError(c_creds.ADCError):
   """An error when ADC does not have permission to bill a quota project."""
 
 
+class AddQuotaProjectError(c_creds.ADCError):
+  """An error when quota project ID is added to creds that don't support it."""
+
+
 class _AcctInfo(object):
   """An auth command resource list item.
 
@@ -130,10 +134,18 @@ def PromptIfADCEnvVarIsSet():
 
 def WriteGcloudCredentialsToADC(creds, add_quota_project=False):
   """Writes gclouds's credential from auth login to ADC json."""
-  if not c_creds.IsUserAccountCredentials(creds):
+  # TODO(b/190114370): We will also support writing service account creds.
+  if (not c_creds.IsUserAccountCredentials(creds) and
+      not c_creds.IsExternalAccountCredentials(creds)):
     log.warning('Credentials cannot be written to application default '
-                'credentials because it is not a user credential.')
+                'credentials because it is not a user or external account '
+                'credential.')
     return
+  # Quota project ID should not be added to non-user credentials.
+  if c_creds.IsExternalAccountCredentials(creds) and add_quota_project:
+    raise AddQuotaProjectError(
+        'The application default credentials are external account credentials, '
+        'quota project cannot be added.')
 
   PromptIfADCEnvVarIsSet()
   if add_quota_project:

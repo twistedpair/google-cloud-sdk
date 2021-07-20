@@ -5,6 +5,123 @@ Copyright 2014-2021 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 349.0.0 (2021-07-20)
+
+### Breaking Changes
+
+*   **(Kpt)** kpt updated to v1.0.0-beta.1. This version has several breaking changes from
+  previous versions. Documentation is available at <https://kpt.dev> and
+  migration instructions can be found at <https://kpt.dev/installation/migration>.
+  Old versions are available at <https://github.com/GoogleContainerTools/kpt>.
+
+
+### AI
+
+* Added `--network` flag to `gcloud beta ai endpoints create`.
+
+### Certificate Authority Service
+
+* Changed certificate chain output format to remove extra newline between
+  `-----END CERTIFICATE-----` and `-----BEGIN CERTIFICATE-----`. This affects
+  certificate outputs of `gcloud privateca certificates create`,
+  `gcloud privateca certificates export` and
+  `gcloud privateca pools get-ca-certs`.
+
+### Cloud Asset Inventory
+
+* Promote `gcloud asset list` CLI to GA.
+
+### Cloud Build
+
+* Add `--no-public-egress` to `gcloud builds worker-pools create`.
+* Add `--public-egress` and a hidden `--no-public-egress` flags to `gcloud builds worker-pools update`.
+
+### Cloud Composer
+
+* Added support of `--scheduler-count` flag for `gcloud beta composer environments {create,update}` commands.
+
+### Cloud DNS
+
+* Added DNS Routing Policies support for `gcloud beta dns record-sets`.
+
+### Cloud Dataflow
+
+* Added Google Artifact Registry support in build command `gcloud beta dataflow flex-template build`.
+
+### Cloud Datastream
+
+* Allow using project numbers in command arguments.
+* Update help text files for `gcloud beta datastream streams create/update`.
+
+### Cloud Functions
+
+* Remove incorrect client-side validation for `--entrypoint` flag of `gcloud functions deploy`.
+
+### Cloud Healthcare
+
+* Added gcloud command-line tool support for healthcare NL
+ * `gcloud beta healthcare nlp analyze-entities`
+
+### Cloud Key Management Service
+
+*   Added `ec-sign-secp256k1-sha256` to the list of supported algorithms.
+
+### Cloud Spanner
+
+* Added `--processing-units` flag to `spanner create instance` and `spanner update instance` to add ability to create granular instances in beta.
+
+### Cloud TPU
+
+* Added Cloud AI Notebooks support to `gcloud compute tpus execution-groups create` by adding flag `--use-with-notebook`.
+
+### Compute Engine
+
+* Added `--redirect-type` and `--redirect-target` to `gcloud compute security-policies rules create|update` in alpha and beta.
+* Add share_type to output of `gcloud compute reservations list`.
+* Added custom response headers to regional `gcloud compute backend-services create` requests.
+* Promoted `user_license` flag of `gcloud compute images insert` to beta.
+* Added an example of `gcloud compute instances list` to display IPv6 related fields.
+* Promoted `--target-service-attachment` flag of `gcloud compute forwarding-rules create` to GA.
+* Promoted `--purpose=private-service-connect` flag of `gcloud compute networks subnets create` to GA.
+* Promoted `gcloud compute service-attachments` to GA.
+* Added `--mesh` to `gcloud compute instance-templates create` in alpha and beta.
+
+### Config Connector
+
+* Updated Google Cloud Config Connector to version 1.56.0.
+  See Config Connector Overview for more details [https://cloud.google.com/config-connector/docs/overview](https://cloud.google.com/config-connector/docs/overview).
+
+### Dataproc Metastore
+
+* Promoted `backups` command group to GA.
+* Promoted Service `restore` command to GA.
+
+### GKE Hub
+
+* Promoted the following commands to GA:
+  * `gcloud container hub features list`
+  * `gcloud container hub ingress describe`
+  * `gcloud container hub ingress disable`
+  * `gcloud container hub ingress enable`
+  * `gcloud container hub ingress update`
+  * `gcloud container hub multi-cluster-services describe`
+  * `gcloud container hub multi-cluster-services disable`
+  * `gcloud container hub multi-cluster-services enable`
+
+### Kpt
+
+* Updated kpt to v1.0.0-beta.1. Look at the documentation at <https://kpt.dev> for
+  more details.
+
+### Pubsub Emulator
+
+* Added support for subscriptions with both dead letter topics and ordered
+  delivery enabled in the Pub/Sub emulator.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 348.0.0 (2021-07-13)
 
 ### Cloud SDK

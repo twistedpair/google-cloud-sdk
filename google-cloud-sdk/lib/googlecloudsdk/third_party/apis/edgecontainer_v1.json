@@ -14,7 +14,7 @@
     "x16": "http://www.google.com/images/icons/product/search-16.gif",
     "x32": "http://www.google.com/images/icons/product/search-32.gif"
    },
-  "documentationLink": "",
+  "documentationLink": "https://cloud.google.com/edge-cloud",
   "protocol": "rest",
   "rootUrl": "https://edgecontainer.googleapis.com/",
   "mtlsRootUrl": "https://edgecontainer.mtls.googleapis.com/",
@@ -446,7 +446,7 @@
     },
     "ListVpnConnectionsResponse": {
       "id": "ListVpnConnectionsResponse",
-      "description": "List of VPN connections in a site.",
+      "description": "List of VPN connections in a location.",
       "type": "object",
       "properties": {
         "vpnConnections": {
@@ -520,7 +520,7 @@
           "type": "string"
         },
         "vpc": {
-          "description": "The canonical VPC name to connect to. It is in the form of projects\/{project}\/locations\/{location}\/vpcs\/{vpc}.",
+          "description": "The network ID of VPC to connect to.",
           "type": "string"
         },
         "enableHighAvailability": {

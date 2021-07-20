@@ -206,7 +206,8 @@ class DialogflowProjectsAgentEnvironmentsDeleteRequest(_messages.Message):
   Fields:
     name: Required. The name of the environment to delete. / Format: -
       `projects//agent/environments/` -
-      `projects//locations//agent/environments/`
+      `projects//locations//agent/environments/` The environment ID for the
+      default environment is `-`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -222,7 +223,8 @@ class DialogflowProjectsAgentEnvironmentsGetHistoryRequest(_messages.Message):
       list request.
     parent: Required. The name of the environment to retrieve history for.
       Supported formats: - `projects//agent/environments/` -
-      `projects//locations//agent/environments/`
+      `projects//locations//agent/environments/` The environment ID for the
+      default environment is `-`.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -236,7 +238,8 @@ class DialogflowProjectsAgentEnvironmentsGetRequest(_messages.Message):
   Fields:
     name: Required. The name of the environment. Supported formats: -
       `projects//agent/environments/` -
-      `projects//locations//agent/environments/`
+      `projects//locations//agent/environments/` The environment ID for the
+      default environment is `-`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -308,15 +311,16 @@ class DialogflowProjectsAgentEnvironmentsPatchRequest(_messages.Message):
 
   Fields:
     allowLoadToDraftAndDiscardChanges: Optional. This field is used to prevent
-      accidental overwrite of the draft environment, which is an operation
+      accidental overwrite of the default environment, which is an operation
       that cannot be undone. To confirm that the caller desires this
       overwrite, this field must be explicitly set to true when updating the
-      draft environment (environment ID = `-`).
+      default environment (environment ID = `-`).
     googleCloudDialogflowV2Environment: A GoogleCloudDialogflowV2Environment
       resource to be passed as the request body.
     name: Output only. The unique identifier of this agent environment.
       Supported formats: - `projects//agent/environments/` -
-      `projects//locations//agent/environments/`
+      `projects//locations//agent/environments/` The environment ID for the
+      default environment is `-`.
     updateMask: Required. The mask to control which fields get updated.
   """
 
@@ -2031,7 +2035,8 @@ class DialogflowProjectsLocationsAgentEnvironmentsDeleteRequest(_messages.Messag
   Fields:
     name: Required. The name of the environment to delete. / Format: -
       `projects//agent/environments/` -
-      `projects//locations//agent/environments/`
+      `projects//locations//agent/environments/` The environment ID for the
+      default environment is `-`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -2047,7 +2052,8 @@ class DialogflowProjectsLocationsAgentEnvironmentsGetHistoryRequest(_messages.Me
       list request.
     parent: Required. The name of the environment to retrieve history for.
       Supported formats: - `projects//agent/environments/` -
-      `projects//locations//agent/environments/`
+      `projects//locations//agent/environments/` The environment ID for the
+      default environment is `-`.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -2061,7 +2067,8 @@ class DialogflowProjectsLocationsAgentEnvironmentsGetRequest(_messages.Message):
   Fields:
     name: Required. The name of the environment. Supported formats: -
       `projects//agent/environments/` -
-      `projects//locations//agent/environments/`
+      `projects//locations//agent/environments/` The environment ID for the
+      default environment is `-`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -2133,15 +2140,16 @@ class DialogflowProjectsLocationsAgentEnvironmentsPatchRequest(_messages.Message
 
   Fields:
     allowLoadToDraftAndDiscardChanges: Optional. This field is used to prevent
-      accidental overwrite of the draft environment, which is an operation
+      accidental overwrite of the default environment, which is an operation
       that cannot be undone. To confirm that the caller desires this
       overwrite, this field must be explicitly set to true when updating the
-      draft environment (environment ID = `-`).
+      default environment (environment ID = `-`).
     googleCloudDialogflowV2Environment: A GoogleCloudDialogflowV2Environment
       resource to be passed as the request body.
     name: Output only. The unique identifier of this agent environment.
       Supported formats: - `projects//agent/environments/` -
-      `projects//locations//agent/environments/`
+      `projects//locations//agent/environments/` The environment ID for the
+      default environment is `-`.
     updateMask: Required. The mask to control which fields get updated.
   """
 
@@ -8607,7 +8615,8 @@ class GoogleCloudDialogflowV2Environment(_messages.Message):
       environment.
     name: Output only. The unique identifier of this agent environment.
       Supported formats: - `projects//agent/environments/` -
-      `projects//locations//agent/environments/`
+      `projects//locations//agent/environments/` The environment ID for the
+      default environment is `-`.
     state: Output only. The state of this environment. This field is read-
       only, i.e., it cannot be set by create and update methods.
     textToSpeechSettings: Optional. Text to speech settings for this
@@ -8651,7 +8660,8 @@ class GoogleCloudDialogflowV2EnvironmentHistory(_messages.Message):
       empty if there are no more results in the list.
     parent: Output only. The name of the environment this history is for.
       Supported formats: - `projects//agent/environments/` -
-      `projects//locations//agent/environments/`
+      `projects//locations//agent/environments/` The environment ID for the
+      default environment is `-`.
   """
 
   entries = _messages.MessageField('GoogleCloudDialogflowV2EnvironmentHistoryEntry', 1, repeated=True)

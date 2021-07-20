@@ -6816,7 +6816,9 @@
             "Nvidia Tesla V100 GPU.",
             "Nvidia Tesla P4 GPU.",
             "Nvidia Tesla T4 GPU.",
-            "Nvidia Tesla A100 GPU."
+            "Nvidia Tesla A100 GPU.",
+            "TPU v2.",
+            "TPU v3."
           ],
           "enum": [
             "ACCELERATOR_TYPE_UNSPECIFIED",
@@ -6825,7 +6827,9 @@
             "NVIDIA_TESLA_V100",
             "NVIDIA_TESLA_P4",
             "NVIDIA_TESLA_T4",
-            "NVIDIA_TESLA_A100"
+            "NVIDIA_TESLA_A100",
+            "TPU_V2",
+            "TPU_V3"
           ]
         },
         "acceleratorCount": {
@@ -9251,7 +9255,9 @@
             "Nvidia Tesla V100 GPU.",
             "Nvidia Tesla P4 GPU.",
             "Nvidia Tesla T4 GPU.",
-            "Nvidia Tesla A100 GPU."
+            "Nvidia Tesla A100 GPU.",
+            "TPU v2.",
+            "TPU v3."
           ],
           "enum": [
             "ACCELERATOR_TYPE_UNSPECIFIED",
@@ -9260,7 +9266,9 @@
             "NVIDIA_TESLA_V100",
             "NVIDIA_TESLA_P4",
             "NVIDIA_TESLA_T4",
-            "NVIDIA_TESLA_A100"
+            "NVIDIA_TESLA_A100",
+            "TPU_V2",
+            "TPU_V3"
           ]
         },
         "acceleratorCount": {
@@ -11423,6 +11431,10 @@
         "genericMetadata": {
           "description": "The operation generic information.",
           "$ref": "GoogleCloudAiplatformV1alpha1GenericOperationMetadata"
+        },
+        "deployedIndexId": {
+          "description": "The unique index id specified by user",
+          "type": "string"
         }
       }
     },
@@ -13181,7 +13193,9 @@
             "Nvidia Tesla V100 GPU.",
             "Nvidia Tesla P4 GPU.",
             "Nvidia Tesla T4 GPU.",
-            "Nvidia Tesla A100 GPU."
+            "Nvidia Tesla A100 GPU.",
+            "TPU v2.",
+            "TPU v3."
           ],
           "enum": [
             "ACCELERATOR_TYPE_UNSPECIFIED",
@@ -13190,7 +13204,9 @@
             "NVIDIA_TESLA_V100",
             "NVIDIA_TESLA_P4",
             "NVIDIA_TESLA_T4",
-            "NVIDIA_TESLA_A100"
+            "NVIDIA_TESLA_A100",
+            "TPU_V2",
+            "TPU_V3"
           ]
         },
         "acceleratorCount": {
@@ -13644,6 +13660,10 @@
         "genericMetadata": {
           "description": "The operation generic information.",
           "$ref": "GoogleCloudAiplatformV1beta1GenericOperationMetadata"
+        },
+        "deployedIndexId": {
+          "description": "The unique index id specified by user",
+          "type": "string"
         }
       }
     },
@@ -13703,6 +13723,13 @@
         "deployedIndexAuthConfig": {
           "description": "Optional. If set, the authentication is enabled for the private endpoint.",
           "$ref": "GoogleCloudAiplatformV1beta1DeployedIndexAuthConfig"
+        },
+        "reservedIpRanges": {
+          "description": "Optional. A list of reserved ip ranges under the VPC network that can be used for this DeployedIndex. If set, we will deploy the index within the provided ip ranges. Otherwise, the index might be deployed to any ip ranges under the provided VPC network. The value sohuld be the name of the address (https:\/\/cloud.google.com\/compute\/docs\/reference\/rest\/v1\/addresses) Example: 'vertex-ai-ip-range'.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -17435,7 +17462,9 @@
             "Nvidia Tesla V100 GPU.",
             "Nvidia Tesla P4 GPU.",
             "Nvidia Tesla T4 GPU.",
-            "Nvidia Tesla A100 GPU."
+            "Nvidia Tesla A100 GPU.",
+            "TPU v2.",
+            "TPU v3."
           ],
           "enum": [
             "ACCELERATOR_TYPE_UNSPECIFIED",
@@ -17444,7 +17473,9 @@
             "NVIDIA_TESLA_V100",
             "NVIDIA_TESLA_P4",
             "NVIDIA_TESLA_T4",
-            "NVIDIA_TESLA_A100"
+            "NVIDIA_TESLA_A100",
+            "TPU_V2",
+            "TPU_V3"
           ]
         },
         "acceleratorCount": {

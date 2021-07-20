@@ -140,7 +140,7 @@ class Binding(_messages.Message):
 
 class BundlesConfig(_messages.Message):
   r"""Configuration for the bundles that can be enabled on the KrmApiHost.
-  Bundles not ready for public consumption must have a visibility label. e.g:
+  Bundles not ready for public consumption must have a visibility label. e.g.:
   YakimaConfig yakima_config = 2 [(google.api.field_visibility).restriction =
   "GOOGLE_INTERNAL, YAKIMA_TRUSTED_TESTER, GCLOUD_TESTER"];
 
@@ -220,12 +220,39 @@ class FullManagementConfig(_messages.Message):
   r"""Configuration of the full (Autopilot) cluster management
 
   Fields:
+    clusterCidrBlock: The IP address range for the cluster pod IPs. Set to
+      blank to have a range chosen with the default size. Set to /netmask
+      (e.g. /14) to have a range chosen with a specific netmask. Set to a CIDR
+      notation (e.g. 10.96.0.0/14) from the RFC-1918 private networks (e.g.
+      10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16) to pick a specific range to
+      use.
+    clusterNamedRange: The name of the existing secondary range in the
+      cluster's subnetwork to use for pod IP addresses. Alternatively,
+      cluster_cidr_block can be used to automatically create a GKE-managed
+      one.
+    manBlock: Master Authorized Network. Allows access to the k8s master from
+      this block.
     masterIpv4CidrBlock: The /28 network that the masters will use.
     network: Existing VPC Network to put the GKE cluster and nodes in.
+    servicesCidrBlock: The IP address range for the cluster service IPs. Set
+      to blank to have a range chosen with the default size. Set to /netmask
+      (e.g. /14) to have a range chosen with a specific netmask. Set to a CIDR
+      notation (e.g. 10.96.0.0/14) from the RFC-1918 private networks (e.g.
+      10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16) to pick a specific range to
+      use.
+    servicesNamedRange: The name of the existing secondary range in the
+      cluster's subnetwork to use for service ClusterIPs. Alternatively,
+      services_cidr_block can be used to automatically create a GKE-managed
+      one.
   """
 
-  masterIpv4CidrBlock = _messages.StringField(1)
-  network = _messages.StringField(2)
+  clusterCidrBlock = _messages.StringField(1)
+  clusterNamedRange = _messages.StringField(2)
+  manBlock = _messages.StringField(3)
+  masterIpv4CidrBlock = _messages.StringField(4)
+  network = _messages.StringField(5)
+  servicesCidrBlock = _messages.StringField(6)
+  servicesNamedRange = _messages.StringField(7)
 
 
 class KrmApiHost(_messages.Message):
@@ -951,12 +978,39 @@ class StandardManagementConfig(_messages.Message):
   r"""Configuration of the standard (GKE) cluster management
 
   Fields:
+    clusterCidrBlock: The IP address range for the cluster pod IPs. Set to
+      blank to have a range chosen with the default size. Set to /netmask
+      (e.g. /14) to have a range chosen with a specific netmask. Set to a CIDR
+      notation (e.g. 10.96.0.0/14) from the RFC-1918 private networks (e.g.
+      10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16) to pick a specific range to
+      use.
+    clusterNamedRange: The name of the existing secondary range in the
+      cluster's subnetwork to use for pod IP addresses. Alternatively,
+      cluster_cidr_block can be used to automatically create a GKE-managed
+      one.
+    manBlock: Master Authorized Network. Allows access to the k8s master from
+      this block.
     masterIpv4CidrBlock: The /28 network that the masters will use.
     network: Existing VPC Network to put the GKE cluster and nodes in.
+    servicesCidrBlock: The IP address range for the cluster service IPs. Set
+      to blank to have a range chosen with the default size. Set to /netmask
+      (e.g. /14) to have a range chosen with a specific netmask. Set to a CIDR
+      notation (e.g. 10.96.0.0/14) from the RFC-1918 private networks (e.g.
+      10.0.0.0/8, 172.16.0.0/12, 192.168.0.0/16) to pick a specific range to
+      use.
+    servicesNamedRange: The name of the existing secondary range in the
+      cluster's subnetwork to use for service ClusterIPs. Alternatively,
+      services_cidr_block can be used to automatically create a GKE-managed
+      one.
   """
 
-  masterIpv4CidrBlock = _messages.StringField(1)
-  network = _messages.StringField(2)
+  clusterCidrBlock = _messages.StringField(1)
+  clusterNamedRange = _messages.StringField(2)
+  manBlock = _messages.StringField(3)
+  masterIpv4CidrBlock = _messages.StringField(4)
+  network = _messages.StringField(5)
+  servicesCidrBlock = _messages.StringField(6)
+  servicesNamedRange = _messages.StringField(7)
 
 
 class StandardQueryParameters(_messages.Message):

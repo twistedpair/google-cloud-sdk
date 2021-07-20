@@ -2531,7 +2531,7 @@ class _SectionStorage(_Section):
       not recommended except for special cases such as measuring download
       performance excluding time for integrity checking.
 
-      This option exists to assist users who wish to download a GCS composite
+      This option exists to assist users who wish to download a composite
       object and are unable to install crcmod with the C-extension. CRC32c is
       the only available integrity check for composite objects, and without the
       C-extension, download performance can be significantly degraded by the
@@ -2545,12 +2545,10 @@ class _SectionStorage(_Section):
   DEFAULT_RESUMABLE_THRESHOLD = '8Mi'
 
   def __init__(self):
-    super(_SectionStorage, self).__init__('storage', hidden=True)
+    super(_SectionStorage, self).__init__('storage')
     self.check_hashes = self._Add(
         'check_hashes',
-        # TODO(b/175725675) Change default to IF_FAST_ELSE_FAIL
-        # after adding google-crc32c.
-        default=CheckHashes.IF_FAST_ELSE_SKIP.value,
+        default=CheckHashes.IF_FAST_ELSE_FAIL.value,
         help_text=self._CHECK_HASHES_HELP_TEXT,
         choices=([setting.value for setting in CheckHashes]))
 
@@ -2650,8 +2648,8 @@ class _SectionStorage(_Section):
         'object. The number of components will be the smaller of '
         'ceil(file_size / parallel_composite_upload_component_size) and '
         'the maximum number of objects the API allows composing at once. For '
-        'GCS this limit is 32. If this property is set to 0, then automatic '
-        'parallel uploads will never occur.')
+        'Cloud Storage this limit is 32. If this property is set to 0, then '
+        'automatic parallel uploads will never occur.')
 
     self.tracker_files_directory = self._Add(
         'tracker_files_directory',
@@ -2788,7 +2786,7 @@ class _SectionCode(_Section):
         'has passed since the last minikube event.')
 
     self.minikube_path_override = self._Add(
-        'minikube_paht_override',
+        'minikube_path_override',
         hidden=True,
         help_text='Location of minikube binary.')
 

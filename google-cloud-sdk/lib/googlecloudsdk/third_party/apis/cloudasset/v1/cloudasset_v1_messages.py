@@ -145,6 +145,25 @@ class Asset(_messages.Message):
   updateTime = _messages.StringField(11)
 
 
+class AttachedResource(_messages.Message):
+  r"""Attached resource representation, which is defined by the corresponding
+  service provider. It represents an attached resource's payload.
+
+  Fields:
+    assetType: The type of this attached resource. Example:
+      `osconfig.googleapis.com/Inventory` You can find the supported attached
+      asset types of each resource in this table:
+      `https://cloud.google.com/asset-inventory/docs/supported-asset-
+      types#searchable_asset_types`
+    versionedResources: Versioned resource representations of this attached
+      resource. This is repeated because there could be multiple versions of
+      the attached resource representations during version migration.
+  """
+
+  assetType = _messages.StringField(1)
+  versionedResources = _messages.MessageField('VersionedResource', 2, repeated=True)
+
+
 class AuditConfig(_messages.Message):
   r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
@@ -862,7 +881,7 @@ class CloudassetSearchAllResourcesRequest(_messages.Message):
       Cloud resources encrypted with a customer-managed encryption key whose
       name contains the word "key". * `state:ACTIVE` to find Cloud resources
       whose state contains "ACTIVE" as a word. * `NOT state:ACTIVE` to find
-      {{gcp_name}} resources whose state doesn't contain "ACTIVE" as a word. *
+      Cloud resources whose state doesn't contain "ACTIVE" as a word. *
       `createTime<1609459200` to find Cloud resources that were created before
       "2021-01-01 00:00:00 UTC". 1609459200 is the epoch timestamp of
       "2021-01-01 00:00:00 UTC" in seconds. * `updateTime>1609459200` to find
@@ -881,15 +900,12 @@ class CloudassetSearchAllResourcesRequest(_messages.Message):
       camelCase are supported. Examples: `"*"`, `"name,location"`,
       `"name,versionedResources"`. The read_mask paths must be valid field
       paths listed but not limited to (both snake_case and camelCase are
-      supported): * name * asset_type or assetType * project * display_name or
-      displayName * description * location * labels * network_tags or
-      networkTags * kms_key or kmsKey * create_time or createTime *
-      update_time or updateTime * state * additional_attributes or
-      additionalAttributes * versioned_resources or versionedResources If
-      read_mask is not specified, all fields except versionedResources will be
-      returned. If only '*' is specified, all fields including
-      versionedResources will be returned. Any invalid field path will trigger
-      INVALID_ARGUMENT error.
+      supported): * name * assetType * project * displayName * description *
+      location * labels * networkTags * kmsKey * createTime * updateTime *
+      state * additionalAttributes * versionedResources If read_mask is not
+      specified, all fields except versionedResources will be returned. If
+      only '*' is specified, all fields including versionedResources will be
+      returned. Any invalid field path will trigger INVALID_ARGUMENT error.
     scope: Required. A scope can be a project, a folder, or an organization.
       The search is limited to the resources within the `scope`. The caller
       must be granted the
@@ -3376,6 +3392,12 @@ class ResourceSearchResult(_messages.Message):
     assetType: The type of this resource. Example:
       `compute.googleapis.com/Disk`. To search against the `asset_type`: *
       specify the `asset_type` field in your search request.
+    attachedResources: Attached resources of this resource. For example, an
+      OSConfig Inventory is an attached resource of a Compute Instance. This
+      field is repeated because a resource could have multiple attached
+      resources. This `attached_resources` field is not searchable. Some
+      attributes of the attached resources are exposed in
+      `additional_attributes` field, so as to allow users to search on them.
     createTime: The create timestamp of this resource, at which the resource
       was created. The granularity is in seconds. Timestamp.nanos will always
       be 0. This field is available only when the resource's proto contains
@@ -3555,22 +3577,23 @@ class ResourceSearchResult(_messages.Message):
 
   additionalAttributes = _messages.MessageField('AdditionalAttributesValue', 1)
   assetType = _messages.StringField(2)
-  createTime = _messages.StringField(3)
-  description = _messages.StringField(4)
-  displayName = _messages.StringField(5)
-  folders = _messages.StringField(6, repeated=True)
-  kmsKey = _messages.StringField(7)
-  labels = _messages.MessageField('LabelsValue', 8)
-  location = _messages.StringField(9)
-  name = _messages.StringField(10)
-  networkTags = _messages.StringField(11, repeated=True)
-  organization = _messages.StringField(12)
-  parentAssetType = _messages.StringField(13)
-  parentFullResourceName = _messages.StringField(14)
-  project = _messages.StringField(15)
-  state = _messages.StringField(16)
-  updateTime = _messages.StringField(17)
-  versionedResources = _messages.MessageField('VersionedResource', 18, repeated=True)
+  attachedResources = _messages.MessageField('AttachedResource', 3, repeated=True)
+  createTime = _messages.StringField(4)
+  description = _messages.StringField(5)
+  displayName = _messages.StringField(6)
+  folders = _messages.StringField(7, repeated=True)
+  kmsKey = _messages.StringField(8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  location = _messages.StringField(10)
+  name = _messages.StringField(11)
+  networkTags = _messages.StringField(12, repeated=True)
+  organization = _messages.StringField(13)
+  parentAssetType = _messages.StringField(14)
+  parentFullResourceName = _messages.StringField(15)
+  project = _messages.StringField(16)
+  state = _messages.StringField(17)
+  updateTime = _messages.StringField(18)
+  versionedResources = _messages.MessageField('VersionedResource', 19, repeated=True)
 
 
 class ResourceSelector(_messages.Message):
