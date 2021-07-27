@@ -108,14 +108,25 @@ class NodePoolsClient(object):
 
     root_volume = self._AddAwsNodePoolRootVolume(config)
     root_volume.sizeGib = args.root_volume_size
+    root_volume.volumeType = args.root_volume_type
+    root_volume.iops = args.root_volume_iops
+    root_volume.kmsKeyArn = args.root_volume_kms_key_arn
 
     ssh_config = self._AddAwsNodePoolSshConfig(config)
     ssh_config.ec2KeyPair = args.ssh_ec2_key_pair
+
+    config.taints.extend(args.node_taints)
 
     if args.tags:
       tag_type = type(config).TagsValue.AdditionalProperty
       config.tags = type(config).TagsValue(additionalProperties=[
           tag_type(key=k, value=v) for k, v in args.tags.items()
+      ])
+
+    if args.node_labels:
+      label_type = type(config).LabelsValue.AdditionalProperty
+      config.labels = type(config).LabelsValue(additionalProperties=[
+          label_type(key=k, value=v) for k, v in args.node_labels.items()
       ])
 
     return self.service.Create(req)

@@ -704,7 +704,7 @@
       "type": "object",
       "properties": {
         "destinationTarget": {
-          "description": "Optional. The name of the `Target` to which we are promoting the Release.",
+          "description": "Optional. The ID of the `Target` to which we are promoting the Release.",
           "type": "string"
         },
         "rolloutId": {
@@ -736,35 +736,12 @@
           "description": "The `Release` being deployed.",
           "type": "string"
         },
-        "rollout": {
-          "description": "`Rollout` that was created from this promotion.",
-          "$ref": "Promotion"
-        },
         "rolloutResource": {
           "description": "The name of the `Rollout` that is being deployed.",
           "type": "string"
         },
         "target": {
           "description": "The name of the `Target` to which is being deployed.",
-          "type": "string"
-        },
-        "operation": {
-          "description": "The name of the operation that is tracking the `Rollout` creation.",
-          "type": "string"
-        }
-      }
-    },
-    "Promotion": {
-      "id": "Promotion",
-      "description": "Details around a `Release` promotion.",
-      "type": "object",
-      "properties": {
-        "target": {
-          "description": "The name of the `Target` to which is being deployed.",
-          "type": "string"
-        },
-        "rollout": {
-          "description": "The name of the `Rollout` that is being deployed.",
           "type": "string"
         },
         "operation": {

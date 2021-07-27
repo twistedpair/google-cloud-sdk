@@ -103,6 +103,31 @@ class AuditLogConfig(_messages.Message):
   logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
 
 
+class AutoscalingLimits(_messages.Message):
+  r"""Limits for the number of nodes a Cluster can autoscale up/down to.
+
+  Fields:
+    maxServeNodes: Required. Maximum number of nodes to scale up to.
+    minServeNodes: Required. Minimum number of nodes to scale down to.
+  """
+
+  maxServeNodes = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  minServeNodes = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class AutoscalingTargets(_messages.Message):
+  r"""The Autoscaling targets for a Cluster. These determine the recommended
+  nodes.
+
+  Fields:
+    cpuUtilizationPercent: The cpu utilization that the Autoscaler should be
+      trying to achieve. This number is on a scale from 0 (no utilization) to
+      100 (total utilization).
+  """
+
+  cpuUtilizationPercent = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
 class Backup(_messages.Message):
   r"""A backup of a Cloud Bigtable table.
 
@@ -1048,6 +1073,7 @@ class Cluster(_messages.Message):
     StateValueValuesEnum: Output only. The current state of the cluster.
 
   Fields:
+    clusterConfig: Configuration for this cluster.
     defaultStorageType: Immutable. The type of storage used by this cluster to
       serve its parent instance's tables, unless explicitly overridden.
     encryptionConfig: Immutable. The encryption configuration for CMEK-
@@ -1100,12 +1126,39 @@ class Cluster(_messages.Message):
     RESIZING = 3
     DISABLED = 4
 
-  defaultStorageType = _messages.EnumField('DefaultStorageTypeValueValuesEnum', 1)
-  encryptionConfig = _messages.MessageField('EncryptionConfig', 2)
-  location = _messages.StringField(3)
-  name = _messages.StringField(4)
-  serveNodes = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
+  clusterConfig = _messages.MessageField('ClusterConfig', 1)
+  defaultStorageType = _messages.EnumField('DefaultStorageTypeValueValuesEnum', 2)
+  encryptionConfig = _messages.MessageField('EncryptionConfig', 3)
+  location = _messages.StringField(4)
+  name = _messages.StringField(5)
+  serveNodes = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+
+
+class ClusterAutoscalingConfig(_messages.Message):
+  r"""Autoscaling config for a cluster.
+
+  Fields:
+    autoscalingLimits: Required. Autoscaling limits for this cluster.
+    autoscalingTargets: Required. Autoscaling targets for this cluster.
+  """
+
+  autoscalingLimits = _messages.MessageField('AutoscalingLimits', 1)
+  autoscalingTargets = _messages.MessageField('AutoscalingTargets', 2)
+
+
+class ClusterConfig(_messages.Message):
+  r"""Configuration for a cluster.
+
+  Fields:
+    clusterAutoscalingConfig: Autoscaling configuration for this cluster. Note
+      that when creating or updating a cluster, exactly one of serve_nodes or
+      cluster_autoscaling_config must be set. If serve_nodes is set, then
+      serve_nodes is fixed and autoscaling is turned off. If
+      cluster_autoscaling_config is set, then serve_nodes will be autoscaled.
+  """
+
+  clusterAutoscalingConfig = _messages.MessageField('ClusterAutoscalingConfig', 1)
 
 
 class ClusterState(_messages.Message):
@@ -2187,6 +2240,35 @@ class OptimizeRestoredTableMetadata(_messages.Message):
 
   name = _messages.StringField(1)
   progress = _messages.MessageField('OperationProgress', 2)
+
+
+class PartialUpdateClusterMetadata(_messages.Message):
+  r"""The metadata for the Operation returned by PartialUpdateCluster.
+
+  Fields:
+    finishTime: The time at which the operation failed or was completed
+      successfully.
+    originalRequest: A PartialUpdateClusterRequest attribute.
+    requestTime: The time at which the original request was received.
+  """
+
+  finishTime = _messages.StringField(1)
+  originalRequest = _messages.MessageField('PartialUpdateClusterRequest', 2)
+  requestTime = _messages.StringField(3)
+
+
+class PartialUpdateClusterRequest(_messages.Message):
+  r"""Request message for BigtableInstanceAdmin.PartialUpdateCluster.
+
+  Fields:
+    cluster: Required. The Cluster which contains the partial updates to be
+      applied, subject to the update_mask.
+    updateMask: Required. The subset of Cluster fields which should be
+      replaced. Must be explicitly set.
+  """
+
+  cluster = _messages.MessageField('Cluster', 1)
+  updateMask = _messages.StringField(2)
 
 
 class PartialUpdateInstanceRequest(_messages.Message):

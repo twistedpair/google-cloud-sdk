@@ -18,7 +18,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from googlecloudsdk.api_lib.storage import request_config_factory
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage.resources import resource_reference
 from googlecloudsdk.command_lib.storage.resources import s3_resource_reference
@@ -141,12 +140,10 @@ def get_metadata_dict_from_request_config(request_config):
     metadata['ContentEncoding'] = request_config.content_encoding
   if request_config.content_language is not None:
     metadata['ContentLanguage'] = request_config.content_language
+  if request_config.content_type is not None:
+    metadata['ContentType'] = request_config.content_type
   if request_config.md5_hash is not None:
     metadata['ContentMD5'] = request_config.md5_hash
-
-  if (request_config.content_type is not None and request_config.content_type !=
-      request_config_factory.DEFAULT_CONTENT_TYPE):
-    metadata['ContentType'] = request_config.content_type
 
   if request_config.custom_metadata:
     metadata['Metadata'] = request_config.custom_metadata

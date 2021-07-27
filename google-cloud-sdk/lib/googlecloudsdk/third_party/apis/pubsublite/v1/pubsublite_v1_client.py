@@ -39,6 +39,7 @@ class PubsubliteV1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.admin_projects_locations_operations = self.AdminProjectsLocationsOperationsService(self)
     self.admin_projects_locations_subscriptions = self.AdminProjectsLocationsSubscriptionsService(self)
     self.admin_projects_locations_topics_subscriptions = self.AdminProjectsLocationsTopicsSubscriptionsService(self)
     self.admin_projects_locations_topics = self.AdminProjectsLocationsTopicsService(self)
@@ -54,6 +55,124 @@ class PubsubliteV1(base_api.BaseApiClient):
     self.topicStats_projects_locations = self.TopicStatsProjectsLocationsService(self)
     self.topicStats_projects = self.TopicStatsProjectsService(self)
     self.topicStats = self.TopicStatsService(self)
+
+  class AdminProjectsLocationsOperationsService(base_api.BaseApiService):
+    """Service class for the admin_projects_locations_operations resource."""
+
+    _NAME = 'admin_projects_locations_operations'
+
+    def __init__(self, client):
+      super(PubsubliteV1.AdminProjectsLocationsOperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Cancel(self, request, global_params=None):
+      r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
+
+      Args:
+        request: (PubsubliteAdminProjectsLocationsOperationsCancelRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Cancel')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Cancel.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/admin/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel',
+        http_method='POST',
+        method_id='pubsublite.admin.projects.locations.operations.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/admin/{+name}:cancel',
+        request_field='cancelOperationRequest',
+        request_type_name='PubsubliteAdminProjectsLocationsOperationsCancelRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`.
+
+      Args:
+        request: (PubsubliteAdminProjectsLocationsOperationsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/admin/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='DELETE',
+        method_id='pubsublite.admin.projects.locations.operations.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/admin/{+name}',
+        request_field='',
+        request_type_name='PubsubliteAdminProjectsLocationsOperationsDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
+
+      Args:
+        request: (PubsubliteAdminProjectsLocationsOperationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/admin/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='pubsublite.admin.projects.locations.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/admin/{+name}',
+        request_field='',
+        request_type_name='PubsubliteAdminProjectsLocationsOperationsGetRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users/*/operations`. To override the binding, API services can add a binding such as `"/v1/{name=users/*}/operations"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id.
+
+      Args:
+        request: (PubsubliteAdminProjectsLocationsOperationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListOperationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/admin/projects/{projectsId}/locations/{locationsId}/operations',
+        http_method='GET',
+        method_id='pubsublite.admin.projects.locations.operations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/admin/{+name}/operations',
+        request_field='',
+        request_type_name='PubsubliteAdminProjectsLocationsOperationsListRequest',
+        response_type_name='ListOperationsResponse',
+        supports_download=False,
+    )
 
   class AdminProjectsLocationsSubscriptionsService(base_api.BaseApiService):
     """Service class for the admin_projects_locations_subscriptions resource."""
@@ -197,6 +316,33 @@ class PubsubliteV1(base_api.BaseApiClient):
         request_field='subscription',
         request_type_name='PubsubliteAdminProjectsLocationsSubscriptionsPatchRequest',
         response_type_name='Subscription',
+        supports_download=False,
+    )
+
+    def Seek(self, request, global_params=None):
+      r"""Performs an out-of-band seek for a subscription to a specified target, which may be timestamps or named positions within the message backlog. Seek translates these targets to cursors for each partition and orchestrates subscribers to start consuming messages from these seek cursors. If an operation is returned, the seek has been registered and subscribers will eventually receive messages from the seek cursors (i.e. eventual consistency), as long as they are using a minimum supported client library version and not a system that tracks cursors independently of Pub/Sub Lite (e.g. Apache Beam, Dataflow, Spark). The seek operation will fail for unsupported clients. If clients would like to know when subscribers react to the seek (or not), they can poll the operation. The seek operation will succeed and complete once subscribers are ready to receive messages from the seek cursors for all partitions of the topic. This means that the seek operation will not complete until all subscribers come online. If the previous seek operation has not yet completed, it will be aborted and the new invocation of seek will supersede it.
+
+      Args:
+        request: (PubsubliteAdminProjectsLocationsSubscriptionsSeekRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Seek')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Seek.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/admin/projects/{projectsId}/locations/{locationsId}/subscriptions/{subscriptionsId}:seek',
+        http_method='POST',
+        method_id='pubsublite.admin.projects.locations.subscriptions.seek',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/admin/{+name}:seek',
+        request_field='seekSubscriptionRequest',
+        request_type_name='PubsubliteAdminProjectsLocationsSubscriptionsSeekRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

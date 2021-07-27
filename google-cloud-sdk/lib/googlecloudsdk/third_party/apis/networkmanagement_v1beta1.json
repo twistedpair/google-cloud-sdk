@@ -777,7 +777,8 @@
             "Next hop is a VPN gateway. This scenario only happens when tracing connectivity from an on-premises network to Google Cloud through a VPN. The analysis simulates a packet departing from the on-premises network through a VPN tunnel and arriving at a Cloud VPN gateway.",
             "Next hop is an internet gateway.",
             "Next hop is blackhole; that is, the next hop either does not exist or is not running.",
-            "Next hop is the forwarding rule of an Internal Load Balancer."
+            "Next hop is the forwarding rule of an Internal Load Balancer.",
+            "Next hop is a [router appliance instance](https:\/\/cloud.google.com\/network-connectivity\/docs\/network-connectivity-center\/concepts\/ra-overview)."
           ],
           "enum": [
             "NEXT_HOP_TYPE_UNSPECIFIED",
@@ -790,7 +791,8 @@
             "NEXT_HOP_VPN_GATEWAY",
             "NEXT_HOP_INTERNET_GATEWAY",
             "NEXT_HOP_BLACKHOLE",
-            "NEXT_HOP_ILB"
+            "NEXT_HOP_ILB",
+            "NEXT_HOP_ROUTER_APPLIANCE"
           ]
         },
         "displayName": {

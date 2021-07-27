@@ -550,8 +550,7 @@ def read_or_create_download_tracker_file(source_object_resource,
           does_tracker_file_match = True
 
     if does_tracker_file_match:
-      log.status.Print(
-          'Resuming download for {}.'.format(download_name_for_logger))
+      log.debug('Found tracker file for {}.'.format(download_name_for_logger))
       return tracker_file_path, True
 
   except files.MissingFileError:
@@ -561,6 +560,10 @@ def read_or_create_download_tracker_file(source_object_resource,
   finally:
     if tracker_file:
       tracker_file.close()
+
+  if tracker_file:
+    # The tracker file exists, but it's not valid.
+    delete_download_tracker_files(destination_url)
 
   log.debug('No matching tracker file for {}.'.format(download_name_for_logger))
   if tracker_file_type is TrackerFileType.DOWNLOAD:

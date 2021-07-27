@@ -1013,6 +1013,10 @@
         "cloudBuildConfig": {
           "description": "Configuration for the Cloud Build addon.",
           "$ref": "CloudBuildConfig"
+        },
+        "gkeBackupAgentConfig": {
+          "description": "Configuration for the Backup for GKE agent addon.",
+          "$ref": "GkeBackupAgentConfig"
         }
       }
     },
@@ -1167,6 +1171,17 @@
       "properties": {
         "enabled": {
           "description": "Whether the Cloud Build addon is enabled for this cluster.",
+          "type": "boolean"
+        }
+      }
+    },
+    "GkeBackupAgentConfig": {
+      "id": "GkeBackupAgentConfig",
+      "description": "Configuration for the Backup for GKE Agent.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Whether the Backup for GKE agent is enabled for this cluster.",
           "type": "boolean"
         }
       }

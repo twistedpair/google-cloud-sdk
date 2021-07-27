@@ -299,6 +299,10 @@
           "description": "The specification for Anthos Observability.",
           "$ref": "AnthosObservabilityFeatureSpec"
         },
+        "workloadidentityplatformFeatureSpec": {
+          "description": "The specification for Workload Identity Platform.",
+          "$ref": "WorkloadIdentityPlatformFeatureSpec"
+        },
         "featureState": {
           "description": "Output only. State of the Feature resource itself.",
           "readOnly": true,
@@ -833,6 +837,13 @@
     "AnthosObservabilityFeatureSpec": {
       "id": "AnthosObservabilityFeatureSpec",
       "description": "Spec for Anthos Observability. This is required since Feature proto requires a spec.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "WorkloadIdentityPlatformFeatureSpec": {
+      "id": "WorkloadIdentityPlatformFeatureSpec",
+      "description": "WorkloadIdentityPlatformFeatureSpec contains the input for the workload identity platform feature. This is required since Feature proto requires a spec. TODO(b\/193825763) add this spec to v1main package once fields are required in the spec",
       "type": "object",
       "properties": {
       }

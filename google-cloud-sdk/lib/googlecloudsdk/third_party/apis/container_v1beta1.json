@@ -941,6 +941,10 @@
         "kalmConfig": {
           "description": "Configuration for the KALM addon, which manages the lifecycle of k8s applications.",
           "$ref": "KalmConfig"
+        },
+        "gkeBackupAgentConfig": {
+          "description": "Configuration for the Backup for GKE agent addon.",
+          "$ref": "GkeBackupAgentConfig"
         }
       }
     },
@@ -1076,6 +1080,17 @@
       "properties": {
         "enabled": {
           "description": "Whether KALM is enabled for this cluster.",
+          "type": "boolean"
+        }
+      }
+    },
+    "GkeBackupAgentConfig": {
+      "id": "GkeBackupAgentConfig",
+      "description": "Configuration for the Backup for GKE Agent.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Whether the Backup for GKE agent is enabled for this cluster.",
           "type": "boolean"
         }
       }

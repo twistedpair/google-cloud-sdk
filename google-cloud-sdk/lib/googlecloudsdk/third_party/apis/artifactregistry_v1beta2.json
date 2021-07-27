@@ -680,6 +680,271 @@
           ]
         }
       }
+    },
+    "ImportAptArtifactsRequest": {
+      "id": "ImportAptArtifactsRequest",
+      "description": "The request to import new apt artifacts.",
+      "type": "object",
+      "properties": {
+        "gcsSource": {
+          "description": "Google Cloud Storage location where input content is located.",
+          "$ref": "ImportAptArtifactsGcsSource"
+        }
+      }
+    },
+    "ImportAptArtifactsGcsSource": {
+      "id": "ImportAptArtifactsGcsSource",
+      "description": "Google Cloud Storage location where the artifacts currently reside.",
+      "type": "object",
+      "properties": {
+        "uris": {
+          "description": "Cloud Storage paths URI (e.g., gs:\/\/my_bucket\/\/my_object).",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "useWildcards": {
+          "description": "Supports URI wildcards for matching multiple objects from a single URI.",
+          "type": "boolean"
+        }
+      }
+    },
+    "ImportYumArtifactsRequest": {
+      "id": "ImportYumArtifactsRequest",
+      "description": "The request to import new yum artifacts.",
+      "type": "object",
+      "properties": {
+        "gcsSource": {
+          "description": "Google Cloud Storage location where input content is located.",
+          "$ref": "ImportYumArtifactsGcsSource"
+        }
+      }
+    },
+    "ImportYumArtifactsGcsSource": {
+      "id": "ImportYumArtifactsGcsSource",
+      "description": "Google Cloud Storage location where the artifacts currently reside.",
+      "type": "object",
+      "properties": {
+        "uris": {
+          "description": "Cloud Storage paths URI (e.g., gs:\/\/my_bucket\/\/my_object).",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "useWildcards": {
+          "description": "Supports URI wildcards for matching multiple objects from a single URI.",
+          "type": "boolean"
+        }
+      }
+    },
+    "ImportAptArtifactsResponse": {
+      "id": "ImportAptArtifactsResponse",
+      "description": "The response message from importing artifacts.",
+      "type": "object",
+      "properties": {
+        "aptArtifacts": {
+          "description": "The Apt artifacts updated.",
+          "type": "array",
+          "items": {
+            "$ref": "AptArtifact"
+          }
+        },
+        "errors": {
+          "description": "Detailed error info for packages that were not imported.",
+          "type": "array",
+          "items": {
+            "$ref": "ImportAptArtifactsErrorInfo"
+          }
+        }
+      }
+    },
+    "AptArtifact": {
+      "id": "AptArtifact",
+      "description": "A detailed representation of an Apt artifact. Information in the record is derived from the archive's control file. See https:\/\/www.debian.org\/doc\/debian-policy\/ch-controlfields.html",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The Artifact Registry resource name of the artifact.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "packageName": {
+          "description": "Output only. The Apt package name of the artifact.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "packageType": {
+          "description": "Output only. An artifact is a binary or source package.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Package type is not specified.",
+            "Binary package.",
+            "Source package."
+          ],
+          "enum": [
+            "PACKAGE_TYPE_UNSPECIFIED",
+            "BINARY",
+            "SOURCE"
+          ]
+        },
+        "architecture": {
+          "description": "Output only. Operating system architecture of the artifact.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "component": {
+          "description": "Output only. Repository component of the artifact.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "controlFile": {
+          "description": "Output only. Contents of the artifact's control metadata file.",
+          "readOnly": true,
+          "type": "string",
+          "format": "byte"
+        }
+      }
+    },
+    "ImportAptArtifactsErrorInfo": {
+      "id": "ImportAptArtifactsErrorInfo",
+      "description": "Error information explaining why a package was not imported.",
+      "type": "object",
+      "properties": {
+        "gcsSource": {
+          "description": "Google Cloud Storage location requested.",
+          "$ref": "ImportAptArtifactsGcsSource"
+        },
+        "error": {
+          "description": "The detailed error status.",
+          "$ref": "Status"
+        }
+      }
+    },
+    "ImportYumArtifactsResponse": {
+      "id": "ImportYumArtifactsResponse",
+      "description": "The response message from importing artifacts.",
+      "type": "object",
+      "properties": {
+        "yumArtifacts": {
+          "description": "The yum artifacts updated.",
+          "type": "array",
+          "items": {
+            "$ref": "YumArtifact"
+          }
+        },
+        "errors": {
+          "description": "Detailed error info for packages that were not imported.",
+          "type": "array",
+          "items": {
+            "$ref": "ImportYumArtifactsErrorInfo"
+          }
+        }
+      }
+    },
+    "YumArtifact": {
+      "id": "YumArtifact",
+      "description": "A detailed representation of a Yum artifact.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The Artifact Registry resource name of the artifact.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "packageName": {
+          "description": "Output only. The yum package name of the artifact.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "packageType": {
+          "description": "Output only. An artifact is a binary or source package.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Package type is not specified.",
+            "Binary package (.rpm). .rpm",
+            "Source package (.srpm)."
+          ],
+          "enum": [
+            "PACKAGE_TYPE_UNSPECIFIED",
+            "BINARY",
+            "SOURCE"
+          ]
+        },
+        "architecture": {
+          "description": "Output only. Operating system architecture of the artifact.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "ImportYumArtifactsErrorInfo": {
+      "id": "ImportYumArtifactsErrorInfo",
+      "description": "Error information explaining why a package was not imported.",
+      "type": "object",
+      "properties": {
+        "gcsSource": {
+          "description": "Google Cloud Storage location requested.",
+          "$ref": "ImportYumArtifactsGcsSource"
+        },
+        "error": {
+          "description": "The detailed error status.",
+          "$ref": "Status"
+        }
+      }
+    },
+    "UploadAptArtifactMediaResponse": {
+      "id": "UploadAptArtifactMediaResponse",
+      "description": "The response to upload an artifact.",
+      "type": "object",
+      "properties": {
+        "operation": {
+          "description": "Operation to be returned to the user.",
+          "$ref": "Operation"
+        }
+      }
+    },
+    "UploadAptArtifactResponse": {
+      "id": "UploadAptArtifactResponse",
+      "description": "The response of the completed artifact upload operation. This response is contained in the Operation and available to users.",
+      "type": "object",
+      "properties": {
+        "aptArtifacts": {
+          "description": "The Apt artifacts updated.",
+          "type": "array",
+          "items": {
+            "$ref": "AptArtifact"
+          }
+        }
+      }
+    },
+    "UploadYumArtifactMediaResponse": {
+      "id": "UploadYumArtifactMediaResponse",
+      "description": "The response to upload an artifact.",
+      "type": "object",
+      "properties": {
+        "operation": {
+          "description": "Operation to be returned to the user.",
+          "$ref": "Operation"
+        }
+      }
+    },
+    "UploadYumArtifactResponse": {
+      "id": "UploadYumArtifactResponse",
+      "description": "The response of the completed artifact upload operation. This response is contained in the Operation and available to users.",
+      "type": "object",
+      "properties": {
+        "yumArtifacts": {
+          "description": "The Apt artifacts updated.",
+          "type": "array",
+          "items": {
+            "$ref": "YumArtifact"
+          }
+        }
+      }
     }
   },
   "resources": {
@@ -1602,6 +1867,70 @@
                         "https://www.googleapis.com/auth/cloud-platform.read-only"
                       ],
                       "description": "Gets a file."
+                    }
+                  }
+                },
+                "aptArtifacts": {
+                  "methods": {
+                    "import": {
+                      "id": "artifactregistry.projects.locations.repositories.aptArtifacts.import",
+                      "path": "v1beta2/{+parent}/aptArtifacts:import",
+                      "flatPath": "v1beta2/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/aptArtifacts:import",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "The name of the parent resource where the artifacts will be imported.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "ImportAptArtifactsRequest"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Imports Apt artifacts. The returned Operation will complete once the resources are imported. Package, Version, and File resources are created based on the imported artifacts. Imported artifacts that conflict with existing resources are ignored."
+                    }
+                  }
+                },
+                "yumArtifacts": {
+                  "methods": {
+                    "import": {
+                      "id": "artifactregistry.projects.locations.repositories.yumArtifacts.import",
+                      "path": "v1beta2/{+parent}/yumArtifacts:import",
+                      "flatPath": "v1beta2/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/yumArtifacts:import",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "The name of the parent resource where the artifacts will be imported.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "ImportYumArtifactsRequest"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Imports Yum (RPM) artifacts. The returned Operation will complete once the resources are imported. Package, Version, and File resources are created based on the imported artifacts. Imported artifacts that conflict with existing resources are ignored."
                     }
                   }
                 }

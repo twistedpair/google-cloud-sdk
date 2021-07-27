@@ -96,14 +96,9 @@ def GetClientInstance(release_track=base.ReleaseTrack.GA, use_http=True):
 def EncodeSubstitutions(substitutions, messages):
   if not substitutions:
     return None
-  substitution_properties = []
-  # TODO(b/35470611): Use map encoder function instead when implemented
-  for key, value in sorted(six.iteritems(substitutions)):  # Sort for tests
-    substitution_properties.append(
-        messages.Build.SubstitutionsValue.AdditionalProperty(
-            key=key, value=value))
-  return messages.Build.SubstitutionsValue(
-      additionalProperties=substitution_properties)
+  # Sort for tests
+  return apitools_encoding.DictToAdditionalPropertyMessage(
+      substitutions, messages.Build.SubstitutionsValue, sort_items=True)
 
 
 def EncodeTriggerSubstitutions(substitutions, messages):

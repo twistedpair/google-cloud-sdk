@@ -278,6 +278,8 @@ class FilestoreClient(object):
       network_config.network = network.get('name')
       if 'reserved-ip-range' in network:
         network_config.reservedIpRange = network['reserved-ip-range']
+      connect_mode = network.get('connect-mode', 'DIRECT_PEERING')
+      self._adapter.ParseConnectMode(network_config, connect_mode)
       instance.networks.append(network_config)
     return instance
 
@@ -487,6 +489,18 @@ class AlphaFilestoreAdapter(object):
     update_op = self.client.projects_locations_instances.Patch(update_request)
     return update_op
 
+  def ParseConnectMode(self, network_config, key):
+    """Parse and match the supplied connection mode."""
+    try:
+      value = self.messages.NetworkConfig.ConnectModeValueValuesEnum.lookup_by_name(
+          key)
+    except KeyError:
+      raise InvalidArgumentError('[{}] is not a valid connect-mode. '
+                                 'Must be one of DIRECT_PEERING or '
+                                 'PRIVATE_SERVICE_ACCESS.'.format(key))
+    else:
+      network_config.connectMode = value
+
 
 class BetaFilestoreAdapter(AlphaFilestoreAdapter):
   """Adapter for the beta filestore API."""
@@ -611,6 +625,9 @@ class FilestoreAdapter(BetaFilestoreAdapter):
           'Must update the file share to a larger capacity. Existing capacity: '
           '[{}]. New capacity requested: [{}].'.format(
               existing_file_share.capacityGb, new_capacity))
+
+  def ParseConnectMode(self, network_config, key):
+    return
 
 
 def GetFilestoreRegistry(api_version=V1_API_VERSION):

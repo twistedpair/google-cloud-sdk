@@ -193,7 +193,7 @@ def _GetGapicClientClass(api_name, api_version, is_async=False):
   client_type = 'async_client' if is_async else 'client'
   module_path = 'googlecloudsdk.third_party.gapic_wrappers.{0}.{1}.{2}'.format(
       api_name, api_version, client_type)
-  client_class_name = '{0}Client'.format(api_name.capitalize())
+  client_class_name = 'GapicWrapperClient'
   module_obj = __import__(module_path, fromlist=[client_class_name])
   return getattr(module_obj, client_class_name)
 

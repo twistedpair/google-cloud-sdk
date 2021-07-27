@@ -384,9 +384,7 @@ class _BaseInstances(object):
       if args.allocated_ip_range_name:
         if not settings.ipConfiguration:
           settings.ipConfiguration = sql_messages.IpConfiguration()
-        # At CloudSQL admin api, reservedIpRange is the field for allocated ip
-        # range name.
-        settings.ipConfiguration.reservedIpRange = args.allocated_ip_range_name
+        settings.ipConfiguration.allocatedIpRange = args.allocated_ip_range_name
 
     return settings
 

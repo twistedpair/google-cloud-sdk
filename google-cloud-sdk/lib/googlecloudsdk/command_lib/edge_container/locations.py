@@ -19,30 +19,40 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import collections
+import re
 
 from apitools.base.py import encoding
+from googlecloudsdk.core import exceptions
 
-_Zone = collections.namedtuple('RedisZone', ['name', 'region'])
+_Zone = collections.namedtuple('EdgeContainerZone', ['name', 'region'])
+
+
+def ReplaceResourceZoneWithRegion(ref, args, request):
+  """Replaces the request.name 'locations/{zone}' with 'locations/{region}'."""
+  del ref, args  # Unused.
+  request.name = re.sub(
+      r'(projects/[-a-z0-9]+/locations/[a-z]+-[a-z]+[0-9])[-a-z0-9]*((?:/.*)?)',
+      r'\1\2', request.name)
+  return request
 
 
 def ExtractZonesFromLocations(response, _):
+  """Returns the zones from a ListLocationResponse."""
   for region in response:
     if not region.metadata:
       continue
 
     metadata = encoding.MessageToDict(region.metadata)
-
     for zone in metadata.get('availableZones', []):
       yield _Zone(name=zone, region=region.locationId)
 
 
-def ExtractZoneFromLocations(response, args):
-  for region in response:
-    if not region.metadata:
-      continue
+def ExtractZoneFromLocation(response, args):
+  """Returns the argument-specified zone from a GetLocationResponse."""
+  metadata = encoding.MessageToDict(response.metadata)
 
-    metadata = encoding.MessageToDict(region.metadata)
-
-    for zone_name, zone in metadata.get('availableZones', []).items():
-      if zone_name == args.zone.split('/')[-1]:
-        return zone
+  want_zone = args.zone.split('/')[-1]
+  for zone_name, zone in metadata.get('availableZones', {}).items():
+    if zone_name == want_zone:
+      return zone
+  raise exceptions.Error('Zone not found: {}'.format(want_zone))

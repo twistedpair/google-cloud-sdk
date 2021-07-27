@@ -301,6 +301,7 @@ _FILE_ARG_VALIDATORS = {
     'other_files': _ValidateKeyValueStringPairs,
     'performance_metrics': _ValidateBool,
     'record_video': _ValidateBool,
+    'resign': _ValidateBool,
     'robo_directives': _ValidateKeyValueStringPairs,
     'scenario_labels': ValidateStringList,
     'scenario_numbers': _ValidatePositiveIntList,

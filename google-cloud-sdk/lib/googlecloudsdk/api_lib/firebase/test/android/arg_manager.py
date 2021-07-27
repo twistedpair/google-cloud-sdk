@@ -46,8 +46,10 @@ def TypedArgRules():
       },
       'robo': {
           'required': [],
-          'optional': ['robo_directives', 'robo_script'],
-          'defaults': {}
+          'optional': ['robo_directives', 'robo_script', 'resign'],
+          'defaults': {
+              'resign': True,
+          }
       },
       'game-loop': {
           'required': [],

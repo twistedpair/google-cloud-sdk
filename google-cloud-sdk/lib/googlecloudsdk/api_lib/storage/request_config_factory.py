@@ -22,9 +22,6 @@ from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.core.util import debug_output
 
 
-DEFAULT_CONTENT_TYPE = 'application/octet-stream'
-
-
 class UserRequestArgs:
   """Class contains user flags and should be passed to RequestConfig factory.
 
@@ -38,7 +35,6 @@ class UserRequestArgs:
                content_encoding=None,
                content_language=None,
                content_type=None,
-               custom_headers=None,
                custom_metadata=None,
                custom_time=None,
                max_bytes_per_call=None,
@@ -53,7 +49,6 @@ class UserRequestArgs:
     self.content_encoding = content_encoding
     self.content_language = content_language
     self.content_type = content_type
-    self.custom_headers = custom_headers
     self.custom_metadata = custom_metadata
     self.custom_time = custom_time
     self.max_bytes_per_call = max_bytes_per_call
@@ -71,7 +66,6 @@ class UserRequestArgs:
             self.content_encoding == other.content_encoding and
             self.content_language == other.content_language and
             self.content_type == other.content_type and
-            self.custom_headers == other.custom_headers and
             self.custom_metadata == other.custom_metadata and
             self.custom_time == other.custom_time and
             self.max_bytes_per_call == other.max_bytes_per_call and
@@ -96,7 +90,6 @@ def get_user_request_args_from_command_args(args):
       content_encoding=getattr(args, 'content_encoding', None),
       content_language=getattr(args, 'content_language', None),
       content_type=getattr(args, 'content_type', None),
-      custom_headers=getattr(args, 'custom_headers', None),
       custom_metadata=getattr(args, 'custom_metadata', None),
       custom_time=getattr(args, 'custom_time', None),
       md5_hash=getattr(args, 'content_md5', None),
@@ -112,16 +105,19 @@ class _RequestConfig(object):
   Subclasses may add more attributes.
 
   Attributes:
-    cache_control (str): Influences how backend caches requests and responses.
-    content_disposition (str): Information on how content should be displayed.
-    content_encoding (str): How content is encoded (e.g. "gzip").
-    content_language (str): Content's language (e.g. "en" = "English).
-    content_type (str): Type of data contained in content (e.g. "text/html").
-    custom_metadata (dict): Custom metadata fields set by user.
-    md5_hash (str): MD5 digest to use for validation.
-    predefined_acl_string (str): ACL to set on resource.
-    predefined_default_acl_string (str): Default ACL to set on resources.
-    size (int): Object size in bytes.
+    cache_control (str|None): Influences how backend caches requests and
+      responses.
+    content_disposition (str|None): Information on how content should be
+      displayed.
+    content_encoding (str|None): How content is encoded (e.g. "gzip").
+    content_language (str|None): Content's language (e.g. "en" = "English).
+    content_type (str|None): Type of data contained in content
+      (e.g. "text/html").
+    custom_metadata (dict|None): Custom metadata fields set by user.
+    md5_hash (str|None): MD5 digest to use for validation.
+    predefined_acl_string (str|None): ACL to set on resource.
+    predefined_default_acl_string (str|None): Default ACL to set on resources.
+    size (int|None): Object size in bytes.
   """
 
   def __init__(self,
@@ -129,7 +125,7 @@ class _RequestConfig(object):
                content_disposition=None,
                content_encoding=None,
                content_language=None,
-               content_type=DEFAULT_CONTENT_TYPE,
+               content_type=None,
                custom_metadata=None,
                md5_hash=None,
                predefined_acl_string=None,
@@ -171,13 +167,14 @@ class _GcsRequestConfig(_RequestConfig):
   See super class for additional attributes.
 
   Attributes:
-    custom_time (datetime): Custom time user can set.
-    gzip_encoded (bool): Whether to use gzip transport encoding for the upload.
-    max_bytes_per_call (int): Integer describing maximum number of bytes to
+    custom_time (datetime|None): Custom time user can set.
+    gzip_encoded (bool|None): Whether to use gzip transport encoding for the
+      upload.
+    max_bytes_per_call (int|None): Integer describing maximum number of bytes to
       write per service call.
-    precondition_generation_match (int): Perform request only if generation of
-      target object matches the given integer. Ignored for bucket requests.
-    precondition_metageneration_match (int): Perform request only if
+    precondition_generation_match (int|None): Perform request only if generation
+      of target object matches the given integer. Ignored for bucket requests.
+    precondition_metageneration_match (int|None): Perform request only if
       metageneration of target object/bucket matches the given integer.
   """
   # pylint:enable=g-missing-from-attributes
@@ -187,7 +184,7 @@ class _GcsRequestConfig(_RequestConfig):
                content_disposition=None,
                content_encoding=None,
                content_language=None,
-               content_type=DEFAULT_CONTENT_TYPE,
+               content_type=None,
                custom_metadata=None,
                custom_time=None,
                gzip_encoded=False,
@@ -231,10 +228,7 @@ class _GcsRequestConfig(_RequestConfig):
 class _S3RequestConfig(_RequestConfig):
   """Arguments object for requests with custom S3 parameters.
 
-  See super class for additional attributes.
-
-  Attributes:
-    custom_headers (dict): Custom HTTP headers to be prepended with "x-aws-".
+  See super class for attributes.
   """
   # pylint:enable=g-missing-from-attributes
 
@@ -243,8 +237,7 @@ class _S3RequestConfig(_RequestConfig):
                content_disposition=None,
                content_encoding=None,
                content_language=None,
-               content_type=DEFAULT_CONTENT_TYPE,
-               custom_headers=None,
+               content_type=None,
                custom_metadata=None,
                md5_hash=None,
                predefined_acl_string=None,
@@ -261,17 +254,15 @@ class _S3RequestConfig(_RequestConfig):
         predefined_acl_string=predefined_acl_string,
         predefined_default_acl_string=predefined_default_acl_string,
         size=size)
-    self.custom_headers = custom_headers
 
   def __eq__(self, other):
     if not isinstance(other, type(self)):
       return NotImplemented
-    return (super().__eq__(other) and
-            self.custom_headers == other.custom_headers)
+    return super().__eq__(other)
 
 
 def get_request_config(url,
-                       content_type=DEFAULT_CONTENT_TYPE,
+                       content_type=None,
                        md5_hash=None,
                        size=None,
                        user_request_args=None):
@@ -290,13 +281,16 @@ def get_request_config(url,
   if user_request_args:
     if url.scheme == storage_url.ProviderPrefix.GCS:
       request_config.custom_time = user_request_args.custom_time
-      request_config.max_bytes_per_call = user_request_args.max_bytes_per_call
-      request_config.precondition_generation_match = (
-          user_request_args.precondition_generation_match)
-      request_config.precondition_metageneration_match = (
-          user_request_args.precondition_metageneration_match)
-    elif url.scheme == storage_url.ProviderPrefix.S3:
-      request_config.custom_headers = user_request_args.custom_headers
+
+      if user_request_args.max_bytes_per_call:
+        request_config.max_bytes_per_call = int(
+            user_request_args.max_bytes_per_call)
+      if user_request_args.precondition_generation_match:
+        request_config.precondition_generation_match = int(
+            user_request_args.precondition_generation_match)
+      if user_request_args.precondition_metageneration_match:
+        request_config.precondition_metageneration_match = int(
+            user_request_args.precondition_metageneration_match)
 
     request_config.cache_control = user_request_args.cache_control
     request_config.content_disposition = user_request_args.content_disposition

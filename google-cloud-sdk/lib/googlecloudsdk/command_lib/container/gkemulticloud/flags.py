@@ -18,7 +18,27 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.api_lib.container.gkemulticloud import util as api_util
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.command_lib.util.apis import arg_utils
+
+
+def _ToCamelCase(name):
+  """Converts hyphen-case name to CamelCase."""
+  parts = name.split('-')
+  return ''.join(x.title() for x in parts)
+
+
+_TAINT_EFFECT_ENUM_MAPPER = arg_utils.ChoiceEnumMapper(
+    '--node-taints',
+    api_util.GetMessagesModule().GoogleCloudGkemulticloudV1NodeTaint
+    .EffectValueValuesEnum,
+    include_filter=lambda effect: 'UNSPECIFIED' not in effect)
+
+_TAINT_FORMAT_HELP = 'Node taint is of format key=value:effect.'
+
+_TAINT_EFFECT_HELP = 'Effect must be one of: {}.'.format(', '.join(
+    [_ToCamelCase(e) for e in _TAINT_EFFECT_ENUM_MAPPER.choices]))
 
 
 def AddRegion(parser, hidden=False):
@@ -249,3 +269,124 @@ def AddCluster(parser, help_action):
       '--cluster',
       required=True,
       help='Name of the cluster to {} node pools with.'.format(help_action))
+
+
+def AddDatabaseEncryption(parser, hidden):
+  """Adds database encryption flags.
+
+  Args:
+    parser: The argparse.parser to add the arguments to.
+    hidden: bool, If True, database encryption flags will be hidden.
+  """
+
+  group = parser.add_argument_group('Database encryption', hidden=hidden)
+  group.add_argument(
+      '--database-encryption-resource-group-id',
+      required=True,
+      help=('ARM ID the of the Azure resource group containing '
+            'the Azure Key Vault key.'))
+  group.add_argument(
+      '--database-encryption-kms-key-id',
+      required=True,
+      help=('URL the of the Azure Key Vault key (with its version) '
+            'to use to encrypt / decrypt data.'))
+
+
+def GetDatabaseEncryption(args):
+  return (args.database_encryption_resource_group_id,
+          args.database_encryption_kms_key_id)
+
+
+def AddNodeLabels(parser):
+  parser.add_argument(
+      '--node-labels',
+      type=arg_parsers.ArgDict(min_length=1),
+      metavar='NODE_LABEL',
+      help='Labels assigned to nodes of the node pool.')
+
+
+def GetNodeLabels(args):
+  return getattr(args, 'node_labels', None) or {}
+
+
+def _ValidateNodeTaintFormat(taint):
+  """Validates the node taint format.
+
+  Node taint is of format key=value:effect.
+
+  Args:
+    taint: Node taint.
+
+  Returns:
+    The node taint value and effect if the format is valid.
+
+  Raises:
+    ArgumentError: If the node taint format is invalid.
+  """
+  strs = taint.split(':')
+  if len(strs) != 2:
+    raise arg_parsers.ArgumentTypeError(
+        'Invalid value [{}] for argument --node-taints. {}'.format(
+            taint, _TAINT_FORMAT_HELP))
+  value, effect = strs[0], strs[1]
+  return value, effect
+
+
+def _ValidateNodeTaint(taint):
+  """Validates the node taint.
+
+  Node taint is of format key=value:effect. Valid values for effect include
+  NoExecute, NoSchedule, PreferNoSchedule.
+
+  Args:
+    taint: Node taint.
+
+  Returns:
+    The node taint if it is valid.
+
+  Raises:
+    ArgumentError: If the node taint is invalid.
+  """
+  unused_value, effect = _ValidateNodeTaintFormat(taint)
+  effects = [_ToCamelCase(e) for e in _TAINT_EFFECT_ENUM_MAPPER.choices]
+  if effect not in effects:
+    raise arg_parsers.ArgumentTypeError(
+        'Invalid value [{}] for argument --node-taints. {}'.format(
+            effect, _TAINT_EFFECT_HELP))
+  return taint
+
+
+def AddNodeTaints(parser):
+  parser.add_argument(
+      '--node-taints',
+      type=arg_parsers.ArgDict(min_length=1, value_type=_ValidateNodeTaint),
+      metavar='NODE_TAINT',
+      help=('Taints assigned to nodes of the node pool. '
+            '{} {}'.format(_TAINT_FORMAT_HELP, _TAINT_EFFECT_HELP)))
+
+
+def GetNodeTaints(args):
+  """Gets node taint objects from the arguments.
+
+  Args:
+    args: Arguments parsed from the command.
+
+  Returns:
+    The list of node taint objects.
+
+  Raises:
+    ArgumentError: If the node taint format is invalid.
+  """
+  taints = []
+  taint_effect_map = {
+      _ToCamelCase(e): e for e in _TAINT_EFFECT_ENUM_MAPPER.choices
+  }
+  if args.node_taints is not None:
+    for k, v in args.node_taints.items():
+      value, effect = _ValidateNodeTaintFormat(v)
+      effect = taint_effect_map[effect]
+      effect = _TAINT_EFFECT_ENUM_MAPPER.GetEnumForChoice(effect)
+      taint = api_util.GetMessagesModule().GoogleCloudGkemulticloudV1NodeTaint(
+          key=k, value=value, effect=effect)
+      taints.append(taint)
+  return taints

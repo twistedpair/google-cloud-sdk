@@ -79,7 +79,7 @@ class DeleteTemporaryComponentsTask(task.Task):
                 self._random_prefix, component_id=component_number))
 
         delete_tasks.append(delete_object_task.DeleteObjectTask(
-            component_resource.storage_url))
+            component_resource.storage_url, verbose=False))
       os.remove(component_tracker_path)
 
     return task.Output(additional_task_iterators=[delete_tasks], messages=None)

@@ -22,8 +22,16 @@ from apitools.base.py import exceptions as apitools_exceptions
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.services import exceptions
 from googlecloudsdk.api_lib.util import apis as core_apis
+from googlecloudsdk.calliope import base as calliope_base
 
 _PROJECT_RESOURCE = 'projects/%s'
+_PARENT_RESOURCE = 'projects/%s/locations/global'
+_API_NAME = 'apikeys'
+
+_RELEASE_TRACK_TO_API_VERSION = {
+    calliope_base.ReleaseTrack.ALPHA: 'v2alpha1',
+    calliope_base.ReleaseTrack.GA: 'v2'
+}
 
 
 def ListKeys(project, deleted=None, page_size=None, limit=None):
@@ -41,7 +49,7 @@ def ListKeys(project, deleted=None, page_size=None, limit=None):
   Returns:
     The list of keys
   """
-  client = GetClientInstance()
+  client = GetClientInstance(calliope_base.ReleaseTrack.ALPHA)
   messages = client.MESSAGES_MODULE
 
   if deleted:
@@ -59,8 +67,45 @@ def ListKeys(project, deleted=None, page_size=None, limit=None):
       field='keys')
 
 
-def GetClientInstance():
-  return core_apis.GetClientInstance('apikeys', 'v2alpha1')
+def ListKeysGa(project, deleted=None, page_size=None, limit=None):
+  """List API Keys for a given project.
+
+  Args:
+    project: The project for which to list keys.
+    deleted: List deleted keys.
+    page_size: The page size to list.
+    limit: The max number of metrics to return.
+
+  Raises:
+    exceptions.PermissionDeniedException: when listing keys fails.
+
+  Returns:
+    The list of keys
+  """
+  client = GetClientInstance(calliope_base.ReleaseTrack.GA)
+  messages = client.MESSAGES_MODULE
+
+  if deleted:
+    key_filter = 'state:DELETED'
+  else:
+    key_filter = None
+  request = messages.ApikeysProjectsLocationsKeysListRequest(
+      parent=GetParentResourceName(
+          project, release_track=calliope_base.ReleaseTrack.GA),
+      filter=key_filter)
+  return list_pager.YieldFromList(
+      client.projects_locations_keys,
+      request,
+      limit=limit,
+      batch_size_attribute='pageSize',
+      batch_size=page_size,
+      field='keys')
+
+
+def GetClientInstance(release_track=calliope_base.ReleaseTrack.ALPHA):
+  """Returns an API client for ApiKeys."""
+  api_version = _RELEASE_TRACK_TO_API_VERSION.get(release_track)
+  return core_apis.GetClientInstance(_API_NAME, api_version)
 
 
 def GetOperation(name):
@@ -108,5 +153,31 @@ def GetApiTargets(args, messages):
   return api_targets
 
 
-def GetParentResourceName(project):
-  return _PROJECT_RESOURCE % (project)
+def GetAllowedAndroidApplicationsGa(args, messages):
+  """Create list of allowed android applications."""
+  allowed_applications = []
+  for application in getattr(args, 'allowed_application', []) or []:
+    android_application = messages.V2AndroidApplication(
+        sha1Fingerprint=application['sha1_fingerprint'],
+        packageName=application['package_name'])
+    allowed_applications.append(android_application)
+  return allowed_applications
+
+
+def GetApiTargetsGa(args, messages):
+  """Create list of target apis."""
+  api_targets = []
+  for api_target in getattr(args, 'api_target', []) or []:
+    api_targets.append(
+        messages.V2ApiTarget(
+            service=api_target.get('service'),
+            methods=api_target.get('methods', [])))
+  return api_targets
+
+
+def GetParentResourceName(project,
+                          release_track=calliope_base.ReleaseTrack.ALPHA):
+  if release_track == calliope_base.ReleaseTrack.ALPHA:
+    return _PROJECT_RESOURCE % (project)
+  else:
+    return _PARENT_RESOURCE % (project)

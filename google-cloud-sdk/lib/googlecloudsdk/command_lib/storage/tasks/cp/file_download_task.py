@@ -67,46 +67,29 @@ _SLOW_HASH_CHECK_WARNING = _HASH_CHECK_WARNING_BASE.format('may be slow')
 _NO_HASH_CHECK_ERROR = _HASH_CHECK_WARNING_BASE.format('was skipped')
 
 
-def _get_digester(algorithm, resource, should_log_warning=True):
-  """Returns digesters dictionary for download hash validation.
+def _log_or_raise_crc32c_issues(resource):
+  """Informs user about non-standard hashing behavior.
 
   Args:
-    algorithm (hash_util.HashAlgorithm): Type of hash digester to create.
     resource (resource_reference.ObjectResource): For checking if object has
       known hash to validate against.
-    should_log_warning (bool): Log a warning about potential digesters issues.
-
-  Returns:
-    Digesters dict.
 
   Raises:
     errors.Error: gcloud storage set to fail if performance-optimized digesters
       could not be created.
   """
+  if crc32c.IS_FAST_GOOGLE_CRC32C_AVAILABLE or not resource.crc32c_hash:
+    # If crc32c is available, hashing behavior will be standard.
+    # If resource.crc32c not available, no hash will be verified.
+    return
+
   check_hashes = properties.VALUES.storage.check_hashes.Get()
-  if check_hashes == properties.CheckHashes.NEVER.value:
-    return {}
-
-  digesters = {}
-  if algorithm == hash_util.HashAlgorithm.MD5 and resource.md5_hash:
-    digesters[hash_util.HashAlgorithm.MD5] = hash_util.get_md5()
-
-  elif algorithm == hash_util.HashAlgorithm.CRC32C and resource.crc32c_hash:
-    if (crc32c.IS_GOOGLE_CRC32C_AVAILABLE or
-        check_hashes == properties.CheckHashes.ALWAYS.value):
-      if should_log_warning and not crc32c.IS_GOOGLE_CRC32C_AVAILABLE:
-        log.warning(_SLOW_HASH_CHECK_WARNING)
-
-      digesters[hash_util.HashAlgorithm.CRC32C] = crc32c.get_crc32c()
-
-    elif check_hashes == properties.CheckHashes.IF_FAST_ELSE_FAIL.value:
-      raise errors.Error(_NO_HASH_CHECK_ERROR)
-
-    elif (should_log_warning and
-          check_hashes == properties.CheckHashes.IF_FAST_ELSE_SKIP.value):
-      log.warning(_NO_HASH_CHECK_WARNING)
-
-  return digesters
+  if check_hashes == properties.CheckHashes.ALWAYS.value:
+    log.warning(_SLOW_HASH_CHECK_WARNING)
+  elif check_hashes == properties.CheckHashes.IF_FAST_ELSE_SKIP.value:
+    log.warning(_NO_HASH_CHECK_WARNING)
+  elif check_hashes == properties.CheckHashes.IF_FAST_ELSE_FAIL.value:
+    raise errors.Error(_NO_HASH_CHECK_ERROR)
 
 
 def _should_perform_sliced_download(resource):
@@ -165,6 +148,8 @@ class FileDownloadTask(task.Task):
 
   def _get_sliced_download_tasks(self):
     """Creates all tasks necessary for a sliced download."""
+    _log_or_raise_crc32c_issues(self._source_resource)
+
     component_offsets_and_lengths = copy_component_util.get_component_offsets_and_lengths(
         self._source_resource.size,
         properties.VALUES.storage.sliced_object_download_component_size.Get(),
@@ -173,10 +158,6 @@ class FileDownloadTask(task.Task):
 
     download_component_task_list = []
     for i, (offset, length) in enumerate(component_offsets_and_lengths):
-      digesters = _get_digester(
-          hash_util.HashAlgorithm.CRC32C,
-          self._source_resource,
-          should_log_warning=i == 0)
       download_component_task_list.append(
           file_part_download_task.FilePartDownloadTask(
               self._source_resource,
@@ -185,8 +166,7 @@ class FileDownloadTask(task.Task):
               length=length,
               component_number=i,
               total_components=len(component_offsets_and_lengths),
-              strategy=self._strategy,
-              digesters=digesters))
+              strategy=self._strategy))
 
     finalize_sliced_download_task_list = [
         finalize_sliced_download_task.FinalizeSlicedDownloadTask(
@@ -239,16 +219,12 @@ class FileDownloadTask(task.Task):
           ],
           messages=None)
 
-    digesters = _get_digester(hash_util.HashAlgorithm.MD5,
-                              self._source_resource)
-
     file_part_download_task.FilePartDownloadTask(
         self._source_resource,
         self._temporary_destination_resource,
         offset=0,
         length=self._source_resource.size,
-        strategy=self._strategy,
-        digesters=digesters).execute(task_status_queue=task_status_queue)
+        strategy=self._strategy).execute(task_status_queue=task_status_queue)
 
     temporary_url = self._temporary_destination_resource.storage_url
     if os.path.exists(temporary_url.object_name):

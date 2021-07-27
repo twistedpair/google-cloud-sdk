@@ -351,6 +351,7 @@ class Cluster(_messages.Message):
       erence/rest/v1/projects.locations.clusters.nodePools#NodePool.FIELDS.loc
       ations) of all node pools and will result in nodes being added and/or
       removed.
+    loggingConfig: Logging configuration for the cluster.
     loggingService: The logging service the cluster should use to write logs.
       Currently available options: * `logging.googleapis.com/kubernetes` - The
       Cloud Logging service with a Kubernetes-native resource model *
@@ -367,6 +368,7 @@ class Cluster(_messages.Message):
       issued.
     masterAuthorizedNetworksConfig: The configuration options for master
       authorized networks feature.
+    monitoringConfig: Monitoring configuration for the cluster.
     monitoringService: The monitoring service the cluster should use to write
       metrics. Currently available options: *
       "monitoring.googleapis.com/kubernetes" - The Cloud Monitoring service
@@ -516,33 +518,35 @@ class Cluster(_messages.Message):
   legacyAbac = _messages.MessageField('LegacyAbac', 26)
   location = _messages.StringField(27)
   locations = _messages.StringField(28, repeated=True)
-  loggingService = _messages.StringField(29)
-  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 30)
-  masterAuth = _messages.MessageField('MasterAuth', 31)
-  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 32)
-  monitoringService = _messages.StringField(33)
-  name = _messages.StringField(34)
-  network = _messages.StringField(35)
-  networkConfig = _messages.MessageField('NetworkConfig', 36)
-  networkPolicy = _messages.MessageField('NetworkPolicy', 37)
-  nodeConfig = _messages.MessageField('NodeConfig', 38)
-  nodeIpv4CidrSize = _messages.IntegerField(39, variant=_messages.Variant.INT32)
-  nodePools = _messages.MessageField('NodePool', 40, repeated=True)
-  notificationConfig = _messages.MessageField('NotificationConfig', 41)
-  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 42)
-  releaseChannel = _messages.MessageField('ReleaseChannel', 43)
-  resourceLabels = _messages.MessageField('ResourceLabelsValue', 44)
-  resourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 45)
-  selfLink = _messages.StringField(46)
-  servicesIpv4Cidr = _messages.StringField(47)
-  shieldedNodes = _messages.MessageField('ShieldedNodes', 48)
-  status = _messages.EnumField('StatusValueValuesEnum', 49)
-  statusMessage = _messages.StringField(50)
-  subnetwork = _messages.StringField(51)
-  tpuIpv4CidrBlock = _messages.StringField(52)
-  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 53)
-  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 54)
-  zone = _messages.StringField(55)
+  loggingConfig = _messages.MessageField('LoggingConfig', 29)
+  loggingService = _messages.StringField(30)
+  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 31)
+  masterAuth = _messages.MessageField('MasterAuth', 32)
+  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 33)
+  monitoringConfig = _messages.MessageField('MonitoringConfig', 34)
+  monitoringService = _messages.StringField(35)
+  name = _messages.StringField(36)
+  network = _messages.StringField(37)
+  networkConfig = _messages.MessageField('NetworkConfig', 38)
+  networkPolicy = _messages.MessageField('NetworkPolicy', 39)
+  nodeConfig = _messages.MessageField('NodeConfig', 40)
+  nodeIpv4CidrSize = _messages.IntegerField(41, variant=_messages.Variant.INT32)
+  nodePools = _messages.MessageField('NodePool', 42, repeated=True)
+  notificationConfig = _messages.MessageField('NotificationConfig', 43)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 44)
+  releaseChannel = _messages.MessageField('ReleaseChannel', 45)
+  resourceLabels = _messages.MessageField('ResourceLabelsValue', 46)
+  resourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 47)
+  selfLink = _messages.StringField(48)
+  servicesIpv4Cidr = _messages.StringField(49)
+  shieldedNodes = _messages.MessageField('ShieldedNodes', 50)
+  status = _messages.EnumField('StatusValueValuesEnum', 51)
+  statusMessage = _messages.StringField(52)
+  subnetwork = _messages.StringField(53)
+  tpuIpv4CidrBlock = _messages.StringField(54)
+  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 55)
+  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 56)
+  zone = _messages.StringField(57)
 
 
 class ClusterAutoscaling(_messages.Message):
@@ -627,6 +631,7 @@ class ClusterUpdate(_messages.Message):
       cluster's primary zone. Warning: changing cluster locations will update
       the locations of all node pools and will result in nodes being added
       and/or removed.
+    desiredLoggingConfig: The desired logging configuration.
     desiredLoggingService: The logging service the cluster should use to write
       logs. Currently available options: * `logging.googleapis.com/kubernetes`
       - The Cloud Logging service with a Kubernetes-native resource model *
@@ -644,6 +649,7 @@ class ClusterUpdate(_messages.Message):
       patch+gke.N patch in the 1.X version - "1.X.Y": picks the highest valid
       gke.N patch in the 1.X.Y version - "1.X.Y-gke.N": picks an explicit
       Kubernetes version - "-": picks the default Kubernetes version
+    desiredMonitoringConfig: The desired monitoring configuration.
     desiredMonitoringService: The monitoring service the cluster should use to
       write metrics. Currently available options: *
       "monitoring.googleapis.com/kubernetes" - The Cloud Monitoring service
@@ -727,21 +733,23 @@ class ClusterUpdate(_messages.Message):
   desiredIntraNodeVisibilityConfig = _messages.MessageField('IntraNodeVisibilityConfig', 12)
   desiredL4ilbSubsettingConfig = _messages.MessageField('ILBSubsettingConfig', 13)
   desiredLocations = _messages.StringField(14, repeated=True)
-  desiredLoggingService = _messages.StringField(15)
-  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 16)
-  desiredMasterVersion = _messages.StringField(17)
-  desiredMonitoringService = _messages.StringField(18)
-  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 19)
-  desiredNodePoolId = _messages.StringField(20)
-  desiredNodeVersion = _messages.StringField(21)
-  desiredNotificationConfig = _messages.MessageField('NotificationConfig', 22)
-  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 23)
-  desiredPrivateIpv6GoogleAccess = _messages.EnumField('DesiredPrivateIpv6GoogleAccessValueValuesEnum', 24)
-  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 25)
-  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 26)
-  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 27)
-  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 28)
-  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 29)
+  desiredLoggingConfig = _messages.MessageField('LoggingConfig', 15)
+  desiredLoggingService = _messages.StringField(16)
+  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 17)
+  desiredMasterVersion = _messages.StringField(18)
+  desiredMonitoringConfig = _messages.MessageField('MonitoringConfig', 19)
+  desiredMonitoringService = _messages.StringField(20)
+  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 21)
+  desiredNodePoolId = _messages.StringField(22)
+  desiredNodeVersion = _messages.StringField(23)
+  desiredNotificationConfig = _messages.MessageField('NotificationConfig', 24)
+  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 25)
+  desiredPrivateIpv6GoogleAccess = _messages.EnumField('DesiredPrivateIpv6GoogleAccessValueValuesEnum', 26)
+  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 27)
+  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 28)
+  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 29)
+  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 30)
+  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 31)
 
 
 class CompleteIPRotationRequest(_messages.Message):
@@ -1774,6 +1782,50 @@ class ListUsableSubnetworksResponse(_messages.Message):
   subnetworks = _messages.MessageField('UsableSubnetwork', 2, repeated=True)
 
 
+class LoggingComponentConfig(_messages.Message):
+  r"""LoggingComponentConfig is cluster logging component configuration.
+
+  Enums:
+    EnableComponentsValueListEntryValuesEnum:
+
+  Fields:
+    enableComponents: Select components to collect logs. An empty set would
+      disable all logging.
+  """
+
+  class EnableComponentsValueListEntryValuesEnum(_messages.Enum):
+    r"""EnableComponentsValueListEntryValuesEnum enum type.
+
+    Values:
+      COMPONENT_UNSPECIFIED: Default value. This shouldn't be used.
+      SYSTEM_COMPONENTS: system components
+      WORKLOADS: workloads
+      APISERVER: kube-apiserver
+      SCHEDULER: kube-scheduler
+      CONTROLLER_MANAGER: kube-controller-manager
+      ADDON_MANAGER: kube-addon-manager
+    """
+    COMPONENT_UNSPECIFIED = 0
+    SYSTEM_COMPONENTS = 1
+    WORKLOADS = 2
+    APISERVER = 3
+    SCHEDULER = 4
+    CONTROLLER_MANAGER = 5
+    ADDON_MANAGER = 6
+
+  enableComponents = _messages.EnumField('EnableComponentsValueListEntryValuesEnum', 1, repeated=True)
+
+
+class LoggingConfig(_messages.Message):
+  r"""LoggingConfig is cluster logging configuration.
+
+  Fields:
+    componentConfig: Logging components configuration
+  """
+
+  componentConfig = _messages.MessageField('LoggingComponentConfig', 1)
+
+
 class MaintenancePolicy(_messages.Message):
   r"""MaintenancePolicy defines the maintenance policy to be used for the
   cluster.
@@ -1925,6 +1977,48 @@ class Metric(_messages.Message):
   intValue = _messages.IntegerField(2)
   name = _messages.StringField(3)
   stringValue = _messages.StringField(4)
+
+
+class MonitoringComponentConfig(_messages.Message):
+  r"""MonitoringComponentConfig is cluster monitoring component configuration.
+
+  Enums:
+    EnableComponentsValueListEntryValuesEnum:
+
+  Fields:
+    enableComponents: Select components to collect metrics. An empty set would
+      disable all monitoring.
+  """
+
+  class EnableComponentsValueListEntryValuesEnum(_messages.Enum):
+    r"""EnableComponentsValueListEntryValuesEnum enum type.
+
+    Values:
+      COMPONENT_UNSPECIFIED: Default value. This shouldn't be used.
+      SYSTEM_COMPONENTS: system components
+      WORKLOADS: workloads
+      APISERVER: kube-apiserver
+      SCHEDULER: kube-scheduler
+      CONTROLLER_MANAGER: kube-controller-manager
+    """
+    COMPONENT_UNSPECIFIED = 0
+    SYSTEM_COMPONENTS = 1
+    WORKLOADS = 2
+    APISERVER = 3
+    SCHEDULER = 4
+    CONTROLLER_MANAGER = 5
+
+  enableComponents = _messages.EnumField('EnableComponentsValueListEntryValuesEnum', 1, repeated=True)
+
+
+class MonitoringConfig(_messages.Message):
+  r"""MonitoringConfig is cluster monitoring configuration.
+
+  Fields:
+    componentConfig: Monitoring components configuration
+  """
+
+  componentConfig = _messages.MessageField('MonitoringComponentConfig', 1)
 
 
 class NetworkConfig(_messages.Message):
@@ -2320,6 +2414,37 @@ class NodeManagement(_messages.Message):
   upgradeOptions = _messages.MessageField('AutoUpgradeOptions', 3)
 
 
+class NodeNetworkConfig(_messages.Message):
+  r"""Parameters for node pool-level network config.
+
+  Fields:
+    createPodRange: Input only. Whether to create a new range for pod IPs in
+      this node pool. Defaults are provided for `pod_range` and
+      `pod_ipv4_cidr_block` if they are not specified. If neither
+      `create_pod_range` or `pod_range` are specified, the cluster-level
+      default (`ip_allocation_policy.cluster_ipv4_cidr_block`) is used. Only
+      applicable if `ip_allocation_policy.use_ip_aliases` is true. This field
+      cannot be changed after the node pool has been created.
+    podIpv4CidrBlock: The IP address range for pod IPs in this node pool. Only
+      applicable if `create_pod_range` is true. Set to blank to have a range
+      chosen with the default size. Set to /netmask (e.g. `/14`) to have a
+      range chosen with a specific netmask. Set to a
+      [CIDR](https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing)
+      notation (e.g. `10.96.0.0/14`) to pick a specific range to use. Only
+      applicable if `ip_allocation_policy.use_ip_aliases` is true. This field
+      cannot be changed after the node pool has been created.
+    podRange: The ID of the secondary range for pod IPs. If `create_pod_range`
+      is true, this ID is used for the new range. If `create_pod_range` is
+      false, uses an existing secondary range with this ID. Only applicable if
+      `ip_allocation_policy.use_ip_aliases` is true. This field cannot be
+      changed after the node pool has been created.
+  """
+
+  createPodRange = _messages.BooleanField(1)
+  podIpv4CidrBlock = _messages.StringField(2)
+  podRange = _messages.StringField(3)
+
+
 class NodePool(_messages.Message):
   r"""NodePool contains the name and configuration for a cluster's node pool.
   Node pools are a set of nodes (i.e. VM's), with a common configuration and
@@ -2358,6 +2483,8 @@ class NodePool(_messages.Message):
     maxPodsConstraint: The constraint on the maximum number of pods that can
       be run simultaneously on a node in the node pool.
     name: The name of the node pool.
+    networkConfig: Networking configuration for this NodePool. If specified,
+      it overrides the cluster-level defaults.
     podIpv4CidrSize: [Output only] The pod CIDR block size per node in this
       node pool.
     selfLink: [Output only] Server-defined URL for the resource.
@@ -2407,12 +2534,13 @@ class NodePool(_messages.Message):
   management = _messages.MessageField('NodeManagement', 7)
   maxPodsConstraint = _messages.MessageField('MaxPodsConstraint', 8)
   name = _messages.StringField(9)
-  podIpv4CidrSize = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  selfLink = _messages.StringField(11)
-  status = _messages.EnumField('StatusValueValuesEnum', 12)
-  statusMessage = _messages.StringField(13)
-  upgradeSettings = _messages.MessageField('UpgradeSettings', 14)
-  version = _messages.StringField(15)
+  networkConfig = _messages.MessageField('NodeNetworkConfig', 10)
+  podIpv4CidrSize = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  selfLink = _messages.StringField(12)
+  status = _messages.EnumField('StatusValueValuesEnum', 13)
+  statusMessage = _messages.StringField(14)
+  upgradeSettings = _messages.MessageField('UpgradeSettings', 15)
+  version = _messages.StringField(16)
 
 
 class NodePoolAutoscaling(_messages.Message):

@@ -28,6 +28,50 @@ class OperationError(exceptions.Error):
   pass
 
 
+class DeletionPoller(waiter.CloudOperationPoller):
+  """Polls for deletion operation."""
+
+  def __init__(self, operation_service):
+    """Sets up poller for polling delete operations.
+
+    Args:
+      operation_service: apitools.base.py.base_api.BaseApiService, api service
+        for retrieving information about ongoing operation.
+    """
+    self.operation_service = operation_service
+
+  def GetResult(self, operation):
+    """Overrides.
+
+    Response for Deletion Operation is of type google.protobuf.Empty and hence
+    we can return the operation itself as the result
+
+    Args:
+      operation: api_name_messages.Operation.
+
+    Returns:
+      operation
+    """
+    return operation
+
+
+def WaitForDeleteOperation(operation, message):
+  """Waits for the given google.longrunning.Operation to complete.
+
+  Args:
+    operation: The operation to poll.
+    message: String to display for default progress_tracker.
+
+  Raises:
+    apitools.base.py.HttpError: if the request returns an HTTP error
+
+  Returns:
+    operation
+  """
+  poller = DeletionPoller(tags.OperationsService())
+  return _WaitForOperation(operation, message, poller)
+
+
 def WaitForOperation(operation, message, service):
   """Waits for the given google.longrunning.Operation to complete.
 
@@ -44,15 +88,14 @@ def WaitForOperation(operation, message, service):
     The TagKey or TagValue resource.
   """
   poller = waiter.CloudOperationPoller(service, tags.OperationsService())
+  return _WaitForOperation(operation, message, poller)
+
+
+def _WaitForOperation(operation, message, poller):
   if poller.IsDone(operation):
     # Use the poller to get the result so it prints the same regardless if the
-    # Operation is immediately done or not. Currently the poller will raise a
-    # KeyError because it assumes a 'name' field  which is not present when
-    # the Operation response is of type Empty.
-    try:
-      return poller.GetResult(operation)
-    except KeyError:
-      return operation
+    # Operation is immediately done or not.
+    return poller.GetResult(operation)
 
   operation_ref = resources.REGISTRY.Parse(
       operation.name, collection='cloudresourcemanager.operations')

@@ -22,7 +22,6 @@ from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
-
 DEFAULT_LIST_FORMAT = """\
     table(
       name:label=NAME,
@@ -69,30 +68,31 @@ def AddArgsUpdateNetworkFirewallPolicy(parser):
             ' policy.'))
 
 
-def NetworkFirewallPolicyAssociationArgument(required=False, plural=False,
+def NetworkFirewallPolicyAssociationArgument(required=False,
+                                             plural=False,
                                              operation=None):
   return compute_flags.ResourceArgument(
-      name='--name',
-      resource_name='association',
+      name='--firewall-policy',
+      resource_name='firewall policy',
       plural=plural,
       required=required,
+      short_help='Firewall policy ID with which to {0} association.'.format(
+          operation),
       global_collection='compute.networkFirewallPolicies',
-      short_help='name of the firewall policy association to {0}.'.format(
-          operation)
-      )
+      regional_collection='compute.regionNetworkFirewallPolicies')
 
 
 def AddArgsCreateAssociation(parser):
   """Adds the arguments of association creation."""
   parser.add_argument(
-      '--firewall-policy',
+      '--name',
       required=True,
-      help=('Security policy ID of the association.'))
+      help=('Name of the association.'))
 
   parser.add_argument(
       '--network',
       required=True,
-      help=('name of the network with which the association is created.'))
+      help=('Name of the network with which the association is created.'))
 
   parser.add_argument(
       '--replace-association-on-target',
@@ -100,19 +100,17 @@ def AddArgsCreateAssociation(parser):
       default=False,
       required=False,
       help=(
-          'By default, if you attempt to insert an association to an '
-          'organization or folder resource that is already associated with a '
+          'By default, if you attempt to insert an association to a '
+          'network that is already associated with a '
           'firewall policy the method will fail. If this is set, the existing '
-          ' association will be deleted at the same time that the new '
+          'association will be deleted at the same time that the new '
           'association is created.'))
 
 
 def AddArgsDeleteAssociation(parser):
   """Adds the arguments of association deletion."""
   parser.add_argument(
-      '--firewall-policy',
-      required=True,
-      help=('Security policy ID of the association.'))
+      '--name', required=True, help=('Name of the association to delete.'))
 
 
 class NetworksCompleter(compute_completers.ListCommandCompleter):

@@ -70,9 +70,6 @@ MAX_OBJECTS_PER_COMPOSE_CALL = 32
 _ERROR_TRANSLATION = [
     (apitools_exceptions.HttpNotFoundError, cloud_errors.GcsNotFoundError),
     (apitools_exceptions.HttpError, cloud_errors.GcsApiError),
-    (apitools_exceptions.StreamExhausted,
-     cloud_errors.ResumableUploadAbortError),
-    (apitools_exceptions.TransferError, cloud_errors.ResumableUploadAbortError),
 ]
 
 
@@ -818,7 +815,20 @@ class GcsApi(cloud_api.CloudApi):
       raise command_errors.Error(
           'Invalid upload strategy: {}.'.format(upload_strategy.value))
 
-    return gcs_metadata_util.get_object_resource_from_metadata(upload.run())
+    try:
+      metadata = upload.run()
+    except (
+        apitools_exceptions.StreamExhausted,
+        apitools_exceptions.TransferError,
+    ) as error:
+      raise cloud_errors.ResumableUploadAbortError(
+          '{}\n This likely occurred because the file being uploaded changed '
+          'size between resumable upload attempts. If this error persists, try '
+          'deleting the tracker files present in {}'.format(
+              str(error),
+              properties.VALUES.storage.tracker_files_directory.Get()))
+
+    return gcs_metadata_util.get_object_resource_from_metadata(metadata)
 
   @_catch_http_error_raise_gcs_api_error()
   def compose_objects(self, source_resources, destination_resource,

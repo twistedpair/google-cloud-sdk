@@ -12,7 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Flags and helpers for the compute allocations commands."""
+"""Flags and helpers for the compute reservation commands."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -22,10 +22,10 @@ from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
 
-class ZoneAllocationsCompleter(compute_completers.ListCommandCompleter):
+class ZoneReservationsCompleter(compute_completers.ListCommandCompleter):
 
   def __init__(self, **kwargs):
-    super(ZoneAllocationsCompleter, self).__init__(
+    super(ZoneReservationsCompleter, self).__init__(
         collection='compute.reservations',
         list_command='alpha compute reservations list --uri',
         **kwargs)
@@ -40,7 +40,7 @@ def GetReservationResourceArg(positional=True):
   return compute_flags.ResourceArgument(
       name=name,
       resource_name='reservation',
-      completer=ZoneAllocationsCompleter,
+      completer=ZoneReservationsCompleter,
       plural=False,
       required=True,
       zonal_collection='compute.reservations',

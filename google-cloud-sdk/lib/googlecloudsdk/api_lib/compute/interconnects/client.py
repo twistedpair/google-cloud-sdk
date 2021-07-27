@@ -71,6 +71,34 @@ class Interconnect(object):
                     **kwargs),
                 project=self.ref.project))
 
+  def _MakePatchRequestTupleAlpha(self, description, location,
+                                  interconnect_type, requested_link_count,
+                                  link_type, admin_enabled, noc_contact_email,
+                                  labels, label_fingerprint, macsec_enabled,
+                                  macsec):
+    """Make a tuple for interconnect alpha patch request."""
+    kwargs = {}
+    if labels is not None:
+      kwargs['labels'] = labels
+    if label_fingerprint is not None:
+      kwargs['labelFingerprint'] = label_fingerprint
+    return (self._client.interconnects, 'Patch',
+            self._messages.ComputeInterconnectsPatchRequest(
+                interconnect=self.ref.Name(),
+                interconnectResource=self._messages.Interconnect(
+                    name=None,
+                    description=description,
+                    interconnectType=interconnect_type,
+                    linkType=link_type,
+                    nocContactEmail=noc_contact_email,
+                    requestedLinkCount=requested_link_count,
+                    location=location,
+                    adminEnabled=admin_enabled,
+                    macsecEnabled=macsec_enabled,
+                    macsec=macsec,
+                    **kwargs),
+                project=self.ref.project))
+
   def _MakeDeleteRequestTuple(self):
     return (self._client.interconnects, 'Delete',
             self._messages.ComputeInterconnectsDeleteRequest(
@@ -84,6 +112,11 @@ class Interconnect(object):
   def _MakeGetDiagnosticsRequestTuple(self):
     return (self._client.interconnects, 'GetDiagnostics',
             self._messages.ComputeInterconnectsGetDiagnosticsRequest(
+                project=self.ref.project, interconnect=self.ref.Name()))
+
+  def _MakeGetMacsecConfigRequestTuple(self):
+    return (self._client.interconnects, 'GetMacsecConfig',
+            self._messages.ComputeInterconnectsGetMacsecConfigRequest(
                 project=self.ref.project, interconnect=self.ref.Name()))
 
   @property
@@ -132,6 +165,13 @@ class Interconnect(object):
       return resources[0]
     return requests
 
+  def GetMacsecConfig(self, only_generate_request=False):
+    requests = [self._MakeGetMacsecConfigRequestTuple()]
+    if not only_generate_request:
+      resources = self._compute_client.MakeRequests(requests)
+      return resources[0]
+    return requests
+
   def Patch(self,
             description='',
             location=None,
@@ -149,6 +189,33 @@ class Interconnect(object):
                                     requested_link_count, link_type,
                                     admin_enabled, noc_contact_email, labels,
                                     label_fingerprint)
+    ]
+    if not only_generate_request:
+      resources = self._compute_client.MakeRequests(requests)
+      return resources[0]
+    return requests
+
+  def PatchAlpha(self,
+                 description='',
+                 location=None,
+                 interconnect_type=None,
+                 requested_link_count=None,
+                 link_type=None,
+                 admin_enabled=False,
+                 noc_contact_email=None,
+                 only_generate_request=False,
+                 labels=None,
+                 label_fingerprint=None,
+                 macsec_enabled=None,
+                 macsec=None):
+    """Patch an interconnect."""
+    requests = [
+        self._MakePatchRequestTupleAlpha(description, location,
+                                         interconnect_type,
+                                         requested_link_count, link_type,
+                                         admin_enabled, noc_contact_email,
+                                         labels, label_fingerprint,
+                                         macsec_enabled, macsec)
     ]
     if not only_generate_request:
       resources = self._compute_client.MakeRequests(requests)

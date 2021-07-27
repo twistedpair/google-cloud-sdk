@@ -165,6 +165,18 @@ def AddInstanceType(parser, required=True):
       help='Specifies instance type.')
 
 
+def AddOperation(parser):
+  """Adds a positional operation argument to parser.
+
+  Args:
+    parser: argparse.Parser: Parser object for command line inputs.
+  """
+  parser.add_argument(
+      'operation',
+      type=str,
+      help='AlloyDB operation ID')
+
+
 def AddMemory(parser):
   """Adds a --memory flag to parser.
 
@@ -182,16 +194,30 @@ def AddMemory(parser):
             'desired, and the `--tier` flag must be omitted.'))
 
 
-def AddReadPoolSize(parser, required=True):
+def AddNetwork(parser):
+  """Adds the `--network` flag to the parser."""
+  parser.add_argument(
+      '--network',
+      required=False,
+      type=str,
+      help=('Network in the current project that the instance will be part '
+            'of. To specify using a network with a shared VPC, use the full '
+            'URL of the network. For an example host project, \'testproject\', '
+            'and shared network, \'testsharednetwork\', this would be of the '
+            'form:'
+            '`--network`=`projects/testproject/global/networks/'
+            'testsharednetwork`'))
+
+
+def AddReadPoolSize(parser):
   """Adds a --read-pool-size flag to parser.
 
   Args:
     parser: argparse.Parser: Parser object for command line inputs.
-    required: Whether or not --read-pool-size is required.
   """
   parser.add_argument(
       '--read-pool-size',
-      required=required,
+      required=False,
       type=int,
       help='Read pool size.')
 

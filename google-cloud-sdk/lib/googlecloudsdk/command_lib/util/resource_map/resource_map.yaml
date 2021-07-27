@@ -709,10 +709,6 @@ iam:
   ProjectsServiceaccountsIdentitybindings: {}
   ProjectsServiceaccountsKeys: {}
   Roles: {}
-iamassist:
-  Operations: {}
-  Replays: {}
-  Simulator: {}
 iamcredentials:
   Serviceaccounts: {}
 iap:

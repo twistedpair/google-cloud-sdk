@@ -391,6 +391,14 @@
           "description": "Output only. Unique id for the cluster.",
           "readOnly": true,
           "type": "string"
+        },
+        "loggingConfig": {
+          "description": "Logging configuration for the cluster.",
+          "$ref": "LoggingConfig"
+        },
+        "monitoringConfig": {
+          "description": "Monitoring configuration for the cluster.",
+          "$ref": "MonitoringConfig"
         }
       }
     },
@@ -924,6 +932,10 @@
             "type": "string"
           }
         },
+        "networkConfig": {
+          "description": "Networking configuration for this NodePool. If specified, it overrides the cluster-level defaults.",
+          "$ref": "NodeNetworkConfig"
+        },
         "selfLink": {
           "description": "[Output only] Server-defined URL for the resource.",
           "type": "string"
@@ -992,6 +1004,25 @@
         "upgradeSettings": {
           "description": "Upgrade settings control disruption and speed of the upgrade.",
           "$ref": "UpgradeSettings"
+        }
+      }
+    },
+    "NodeNetworkConfig": {
+      "id": "NodeNetworkConfig",
+      "description": "Parameters for node pool-level network config.",
+      "type": "object",
+      "properties": {
+        "createPodRange": {
+          "description": "Input only. Whether to create a new range for pod IPs in this node pool. Defaults are provided for `pod_range` and `pod_ipv4_cidr_block` if they are not specified. If neither `create_pod_range` or `pod_range` are specified, the cluster-level default (`ip_allocation_policy.cluster_ipv4_cidr_block`) is used. Only applicable if `ip_allocation_policy.use_ip_aliases` is true. This field cannot be changed after the node pool has been created.",
+          "type": "boolean"
+        },
+        "podRange": {
+          "description": "The ID of the secondary range for pod IPs. If `create_pod_range` is true, this ID is used for the new range. If `create_pod_range` is false, uses an existing secondary range with this ID. Only applicable if `ip_allocation_policy.use_ip_aliases` is true. This field cannot be changed after the node pool has been created.",
+          "type": "string"
+        },
+        "podIpv4CidrBlock": {
+          "description": "The IP address range for pod IPs in this node pool. Only applicable if `create_pod_range` is true. Set to blank to have a range chosen with the default size. Set to \/netmask (e.g. `\/14`) to have a range chosen with a specific netmask. Set to a [CIDR](https:\/\/en.wikipedia.org\/wiki\/Classless_Inter-Domain_Routing) notation (e.g. `10.96.0.0\/14`) to pick a specific range to use. Only applicable if `ip_allocation_policy.use_ip_aliases` is true. This field cannot be changed after the node pool has been created.",
+          "type": "string"
         }
       }
     },
@@ -1793,6 +1824,90 @@
         }
       }
     },
+    "LoggingConfig": {
+      "id": "LoggingConfig",
+      "description": "LoggingConfig is cluster logging configuration.",
+      "type": "object",
+      "properties": {
+        "componentConfig": {
+          "description": "Logging components configuration",
+          "$ref": "LoggingComponentConfig"
+        }
+      }
+    },
+    "LoggingComponentConfig": {
+      "id": "LoggingComponentConfig",
+      "description": "LoggingComponentConfig is cluster logging component configuration.",
+      "type": "object",
+      "properties": {
+        "enableComponents": {
+          "description": "Select components to collect logs. An empty set would disable all logging.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enumDescriptions": [
+              "Default value. This shouldn't be used.",
+              "system components",
+              "workloads",
+              "kube-apiserver",
+              "kube-scheduler",
+              "kube-controller-manager",
+              "kube-addon-manager"
+            ],
+            "enum": [
+              "COMPONENT_UNSPECIFIED",
+              "SYSTEM_COMPONENTS",
+              "WORKLOADS",
+              "APISERVER",
+              "SCHEDULER",
+              "CONTROLLER_MANAGER",
+              "ADDON_MANAGER"
+            ]
+          }
+        }
+      }
+    },
+    "MonitoringConfig": {
+      "id": "MonitoringConfig",
+      "description": "MonitoringConfig is cluster monitoring configuration.",
+      "type": "object",
+      "properties": {
+        "componentConfig": {
+          "description": "Monitoring components configuration",
+          "$ref": "MonitoringComponentConfig"
+        }
+      }
+    },
+    "MonitoringComponentConfig": {
+      "id": "MonitoringComponentConfig",
+      "description": "MonitoringComponentConfig is cluster monitoring component configuration.",
+      "type": "object",
+      "properties": {
+        "enableComponents": {
+          "description": "Select components to collect metrics. An empty set would disable all monitoring.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enumDescriptions": [
+              "Default value. This shouldn't be used.",
+              "system components",
+              "workloads",
+              "kube-apiserver",
+              "kube-scheduler",
+              "kube-controller-manager"
+            ],
+            "enum": [
+              "COMPONENT_UNSPECIFIED",
+              "SYSTEM_COMPONENTS",
+              "WORKLOADS",
+              "APISERVER",
+              "SCHEDULER",
+              "CONTROLLER_MANAGER"
+            ]
+          }
+        }
+      }
+    },
     "CreateClusterRequest": {
       "id": "CreateClusterRequest",
       "description": "CreateClusterRequest creates a cluster.",
@@ -2202,6 +2317,14 @@
         "desiredAuthenticatorGroupsConfig": {
           "description": "The desired authenticator groups config for the cluster.",
           "$ref": "AuthenticatorGroupsConfig"
+        },
+        "desiredLoggingConfig": {
+          "description": "The desired logging configuration.",
+          "$ref": "LoggingConfig"
+        },
+        "desiredMonitoringConfig": {
+          "description": "The desired monitoring configuration.",
+          "$ref": "MonitoringConfig"
         },
         "desiredMasterVersion": {
           "description": "The Kubernetes version to change the master to. Users may specify either explicit versions offered by Kubernetes Engine or version aliases, which have the following behavior: - \"latest\": picks the highest valid Kubernetes version - \"1.X\": picks the highest valid patch+gke.N patch in the 1.X version - \"1.X.Y\": picks the highest valid gke.N patch in the 1.X.Y version - \"1.X.Y-gke.N\": picks an explicit Kubernetes version - \"-\": picks the default Kubernetes version",

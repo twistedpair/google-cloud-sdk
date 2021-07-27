@@ -20,7 +20,6 @@ from __future__ import unicode_literals
 
 import copy
 
-from googlecloudsdk.api_lib.storage import request_config_factory
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage.resources import gcs_resource_reference
@@ -180,12 +179,10 @@ def update_object_metadata_from_request_config(object_metadata, request_config):
     object_metadata.contentLanguage = request_config.content_language
   if request_config.custom_time is not None:
     object_metadata.customTime = request_config.custom_time
+  if request_config.content_type is not None:
+    object_metadata.contentType = request_config.content_type
   if request_config.md5_hash is not None:
     object_metadata.md5Hash = request_config.md5_hash
-
-  if (request_config.content_type != request_config_factory.DEFAULT_CONTENT_TYPE
-      or object_metadata.contentType is None):
-    object_metadata.contentType = request_config.content_type
 
   if request_config.custom_metadata:
     messages = apis.GetMessagesModule('storage', 'v1')

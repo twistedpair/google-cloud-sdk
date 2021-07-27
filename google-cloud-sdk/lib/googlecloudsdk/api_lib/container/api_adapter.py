@@ -177,6 +177,10 @@ CLOUDBUILD_STACKDRIVER_KUBERNETES_DISABLED_ERROR_MSG = """\
 Cloud Build for Anthos (--addons=CloudBuild) requires Cloud Logging and Cloud Monitoring to be enabled via the --enable-stackdriver-kubernetes flag.
 """
 
+BACKUPRESTORE_WORKLOAD_IDENTITY_DISABLED_ERROR_MSG = """\
+The Backup & Restore addon (--addons=BackupRestore) requires workload identity to be enabled via the --workload-pool=WORKLOAD_POOL flag.
+"""
+
 DEFAULT_MAX_PODS_PER_NODE_WITHOUT_IP_ALIAS_ERROR_MSG = """\
 Cannot use --default-max-pods-per-node without --enable-ip-alias.
 """
@@ -240,6 +244,7 @@ INGRESS = 'HttpLoadBalancing'
 HPA = 'HorizontalPodAutoscaling'
 DASHBOARD = 'KubernetesDashboard'
 CLOUDBUILD = 'CloudBuild'
+BACKUPRESTORE = 'BackupRestore'
 CONFIGCONNECTOR = 'ConfigConnector'
 GCEPDCSIDRIVER = 'GcePersistentDiskCsiDriver'
 ISTIO = 'Istio'
@@ -277,6 +282,7 @@ ADDONS_OPTIONS = DEFAULT_ADDONS + [
 BETA_ADDONS_OPTIONS = ADDONS_OPTIONS + [
     ISTIO,
     APPLICATIONMANAGER,
+    BACKUPRESTORE,
 ]
 ALPHA_ADDONS_OPTIONS = BETA_ADDONS_OPTIONS + [CLOUDBUILD]
 
@@ -1298,6 +1304,7 @@ class APIAdapter(object):
           enable_gcepd_csi_driver=(GCEPDCSIDRIVER in options.addons),
           enable_application_manager=(APPLICATIONMANAGER in options.addons),
           enable_cloud_build=(CLOUDBUILD in options.addons),
+          enable_backup_restore=(BACKUPRESTORE in options.addons),
       )
       # CONFIGCONNECTOR is disabled by default.
       if CONFIGCONNECTOR in options.addons:
@@ -2383,7 +2390,8 @@ class APIAdapter(object):
                     enable_node_local_dns=None,
                     enable_gcepd_csi_driver=None,
                     enable_application_manager=None,
-                    enable_cloud_build=None):
+                    enable_cloud_build=None,
+                    enable_backup_restore=None):
     """Generates an AddonsConfig object given specific parameters.
 
     Args:
@@ -2395,6 +2403,7 @@ class APIAdapter(object):
       enable_gcepd_csi_driver: whether to enable GcePersistentDiskCsiDriver.
       enable_application_manager: whether to enable ApplicationManager.
       enable_cloud_build: whether to enable CloudBuild.
+      enable_backup_restore: whether to enable BackupRestore.
 
     Returns:
       An AddonsConfig object that contains the options defining what addons to
@@ -2424,6 +2433,9 @@ class APIAdapter(object):
       addons.kalmConfig = self.messages.KalmConfig(enabled=True)
     if enable_cloud_build:
       addons.cloudBuildConfig = self.messages.CloudBuildConfig(enabled=True)
+    if enable_backup_restore:
+      addons.gkeBackupAgentConfig = self.messages.GkeBackupAgentConfig(
+          enabled=True)
 
     return addons
 
@@ -3386,6 +3398,12 @@ class V1Beta1Adapter(V1Adapter):
           raise util.Error(CLOUDBUILD_STACKDRIVER_KUBERNETES_DISABLED_ERROR_MSG)
         cluster.addonsConfig.cloudBuildConfig = self.messages.CloudBuildConfig(
             enabled=True)
+      # BackupRestore is disabled by default.
+      if BACKUPRESTORE in options.addons:
+        if not options.workload_pool:
+          raise util.Error(BACKUPRESTORE_WORKLOAD_IDENTITY_DISABLED_ERROR_MSG)
+        cluster.addonsConfig.gkeBackupAgentConfig = self.messages.GkeBackupAgentConfig(
+            enabled=True)
       # Istio is disabled by default.
       if ISTIO in options.addons:
         istio_auth = self.messages.IstioConfig.AuthValueValuesEnum.AUTH_NONE
@@ -3635,6 +3653,10 @@ class V1Beta1Adapter(V1Adapter):
         update.desiredAddonsConfig.cloudBuildConfig = (
             self.messages.CloudBuildConfig(
                 enabled=(not options.disable_addons.get(CLOUDBUILD))))
+      if options.disable_addons.get(BACKUPRESTORE) is not None:
+        update.desiredAddonsConfig.gkeBackupAgentConfig = (
+            self.messages.GkeBackupAgentConfig(
+                enabled=(not options.disable_addons.get(BACKUPRESTORE))))
 
     op = self.client.projects_locations_clusters.Update(
         self.messages.UpdateClusterRequest(
@@ -3887,6 +3909,12 @@ class V1Alpha1Adapter(V1Beta1Adapter):
         if not options.enable_stackdriver_kubernetes:
           raise util.Error(CLOUDBUILD_STACKDRIVER_KUBERNETES_DISABLED_ERROR_MSG)
         cluster.addonsConfig.cloudBuildConfig = self.messages.CloudBuildConfig(
+            enabled=True)
+      # BackupRestore is disabled by default.
+      if BACKUPRESTORE in options.addons:
+        if not options.workload_pool:
+          raise util.Error(BACKUPRESTORE_WORKLOAD_IDENTITY_DISABLED_ERROR_MSG)
+        cluster.addonsConfig.gkeBackupAgentConfig = self.messages.GkeBackupAgentConfig(
             enabled=True)
       # Istio is disabled by default
       if ISTIO in options.addons:
@@ -4146,6 +4174,10 @@ class V1Alpha1Adapter(V1Beta1Adapter):
         update.desiredAddonsConfig.cloudBuildConfig = (
             self.messages.CloudBuildConfig(
                 enabled=(not options.disable_addons.get(CLOUDBUILD))))
+      if options.disable_addons.get(BACKUPRESTORE) is not None:
+        update.desiredAddonsConfig.gkeBackupAgentConfig = (
+            self.messages.GkeBackupAgentConfig(
+                enabled=(not options.disable_addons.get(BACKUPRESTORE))))
 
     op = self.client.projects_locations_clusters.Update(
         self.messages.UpdateClusterRequest(

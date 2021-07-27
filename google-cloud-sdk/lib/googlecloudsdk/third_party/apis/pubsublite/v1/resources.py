@@ -38,6 +38,17 @@ class Collections(enum.Enum):
       ['projectsId', 'locationsId'],
       True
   )
+  ADMIN_PROJECTS_LOCATIONS_OPERATIONS = (
+      'admin.projects.locations.operations',
+      'admin/{+name}',
+      {
+          '':
+              'admin/projects/{projectsId}/locations/{locationsId}/'
+              'operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
   ADMIN_PROJECTS_LOCATIONS_SUBSCRIPTIONS = (
       'admin.projects.locations.subscriptions',
       'admin/{+name}',

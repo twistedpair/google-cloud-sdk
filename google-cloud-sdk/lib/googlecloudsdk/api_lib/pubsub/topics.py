@@ -81,6 +81,7 @@ class TopicsClient(object):
              topic_ref,
              labels=None,
              kms_key=None,
+             message_retention_duration=None,
              message_storage_policy_allowed_regions=None,
              schema=None,
              message_encoding=None):
@@ -90,6 +91,8 @@ class TopicsClient(object):
       topic_ref (Resource): Resource reference to the Topic to create.
       labels (LabelsValue): Labels for the topic to create.
       kms_key (str): Full resource name of kms_key to set on Topic or None.
+      message_retention_duration (str): How long to retain messages published to
+        the Topic.
       message_storage_policy_allowed_regions (list[str]): List of Cloud regions
         in which messages are allowed to be stored at rest.
       schema (Resource): Full resource name of schema used to validate
@@ -104,7 +107,10 @@ class TopicsClient(object):
       InvalidSchemaSettingsException: If an invalid --schema or
           --message-encoding flag comnbination is specified.
     """
-    topic = self.messages.Topic(name=topic_ref.RelativeName(), labels=labels)
+    topic = self.messages.Topic(
+        name=topic_ref.RelativeName(),
+        labels=labels,
+        messageRetentionDuration=message_retention_duration)
     if kms_key:
       topic.kmsKeyName = kms_key
     if message_storage_policy_allowed_regions:
@@ -329,6 +335,8 @@ class TopicsClient(object):
             topic_ref,
             labels=None,
             kms_key_name=None,
+            message_retention_duration=None,
+            clear_message_retention_duration=False,
             recompute_message_storage_policy=False,
             message_storage_policy_allowed_regions=None):
     """Updates a Topic.
@@ -338,6 +346,9 @@ class TopicsClient(object):
       labels (LabelsValue): The Cloud labels for the topic.
       kms_key_name (str): The full resource name of the Cloud KMS key to
         associate with the topic, or None.
+      message_retention_duration (str): How long to retain messages.
+      clear_message_retention_duration (bool): If set, remove retention from the
+        topic.
       recompute_message_storage_policy (bool): True to have the API recalculate
         the message storage policy.
       message_storage_policy_allowed_regions (list[str]): List of Cloud regions
@@ -355,6 +366,14 @@ class TopicsClient(object):
 
     if kms_key_name:
       update_settings.append(_TopicUpdateSetting('kmsKeyName', kms_key_name))
+
+    if message_retention_duration:
+      update_settings.append(
+          _TopicUpdateSetting('messageRetentionDuration',
+                              message_retention_duration))
+    if clear_message_retention_duration:
+      update_settings.append(
+          _TopicUpdateSetting('messageRetentionDuration', None))
 
     if recompute_message_storage_policy:
       update_settings.append(_TopicUpdateSetting('messageStoragePolicy', None))

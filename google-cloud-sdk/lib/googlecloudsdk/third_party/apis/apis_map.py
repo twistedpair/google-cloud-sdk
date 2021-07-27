@@ -1400,24 +1400,6 @@ MAP = {
                 enable_mtls=False,
                 mtls_endpoint_override=''),
     },
-    'iamassist': {
-        'v1alpha2':
-            APIDef(
-                class_path='googlecloudsdk.third_party.apis.iamassist.v1alpha2',
-                client_classpath='iamassist_v1alpha2_client.IamassistV1alpha2',
-                messages_modulepath='iamassist_v1alpha2_messages',
-                default_version=False,
-                enable_mtls=False,
-                mtls_endpoint_override=''),
-        'v1alpha3':
-            APIDef(
-                class_path='googlecloudsdk.third_party.apis.iamassist.v1alpha3',
-                client_classpath='iamassist_v1alpha3_client.IamassistV1alpha3',
-                messages_modulepath='iamassist_v1alpha3_messages',
-                default_version=True,
-                enable_mtls=False,
-                mtls_endpoint_override=''),
-    },
     'iamcredentials': {
         'v1':
             APIDef(

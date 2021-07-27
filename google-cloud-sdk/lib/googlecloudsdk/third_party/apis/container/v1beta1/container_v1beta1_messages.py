@@ -49,6 +49,7 @@ class AddonsConfig(_messages.Message):
       cluster nodes
     gcePersistentDiskCsiDriverConfig: Configuration for the Compute Engine
       Persistent Disk CSI driver.
+    gkeBackupAgentConfig: Configuration for the Backup for GKE agent addon.
     horizontalPodAutoscaling: Configuration for the horizontal pod autoscaling
       feature, which increases or decreases the number of replica pods a
       replication controller has based on the resource usage of the existing
@@ -74,12 +75,13 @@ class AddonsConfig(_messages.Message):
   configConnectorConfig = _messages.MessageField('ConfigConnectorConfig', 2)
   dnsCacheConfig = _messages.MessageField('DnsCacheConfig', 3)
   gcePersistentDiskCsiDriverConfig = _messages.MessageField('GcePersistentDiskCsiDriverConfig', 4)
-  horizontalPodAutoscaling = _messages.MessageField('HorizontalPodAutoscaling', 5)
-  httpLoadBalancing = _messages.MessageField('HttpLoadBalancing', 6)
-  istioConfig = _messages.MessageField('IstioConfig', 7)
-  kalmConfig = _messages.MessageField('KalmConfig', 8)
-  kubernetesDashboard = _messages.MessageField('KubernetesDashboard', 9)
-  networkPolicyConfig = _messages.MessageField('NetworkPolicyConfig', 10)
+  gkeBackupAgentConfig = _messages.MessageField('GkeBackupAgentConfig', 5)
+  horizontalPodAutoscaling = _messages.MessageField('HorizontalPodAutoscaling', 6)
+  httpLoadBalancing = _messages.MessageField('HttpLoadBalancing', 7)
+  istioConfig = _messages.MessageField('IstioConfig', 8)
+  kalmConfig = _messages.MessageField('KalmConfig', 9)
+  kubernetesDashboard = _messages.MessageField('KubernetesDashboard', 10)
+  networkPolicyConfig = _messages.MessageField('NetworkPolicyConfig', 11)
 
 
 class AdvancedMachineFeatures(_messages.Message):
@@ -1846,6 +1848,16 @@ class GetOpenIDConfigResponse(_messages.Message):
   jwks_uri = _messages.StringField(6)
   response_types_supported = _messages.StringField(7, repeated=True)
   subject_types_supported = _messages.StringField(8, repeated=True)
+
+
+class GkeBackupAgentConfig(_messages.Message):
+  r"""Configuration for the Backup for GKE Agent.
+
+  Fields:
+    enabled: Whether the Backup for GKE agent is enabled for this cluster.
+  """
+
+  enabled = _messages.BooleanField(1)
 
 
 class GkeOidcConfig(_messages.Message):

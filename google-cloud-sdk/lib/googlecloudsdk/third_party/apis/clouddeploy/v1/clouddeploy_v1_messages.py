@@ -1606,7 +1606,7 @@ class PromoteReleaseRequest(_messages.Message):
       These attributes can only be set and used by the user, and not by Cloud
       Deploy. See https://google.aip.dev/128#annotations for more details such
       as format and size limitations.
-    destinationTarget: Optional. The name of the `Target` to which we are
+    destinationTarget: Optional. The ID of the `Target` to which we are
       promoting the Release.
     labels: Optional. Labels to be placed on the created `Rollout`. Labels are
       attributes that can be set and used by both the user and by Cloud
@@ -1687,31 +1687,14 @@ class PromoteReleaseResponse(_messages.Message):
     operation: The name of the operation that is tracking the `Rollout`
       creation.
     release: The `Release` being deployed.
-    rollout: `Rollout` that was created from this promotion.
     rolloutResource: The name of the `Rollout` that is being deployed.
     target: The name of the `Target` to which is being deployed.
   """
 
   operation = _messages.StringField(1)
   release = _messages.StringField(2)
-  rollout = _messages.MessageField('Promotion', 3)
-  rolloutResource = _messages.StringField(4)
-  target = _messages.StringField(5)
-
-
-class Promotion(_messages.Message):
-  r"""Details around a `Release` promotion.
-
-  Fields:
-    operation: The name of the operation that is tracking the `Rollout`
-      creation.
-    rollout: The name of the `Rollout` that is being deployed.
-    target: The name of the `Target` to which is being deployed.
-  """
-
-  operation = _messages.StringField(1)
-  rollout = _messages.StringField(2)
-  target = _messages.StringField(3)
+  rolloutResource = _messages.StringField(3)
+  target = _messages.StringField(4)
 
 
 class Release(_messages.Message):

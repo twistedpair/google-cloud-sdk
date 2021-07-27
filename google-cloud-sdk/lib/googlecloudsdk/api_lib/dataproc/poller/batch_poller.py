@@ -100,9 +100,6 @@ class BatchPoller(dataproc_poller_base.AbstractOperationStreamerPoller):
 
   def _GetOutputUri(self, batch):
     """See base class."""
-    if batch and batch.runtimeInfo:
-      if batch.runtimeInfo.outputUri:
-        return batch.runtimeInfo.outputUri
-      if batch.runtimeInfo.processOutputUri:
-        return batch.runtimeInfo.processOutputUri
+    if batch and batch.runtimeInfo and batch.runtimeInfo.outputUri:
+      return batch.runtimeInfo.outputUri
     return None

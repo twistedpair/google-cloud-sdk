@@ -1106,7 +1106,7 @@ class GoogleCloudGkemulticloudV1AwsNodeConfig(_messages.Message):
   securityGroupIds = _messages.StringField(5, repeated=True)
   sshConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AwsSshConfig', 6)
   tags = _messages.MessageField('TagsValue', 7)
-  taints = _messages.MessageField('GoogleCloudGkemulticloudV1AwsNodeTaint', 8, repeated=True)
+  taints = _messages.MessageField('GoogleCloudGkemulticloudV1NodeTaint', 8, repeated=True)
 
 
 class GoogleCloudGkemulticloudV1AwsNodePool(_messages.Message):
@@ -1240,44 +1240,6 @@ class GoogleCloudGkemulticloudV1AwsNodePoolAutoscaling(_messages.Message):
 
   maxNodeCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   minNodeCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-
-
-class GoogleCloudGkemulticloudV1AwsNodeTaint(_messages.Message):
-  r"""The taint content for the node taint.
-
-  Enums:
-    EffectValueValuesEnum: Required. The taint effect.
-
-  Fields:
-    effect: Required. The taint effect.
-    key: Required. Key for the taint.
-    value: Required. Value for the taint.
-  """
-
-  class EffectValueValuesEnum(_messages.Enum):
-    r"""Required. The taint effect.
-
-    Values:
-      EFFECT_UNSPECIFIED: Not set.
-      NO_SCHEDULE: Do not allow new pods to schedule onto the node unless they
-        tolerate the taint, but allow all pods submitted to Kubelet without
-        going through the scheduler to start, and allow all already-running
-        pods to continue running. Enforced by the scheduler.
-      PREFER_NO_SCHEDULE: Like TaintEffectNoSchedule, but the scheduler tries
-        not to schedule new pods onto the node, rather than prohibiting new
-        pods from scheduling onto the node entirely. Enforced by the
-        scheduler.
-      NO_EXECUTE: Evict any already-running pods that do not tolerate the
-        taint. Currently enforced by NodeController.
-    """
-    EFFECT_UNSPECIFIED = 0
-    NO_SCHEDULE = 1
-    PREFER_NO_SCHEDULE = 2
-    NO_EXECUTE = 3
-
-  effect = _messages.EnumField('EffectValueValuesEnum', 1)
-  key = _messages.StringField(2)
-  value = _messages.StringField(3)
 
 
 class GoogleCloudGkemulticloudV1AwsOpenIdConfig(_messages.Message):
@@ -1608,8 +1570,6 @@ class GoogleCloudGkemulticloudV1AzureControlPlane(_messages.Message):
       plane Azure resources.
 
   Fields:
-    azureServicesAuthentication: Authentication configuration for management
-      of Azure resources.
     databaseEncryption: Optional. Configuration related to application-layer
       secrets encryption.
     mainVolume: Optional. Configuration related to the main volume provisioned
@@ -1660,15 +1620,14 @@ class GoogleCloudGkemulticloudV1AzureControlPlane(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  azureServicesAuthentication = _messages.MessageField('GoogleCloudGkemulticloudV1AzureServicesAuthentication', 1)
-  databaseEncryption = _messages.MessageField('GoogleCloudGkemulticloudV1AzureDatabaseEncryption', 2)
-  mainVolume = _messages.MessageField('GoogleCloudGkemulticloudV1AzureDiskTemplate', 3)
-  rootVolume = _messages.MessageField('GoogleCloudGkemulticloudV1AzureDiskTemplate', 4)
-  sshConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AzureSshConfig', 5)
-  subnetId = _messages.StringField(6)
-  tags = _messages.MessageField('TagsValue', 7)
-  version = _messages.StringField(8)
-  vmSize = _messages.StringField(9)
+  databaseEncryption = _messages.MessageField('GoogleCloudGkemulticloudV1AzureDatabaseEncryption', 1)
+  mainVolume = _messages.MessageField('GoogleCloudGkemulticloudV1AzureDiskTemplate', 2)
+  rootVolume = _messages.MessageField('GoogleCloudGkemulticloudV1AzureDiskTemplate', 3)
+  sshConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AzureSshConfig', 4)
+  subnetId = _messages.StringField(5)
+  tags = _messages.MessageField('TagsValue', 6)
+  version = _messages.StringField(7)
+  vmSize = _messages.StringField(8)
 
 
 class GoogleCloudGkemulticloudV1AzureDatabaseEncryption(_messages.Message):
@@ -1727,6 +1686,9 @@ class GoogleCloudGkemulticloudV1AzureNodeConfig(_messages.Message):
   given node pool.
 
   Messages:
+    LabelsValue: Optional. The initial labels assigned to nodes of this node
+      pool. An object containing a list of "key": value pairs. Example: {
+      "name": "wrench", "mass": "1.3kg", "count": "3" }.
     TagsValue: Optional. A set of tags to apply to all underlying Azure
       resources for this node pool. This currently only includes Virtual
       Machine Scale Sets. Specify at most 50 pairs containing alphanumerics,
@@ -1734,6 +1696,9 @@ class GoogleCloudGkemulticloudV1AzureNodeConfig(_messages.Message):
       characters. Values can be up to 255 Unicode characters.
 
   Fields:
+    labels: Optional. The initial labels assigned to nodes of this node pool.
+      An object containing a list of "key": value pairs. Example: { "name":
+      "wrench", "mass": "1.3kg", "count": "3" }.
     rootVolume: Optional. Configuration related to the root volume provisioned
       for each node pool machine. When unspecified, it defaults to a 32-GiB
       Azure Disk.
@@ -1744,10 +1709,37 @@ class GoogleCloudGkemulticloudV1AzureNodeConfig(_messages.Message):
       Sets. Specify at most 50 pairs containing alphanumerics, spaces, and
       symbols (.+-=_:@/). Keys can be up to 127 Unicode characters. Values can
       be up to 255 Unicode characters.
+    taints: Optional. The initial taints assigned to nodes of this node pool.
     vmSize: Optional. The Azure VM size name. Example: `Standard_DS2_v2`. See
       [Supported VM sizes](/anthos/clusters/docs/azure/reference/supported-
       vms) for options. When unspecified, it defaults to `Standard_DS2_v2`.
   """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. The initial labels assigned to nodes of this node pool. An
+    object containing a list of "key": value pairs. Example: { "name":
+    "wrench", "mass": "1.3kg", "count": "3" }.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class TagsValue(_messages.Message):
@@ -1777,10 +1769,12 @@ class GoogleCloudGkemulticloudV1AzureNodeConfig(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  rootVolume = _messages.MessageField('GoogleCloudGkemulticloudV1AzureDiskTemplate', 1)
-  sshConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AzureSshConfig', 2)
-  tags = _messages.MessageField('TagsValue', 3)
-  vmSize = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 1)
+  rootVolume = _messages.MessageField('GoogleCloudGkemulticloudV1AzureDiskTemplate', 2)
+  sshConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AzureSshConfig', 3)
+  tags = _messages.MessageField('TagsValue', 4)
+  taints = _messages.MessageField('GoogleCloudGkemulticloudV1NodeTaint', 5, repeated=True)
+  vmSize = _messages.StringField(6)
 
 
 class GoogleCloudGkemulticloudV1AzureNodePool(_messages.Message):
@@ -1963,24 +1957,6 @@ class GoogleCloudGkemulticloudV1AzureServerConfig(_messages.Message):
   validVersions = _messages.MessageField('GoogleCloudGkemulticloudV1AzureK8sVersionInfo', 3, repeated=True)
 
 
-class GoogleCloudGkemulticloudV1AzureServicesAuthentication(_messages.Message):
-  r"""Authentication configuration for the management of Azure resources.
-
-  Fields:
-    aadApplication: The Azure Active Directory application ID.
-    aadApplicationKeypairSecret: The resource name of the Secret in the format
-      `projects/*/secrets/*` for the authentication to the Azure Active
-      Directory application. The latest SecretVersion is used.
-    aadTenant: The Azure Active Directory Tenant ID.
-    subscription: The Azure Subscription ID.
-  """
-
-  aadApplication = _messages.StringField(1)
-  aadApplicationKeypairSecret = _messages.StringField(2)
-  aadTenant = _messages.StringField(3)
-  subscription = _messages.StringField(4)
-
-
 class GoogleCloudGkemulticloudV1AzureSshConfig(_messages.Message):
   r"""SSH configuration for Azure resources.
 
@@ -2120,6 +2096,44 @@ class GoogleCloudGkemulticloudV1MaxPodsConstraint(_messages.Message):
   """
 
   maxPodsPerNode = _messages.IntegerField(1)
+
+
+class GoogleCloudGkemulticloudV1NodeTaint(_messages.Message):
+  r"""The taint content for the node taint.
+
+  Enums:
+    EffectValueValuesEnum: Required. The taint effect.
+
+  Fields:
+    effect: Required. The taint effect.
+    key: Required. Key for the taint.
+    value: Required. Value for the taint.
+  """
+
+  class EffectValueValuesEnum(_messages.Enum):
+    r"""Required. The taint effect.
+
+    Values:
+      EFFECT_UNSPECIFIED: Not set.
+      NO_SCHEDULE: Do not allow new pods to schedule onto the node unless they
+        tolerate the taint, but allow all pods submitted to Kubelet without
+        going through the scheduler to start, and allow all already-running
+        pods to continue running. Enforced by the scheduler.
+      PREFER_NO_SCHEDULE: Like TaintEffectNoSchedule, but the scheduler tries
+        not to schedule new pods onto the node, rather than prohibiting new
+        pods from scheduling onto the node entirely. Enforced by the
+        scheduler.
+      NO_EXECUTE: Evict any already-running pods that do not tolerate the
+        taint. Currently enforced by NodeController.
+    """
+    EFFECT_UNSPECIFIED = 0
+    NO_SCHEDULE = 1
+    PREFER_NO_SCHEDULE = 2
+    NO_EXECUTE = 3
+
+  effect = _messages.EnumField('EffectValueValuesEnum', 1)
+  key = _messages.StringField(2)
+  value = _messages.StringField(3)
 
 
 class GoogleCloudGkemulticloudV1OperationMetadata(_messages.Message):

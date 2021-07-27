@@ -28,16 +28,20 @@ from googlecloudsdk.core import log
 class DeleteObjectTask(task.Task):
   """Deletes an object."""
 
-  def __init__(self, object_url, user_request_args=None):
+  def __init__(self, object_url, user_request_args=None, verbose=True):
     """Initializes task.
 
     Args:
       object_url (storage_url.CloudUrl): URL of the object to delete.
       user_request_args (UserRequestArgs|None): Values for RequestConfig.
+      verbose (bool): If true, prints status messages. Otherwise, does not
+          print anything.
     """
     super().__init__()
     self._object_url = object_url
     self._user_request_args = user_request_args
+    self._verbose = verbose
+
     self.parallel_processing_key = object_url.url_string
 
   def execute(self, task_status_queue=None):
@@ -45,7 +49,8 @@ class DeleteObjectTask(task.Task):
     request_config = request_config_factory.get_request_config(
         self._object_url, user_request_args=self._user_request_args)
 
-    log.status.Print('Removing {}...'.format(self._object_url))
+    if self._verbose:
+      log.status.Print('Removing {}...'.format(self._object_url))
     api_factory.get_api(provider).delete_object(self._object_url,
                                                 request_config)
     if task_status_queue:
@@ -55,4 +60,5 @@ class DeleteObjectTask(task.Task):
     if not isinstance(other, DeleteObjectTask):
       return NotImplemented
     return (self._object_url == other._object_url and
-            self._user_request_args == other._user_request_args)
+            self._user_request_args == other._user_request_args and
+            self._verbose == other._verbose)

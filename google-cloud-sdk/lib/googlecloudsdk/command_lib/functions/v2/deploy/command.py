@@ -18,55 +18,88 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import os
+import random
 import re
+import string
 
 from apitools.base.py import exceptions as apitools_exceptions
+from apitools.base.py import http_wrapper
+from apitools.base.py import transfer
 from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.api_lib.functions.v2 import exceptions
 from googlecloudsdk.api_lib.functions.v2 import util as api_util
 from googlecloudsdk.api_lib.run import global_methods
+from googlecloudsdk.api_lib.storage import storage_api
+from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.command_lib.functions import flags
 from googlecloudsdk.command_lib.run import connection_context
 from googlecloudsdk.command_lib.run import serverless_operations
+from googlecloudsdk.command_lib.util import gcloudignore
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.command_lib.util.args import map_util
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
+from googlecloudsdk.core import transports
 from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core.util import archive
+from googlecloudsdk.core.util import files as file_utils
 
 import six
 
-SOURCE_REGEX = re.compile('gs://([^/]+)/(.*)')
-SOURCE_ERROR_MESSAGE = (
-    'For now, Cloud Functions v2 only supports deploying from a Cloud '
-    'Storage bucket. You must provide a `--source` that begins with '
-    '`gs://`.')
+_MISSING_SOURCE_ERROR_MESSAGE = 'Please provide the `--source` flag.'
+_SIGNED_URL_UPLOAD_ERROR_MESSSAGE = (
+    'There was a problem uploading the source code to a signed Cloud Storage '
+    'URL. Please try again.')
 
-INVALID_NON_HTTP_SIGNATURE_TYPE_ERROR_MESSAGE = (
+_GCS_SOURCE_REGEX = re.compile('gs://([^/]+)/(.*)')
+_GCS_SOURCE_ERROR_MESSAGE = (
+    'Invalid Cloud Storage URL. Must match the following format: '
+    'gs://bucket/object')
+
+# https://cloud.google.com/functions/docs/reference/rest/v1/projects.locations.functions#sourcerepository
+_CSR_SOURCE_REGEX = re.compile(
+    # Minimally required fields
+    r'https://source\.developers\.google\.com'
+    r'/projects/(?P<project_id>[^/]+)/repos/(?P<repo_name>[^/]+)'
+    # Optional oneof revision/alias
+    r'(((/revisions/(?P<commit>[^/]+))|'
+    r'(/moveable-aliases/(?P<branch>[^/]+))|'
+    r'(/fixed-aliases/(?P<tag>[^/]+)))'
+    # Optional path
+    r'(/paths/(?P<path>[^/]+))?)?'
+    # Optional ending forward slash and enforce regex matches end of string
+    r'/?$')
+_CSR_SOURCE_ERROR_MESSAGE = (
+    'Invalid Cloud Source Repository URL provided. Must match the '
+    'following format: https://source.developers.google.com/projects/'
+    '<projectId>/repos/<repoName>. Specify the desired branch by appending '
+    '/moveable-aliases/<branchName>, the desired tag with '
+    '/fixed-aliases/<tagName>, or the desired commit with /revisions/<commit>. '
+)
+
+_INVALID_NON_HTTP_SIGNATURE_TYPE_ERROR_MESSAGE = (
     'When `--trigger_http` is provided, `--signature-type` must be omitted '
     'or set to `http`.')
-INVALID_HTTP_SIGNATURE_TYPE_ERROR_MESSAGE = (
+_INVALID_HTTP_SIGNATURE_TYPE_ERROR_MESSAGE = (
     'When an event trigger is provided, `--signature-type` cannot be set to '
     '`http`.')
-SIGNATURE_TYPE_ENV_VAR_COLLISION_ERROR_MESSAGE = (
+_SIGNATURE_TYPE_ENV_VAR_COLLISION_ERROR_MESSAGE = (
     '`GOOGLE_FUNCTION_SIGNATURE_TYPE` is a reserved build environment variable.'
 )
 
-LEGACY_V1_FLAGS = [
+_LEGACY_V1_FLAGS = [
     ('security_level', '--security-level'),
     ('trigger_event', '--trigger-event'),
     ('trigger_resource', '--trigger-resource'),
 ]
-LEGACY_V1_FLAG_ERROR = '`%s` is only supported in Cloud Functions V1.'
+_LEGACY_V1_FLAG_ERROR = '`%s` is only supported in Cloud Functions V1.'
 
 _UNSUPPORTED_V2_FLAGS = [
     # TODO(b/192479883): Support --retry flag.
     ('retry', '--retry'),
-    # TODO(b/191995547): Support deploying from source.
-    ('ignore_file', '--ignore-file'),
-    ('stage_bucket', '--stage-bucket'),
     # TODO(b/192480007): Add support for secrets.
     ('set_secrets', '--set-secrets'),
     ('update_secrets', '--update-secrets'),
@@ -77,10 +110,14 @@ _UNSUPPORTED_V2_FLAGS = [
 ]
 _UNSUPPORTED_V2_FLAG_ERROR = '`%s` is not yet supported in Cloud Functions V2.'
 
-EVENT_TYPE_PUBSUB_MESSAGE_PUBLISHED = 'google.cloud.pubsub.topic.v1.messagePublished'
+_EVENT_TYPE_PUBSUB_MESSAGE_PUBLISHED = 'google.cloud.pubsub.topic.v1.messagePublished'
 
-CLOUD_RUN_SERVICE_COLLECTION_K8S = 'run.namespaces.services'
-CLOUD_RUN_SERVICE_COLLECTION_ONE_PLATFORM = 'run.projects.locations.services'
+_CLOUD_RUN_SERVICE_COLLECTION_K8S = 'run.namespaces.services'
+_CLOUD_RUN_SERVICE_COLLECTION_ONE_PLATFORM = 'run.projects.locations.services'
+
+_DEFAULT_IGNORE_FILE = gcloudignore.DEFAULT_IGNORE_FILE + '\nnode_modules\n'
+
+_ZIP_MIME_TYPE = 'application/zip'
 
 
 def _IsHttpTriggered(args):
@@ -88,34 +125,190 @@ def _IsHttpTriggered(args):
                                                   args.trigger_event_filters)
 
 
-def _GetSource(source_arg, is_new_function):
-  """Parses the source bucket and object from the --source flag.
+def _GcloudIgnoreCreationPredicate(directory):
+  return gcloudignore.AnyFileOrDirExists(
+      directory, gcloudignore.GIT_FILES + ['node_modules'])
 
-  Currently only Cloud Storage location source is supported.
+
+def _GetSourceGCS(messages, source):
+  """Constructs a `Source` message from a Cloud Storage object.
 
   Args:
-    source_arg: str, the passed in source flag argument. Either with gs://,
-      https://, or local file system
-    is_new_function: bool, true if function does not exist yet
+    messages: messages module, the GCFv2 message stubs
+    source: str, the Cloud Storage URL
 
   Returns:
-    source_bucket: str, source bucket name
-    source_object: str, source object path
+    function_source: cloud.functions.v2main.Source
+  """
+  match = _GCS_SOURCE_REGEX.match(source)
+  if not match:
+    raise exceptions.FunctionsError(_GCS_SOURCE_ERROR_MESSAGE)
+
+  return messages.Source(
+      storageSource=messages.StorageSource(
+          bucket=match.group(1), object=match.group(2)))
+
+
+def _GetSourceCSR(messages, source):
+  """Constructs a `Source` message from a Cloud Source Repository reference.
+
+  Args:
+    messages: messages module, the GCFv2 message stubs
+    source: str, the Cloud Source Repository reference
+
+  Returns:
+    function_source: cloud.functions.v2main.Source
+  """
+  match = _CSR_SOURCE_REGEX.match(source)
+
+  if match is None:
+    raise exceptions.FunctionsError(_CSR_SOURCE_ERROR_MESSAGE)
+
+  repo_source = messages.RepoSource(
+      projectId=match.group('project_id'),
+      repoName=match.group('repo_name'),
+      dir=match.group('path'),  # Optional
+  )
+
+  # Optional oneof revision field
+  commit = match.group('commit')
+  branch = match.group('branch')
+  tag = match.group('tag')
+
+  if commit:
+    repo_source.commitSha = commit
+  elif tag:
+    repo_source.tagName = tag
+  else:
+    # Default to 'master' branch if no revision/alias provided.
+    repo_source.branchName = branch or 'master'
+
+  return messages.Source(repoSource=repo_source)
+
+
+def _UploadToStageBucket(region, function_name, zip_file_path, stage_bucket):
+  """Uploads a ZIP file to a user-provided stage bucket.
+
+  Args:
+    region: str, the region to deploy the function to
+    function_name: str, the name of the function
+    zip_file_path: str, the path to the ZIP file
+    stage_bucket: str, the name of the stage bucket
+
+  Returns:
+    dest_object: storage_util.ObjectReference, a reference to the uploaded
+                 Cloud Storage object
+  """
+  dest_object = storage_util.ObjectReference.FromBucketRef(
+      storage_util.BucketReference.FromArgument(stage_bucket),
+      '{}-{}-{}.zip'.format(
+          region, function_name,
+          ''.join(random.choice(string.ascii_lowercase) for _ in range(12))))
+  storage_api.StorageClient().CopyFileToGCS(zip_file_path, dest_object)
+  return dest_object
+
+
+def _UploadToGeneratedUrl(zip_file_path, url):
+  """Uploads a ZIP file to a signed Cloud Storage URL.
+
+  Args:
+    zip_file_path: str, the path to the ZIP file
+    url: str, the signed Cloud Storage URL
+  """
+  upload = transfer.Upload.FromFile(zip_file_path, mime_type=_ZIP_MIME_TYPE)
+  try:
+    request = http_wrapper.Request(
+        url, http_method='PUT', headers={'content-type': upload.mime_type})
+    request.body = upload.stream.read()
+    upload.stream.close()
+    response = http_wrapper.MakeRequest(transports.GetApitoolsTransport(),
+                                        request)
+  finally:
+    upload.stream.close()
+  if response.status_code // 100 != 2:
+    raise exceptions.FunctionsError(_SIGNED_URL_UPLOAD_ERROR_MESSSAGE)
+
+
+def _GetSourceLocal(client, messages, region, function_name, source,
+                    stage_bucket_arg, ignore_file_arg):
+  """Constructs a `Source` message from a local file system path.
+
+  Args:
+    client: The GCFv2 API client
+    messages: messages module, the GCFv2 message stubs
+    region: str, the region to deploy the function to
+    function_name: str, the name of the function
+    source: str, the path
+    stage_bucket_arg: str, the passed in --stage-bucket flag argument
+    ignore_file_arg: str, the passed in --ignore-file flag argument
+
+  Returns:
+    function_source: cloud.functions.v2main.Source
+  """
+  with file_utils.TemporaryDirectory() as tmp_dir:
+    zip_file_path = os.path.join(tmp_dir, 'fun.zip')
+    chooser = gcloudignore.GetFileChooserForDir(
+        source,
+        default_ignore_file=_DEFAULT_IGNORE_FILE,
+        gcloud_ignore_creation_predicate=_GcloudIgnoreCreationPredicate,
+        ignore_file=ignore_file_arg)
+    archive.MakeZipFromDir(zip_file_path, source, predicate=chooser.IsIncluded)
+
+    if stage_bucket_arg:
+      dest_object = _UploadToStageBucket(region, function_name, zip_file_path,
+                                         stage_bucket_arg)
+      return messages.Source(
+          storageSource=messages.StorageSource(
+              bucket=dest_object.bucket, object=dest_object.name))
+    else:
+      dest = client.projects_locations_functions.GenerateUploadUrl(
+          messages
+          .CloudfunctionsProjectsLocationsFunctionsGenerateUploadUrlRequest(
+              generateUploadUrlRequest=messages.GenerateUploadUrlRequest(),
+              parent='projects/%s/locations/%s' %
+              (properties.VALUES.core.project.GetOrFail(), region)))
+
+      _UploadToGeneratedUrl(zip_file_path, dest.uploadUrl)
+
+      return messages.Source(storageSource=dest.storageSource)
+
+
+def _GetSource(client, messages, region, function_name, source_arg,
+               stage_bucket_arg, ignore_file_arg, existing_function):
+  """Parses the source bucket and object from the --source flag.
+
+  Args:
+    client: The GCFv2 API client
+    messages: messages module, the GCFv2 message stubs
+    region: str, the region to deploy the function to
+    function_name: str, the name of the function
+    source_arg: str, the passed in --source flag argument
+    stage_bucket_arg: str, the passed in --stage-bucket flag argument
+    ignore_file_arg: str, the passed in --ignore-file flag argument
+    existing_function: cloudfunctions_v2alpha_messages.Function | None
+
+  Returns:
+    function_source: cloud.functions.v2main.Source
     update_field_set: frozenset, set of update mask fields
   """
-  if not source_arg:
-    # Require the `--source` flag for new function deployments.
-    if is_new_function:
-      raise exceptions.FunctionsError(SOURCE_ERROR_MESSAGE)
-    else:
-      return None, None, frozenset()
+  if existing_function is not None and source_arg is None:
+    if existing_function.buildConfig.source.repoSource is not None:
+      return None, frozenset()
 
-  source_match = SOURCE_REGEX.match(source_arg)
-  if not source_match:
-    raise exceptions.FunctionsError(SOURCE_ERROR_MESSAGE)
+    # We don't know if the function was originally deployed from local source
+    # files or from Cloud Storage. Ask the user to clarify.
+    raise exceptions.FunctionsError(_MISSING_SOURCE_ERROR_MESSAGE)
 
-  return source_match.group(1), source_match.group(2), frozenset(
-      ['build_config.source'])
+  source = source_arg or '.'
+
+  if source.startswith('gs://'):
+    return _GetSourceGCS(messages, source), frozenset(['build_config.source'])
+  elif source.startswith('https://'):
+    return _GetSourceCSR(messages, source), frozenset(['build_config.source'])
+  else:
+    return _GetSourceLocal(client, messages, region, function_name, source,
+                           stage_bucket_arg,
+                           ignore_file_arg), frozenset(['build_config.source'])
 
 
 def _GetServiceConfig(args, messages, existing_function):
@@ -205,7 +398,7 @@ def _GetEventTrigger(args, messages):
   pubsub_topic = None
 
   if args.trigger_topic:
-    event_type = EVENT_TYPE_PUBSUB_MESSAGE_PUBLISHED
+    event_type = _EVENT_TYPE_PUBSUB_MESSAGE_PUBLISHED
     pubsub_topic = 'projects/{}/topics/{}'.format(
         properties.VALUES.core.project.GetOrFail(), args.trigger_topic)
 
@@ -240,7 +433,7 @@ def _GetSignatureType(args, event_trigger):
   if args.trigger_http or not event_trigger:
     if args.signature_type and args.signature_type != 'http':
       raise exceptions.FunctionsError(
-          INVALID_NON_HTTP_SIGNATURE_TYPE_ERROR_MESSAGE)
+          _INVALID_NON_HTTP_SIGNATURE_TYPE_ERROR_MESSAGE)
     if args.trigger_http:
       return 'http', frozenset(['build_config.environment_variables'])
     else:
@@ -249,19 +442,24 @@ def _GetSignatureType(args, event_trigger):
       return 'http', frozenset()
   elif args.signature_type:
     if args.signature_type == 'http':
-      raise exceptions.FunctionsError(INVALID_HTTP_SIGNATURE_TYPE_ERROR_MESSAGE)
+      raise exceptions.FunctionsError(
+          _INVALID_HTTP_SIGNATURE_TYPE_ERROR_MESSAGE)
     return args.signature_type, frozenset(
         ['build_config.environment_variables'])
   else:
     return 'cloudevent', frozenset()
 
 
-def _GetBuildConfig(args, messages, event_trigger, existing_function):
+def _GetBuildConfig(args, client, messages, region, function_name,
+                    event_trigger, existing_function):
   """Constructs a BuildConfig message from the command-line arguments.
 
   Args:
     args: argparse.Namespace, arguments that this command was invoked with
+    client: The GCFv2 API client
     messages: messages module, the GCFv2 message stubs
+    region: str, the region to deploy the function to
+    function_name: str, the name of the function
     event_trigger: cloudfunctions_v2alpha_messages.EventTrigger, used to request
       events sent from another service
     existing_function: cloudfunctions_v2alpha_messages.Function | None
@@ -271,8 +469,9 @@ def _GetBuildConfig(args, messages, event_trigger, existing_function):
       build step for the function
     updated_fields_set: frozenset[str], set of update mask fields
   """
-  source_bucket, source_object, source_updated_fields = _GetSource(
-      args.source, existing_function is None)
+  function_source, source_updated_fields = _GetSource(
+      client, messages, region, function_name, args.source, args.stage_bucket,
+      args.ignore_file, existing_function)
 
   old_build_env_vars = {}
   if (existing_function and existing_function.buildConfig and
@@ -292,7 +491,7 @@ def _GetBuildConfig(args, messages, event_trigger, existing_function):
   if ('GOOGLE_FUNCTION_SIGNATURE_TYPE' in build_env_vars and
       'GOOGLE_FUNCTION_SIGNATURE_TYPE' not in old_build_env_vars):
     raise exceptions.FunctionsError(
-        SIGNATURE_TYPE_ENV_VAR_COLLISION_ERROR_MESSAGE)
+        _SIGNATURE_TYPE_ENV_VAR_COLLISION_ERROR_MESSAGE)
   build_env_vars['GOOGLE_FUNCTION_SIGNATURE_TYPE'] = signature_type
 
   updated_fields = set()
@@ -316,9 +515,7 @@ def _GetBuildConfig(args, messages, event_trigger, existing_function):
   return messages.BuildConfig(
       entryPoint=args.entry_point,
       runtime=args.runtime,
-      source=messages.Source(
-          storageSource=messages.StorageSource(
-              bucket=source_bucket, object=source_object)),
+      source=function_source,
       workerPool=worker_pool,
       environmentVariables=messages.BuildConfig.EnvironmentVariablesValue(
           additionalProperties=[
@@ -403,9 +600,9 @@ def _GetVpcAndVpcEgressSettings(args, messages, existing_function):
 
 
 def _ValidateLegacyV1Flags(args):
-  for flag_variable, flag_name in LEGACY_V1_FLAGS:
+  for flag_variable, flag_name in _LEGACY_V1_FLAGS:
     if args.IsSpecified(flag_variable):
-      raise exceptions.FunctionsError(LEGACY_V1_FLAG_ERROR % flag_name)
+      raise exceptions.FunctionsError(_LEGACY_V1_FLAG_ERROR % flag_name)
 
 
 def _ValidateUnsupportedV2Flags(args):
@@ -449,7 +646,8 @@ def _SetInvokerPermissions(args, function, is_new_function):
     None
   """
   service_ref_one_platform = resources.REGISTRY.ParseRelativeName(
-      function.serviceConfig.service, CLOUD_RUN_SERVICE_COLLECTION_ONE_PLATFORM)
+      function.serviceConfig.service,
+      _CLOUD_RUN_SERVICE_COLLECTION_ONE_PLATFORM)
 
   if not _IsHttpTriggered(args):
     return
@@ -479,7 +677,7 @@ def _SetInvokerPermissions(args, function, is_new_function):
     service_ref_k8s = resources.REGISTRY.ParseRelativeName(
         'namespaces/{}/services/{}'.format(
             properties.VALUES.core.project.GetOrFail(),
-            service_ref_one_platform.Name()), CLOUD_RUN_SERVICE_COLLECTION_K8S)
+            service_ref_one_platform.Name()), _CLOUD_RUN_SERVICE_COLLECTION_K8S)
 
     if allow_unauthenticated:
       operations.AddOrRemoveIamPolicyBinding(
@@ -591,7 +789,9 @@ def Run(args, release_track):
   is_new_function = existing_function is None
 
   event_trigger, trigger_updated_fields = _GetEventTrigger(args, messages)
-  build_config, build_updated_fields = _GetBuildConfig(args, messages,
+  build_config, build_updated_fields = _GetBuildConfig(args, client, messages,
+                                                       function_ref.locationsId,
+                                                       function_ref.Name(),
                                                        event_trigger,
                                                        existing_function)
 

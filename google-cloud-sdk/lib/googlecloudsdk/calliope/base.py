@@ -36,6 +36,12 @@ from googlecloudsdk.core.resource import resource_printer
 
 import six
 
+try:
+  # Python 3.3 and above.
+  collections_abc = collections.abc
+except AttributeError:
+  collections_abc = collections
+
 # Category constants
 AI_AND_MACHINE_LEARNING_CATEGORY = 'AI and Machine Learning'
 VERTEX_AI_CATEGORY = 'Vertex AI'
@@ -927,7 +933,7 @@ def ChoiceArgument(name_or_flag, choices, help_str=None, required=False,
   if not choices:
     raise ValueError('Choices must not be empty.')
 
-  if (not isinstance(choices, collections.Iterable)
+  if (not isinstance(choices, collections_abc.Iterable)
       or isinstance(choices, six.string_types)):
     raise TypeError(
         'Choices must be an iterable container of options: [{}].'.format(

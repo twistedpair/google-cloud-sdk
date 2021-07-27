@@ -71,9 +71,13 @@ class Client(object):
     msg = 'GoogleCloudGkemulticloud{}AwsClusterUser'.format(self.version)
     return getattr(self.messages, msg)(username=username)
 
-  def _CreateAwsVolumeTemplate(self, size_gib):
+  def _CreateAwsVolumeTemplate(self, size_gib, volume_type, iops, kms_key_arn):
     msg = 'GoogleCloudGkemulticloud{}AwsVolumeTemplate'.format(self.version)
-    return getattr(self.messages, msg)(sizeGib=size_gib)
+    return getattr(self.messages, msg)(
+        sizeGib=size_gib,
+        volumeType=volume_type,
+        iops=iops,
+        kmsKeyArn=kms_key_arn)
 
   def _CreateAwsDatabaseEncryption(self, database_encryption_key):
     msg = 'GoogleCloudGkemulticloud{}AwsDatabaseEncryption'.format(self.version)
@@ -106,8 +110,14 @@ class Client(object):
     cp.iamInstanceProfile = args.iam_instance_profile
     cp.version = args.cluster_version
     cp.instanceType = args.instance_type
-    cp.mainVolume = self._CreateAwsVolumeTemplate(args.main_volume_size)
-    cp.rootVolume = self._CreateAwsVolumeTemplate(args.root_volume_size)
+    cp.mainVolume = self._CreateAwsVolumeTemplate(args.main_volume_size,
+                                                  args.main_volume_type,
+                                                  args.main_volume_iops,
+                                                  args.main_volume_kms_key_arn)
+    cp.rootVolume = self._CreateAwsVolumeTemplate(args.root_volume_size,
+                                                  args.root_volume_type,
+                                                  args.root_volume_iops,
+                                                  args.root_volume_kms_key_arn)
     cp.databaseEncryption = self._CreateAwsDatabaseEncryption(
         args.database_encryption_kms_key_arn)
     cp.awsServicesAuthentication = self._CreateAwsServicesAuthentication(

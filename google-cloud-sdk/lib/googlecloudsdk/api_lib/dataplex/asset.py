@@ -63,3 +63,33 @@ def SetIamPolicyFromFile(asset_ref, policy_file):
       policy_file,
       dataplex_api.GetMessageModule().GoogleIamV1Policy)
   return SetIamPolicy(asset_ref, policy)
+
+
+def GenerateAssetForCreateRequest(description, display_name, labels,
+                                  resource_name, resource_spec_type,
+                                  creation_policy, deletion_policy,
+                                  discovery_spec_enabled, schedule):
+  """Create Asset for Message Create Requests."""
+  module = dataplex_api.GetMessageModule()
+  resource_spec = module.GoogleCloudDataplexV1AssetResourceSpec
+  return module.GoogleCloudDataplexV1Asset(
+      description=description,
+      displayName=display_name,
+      labels=labels,
+      resourceSpec=module.GoogleCloudDataplexV1AssetResourceSpec(
+          name=resource_name,
+          type=resource_spec.TypeValueValuesEnum(resource_spec_type),
+          creationPolicy=resource_spec.CreationPolicyValueValuesEnum(
+              creation_policy),
+          deletionPolicy=resource_spec.DeletionPolicyValueValuesEnum(
+              deletion_policy)),
+      discoverySpec=module.GoogleCloudDataplexV1AssetDiscoverySpec(
+          enabled=discovery_spec_enabled, schedule=schedule))
+
+
+def WaitForOperation(operation):
+  """Waits for the given google.longrunning.Operation to complete."""
+  return dataplex_api.WaitForOperation(
+      operation,
+      dataplex_api.GetClientInstance().projects_locations_lakes_zones_assets)
+

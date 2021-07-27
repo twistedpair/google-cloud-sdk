@@ -130,6 +130,11 @@ def _FindCompletions(root, cmd_line):
       elif flag_mode != FLAG_BOOLEAN:
         flag_mode = FLAG_BOOLEAN
         continue  # Just consume if we are expecting a flag value
+      elif not is_flag_word and not node.get(LOOKUP_COMMANDS):
+        # If we're at a leaf command node, this could be a positional arg, so
+        # consume it and move on.
+        flag_mode = FLAG_BOOLEAN
+        continue
       else:
         return []  # Non-existing command/flag, so nothing to do
 

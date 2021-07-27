@@ -335,6 +335,10 @@
           "type": "integer",
           "format": "int32"
         },
+        "clusterConfig": {
+          "description": "Configuration for this cluster.",
+          "$ref": "ClusterConfig"
+        },
         "defaultStorageType": {
           "description": "Immutable. The type of storage used by this cluster to serve its parent instance's tables, unless explicitly overridden.",
           "type": "string",
@@ -352,6 +356,61 @@
         "encryptionConfig": {
           "description": "Immutable. The encryption configuration for CMEK-protected clusters.",
           "$ref": "EncryptionConfig"
+        }
+      }
+    },
+    "ClusterConfig": {
+      "id": "ClusterConfig",
+      "description": "Configuration for a cluster.",
+      "type": "object",
+      "properties": {
+        "clusterAutoscalingConfig": {
+          "description": "Autoscaling configuration for this cluster. Note that when creating or updating a cluster, exactly one of serve_nodes or cluster_autoscaling_config must be set. If serve_nodes is set, then serve_nodes is fixed and autoscaling is turned off. If cluster_autoscaling_config is set, then serve_nodes will be autoscaled.",
+          "$ref": "ClusterAutoscalingConfig"
+        }
+      }
+    },
+    "ClusterAutoscalingConfig": {
+      "id": "ClusterAutoscalingConfig",
+      "description": "Autoscaling config for a cluster.",
+      "type": "object",
+      "properties": {
+        "autoscalingLimits": {
+          "description": "Required. Autoscaling limits for this cluster.",
+          "$ref": "AutoscalingLimits"
+        },
+        "autoscalingTargets": {
+          "description": "Required. Autoscaling targets for this cluster.",
+          "$ref": "AutoscalingTargets"
+        }
+      }
+    },
+    "AutoscalingLimits": {
+      "id": "AutoscalingLimits",
+      "description": "Limits for the number of nodes a Cluster can autoscale up\/down to.",
+      "type": "object",
+      "properties": {
+        "minServeNodes": {
+          "description": "Required. Minimum number of nodes to scale down to.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "maxServeNodes": {
+          "description": "Required. Maximum number of nodes to scale up to.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "AutoscalingTargets": {
+      "id": "AutoscalingTargets",
+      "description": "The Autoscaling targets for a Cluster. These determine the recommended nodes.",
+      "type": "object",
+      "properties": {
+        "cpuUtilizationPercent": {
+          "description": "The cpu utilization that the Autoscaler should be trying to achieve. This number is on a scale from 0 (no utilization) to 100 (total utilization).",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -1412,6 +1471,42 @@
             "COMPLETED",
             "CANCELLED"
           ]
+        }
+      }
+    },
+    "PartialUpdateClusterMetadata": {
+      "id": "PartialUpdateClusterMetadata",
+      "description": "The metadata for the Operation returned by PartialUpdateCluster.",
+      "type": "object",
+      "properties": {
+        "originalRequest": {
+          "$ref": "PartialUpdateClusterRequest"
+        },
+        "requestTime": {
+          "description": "The time at which the original request was received.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "finishTime": {
+          "description": "The time at which the operation failed or was completed successfully.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "PartialUpdateClusterRequest": {
+      "id": "PartialUpdateClusterRequest",
+      "description": "Request message for BigtableInstanceAdmin.PartialUpdateCluster.",
+      "type": "object",
+      "properties": {
+        "cluster": {
+          "description": "Required. The Cluster which contains the partial updates to be applied, subject to the update_mask.",
+          "$ref": "Cluster"
+        },
+        "updateMask": {
+          "description": "Required. The subset of Cluster fields which should be replaced. Must be explicitly set.",
+          "type": "string",
+          "format": "google-fieldmask"
         }
       }
     },

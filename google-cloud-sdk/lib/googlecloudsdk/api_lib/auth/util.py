@@ -25,6 +25,7 @@ import json
 from googlecloudsdk.core import context_aware
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
+from googlecloudsdk.core import yaml
 from googlecloudsdk.core.credentials import flow as c_flow
 from googlecloudsdk.core.credentials import google_auth_credentials as c_google_auth
 from googlecloudsdk.core.credentials import store as c_store
@@ -60,6 +61,46 @@ class Error(exceptions.Error):
 class InvalidClientSecretsError(Error):
   """An error for when we fail to load the client secrets file."""
   pass
+
+
+class BadCredentialFileException(Error):
+  """Raised when credentials file cannot be read."""
+  pass
+
+
+def GetCredentialsConfigFromFile(filename):
+  """Returns the JSON content of a credentials config file.
+
+  This function is useful when the content of a file need to be inspected first
+  before determining how to handle it (how to initialize the underlying
+  credentials). Only UTF-8 JSON files are supported.
+
+  Args:
+    filename (str): The filepath to the ADC file representing credentials.
+
+  Returns:
+    Optional(Mapping): The JSON content.
+
+  Raises:
+    BadCredentialFileException: If JSON parsing of the file fails.
+  """
+
+  try:
+    # YAML is a superset of JSON.
+    content = yaml.load_path(filename)
+  except UnicodeDecodeError as e:
+    raise BadCredentialFileException(
+        'File {0} is not utf-8 encoded: {1}'.format(filename, e))
+  except yaml.YAMLParseError as e:
+    raise BadCredentialFileException('Could not read json file {0}: {1}'.format(
+        filename, e))
+
+  # Require the JSON content to be an object.
+  # Credentials and configs are always objects.
+  if not isinstance(content, dict):
+    raise BadCredentialFileException(
+        'Could not read json file {0}'.format(filename))
+  return content
 
 
 def DoInstalledAppBrowserFlowGoogleAuth(launch_browser,

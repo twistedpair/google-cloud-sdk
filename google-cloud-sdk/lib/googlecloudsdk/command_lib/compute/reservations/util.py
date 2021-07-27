@@ -21,8 +21,8 @@ from __future__ import unicode_literals
 from googlecloudsdk.calliope import exceptions
 
 
-def MakeReservationMessageFromArgs(messages, args, allocation_ref):
-  """Construct allocation message from args passed in."""
+def MakeReservationMessageFromArgs(messages, args, reservation_ref):
+  """Construct reservation message from args passed in."""
   accelerators = MakeGuestAccelerators(messages,
                                        getattr(args, 'accelerator', None))
   local_ssds = MakeLocalSsds(messages, getattr(args, 'local_ssd', None))
@@ -33,10 +33,10 @@ def MakeReservationMessageFromArgs(messages, args, allocation_ref):
       args.min_cpu_platform, getattr(args, 'location_hint', None),
       getattr(args, 'maintenance_freeze_duration', None),
       getattr(args, 'maintenance_interval', None))
-  return MakeReservationMessage(messages, allocation_ref.Name(), share_settings,
-                                specific_reservation,
+  return MakeReservationMessage(messages, reservation_ref.Name(),
+                                share_settings, specific_reservation,
                                 args.require_specific_reservation,
-                                allocation_ref.zone)
+                                reservation_ref.zone)
 
 
 def MakeGuestAccelerators(messages, accelerator_configs):
@@ -83,9 +83,8 @@ def MakeShareSettingsWithArgs(messages,
   """Constructs the share settings message object from raw args as input."""
   if setting_configs:
     if setting_configs == 'organization':
-      return messages.ShareSettings(
-          shareType=messages.ShareSettings.ShareTypeValueValuesEnum
-          .ORGANIZATION)
+      return messages.ShareSettings(shareType=messages.ShareSettings
+                                    .ShareTypeValueValuesEnum.ORGANIZATION)
     if setting_configs == 'projects':
       if not args.IsSpecified(share_with):
         raise exceptions.InvalidArgumentException(
@@ -97,6 +96,10 @@ def MakeShareSettingsWithArgs(messages,
           .SPECIFIC_PROJECTS,
           projects=getattr(args, share_with, None))
   else:
+    if args.IsKnownAndSpecified(share_with):
+      raise exceptions.InvalidArgumentException(
+          '--share_setting',
+          'Please specify share setting if specifying share with.')
     return None
 
 
@@ -117,6 +120,10 @@ def MakeShareSettingsWithDict(messages, dictionary, setting_configs):
           .SPECIFIC_PROJECTS,
           projects=dictionary.get('share_with', None))
   else:
+    if 'share_with' in dictionary.keys():
+      raise exceptions.InvalidArgumentException(
+          '--share_setting',
+          'Please specify share setting if specifying share with.')
     return None
 
 
@@ -152,7 +159,7 @@ def MakeSpecificSKUReservationMessage(messages,
 def MakeReservationMessage(messages, reservation_name, share_settings,
                            specific_reservation, require_specific_reservation,
                            reservation_zone):
-  """Constructs a single allocation message object."""
+  """Constructs a single reservations message object."""
   reservation_message = messages.Reservation(
       name=reservation_name,
       specificReservation=specific_reservation,

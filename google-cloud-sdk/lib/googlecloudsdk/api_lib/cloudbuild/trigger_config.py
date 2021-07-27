@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 from googlecloudsdk.api_lib.cloudbuild import cloudbuild_util
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions as c_exceptions
+from googlecloudsdk.command_lib.builds import flags as build_flags
 
 _CREATE_FILE_DESC = ('A file that contains the configuration for the '
                      'WorkerPool to be created.')
@@ -61,8 +62,20 @@ def AddTriggerArgs(parser):
   # Trigger configuration
   flag_config = trigger_config.add_argument_group(
       help='Flag based trigger configuration')
+  build_flags.AddRegionFlag(flag_config, hidden=True)
   flag_config.add_argument('--name', help='Build trigger name.')
   flag_config.add_argument('--description', help='Build trigger description.')
+  flag_config.add_argument(
+      '--service-account',
+      help=(
+          'The service account used for all user-controlled operations '
+          'including UpdateBuildTrigger, RunBuildTrigger, CreateBuild, and '
+          'CancelBuild. If no service account is set, then the standard Cloud '
+          'Build service account ([PROJECT_NUM]@system.gserviceaccount.com) is '
+          'used instead. Format: '
+          '`projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT_ID_OR_EMAIL}`.'
+      ),
+      required=False)
   flag_config.add_argument('--require-approval',
                            help='Require manual approval for triggered builds.',
                            action='store_true',
@@ -93,6 +106,7 @@ def ParseTriggerArgs(args, messages):
   trigger = messages.BuildTrigger()
   trigger.name = args.name
   trigger.description = args.description
+  trigger.serviceAccount = args.service_account
   ParseRequireApproval(trigger, args, messages)
   return trigger, False
 

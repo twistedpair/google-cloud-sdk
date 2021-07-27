@@ -40,10 +40,12 @@ class ArtifactregistryV1beta2(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
+    self.projects_locations_repositories_aptArtifacts = self.ProjectsLocationsRepositoriesAptArtifactsService(self)
     self.projects_locations_repositories_files = self.ProjectsLocationsRepositoriesFilesService(self)
     self.projects_locations_repositories_packages_tags = self.ProjectsLocationsRepositoriesPackagesTagsService(self)
     self.projects_locations_repositories_packages_versions = self.ProjectsLocationsRepositoriesPackagesVersionsService(self)
     self.projects_locations_repositories_packages = self.ProjectsLocationsRepositoriesPackagesService(self)
+    self.projects_locations_repositories_yumArtifacts = self.ProjectsLocationsRepositoriesYumArtifactsService(self)
     self.projects_locations_repositories = self.ProjectsLocationsRepositoriesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
@@ -109,6 +111,43 @@ class ArtifactregistryV1beta2(base_api.BaseApiClient):
         request_field='',
         request_type_name='ArtifactregistryProjectsLocationsOperationsListRequest',
         response_type_name='ListOperationsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsRepositoriesAptArtifactsService(base_api.BaseApiService):
+    """Service class for the projects_locations_repositories_aptArtifacts resource."""
+
+    _NAME = 'projects_locations_repositories_aptArtifacts'
+
+    def __init__(self, client):
+      super(ArtifactregistryV1beta2.ProjectsLocationsRepositoriesAptArtifactsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Import(self, request, global_params=None):
+      r"""Imports Apt artifacts. The returned Operation will complete once the resources are imported. Package, Version, and File resources are created based on the imported artifacts. Imported artifacts that conflict with existing resources are ignored.
+
+      Args:
+        request: (ArtifactregistryProjectsLocationsRepositoriesAptArtifactsImportRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Import')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Import.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta2/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/aptArtifacts:import',
+        http_method='POST',
+        method_id='artifactregistry.projects.locations.repositories.aptArtifacts.import',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1beta2/{+parent}/aptArtifacts:import',
+        request_field='importAptArtifactsRequest',
+        request_type_name='ArtifactregistryProjectsLocationsRepositoriesAptArtifactsImportRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -500,6 +539,43 @@ class ArtifactregistryV1beta2(base_api.BaseApiClient):
         request_field='',
         request_type_name='ArtifactregistryProjectsLocationsRepositoriesPackagesListRequest',
         response_type_name='ListPackagesResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsRepositoriesYumArtifactsService(base_api.BaseApiService):
+    """Service class for the projects_locations_repositories_yumArtifacts resource."""
+
+    _NAME = 'projects_locations_repositories_yumArtifacts'
+
+    def __init__(self, client):
+      super(ArtifactregistryV1beta2.ProjectsLocationsRepositoriesYumArtifactsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Import(self, request, global_params=None):
+      r"""Imports Yum (RPM) artifacts. The returned Operation will complete once the resources are imported. Package, Version, and File resources are created based on the imported artifacts. Imported artifacts that conflict with existing resources are ignored.
+
+      Args:
+        request: (ArtifactregistryProjectsLocationsRepositoriesYumArtifactsImportRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Import')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Import.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta2/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/yumArtifacts:import',
+        http_method='POST',
+        method_id='artifactregistry.projects.locations.repositories.yumArtifacts.import',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1beta2/{+parent}/yumArtifacts:import',
+        request_field='importYumArtifactsRequest',
+        request_type_name='ArtifactregistryProjectsLocationsRepositoriesYumArtifactsImportRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

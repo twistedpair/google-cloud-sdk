@@ -89,6 +89,16 @@ _SANDBOX_CHOICES = {
 
 _DEFAULT_KUBECONFIG_PATH = '~/.kube/config'
 
+_POST_CMEK_KEY_REVOCATION_ACTION_TYPE_CHOICES = {
+    'shut-down':
+        """\
+        No new instances will be started and the existing instances will be shut
+        down after CMEK key revocation.
+        """,
+    'prevent-new':
+        'No new instances will be started after CMEK key revocation.',
+}
+
 
 def _StripKeys(d):
   return {k.strip(): v for k, v in d.items()}
@@ -856,6 +866,24 @@ def AddCmekKeyFlag(parser, with_clear=True):
       '--key', help=('CMEK key reference to encrypt the container with.'))
 
 
+def AddCmekKeyRevocationActionTypeFlag(parser, with_clear=True):
+  """Add post CMEK key revocation action type flag."""
+  policy_group = parser
+  if with_clear:
+    policy_group = parser.add_mutually_exclusive_group(hidden=True)
+    policy_group.add_argument(
+        '--clear-post-key-revocation-action-type',
+        default=False,
+        hidden=True,
+        action='store_true',
+        help='Remove any previously set post CMEK key revocation action type.')
+  policy_group.add_argument(
+      '--post-key-revocation-action-type',
+      choices=_POST_CMEK_KEY_REVOCATION_ACTION_TYPE_CHOICES,
+      hidden=True,
+      help=('Action type after CMEK key revocation.'))
+
+
 def _PortValue(value):
   """Returns True if port value is an int within range or 'default'."""
   try:
@@ -1322,10 +1350,19 @@ def _GetConfigurationChanges(args):
     changes.append(
         config_changes.SetTemplateAnnotationChange(
             container_resource.CMEK_KEY_ANNOTATION, args.key))
+  if FlagIsExplicitlySet(args, 'post_key_revocation_action_type'):
+    changes.append(
+        config_changes.SetTemplateAnnotationChange(
+            container_resource.POST_CMEK_KEY_REVOCATION_ACTION_TYPE_ANNOTATION,
+            args.post_key_revocation_action_type))
   if FlagIsExplicitlySet(args, 'clear_key'):
     changes.append(
         config_changes.DeleteTemplateAnnotationChange(
             container_resource.CMEK_KEY_ANNOTATION))
+    changes.append(
+        config_changes.DeleteTemplateAnnotationChange(
+            container_resource.POST_CMEK_KEY_REVOCATION_ACTION_TYPE_ANNOTATION))
+  if FlagIsExplicitlySet(args, 'clear_post_key_revocation_action_type'):
     changes.append(
         config_changes.DeleteTemplateAnnotationChange(
             container_resource.POST_CMEK_KEY_REVOCATION_ACTION_TYPE_ANNOTATION))
@@ -1735,10 +1772,26 @@ def VerifyGKEFlags(args, release_track, product):
             platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
                 platforms.PLATFORM_MANAGED]))
 
+  if FlagIsExplicitlySet(args, 'post_key_revocation_action_type'):
+    raise serverless_exceptions.ConfigurationError(
+        error_msg.format(
+            flag='--post-key-revocation-action-type',
+            platform=platforms.PLATFORM_MANAGED,
+            platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
+                platforms.PLATFORM_MANAGED]))
+
   if FlagIsExplicitlySet(args, 'clear_key'):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--clear-key',
+            platform=platforms.PLATFORM_MANAGED,
+            platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
+                platforms.PLATFORM_MANAGED]))
+
+  if FlagIsExplicitlySet(args, 'clear_post_key_revocation_action_type'):
+    raise serverless_exceptions.ConfigurationError(
+        error_msg.format(
+            flag='--clear-post-key-revocation-action-type',
             platform=platforms.PLATFORM_MANAGED,
             platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
                 platforms.PLATFORM_MANAGED]))
@@ -1852,10 +1905,26 @@ def VerifyKubernetesFlags(args, release_track, product):
             platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
                 platforms.PLATFORM_MANAGED]))
 
+  if FlagIsExplicitlySet(args, 'post_key_revocation_action_type'):
+    raise serverless_exceptions.ConfigurationError(
+        error_msg.format(
+            flag='--post-key-revocation-action-type',
+            platform=platforms.PLATFORM_MANAGED,
+            platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
+                platforms.PLATFORM_MANAGED]))
+
   if FlagIsExplicitlySet(args, 'clear_key'):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--clear-key',
+            platform=platforms.PLATFORM_MANAGED,
+            platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
+                platforms.PLATFORM_MANAGED]))
+
+  if FlagIsExplicitlySet(args, 'clear_post_key_revocation_action_type'):
+    raise serverless_exceptions.ConfigurationError(
+        error_msg.format(
+            flag='--clear-post-key-revocation-action-type',
             platform=platforms.PLATFORM_MANAGED,
             platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
                 platforms.PLATFORM_MANAGED]))

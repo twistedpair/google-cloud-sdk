@@ -26,10 +26,15 @@ import six
 try:
   # TODO(b/175725675) Make google_crc32c available with Cloud SDK.
   import google_crc32c
-  IS_GOOGLE_CRC32C_AVAILABLE = True
+  if google_crc32c.implementation == 'cffi':
+    IS_FAST_GOOGLE_CRC32C_AVAILABLE = True
+  else:
+    IS_FAST_GOOGLE_CRC32C_AVAILABLE = False
 except ImportError:
+  # TODO(b/194124148) Fall back on pure Python google-crc32c.
+  # Cleans up a lot of this file.
   import gcloud_crcmod as crcmod
-  IS_GOOGLE_CRC32C_AVAILABLE = False
+  IS_FAST_GOOGLE_CRC32C_AVAILABLE = False
 # pylint: enable=g-import-not-at-top
 
 # Castagnoli polynomial and its degree.
@@ -72,7 +77,7 @@ def get_crc32c(initial_data=b''):
     crc_digest = crc.digest()
 
   """
-  if IS_GOOGLE_CRC32C_AVAILABLE:
+  if IS_FAST_GOOGLE_CRC32C_AVAILABLE:
     crc = google_crc32c.Checksum()
   else:
     crc = crcmod.predefined.Crc('crc-32c')
@@ -94,7 +99,7 @@ def get_crc32c_from_checksum(checksum):
    instance from crcmod library. Both set to use initial checksum.
   """
   crc = get_crc32c()
-  if IS_GOOGLE_CRC32C_AVAILABLE:
+  if IS_FAST_GOOGLE_CRC32C_AVAILABLE:
     # pylint:disable=protected-access
     crc._crc = checksum
     # pylint:enable=protected-access

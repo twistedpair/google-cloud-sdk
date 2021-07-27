@@ -93,7 +93,6 @@ class SimpleUpload(_Upload):
   def run(self):
     apitools_upload = transfer.Upload(
         self._source_stream,
-        # TODO(b/192670925): Replace with content type from object metadata.
         self._request_config.content_type,
         gzip_encoded=self._request_config.gzip_encoded,
         total_size=self._request_config.size)
@@ -140,7 +139,6 @@ class ResumableUpload(_Upload):
     else:
       apitools_upload = transfer.Upload(
           self._source_stream,
-          # TODO(b/192670925): Replace with content type from object metadata.
           self._request_config.content_type,
           auto_transfer=False,
           chunksize=scaled_integer.ParseInteger(

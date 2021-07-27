@@ -1131,11 +1131,12 @@ def DeleteGeneratedProperties(cluster, dataproc):
         props, dataproc.messages.SoftwareConfig.PropertiesValue)
 
 
-def ClusterKey(cluster):
+def ClusterKey(cluster, key_type):
   """Return a cluster-generated public encryption key if there is one.
 
   Args:
     cluster: Cluster to check for an encryption key.
+    key_type: Dataproc clusters publishes both RSA and ECIES public keys.
 
   Returns:
     The public key for the cluster if there is one, otherwise None
@@ -1143,6 +1144,8 @@ def ClusterKey(cluster):
   master_instance_refs = cluster.config.masterConfig.instanceReferences
   if not master_instance_refs:
     return None
+  if key_type == 'ECIES':
+    return master_instance_refs[0].publicEciesKey
   return master_instance_refs[0].publicKey
 
 

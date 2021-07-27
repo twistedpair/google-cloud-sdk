@@ -719,6 +719,8 @@ class Feature(_messages.Message):
     servicedirectoryFeatureSpec: The specification for Service Directory.
     servicemeshFeatureSpec: The specification for the Service Mesh Feature.
     updateTime: Output only. When the Feature was last updated.
+    workloadidentityplatformFeatureSpec: The specification for Workload
+      Identity Platform.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -766,6 +768,7 @@ class Feature(_messages.Message):
   servicedirectoryFeatureSpec = _messages.MessageField('ServiceDirectoryFeatureSpec', 19)
   servicemeshFeatureSpec = _messages.MessageField('ServiceMeshFeatureSpec', 20)
   updateTime = _messages.StringField(21)
+  workloadidentityplatformFeatureSpec = _messages.MessageField('WorkloadIdentityPlatformFeatureSpec', 22)
 
 
 class FeatureState(_messages.Message):
@@ -2467,6 +2470,15 @@ class Type(_messages.Message):
 
   code = _messages.StringField(1)
   displayName = _messages.StringField(2)
+
+
+class WorkloadIdentityPlatformFeatureSpec(_messages.Message):
+  r"""WorkloadIdentityPlatformFeatureSpec contains the input for the workload
+  identity platform feature. This is required since Feature proto requires a
+  spec. TODO(b/193825763) add this spec to v1main package once fields are
+  required in the spec
+  """
+
 
 
 encoding.AddCustomJsonFieldMapping(

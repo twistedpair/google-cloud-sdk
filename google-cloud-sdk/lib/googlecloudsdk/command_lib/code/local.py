@@ -204,8 +204,6 @@ class Settings(DataObject):
     # Service names may not include _ and upper case characters.
     service_name = dir_name.replace('_', '-').lower()
 
-    image = _DefaultImageName(service_name)
-
     dockerfile_arg_default = 'Dockerfile'
     builder = DockerfileBuilder(dockerfile=dockerfile_arg_default)
 
@@ -213,7 +211,7 @@ class Settings(DataObject):
         builder=builder,
         cloudsql_instances=[],
         context=os.path.abspath(files.GetCWD()),
-        image=image,
+        image=None,  # See Build() below.
         service_name=service_name,
     )
 
@@ -224,7 +222,10 @@ class Settings(DataObject):
         yaml_dict, RUN_MESSAGES_MODULE.Service)
     knative_service = k8s_service.Service(message, RUN_MESSAGES_MODULE)
 
-    replacements = {}
+    replacements = {
+        'service_name': knative_service.metadata.name,
+    }
+
     try:
       [container] = knative_service.spec.template.spec.containers
     except ValueError:
@@ -237,6 +238,10 @@ class Settings(DataObject):
     if service_account_name:
       replacements['credential'] = ServiceAccountSetting(
           name=service_account_name)
+
+    image_name = container.image
+    if image_name:
+      replacements['image'] = image_name
 
     replacements.update(self._ResourceRequests(container))
 
@@ -270,12 +275,6 @@ class Settings(DataObject):
       if args.IsKnownAndSpecified(override_arg):
         replacements[override_arg] = getattr(args, override_arg)
 
-    # Default 'image' was computed from default 'service_name', but
-    # 'service_name' could have changed.
-    if (args.IsKnownAndSpecified('service_name') and
-        not args.IsKnownAndSpecified('image')):
-      service_name = replacements.get('service_name', self.service_name)
-      replacements['image'] = _DefaultImageName(service_name)
     if args.IsSpecified('application_default_credential'):
       replacements['credential'] = ApplicationDefaultCredentialSetting()
     elif args.IsSpecified('service_account'):
@@ -303,9 +302,14 @@ class Settings(DataObject):
 
     return self.replace(**replacements)
 
-  def Validate(self):
+  def Build(self):
+    """Validate and compute settings after all user inputs have been read."""
     if isinstance(self.builder, DockerfileBuilder):
       self.builder.Validate(self.context)
+    replacements = {}
+    if self.image is None:
+      replacements['image'] = _DefaultImageName(self.service_name)
+    return self.replace(**replacements)
 
 
 def _ChooseExistingServiceYaml(context, arg):
@@ -348,7 +352,7 @@ def AssembleSettings(args):
   if yaml_file:
     settings = settings.WithServiceYaml(yaml_file)
   settings = settings.WithArgs(args)
-  settings.Validate()
+  settings = settings.Build()
   return settings
 
 
@@ -431,16 +435,17 @@ readinessProbe:
     - "grep"
     - ":1F90"
     - "/proc/net/tcp"
+    - "/proc/net/tcp6"
   periodSeconds: 1
 """
 
 
-def CreateDeployment(service_name,
-                     image_name,
-                     memory_limit=None,
-                     cpu_limit=None,
-                     cpu_request=None,
-                     readiness_probe=False):
+def _CreateDeployment(service_name,
+                      image_name,
+                      memory_limit=None,
+                      cpu_limit=None,
+                      cpu_request=None,
+                      readiness_probe=False):
   """Create a deployment specification for a service.
 
   Args:
@@ -452,7 +457,7 @@ def CreateDeployment(service_name,
     readiness_probe: If true, add a readiness probe.
 
   Returns:
-    Dictionary object representing the deployment yaml.
+    Dictionary object representing the deployment yaml, and the main container.
   """
   deployment = yaml.load(_POD_TEMPLATE.format(service=service_name))
   container = yaml.load(
@@ -475,7 +480,7 @@ def CreateDeployment(service_name,
         _READINESS_PROBE_CONTAINER_TEMPLATE.format(service=service_name))
     containers.append(readiness_container)
 
-  return deployment
+  return deployment, container
 
 
 _SERVICE_TEMPLATE = """
@@ -507,17 +512,13 @@ def CreateService(service_name):
   return yaml.load(yaml_text)
 
 
-def AddEnvironmentVariables(deployment, container_name, env_vars):
+def _AddEnvironmentVariables(container, env_vars):
   """Add environment variable settings to a container.
 
   Args:
-    deployment: (dict) Yaml deployment configuration.
-    container_name: (str) Container name.
+    container: (dict) Container to edit.
     env_vars: (dict) Key value environment variable pairs.
   """
-  containers = yaml_helper.GetOrCreate(
-      deployment, ('spec', 'template', 'spec', 'containers'), constructor=list)
-  container = _FindFirst(containers, lambda c: c['name'] == container_name)
   env_list = yaml_helper.GetOrCreate(container, ('env',), constructor=list)
   for key, value in sorted(env_vars.items()):
     env_list.append({'name': key, 'value': value})
@@ -756,19 +757,18 @@ class AppContainerGenerator(KubeConfigGenerator):
     self._readiness_probe = readiness_probe
 
   def CreateConfigs(self):
-    deployment = CreateDeployment(self._service_name, self._image_name,
-                                  self._memory_limit, self._cpu_limit,
-                                  self._cpu_request, self._readiness_probe)
+    deployment, container = _CreateDeployment(
+        self._service_name, self._image_name, self._memory_limit,
+        self._cpu_limit, self._cpu_request, self._readiness_probe)
     default_env_vars = {
         'K_SERVICE': self._service_name,
         'K_CONFIGURATION': 'dev',
         'K_REVISION': 'dev-0001',
     }
-    AddEnvironmentVariables(deployment, self._service_name + '-container',
-                            default_env_vars)
+
+    _AddEnvironmentVariables(container, default_env_vars)
     if self._env_vars:
-      AddEnvironmentVariables(deployment, self._service_name + '-container',
-                              self._env_vars)
+      _AddEnvironmentVariables(container, self._env_vars)
     service = CreateService(self._service_name)
     return [deployment, service]
 
@@ -984,7 +984,7 @@ def _AddSecretVolume(volumes, secret_name):
     volumes: (list[dict]) List of volume specifications.
     secret_name: (str) Name of the secret.
   """
-  if not _Contains(volumes, lambda volume: volume['name'] == secret_name):
+  if secret_name not in (volume['name'] for volume in volumes):
     volumes.append(
         yaml.load(_SECRET_VOLUME_TEMPLATE.format(secret_name=secret_name)))
 
@@ -1003,15 +1003,10 @@ def _AddSecretVolumeMount(mounts, secret_name):
     mounts: (list[dict]) List of volume mount dictionaries.
     secret_name: (str) Name of the secret.
   """
-  if not _Contains(mounts, lambda mount: mount['name'] == secret_name):
+  if secret_name not in (mount['name'] for mount in mounts):
     yaml_text = _SECRET_MOUNT_TEMPLATE.format(
         secret_name=secret_name, secret_path=secret_name.replace('-', '_'))
     mounts.append(yaml.load(yaml_text))
-
-
-def _IsApplicationCredentialVar(var):
-  """Tests if the dictionary has name GOOGLE_APPLICATION_CREDENTIALS."""
-  return var['name'] == 'GOOGLE_APPLICATION_CREDENTIALS'
 
 
 def _AddSecretEnvVar(envs, path):
@@ -1024,55 +1019,8 @@ def _AddSecretEnvVar(envs, path):
     envs: (list[dict]) List of dictionaries with a name entry and value entry.
     path: (str) Path to secret.
   """
-  if not _Contains(envs, _IsApplicationCredentialVar):
+  if 'GOOGLE_APPLICATION_CREDENTIALS' not in (var['name'] for var in envs):
     envs.append({'name': 'GOOGLE_APPLICATION_CREDENTIALS', 'value': path})
-
-
-def _FindByName(configs, name):
-  """Finds a yaml config where the metadata name is the given name.
-
-  Args:
-    configs: (iterable[dict]) Iterable of yaml dictionaries.
-    name: (str) Name for which to search.
-
-  Returns:
-    Dictionary where the name field of the metadata section is the given name.
-    If no config matches that criteria, return None.
-  """
-  return _FindFirst(configs, lambda config: config['metadata']['name'] == name)
-
-
-def _FindFirst(itr, matcher):
-  """Finds a value in an iterable that matches the matcher.
-
-  Args:
-    itr: (iterable[object]) Iterable.
-    matcher: Function accepting a single value and returning a boolean.
-
-  Returns:
-    The first value for which the matcher returns True. If no value matches,
-    return None.
-  """
-  return next((x for x in itr if matcher(x)), None)
-
-
-def _Contains(itr, matcher):
-  """Returns True if the iterable contains a value specified by a matcher.
-
-  Args:
-    itr: (iterable[object]) Iterable.
-    matcher: Function accepting a single value and returning a boolean.
-
-  Returns:
-    True if there is an object in the iterable for which the matcher True.
-    False otherwise.
-  """
-  return not _IsEmpty(x for x in itr if matcher(x))
-
-
-def _IsEmpty(itr):
-  """Returns True if a given iterable returns no values."""
-  return next(itr, None) is None
 
 
 def _Utf8ToBase64(s):

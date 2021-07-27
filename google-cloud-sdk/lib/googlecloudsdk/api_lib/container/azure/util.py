@@ -98,7 +98,9 @@ class ClustersClient(_AzureClientBase):
              root_volume_size=None,
              validate_only=False,
              tags=None,
-             admin_users=None):
+             admin_users=None,
+             db_resource_group_id=None,
+             db_kms_key_id=None):
     """Create a new Azure Cluster."""
     req = self._service.GetRequestType('Create')(
         azureClusterId=cluster_ref.azureClustersId,
@@ -129,6 +131,11 @@ class ClustersClient(_AzureClientBase):
     cp.subnetId = subnet_id
     cp.version = cluster_version
     cp.vmSize = vm_size
+
+    if db_resource_group_id is not None and db_kms_key_id is not None:
+      db_encryption = self._AddAzureDatabaseEncryption(cp)
+      db_encryption.resourceGroupId = db_resource_group_id
+      db_encryption.kmsKeyIdentifier = db_kms_key_id
 
     if tags:
       tag_type = type(cp).TagsValue.AdditionalProperty
@@ -173,6 +180,13 @@ class ClustersClient(_AzureClientBase):
     cp = getattr(self.messages, msg)()
     req.controlPlane = cp
     return cp
+
+  def _AddAzureDatabaseEncryption(self, control_plane):
+    version = util.GetApiVersionForTrack(self.track).capitalize()
+    msg = 'GoogleCloudGkemulticloud{}AzureDatabaseEncryption'.format(version)
+    database_encryption = getattr(self.messages, msg)()
+    control_plane.databaseEncryption = database_encryption
+    return database_encryption
 
   def _CreateSshConfig(self, **kwargs):
     # Using this to hide the 'v1alpha' that shows up in the type.
@@ -234,7 +248,9 @@ class NodePoolsClient(_AzureClientBase):
              validate_only=None,
              min_nodes=None,
              max_nodes=None,
-             max_pods_per_node=None):
+             max_pods_per_node=None,
+             taints=None,
+             labels=None):
     """Create a new Azure Node Pool."""
     req = self._service.GetRequestType('Create')(
         azureNodePoolId=nodepool_ref.azureNodePoolsId,
@@ -259,6 +275,7 @@ class NodePoolsClient(_AzureClientBase):
     nodeconfig = nodepool.config
     nodeconfig.sshConfig = type(nodeconfig).sshConfig.type(
         authorizedKey=ssh_public_key)
+    nodeconfig.taints.extend(taints)
 
     if root_volume_size:
       nodeconfig.rootVolume = self._CreateAzureDiskTemplate(root_volume_size)
@@ -267,6 +284,12 @@ class NodePoolsClient(_AzureClientBase):
       tag_type = type(nodeconfig).TagsValue.AdditionalProperty
       nodeconfig.tags = type(nodeconfig).TagsValue(additionalProperties=[
           tag_type(key=k, value=v) for k, v in tags.items()
+      ])
+
+    if labels:
+      label_type = type(nodeconfig).LabelsValue.AdditionalProperty
+      nodeconfig.labels = type(nodeconfig).LabelsValue(additionalProperties=[
+          label_type(key=k, value=v) for k, v in labels.items()
       ])
 
     return self._service.Create(req)

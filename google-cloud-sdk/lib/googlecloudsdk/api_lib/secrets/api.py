@@ -162,10 +162,10 @@ class Secrets(Client):
     except apitools_exceptions.HttpNotFoundError:
       return None
 
-  def ListWithPager(self, project_ref, limit):
+  def ListWithPager(self, project_ref, limit, request_filter=None):
     """List secrets returning a pager object."""
     request = self.messages.SecretmanagerProjectsSecretsListRequest(
-        parent=project_ref.RelativeName())
+        parent=project_ref.RelativeName(), filter=request_filter)
 
     return list_pager.YieldFromList(
         service=self.service,
@@ -292,10 +292,10 @@ class Versions(Client):
         parent=secret_ref.RelativeName(), pageSize=limit)
     return self.service.List(request)
 
-  def ListWithPager(self, secret_ref, limit):
+  def ListWithPager(self, secret_ref, limit, request_filter=None):
     """List secrets returning a pager object."""
     request = self.messages.SecretmanagerProjectsSecretsVersionsListRequest(
-        parent=secret_ref.RelativeName(), pageSize=0)
+        parent=secret_ref.RelativeName(), filter=request_filter, pageSize=0)
     return list_pager.YieldFromList(
         service=self.service,
         request=request,

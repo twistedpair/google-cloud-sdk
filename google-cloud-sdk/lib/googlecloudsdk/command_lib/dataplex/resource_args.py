@@ -79,7 +79,9 @@ def AddLakeResourceArg(parser, verb, positional=True):
   """Adds a resource argument for a Dataplex Lake."""
   name = 'lake' if positional else '--lake'
   return concept_parsers.ConceptParser.ForResource(
-      name, GetLakeResourceSpec(), 'The Lake {}'.format(verb),
+      name,
+      GetLakeResourceSpec(),
+      'The Lake {}'.format(verb),
       required=True).AddToParser(parser)
 
 
@@ -87,7 +89,9 @@ def AddZoneResourceArg(parser, verb, positional=True):
   """Adds a resource argument for a Dataplex Zone."""
   name = 'zone' if positional else '--zone'
   return concept_parsers.ConceptParser.ForResource(
-      name, GetZoneResourceSpec(), 'The Zone {}'.format(verb),
+      name,
+      GetZoneResourceSpec(),
+      'The Zone {}'.format(verb),
       required=True).AddToParser(parser)
 
 
@@ -95,5 +99,7 @@ def AddAssetResourceArg(parser, verb, positional=True):
   """Adds a resource argument for a Dataplex Asset."""
   name = 'asset' if positional else '--asset'
   return concept_parsers.ConceptParser.ForResource(
-      name, GetAssetResourceSpec(), 'The Asset {}'.format(verb),
+      name,
+      GetAssetResourceSpec(),
+      'The Asset {}'.format(verb),
       required=True).AddToParser(parser)

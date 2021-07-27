@@ -26,7 +26,6 @@ import threading
 
 from googlecloudsdk.api_lib.storage import api_factory
 from googlecloudsdk.api_lib.storage import cloud_api
-from googlecloudsdk.api_lib.storage import request_config_factory
 from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import hash_util
 from googlecloudsdk.command_lib.storage import progress_callbacks
@@ -39,6 +38,7 @@ from googlecloudsdk.core.util import platforms
 from googlecloudsdk.core.util import scaled_integer
 
 
+DEFAULT_CONTENT_TYPE = 'application/octet-stream'
 COMMON_EXTENSION_RULES = {
     '.md': 'text/markdown',  # b/169088193
     '.tgz': 'application/gzip',  # b/179176339
@@ -98,7 +98,7 @@ def get_content_type(file_resource):
     content_type, _ = mimetypes.guess_type(path)
   if content_type:
     return content_type
-  return request_config_factory.DEFAULT_CONTENT_TYPE
+  return DEFAULT_CONTENT_TYPE
 
 
 def get_digesters(source_resource, destination_resource):

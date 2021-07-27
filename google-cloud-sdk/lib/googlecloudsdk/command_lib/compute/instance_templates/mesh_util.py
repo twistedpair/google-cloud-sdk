@@ -39,11 +39,18 @@ _SERVICE_PROXY_BUCKET_NAME = (
 _SERVICE_PROXY_INSTALLER_BUCKET_NAME = (
     'gs://gce-service-proxy/service-proxy-agent-installer/'
     'releases/installer.tgz')
+_GCE_SERVICE_PROXY_ASM_VERSION_METADATA = 'gce-service-proxy-asm-version'
+_GCE_SERVICE_PROXY_INSTALLER_BUCKET_METADATA = (
+    'gce-service-proxy-installer-bucket')
+_GCE_SERVICE_PROXY_AGENT_BUCKET_METADATA = 'gce-service-proxy-agent-bucket'
 
 _ISTIO_CANONICAL_SERVICE_NAME_LABEL = 'service.istio.io/canonical-name'
 _ISTIO_CANONICAL_SERVICE_REVISION_LABEL = 'service.istio.io/canonical-revision'
 _KUBERNETES_APP_NAME_LABEL = 'app.kubernetes.io/name'
 _KUBERNETES_APP_VERSION_LABEL = 'app.kubernetes.io/version'
+
+_ISTIO_META_CLOUDRUN_ADDR_KEY = 'ISTIO_META_CLOUDRUN_ADDR'
+_CLOUDRUN_ADDR_KEY = 'CLOUDRUN_ADDR'
 
 _ISTIO_DISCOVERY_PORT = '15012'
 
@@ -406,7 +413,7 @@ def _RetrieveWorkloadServiceAccount(workload_manifest):
   return service_account
 
 
-def _RetrieveServiceProxyMetadata(is_mcp, kube_client, project_id,
+def _RetrieveServiceProxyMetadata(args, is_mcp, kube_client, project_id,
                                   network_resource, workload_namespace,
                                   workload_name, workload_manifest,
                                   membership_manifest, asm_revision,
@@ -420,7 +427,10 @@ def _RetrieveServiceProxyMetadata(is_mcp, kube_client, project_id,
     service_proxy_api_server = _GetDiscoveryAddress(mesh_config)
     env_config = kube_client.RetrieveEnvConfig(asm_revision)
   else:
-    asm_version = kube_client.RetrieveASMVersion(asm_revision)
+    if _GCE_SERVICE_PROXY_ASM_VERSION_METADATA in args.metadata:
+      asm_version = args.metadata[_GCE_SERVICE_PROXY_ASM_VERSION_METADATA]
+    else:
+      asm_version = kube_client.RetrieveASMVersion(asm_revision)
     expansionagateway_ip = kube_client.RetrieveExpansionGatewayIP()
     root_cert = kube_client.RetrieveKubernetesRootCert()
     service_proxy_api_server = '{}:{}'.format(expansionagateway_ip,
@@ -520,6 +530,10 @@ def _ModifyInstanceTemplate(args, is_mcp, metadata_args):
         }
     }]
     proxy_metadata.update(metadata_args.mcp_env_config)
+    # ISTIO_META_CLOUDRUN_ADDR must be set to generate node metadata on VM.
+    if _CLOUDRUN_ADDR_KEY in proxy_metadata:
+      proxy_metadata[_ISTIO_META_CLOUDRUN_ADDR_KEY] = proxy_metadata[
+          _CLOUDRUN_ADDR_KEY]
     if 'gce-service-proxy-installer-bucket' not in args.metadata:
       args.metadata['gce-service-proxy-installer-bucket'] = (
           _SERVICE_PROXY_INSTALLER_BUCKET_NAME)
@@ -535,10 +549,10 @@ def _ModifyInstanceTemplate(args, is_mcp, metadata_args):
     }]
     proxy_metadata['ISTIO_META_ISTIO_VERSION'] = metadata_args.asm_version
     args.metadata['rootcert'] = metadata_args.root_cert
-    if 'gce-service-proxy-agent-bucket' not in args.metadata:
+    if _GCE_SERVICE_PROXY_AGENT_BUCKET_METADATA not in args.metadata:
       args.metadata[
-          'gce-service-proxy-agent-bucket'] = _SERVICE_PROXY_BUCKET_NAME.format(
-              metadata_args.asm_version)
+          _GCE_SERVICE_PROXY_AGENT_BUCKET_METADATA] = (
+              _SERVICE_PROXY_BUCKET_NAME.format(metadata_args.asm_version))
 
   gce_software_declaration['softwareRecipes'] = [service_proxy_agent_recipe]
 
@@ -568,9 +582,9 @@ def ConfigureInstanceTemplate(args, kube_client, project_id, network_resource,
   is_mcp = _IsMCP(mesh_config)
 
   service_proxy_metadata_args = _RetrieveServiceProxyMetadata(
-      is_mcp, kube_client, project_id, network_resource, workload_namespace,
-      workload_name, workload_manifest, membership_manifest, asm_revision,
-      mesh_config)
+      args, is_mcp, kube_client, project_id, network_resource,
+      workload_namespace, workload_name, workload_manifest, membership_manifest,
+      asm_revision, mesh_config)
 
   _ModifyInstanceTemplate(args, is_mcp, service_proxy_metadata_args)
 
@@ -615,7 +629,7 @@ class KubernetesClient(object):
     """
     for ns in namespaces:
       out, err = self._RunKubectl(
-          ['auth', 'can-i', 'read', '*', '-n', ns], None)
+          ['auth', 'can-i', 'get', '*', '-n', ns], None)
       if err:
         raise exceptions.Error(
             'Failed to check if the user can read resources in {} namespace: {}'

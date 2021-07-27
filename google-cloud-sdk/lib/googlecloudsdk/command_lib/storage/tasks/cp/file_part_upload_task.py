@@ -42,6 +42,7 @@ from googlecloudsdk.command_lib.storage.tasks import task
 from googlecloudsdk.command_lib.storage.tasks import task_status
 from googlecloudsdk.command_lib.storage.tasks.cp import file_part_task
 from googlecloudsdk.command_lib.storage.tasks.cp import upload_util
+from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import retry
@@ -180,6 +181,10 @@ class FilePartUploadTask(file_part_task.FilePartTask):
         if tracker_data is None:
           serialization_data = None
         else:
+          # TODO(b/190093425): Print a better message for component uploads once
+          # the final destination resource is available in ComponentUploadTask.
+          log.status.Print('Resuming upload for ' + destination_url.object_name)
+
           serialization_data = tracker_data.serialization_data
 
         if tracker_data and tracker_data.complete:

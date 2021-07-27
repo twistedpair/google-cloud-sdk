@@ -22,10 +22,12 @@ from __future__ import unicode_literals
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 
+# See //third_party/py/googlecloudsdk/command_lib/container/resources.yaml
 LOCATIONS_POLICY = 'binaryauthorization.systempolicy'
 PROJECTS_COLLECTION = 'binaryauthorization.projects'
 PROJECTS_POLICY_COLLECTION = 'binaryauthorization.projects.policy'
 PROJECTS_ATTESTORS_COLLECTION = 'binaryauthorization.projects.attestors'
+PROJECTS_CV_CONFIGS_COLLECTION = 'binaryauthorization.projects.continuousValidationConfig'
 
 
 def GetProjectRef():
@@ -56,4 +58,12 @@ def GetAttestorRef(attestor_name):
       attestor_name,
       params={'projectsId': properties.VALUES.core.project.GetOrFail},
       collection=PROJECTS_ATTESTORS_COLLECTION,
+  )
+
+
+def GetCvConfigRef():
+  return resources.REGISTRY.Parse(
+      None,
+      params={'projectsId': properties.VALUES.core.project.GetOrFail},
+      collection=PROJECTS_CV_CONFIGS_COLLECTION,
   )

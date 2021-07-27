@@ -160,6 +160,8 @@ apis:
           path: projects/{projectsId}/policy
         systempolicy:
           path: locations/{locationsId}/policy
+        projects.continuousValidationConfig:
+          path: projects/{projectsId}/continuousValidationConfig
     v1beta1:
       default: false
       discovery_doc: binaryauthorization_v1beta1.json
@@ -706,18 +708,6 @@ apis:
           path: iamPolicies
     v2alpha1:
       discovery_doc: iam_v2alpha1.json
-  iamassist:
-    v1alpha2:
-      resources:
-        simulator:
-          path: simulator
-      discovery_doc: iamassist_v1alpha2.json
-    v1alpha3:
-      default: true
-      resources:
-        simulator:
-          path: simulator
-      discovery_doc: iamassist_v1alpha3.json
   iamcredentials:
     v1:
       discovery_doc: iamcredentials_v1.json

@@ -41,6 +41,13 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_CONTINUOUSVALIDATIONCONFIG = (
+      'projects.continuousValidationConfig',
+      'projects/{projectsId}/continuousValidationConfig',
+      {},
+      ['projectsId'],
+      True
+  )
   PROJECTS_POLICY = (
       'projects.policy',
       'projects/{projectsId}/policy',

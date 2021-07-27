@@ -62,9 +62,8 @@ def AddServiceAccountToDatasetPolicy(access_message_type, dataset_policy,
                                      member, role):
   """Add service account to dataset."""
   for entry in dataset_policy.access:
-    if entry.role == role:
-      if member in entry.userByEmail:
-        return False
+    if entry.role == role and member in entry.userByEmail:
+      return False
   dataset_policy.access.append(
       access_message_type(userByEmail=member, role='{0}'.format(role)))
   return True
@@ -88,7 +87,14 @@ def RemoveServiceAccountFromBucketPolicy(bucket_ref, member, role):
 def RemoveServiceAccountFromDatasetPolicy(dataset_policy, member, role):
   """Deauthorize Account for Dataset."""
   for entry in dataset_policy.access:
-    if entry.role == role:
-      if member in entry.userByEmail:
-        dataset_policy.access.remove(entry)
-  return True
+    if entry.role == role and member in entry.userByEmail:
+      dataset_policy.access.remove(entry)
+      return True
+  return False
+
+
+def WaitForOperation(operation):
+  """Waits for the given google.longrunning.Operation to complete."""
+  return dataplex_api.WaitForOperation(
+      operation,
+      dataplex_api.GetClientInstance().projects_locations_lakes)

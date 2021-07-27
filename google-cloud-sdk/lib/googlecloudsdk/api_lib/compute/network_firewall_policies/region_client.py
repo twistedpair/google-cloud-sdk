@@ -58,6 +58,15 @@ class RegionNetworkFirewallPolicy(object):
                 project=self.ref.project,
                 region=self.ref.region))
 
+  def _MakeCloneRulesRequestTuple(self, source_firewall_policy):
+    return (
+        self._client.regionNetworkFirewallPolicies, 'CloneRules',
+        self._messages.ComputeRegionNetworkFirewallPoliciesCloneRulesRequest(
+            firewallPolicy=self.ref.Name(),
+            sourceFirewallPolicy=source_firewall_policy,
+            project=self.ref.project,
+            region=self.ref.region))
+
   def _MakeCreateRequestTuple(self, firewall_policy):
     return (self._client.regionNetworkFirewallPolicies, 'Insert',
             self._messages.ComputeRegionNetworkFirewallPoliciesInsertRequest(
@@ -80,13 +89,13 @@ class RegionNetworkFirewallPolicy(object):
                 region=self.ref.region))
 
   def _MakeDeleteAssociationRequestTuple(self, firewall_policy, name):
-    return (
-        self._client.regionNetworkFirewallPolicies, 'RemoveAssociation',
-        self._messages.ComputeNetworkFirewallPoliciesRemoveAssociationRequest(
-            firewallPolicy=firewall_policy,
-            name=name,
-            project=self.ref.project,
-            region=self.ref.region))
+    return (self._client.regionNetworkFirewallPolicies, 'RemoveAssociation',
+            self._messages
+            .ComputeRegionNetworkFirewallPoliciesRemoveAssociationRequest(
+                firewallPolicy=firewall_policy,
+                name=name,
+                project=self.ref.project,
+                region=self.ref.region))
 
   def _MakeUpdateRequestTuple(self, firewall_policy=None):
     return (self._client.regionNetworkFirewallPolicies, 'Patch',
@@ -95,6 +104,18 @@ class RegionNetworkFirewallPolicy(object):
                 firewallPolicyResource=firewall_policy,
                 project=self.ref.project,
                 region=self.ref.region))
+
+  def CloneRules(self,
+                 source_firewall_policy=None,
+                 only_generate_request=False):
+    """Sends request to clone all the rules from another firewall policy."""
+    requests = [
+        self._MakeCloneRulesRequestTuple(
+            source_firewall_policy=source_firewall_policy)
+    ]
+    if not only_generate_request:
+      return self._compute_client.MakeRequests(requests)
+    return requests
 
   def Create(self, firewall_policy=None, only_generate_request=False):
     """Sends request to create a region network firewall policy."""

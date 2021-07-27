@@ -32,6 +32,8 @@ from googlecloudsdk.core.util import files
 
 from oauth2client import service_account
 
+_SERVICE_ACCOUNT_TYPE = 'service_account'
+
 
 class Error(exceptions.Error):
   """Errors raised by this module."""
@@ -47,6 +49,11 @@ class BadCredentialFileException(Error):
 
 class BadCredentialJsonFileException(Error):
   """Raised when file cannot be read."""
+
+
+def IsServiceAccountConfig(content_json):
+  """Returns whether a JSON content corresponds to an service account cred."""
+  return (content_json or {}).get('type') == _SERVICE_ACCOUNT_TYPE
 
 
 def CredentialsFromAdcFile(filename):

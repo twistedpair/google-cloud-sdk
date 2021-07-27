@@ -256,3 +256,70 @@ def AddAdminEnabledForUpdate(parser):
       traffic across any functioning linked interconnect attachments. Use
       --no-admin-enabled to disable it.
       """)
+
+
+def AddMacsecEnabledForUpdate(parser):
+  """Adds macsecEnabled flag to the argparse.ArgumentParser."""
+  parser.add_argument(
+      '--enabled',
+      action='store_true',
+      default=None,
+      help="""\
+      Enable or disable MACsec on this Interconnect. MACsec enablement will fail
+      if the MACsec configuration is not specified. Use --no-enabled to disable
+      it.
+      """)
+
+
+def AddFailOpenForUpdate(parser):
+  """Adds failOpen flag to the argparse.ArgumentParser."""
+  parser.add_argument(
+      '--fail-open',
+      action='store_true',
+      default=None,
+      help="""\
+      If enabled, the Interconnect will be configured with a should-secure
+      MACsec security policy, that allows the Google router to fallback to
+      cleartext traffic if the MKA session cannot be established. By default,
+      the Interconnect will be configured with a must-secure security policy
+      that drops all traffic if the MKA session cannot be established with your
+      router. Use --no-fail-open to disable it.
+      """)
+
+
+def AddMacsecPreSharedKeyNameForAddKey(parser):
+  """Adds keyName flag to the argparse.ArgumentParser."""
+  parser.add_argument(
+      '--key-name',
+      required=True,
+      help="""\
+      A name of pre-shared key being added to MACsec configuration of the
+      interconnect. The name must be 1-63 characters long, and comply with
+      RFC1035.
+      """)
+
+
+def AddMacsecPreSharedKeyStartTimeForAddKey(parser):
+  """Adds keyName flag to the argparse.ArgumentParser."""
+  parser.add_argument(
+      '--start-time',
+      required=False,
+      default=None,
+      help="""\
+      A RFC3339 timestamp on or after which the key is valid. startTime can be
+      in the future. If the keychain has a single key, --start-time can be
+      omitted. If the keychain has multiple keys, --start-time is mandatory for
+      each key. The start times of two consecutive keys must be at least 6 hours
+      apart.
+      """)
+
+
+def AddMacsecPreSharedKeyNameForRomoveKey(parser):
+  """Adds keyName flag to the argparse.ArgumentParser."""
+  parser.add_argument(
+      '--key-name',
+      required=True,
+      help="""\
+      The name of pre-shared key being removed from MACsec configuration of the
+      interconnect.
+      """)

@@ -35,6 +35,8 @@ from googlecloudsdk.command_lib.storage.tasks import task_status
 from googlecloudsdk.command_lib.storage.tasks.cp import copy_component_util
 from googlecloudsdk.command_lib.storage.tasks.cp import file_part_task
 from googlecloudsdk.command_lib.util import crc32c
+from googlecloudsdk.core import log
+from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files
 
 
@@ -74,6 +76,41 @@ def _get_first_null_byte_index(destination_url, offset, length):
   return first_null_byte
 
 
+def _get_digesters(component_number, resource):
+  """Returns digesters dictionary for download hash validation.
+
+  Note: The digester object is not picklable. It cannot be passed between
+  tasks through the task graph.
+
+  Args:
+    component_number (int): Used to determine if downloading a slice in a sliced
+      download, which uses CRC32C for hashing.
+    resource (resource_reference.ObjectResource): For checking if object has
+      known hash to validate against.
+
+  Returns:
+    Digesters dict.
+
+  Raises:
+    errors.Error: gcloud storage set to fail if performance-optimized digesters
+      could not be created.
+  """
+  check_hashes = properties.VALUES.storage.check_hashes.Get()
+  if check_hashes == properties.CheckHashes.NEVER.value:
+    return {}
+
+  digesters = {}
+  if component_number is None and resource.md5_hash:
+    digesters[hash_util.HashAlgorithm.MD5] = hash_util.get_md5()
+
+  elif (component_number is not None and resource.crc32c_hash and
+        (crc32c.IS_FAST_GOOGLE_CRC32C_AVAILABLE or
+         check_hashes == properties.CheckHashes.ALWAYS.value)):
+    digesters[hash_util.HashAlgorithm.CRC32C] = crc32c.get_crc32c()
+
+  return digesters
+
+
 class FilePartDownloadTask(file_part_task.FilePartTask):
   """Downloads a byte range."""
 
@@ -84,8 +121,7 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
                length,
                component_number=None,
                total_components=None,
-               strategy=cloud_api.DownloadStrategy.ONE_SHOT,
-               digesters=None):
+               strategy=cloud_api.DownloadStrategy.ONE_SHOT):
     """Initializes task.
 
     Args:
@@ -103,16 +139,14 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
         number of components.
       strategy (cloud_api.DownloadStrategy): Determines what download
         implementation to use.
-      digesters (dict|None): Determines what hash validation to do on download.
     """
     super(FilePartDownloadTask,
           self).__init__(source_resource, destination_resource, offset, length,
                          component_number, total_components)
     self._strategy = strategy
-    self._digesters = digesters or {}
 
   def _perform_download(self, progress_callback, download_strategy, start_byte,
-                        end_byte, write_mode):
+                        end_byte, write_mode, digesters):
     """Prepares file stream, calls API, and validates hash."""
     with files.BinaryFileWriter(
         self._destination_resource.storage_url.object_name,
@@ -125,7 +159,7 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
         api_factory.get_api(provider).download_object(
             self._source_resource,
             download_stream,
-            digesters=self._digesters,
+            digesters=digesters,
             download_strategy=download_strategy,
             progress_callback=progress_callback,
             start_byte=start_byte,
@@ -136,36 +170,37 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
         progress_callback(0)
 
     # CRC32C validated in FinalizeSlicedDownloadTask.
-    if hash_util.HashAlgorithm.MD5 in self._digesters:
+    if hash_util.HashAlgorithm.MD5 in digesters:
       calculated_digest = hash_util.get_base64_hash_digest_string(
-          self._digesters[hash_util.HashAlgorithm.MD5])
+          digesters[hash_util.HashAlgorithm.MD5])
       hash_util.validate_object_hashes_match(self._source_resource.storage_url,
                                              self._source_resource.md5_hash,
                                              calculated_digest)
 
-  def _perform_one_shot_download(self, progress_callback):
+  def _perform_one_shot_download(self, progress_callback, digesters):
     """Sets up a basic download based on task attributes."""
     start_byte = self._offset
     end_byte = self._offset + self._length - 1
 
     self._perform_download(progress_callback,
                            cloud_api.DownloadStrategy.ONE_SHOT, start_byte,
-                           end_byte, files.BinaryFileWriterMode.TRUNCATE)
+                           end_byte, files.BinaryFileWriterMode.TRUNCATE,
+                           digesters)
 
     # Delete orphaned tracker files in case previous strategy created them.
     tracker_file_util.delete_download_tracker_files(
         self._destination_resource.storage_url)
 
-  def _catch_up_digesters(self, start_byte, end_byte):
+  def _catch_up_digesters(self, digesters, start_byte, end_byte):
     with files.BinaryFileReader(
         self._destination_resource.storage_url.object_name
     ) as file_reader:
       # Get hash of partially-downloaded file as start for validation.
-      for hash_algorithm in self._digesters:
-        self._digesters[hash_algorithm] = hash_util.get_hash_from_file_stream(
+      for hash_algorithm in digesters:
+        digesters[hash_algorithm] = hash_util.get_hash_from_file_stream(
             file_reader, hash_algorithm, start=start_byte, stop=end_byte)
 
-  def _perform_resumable_download(self, progress_callback):
+  def _perform_resumable_download(self, progress_callback, digesters):
     """Resume or start download that can be resumabled."""
     copy_component_util.create_file_if_needed(self._source_resource,
                                               self._destination_resource)
@@ -181,18 +216,19 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
 
     if start_byte:
       write_mode = files.BinaryFileWriterMode.MODIFY
-      self._catch_up_digesters(start_byte=0, end_byte=start_byte)
+      self._catch_up_digesters(digesters, start_byte=0, end_byte=start_byte)
+      log.status.Print('Resuming download for {}'.format(self._source_resource))
     else:
       # TRUNCATE can create new file unlike MODIFY.
       write_mode = files.BinaryFileWriterMode.TRUNCATE
 
     self._perform_download(progress_callback,
                            cloud_api.DownloadStrategy.RESUMABLE, start_byte,
-                           end_byte, write_mode)
+                           end_byte, write_mode, digesters)
 
-  def _get_output(self):
+  def _get_output(self, digesters):
     crc32c_checksum = crc32c.get_checksum(
-        self._digesters[hash_util.HashAlgorithm.CRC32C])
+        digesters[hash_util.HashAlgorithm.CRC32C])
     return task.Output(
         additional_task_iterators=None,
         messages=[
@@ -205,7 +241,7 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
                 })
         ])
 
-  def _perform_component_download(self, progress_callback):
+  def _perform_component_download(self, progress_callback, digesters):
     """Component download does not validate hash or delete tracker."""
     destination_url = self._destination_resource.storage_url
 
@@ -219,26 +255,34 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
       first_null_byte = _get_first_null_byte_index(
           destination_url, offset=self._offset, length=self._length)
       start_byte = first_null_byte if found_tracker_file else self._offset
+
       if start_byte >= self._source_resource.size:
         # Component has already been downloaded.
         self._catch_up_digesters(
-            start_byte=self._offset, end_byte=self._source_resource.size)
-        return self._get_output()
+            digesters,
+            start_byte=self._offset,
+            end_byte=self._source_resource.size)
+        return self._get_output(digesters)
       elif found_tracker_file and start_byte != self._offset:
-        self._catch_up_digesters(start_byte=self._offset, end_byte=start_byte)
-
+        self._catch_up_digesters(
+            digesters, start_byte=self._offset, end_byte=start_byte)
+        log.status.Print('Resuming download for {} component {}'.format(
+            self._source_resource, self._component_number))
     else:
       start_byte = self._offset
 
     end_byte = self._offset + self._length - 1
     self._perform_download(progress_callback, self._strategy, start_byte,
-                           end_byte, files.BinaryFileWriterMode.MODIFY)
+                           end_byte, files.BinaryFileWriterMode.MODIFY,
+                           digesters)
 
-    if hash_util.HashAlgorithm.CRC32C in self._digesters:
-      return self._get_output()
+    if hash_util.HashAlgorithm.CRC32C in digesters:
+      return self._get_output(digesters)
 
   def execute(self, task_status_queue=None):
     """Performs download."""
+    digesters = _get_digesters(self._component_number, self._source_resource)
+
     progress_callback = progress_callbacks.FilesAndBytesProgressCallback(
         status_queue=task_status_queue,
         offset=self._offset,
@@ -254,7 +298,7 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
 
     if self._source_resource.size and self._component_number is not None:
       try:
-        return self._perform_component_download(progress_callback)
+        return self._perform_component_download(progress_callback, digesters)
       # pylint:disable=broad-except
       except Exception as e:
         # pylint:enable=broad-except
@@ -263,6 +307,6 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
             messages=[task.Message(topic=task.Topic.ERROR, payload=e)])
 
     if self._strategy is cloud_api.DownloadStrategy.RESUMABLE:
-      self._perform_resumable_download(progress_callback)
+      self._perform_resumable_download(progress_callback, digesters)
     else:
-      self._perform_one_shot_download(progress_callback)
+      self._perform_one_shot_download(progress_callback, digesters)

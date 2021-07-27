@@ -1029,10 +1029,6 @@ iam:
     krm_kind: IAMCustomRole
     support_bulk_export: true
     support_single_export: false
-iamassist:
-  Operations: {}
-  Replays: {}
-  Simulator: {}
 iamcredentials:
   Serviceaccounts: {}
 iap:

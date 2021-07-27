@@ -29,6 +29,12 @@ import time
 
 from googlecloudsdk.core import exceptions
 
+try:
+  # Python 3.3 and above.
+  collections_abc = collections.abc
+except AttributeError:
+  collections_abc = collections
+
 
 _DEFAULT_JITTER_MS = 1000
 
@@ -224,7 +230,7 @@ class Retryer(object):
     else:
       should_retry = lambda x, s: x == should_retry_if
 
-    if isinstance(sleep_ms, collections.Iterable):
+    if isinstance(sleep_ms, collections_abc.Iterable):
       sleep_gen = iter(sleep_ms)
     else:
       sleep_gen = itertools.repeat(sleep_ms)

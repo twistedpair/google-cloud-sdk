@@ -23,6 +23,7 @@ from __future__ import unicode_literals
 
 import functools
 import multiprocessing
+import os
 import sys
 import threading
 
@@ -94,7 +95,7 @@ def _thread_worker(task_queue, task_output_queue, task_status_queue,
 
 @crash_handling.CrashManager
 def _process_worker(task_queue, task_output_queue, task_status_queue,
-                    thread_count, idle_thread_count):
+                    thread_count, idle_thread_count, environment_variables):
   """Starts a consumer thread pool.
 
   Args:
@@ -105,7 +106,11 @@ def _process_worker(task_queue, task_output_queue, task_status_queue,
       progress to a central location.
     thread_count (int): Number of threads the process should spawn.
     idle_thread_count (multiprocessing.Semaphore): Passed on to worker threads.
+    environment_variables (dict): Environment variables from the main process.
+      Needed for spawn compatibility in testing environments, as the testing
+      framework clears environment variables in test SetUp methods.
   """
+  os.environ.update(environment_variables)
   threads = []
   with creds_context_managers.CredentialProvidersManager():
     for _ in range(thread_count):
@@ -122,7 +127,8 @@ def _process_worker(task_queue, task_output_queue, task_status_queue,
 
 @crash_handling.CrashManager
 def _process_factory(task_queue, task_output_queue, task_status_queue,
-                     thread_count, idle_thread_count, signal_queue):
+                     thread_count, idle_thread_count, signal_queue,
+                     environment_variables):
   """Create worker processes.
 
   This factory must run in a separate process to avoid deadlock issue,
@@ -140,6 +146,9 @@ def _process_factory(task_queue, task_output_queue, task_status_queue,
     idle_thread_count (multiprocessing.Semaphore): Passed on to worker threads.
     signal_queue (multiprocessing.Queue): Queue used by parent process to
       signal when a new child worker process must be created.
+    environment_variables (dict): Environment variables from the main process.
+      Needed for spawn compatibility in testing environments, as the testing
+      framework clears environment variables in test SetUp methods.
   """
   processes = []
   while True:
@@ -157,7 +166,7 @@ def _process_factory(task_queue, task_output_queue, task_status_queue,
       process = multiprocessing.Process(
           target=_process_worker,
           args=(task_queue, task_output_queue, task_status_queue,
-                thread_count, idle_thread_count))
+                thread_count, idle_thread_count, environment_variables))
       processes.append(process)
       log.debug('Adding 1 process with {} threads.'
                 ' Total processes: {}. Total threads: {}.'.format(
@@ -344,7 +353,8 @@ class TaskGraphExecutor:
         target=_process_factory,
         args=(self._task_queue, self._task_output_queue,
               self._task_status_queue, self._thread_count,
-              self._idle_thread_count, self._signal_queue))
+              self._idle_thread_count, self._signal_queue,
+              os.environ.copy()))
     worker_process_spawner.start()
 
     # It is now safe to start the progress_manager.

@@ -59,12 +59,19 @@ class Client:
     return self._messages.Endpoint.SeverityValueValuesEnum.lookup_by_name(
         severity_name.upper())
 
-  def CreateEndpoint(self, name, parent, network, severity, description=''):
+  def CreateEndpoint(self,
+                     name,
+                     parent,
+                     network,
+                     severity,
+                     description='',
+                     enable_traffic_logs=False):
     """Calls the CreateEndpoint API"""
     endpoint = self._messages.Endpoint(
         network=network,
         description=description,
-        severity=self._ParseSeverityLevel(severity))
+        severity=self._ParseSeverityLevel(severity),
+        trafficLogs=enable_traffic_logs)
     req = self._messages.IdsProjectsLocationsEndpointsCreateRequest(
         endpointId=name, parent=parent, endpoint=endpoint)
     return self._endpointClient.Create(req)

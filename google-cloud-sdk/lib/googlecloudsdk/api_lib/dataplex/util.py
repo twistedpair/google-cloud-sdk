@@ -19,6 +19,8 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.api_lib.util import waiter
+from googlecloudsdk.core import resources
 
 
 def GetClientInstance():
@@ -27,3 +29,15 @@ def GetClientInstance():
 
 def GetMessageModule():
   return apis.GetMessagesModule('dataplex', 'v1')
+
+
+def WaitForOperation(operation, resource):
+  """Waits for the given google.longrunning.Operation to complete."""
+  operation_ref = resources.REGISTRY.Parse(
+      operation.name, collection='dataplex.projects.locations.operations')
+  poller = waiter.CloudOperationPoller(
+      resource,
+      GetClientInstance().projects_locations_operations)
+  return waiter.WaitFor(
+      poller, operation_ref,
+      'Waiting for [{0}] to finish'.format(operation_ref.RelativeName()))

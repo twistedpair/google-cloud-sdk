@@ -29,7 +29,7 @@ from googlecloudsdk.api_lib.ids import ids_api
 
 def AddDescriptionArg(parser):
   parser.add_argument(
-      "--description", required=False, help="Description of the endpoint")
+      "--description", required=False, help="Description of the endpoint.")
 
 
 DEFAULT_SEVERITIES = ["INFORMATIONAL", "LOW", "MEDIUM", "HIGH", "CRITICAL"]
@@ -52,6 +52,20 @@ def AddNetworkArg(parser,
 
 def AddZoneArg(parser, required=True, help_text="The zone of the endpoint"):
   parser.add_argument("--zone", required=required, default="-", help=help_text)
+
+
+def AddTrafficLogsArg(
+    parser,
+    help_text="Whether to enable traffic logs on the endpoint. Enabling "
+    "traffic logs can generate a large number of logs which can "
+    "increase costs in Cloud Logging."):
+  parser.add_argument(
+      "--enable-traffic-logs",
+      dest="enable_traffic_logs",
+      required=False,
+      default=False,
+      help=help_text,
+      action="store_true")
 
 
 def AddEndpointResource(parser):

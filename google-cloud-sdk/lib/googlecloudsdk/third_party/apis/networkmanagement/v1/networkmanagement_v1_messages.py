@@ -56,6 +56,15 @@ class AbortInfo(_messages.Message):
         destination information specified in the input test request.
       TRACE_TOO_LONG: Aborted because the number of steps in the trace
         exceeding a certain limit which may be caused by routing loop.
+      INTERNAL_ERROR: Aborted due to internal server error.
+      SOURCE_ENDPOINT_NOT_FOUND: Aborted because the source endpoint could not
+        be found.
+      MISMATCHED_SOURCE_NETWORK: Aborted because the source network does not
+        match the source endpoint.
+      DESTINATION_ENDPOINT_NOT_FOUND: Aborted because the destination endpoint
+        could not be found.
+      MISMATCHED_DESTINATION_NETWORK: Aborted because the destination network
+        does not match the destination endpoint.
     """
     CAUSE_UNSPECIFIED = 0
     UNKNOWN_NETWORK = 1
@@ -67,6 +76,11 @@ class AbortInfo(_messages.Message):
     NO_EXTERNAL_IP = 7
     UNINTENDED_DESTINATION = 8
     TRACE_TOO_LONG = 9
+    INTERNAL_ERROR = 10
+    SOURCE_ENDPOINT_NOT_FOUND = 11
+    MISMATCHED_SOURCE_NETWORK = 12
+    DESTINATION_ENDPOINT_NOT_FOUND = 13
+    MISMATCHED_DESTINATION_NETWORK = 14
 
   cause = _messages.EnumField('CauseValueValuesEnum', 1)
   resourceUri = _messages.StringField(2)
@@ -76,23 +90,19 @@ class AuditConfig(_messages.Message):
   r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
   are exempted from logging. An AuditConfig must have one or more
-  AuditLogConfigs.  If there are AuditConfigs for both `allServices` and a
+  AuditLogConfigs. If there are AuditConfigs for both `allServices` and a
   specific service, the union of the two AuditConfigs is used for that
   service: the log_types specified in each AuditConfig are enabled, and the
-  exempted_members in each AuditLogConfig are exempted.  Example Policy with
-  multiple AuditConfigs:      {       "audit_configs": [         {
-  "service": "allServices"           "audit_log_configs": [             {
-  "log_type": "DATA_READ",               "exempted_members": [
-  "user:jose@example.com"               ]             },             {
-  "log_type": "DATA_WRITE",             },             {
-  "log_type": "ADMIN_READ",             }           ]         },         {
-  "service": "sampleservice.googleapis.com"           "audit_log_configs": [
-  {               "log_type": "DATA_READ",             },             {
-  "log_type": "DATA_WRITE",               "exempted_members": [
-  "user:aliya@example.com"               ]             }           ]         }
-  ]     }  For sampleservice, this policy enables DATA_READ, DATA_WRITE and
-  ADMIN_READ logging. It also exempts jose@example.com from DATA_READ logging,
-  and aliya@example.com from DATA_WRITE logging.
+  exempted_members in each AuditLogConfig are exempted. Example Policy with
+  multiple AuditConfigs: { "audit_configs": [ { "service": "allServices",
+  "audit_log_configs": [ { "log_type": "DATA_READ", "exempted_members": [
+  "user:jose@example.com" ] }, { "log_type": "DATA_WRITE" }, { "log_type":
+  "ADMIN_READ" } ] }, { "service": "sampleservice.googleapis.com",
+  "audit_log_configs": [ { "log_type": "DATA_READ" }, { "log_type":
+  "DATA_WRITE", "exempted_members": [ "user:aliya@example.com" ] } ] } ] } For
+  sampleservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ
+  logging. It also exempts jose@example.com from DATA_READ logging, and
+  aliya@example.com from DATA_WRITE logging.
 
   Fields:
     auditLogConfigs: The configuration for logging of each type of permission.
@@ -106,12 +116,11 @@ class AuditConfig(_messages.Message):
 
 
 class AuditLogConfig(_messages.Message):
-  r"""Provides the configuration for logging a type of permissions. Example:
-  {       "audit_log_configs": [         {           "log_type": "DATA_READ",
-  "exempted_members": [             "user:jose@example.com"           ]
-  },         {           "log_type": "DATA_WRITE",         }       ]     }
-  This enables 'DATA_READ' and 'DATA_WRITE' logging, while exempting
-  jose@example.com from DATA_READ logging.
+  r"""Provides the configuration for logging a type of permissions. Example: {
+  "audit_log_configs": [ { "log_type": "DATA_READ", "exempted_members": [
+  "user:jose@example.com" ] }, { "log_type": "DATA_WRITE" } ] } This enables
+  'DATA_READ' and 'DATA_WRITE' logging, while exempting jose@example.com from
+  DATA_READ logging.
 
   Enums:
     LogTypeValueValuesEnum: The log type that this config enables.
@@ -144,40 +153,45 @@ class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
   Fields:
-    condition: The condition that is associated with this binding. NOTE: An
-      unsatisfied condition will not allow user access via current binding.
-      Different bindings, including their conditions, are examined
-      independently.
+    condition: The condition that is associated with this binding. If the
+      condition evaluates to `true`, then this binding applies to the current
+      request. If the condition evaluates to `false`, then this binding does
+      not apply to the current request. However, a different role binding
+      might grant the same role to one or more of the members in this binding.
+      To learn which resources support conditions in their IAM policies, see
+      the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
     members: Specifies the identities requesting access for a Cloud Platform
-      resource. `members` can have the following values:  * `allUsers`: A
-      special identifier that represents anyone who is    on the internet;
-      with or without a Google account.  * `allAuthenticatedUsers`: A special
-      identifier that represents anyone    who is authenticated with a Google
-      account or a service account.  * `user:{emailid}`: An email address that
-      represents a specific Google    account. For example,
-      `alice@example.com` .   * `serviceAccount:{emailid}`: An email address
-      that represents a service    account. For example, `my-other-
-      app@appspot.gserviceaccount.com`.  * `group:{emailid}`: An email address
-      that represents a Google group.    For example, `admins@example.com`.  *
+      resource. `members` can have the following values: * `allUsers`: A
+      special identifier that represents anyone who is on the internet; with
+      or without a Google account. * `allAuthenticatedUsers`: A special
+      identifier that represents anyone who is authenticated with a Google
+      account or a service account. * `user:{emailid}`: An email address that
+      represents a specific Google account. For example, `alice@example.com` .
+      * `serviceAccount:{emailid}`: An email address that represents a service
+      account. For example, `my-other-app@appspot.gserviceaccount.com`. *
+      `group:{emailid}`: An email address that represents a Google group. For
+      example, `admins@example.com`. *
       `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
       identifier) representing a user that has been recently deleted. For
       example, `alice@example.com?uid=123456789012345678901`. If the user is
       recovered, this value reverts to `user:{emailid}` and the recovered user
-      retains the role in the binding.  *
+      retains the role in the binding. *
       `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address
-      (plus    unique identifier) representing a service account that has been
-      recently    deleted. For example,    `my-other-
-      app@appspot.gserviceaccount.com?uid=123456789012345678901`.    If the
+      (plus unique identifier) representing a service account that has been
+      recently deleted. For example, `my-other-
+      app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the
       service account is undeleted, this value reverts to
       `serviceAccount:{emailid}` and the undeleted service account retains the
-      role in the binding.  * `deleted:group:{emailid}?uid={uniqueid}`: An
-      email address (plus unique    identifier) representing a Google group
-      that has been recently    deleted. For example,
-      `admins@example.com?uid=123456789012345678901`. If    the group is
-      recovered, this value reverts to `group:{emailid}` and the    recovered
-      group retains the role in the binding.   * `domain:{domain}`: The G
-      Suite domain (primary) that represents all the    users of that domain.
-      For example, `google.com` or `example.com`.
+      role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An
+      email address (plus unique identifier) representing a Google group that
+      has been recently deleted. For example,
+      `admins@example.com?uid=123456789012345678901`. If the group is
+      recovered, this value reverts to `group:{emailid}` and the recovered
+      group retains the role in the binding. * `domain:{domain}`: The G Suite
+      domain (primary) that represents all the users of that domain. For
+      example, `google.com` or `example.com`.
     role: Role that is assigned to `members`. For example, `roles/viewer`,
       `roles/editor`, or `roles/owner`.
   """
@@ -189,6 +203,27 @@ class Binding(_messages.Message):
 
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
+
+
+class CloudSQLInstanceInfo(_messages.Message):
+  r"""For display only. Metadata associated with a Cloud SQL instance.
+
+  Fields:
+    displayName: Name of a Cloud SQL instance.
+    externalIp: External IP address of a Cloud SQL instance.
+    internalIp: Internal IP address of a Cloud SQL instance.
+    networkUri: URI of a Cloud SQL instance network or empty string if the
+      instance does not have one.
+    region: Region in which the Cloud SQL instance is running.
+    uri: URI of a Cloud SQL instance.
+  """
+
+  displayName = _messages.StringField(1)
+  externalIp = _messages.StringField(2)
+  internalIp = _messages.StringField(3)
+  networkUri = _messages.StringField(4)
+  region = _messages.StringField(5)
+  uri = _messages.StringField(6)
 
 
 class ConnectivityTest(_messages.Message):
@@ -206,16 +241,16 @@ class ConnectivityTest(_messages.Message):
       instance, or VPC network to uniquely identify the destination location.
       Even if the destination IP address is not unique, the source IP location
       is unique. Usually, the analysis can infer the destination endpoint from
-      route information.  If the destination you specify is a VM instance and
+      route information. If the destination you specify is a VM instance and
       the instance has multiple network interfaces, then you must also specify
-      either a destination IP address  or VPC network to identify the
-      destination interface.  A reachability analysis proceeds even if the
+      either a destination IP address or VPC network to identify the
+      destination interface. A reachability analysis proceeds even if the
       destination location is ambiguous. However, the result can include
       endpoints that you don't intend to test.
     displayName: Output only. The display name of a Connectivity Test.
     labels: Resource labels to represent user-provided metadata.
     name: Required. Unique name of the resource using the form:
-      `projects/{project_id}/tests/{test_id}`
+      `projects/{project_id}/locations/global/connectivityTests/{test_id}`
     protocol: IP Protocol of the test. When not provided, "TCP" is assumed.
     reachabilityDetails: Output only. The reachability details of this test
       from the latest run. The details are updated when creating a new test,
@@ -224,20 +259,20 @@ class ConnectivityTest(_messages.Message):
     relatedProjects: Other projects that may be relevant for reachability
       analysis. This is applicable to scenarios where a test can cross project
       boundaries.
-    source: Required. Source specification of the Connectivity Test.  You can
+    source: Required. Source specification of the Connectivity Test. You can
       use a combination of source IP address, virtual machine (VM) instance,
       or Compute Engine network to uniquely identify the source location.
       Examples: If the source IP address is an internal IP address within a
       Google Cloud Virtual Private Cloud (VPC) network, then you must also
       specify the VPC network. Otherwise, specify the VM instance, which
-      already contains its internal IP address and VPC network information.
-      If the source of the test is within an on-premises network, then you
-      must provide the destination VPC network.  If the source endpoint is a
-      Compute Engine VM instance with multiple network interfaces, the
-      instance itself is not sufficient to identify the endpoint. So, you must
-      also specify the source IP address or VPC network.  A reachability
-      analysis proceeds even if the source location is ambiguous. However, the
-      test result may include endpoints that you don't intend to test.
+      already contains its internal IP address and VPC network information. If
+      the source of the test is within an on-premises network, then you must
+      provide the destination VPC network. If the source endpoint is a Compute
+      Engine VM instance with multiple network interfaces, the instance itself
+      is not sufficient to identify the endpoint. So, you must also specify
+      the source IP address or VPC network. A reachability analysis proceeds
+      even if the source location is ambiguous. However, the test result may
+      include endpoints that you don't intend to test.
     updateTime: Output only. The time the test's configuration was updated.
   """
 
@@ -295,13 +330,17 @@ class DeliverInfo(_messages.Message):
     Values:
       TARGET_UNSPECIFIED: Target not specified.
       INSTANCE: Target is a Compute Engine instance.
-      INTERNET: Target is the Internet.
+      INTERNET: Target is the internet.
       GOOGLE_API: Target is a Google API.
+      GKE_MASTER: Target is a Google Kubernetes Engine cluster master.
+      CLOUD_SQL_INSTANCE: Target is a Cloud SQL instance.
     """
     TARGET_UNSPECIFIED = 0
     INSTANCE = 1
     INTERNET = 2
     GOOGLE_API = 3
+    GKE_MASTER = 4
+    CLOUD_SQL_INSTANCE = 5
 
   resourceUri = _messages.StringField(1)
   target = _messages.EnumField('TargetValueValuesEnum', 2)
@@ -324,49 +363,66 @@ class DropInfo(_messages.Message):
     Values:
       CAUSE_UNSPECIFIED: Cause is unspecified.
       UNKNOWN_EXTERNAL_ADDRESS: Destination external address cannot be
-        resolved to a known target.
-      FOREIGN_IP_DISALLOWED: a Compute Engine instance can only send or
-        receive a packet with a foreign IP <code>if ip_forward</code> is
-        enabled.
-      FIREWALL_RULE: Dropped due to a firewall rule unless allowed due to
+        resolved to a known target. If the address is used in a Google Cloud
+        project, provide the project ID as test input.
+      FOREIGN_IP_DISALLOWED: A Compute Engine instance can only send or
+        receive a packet with a foreign IP address if ip_forward is enabled.
+      FIREWALL_RULE: Dropped due to a firewall rule, unless allowed due to
         connection tracking.
       NO_ROUTE: Dropped due to no routes.
       ROUTE_BLACKHOLE: Dropped due to invalid route. Route's next hop is a
         blackhole.
       ROUTE_WRONG_NETWORK: Packet is sent to a wrong (unintended) network.
-        Example: user traces a packet from VM1:Network1 to VM2:Network2,
+        Example: you trace a packet from VM1:Network1 to VM2:Network2,
         however, the route configured in Network1 sends the packet destined
         for VM2's IP addresss to Network3.
       PRIVATE_TRAFFIC_TO_INTERNET: Packet with internal destination address
-        sent to Internet gateway.
+        sent to the internet gateway.
       PRIVATE_GOOGLE_ACCESS_DISALLOWED: Instance with only an internal IP
-        tries to access Google API and Services, and private Google access is
-        not enabled.
-      NO_EXTERNAL_ADDRESS: Instance with only internal IP tries to access
-        external hosts, but Cloud NAT is not enabled in the subnet, unless
-        special configurations on a VM allows this connection. See [Special
-        Configurations for VM instances](/vpc/docs/special-configurations) for
-        details.
+        address tries to access Google API and services, but private Google
+        access is not enabled.
+      NO_EXTERNAL_ADDRESS: Instance with only an internal IP address tries to
+        access external hosts, but Cloud NAT is not enabled in the subnet,
+        unless special configurations on a VM allow this connection. For more
+        details, see [Special configurations for VM
+        instances](https://cloud.google.com/vpc/docs/special-configurations).
       UNKNOWN_INTERNAL_ADDRESS: Destination internal address cannot be
-        resolved to a known target.
+        resolved to a known target. If this is a shared VPC scenario, verify
+        if the service project ID is provided as test input. Otherwise, verify
+        if the IP address is being used in the project.
       FORWARDING_RULE_MISMATCH: Forwarding rule's protocol and ports do not
         match the packet header.
       FORWARDING_RULE_NO_INSTANCES: Forwarding rule does not have backends
         configured.
       FIREWALL_BLOCKING_LOAD_BALANCER_BACKEND_HEALTH_CHECK: Firewalls block
         the health check probes to the backends and cause the backends to be
-        unavailable for traffic from the load balancer. See [Health check
-        firewall rules](/load-balancing/docs/ health-checks#firewall_rules)
-        for more details.
+        unavailable for traffic from the load balancer. For more details, see
+        [Health check firewall rules](https://cloud.google.com/load-
+        balancing/docs/health-checks#firewall_rules).
       INSTANCE_NOT_RUNNING: Packet is sent from or to a Compute Engine
         instance that is not in a running state.
       TRAFFIC_TYPE_BLOCKED: The type of traffic is blocked and the user cannot
         configure a firewall rule to enable it. See [Always blocked
-        traffic](/vpc/docs/firewalls# blockedtraffic) for more details.
-      GKE_MASTER_UNAUTHORIZED_ACCESS: Access to GKE master's endpoint is not
-        authorized. See [Access to the cluster endpoints](/kubernetes-
-        engine/docs/how-to/ private-clusters#access_to_the_cluster_endpoints)
+        traffic](https://cloud.google.com/vpc/docs/firewalls#blockedtraffic)
         for more details.
+      GKE_MASTER_UNAUTHORIZED_ACCESS: Access to Google Kubernetes Engine
+        cluster master's endpoint is not authorized. See [Access to the
+        cluster endpoints](https://cloud.google.com/kubernetes-
+        engine/docs/how-to/private-clusters#access_to_the_cluster_endpoints)
+        for more details.
+      CLOUD_SQL_INSTANCE_UNAUTHORIZED_ACCESS: Access to the Cloud SQL instance
+        endpoint is not authorized. See [Authorizing with authorized
+        networks](https://cloud.google.com/sql/docs/mysql/authorize-networks)
+        for more details.
+      DROPPED_INSIDE_GKE_SERVICE: Packet was dropped inside Google Kubernetes
+        Engine Service.
+      DROPPED_INSIDE_CLOUD_SQL_SERVICE: Packet was dropped inside Cloud SQL
+        Service.
+      GOOGLE_MANAGED_SERVICE_NO_PEERING: Packet was dropped because there is
+        no peering between the originating network and the Google Managed
+        Services Network.
+      CLOUD_SQL_INSTANCE_NO_IP_ADDRESS: Packet was dropped because the Cloud
+        SQL instance has neither a private nor a public IP address.
     """
     CAUSE_UNSPECIFIED = 0
     UNKNOWN_EXTERNAL_ADDRESS = 1
@@ -385,6 +441,11 @@ class DropInfo(_messages.Message):
     INSTANCE_NOT_RUNNING = 14
     TRAFFIC_TYPE_BLOCKED = 15
     GKE_MASTER_UNAUTHORIZED_ACCESS = 16
+    CLOUD_SQL_INSTANCE_UNAUTHORIZED_ACCESS = 17
+    DROPPED_INSIDE_GKE_SERVICE = 18
+    DROPPED_INSIDE_CLOUD_SQL_SERVICE = 19
+    GOOGLE_MANAGED_SERVICE_NO_PEERING = 20
+    CLOUD_SQL_INSTANCE_NO_IP_ADDRESS = 21
 
   cause = _messages.EnumField('CauseValueValuesEnum', 1)
   resourceUri = _messages.StringField(2)
@@ -393,9 +454,9 @@ class DropInfo(_messages.Message):
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
-  or the response type of an API method. For instance:      service Foo {
-  rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty);     }  The
-  JSON representation for `Empty` is empty JSON object `{}`.
+  or the response type of an API method. For instance: service Foo { rpc
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON
+  representation for `Empty` is empty JSON object `{}`.
   """
 
 
@@ -409,6 +470,11 @@ class Endpoint(_messages.Message):
       can be inferred from the source.
 
   Fields:
+    cloudSqlInstance: A [Cloud SQL](https://cloud.google.com/sql) instance
+      URI.
+    gkeMasterCluster: A cluster URI for [Google Kubernetes Engine
+      master](https://cloud.google.com/kubernetes-
+      engine/docs/concepts/cluster-architecture).
     instance: A Compute Engine instance URI.
     ipAddress: The IP address of the endpoint, which can be an external or
       internal IP. An IPv6 address is only allowed when the test's destination
@@ -447,12 +513,14 @@ class Endpoint(_messages.Message):
     GCP_NETWORK = 1
     NON_GCP_NETWORK = 2
 
-  instance = _messages.StringField(1)
-  ipAddress = _messages.StringField(2)
-  network = _messages.StringField(3)
-  networkType = _messages.EnumField('NetworkTypeValueValuesEnum', 4)
-  port = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  projectId = _messages.StringField(6)
+  cloudSqlInstance = _messages.StringField(1)
+  gkeMasterCluster = _messages.StringField(2)
+  instance = _messages.StringField(3)
+  ipAddress = _messages.StringField(4)
+  network = _messages.StringField(5)
+  networkType = _messages.EnumField('NetworkTypeValueValuesEnum', 6)
+  port = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  projectId = _messages.StringField(8)
 
 
 class EndpointInfo(_messages.Message):
@@ -482,20 +550,20 @@ class EndpointInfo(_messages.Message):
 class Expr(_messages.Message):
   r"""Represents a textual expression in the Common Expression Language (CEL)
   syntax. CEL is a C-like expression language. The syntax and semantics of CEL
-  are documented at https://github.com/google/cel-spec.  Example (Comparison):
-  title: "Summary size limit"     description: "Determines if a summary is
-  less than 100 chars"     expression: "document.summary.size() < 100"
-  Example (Equality):      title: "Requestor is owner"     description:
-  "Determines if requestor is the document owner"     expression:
-  "document.owner == request.auth.claims.email"  Example (Logic):      title:
-  "Public documents"     description: "Determine whether the document should
-  be publicly visible"     expression: "document.type != 'private' &&
-  document.type != 'internal'"  Example (Data Manipulation):      title:
-  "Notification string"     description: "Create a notification string with a
-  timestamp."     expression: "'New message received at ' +
-  string(document.create_time)"  The exact variables and functions that may be
-  referenced within an expression are determined by the service that evaluates
-  it. See the service documentation for additional information.
+  are documented at https://github.com/google/cel-spec. Example (Comparison):
+  title: "Summary size limit" description: "Determines if a summary is less
+  than 100 chars" expression: "document.summary.size() < 100" Example
+  (Equality): title: "Requestor is owner" description: "Determines if
+  requestor is the document owner" expression: "document.owner ==
+  request.auth.claims.email" Example (Logic): title: "Public documents"
+  description: "Determine whether the document should be publicly visible"
+  expression: "document.type != 'private' && document.type != 'internal'"
+  Example (Data Manipulation): title: "Notification string" description:
+  "Create a notification string with a timestamp." expression: "'New message
+  received at ' + string(document.create_time)" The exact variables and
+  functions that may be referenced within an expression are determined by the
+  service that evaluates it. See the service documentation for additional
+  information.
 
   Fields:
     description: Optional. Description of the expression. This is a longer
@@ -516,29 +584,61 @@ class Expr(_messages.Message):
 
 
 class FirewallInfo(_messages.Message):
-  r"""For display only. Metadata associated with a Compute Engine firewall
-  rule.
+  r"""For display only. Metadata associated with a VPC firewall rule, an
+  implied VPC firewall rule, or a hierarchical firewall policy rule.
+
+  Enums:
+    FirewallRuleTypeValueValuesEnum: The firewall rule's type.
 
   Fields:
     action: Possible values: ALLOW, DENY
     direction: Possible values: INGRESS, EGRESS
-    displayName: Name of a Compute Engine firewall rule.
-    networkUri: URI of a Compute Engine network.
-    priority: Priority of the firewall rule.
-    targetServiceAccounts: Target service accounts of the firewall rule.
-    targetTags: Target tags of the firewall rule.
-    uri: URI of a Compute Engine firewall rule. Implied default rule does not
-      have URI.
+    displayName: The display name of the VPC firewall rule. This field is not
+      applicable to hierarchical firewall policy rules.
+    firewallRuleType: The firewall rule's type.
+    networkUri: The URI of the VPC network that the firewall rule is
+      associated with. This field is not applicable to hierarchical firewall
+      policy rules.
+    policy: The hierarchical firewall policy that this rule is associated
+      with. This field is not applicable to VPC firewall rules.
+    priority: The priority of the firewall rule.
+    targetServiceAccounts: The target service accounts specified by the
+      firewall rule.
+    targetTags: The target tags defined by the VPC firewall rule. This field
+      is not applicable to hierarchical firewall policy rules.
+    uri: The URI of the VPC firewall rule. This field is not applicable to
+      implied firewall rules or hierarchical firewall policy rules.
   """
+
+  class FirewallRuleTypeValueValuesEnum(_messages.Enum):
+    r"""The firewall rule's type.
+
+    Values:
+      FIREWALL_RULE_TYPE_UNSPECIFIED: Unspecified type.
+      HIERARCHICAL_FIREWALL_POLICY_RULE: Hierarchical firewall policy rule.
+        For details, see [Hierarchical firewall policies
+        overview](https://cloud.google.com/vpc/docs/firewall-policies).
+      VPC_FIREWALL_RULE: VPC firewall rule. For details, see [VPC firewall
+        rules overview](https://cloud.google.com/vpc/docs/firewalls).
+      IMPLIED_VPC_FIREWALL_RULE: Implied VPC firewall rule. For details, see
+        [Implied rules](https://cloud.google.com/vpc/docs/firewalls#default_fi
+        rewall_rules).
+    """
+    FIREWALL_RULE_TYPE_UNSPECIFIED = 0
+    HIERARCHICAL_FIREWALL_POLICY_RULE = 1
+    VPC_FIREWALL_RULE = 2
+    IMPLIED_VPC_FIREWALL_RULE = 3
 
   action = _messages.StringField(1)
   direction = _messages.StringField(2)
   displayName = _messages.StringField(3)
-  networkUri = _messages.StringField(4)
-  priority = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  targetServiceAccounts = _messages.StringField(6, repeated=True)
-  targetTags = _messages.StringField(7, repeated=True)
-  uri = _messages.StringField(8)
+  firewallRuleType = _messages.EnumField('FirewallRuleTypeValueValuesEnum', 4)
+  networkUri = _messages.StringField(5)
+  policy = _messages.StringField(6)
+  priority = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  targetServiceAccounts = _messages.StringField(8, repeated=True)
+  targetTags = _messages.StringField(9, repeated=True)
+  uri = _messages.StringField(10)
 
 
 class ForwardInfo(_messages.Message):
@@ -559,11 +659,12 @@ class ForwardInfo(_messages.Message):
       TARGET_UNSPECIFIED: Target not specified.
       PEERING_VPC: Forwarded to a VPC peering network.
       VPN_GATEWAY: Forwarded to a Cloud VPN gateway.
-      INTERCONNECT: Forwarded to an Cloud Interconnect connection.
+      INTERCONNECT: Forwarded to a Cloud Interconnect connection.
       GKE_MASTER: Forwarded to a Google Kubernetes Engine Container cluster
         master.
       IMPORTED_CUSTOM_ROUTE_NEXT_HOP: Forwarded to the next hop of a custom
         route imported from a peering VPC.
+      CLOUD_SQL_INSTANCE: Forwarded to a Cloud SQL instance.
     """
     TARGET_UNSPECIFIED = 0
     PEERING_VPC = 1
@@ -571,6 +672,7 @@ class ForwardInfo(_messages.Message):
     INTERCONNECT = 3
     GKE_MASTER = 4
     IMPORTED_CUSTOM_ROUTE_NEXT_HOP = 5
+    CLOUD_SQL_INSTANCE = 6
 
   resourceUri = _messages.StringField(1)
   target = _messages.EnumField('TargetValueValuesEnum', 2)
@@ -599,6 +701,23 @@ class ForwardingRuleInfo(_messages.Message):
   target = _messages.StringField(5)
   uri = _messages.StringField(6)
   vip = _messages.StringField(7)
+
+
+class GKEMasterInfo(_messages.Message):
+  r"""For display only. Metadata associated with a Google Kubernetes Engine
+  (GKE) cluster master.
+
+  Fields:
+    clusterNetworkUri: URI of a GKE cluster network.
+    clusterUri: URI of a GKE cluster.
+    externalIp: External IP address of a GKE cluster master.
+    internalIp: Internal IP address of a GKE cluster master.
+  """
+
+  clusterNetworkUri = _messages.StringField(1)
+  clusterUri = _messages.StringField(2)
+  externalIp = _messages.StringField(3)
+  internalIp = _messages.StringField(4)
 
 
 class InstanceInfo(_messages.Message):
@@ -876,7 +995,7 @@ class NetworkmanagementProjectsLocationsGlobalConnectivityTestsCreateRequest(_me
     parent: Required. The parent resource of the Connectivity Test to create:
       `projects/{project_id}/locations/global`
     testId: Required. The logical name of the Connectivity Test in your
-      project with the following restrictions:  * Must contain only lowercase
+      project with the following restrictions: * Must contain only lowercase
       letters, numbers, and hyphens. * Must start with a letter. * Must be
       between 1-40 characters. * Must end with a number or a letter. * Must be
       unique within the customer project
@@ -893,7 +1012,7 @@ class NetworkmanagementProjectsLocationsGlobalConnectivityTestsDeleteRequest(_me
 
   Fields:
     name: Required. Connectivity Test resource name using the form:
-      `projects/{project_id}/connectivityTests/{test_id}`
+      `projects/{project_id}/locations/global/connectivityTests/{test_id}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -906,10 +1025,13 @@ class NetworkmanagementProjectsLocationsGlobalConnectivityTestsGetIamPolicyReque
 
   Fields:
     options_requestedPolicyVersion: Optional. The policy format version to be
-      returned.  Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected.  Requests for policies with any conditional
+      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected. Requests for policies with any conditional
       bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset.
+      bindings may specify any valid value or leave the field unset. To learn
+      which resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
     resource: REQUIRED: The resource for which the policy is being requested.
       See the operation documentation for the appropriate value for this
       field.
@@ -938,14 +1060,15 @@ class NetworkmanagementProjectsLocationsGlobalConnectivityTestsListRequest(_mess
   Fields:
     filter: Lists the `ConnectivityTests` that match the filter expression. A
       filter expression filters the resources listed in the response. The
-      expression must be of the form `<field> <operator> <value>` where
-      operators: `<`, `>`, `<=`, `>=`, `!=`, `=`, `:` are supported (colon `:`
-      represents a HAS operator which is roughly synonymous with equality).
-      <field> can refer to a proto or JSON field, or a synthetic field. Field
-      names can be camelCase or snake_case.  Examples: - Filter by name:
-      name = "projects/proj-1/connectivityTests/test-1  - Filter by labels:
-      - Resources that have a key called `foo`     labels.foo:*   - Resources
-      that have a key called `foo` whose value is `bar`     labels.foo = bar
+      expression must be of the form ` ` where operators: `<`, `>`, `<=`,
+      `>=`, `!=`, `=`, `:` are supported (colon `:` represents a HAS operator
+      which is roughly synonymous with equality). can refer to a proto or JSON
+      field, or a synthetic field. Field names can be camelCase or snake_case.
+      Examples: - Filter by name: name =
+      "projects/proj-1/locations/global/connectivityTests/test-1 - Filter by
+      labels: - Resources that have a key called `foo` labels.foo:* -
+      Resources that have a key called `foo` whose value is `bar` labels.foo =
+      bar
     orderBy: Field to use to sort the list.
     pageSize: Number of `ConnectivityTests` to return.
     pageToken: Page token from an earlier query, as returned in
@@ -969,7 +1092,7 @@ class NetworkmanagementProjectsLocationsGlobalConnectivityTestsPatchRequest(_mes
     connectivityTest: A ConnectivityTest resource to be passed as the request
       body.
     name: Required. Unique name of the resource using the form:
-      `projects/{project_id}/tests/{test_id}`
+      `projects/{project_id}/locations/global/connectivityTests/{test_id}`
     updateMask: Required. Mask of fields to update. At least one path must be
       supplied in this field.
   """
@@ -985,7 +1108,7 @@ class NetworkmanagementProjectsLocationsGlobalConnectivityTestsRerunRequest(_mes
 
   Fields:
     name: Required. Connectivity Test resource name using the form:
-      `projects/{project_id}/connectivityTests/{test_id}`
+      `projects/{project_id}/locations/global/connectivityTests/{test_id}`
     rerunConnectivityTestRequest: A RerunConnectivityTestRequest resource to
       be passed as the request body.
   """
@@ -1082,10 +1205,14 @@ class NetworkmanagementProjectsLocationsListRequest(_messages.Message):
   r"""A NetworkmanagementProjectsLocationsListRequest object.
 
   Fields:
-    filter: The standard list filter.
+    filter: A filter to narrow down results to a preferred subset. The
+      filtering language accepts strings like "displayName=tokyo", and is
+      documented in more detail in [AIP-160](https://google.aip.dev/160).
     name: The resource that owns the locations collection, if applicable.
-    pageSize: The standard list page size.
-    pageToken: The standard list page token.
+    pageSize: The maximum number of results to return. If not set, the service
+      selects a default.
+    pageToken: A page token received from the `next_page_token` field in the
+      response. Send that page token to receive the subsequent page.
   """
 
   filter = _messages.StringField(1)
@@ -1099,17 +1226,17 @@ class Operation(_messages.Message):
   a network API call.
 
   Messages:
-    MetadataValue: Service-specific metadata associated with the operation.
-      It typically contains progress information and common metadata such as
-      create time. Some services might not provide such metadata.  Any method
+    MetadataValue: Service-specific metadata associated with the operation. It
+      typically contains progress information and common metadata such as
+      create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success.
-      If the original method returns no data on success, such as `Delete`, the
-      response is `google.protobuf.Empty`.  If the original method is standard
-      `Get`/`Create`/`Update`, the response should be the resource.  For other
+    ResponseValue: The normal response of the operation in case of success. If
+      the original method returns no data on success, such as `Delete`, the
+      response is `google.protobuf.Empty`. If the original method is standard
+      `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
-      the original method name.  For example, if the original method name is
+      the original method name. For example, if the original method name is
       `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
 
   Fields:
@@ -1118,29 +1245,29 @@ class Operation(_messages.Message):
       `response` is available.
     error: The error result of the operation in case of failure or
       cancellation.
-    metadata: Service-specific metadata associated with the operation.  It
+    metadata: Service-specific metadata associated with the operation. It
       typically contains progress information and common metadata such as
-      create time. Some services might not provide such metadata.  Any method
+      create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
     name: The server-assigned name, which is only unique within the same
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success.  If the
+    response: The normal response of the operation in case of success. If the
       original method returns no data on success, such as `Delete`, the
-      response is `google.protobuf.Empty`.  If the original method is standard
-      `Get`/`Create`/`Update`, the response should be the resource.  For other
+      response is `google.protobuf.Empty`. If the original method is standard
+      `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
-      the original method name.  For example, if the original method name is
+      the original method name. For example, if the original method name is
       `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MetadataValue(_messages.Message):
-    r"""Service-specific metadata associated with the operation.  It typically
+    r"""Service-specific metadata associated with the operation. It typically
     contains progress information and common metadata such as create time.
-    Some services might not provide such metadata.  Any method that returns a
+    Some services might not provide such metadata. Any method that returns a
     long-running operation should document the metadata type, if any.
 
     Messages:
@@ -1166,12 +1293,12 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success.  If the
+    r"""The normal response of the operation in case of success. If the
     original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`.  If the original method is standard
-    `Get`/`Create`/`Update`, the response should be the resource.  For other
+    is `google.protobuf.Empty`. If the original method is standard
+    `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
-    the original method name.  For example, if the original method name is
+    the original method name. For example, if the original method name is
     `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
 
     Messages:
@@ -1213,7 +1340,7 @@ class OperationMetadata(_messages.Message):
     endTime: The time the operation finished running.
     statusDetail: Human-readable status of the operation, if any.
     target: Target of the operation - for example
-      projects/project-1/connectivityTests/test-1
+      projects/project-1/locations/global/connectivityTests/test-1
     verb: Name of the verb executed by the operation.
   """
 
@@ -1228,34 +1355,33 @@ class OperationMetadata(_messages.Message):
 
 class Policy(_messages.Message):
   r"""An Identity and Access Management (IAM) policy, which specifies access
-  controls for Google Cloud resources.   A `Policy` is a collection of
+  controls for Google Cloud resources. A `Policy` is a collection of
   `bindings`. A `binding` binds one or more `members` to a single `role`.
   Members can be user accounts, service accounts, Google groups, and domains
   (such as G Suite). A `role` is a named list of permissions; each `role` can
-  be an IAM predefined role or a user-created custom role.  Optionally, a
-  `binding` can specify a `condition`, which is a logical expression that
-  allows access to a resource only if the expression evaluates to `true`. A
-  condition can add constraints based on attributes of the request, the
-  resource, or both.  **JSON example:**      {       "bindings": [         {
-  "role": "roles/resourcemanager.organizationAdmin",           "members": [
-  "user:mike@example.com",             "group:admins@example.com",
-  "domain:google.com",             "serviceAccount:my-project-
-  id@appspot.gserviceaccount.com"           ]         },         {
-  "role": "roles/resourcemanager.organizationViewer",           "members":
-  ["user:eve@example.com"],           "condition": {             "title":
-  "expirable access",             "description": "Does not grant access after
-  Sep 2020",             "expression": "request.time <
-  timestamp('2020-10-01T00:00:00.000Z')",           }         }       ],
-  "etag": "BwWWja0YfJA=",       "version": 3     }  **YAML example:**
-  bindings:     - members:       - user:mike@example.com       -
-  group:admins@example.com       - domain:google.com       -
-  serviceAccount:my-project-id@appspot.gserviceaccount.com       role:
-  roles/resourcemanager.organizationAdmin     - members:       -
-  user:eve@example.com       role: roles/resourcemanager.organizationViewer
-  condition:         title: expirable access         description: Does not
-  grant access after Sep 2020         expression: request.time <
-  timestamp('2020-10-01T00:00:00.000Z')     - etag: BwWWja0YfJA=     -
-  version: 3  For a description of IAM and its features, see the [IAM
+  be an IAM predefined role or a user-created custom role. For some types of
+  Google Cloud resources, a `binding` can also specify a `condition`, which is
+  a logical expression that allows access to a resource only if the expression
+  evaluates to `true`. A condition can add constraints based on attributes of
+  the request, the resource, or both. To learn which resources support
+  conditions in their IAM policies, see the [IAM
+  documentation](https://cloud.google.com/iam/help/conditions/resource-
+  policies). **JSON example:** { "bindings": [ { "role":
+  "roles/resourcemanager.organizationAdmin", "members": [
+  "user:mike@example.com", "group:admins@example.com", "domain:google.com",
+  "serviceAccount:my-project-id@appspot.gserviceaccount.com" ] }, { "role":
+  "roles/resourcemanager.organizationViewer", "members": [
+  "user:eve@example.com" ], "condition": { "title": "expirable access",
+  "description": "Does not grant access after Sep 2020", "expression":
+  "request.time < timestamp('2020-10-01T00:00:00.000Z')", } } ], "etag":
+  "BwWWja0YfJA=", "version": 3 } **YAML example:** bindings: - members: -
+  user:mike@example.com - group:admins@example.com - domain:google.com -
+  serviceAccount:my-project-id@appspot.gserviceaccount.com role:
+  roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
+  role: roles/resourcemanager.organizationViewer condition: title: expirable
+  access description: Does not grant access after Sep 2020 expression:
+  request.time < timestamp('2020-10-01T00:00:00.000Z') - etag: BwWWja0YfJA= -
+  version: 3 For a description of IAM and its features, see the [IAM
   documentation](https://cloud.google.com/iam/docs/).
 
   Fields:
@@ -1270,24 +1396,27 @@ class Policy(_messages.Message):
       conditions: An `etag` is returned in the response to `getIamPolicy`, and
       systems are expected to put that etag in the request to `setIamPolicy`
       to ensure that their change will be applied to the same version of the
-      policy.  **Important:** If you use IAM Conditions, you must include the
+      policy. **Important:** If you use IAM Conditions, you must include the
       `etag` field whenever you call `setIamPolicy`. If you omit this field,
       then IAM allows you to overwrite a version `3` policy with a version `1`
       policy, and all of the conditions in the version `3` policy are lost.
-    version: Specifies the format of the policy.  Valid values are `0`, `1`,
-      and `3`. Requests that specify an invalid value are rejected.  Any
+    version: Specifies the format of the policy. Valid values are `0`, `1`,
+      and `3`. Requests that specify an invalid value are rejected. Any
       operation that affects conditional role bindings must specify version
-      `3`. This requirement applies to the following operations:  * Getting a
+      `3`. This requirement applies to the following operations: * Getting a
       policy that includes a conditional role binding * Adding a conditional
       role binding to a policy * Changing a conditional role binding in a
       policy * Removing any role binding, with or without a condition, from a
-      policy   that includes conditions  **Important:** If you use IAM
+      policy that includes conditions **Important:** If you use IAM
       Conditions, you must include the `etag` field whenever you call
       `setIamPolicy`. If you omit this field, then IAM allows you to overwrite
       a version `3` policy with a version `1` policy, and all of the
-      conditions in the version `3` policy are lost.  If a policy does not
+      conditions in the version `3` policy are lost. If a policy does not
       include any conditions, operations on that policy may specify any valid
-      version or leave the field unset.
+      version or leave the field unset. To learn which resources support
+      conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
   """
 
   auditConfigs = _messages.MessageField('AuditConfig', 1, repeated=True)
@@ -1297,41 +1426,44 @@ class Policy(_messages.Message):
 
 
 class ReachabilityDetails(_messages.Message):
-  r"""The details of reachability state from the latest run.
+  r"""Results of the configuration analysis from the last run of the test.
 
   Enums:
-    ResultValueValuesEnum: The overall reachability result of the test.
+    ResultValueValuesEnum: The overall result of the test's configuration
+      analysis.
 
   Fields:
     error: The details of a failure or a cancellation of reachability
       analysis.
-    result: The overall reachability result of the test.
+    result: The overall result of the test's configuration analysis.
     traces: Result may contain a list of traces if a test has multiple
       possible paths in the network, such as when destination endpoint is a
       load balancer with multiple backends.
-    verifyTime: The time the reachability state was verified.
+    verifyTime: The time of the configuration analysis.
   """
 
   class ResultValueValuesEnum(_messages.Enum):
-    r"""The overall reachability result of the test.
+    r"""The overall result of the test's configuration analysis.
 
     Values:
-      RESULT_UNSPECIFIED: Result is not specified.
-      REACHABLE: Packet originating from source is expected to reach
-        destination.
-      UNREACHABLE: Packet originating from source is expected to be dropped
-        before reaching destination.
-      AMBIGUOUS: If the source and destination endpoint does not uniquely
-        identify the test location in the network, and the reachability result
-        contains multiple traces with mixed reachable and unreachable states,
-        then this result is returned.
-      UNDETERMINED: The reachability could not be determined. Possible reasons
-        are:  * Analysis is aborted due to permission error. User does not
-        have read   permission to the projects listed in the test. * Analysis
-        is aborted due to internal errors. * Analysis is partially complete
-        based on configurations where the user   has permission.   The Final
-        state indicates that the packet is forwarded to another network where
-        the user has no permission to access the configurations.
+      RESULT_UNSPECIFIED: No result was specified.
+      REACHABLE: Possible scenarios are: * The configuration analysis
+        determined that a packet originating from the source is expected to
+        reach the destination. * The analysis didn't complete because the user
+        lacks permission for some of the resources in the trace. However, at
+        the time the user's permission became insufficient, the trace had been
+        successful so far.
+      UNREACHABLE: A packet originating from the source is expected to be
+        dropped before reaching the destination.
+      AMBIGUOUS: The source and destination endpoints do not uniquely identify
+        the test location in the network, and the reachability result contains
+        multiple traces. For some traces, a packet could be delivered, and for
+        others, it would not be.
+      UNDETERMINED: The configuration analysis did not complete. Possible
+        reasons are: * A permissions error occurred--for example, the user
+        might not have read permission for all of the resources named in the
+        test. * An internal error occurred. * The analyzer received an invalid
+        or unsupported argument or was unable to identify a known endpoint.
     """
     RESULT_UNSPECIFIED = 0
     REACHABLE = 1
@@ -1381,14 +1513,19 @@ class RouteInfo(_messages.Message):
       NEXT_HOP_PEERING: Next hop is a peering VPC.
       NEXT_HOP_INTERCONNECT: Next hop is an interconnect.
       NEXT_HOP_VPN_TUNNEL: Next hop is a VPN tunnel.
-      NEXT_HOP_VPN_GATEWAY: Next hop is a VPN Gateway. This scenario only
-        happens when tracing connectivity from an on-premises network to GCP
-        through a VPN. The analysis simulates a packet departing from the on-
-        premises network through a VPN tunnel and arrives at a Cloud VPN
-        gateway.
+      NEXT_HOP_VPN_GATEWAY: Next hop is a VPN gateway. This scenario only
+        happens when tracing connectivity from an on-premises network to
+        Google Cloud through a VPN. The analysis simulates a packet departing
+        from the on-premises network through a VPN tunnel and arriving at a
+        Cloud VPN gateway.
       NEXT_HOP_INTERNET_GATEWAY: Next hop is an internet gateway.
       NEXT_HOP_BLACKHOLE: Next hop is blackhole; that is, the next hop either
         does not exist or is not running.
+      NEXT_HOP_ILB: Next hop is the forwarding rule of an Internal Load
+        Balancer.
+      NEXT_HOP_ROUTER_APPLIANCE: Next hop is a [router appliance
+        instance](https://cloud.google.com/network-connectivity/docs/network-
+        connectivity-center/concepts/ra-overview).
     """
     NEXT_HOP_TYPE_UNSPECIFIED = 0
     NEXT_HOP_IP = 1
@@ -1400,6 +1537,8 @@ class RouteInfo(_messages.Message):
     NEXT_HOP_VPN_GATEWAY = 7
     NEXT_HOP_INTERNET_GATEWAY = 8
     NEXT_HOP_BLACKHOLE = 9
+    NEXT_HOP_ILB = 10
+    NEXT_HOP_ROUTER_APPLIANCE = 11
 
   class RouteTypeValueValuesEnum(_messages.Enum):
     r"""Type of route.
@@ -1407,8 +1546,8 @@ class RouteInfo(_messages.Message):
     Values:
       ROUTE_TYPE_UNSPECIFIED: Unspecified type. Default value.
       SUBNET: Route is a subnet route automatically created by the system.
-      STATIC: Static route created by the user including the default route to
-        the Internet.
+      STATIC: Static route created by the user, including the default route to
+        the internet.
       DYNAMIC: Dynamic route exchanged between BGP peers.
       PEERING_SUBNET: A subnet route received from peering network.
       PEERING_STATIC: A static route received from peering network.
@@ -1443,8 +1582,7 @@ class SetIamPolicyRequest(_messages.Message):
       might reject them.
     updateMask: OPTIONAL: A FieldMask specifying which fields of the policy to
       modify. Only the fields in the mask will be modified. If no mask is
-      provided, the following default mask is used: paths: "bindings, etag"
-      This field is only used by Cloud IAM.
+      provided, the following default mask is used: `paths: "bindings, etag"`
   """
 
   policy = _messages.MessageField('Policy', 1)
@@ -1518,7 +1656,7 @@ class Status(_messages.Message):
   r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
   used by [gRPC](https://github.com/grpc). Each `Status` message contains
-  three pieces of data: error code, error message, and error details.  You can
+  three pieces of data: error code, error message, and error details. You can
   find out more about this error model and how to work with it in the [API
   Design Guide](https://cloud.google.com/apis/design/errors).
 
@@ -1527,7 +1665,7 @@ class Status(_messages.Message):
 
   Fields:
     code: The status code, which should be an enum value of google.rpc.Code.
-    details: A list of messages that carry the error details.  There is a
+    details: A list of messages that carry the error details. There is a
       common set of message types for APIs to use.
     message: A developer-facing error message, which should be in English. Any
       user-facing error message should be localized and sent in the
@@ -1573,27 +1711,31 @@ class Step(_messages.Message):
     StateValueValuesEnum: Each step is in one of the pre-defined states.
 
   Fields:
-    abort: Display info of the final state "abort" and reason.
+    abort: Display information of the final state "abort" and reason.
     causesDrop: This is a step that leads to the final state Drop.
-    deliver: Display info of the final state "deliver" and reason.
+    cloudSqlInstance: Display information of a Cloud SQL instance.
+    deliver: Display information of the final state "deliver" and reason.
     description: A description of the step. Usually this is a summary of the
       state.
-    drop: Display info of the final state "drop" and reason.
-    endpoint: Display info of the source and destination under analysis. The
-      endpiont info in an intermediate state may differ with the initial
-      input, as it might be modified by state like NAT, or Connection Proxy.
-    firewall: Display info of a Compute Engine firewall rule.
-    forward: Display info of the final state "forward" and reason.
-    forwardingRule: Display info of a Compute Engine forwarding rule.
-    instance: Display info of a Compute Engine instance.
-    loadBalancer: Display info of the load balancers.
-    network: Display info of a GCP network.
+    drop: Display information of the final state "drop" and reason.
+    endpoint: Display information of the source and destination under
+      analysis. The endpoint information in an intermediate state may differ
+      with the initial input, as it might be modified by state like NAT, or
+      Connection Proxy.
+    firewall: Display information of a Compute Engine firewall rule.
+    forward: Display information of the final state "forward" and reason.
+    forwardingRule: Display information of a Compute Engine forwarding rule.
+    gkeMaster: Display information of a Google Kubernetes Engine cluster
+      master.
+    instance: Display information of a Compute Engine instance.
+    loadBalancer: Display information of the load balancers.
+    network: Display information of a Google Cloud network.
     projectId: Project ID that contains the configuration this step is
       validating.
-    route: Display info of a Compute Engine route.
+    route: Display information of a Compute Engine route.
     state: Each step is in one of the pre-defined states.
-    vpnGateway: Display info of a Compute Engine VPN gateway.
-    vpnTunnel: Display info of a Compute Engine VPN tunnel.
+    vpnGateway: Display information of a Compute Engine VPN gateway.
+    vpnTunnel: Display information of a Compute Engine VPN tunnel.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -1602,14 +1744,20 @@ class Step(_messages.Message):
     Values:
       STATE_UNSPECIFIED: Unspecified state.
       START_FROM_INSTANCE: Initial state: packet originating from a Compute
-        Engine instance. An InstanceInfo will be populated with starting
-        instance info.
-      START_FROM_INTERNET: Initial state: packet originating from Internet.
-        The endpoint info will be populated.
+        Engine instance. An InstanceInfo is populated with starting instance
+        information.
+      START_FROM_INTERNET: Initial state: packet originating from the
+        internet. The endpoint information is populated.
       START_FROM_PRIVATE_NETWORK: Initial state: packet originating from a VPC
         or on-premises network with internal source IP. If the source is a VPC
-        network visible to the user, a NetworkInfo will be populated with
-        details of the network.
+        network visible to the user, a NetworkInfo is populated with details
+        of the network.
+      START_FROM_GKE_MASTER: Initial state: packet originating from a Google
+        Kubernetes Engine cluster master. A GKEMasterInfo is populated with
+        starting instance information.
+      START_FROM_CLOUD_SQL_INSTANCE: Initial state: packet originating from a
+        Cloud SQL instance. A CloudSQLInstanceInfo is populated with starting
+        instance information.
       APPLY_INGRESS_FIREWALL_RULE: Config checking state: verify ingress
         firewall rule.
       APPLY_EGRESS_FIREWALL_RULE: Config checking state: verify egress
@@ -1630,10 +1778,10 @@ class Step(_messages.Message):
       NAT: Transition state: packet header translated.
       PROXY_CONNECTION: Transition state: original connection is terminated
         and a new proxied connection is initiated.
-      DELIVER: Final state: packet delivered.
-      DROP: Final state: packet dropped.
-      FORWARD: Final state: packet forwarded to a network with an unknown
-        configuration.
+      DELIVER: Final state: packet could be delivered.
+      DROP: Final state: packet could be dropped.
+      FORWARD: Final state: packet could be forwarded to a network with an
+        unknown configuration.
       ABORT: Final state: analysis is aborted.
       VIEWER_PERMISSION_MISSING: Special state: viewer of the test result does
         not have permission to see the configuration in this step.
@@ -1642,41 +1790,45 @@ class Step(_messages.Message):
     START_FROM_INSTANCE = 1
     START_FROM_INTERNET = 2
     START_FROM_PRIVATE_NETWORK = 3
-    APPLY_INGRESS_FIREWALL_RULE = 4
-    APPLY_EGRESS_FIREWALL_RULE = 5
-    APPLY_ROUTE = 6
-    APPLY_FORWARDING_RULE = 7
-    SPOOFING_APPROVED = 8
-    ARRIVE_AT_INSTANCE = 9
-    ARRIVE_AT_INTERNAL_LOAD_BALANCER = 10
-    ARRIVE_AT_EXTERNAL_LOAD_BALANCER = 11
-    ARRIVE_AT_VPN_GATEWAY = 12
-    ARRIVE_AT_VPN_TUNNEL = 13
-    NAT = 14
-    PROXY_CONNECTION = 15
-    DELIVER = 16
-    DROP = 17
-    FORWARD = 18
-    ABORT = 19
-    VIEWER_PERMISSION_MISSING = 20
+    START_FROM_GKE_MASTER = 4
+    START_FROM_CLOUD_SQL_INSTANCE = 5
+    APPLY_INGRESS_FIREWALL_RULE = 6
+    APPLY_EGRESS_FIREWALL_RULE = 7
+    APPLY_ROUTE = 8
+    APPLY_FORWARDING_RULE = 9
+    SPOOFING_APPROVED = 10
+    ARRIVE_AT_INSTANCE = 11
+    ARRIVE_AT_INTERNAL_LOAD_BALANCER = 12
+    ARRIVE_AT_EXTERNAL_LOAD_BALANCER = 13
+    ARRIVE_AT_VPN_GATEWAY = 14
+    ARRIVE_AT_VPN_TUNNEL = 15
+    NAT = 16
+    PROXY_CONNECTION = 17
+    DELIVER = 18
+    DROP = 19
+    FORWARD = 20
+    ABORT = 21
+    VIEWER_PERMISSION_MISSING = 22
 
   abort = _messages.MessageField('AbortInfo', 1)
   causesDrop = _messages.BooleanField(2)
-  deliver = _messages.MessageField('DeliverInfo', 3)
-  description = _messages.StringField(4)
-  drop = _messages.MessageField('DropInfo', 5)
-  endpoint = _messages.MessageField('EndpointInfo', 6)
-  firewall = _messages.MessageField('FirewallInfo', 7)
-  forward = _messages.MessageField('ForwardInfo', 8)
-  forwardingRule = _messages.MessageField('ForwardingRuleInfo', 9)
-  instance = _messages.MessageField('InstanceInfo', 10)
-  loadBalancer = _messages.MessageField('LoadBalancerInfo', 11)
-  network = _messages.MessageField('NetworkInfo', 12)
-  projectId = _messages.StringField(13)
-  route = _messages.MessageField('RouteInfo', 14)
-  state = _messages.EnumField('StateValueValuesEnum', 15)
-  vpnGateway = _messages.MessageField('VpnGatewayInfo', 16)
-  vpnTunnel = _messages.MessageField('VpnTunnelInfo', 17)
+  cloudSqlInstance = _messages.MessageField('CloudSQLInstanceInfo', 3)
+  deliver = _messages.MessageField('DeliverInfo', 4)
+  description = _messages.StringField(5)
+  drop = _messages.MessageField('DropInfo', 6)
+  endpoint = _messages.MessageField('EndpointInfo', 7)
+  firewall = _messages.MessageField('FirewallInfo', 8)
+  forward = _messages.MessageField('ForwardInfo', 9)
+  forwardingRule = _messages.MessageField('ForwardingRuleInfo', 10)
+  gkeMaster = _messages.MessageField('GKEMasterInfo', 11)
+  instance = _messages.MessageField('InstanceInfo', 12)
+  loadBalancer = _messages.MessageField('LoadBalancerInfo', 13)
+  network = _messages.MessageField('NetworkInfo', 14)
+  projectId = _messages.StringField(15)
+  route = _messages.MessageField('RouteInfo', 16)
+  state = _messages.EnumField('StateValueValuesEnum', 17)
+  vpnGateway = _messages.MessageField('VpnGatewayInfo', 18)
+  vpnTunnel = _messages.MessageField('VpnTunnelInfo', 19)
 
 
 class TestIamPermissionsRequest(_messages.Message):
@@ -1704,22 +1856,21 @@ class TestIamPermissionsResponse(_messages.Message):
 
 
 class Trace(_messages.Message):
-  r"""Trace represents one simulated packet forwarding path. <ul>   <li>Each
-  trace contains multiple ordered steps.</li>   <li>Each step is in a
-  particular state and has an associated   configuration.</li> <li>State is
-  categorized as a final or non-final   state.</li> <li>Each final state has a
-  reason associated with it.</li>   <li>Each trace must end with a final state
-  (the last step).</li> </ul> <pre><code>
-  |---------------------Trace----------------------|   Step1(State)
-  Step2(State) ---  StepN(State(final)) </code></pre>
+  r"""Trace represents one simulated packet forwarding path. * Each trace
+  contains multiple ordered steps. * Each step is in a particular state with
+  associated configuration. * State is categorized as final or non-final
+  states. * Each final state has a reason associated. * Each trace must end
+  with a final state (the last step). ```
+  |---------------------Trace----------------------| Step1(State) Step2(State)
+  --- StepN(State(final)) ```
 
   Fields:
-    endpointInfo: Derived from the source and destination endpoints
-      definition, and validated by the data plane model. If there are multiple
-      traces starting from different source locations, then the endpoint_info
-      may be different between traces.
+    endpointInfo: Derived from the source and destination endpoints definition
+      specified by user request, and validated by the data plane model. If
+      there are multiple traces starting from different source locations, then
+      the endpoint_info may be different between traces.
     steps: A trace of a test contains multiple steps from the initial state to
-      the final state (delivered, dropped, forwarded, or aborted).  The steps
+      the final state (delivered, dropped, forwarded, or aborted). The steps
       are ordered by the processing sequence within the simulated network
       state machine. It is critical to preserve the order of the steps and
       avoid reordering or sorting them.
@@ -1737,7 +1888,8 @@ class VpnGatewayInfo(_messages.Message):
     ipAddress: IP address of the VPN gateway.
     networkUri: URI of a Compute Engine network where the VPN gateway is
       configured.
-    region: Name of a GCP region where this VPN gateway is configured.
+    region: Name of a Google Cloud region where this VPN gateway is
+      configured.
     uri: URI of a VPN gateway.
     vpnTunnelUri: A VPN tunnel that is associated with this VPN gateway. There
       may be multiple VPN tunnels configured on a VPN gateway, and only the
@@ -1762,7 +1914,7 @@ class VpnTunnelInfo(_messages.Message):
     displayName: Name of a VPN tunnel.
     networkUri: URI of a Compute Engine network where the VPN tunnel is
       configured.
-    region: Name of a GCP region where this VPN tunnel is configured.
+    region: Name of a Google Cloud region where this VPN tunnel is configured.
     remoteGateway: URI of a VPN gateway at remote end of the tunnel.
     remoteGatewayIp: Remote VPN gateway's IP address.
     routingType: Type of the routing policy.

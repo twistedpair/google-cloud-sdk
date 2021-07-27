@@ -375,11 +375,11 @@ def _SetWorkerPool(build_config, messages, arg_worker_pool):
     # Only regional pools are supported here
     worker_pool = resources.REGISTRY.Parse(
         arg_worker_pool,
-        api_version='v1beta1',
         collection='cloudbuild.projects.locations.workerPools')
     if not build_config.options:
       build_config.options = messages.BuildOptions()
-    build_config.options.workerPool = worker_pool.RelativeName()
+    build_config.options.pool = messages.PoolOption()
+    build_config.options.pool.name = worker_pool.RelativeName()
 
   return build_config
 
@@ -453,7 +453,9 @@ def DetermineBuildRegion(build_config, desired_region=None):
   wp_options = build_config.options
   if not wp_options:
     return desired_region
-  wp_resource = wp_options.workerPool
+  wp_resource = wp_options.pool.name if wp_options.pool else ''
+  if not wp_resource:
+    wp_resource = wp_options.workerPool
   if not wp_resource:
     return desired_region
   if not cloudbuild_util.IsRegionalWorkerPool(wp_resource):

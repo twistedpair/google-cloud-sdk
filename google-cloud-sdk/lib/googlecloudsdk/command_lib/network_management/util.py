@@ -53,20 +53,26 @@ def AddFieldToUpdateMask(field, patch_request):
 
 def ClearSingleEndpointAttr(patch_request, endpoint_type, endpoint_name):
   """Checks if given endpoint can be removed from Connectivity Test and removes it."""
-  alt_endpoint_name = "instance" if endpoint_name == "ipAddress" else "ipAddress"
   test = patch_request.connectivityTest
-  endpoints = getattr(test, endpoint_type)
-
-  if getattr(endpoints, alt_endpoint_name, None):
-    setattr(endpoints, endpoint_name, "")
-    setattr(test, endpoint_type, endpoints)
+  endpoint = getattr(test, endpoint_type)
+  endpoint_fields = {
+      "instance", "ipAddress", "gkeMasterCluster", "cloudSqlInstance"
+  }
+  non_empty_endpoint_fields = 0
+  for field in endpoint_fields:
+    if getattr(endpoint, field, None):
+      non_empty_endpoint_fields += 1
+  if (non_empty_endpoint_fields > 1 or
+      not getattr(endpoint, endpoint_name, None)):
+    setattr(endpoint, endpoint_name, "")
+    setattr(test, endpoint_type, endpoint)
     patch_request.connectivityTest = test
     return AddFieldToUpdateMask(endpoint_type + "." + endpoint_name,
                                 patch_request)
   else:
     raise InvalidInputError(
-        "Invalid Connectivity Test. At least one of --{}-instance or --{}-ip-address must be specified."
-        .format(endpoint_type, endpoint_type))
+        "Invalid Connectivity Test. At least one of --{endpoint_type}-instance, --{endpoint_type}-ip-address, --{endpoint_type}-gke_master_cluster or --{endpoint_type}-cloud_sql_instance must be specified."
+        .format(endpoint_type=endpoint_type))
 
 
 def ClearEndpointAttrs(unused_ref, args, patch_request):
@@ -74,8 +80,14 @@ def ClearEndpointAttrs(unused_ref, args, patch_request):
   flags_and_endpoints = [
       ("clear_source_instance", "source", "instance"),
       ("clear_source_ip_address", "source", "ipAddress"),
+      ("clear_source_gke_master_cluster", "source", "gkeMasterCluster"),
+      ("clear_source_cloud_sql_instance", "source", "cloudSqlInstance"),
       ("clear_destination_instance", "destination", "instance"),
-      ("clear_destination_ip_address", "destination", "ipAddress")
+      ("clear_destination_ip_address", "destination", "ipAddress"),
+      ("clear_destination_gke_master_cluster", "destination",
+       "gkeMasterCluster"),
+      ("clear_destination_cloud_sql_instance", "destination",
+       "cloudSqlInstance"),
   ]
 
   for flag, endpoint_type, endpoint_name in flags_and_endpoints:

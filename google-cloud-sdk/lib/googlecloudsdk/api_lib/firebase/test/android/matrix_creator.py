@@ -138,11 +138,15 @@ class MatrixCreator(object):
     """Build a TestSpecification for an AndroidRoboTest."""
     spec = self._BuildGenericTestSpec()
     app_apk, app_bundle = self._BuildAppReference(self._args.app)
+    robo_modes = self._messages.AndroidRoboTest.RoboModeValueValuesEnum
+    robo_mode = robo_modes.ROBO_VERSION_2 if getattr(
+        self._args, 'resign', True) else robo_modes.ROBO_VERSION_1
     spec.androidRoboTest = self._messages.AndroidRoboTest(
         appApk=app_apk,
         appBundle=app_bundle,
         appPackageId=self._args.app_package,
-        roboDirectives=self._BuildRoboDirectives(self._args.robo_directives))
+        roboDirectives=self._BuildRoboDirectives(self._args.robo_directives),
+        roboMode=robo_mode)
     if getattr(self._args, 'robo_script', None):
       spec.androidRoboTest.roboScript = self._BuildFileReference(
           os.path.basename(self._args.robo_script))

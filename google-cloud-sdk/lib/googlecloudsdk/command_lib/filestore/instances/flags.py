@@ -51,11 +51,6 @@ INSTANCES_LIST_FORMAT_ALPHA_BETA = """\
       createTime.date()
     )"""
 
-NETWORK_ARG_SPEC = {
-    'name': str,
-    'reserved-ip-range': str,
-}
-
 
 FILE_SHARE_ARG_SPEC = {
     'name':
@@ -173,11 +168,19 @@ def AddNetworkArg(parser, api_version):
     parser: argparse parser.
     api_version: API version.
   """
-  if ((api_version == filestore_client.ALPHA_API_VERSION) or
-      (api_version == filestore_client.BETA_API_VERSION)):
+
+  network_arg_spec = {}
+
+  if api_version == filestore_client.ALPHA_API_VERSION or api_version == filestore_client.BETA_API_VERSION:
+    network_arg_spec = {
+        'name': str,
+        'reserved-ip-range': str,
+        'connect-mode': str,
+    }
+
     network_help = """\
         Network configuration for a Cloud Filestore instance. Specifying
-        `reserved-ip-range` is optional.
+        `reserved-ip-range` and `connect-mode` is optional.
         *name*::: The name of the Google Compute Engine
         [VPC network](/compute/docs/networks-and-firewalls#networks) to which the
         instance is connected.
@@ -186,8 +189,15 @@ def AddNetworkArg(parser, api_version):
         The range you specify can't overlap with either existing subnets or
         assigned IP address ranges for other Cloud Filestore instances in the selected VPC network.
         We recommend that you skip this field to allow Cloud Filestore to automatically find a free IP address range and assign it to the instance.
-        """
+        *connect-mode*::: Network connection mode used by instances. CONNECT_MODE must be one of:
+        DIRECT_PEERING or PRIVATE_SERVICE_ACCESS.
+    """
   else:
+    network_arg_spec = {
+        'name': str,
+        'reserved-ip-range': str,
+    }
+
     network_help = """\
       Network configuration for a Cloud Filestore instance. Specifying
       `reserved-ip-range` is optional.
@@ -201,9 +211,10 @@ def AddNetworkArg(parser, api_version):
       specify can't overlap with either existing subnets or assigned IP address
       ranges for other Cloud Filestore instances in the selected VPC network.
       """
+
   parser.add_argument(
       '--network',
-      type=arg_parsers.ArgDict(spec=NETWORK_ARG_SPEC, required_keys=['name']),
+      type=arg_parsers.ArgDict(spec=network_arg_spec, required_keys=['name']),
       required=True,
       help=network_help)
 

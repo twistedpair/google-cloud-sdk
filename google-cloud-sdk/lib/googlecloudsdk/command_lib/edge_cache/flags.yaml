@@ -330,3 +330,34 @@ service:
 
       If not set, the EdgeCacheService has no SSL policy configured, and will
       default to the "COMPATIBLE" policy.
+
+invalidateCacheRequest:
+  host:
+    arg_name: host
+    api_field: invalidateCacheRequest.host
+    help_text: |
+      The hostname to invalidate against. You can specify an exact or wildcard host - e.g.
+      "video.example.com" or "*.example.com" - based on host component.
+
+  path:
+    arg_name: path
+    api_field: invalidateCacheRequest.path
+    help_text: |
+      The path to invalidate against. You can specify an exact or wildcard host - e.g.
+      "/videos/hls/139123.mp4" or "/manifests/*" - based on path component.
+
+  tags:
+    arg_name: tags
+    api_field: invalidateCacheRequest.cacheTags
+    help_text: |
+      A list of cache tags used to identify cached objects.
+
+      - Cache tags are specified when the response is first cached, by setting the "Cache-Tag"
+      response header at the origin.
+      - By default, all objects have a cache tag representing the HTTP status code of the response,
+      the MIME content-type, and the origin.
+      - Multiple cache tags in the same revalidation request are treated as boolean OR - e.g. tag1
+      OR tag2 OR tag3.
+      - If a host and/or path are also specified, these are treated as boolean AND with any tags.
+
+      Up to 10 tags may be specified in a single invalidation request.

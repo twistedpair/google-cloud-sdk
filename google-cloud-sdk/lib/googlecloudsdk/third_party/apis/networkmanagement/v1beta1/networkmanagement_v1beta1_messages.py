@@ -1618,6 +1618,9 @@ class RouteInfo(_messages.Message):
         does not exist or is not running.
       NEXT_HOP_ILB: Next hop is the forwarding rule of an Internal Load
         Balancer.
+      NEXT_HOP_ROUTER_APPLIANCE: Next hop is a [router appliance
+        instance](https://cloud.google.com/network-connectivity/docs/network-
+        connectivity-center/concepts/ra-overview).
     """
     NEXT_HOP_TYPE_UNSPECIFIED = 0
     NEXT_HOP_IP = 1
@@ -1630,6 +1633,7 @@ class RouteInfo(_messages.Message):
     NEXT_HOP_INTERNET_GATEWAY = 8
     NEXT_HOP_BLACKHOLE = 9
     NEXT_HOP_ILB = 10
+    NEXT_HOP_ROUTER_APPLIANCE = 11
 
   class RouteTypeValueValuesEnum(_messages.Enum):
     r"""Type of route.

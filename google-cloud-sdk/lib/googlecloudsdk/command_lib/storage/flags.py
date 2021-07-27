@@ -37,27 +37,23 @@ def add_object_metadata_flags(parser):
   """Add flags that allow setting object metadata."""
   parser.add_argument(
       '--cache-control',
-      help='Influences how backend caches requests and responses.')
+      help='How caches should handle requests and responses.')
   parser.add_argument(
       '--content-disposition',
-      help='Information on how content should be displayed.')
+      help='How content should be displayed.')
   parser.add_argument(
-      '--content-encoding', help='How content is encoded (e.g. "gzip").')
+      '--content-encoding', help='How content is encoded (e.g. ``gzip\'\').')
   parser.add_argument(
       '--content-md5',
-      help=('Manually set a MD5 hash digest for the contents of an upload'
-            ' file. Cannot be used when uploading multiple files. The custom'
-            ' digest will forwarded to the cloud provider for validation.'))
+      help=('Manually specified MD5 hash digest for the contents of an uploaded'
+            ' file. This flag cannot be used when uploading multiple files. The'
+            ' custom digest is used by the cloud provider for validation.'))
   parser.add_argument(
-      '--content-language', help='Content\'s language (e.g. "en" = "English).')
+      '--content-language',
+      help='Content\'s language (e.g. ``en\'\' signifies "English").')
   parser.add_argument(
       '--content-type',
-      help='Type of data contained in content (e.g. "text/html").')
-  parser.add_argument(
-      '--custom-headers',
-      metavar='CUSTOM_HEADERS',
-      type=arg_parsers.ArgDict(),
-      help='Custom HTTP headers for AWS that will be prepended with "x-aws-".')
+      help='Type of data contained in the object (e.g. ``text/html\'\').')
   parser.add_argument(
       '--custom-metadata',
       metavar='CUSTOM_METADATA',

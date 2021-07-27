@@ -63,3 +63,60 @@ def SetIamPolicyFromFile(zone_ref, policy_file):
       policy_file,
       dataplex_api.GetMessageModule().GoogleIamV1Policy)
   return SetIamPolicy(zone_ref, policy)
+
+
+def GenerateZoneForCreateRequest(description, display_name, labels, zone_type,
+                                 discovery_spec_enabled, schedule,
+                                 bigquery_enabled, dataset_name,
+                                 metastore_enabled, database_name,
+                                 location_type):
+  """Create Zone for Message Create Requests."""
+  module = dataplex_api.GetMessageModule()
+  return module.GoogleCloudDataplexV1Zone(
+      description=description,
+      displayName=display_name,
+      labels=labels,
+      type=module.GoogleCloudDataplexV1Zone.TypeValueValuesEnum(zone_type),
+      discoverySpec=module.GoogleCloudDataplexV1ZoneDiscoverySpec(
+          enabled=discovery_spec_enabled,
+          schedule=schedule,
+          publishing=module
+          .GoogleCloudDataplexV1ZoneDiscoverySpecMetadataPublishing(
+              bigquery=module
+              .GoogleCloudDataplexV1ZoneDiscoverySpecMetadataPublishingBigQuery(
+                  enabled=bigquery_enabled, datasetName=dataset_name),
+              metastore=module.
+              GoogleCloudDataplexV1ZoneDiscoverySpecMetadataPublishingMetastore(
+                  enabled=metastore_enabled, databaseName=database_name))),
+      resourceSpec=module.GoogleCloudDataplexV1ZoneResourceSpec(
+          locationType=module.GoogleCloudDataplexV1ZoneResourceSpec
+          .LocationTypeValueValuesEnum(location_type)))
+
+
+def GenerateZoneForUpdateRequest(description, display_name, labels,
+                                 discovery_spec_enabled, schedule,
+                                 bigquery_enabled, metastore_enabled):
+  """Create Zone for Message Update Requests."""
+  module = dataplex_api.GetMessageModule()
+  module.GoogleCloudDataplexV1Zone(
+      description=description,
+      displayName=display_name,
+      labels=labels,
+      discoverySpec=module.GoogleCloudDataplexV1ZoneDiscoverySpec(
+          enabled=discovery_spec_enabled,
+          schedule=schedule,
+          publishing=module
+          .GoogleCloudDataplexV1ZoneDiscoverySpecMetadataPublishing(
+              bigquery=module
+              .GoogleCloudDataplexV1ZoneDiscoverySpecMetadataPublishingBigQuery(
+                  enabled=bigquery_enabled),
+              metastore=module.
+              GoogleCloudDataplexV1ZoneDiscoverySpecMetadataPublishingMetastore(
+                  enabled=metastore_enabled))))
+
+
+def WaitForOperation(operation):
+  """Waits for the given google.longrunning.Operation to complete."""
+  return dataplex_api.WaitForOperation(
+      operation,
+      dataplex_api.GetClientInstance().projects_locations_lakes_zones)

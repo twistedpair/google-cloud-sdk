@@ -5,6 +5,58 @@ Copyright 2014-2021 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 350.0.0 (2021-07-27)
+
+### Cloud SDK
+
+* Fixed issue where the gcloud command-line tool would fail to tab complete
+  flags specified after positional arguments.
+
+### Cloud Build
+
+* Added `--service-account` flag to `gcloud beta builds triggers create` command.
+
+### Cloud Filestore
+
+*   Added `connect-mode` param to `--network` flag of `gcloud filestore instances create` for alpha and beta.
+
+### Cloud Services
+
+* Promoted `gcloud services api-keys list` to GA.
+
+### Compute Engine
+
+* Modified `--source-ranges` and `--destination-ranges` for `gcloud compute
+  firewall-rules create` and `gcloud compute firewall-rules update` to accept
+  IPv6 address ranges in addition to IPv4 address ranges.
+* Promoted rsa_encrypted_key in `gcloud compute disks snapshot` to GA.
+* Promoted rsa_encrypted_key in `gcloud compute disks create` and
+  `gcloud compute images create` to GA.
+* Promoted `type` flag of `gcloud compute security-policies create` to beta.
+
+### Firebase Test Lab
+
+*   Added `--resign` flag to
+    `gcloud beta firebase test android run`. This flag allows clients to
+    specify if Robo should re-sign the app-under-test APK.
+
+### Network Management
+
+* Added `gkeMasterCluster` and `cloudSqlInstance` arguments for source and
+  destination in `gcloud network-management connectivity-tests`. This allows
+  the user to run tests using Google Managed Services (GKE and Cloud SQL)
+  endpoint types as source or destination.
+
+### Secret Manager
+
+* Updated `--filter` flag to be passed to the backend in
+    * `gcloud beta secrets list`
+    * `gcloud secrets versions list`
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 349.0.0 (2021-07-20)
 
 ### Breaking Changes

@@ -758,7 +758,8 @@ def RunOnestepImageImport(args,
                         docker_image_tag, builder_region)
   return RunImageCloudBuild(args, builder, import_args, tags, output_filter,
                             IMPORT_ROLES_FOR_CLOUDBUILD_SERVICE_ACCOUNT,
-                            IMPORT_ROLES_FOR_COMPUTE_SERVICE_ACCOUNT)
+                            IMPORT_ROLES_FOR_COMPUTE_SERVICE_ACCOUNT,
+                            build_region=builder_region)
 
 
 def RunImageExport(args,

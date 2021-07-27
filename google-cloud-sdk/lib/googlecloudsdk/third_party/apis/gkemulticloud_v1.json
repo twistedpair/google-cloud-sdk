@@ -642,7 +642,7 @@
           "description": "Optional. The initial taints assigned to nodes of this node pool.",
           "type": "array",
           "items": {
-            "$ref": "GoogleCloudGkemulticloudV1AwsNodeTaint"
+            "$ref": "GoogleCloudGkemulticloudV1NodeTaint"
           }
         },
         "labels": {
@@ -676,8 +676,8 @@
         }
       }
     },
-    "GoogleCloudGkemulticloudV1AwsNodeTaint": {
-      "id": "GoogleCloudGkemulticloudV1AwsNodeTaint",
+    "GoogleCloudGkemulticloudV1NodeTaint": {
+      "id": "GoogleCloudGkemulticloudV1NodeTaint",
       "description": "The taint content for the node taint.",
       "type": "object",
       "properties": {
@@ -1110,10 +1110,6 @@
           "description": "Optional. Configuration related to the main volume provisioned for each control plane replica. The main volume is in charge of storing all of the cluster's etcd state. When unspecified, it defaults to a 8-GiB Azure Disk.",
           "$ref": "GoogleCloudGkemulticloudV1AzureDiskTemplate"
         },
-        "azureServicesAuthentication": {
-          "description": "Authentication configuration for management of Azure resources.",
-          "$ref": "GoogleCloudGkemulticloudV1AzureServicesAuthentication"
-        },
         "databaseEncryption": {
           "description": "Optional. Configuration related to application-layer secrets encryption.",
           "$ref": "GoogleCloudGkemulticloudV1AzureDatabaseEncryption"
@@ -1147,29 +1143,6 @@
           "description": "Optional. The size of the disk, in GiBs. When unspecified, a default value is provided. See the specific reference in the parent resource.",
           "type": "integer",
           "format": "int32"
-        }
-      }
-    },
-    "GoogleCloudGkemulticloudV1AzureServicesAuthentication": {
-      "id": "GoogleCloudGkemulticloudV1AzureServicesAuthentication",
-      "description": "Authentication configuration for the management of Azure resources.",
-      "type": "object",
-      "properties": {
-        "subscription": {
-          "description": "The Azure Subscription ID.",
-          "type": "string"
-        },
-        "aadTenant": {
-          "description": "The Azure Active Directory Tenant ID.",
-          "type": "string"
-        },
-        "aadApplication": {
-          "description": "The Azure Active Directory application ID.",
-          "type": "string"
-        },
-        "aadApplicationKeypairSecret": {
-          "description": "The resource name of the Secret in the format `projects\/*\/secrets\/*` for the authentication to the Azure Active Directory application. The latest SecretVersion is used.",
-          "type": "string"
         }
       }
     },
@@ -1356,6 +1329,20 @@
         "sshConfig": {
           "description": "Required. SSH configuration for how to access the node pool machines.",
           "$ref": "GoogleCloudGkemulticloudV1AzureSshConfig"
+        },
+        "taints": {
+          "description": "Optional. The initial taints assigned to nodes of this node pool.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudGkemulticloudV1NodeTaint"
+          }
+        },
+        "labels": {
+          "description": "Optional. The initial labels assigned to nodes of this node pool. An object containing a list of \"key\": value pairs. Example: { \"name\": \"wrench\", \"mass\": \"1.3kg\", \"count\": \"3\" }.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
         }
       }
     },

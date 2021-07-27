@@ -140,8 +140,8 @@ def AddCommonArgs(parser,
 
       If neither --source-ranges nor --source-tags are specified,
       --source-ranges defaults to `0.0.0.0/0`, which means that the rule applies
-      to all incoming connections from inside or outside the network.  If both
-      --source-ranges and --source-tags are specified, the rule matches if
+      to all incoming IPv4 connections from inside or outside the network. If
+      both --source-ranges and --source-tags are specified, the rule matches if
       either the range of the source matches  --source-ranges or the tag of the
       source matches --source-tags.
       """
@@ -169,7 +169,7 @@ def AddCommonArgs(parser,
       which the rule applies if all other fields match.  If neither
       --source-ranges nor --source-tags are specified, --source-ranges
       defaults to `0.0.0.0/0`, which means that the rule applies to all
-      incoming connections from inside or outside the network.
+      incoming IPv4 connections from inside or outside the network.
 
       If both --source-ranges and --source-tags are specified, an inbound
       connection is allowed if either the range of the source matches
@@ -340,8 +340,8 @@ def AddArgsForEgress(parser, ruleset_parser, for_update=False):
   else:
     destination_ranges_help += """
       If --destination-ranges is NOT provided, then this
-      flag will default to 0.0.0.0/0, allowing all destinations. Multiple IP
-      address blocks can be specified if they are separated by commas.
+      flag will default to 0.0.0.0/0, allowing all IPv4 destinations. Multiple
+      IP address blocks can be specified if they are separated by commas.
       """
   parser.add_argument(
       '--destination-ranges',

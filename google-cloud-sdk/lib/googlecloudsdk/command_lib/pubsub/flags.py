@@ -27,14 +27,19 @@ from googlecloudsdk.command_lib.pubsub import resource_args
 from googlecloudsdk.command_lib.pubsub import util
 from googlecloudsdk.core import log
 
-
 # Maximum number of attributes you can specify for a message.
 MAX_ATTRIBUTES = 100
-
 
 # Format string for deprecation message for renaming positional to flag.
 DEPRECATION_FORMAT_STR = (
     'Positional argument `{0}` is deprecated. Please use `{1}` instead.')
+
+# Help string for duration format flags.
+DURATION_HELP_STR = (
+    'Valid values are strings of the form INTEGER[UNIT], where UNIT is one of '
+    '"s", "m", "h", and "d" for seconds, minutes, hours, and days, '
+    'respectively. If the unit is omitted, seconds is assumed.'
+)
 
 
 def AddAckIdFlag(parser, action, add_deprecated=False):
@@ -172,10 +177,10 @@ def AddAckDeadlineFlag(parser, required=False):
            'acknowledge receiving a message before re-attempting delivery.')
 
 
-def AddMessageRetentionFlags(parser, is_update):
+def AddSubscriptionMessageRetentionFlags(parser, is_update):
   """Adds flags subscription's messsage retention properties to the parser."""
   if is_update:
-    retention_parser = ParseRetentionDurationWithDefault
+    retention_parser = ParseSubscriptionRetentionDurationWithDefault
     retention_default_help = 'Specify "default" to use the default value.'
   else:
     retention_parser = arg_parsers.Duration()
@@ -188,7 +193,7 @@ def AddMessageRetentionFlags(parser, is_update):
       action='store_true',
       default=None,
       help="""\
-          Whether or not to retain acknowledged messages.  If true,
+          Whether or not to retain acknowledged messages. If true,
           messages are not expunged from the subscription's backlog
           until they fall out of the --message-retention-duration
           window. Acknowledged messages are not retained by default.""")
@@ -198,12 +203,9 @@ def AddMessageRetentionFlags(parser, is_update):
       help="""\
           How long to retain unacknowledged messages in the
           subscription's backlog, from the moment a message is
-          published.  If --retain-acked-messages is true, this also
-          configures the retention of acknowledged messages.  {}
-          Valid values are strings of the form INTEGER[UNIT],
-          where UNIT is one of "s", "m", "h", and "d" for seconds,
-          minutes, hours, and days, respectively.  If the unit
-          is omitted, seconds is assumed.""".format(retention_default_help))
+          published. If --retain-acked-messages is true, this also
+          configures the retention of acknowledged messages. {} {}""".format(
+              retention_default_help, DURATION_HELP_STR))
 
 
 def AddSubscriptionTopicResourceFlags(parser):
@@ -218,7 +220,7 @@ def AddSubscriptionTopicResourceFlags(parser):
            'If not set, it defaults to the currently selected cloud project.')
 
 
-def ParseRetentionDurationWithDefault(value):
+def ParseSubscriptionRetentionDurationWithDefault(value):
   if value == subscriptions.DEFAULT_MESSAGE_RETENTION_VALUE:
     return value
   return util.FormatDuration(arg_parsers.Duration()(value))
@@ -239,7 +241,7 @@ def AddSubscriptionSettingsFlags(parser, is_update=False):
   """
   AddAckDeadlineFlag(parser)
   AddPushConfigFlags(parser)
-  AddMessageRetentionFlags(parser, is_update)
+  AddSubscriptionMessageRetentionFlags(parser, is_update)
   if not is_update:
     parser.add_argument(
         '--enable-message-ordering',
@@ -290,11 +292,9 @@ def AddSubscriptionSettingsFlags(parser, is_update=False):
       '--expiration-period',
       type=ParseExpirationPeriodWithNeverSentinel,
       help="""The subscription will expire if it is inactive for the given
-          period. Valid values are strings of the form INTEGER[UNIT], where
-          UNIT is one of "s", "m", "h", and "d" for seconds, minutes, hours,
-          and days, respectively. If the unit is omitted, seconds is
-          assumed. This flag additionally accepts the special value "never" to
-          indicate that the subscription will never expire.""")
+          period. {} This flag additionally accepts the special value "never" to
+          indicate that the subscription will never expire.""".format(
+              DURATION_HELP_STR))
 
   current_group = parser
   if is_update:
@@ -315,19 +315,13 @@ def AddSubscriptionSettingsFlags(parser, is_update=False):
       type=arg_parsers.Duration(lower_bound='0s', upper_bound='600s'),
       help="""The minimum delay between consecutive deliveries of a given
           message. Value should be between 0 and 600 seconds. Defaults to 10
-          seconds. Valid values are strings of the form INTEGER[UNIT], where
-          UNIT is one of "s", "m", "h", and "d" for seconds, minutes, hours,
-          and days, respectively. If the unit is omitted, seconds is
-          assumed.""")
+          seconds. {}""".format(DURATION_HELP_STR))
   set_retry_policy_group.add_argument(
       '--max-retry-delay',
       type=arg_parsers.Duration(lower_bound='0s', upper_bound='600s'),
       help="""The maximum delay between consecutive deliveries of a given
           message. Value should be between 0 and 600 seconds. Defaults to 10
-          seconds. Valid values are strings of the form INTEGER[UNIT], where
-          UNIT is one of "s", "m", "h", and "d" for seconds, minutes, hours,
-          and days, respectively. If the unit is omitted, seconds is
-          assumed.""")
+          seconds. {}""".format(DURATION_HELP_STR))
 
 
 def AddPublishMessageFlags(parser, add_deprecated=False):
@@ -391,6 +385,38 @@ def AddSchemaSettingsFlags(parser):
       metavar='ENCODING',
       help="""The encoding of messages validated against the schema.""",
       required=True)
+
+
+def AddTopicMessageRetentionFlags(parser, is_update):
+  """Add flags for the topic message retention property to the parser.
+
+  Args:
+    parser: The argparse parser.
+    is_update: Whether the operation is for updating message retention.
+  """
+  current_group = parser
+  if is_update:
+    mutual_exclusive_group = parser.add_mutually_exclusive_group()
+    mutual_exclusive_group.add_argument(
+        '--clear-message-retention-duration',
+        action='store_true',
+        default=None,
+        help="""If set, clear the message retention duration from the topic.""")
+    current_group = mutual_exclusive_group
+
+  current_group.add_argument(
+      '--message-retention-duration',
+      type=arg_parsers.Duration(lower_bound='600s', upper_bound='604800s'),
+      help="""\
+          Indicates the minimum duration to retain a message after it is
+          published to the topic. If this field is set, messages published to
+          the topic in the last `message_retention_duration` are always
+          available to subscribers. For instance, it allows any attached
+          subscription to seek to a timestamp that is up to
+          `message_retention_duration` in the past. If this field is not set,
+          message retention is controlled by settings on individual
+          subscriptions. The minimum is 10 minutes and the maximum is 7
+          days. {}""".format(DURATION_HELP_STR))
 
 
 def ParseMessageBody(args):
