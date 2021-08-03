@@ -283,6 +283,11 @@
           "description": "Optional. Settings to manage metadata publishing to a Hive Metastore from the lake.",
           "$ref": "GoogleCloudDataplexV1LakeMetastore"
         },
+        "assetStatus": {
+          "description": "Output only. Aggregated status of the underlying assets of the lake.",
+          "readOnly": true,
+          "$ref": "GoogleCloudDataplexV1AssetStatus"
+        },
         "actions": {
           "description": "Output only. The current set of actions required of the administrator for this lake.",
           "readOnly": true,
@@ -364,6 +369,28 @@
         }
       }
     },
+    "GoogleCloudDataplexV1AssetStatus": {
+      "id": "GoogleCloudDataplexV1AssetStatus",
+      "description": "Aggregated status of the underlying assets of a lake or zone.",
+      "type": "object",
+      "properties": {
+        "updateTime": {
+          "description": "Last update time of the status.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "activeAssets": {
+          "description": "Number of active assets.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "securityPolicyApplyingAssets": {
+          "description": "Number of assets that are in process of updating the security policy on attached resources.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
     "GoogleCloudDataplexV1Action": {
       "id": "GoogleCloudDataplexV1Action",
       "description": "Action represents an issue requiring administrator action for resolution.",
@@ -402,6 +429,33 @@
           "description": "The time that the issue was detected.",
           "type": "string",
           "format": "google-datetime"
+        },
+        "name": {
+          "description": "Output only. The relative resource name of the action, of the form: projects\/{project}\/locations\/{location}\/lakes\/{lake}\/actions\/{action} projects\/{project}\/locations\/{location}\/lakes\/{lake}\/zones\/{zone}\/actions\/{action} projects\/{project}\/locations\/{location}\/lakes\/{lake}\/zones\/{zone}\/assets\/{asset}\/actions\/{action}",
+          "readOnly": true,
+          "type": "string"
+        },
+        "lake": {
+          "description": "Output only. The relative resource name of the lake, of the form: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id}",
+          "readOnly": true,
+          "type": "string"
+        },
+        "zone": {
+          "description": "Output only. The relative resource name of the zone, of the form: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id}\/zones\/{zone_id}",
+          "readOnly": true,
+          "type": "string"
+        },
+        "asset": {
+          "description": "Output only. The relative resource name of the asset, of the form: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id}\/zones\/{zone_id}\/assets\/{asset_id}",
+          "readOnly": true,
+          "type": "string"
+        },
+        "dataLocations": {
+          "description": "The list of data locations associated with this action. Cloud Storage locations are represented as URI paths(E.g. gs:\/\/bucket\/table1\/year=2020\/month=Jan\/). BigQuery locations refer to resource names(E.g. \/\/bigquery.googleapis.com\/projects\/project-id\/datasets\/dataset-id).",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         },
         "invalidDataFormat": {
           "description": "Details for issues related to invalid or unsupported data formats.",
@@ -448,8 +502,12 @@
           "$ref": "GoogleCloudDataplexV1ActionInvalidMetastore"
         },
         "failedSecurityPolicyApply": {
-          "description": "Details for issues related to one or more underlying assets having a failure propagating security policy to the associated managed resource. Applicable to a lake or zone resource.",
+          "description": "Details for issues related to applying security policy.",
           "$ref": "GoogleCloudDataplexV1ActionFailedSecurityPolicyApply"
+        },
+        "invalidDataOrganization": {
+          "description": "Details for issues related to invalid data arrangement.",
+          "$ref": "GoogleCloudDataplexV1ActionInvalidDataOrganization"
         }
       }
     },
@@ -566,13 +624,20 @@
     },
     "GoogleCloudDataplexV1ActionFailedSecurityPolicyApply": {
       "id": "GoogleCloudDataplexV1ActionFailedSecurityPolicyApply",
-      "description": "One or more underlying assets has a failure propagating security policy to the associated managed resource. Applicable to a lake or zone resource.",
+      "description": "Failed to apply security policy to the managed resource(s) under a lake, zone or an asset. For a lake or zone resource, one or more underlying assets has a failure applying security policy to the associated managed resource.",
       "type": "object",
       "properties": {
         "asset": {
-          "description": "Resource name of one of the assets with failing security policy propagation.",
+          "description": "Resource name of one of the assets with failing security policy application. Populated for a lake or zone resource only.",
           "type": "string"
         }
+      }
+    },
+    "GoogleCloudDataplexV1ActionInvalidDataOrganization": {
+      "id": "GoogleCloudDataplexV1ActionInvalidDataOrganization",
+      "description": "Action details for invalid data arrangement.",
+      "type": "object",
+      "properties": {
       }
     },
     "GoogleCloudDataplexV1ListLakesResponse": {
@@ -714,8 +779,13 @@
           "$ref": "GoogleCloudDataplexV1ZoneDiscoverySpec"
         },
         "resourceSpec": {
-          "description": "Optional. Specification of the resources that are referenced by the assets within this zone.",
+          "description": "Required. Specification of the resources that are referenced by the assets within this zone.",
           "$ref": "GoogleCloudDataplexV1ZoneResourceSpec"
+        },
+        "assetStatus": {
+          "description": "Output only. Aggregated status of the underlying assets of the zone.",
+          "readOnly": true,
+          "$ref": "GoogleCloudDataplexV1AssetStatus"
         },
         "actions": {
           "description": "Output only. The current set of actions required of the administrator for this zone.",
@@ -767,6 +837,20 @@
         "enabled": {
           "description": "Required. Whether discovery is enabled.",
           "type": "boolean"
+        },
+        "includePatterns": {
+          "description": "Optional. The list of patterns to apply for selecting data to include during discovery if only a subset of the data should considered. For Cloud Storage bucket assets, these are interpreted as glob patterns used to match object names. For BigQuery dataset assets, these are interpreted as patterns to match table names.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "excludePatterns": {
+          "description": "Optional. The list of patterns to apply for selecting data to exclude during discovery. For Cloud Storage bucket assets, these are interpreted as glob patterns used to match object names. For BigQuery dataset assets, these are interpreted as patterns to match table names.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         },
         "schedule": {
           "description": "Optional. Cron schedule (https:\/\/en.wikipedia.org\/wiki\/Cron) for running discovery jobs periodically. Discovery jobs must be scheduled at least 30 minutes apart. To explicitly set a timezone to the cron tab, apply a prefix in the cron tab: \"CRON_TZ=${IANA_TIME_ZONE}\" or \"RON_TZ=${IANA_TIME_ZONE}\". The ${IANA_TIME_ZONE} may only be a valid string from IANA time zone database. For example, \"CRON_TZ=America\/New_York 1 * * * *\", or \"TZ=America\/New_York 1 * * * *\".",
@@ -1084,17 +1168,17 @@
     },
     "GoogleCloudDataplexV1AssetSecurityStatus": {
       "id": "GoogleCloudDataplexV1AssetSecurityStatus",
-      "description": "Security policy status of the asset.",
+      "description": "Security policy status of the asset. Data security policy, i.e., readers, writers & owners, should be specified in the lake\/zone\/asset IAM policy.",
       "type": "object",
       "properties": {
         "state": {
-          "description": "The current state of the security policy applied to data.",
+          "description": "The current state of the security policy applied to the attached resource.",
           "type": "string",
           "enumDescriptions": [
             "State unspecified.",
-            "Security policy has been successfully applied to data.",
-            "Security policy is in the process of being applied to data.",
-            "Security policy could not be applied to data due to errors."
+            "Security policy has been successfully applied to the attached resource.",
+            "Security policy is in the process of being applied to the attached resource.",
+            "Security policy could not be applied to the attached resource due to errors."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
@@ -1143,6 +1227,20 @@
         "enabled": {
           "description": "Optional. Whether discovery is enabled. When inheritance_mode is set to INHERIT this field is unset and ignored.",
           "type": "boolean"
+        },
+        "includePatterns": {
+          "description": "Optional. The list of patterns to apply for selecting data to include during discovery if only a subset of the data should considered. For Cloud Storage bucket assets, these are interpreted as glob patterns used to match object names. For BigQuery dataset assets, these are interpreted as patterns to match table names. When inheritance_mode is set to INHERIT this field is unset and ignored.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "excludePatterns": {
+          "description": "Optional. The list of patterns to apply for selecting data to exclude during discovery. For Cloud Storage bucket assets, these are interpreted as glob patterns used to match object names. For BigQuery dataset assets, these are interpreted as patterns to match table names. When inheritance_mode is set to INHERIT this field is unset and ignored.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         },
         "schedule": {
           "description": "Optional. Cron schedule (https:\/\/en.wikipedia.org\/wiki\/Cron) for running discovery jobs periodically. Discovery jobs must be scheduled at least 30 minutes apart.",
@@ -1197,7 +1295,9 @@
             "Discovery for the asset is running.",
             "Discovery for the asset is paused and has actions to be resolved before it can be resumed.",
             "Discovery for the asset has errors.",
-            "Discovery for the asset is disabled."
+            "Discovery for the asset is disabled.",
+            "Discovery for the asset is processing all the data in the storage resource.",
+            "Discovery for the asset is processing changes to the data."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
@@ -1205,7 +1305,9 @@
             "IN_PROGRESS",
             "PAUSED",
             "ERROR",
-            "DISABLED"
+            "DISABLED",
+            "PROCESSING_DATA",
+            "PROCESSING_CHANGES"
           ]
         },
         "message": {
@@ -1235,6 +1337,11 @@
           "description": "The duration of the last run of the discovery job of the asset.",
           "type": "string",
           "format": "google-duration"
+        },
+        "latestProcessedChangeTime": {
+          "description": "Timestamp of the latest change to data that has been processed. This is only valid when discovery is in PROCESSING_CHANGES state.",
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },

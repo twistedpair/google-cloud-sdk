@@ -2256,6 +2256,75 @@ class ApigeeOrganizationsEnvironmentsResourcefilesUpdateRequest(_messages.Messag
   type = _messages.StringField(4, required=True)
 
 
+class ApigeeOrganizationsEnvironmentsSecurityReportsCreateRequest(_messages.Message):
+  r"""A ApigeeOrganizationsEnvironmentsSecurityReportsCreateRequest object.
+
+  Fields:
+    googleCloudApigeeV1SecurityReportQuery: A
+      GoogleCloudApigeeV1SecurityReportQuery resource to be passed as the
+      request body.
+    parent: Required. The parent resource name. Must be of the form
+      `organizations/{org}/environments/{env}`.
+  """
+
+  googleCloudApigeeV1SecurityReportQuery = _messages.MessageField('GoogleCloudApigeeV1SecurityReportQuery', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class ApigeeOrganizationsEnvironmentsSecurityReportsGetRequest(_messages.Message):
+  r"""A ApigeeOrganizationsEnvironmentsSecurityReportsGetRequest object.
+
+  Fields:
+    name: Required. Name of the asynchronous query to get. Must be of the form
+      `organizations/{org}/environments/{env}/securityReports/{reportId}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApigeeOrganizationsEnvironmentsSecurityReportsGetResultRequest(_messages.Message):
+  r"""A ApigeeOrganizationsEnvironmentsSecurityReportsGetResultRequest object.
+
+  Fields:
+    name: Required. Name of the security report result to get. Must be of the
+      form `organizations/{org}/environments/{env}/securityReports/{reportId}/
+      result`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApigeeOrganizationsEnvironmentsSecurityReportsListRequest(_messages.Message):
+  r"""A ApigeeOrganizationsEnvironmentsSecurityReportsListRequest object.
+
+  Fields:
+    dataset: Filter response list by dataset. Example: `api`, `mint`
+    from_: Filter response list by returning asynchronous queries that created
+      after this date time. Time must be in ISO date-time format like
+      '2011-12-03T10:15:30Z'.
+    pageSize: The maximum number of security report to return in the list
+      response.
+    pageToken: Token returned from the previous list response to fetch the
+      next page.
+    parent: Required. The parent resource name. Must be of the form
+      `organizations/{org}/environments/{env}`.
+    status: Filter response list by asynchronous query status.
+    submittedBy: Filter response list by user who submitted queries.
+    to: Filter response list by returning asynchronous queries that created
+      before this date time. Time must be in ISO date-time format like
+      '2011-12-03T10:16:30Z'.
+  """
+
+  dataset = _messages.StringField(1)
+  from_ = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+  status = _messages.StringField(6)
+  submittedBy = _messages.StringField(7)
+  to = _messages.StringField(8)
+
+
 class ApigeeOrganizationsEnvironmentsSetIamPolicyRequest(_messages.Message):
   r"""A ApigeeOrganizationsEnvironmentsSetIamPolicyRequest object.
 
@@ -3204,6 +3273,76 @@ class ApigeeOrganizationsReportsListRequest(_messages.Message):
   parent = _messages.StringField(2, required=True)
 
 
+class ApigeeOrganizationsSecurityHostReportsCreateRequest(_messages.Message):
+  r"""A ApigeeOrganizationsSecurityHostReportsCreateRequest object.
+
+  Fields:
+    googleCloudApigeeV1SecurityReportQuery: A
+      GoogleCloudApigeeV1SecurityReportQuery resource to be passed as the
+      request body.
+    parent: Required. The parent resource name. Must be of the form
+      `organizations/{org}`.
+  """
+
+  googleCloudApigeeV1SecurityReportQuery = _messages.MessageField('GoogleCloudApigeeV1SecurityReportQuery', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class ApigeeOrganizationsSecurityHostReportsGetRequest(_messages.Message):
+  r"""A ApigeeOrganizationsSecurityHostReportsGetRequest object.
+
+  Fields:
+    name: Required. Name of the asynchronous query to get. Must be of the form
+      `organizations/{org}/securityReports/{reportId}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApigeeOrganizationsSecurityHostReportsGetResultRequest(_messages.Message):
+  r"""A ApigeeOrganizationsSecurityHostReportsGetResultRequest object.
+
+  Fields:
+    name: Required. Name of the asynchronous query result to get. Must be of
+      the form `organizations/{org}/securityReports/{reportId}/result`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApigeeOrganizationsSecurityHostReportsListRequest(_messages.Message):
+  r"""A ApigeeOrganizationsSecurityHostReportsListRequest object.
+
+  Fields:
+    dataset: Filter response list by dataset. Example: `api`, `mint`
+    envgroupHostname: Required. Filter response list by hostname.
+    from_: Filter response list by returning asynchronous queries that created
+      after this date time. Time must be in ISO date-time format like
+      '2011-12-03T10:15:30Z'.
+    pageSize: The maximum number of security report to return in the list
+      response.
+    pageToken: Token returned from the previous list response to fetch the
+      next page.
+    parent: Required. The parent resource name. Must be of the form
+      `organizations/{org}`.
+    status: Filter response list by asynchronous query status.
+    submittedBy: Filter response list by user who submitted queries.
+    to: Filter response list by returning asynchronous queries that created
+      before this date time. Time must be in ISO date-time format like
+      '2011-12-03T10:16:30Z'.
+  """
+
+  dataset = _messages.StringField(1)
+  envgroupHostname = _messages.StringField(2)
+  from_ = _messages.StringField(3)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
+  parent = _messages.StringField(6, required=True)
+  status = _messages.StringField(7)
+  submittedBy = _messages.StringField(8)
+  to = _messages.StringField(9)
+
+
 class ApigeeOrganizationsSetAddonsRequest(_messages.Message):
   r"""A ApigeeOrganizationsSetAddonsRequest object.
 
@@ -3409,66 +3548,6 @@ class ApigeeOrganizationsSitesApicategoriesListRequest(_messages.Message):
   parent = _messages.StringField(1, required=True)
 
 
-class ApigeeProjectsGenerateInfraMigrationPlanRequest(_messages.Message):
-  r"""A ApigeeProjectsGenerateInfraMigrationPlanRequest object.
-
-  Fields:
-    organizationId: Required. The ID of the Apigee Organization associated
-      with the project.
-    project: Required. Name of the GCP project in which to migrate the
-      organization's infrastructure `projects/{project-id/project-number}`.
-  """
-
-  organizationId = _messages.StringField(1)
-  project = _messages.StringField(2, required=True)
-
-
-class ApigeeProjectsMigrateConfigDataRequest(_messages.Message):
-  r"""A ApigeeProjectsMigrateConfigDataRequest object.
-
-  Fields:
-    googleCloudApigeeV1MigrateConfigDataRequest: A
-      GoogleCloudApigeeV1MigrateConfigDataRequest resource to be passed as the
-      request body.
-    project: Required. Name of the GCP project in which to migrate the
-      organization's config data in the following format:
-      `projects/{project}`.
-  """
-
-  googleCloudApigeeV1MigrateConfigDataRequest = _messages.MessageField('GoogleCloudApigeeV1MigrateConfigDataRequest', 1)
-  project = _messages.StringField(2, required=True)
-
-
-class ApigeeProjectsMigrateDeveloperPortalsRequest(_messages.Message):
-  r"""A ApigeeProjectsMigrateDeveloperPortalsRequest object.
-
-  Fields:
-    googleCloudApigeeV1MigrateDeveloperPortalsRequest: A
-      GoogleCloudApigeeV1MigrateDeveloperPortalsRequest resource to be passed
-      as the request body.
-    project: Required. Name of the GCP project in which to migrate the
-      organization's developer portals `projects/{project}`.
-  """
-
-  googleCloudApigeeV1MigrateDeveloperPortalsRequest = _messages.MessageField('GoogleCloudApigeeV1MigrateDeveloperPortalsRequest', 1)
-  project = _messages.StringField(2, required=True)
-
-
-class ApigeeProjectsMigrateInfrastructureRequest(_messages.Message):
-  r"""A ApigeeProjectsMigrateInfrastructureRequest object.
-
-  Fields:
-    googleCloudApigeeV1MigrateInfrastructureRequest: A
-      GoogleCloudApigeeV1MigrateInfrastructureRequest resource to be passed as
-      the request body.
-    project: Required. Name of the GCP project in which to migrate the
-      organization's developer portals `projects/{project-id/project-number}`.
-  """
-
-  googleCloudApigeeV1MigrateInfrastructureRequest = _messages.MessageField('GoogleCloudApigeeV1MigrateInfrastructureRequest', 1)
-  project = _messages.StringField(2, required=True)
-
-
 class ApigeeProjectsProvisionOrganizationRequest(_messages.Message):
   r"""A ApigeeProjectsProvisionOrganizationRequest object.
 
@@ -3482,6 +3561,29 @@ class ApigeeProjectsProvisionOrganizationRequest(_messages.Message):
 
   googleCloudApigeeV1ProvisionOrganizationRequest = _messages.MessageField('GoogleCloudApigeeV1ProvisionOrganizationRequest', 1)
   project = _messages.StringField(2, required=True)
+
+
+class EdgeConfigstoreBundleBadBundle(_messages.Message):
+  r"""Describes why a bundle is invalid. Intended for use in error details.
+
+  Fields:
+    violations: Describes all precondition violations.
+  """
+
+  violations = _messages.MessageField('EdgeConfigstoreBundleBadBundleViolation', 1, repeated=True)
+
+
+class EdgeConfigstoreBundleBadBundleViolation(_messages.Message):
+  r"""A message type used to describe a single bundle validation error.
+
+  Fields:
+    description: A description of why the bundle is invalid and how to fix it.
+    filename: The filename (including relative path from the bundle root) in
+      which the error occurred.
+  """
+
+  description = _messages.StringField(1)
+  filename = _messages.StringField(2)
 
 
 class GoogleApiHttpBody(_messages.Message):
@@ -3856,18 +3958,47 @@ class GoogleCloudApigeeV1ApiProductRef(_messages.Message):
 class GoogleCloudApigeeV1ApiProxy(_messages.Message):
   r"""Metadata describing the API proxy
 
+  Messages:
+    LabelsValue: User labels applied to this API Proxy.
+
   Fields:
-    latestRevisionId: The id of the most recently created revision for this
-      api proxy.
-    metaData: Metadata describing the API proxy.
-    name: Name of the API proxy.
-    revision: List of revisons defined for the API proxy.
+    labels: User labels applied to this API Proxy.
+    latestRevisionId: Output only. The id of the most recently created
+      revision for this api proxy.
+    metaData: Output only. Metadata describing the API proxy.
+    name: Output only. Name of the API proxy.
+    revision: Output only. List of revisons defined for the API proxy.
   """
 
-  latestRevisionId = _messages.StringField(1)
-  metaData = _messages.MessageField('GoogleCloudApigeeV1EntityMetadata', 2)
-  name = _messages.StringField(3)
-  revision = _messages.StringField(4, repeated=True)
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""User labels applied to this API Proxy.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  labels = _messages.MessageField('LabelsValue', 1)
+  latestRevisionId = _messages.StringField(2)
+  metaData = _messages.MessageField('GoogleCloudApigeeV1EntityMetadata', 3)
+  name = _messages.StringField(4)
+  revision = _messages.StringField(5, repeated=True)
 
 
 class GoogleCloudApigeeV1ApiProxyRevision(_messages.Message):
@@ -4056,6 +4187,9 @@ class GoogleCloudApigeeV1ArchiveDeployment(_messages.Message):
       with a given store.
     name: Name of the Archive Deployment in the following format:
       `organizations/{org}/environments/{env}/archiveDeployments/{id}`.
+    operation: Output only. A reference to the LRO that created this Archive
+      Deployment in the following format:
+      `organizations/{org}/operations/{id}`
     updatedAt: Output only. The time at which the Archive Deployment was
       updated in milliseconds since the epoch.
   """
@@ -4095,7 +4229,8 @@ class GoogleCloudApigeeV1ArchiveDeployment(_messages.Message):
   gcsUri = _messages.StringField(2)
   labels = _messages.MessageField('LabelsValue', 3)
   name = _messages.StringField(4)
-  updatedAt = _messages.IntegerField(5)
+  operation = _messages.StringField(5)
+  updatedAt = _messages.IntegerField(6)
 
 
 class GoogleCloudApigeeV1AsyncQuery(_messages.Message):
@@ -5643,40 +5778,6 @@ class GoogleCloudApigeeV1GraphQLOperationGroup(_messages.Message):
   operationConfigs = _messages.MessageField('GoogleCloudApigeeV1GraphQLOperationConfig', 2, repeated=True)
 
 
-class GoogleCloudApigeeV1InfraMigrationPlan(_messages.Message):
-  r"""Migration plan details all the relevant information required to
-  replicate the infrastructure from the organization's Apigee Edge resources
-  to Apigee X resources.
-
-  Fields:
-    environments: Environment details extracted from Apigee Edge environments
-      owned by the organization.
-    instanceAndAttachments: Apigee X instance and attachments modeled after
-      Apigee Edge organization and environment resources.
-    organization: Organization details extracted from Apigee Edge
-      organization.
-  """
-
-  environments = _messages.MessageField('GoogleCloudApigeeV1Environment', 1, repeated=True)
-  instanceAndAttachments = _messages.MessageField('GoogleCloudApigeeV1InfraMigrationPlanInstanceAndAttachments', 2, repeated=True)
-  organization = _messages.MessageField('GoogleCloudApigeeV1Organization', 3)
-
-
-class GoogleCloudApigeeV1InfraMigrationPlanInstanceAndAttachments(_messages.Message):
-  r"""InstanceAndAttachments represents the one to many relationship between
-  instance and instance attachments.
-
-  Fields:
-    environments: List of environments that will be attached to the parent
-      instance during creation.
-    instance: Apigee X instance modeled after the Apigee Edge organization
-      resources.
-  """
-
-  environments = _messages.StringField(1, repeated=True)
-  instance = _messages.MessageField('GoogleCloudApigeeV1Instance', 2)
-
-
 class GoogleCloudApigeeV1IngressConfig(_messages.Message):
   r"""A GoogleCloudApigeeV1IngressConfig object.
 
@@ -6236,6 +6337,22 @@ class GoogleCloudApigeeV1ListRatePlansResponse(_messages.Message):
   ratePlans = _messages.MessageField('GoogleCloudApigeeV1RatePlan', 2, repeated=True)
 
 
+class GoogleCloudApigeeV1ListSecurityReportsResponse(_messages.Message):
+  r"""The response for SecurityReports.
+
+  Fields:
+    nextPageToken: If the number of security reports exceeded the page size
+      requested, the token can be used to fetch the next page in a subsequent
+      call. If the response is the last page and there are no more reports to
+      return this field is left empty.
+    securityReports: The asynchronous security reports belong to requested
+      resource name.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  securityReports = _messages.MessageField('GoogleCloudApigeeV1SecurityReport', 2, repeated=True)
+
+
 class GoogleCloudApigeeV1ListSharedFlowsResponse(_messages.Message):
   r"""A GoogleCloudApigeeV1ListSharedFlowsResponse object.
 
@@ -6291,31 +6408,6 @@ class GoogleCloudApigeeV1Metric(_messages.Message):
 
   name = _messages.StringField(1)
   values = _messages.MessageField('extra_types.JsonValue', 2, repeated=True)
-
-
-class GoogleCloudApigeeV1MigrateConfigDataRequest(_messages.Message):
-  r"""Request for MigrateConfigData.
-
-  Fields:
-    organizationId: Required. The id of the Apigee organization to migrate.
-  """
-
-  organizationId = _messages.StringField(1)
-
-
-class GoogleCloudApigeeV1MigrateDeveloperPortalsRequest(_messages.Message):
-  r"""Request for MigrateDeveloperPortals."""
-
-
-class GoogleCloudApigeeV1MigrateInfrastructureRequest(_messages.Message):
-  r"""Request for MigrateInfrastructure.
-
-  Fields:
-    plan: Required. Migration plan used to populate all infrastructure-related
-      resources in Apigee X.
-  """
-
-  plan = _messages.MessageField('GoogleCloudApigeeV1InfraMigrationPlan', 1)
 
 
 class GoogleCloudApigeeV1MonetizationConfig(_messages.Message):
@@ -7691,6 +7783,160 @@ class GoogleCloudApigeeV1SchemaSchemaProperty(_messages.Message):
   createTime = _messages.StringField(1)
   custom = _messages.StringField(2)
   type = _messages.StringField(3)
+
+
+class GoogleCloudApigeeV1SecurityReport(_messages.Message):
+  r"""SecurityReport saves all the information about the created security
+  report.
+
+  Fields:
+    created: Creation time of the query.
+    displayName: Display Name specified by the user.
+    envgroupHostname: Hostname is available only when query is executed at
+      host level.
+    error: Error is set when query fails.
+    executionTime: ExecutionTime is available only after the query is
+      completed.
+    queryParams: Contains information like metrics, dimenstions etc of the
+      Security Report.
+    reportDefinitionId: Asynchronous Report ID.
+    result: Result is available only after the query is completed.
+    resultFileSize: ResultFileSize is available only after the query is
+      completed.
+    resultRows: ResultRows is available only after the query is completed.
+    self: Self link of the query. Example: `/organizations/myorg/environments/
+      myenv/securityReports/9cfc0d85-0f30-46d6-ae6f-318d0cb961bd` or following
+      format if query is running at host level: `/organizations/myorg/hostSecu
+      rityReports/9cfc0d85-0f30-46d6-ae6f-318d0cb961bd`
+    state: Query state could be "enqueued", "running", "completed", "failed".
+    updated: Output only. Last updated timestamp for the query.
+  """
+
+  created = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  envgroupHostname = _messages.StringField(3)
+  error = _messages.StringField(4)
+  executionTime = _messages.StringField(5)
+  queryParams = _messages.MessageField('GoogleCloudApigeeV1SecurityReportMetadata', 6)
+  reportDefinitionId = _messages.StringField(7)
+  result = _messages.MessageField('GoogleCloudApigeeV1SecurityReportResultMetadata', 8)
+  resultFileSize = _messages.StringField(9)
+  resultRows = _messages.IntegerField(10)
+  self = _messages.StringField(11)
+  state = _messages.StringField(12)
+  updated = _messages.StringField(13)
+
+
+class GoogleCloudApigeeV1SecurityReportMetadata(_messages.Message):
+  r"""Metadata for the security report.
+
+  Fields:
+    dimensions: Dimensions of the SecurityReport.
+    endTimestamp: End timestamp of the query range.
+    metrics: Metrics of the SecurityReport. Example:
+      ["name:bot_count,func:sum,alias:sum_bot_count"]
+    mimeType: MIME type / Output format.
+    startTimestamp: Start timestamp of the query range.
+    timeUnit: Query GroupBy time unit. Example: "seconds", "minute", "hour"
+  """
+
+  dimensions = _messages.StringField(1, repeated=True)
+  endTimestamp = _messages.StringField(2)
+  metrics = _messages.StringField(3, repeated=True)
+  mimeType = _messages.StringField(4)
+  startTimestamp = _messages.StringField(5)
+  timeUnit = _messages.StringField(6)
+
+
+class GoogleCloudApigeeV1SecurityReportQuery(_messages.Message):
+  r"""Body structure when user makes a request to create a security report.
+
+  Fields:
+    csvDelimiter: Delimiter used in the CSV file, if `outputFormat` is set to
+      `csv`. Defaults to the `,` (comma) character. Supported delimiter
+      characters include comma (`,`), pipe (`|`), and tab (`\t`).
+    dimensions: A list of dimensions. https://docs.apigee.com/api-
+      platform/analytics/analytics-reference#dimensions
+    displayName: Security Report display name which users can specify.
+    envgroupHostname: Hostname needs to be specified if query intends to run
+      at host level. This field is only allowed when query is submitted by
+      CreateHostSecurityReport where analytics data will be grouped by
+      organization and hostname.
+    filter: Boolean expression that can be used to filter data. Filter
+      expressions can be combined using AND/OR terms and should be fully
+      parenthesized to avoid ambiguity. See Analytics metrics, dimensions, and
+      filters reference https://docs.apigee.com/api-
+      platform/analytics/analytics-reference for more information on the
+      fields available to filter on. For more information on the tokens that
+      you use to build filter expressions, see Filter expression syntax.
+      https://docs.apigee.com/api-platform/analytics/asynch-reports-
+      api#filter-expression-syntax
+    groupByTimeUnit: Time unit used to group the result set. Valid values
+      include: second, minute, hour, day, week, or month. If a query includes
+      groupByTimeUnit, then the result is an aggregation based on the
+      specified time unit and the resultant timestamp does not include
+      milliseconds precision. If a query omits groupByTimeUnit, then the
+      resultant timestamp includes milliseconds precision.
+    limit: Maximum number of rows that can be returned in the result.
+    metrics: A list of Metrics.
+    mimeType: Valid values include: `csv` or `json`. Defaults to `json`. Note:
+      Configure the delimiter for CSV output using the csvDelimiter property.
+    reportDefinitionId: Asynchronous Report ID.
+    timeRange: Required. Time range for the query. Can use the following
+      predefined strings to specify the time range: `last60minutes`
+      `last24hours` `last7days` Or, specify the timeRange as a structure
+      describing start and end timestamps in the ISO format: yyyy-mm-
+      ddThh:mm:ssZ. Example: "timeRange": { "start": "2018-07-29T00:13:00Z",
+      "end": "2018-08-01T00:18:00Z" }
+  """
+
+  csvDelimiter = _messages.StringField(1)
+  dimensions = _messages.StringField(2, repeated=True)
+  displayName = _messages.StringField(3)
+  envgroupHostname = _messages.StringField(4)
+  filter = _messages.StringField(5)
+  groupByTimeUnit = _messages.StringField(6)
+  limit = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  metrics = _messages.MessageField('GoogleCloudApigeeV1SecurityReportQueryMetric', 8, repeated=True)
+  mimeType = _messages.StringField(9)
+  reportDefinitionId = _messages.StringField(10)
+  timeRange = _messages.MessageField('extra_types.JsonValue', 11)
+
+
+class GoogleCloudApigeeV1SecurityReportQueryMetric(_messages.Message):
+  r"""Metric of the Query
+
+  Fields:
+    aggregationFunction: Aggregation function: avg, min, max, or sum.
+    alias: Alias for the metric. Alias will be used to replace metric name in
+      query results.
+    name: Required. Metric name.
+    operator: One of `+`, `-`, `/`, `%`, `*`.
+    value: Operand value should be provided when operator is set.
+  """
+
+  aggregationFunction = _messages.StringField(1)
+  alias = _messages.StringField(2)
+  name = _messages.StringField(3)
+  operator = _messages.StringField(4)
+  value = _messages.StringField(5)
+
+
+class GoogleCloudApigeeV1SecurityReportResultMetadata(_messages.Message):
+  r"""Contains informations about the security report results.
+
+  Fields:
+    expires: Output only. Expire_time is set to 7 days after report creation.
+      Query result will be unaccessable after this time. Example:
+      "2021-05-04T13:38:52-07:00"
+    self: Self link of the query results. Example: `/organizations/myorg/envir
+      onments/myenv/securityReports/9cfc0d85-0f30-46d6-ae6f-318d0cb961bd/resul
+      t` or following format if query is running at host level: `/organization
+      s/myorg/hostSecurityReports/9cfc0d85-0f30-46d6-ae6f-318d0cb961bd/result`
+  """
+
+  expires = _messages.StringField(1)
+  self = _messages.StringField(2)
 
 
 class GoogleCloudApigeeV1ServiceIssuersMapping(_messages.Message):

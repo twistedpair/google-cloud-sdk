@@ -2321,7 +2321,8 @@ class LoggingComponentConfig(_messages.Message):
     EnableComponentsValueListEntryValuesEnum:
 
   Fields:
-    enableComponents: Select components to collect logs
+    enableComponents: Select components to collect logs. An empty set would
+      disable all logging.
   """
 
   class EnableComponentsValueListEntryValuesEnum(_messages.Enum):
@@ -2560,7 +2561,8 @@ class MonitoringComponentConfig(_messages.Message):
     EnableComponentsValueListEntryValuesEnum:
 
   Fields:
-    enableComponents: Select components to collect metrics
+    enableComponents: Select components to collect metrics. An empty set would
+      disable all monitoring.
   """
 
   class EnableComponentsValueListEntryValuesEnum(_messages.Enum):
@@ -2573,7 +2575,7 @@ class MonitoringComponentConfig(_messages.Message):
       APISERVER: kube-apiserver
       SCHEDULER: kube-scheduler
       CONTROLLER_MANAGER: kube-controller-manager
-      GOOGLE_PROMETHEUS_ENGINE: google prometheus engine
+      GOOGLE_PROMETHEUS_ENGINE: Deprecated. google prometheus engine
     """
     COMPONENT_UNSPECIFIED = 0
     SYSTEM_COMPONENTS = 1
@@ -3062,46 +3064,37 @@ class NodeManagement(_messages.Message):
 
 
 class NodeNetworkConfig(_messages.Message):
-  r"""Parameters for node pool-level network config. Only applicable if
-  `ip_allocation_policy.use_ip_aliases` is true.
+  r"""Parameters for node pool-level network config.
 
   Fields:
     createPodRange: Input only. Whether to create a new range for pod IPs in
       this node pool. Defaults are provided for `pod_range` and
       `pod_ipv4_cidr_block` if they are not specified. If neither
       `create_pod_range` or `pod_range` are specified, the cluster-level
-      default (`ip_allocation_policy.cluster_ipv4_cidr_block`) is used.
-    createSubnetwork: Input only. Whether to create a new subnetwork for the
-      node pool. Defaults are provided for `subnetwork` and
-      `node_ipv4_cidr_block` if they are not specified. If neither
-      `create_subnetwork` or `subnetwork` are specified, the cluster-level
-      default (`ip_allocation_policy.subnetwork_name`) is used.
+      default (`ip_allocation_policy.cluster_ipv4_cidr_block`) is used. Only
+      applicable if `ip_allocation_policy.use_ip_aliases` is true. This field
+      cannot be changed after the node pool has been created.
+    createSubnetwork: Input only.
     enableEndpointsliceProxying: If true, kube-proxy will read from
       EndpointSlices instead of Endpoints. This flag only applies to GKE 1.18.
     enablePrivateNodes: Whether nodes have internal IP addresses only. If
       enable_private_nodes is not specified, then the value is derived from
       cluster.privateClusterConfig.enablePrivateNodes
-    nodeIpv4CidrBlock: The IP address range for node IPs in this node pool.
-      Only applicable if `create_subnetwork` is true. Set to blank to have a
-      range chosen with the default size. Set to /netmask (e.g. `/14`) to have
-      a range chosen with a specific netmask. Set to a
-      [CIDR](https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing)
-      notation (e.g. `10.96.0.0/14`) from the RFC-1918 private networks (e.g.
-      `10.0.0.0/8`, `172.16.0.0/12`, `192.168.0.0/16`) to pick a specific
-      range to use.
+    nodeIpv4CidrBlock: A string attribute.
     podIpv4CidrBlock: The IP address range for pod IPs in this node pool. Only
       applicable if `create_pod_range` is true. Set to blank to have a range
       chosen with the default size. Set to /netmask (e.g. `/14`) to have a
       range chosen with a specific netmask. Set to a
       [CIDR](https://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing)
-      notation (e.g. `10.96.0.0/14`) to pick a specific range to use.
+      notation (e.g. `10.96.0.0/14`) to pick a specific range to use. Only
+      applicable if `ip_allocation_policy.use_ip_aliases` is true. This field
+      cannot be changed after the node pool has been created.
     podRange: The ID of the secondary range for pod IPs. If `create_pod_range`
       is true, this ID is used for the new range. If `create_pod_range` is
-      false, uses an existing secondary range with this ID.
-    subnetwork: The ID of the [subnetwork](https://cloud.google.com/vpc/docs/v
-      pc#vpc_networks_and_subnets) for this node pool. If `create_subnetwork`
-      is true, this ID is used for the new subnet. If `create_subnetwork` is
-      false, uses an existing subnetwork with this ID.
+      false, uses an existing secondary range with this ID. Only applicable if
+      `ip_allocation_policy.use_ip_aliases` is true. This field cannot be
+      changed after the node pool has been created.
+    subnetwork: A string attribute.
   """
 
   createPodRange = _messages.BooleanField(1)

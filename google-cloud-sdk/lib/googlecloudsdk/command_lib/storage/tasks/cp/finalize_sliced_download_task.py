@@ -22,39 +22,14 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import gzip
 import os
-import shutil
 
-from googlecloudsdk.command_lib.storage import errors
-from googlecloudsdk.command_lib.storage import hash_util
 from googlecloudsdk.command_lib.storage import tracker_file_util
 from googlecloudsdk.command_lib.storage.tasks import task
+from googlecloudsdk.command_lib.storage.tasks.cp import download_util
 from googlecloudsdk.command_lib.util import crc32c
+from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
-from googlecloudsdk.core.util import files
-
-
-def _should_decompress_gzip(source_resource, destination_resource):
-  """Checks if file has gzip metadata and is actually gzipped."""
-  content_encoding = getattr(source_resource.metadata, 'contentEncoding', '')
-  if content_encoding is None or 'gzip' not in content_encoding.split(','):
-    return False
-  try:
-    with gzip.open(destination_resource.storage_url.object_name) as file_stream:
-      file_stream.read(1)
-    return True
-  except OSError:
-    return False
-
-
-def _ungzip_file(gzipped_path, destination_path):
-  """Unzips gzip file."""
-  with gzip.open(gzipped_path, 'rb') as gzipped_file:
-    with files.BinaryFileWriter(
-        destination_path, create_path=True) as ungzipped_file:
-      shutil.copyfileobj(gzipped_file, ungzipped_file)
-  os.remove(gzipped_path)
 
 
 class FinalizeSlicedDownloadTask(task.Task):
@@ -78,18 +53,17 @@ class FinalizeSlicedDownloadTask(task.Task):
     self._temporary_destination_resource = temporary_destination_resource
     self._final_destination_resource = final_destination_resource
 
-  def _clean_up_tracker_files(self):
-    """Clean up master and component tracker files."""
-    tracker_file_util.delete_download_tracker_files(
-        self._temporary_destination_resource.storage_url)
-
   def execute(self, task_status_queue=None):
     """Validates and clean ups after sliced download."""
-    if task.Topic.ERROR in [
-        message.topic for message in self.received_messages
-    ]:
-      return
+    for message in self.received_messages:
+      if message.topic is task.Topic.ERROR:
+        log.error(message.payload)
+        return
 
+    temporary_object_path = (
+        self._temporary_destination_resource.storage_url.object_name)
+    final_destination_object_path = (
+        self._final_destination_resource.storage_url.object_name)
     if (properties.VALUES.storage.check_hashes.Get() !=
         properties.CheckHashes.NEVER.value and
         self._source_resource.crc32c_hash):
@@ -118,25 +92,17 @@ class FinalizeSlicedDownloadTask(task.Task):
         downloaded_file_hash_digest = crc32c.get_hash(
             downloaded_file_hash_object)
 
-        try:
-          hash_util.validate_object_hashes_match(
-              self._temporary_destination_resource.storage_url,
-              self._source_resource.crc32c_hash, downloaded_file_hash_digest)
-        except errors.HashMismatchError:
-          os.remove(
-              self._temporary_destination_resource.storage_url.object_name)
-          self._clean_up_tracker_files()
-          raise
+        download_util.validate_download_hash_and_delete_corrupt_files(
+            temporary_object_path, self._source_resource.crc32c_hash,
+            downloaded_file_hash_digest)
 
-    temporary_url = self._temporary_destination_resource.storage_url
-    if _should_decompress_gzip(self._source_resource,
-                               self._temporary_destination_resource):
-      _ungzip_file(
-          temporary_url.object_name,
-          self._final_destination_resource.storage_url.object_name)
-    elif os.path.exists(temporary_url.object_name):
-      os.rename(
-          temporary_url.object_name,
-          self._final_destination_resource.storage_url.object_name)
+    if download_util.decompress_gzip_if_necessary(
+        self._source_resource, temporary_object_path,
+        final_destination_object_path):
+      os.remove(temporary_object_path)
 
-    self._clean_up_tracker_files()
+    if os.path.exists(temporary_object_path):
+      os.rename(temporary_object_path, final_destination_object_path)
+
+    tracker_file_util.delete_download_tracker_files(
+        self._temporary_destination_resource.storage_url)

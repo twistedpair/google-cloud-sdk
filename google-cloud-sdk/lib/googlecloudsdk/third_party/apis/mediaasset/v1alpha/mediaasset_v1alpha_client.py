@@ -42,7 +42,6 @@ class MediaassetV1alpha(base_api.BaseApiClient):
     self.projects_locations_assetTypes_assets_actions = self.ProjectsLocationsAssetTypesAssetsActionsService(self)
     self.projects_locations_assetTypes_assets_annotationSets_annotations = self.ProjectsLocationsAssetTypesAssetsAnnotationSetsAnnotationsService(self)
     self.projects_locations_assetTypes_assets_annotationSets = self.ProjectsLocationsAssetTypesAssetsAnnotationSetsService(self)
-    self.projects_locations_assetTypes_assets_transformations = self.ProjectsLocationsAssetTypesAssetsTransformationsService(self)
     self.projects_locations_assetTypes_assets = self.ProjectsLocationsAssetTypesAssetsService(self)
     self.projects_locations_assetTypes_rules = self.ProjectsLocationsAssetTypesRulesService(self)
     self.projects_locations_assetTypes = self.ProjectsLocationsAssetTypesService(self)
@@ -261,6 +260,33 @@ class MediaassetV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
+
+      Args:
+        request: (MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsAnnotationsGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/assetTypes/{assetTypesId}/assets/{assetsId}/annotationSets/{annotationSetsId}/annotations/{annotationsId}:getIamPolicy',
+        http_method='GET',
+        method_id='mediaasset.projects.locations.assetTypes.assets.annotationSets.annotations.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1alpha/{+resource}:getIamPolicy',
+        request_field='',
+        request_type_name='MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsAnnotationsGetIamPolicyRequest',
+        response_type_name='GoogleIamV1Policy',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists annotations in a given project and location.
 
@@ -315,6 +341,60 @@ class MediaassetV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
+
+      Args:
+        request: (MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsAnnotationsSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/assetTypes/{assetTypesId}/assets/{assetsId}/annotationSets/{annotationSetsId}/annotations/{annotationsId}:setIamPolicy',
+        http_method='POST',
+        method_id='mediaasset.projects.locations.assetTypes.assets.annotationSets.annotations.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1alpha/{+resource}:setIamPolicy',
+        request_field='googleIamV1SetIamPolicyRequest',
+        request_type_name='MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsAnnotationsSetIamPolicyRequest',
+        response_type_name='GoogleIamV1Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
+
+      Args:
+        request: (MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsAnnotationsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/assetTypes/{assetTypesId}/assets/{assetsId}/annotationSets/{annotationSetsId}/annotations/{annotationsId}:testIamPermissions',
+        http_method='POST',
+        method_id='mediaasset.projects.locations.assetTypes.assets.annotationSets.annotations.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1alpha/{+resource}:testIamPermissions',
+        request_field='googleIamV1TestIamPermissionsRequest',
+        request_type_name='MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsAnnotationsTestIamPermissionsRequest',
+        response_type_name='GoogleIamV1TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsAssetTypesAssetsAnnotationSetsService(base_api.BaseApiService):
     """Service class for the projects_locations_assetTypes_assets_annotationSets resource."""
 
@@ -324,60 +404,6 @@ class MediaassetV1alpha(base_api.BaseApiClient):
       super(MediaassetV1alpha.ProjectsLocationsAssetTypesAssetsAnnotationSetsService, self).__init__(client)
       self._upload_configs = {
           }
-
-    def Create(self, request, global_params=None):
-      r"""Creates a new annotationSet in a given project and location.
-
-      Args:
-        request: (MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsCreateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (AnnotationSet) The response message.
-      """
-      config = self.GetMethodConfig('Create')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/assetTypes/{assetTypesId}/assets/{assetsId}/annotationSets',
-        http_method='POST',
-        method_id='mediaasset.projects.locations.assetTypes.assets.annotationSets.create',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['annotationSetId'],
-        relative_path='v1alpha/{+parent}/annotationSets',
-        request_field='annotationSet',
-        request_type_name='MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsCreateRequest',
-        response_type_name='AnnotationSet',
-        supports_download=False,
-    )
-
-    def Delete(self, request, global_params=None):
-      r"""Deletes a single annotationSet.
-
-      Args:
-        request: (MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Empty) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/assetTypes/{assetTypesId}/assets/{assetsId}/annotationSets/{annotationSetsId}',
-        http_method='DELETE',
-        method_id='mediaasset.projects.locations.assetTypes.assets.annotationSets.delete',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['etag'],
-        relative_path='v1alpha/{+name}',
-        request_field='',
-        request_type_name='MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsDeleteRequest',
-        response_type_name='Empty',
-        supports_download=False,
-    )
 
     def Get(self, request, global_params=None):
       r"""Gets details of a single annotationSet.
@@ -403,6 +429,33 @@ class MediaassetV1alpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsGetRequest',
         response_type_name='AnnotationSet',
+        supports_download=False,
+    )
+
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
+
+      Args:
+        request: (MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/assetTypes/{assetTypesId}/assets/{assetsId}/annotationSets/{annotationSetsId}:getIamPolicy',
+        http_method='GET',
+        method_id='mediaasset.projects.locations.assetTypes.assets.annotationSets.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1alpha/{+resource}:getIamPolicy',
+        request_field='',
+        request_type_name='MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsGetIamPolicyRequest',
+        response_type_name='GoogleIamV1Policy',
         supports_download=False,
     )
 
@@ -433,129 +486,11 @@ class MediaassetV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def Patch(self, request, global_params=None):
-      r"""Updates the parameters of a single annotationSet.
-
-      Args:
-        request: (MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsPatchRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (AnnotationSet) The response message.
-      """
-      config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/assetTypes/{assetTypesId}/assets/{assetsId}/annotationSets/{annotationSetsId}',
-        http_method='PATCH',
-        method_id='mediaasset.projects.locations.assetTypes.assets.annotationSets.patch',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['oldUpdateMask', 'updateMask'],
-        relative_path='v1alpha/{+name}',
-        request_field='annotationSet',
-        request_type_name='MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsPatchRequest',
-        response_type_name='AnnotationSet',
-        supports_download=False,
-    )
-
-  class ProjectsLocationsAssetTypesAssetsTransformationsService(base_api.BaseApiService):
-    """Service class for the projects_locations_assetTypes_assets_transformations resource."""
-
-    _NAME = 'projects_locations_assetTypes_assets_transformations'
-
-    def __init__(self, client):
-      super(MediaassetV1alpha.ProjectsLocationsAssetTypesAssetsTransformationsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Get(self, request, global_params=None):
-      r"""Gets details of a single asset transformation.
-
-      Args:
-        request: (MediaassetProjectsLocationsAssetTypesAssetsTransformationsGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (AssetTransformation) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/assetTypes/{assetTypesId}/assets/{assetsId}/transformations/{transformationsId}',
-        http_method='GET',
-        method_id='mediaasset.projects.locations.assetTypes.assets.transformations.get',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1alpha/{+name}',
-        request_field='',
-        request_type_name='MediaassetProjectsLocationsAssetTypesAssetsTransformationsGetRequest',
-        response_type_name='AssetTransformation',
-        supports_download=False,
-    )
-
-    def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
-
-      Args:
-        request: (MediaassetProjectsLocationsAssetTypesAssetsTransformationsGetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleIamV1Policy) The response message.
-      """
-      config = self.GetMethodConfig('GetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/assetTypes/{assetTypesId}/assets/{assetsId}/transformations/{transformationsId}:getIamPolicy',
-        http_method='GET',
-        method_id='mediaasset.projects.locations.assetTypes.assets.transformations.getIamPolicy',
-        ordered_params=['resource'],
-        path_params=['resource'],
-        query_params=['options_requestedPolicyVersion'],
-        relative_path='v1alpha/{+resource}:getIamPolicy',
-        request_field='',
-        request_type_name='MediaassetProjectsLocationsAssetTypesAssetsTransformationsGetIamPolicyRequest',
-        response_type_name='GoogleIamV1Policy',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""Lists asset transformations in a given project and location.
-
-      Args:
-        request: (MediaassetProjectsLocationsAssetTypesAssetsTransformationsListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListAssetTransformationsResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/assetTypes/{assetTypesId}/assets/{assetsId}/transformations',
-        http_method='GET',
-        method_id='mediaasset.projects.locations.assetTypes.assets.transformations.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
-        relative_path='v1alpha/{+parent}/transformations',
-        request_field='',
-        request_type_name='MediaassetProjectsLocationsAssetTypesAssetsTransformationsListRequest',
-        response_type_name='ListAssetTransformationsResponse',
-        supports_download=False,
-    )
-
     def SetIamPolicy(self, request, global_params=None):
       r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
 
       Args:
-        request: (MediaassetProjectsLocationsAssetTypesAssetsTransformationsSetIamPolicyRequest) input message
+        request: (MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsSetIamPolicyRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (GoogleIamV1Policy) The response message.
@@ -565,15 +500,15 @@ class MediaassetV1alpha(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/assetTypes/{assetTypesId}/assets/{assetsId}/transformations/{transformationsId}:setIamPolicy',
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/assetTypes/{assetTypesId}/assets/{assetsId}/annotationSets/{annotationSetsId}:setIamPolicy',
         http_method='POST',
-        method_id='mediaasset.projects.locations.assetTypes.assets.transformations.setIamPolicy',
+        method_id='mediaasset.projects.locations.assetTypes.assets.annotationSets.setIamPolicy',
         ordered_params=['resource'],
         path_params=['resource'],
         query_params=[],
         relative_path='v1alpha/{+resource}:setIamPolicy',
         request_field='googleIamV1SetIamPolicyRequest',
-        request_type_name='MediaassetProjectsLocationsAssetTypesAssetsTransformationsSetIamPolicyRequest',
+        request_type_name='MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsSetIamPolicyRequest',
         response_type_name='GoogleIamV1Policy',
         supports_download=False,
     )
@@ -582,7 +517,7 @@ class MediaassetV1alpha(base_api.BaseApiClient):
       r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
 
       Args:
-        request: (MediaassetProjectsLocationsAssetTypesAssetsTransformationsTestIamPermissionsRequest) input message
+        request: (MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsTestIamPermissionsRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (GoogleIamV1TestIamPermissionsResponse) The response message.
@@ -592,15 +527,15 @@ class MediaassetV1alpha(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/assetTypes/{assetTypesId}/assets/{assetsId}/transformations/{transformationsId}:testIamPermissions',
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/assetTypes/{assetTypesId}/assets/{assetsId}/annotationSets/{annotationSetsId}:testIamPermissions',
         http_method='POST',
-        method_id='mediaasset.projects.locations.assetTypes.assets.transformations.testIamPermissions',
+        method_id='mediaasset.projects.locations.assetTypes.assets.annotationSets.testIamPermissions',
         ordered_params=['resource'],
         path_params=['resource'],
         query_params=[],
         relative_path='v1alpha/{+resource}:testIamPermissions',
         request_field='googleIamV1TestIamPermissionsRequest',
-        request_type_name='MediaassetProjectsLocationsAssetTypesAssetsTransformationsTestIamPermissionsRequest',
+        request_type_name='MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsTestIamPermissionsRequest',
         response_type_name='GoogleIamV1TestIamPermissionsResponse',
         supports_download=False,
     )

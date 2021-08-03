@@ -178,7 +178,7 @@ class TPUNode(object):
         name=fully_qualified_node_name_ref.RelativeName())
     return self.client.projects_locations_nodes.Get(request)
 
-  def GetGuestAttributes(self, name, zone):
+  def GetGuestAttributes(self, name, zone, worker_id=''):
     """Retrives the Guest Attributes for the nodes."""
     project = properties.VALUES.core.project.Get(required=True)
     fully_qualified_node_name_ref = resources.REGISTRY.Parse(
@@ -189,8 +189,11 @@ class TPUNode(object):
         },
         collection='tpu.projects.locations.nodes',
         )
+    get_guest_attributes_request = self.messages.GetGuestAttributesRequest(
+        workerIds=[worker_id])
     request = self.messages.TpuProjectsLocationsNodesGetGuestAttributesRequest(
-        name=fully_qualified_node_name_ref.RelativeName())
+        name=fully_qualified_node_name_ref.RelativeName(),
+        getGuestAttributesRequest=get_guest_attributes_request)
     return self.client.projects_locations_nodes.GetGuestAttributes(request)
 
   def UpdateNode(self, name, zone, node, update_mask):

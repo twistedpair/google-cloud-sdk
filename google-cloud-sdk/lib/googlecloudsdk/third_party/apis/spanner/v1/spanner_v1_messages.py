@@ -1082,14 +1082,18 @@ class Instance(_messages.Message):
       changed after the instance is created. Values are of the form
       `projects//instances/a-z*[a-z0-9]`. The final segment of the name must
       be between 2 and 64 characters in length.
-    nodeCount: The number of nodes allocated to this instance. This may be
-      zero in API responses for instances that are not yet in state `READY`.
-      See [the documentation](https://cloud.google.com/spanner/docs/instances#
-      node_count) for more information about nodes.
+    nodeCount: The number of nodes allocated to this instance. At most one of
+      either node_count or processing_units should be present in the message.
+      This may be zero in API responses for instances that are not yet in
+      state `READY`. See [the
+      documentation](https://cloud.google.com/spanner/docs/compute-capacity)
+      for more information about nodes and processing units.
     processingUnits: The number of processing units allocated to this
       instance. At most one of processing_units or node_count should be
       present in the message. This may be zero in API responses for instances
-      that are not yet in state `READY`.
+      that are not yet in state `READY`. See [the
+      documentation](https://cloud.google.com/spanner/docs/compute-capacity)
+      for more information about nodes and processing units.
     state: Output only. The current instance state. For CreateInstance, the
       state must be either omitted or set to `CREATING`. For UpdateInstance,
       the state must be either omitted or set to `READY`.

@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.command_lib.compute.instance_groups import flags
+
 
 def MakePreservedStateDisksMapEntry(messages, stateful_disk):
   """Make a map entry for disks field in preservedState message."""
@@ -60,14 +62,16 @@ def MakeStatefulPolicyPreservedStateDiskEntry(messages, stateful_disk_dict):
 def MakeInternalIPEntry(messages, stateful_ip_dict):
   return (messages.StatefulPolicyPreservedState.InternalIPsValue
           .AdditionalProperty(
-              key=stateful_ip_dict.get('interface-name'),
+              key=stateful_ip_dict.get(
+                  'interface-name', flags.STATEFUL_IP_DEFAULT_INTERFACE_NAME),
               value=_MakeNetworkIPForStatefulIP(messages, stateful_ip_dict)))
 
 
 def MakeExternalIPEntry(messages, stateful_ip_dict):
   return (messages.StatefulPolicyPreservedState.ExternalIPsValue
           .AdditionalProperty(
-              key=stateful_ip_dict.get('interface-name'),
+              key=stateful_ip_dict.get(
+                  'interface-name', flags.STATEFUL_IP_DEFAULT_INTERFACE_NAME),
               value=_MakeNetworkIPForStatefulIP(messages, stateful_ip_dict)))
 
 
@@ -86,7 +90,8 @@ def MakeStatefulPolicyPreservedStateInternalIPEntry(messages, stateful_ip_dict):
   """Make InternalIPsValue proto for a given stateful IP configuration dict."""
   return (messages.StatefulPolicyPreservedState.InternalIPsValue
           .AdditionalProperty(
-              key=stateful_ip_dict.get('interface-name'),
+              key=stateful_ip_dict.get(
+                  'interface-name', flags.STATEFUL_IP_DEFAULT_INTERFACE_NAME),
               value=_MakeNetworkIPForStatefulIP(messages, stateful_ip_dict)))
 
 
@@ -94,7 +99,8 @@ def MakeStatefulPolicyPreservedStateExternalIPEntry(messages, stateful_ip_dict):
   """Make ExternalIPsValue proto for a given stateful IP configuration dict."""
   return (messages.StatefulPolicyPreservedState.ExternalIPsValue
           .AdditionalProperty(
-              key=stateful_ip_dict.get('interface-name'),
+              key=stateful_ip_dict.get(
+                  'interface-name', flags.STATEFUL_IP_DEFAULT_INTERFACE_NAME),
               value=_MakeNetworkIPForStatefulIP(messages, stateful_ip_dict)))
 
 

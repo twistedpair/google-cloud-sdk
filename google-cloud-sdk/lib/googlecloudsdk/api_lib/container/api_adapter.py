@@ -552,6 +552,7 @@ class CreateClusterOptions(object):
       kubernetes_objects_changes_target=None,
       kubernetes_objects_snapshots_target=None,
       enable_gcfs=None,
+      enable_image_streaming=None,
       private_endpoint_subnetwork=None,
       cross_connect_subnetworks=None,
       enable_service_externalips=None,
@@ -696,6 +697,7 @@ class CreateClusterOptions(object):
     self.kubernetes_objects_changes_target = kubernetes_objects_changes_target
     self.kubernetes_objects_snapshots_target = kubernetes_objects_snapshots_target
     self.enable_gcfs = enable_gcfs
+    self.enable_image_streaming = enable_image_streaming
     self.private_endpoint_subnetwork = private_endpoint_subnetwork
     self.cross_connect_subnetworks = cross_connect_subnetworks
     self.enable_service_externalips = enable_service_externalips
@@ -947,6 +949,7 @@ class CreateNodePoolOptions(object):
                reservation=None,
                node_group=None,
                enable_gcfs=None,
+               enable_image_streaming=None,
                pod_ipv4_range=None,
                create_pod_ipv4_range=None,
                enable_private_nodes=None,
@@ -994,6 +997,7 @@ class CreateNodePoolOptions(object):
     self.reservation = reservation
     self.node_group = node_group
     self.enable_gcfs = enable_gcfs
+    self.enable_image_streaming = enable_image_streaming
     self.pod_ipv4_range = pod_ipv4_range
     self.create_pod_ipv4_range = create_pod_ipv4_range
     self.enable_private_nodes = enable_private_nodes
@@ -1490,10 +1494,19 @@ class APIAdapter(object):
       if cluster.nodePoolDefaults is None:
         cluster.nodePoolDefaults = self.messages.NodePoolDefaults()
       if cluster.nodePoolDefaults.nodeConfigDefaults is None:
-        cluster.nodePoolDefaults.nodeConfigDefaults = self.messages.NodeConfigDefaults(
-        )
-      cluster.nodePoolDefaults.nodeConfigDefaults.gcfsConfig = self.messages.GcfsConfig(
-          enabled=options.enable_gcfs)
+        cluster.nodePoolDefaults.nodeConfigDefaults = (
+            self.messages.NodeConfigDefaults())
+      cluster.nodePoolDefaults.nodeConfigDefaults.gcfsConfig = (
+          self.messages.GcfsConfig(enabled=options.enable_gcfs))
+
+    if options.enable_image_streaming:
+      if cluster.nodePoolDefaults is None:
+        cluster.nodePoolDefaults = self.messages.NodePoolDefaults()
+      if cluster.nodePoolDefaults.nodeConfigDefaults is None:
+        cluster.nodePoolDefaults.nodeConfigDefaults = (
+            self.messages.NodeConfigDefaults())
+      cluster.nodePoolDefaults.nodeConfigDefaults.gcfsConfig = (
+          self.messages.GcfsConfig(enabled=options.enable_image_streaming))
 
     _AddNotificationConfigToCluster(cluster, options, self.messages)
 
@@ -2715,6 +2728,11 @@ class APIAdapter(object):
 
     if options.enable_gcfs:
       gcfs_config = self.messages.GcfsConfig(enabled=options.enable_gcfs)
+      node_config.gcfsConfig = gcfs_config
+
+    if options.enable_image_streaming:
+      gcfs_config = self.messages.GcfsConfig(
+          enabled=options.enable_image_streaming)
       node_config.gcfsConfig = gcfs_config
 
     self._AddWorkloadMetadataToNodeConfig(node_config, options, self.messages)

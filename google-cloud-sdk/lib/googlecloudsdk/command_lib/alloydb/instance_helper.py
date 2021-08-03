@@ -59,8 +59,10 @@ def ConstructCreateRequestFromArgs(client, alloydb_messages, project_ref, args):
                                                       args.instance_type)
   instance_resource.networkConfig = _ParseNetworkConfig(alloydb_messages,
                                                         args.assign_ip)
-  instance_resource.readPoolConfig = alloydb_messages.ReadPoolConfig(
-      readPoolSize=args.read_pool_size)
+
+  if instance_resource.instanceType == alloydb_messages.Instance.InstanceTypeValueValuesEnum.READ:
+    instance_resource.readPoolConfig = alloydb_messages.ReadPoolConfig(
+        readPoolSize=args.read_pool_size)
 
   # TODO(b/185795425): Need better understanding of use cases before adding
   # instance_resource.networkConfig

@@ -248,14 +248,16 @@
           "enumDescriptions": [
             "",
             "Operating System",
-            "",
-            ""
+            "Java packages from Maven.",
+            "Go third-party packages.",
+            "Go toolchain + standard library packages."
           ],
           "enum": [
             "PACKAGE_TYPE_UNSPECIFIED",
             "OS",
             "MAVEN",
-            "GO"
+            "GO",
+            "GO_STDLIB"
           ]
         }
       }

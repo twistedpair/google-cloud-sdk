@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.storage import api_factory
 from googlecloudsdk.command_lib.storage.tasks import task
+from googlecloudsdk.core import log
 
 
 class CreateBucketTask(task.Task):
@@ -36,5 +37,6 @@ class CreateBucketTask(task.Task):
     self._bucket_resource = bucket_resource
 
   def execute(self, task_status_queue=None):
+    log.status.Print('Creating {}...'.format(self._bucket_resource))
     provider = self._bucket_resource.storage_url.scheme
     api_factory.get_api(provider).create_bucket(self._bucket_resource)

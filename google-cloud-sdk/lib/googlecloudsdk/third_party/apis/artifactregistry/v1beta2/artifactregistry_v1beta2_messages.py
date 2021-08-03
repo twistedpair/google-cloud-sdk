@@ -135,6 +135,21 @@ class ArtifactregistryProjectsLocationsRepositoriesAptArtifactsImportRequest(_me
   parent = _messages.StringField(2, required=True)
 
 
+class ArtifactregistryProjectsLocationsRepositoriesAptartifactsUploadRequest(_messages.Message):
+  r"""A ArtifactregistryProjectsLocationsRepositoriesAptartifactsUploadRequest
+  object.
+
+  Fields:
+    parent: The name of the parent resource where the artifacts will be
+      uploaded.
+    uploadAptArtifactRequest: A UploadAptArtifactRequest resource to be passed
+      as the request body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  uploadAptArtifactRequest = _messages.MessageField('UploadAptArtifactRequest', 2)
+
+
 class ArtifactregistryProjectsLocationsRepositoriesCreateRequest(_messages.Message):
   r"""A ArtifactregistryProjectsLocationsRepositoriesCreateRequest object.
 
@@ -509,6 +524,21 @@ class ArtifactregistryProjectsLocationsRepositoriesYumArtifactsImportRequest(_me
 
   importYumArtifactsRequest = _messages.MessageField('ImportYumArtifactsRequest', 1)
   parent = _messages.StringField(2, required=True)
+
+
+class ArtifactregistryProjectsLocationsRepositoriesYumartifactsUploadRequest(_messages.Message):
+  r"""A ArtifactregistryProjectsLocationsRepositoriesYumartifactsUploadRequest
+  object.
+
+  Fields:
+    parent: The name of the parent resource where the artifacts will be
+      uploaded.
+    uploadYumArtifactRequest: A UploadYumArtifactRequest resource to be passed
+      as the request body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  uploadYumArtifactRequest = _messages.MessageField('UploadYumArtifactRequest', 2)
 
 
 class ArtifactregistryProjectsUpdateProjectSettingsRequest(_messages.Message):
@@ -1441,6 +1471,10 @@ class UploadAptArtifactMediaResponse(_messages.Message):
   operation = _messages.MessageField('Operation', 1)
 
 
+class UploadAptArtifactRequest(_messages.Message):
+  r"""The request to upload an artifact."""
+
+
 class UploadAptArtifactResponse(_messages.Message):
   r"""The response of the completed artifact upload operation. This response
   is contained in the Operation and available to users.
@@ -1460,6 +1494,10 @@ class UploadYumArtifactMediaResponse(_messages.Message):
   """
 
   operation = _messages.MessageField('Operation', 1)
+
+
+class UploadYumArtifactRequest(_messages.Message):
+  r"""The request to upload an artifact."""
 
 
 class UploadYumArtifactResponse(_messages.Message):

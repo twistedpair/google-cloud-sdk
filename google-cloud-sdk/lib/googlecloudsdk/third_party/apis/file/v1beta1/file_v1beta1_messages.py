@@ -395,6 +395,88 @@ class FileProjectsLocationsInstancesRestoreRequest(_messages.Message):
   restoreInstanceRequest = _messages.MessageField('RestoreInstanceRequest', 2)
 
 
+class FileProjectsLocationsInstancesSnapshotsCreateRequest(_messages.Message):
+  r"""A FileProjectsLocationsInstancesSnapshotsCreateRequest object.
+
+  Fields:
+    parent: Required. The Filestore Instance to create the snapshots of, in
+      the format
+      projects/{project_id}/locations/{location}/instances/{instance_id}
+    snapshot: A Snapshot resource to be passed as the request body.
+    snapshotId: Required. The ID to use for the snapshot. The ID must be
+      unique within the specified instance. This value must start with a
+      lowercase letter followed by up to 62 lowercase letters, numbers, or
+      hyphens, and cannot end with a hyphen.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  snapshot = _messages.MessageField('Snapshot', 2)
+  snapshotId = _messages.StringField(3)
+
+
+class FileProjectsLocationsInstancesSnapshotsDeleteRequest(_messages.Message):
+  r"""A FileProjectsLocationsInstancesSnapshotsDeleteRequest object.
+
+  Fields:
+    name: Required. The snapshot resource name, in the format projects/{projec
+      t_id}/locations/{location}/instances/{instance_id}/snapshots/{snapshot_i
+      d}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class FileProjectsLocationsInstancesSnapshotsGetRequest(_messages.Message):
+  r"""A FileProjectsLocationsInstancesSnapshotsGetRequest object.
+
+  Fields:
+    name: Required. The snapshot resource name, in the format projects/{projec
+      t_id}/locations/{location}/instances/{instance_id}/snapshots/{snapshot_i
+      d}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class FileProjectsLocationsInstancesSnapshotsListRequest(_messages.Message):
+  r"""A FileProjectsLocationsInstancesSnapshotsListRequest object.
+
+  Fields:
+    filter: List filter.
+    orderBy: Sort results. Supported values are "name", "name desc" or ""
+      (unsorted).
+    pageSize: The maximum number of items to return.
+    pageToken: The next_page_token value to use if there are additional
+      results to retrieve for this list request.
+    parent: Required. The instance for which to retrieve snapshot information,
+      in the format
+      projects/{project_id}/locations/{location}/instances/{instance_id}.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class FileProjectsLocationsInstancesSnapshotsPatchRequest(_messages.Message):
+  r"""A FileProjectsLocationsInstancesSnapshotsPatchRequest object.
+
+  Fields:
+    name: Output only. The resource name of the snapshot, in the format projec
+      ts/{project_id}/locations/{location_id}/instances/{instance_id}/snapshot
+      s/{snapshot_id}.
+    snapshot: A Snapshot resource to be passed as the request body.
+    updateMask: Required. Mask of fields to update. At least one path must be
+      supplied in this field.
+  """
+
+  name = _messages.StringField(1, required=True)
+  snapshot = _messages.MessageField('Snapshot', 2)
+  updateMask = _messages.StringField(3)
+
+
 class FileProjectsLocationsListRequest(_messages.Message):
   r"""A FileProjectsLocationsListRequest object.
 
@@ -1203,6 +1285,19 @@ class ListOperationsResponse(_messages.Message):
   operations = _messages.MessageField('Operation', 2, repeated=True)
 
 
+class ListSnapshotsResponse(_messages.Message):
+  r"""ListSnapshotsResponse is the result of ListSnapshotsRequest.
+
+  Fields:
+    nextPageToken: The token you can use to retrieve the next page of results.
+      Not returned if there are no more results in the list.
+    snapshots: A list of snapshots in the project for the specified instance.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  snapshots = _messages.MessageField('Snapshot', 2, repeated=True)
+
+
 class Location(_messages.Message):
   r"""A resource that represents Google Cloud Platform location.
 
@@ -1703,6 +1798,74 @@ class Schedule(_messages.Message):
   startTime = _messages.MessageField('TimeOfDay', 3)
 
 
+class Snapshot(_messages.Message):
+  r"""A Cloud Filestore snapshot.
+
+  Enums:
+    StateValueValuesEnum: Output only. The snapshot state.
+
+  Messages:
+    LabelsValue: Resource labels to represent user provided metadata.
+
+  Fields:
+    createTime: Output only. The time when the snapshot was created.
+    description: A description of the snapshot with 2048 characters or less.
+      Requests with longer descriptions will be rejected.
+    filesystemUsedBytes: Output only. The amount of bytes needed to allocate a
+      full copy of the snapshot content
+    labels: Resource labels to represent user provided metadata.
+    name: Output only. The resource name of the snapshot, in the format projec
+      ts/{project_id}/locations/{location_id}/instances/{instance_id}/snapshot
+      s/{snapshot_id}.
+    state: Output only. The snapshot state.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The snapshot state.
+
+    Values:
+      STATE_UNSPECIFIED: State not set.
+      CREATING: Snapshot is being created.
+      READY: Snapshot is available for use.
+      DELETING: Snapshot is being deleted.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    READY = 2
+    DELETING = 3
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Resource labels to represent user provided metadata.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  filesystemUsedBytes = _messages.IntegerField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+
+
 class StandardQueryParameters(_messages.Message):
   r"""Query parameters accepted by all methods.
 
@@ -1849,8 +2012,8 @@ class UpdatePolicy(_messages.Message):
     channel: Optional. Relative scheduling channel applied to resource.
     denyMaintenancePeriods: Deny Maintenance Period that is applied to
       resource to indicate when maintenance is forbidden. User can specify
-      zero or more non-overlapping deny periods. For V1, Maximum number of
-      deny_maintenance_periods is expected to be one.
+      zero or more non-overlapping deny periods. Maximum number of
+      deny_maintenance_periods expected is one.
     window: Optional. Maintenance window that is applied to resources covered
       by this policy.
   """

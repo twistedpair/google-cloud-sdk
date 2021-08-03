@@ -24,6 +24,16 @@ DOCS_URL = 'https://cloud.google.com/monitoring/api/'
 class Collections(enum.Enum):
   """Collections for all supported apis."""
 
+  LOCATIONS_GLOBAL_METRICSSCOPES = (
+      'locations.global.metricsScopes',
+      '{+name}',
+      {
+          '':
+              'locations/global/metricsScopes/{metricsScopesId}',
+      },
+      ['name'],
+      True
+  )
   OPERATIONS = (
       'operations',
       '{+name}',

@@ -12,7 +12,7 @@ class ComputeBeta(base_api.BaseApiClient):
 
   MESSAGES_MODULE = messages
   BASE_URL = 'https://compute.googleapis.com/compute/beta/'
-  MTLS_BASE_URL = ''
+  MTLS_BASE_URL = 'https://compute.mtls.googleapis.com/compute/beta/'
 
   _PACKAGE = 'compute'
   _SCOPES = ['https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/compute', 'https://www.googleapis.com/auth/compute.readonly', 'https://www.googleapis.com/auth/devstorage.full_control', 'https://www.googleapis.com/auth/devstorage.read_only', 'https://www.googleapis.com/auth/devstorage.read_write']
@@ -1085,11 +1085,7 @@ class ComputeBeta(base_api.BaseApiClient):
     )
 
     def GetHealth(self, request, global_params=None):
-      r"""Gets the most recent health check results for this BackendService.
-
-Example request body:
-
-{ "group": "/zones/us-east1-b/instanceGroups/lb-backend-example" }
+      r"""Gets the most recent health check results for this BackendService. Example request body: { "group": "/zones/us-east1-b/instanceGroups/lb-backend-example" }.
 
       Args:
         request: (ComputeBackendServicesGetHealthRequest) input message
@@ -1141,7 +1137,7 @@ Example request body:
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a BackendService resource in the specified project using the data included in the request. For more information, see  Backend services overview.
+      r"""Creates a BackendService resource in the specified project using the data included in the request. For more information, see Backend services overview .
 
       Args:
         request: (ComputeBackendServicesInsertRequest) input message
@@ -1193,7 +1189,7 @@ Example request body:
     )
 
     def Patch(self, request, global_params=None):
-      r"""Patches the specified BackendService resource with the data included in the request. For more information, see  Backend services overview. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+      r"""Patches the specified BackendService resource with the data included in the request. For more information, see Backend services overview. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 
       Args:
         request: (ComputeBackendServicesPatchRequest) input message
@@ -1802,7 +1798,7 @@ Example request body:
         method_id='compute.disks.update',
         ordered_params=['project', 'zone', 'disk'],
         path_params=['disk', 'project', 'zone'],
-        query_params=['paths', 'requestId'],
+        query_params=['paths', 'requestId', 'updateMask'],
         relative_path='projects/{project}/zones/{zone}/disks/{disk}',
         request_field='diskResource',
         request_type_name='ComputeDisksUpdateRequest',
@@ -2813,7 +2809,7 @@ Example request body:
     )
 
     def SetLabels(self, request, global_params=None):
-      r"""Sets the labels on the specified resource. To learn more about labels, read the  Labeling Resources documentation.
+      r"""Sets the labels on the specified resource. To learn more about labels, read the Labeling Resources documentation.
 
       Args:
         request: (ComputeForwardingRulesSetLabelsRequest) input message
@@ -3197,7 +3193,7 @@ Example request body:
     )
 
     def SetLabels(self, request, global_params=None):
-      r"""Sets the labels on the specified resource. To learn more about labels, read the  Labeling resources documentation.
+      r"""Sets the labels on the specified resource. To learn more about labels, read the Labeling resources documentation.
 
       Args:
         request: (ComputeGlobalForwardingRulesSetLabelsRequest) input message
@@ -3581,11 +3577,7 @@ Example request body:
     )
 
     def Wait(self, request, global_params=None):
-      r"""Waits for the specified Operation resource to return as `DONE` or for the request to approach the 2 minute deadline, and retrieves the specified Operation resource. This method differs from the `GET` method in that it waits for no more than the default deadline (2 minutes) and then returns the current state of the operation, which might be `DONE` or still in progress.
-
-This method is called on a best-effort basis. Specifically:  
-- In uncommon cases, when the server is overloaded, the request might return before the default deadline is reached, or might return after zero seconds. 
-- If the default deadline is reached, there is no guarantee that the operation is actually done when the method returns. Be prepared to retry if the operation is not `DONE`.
+      r"""Waits for the specified Operation resource to return as `DONE` or for the request to approach the 2 minute deadline, and retrieves the specified Operation resource. This method differs from the `GET` method in that it waits for no more than the default deadline (2 minutes) and then returns the current state of the operation, which might be `DONE` or still in progress. This method is called on a best-effort basis. Specifically: - In uncommon cases, when the server is overloaded, the request might return before the default deadline is reached, or might return after zero seconds. - If the default deadline is reached, there is no guarantee that the operation is actually done when the method returns. Be prepared to retry if the operation is not `DONE`. .
 
       Args:
         request: (ComputeGlobalOperationsWaitRequest) input message
@@ -4513,9 +4505,7 @@ This method is called on a best-effort basis. Specifically:
     )
 
     def Deprecate(self, request, global_params=None):
-      r"""Sets the deprecation status of an image.
-
-If an empty request body is given, clears the deprecation status instead.
+      r"""Sets the deprecation status of an image. If an empty request body is given, clears the deprecation status instead.
 
       Args:
         request: (ComputeImagesDeprecateRequest) input message
@@ -4785,11 +4775,7 @@ If an empty request body is given, clears the deprecation status instead.
           }
 
     def AbandonInstances(self, request, global_params=None):
-      r"""Flags the specified instances to be removed from the managed instance group. Abandoning an instance does not delete the instance, but it does remove the instance from any target pools that are applied by the managed instance group. This method reduces the targetSize of the managed instance group by the number of instances that you abandon. This operation is marked as DONE when the action is scheduled even if the instances have not yet been removed from the group. You must separately verify the status of the abandoning action with the listmanagedinstances method.
-
-If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.
-
-You can specify a maximum of 1000 instances with this method per request.
+      r"""Flags the specified instances to be removed from the managed instance group. Abandoning an instance does not delete the instance, but it does remove the instance from any target pools that are applied by the managed instance group. This method reduces the targetSize of the managed instance group by the number of instances that you abandon. This operation is marked as DONE when the action is scheduled even if the instances have not yet been removed from the group. You must separately verify the status of the abandoning action with the listmanagedinstances method. If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted. You can specify a maximum of 1000 instances with this method per request.
 
       Args:
         request: (ComputeInstanceGroupManagersAbandonInstancesRequest) input message
@@ -4893,7 +4879,7 @@ You can specify a maximum of 1000 instances with this method per request.
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified managed instance group and all of the instances in that group. Note that the instance group must not belong to a backend service. Read  Deleting an instance group for more information.
+      r"""Deletes the specified managed instance group and all of the instances in that group. Note that the instance group must not belong to a backend service. Read Deleting an instance group for more information.
 
       Args:
         request: (ComputeInstanceGroupManagersDeleteRequest) input message
@@ -4919,11 +4905,7 @@ You can specify a maximum of 1000 instances with this method per request.
     )
 
     def DeleteInstances(self, request, global_params=None):
-      r"""Flags the specified instances in the managed instance group for immediate deletion. The instances are also removed from any target pools of which they were a member. This method reduces the targetSize of the managed instance group by the number of instances that you delete. This operation is marked as DONE when the action is scheduled even if the instances are still being deleted. You must separately verify the status of the deleting action with the listmanagedinstances method.
-
-If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.
-
-You can specify a maximum of 1000 instances with this method per request.
+      r"""Flags the specified instances in the managed instance group for immediate deletion. The instances are also removed from any target pools of which they were a member. This method reduces the targetSize of the managed instance group by the number of instances that you delete. This operation is marked as DONE when the action is scheduled even if the instances are still being deleted. You must separately verify the status of the deleting action with the listmanagedinstances method. If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted. You can specify a maximum of 1000 instances with this method per request.
 
       Args:
         request: (ComputeInstanceGroupManagersDeleteInstancesRequest) input message
@@ -5001,9 +4983,7 @@ You can specify a maximum of 1000 instances with this method per request.
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a managed instance group using the information that you specify in the request. After the group is created, instances in the group are created using the specified instance template. This operation is marked as DONE when the group is created even if the instances in the group have not yet been created. You must separately verify the status of the individual instances with the listmanagedinstances method.
-
-A managed instance group can have up to 1000 VM instances per group. Please contact Cloud Support if you need an increase in this limit.
+      r"""Creates a managed instance group using the information that you specify in the request. After the group is created, instances in the group are created using the specified instance template. This operation is marked as DONE when the group is created even if the instances in the group have not yet been created. You must separately verify the status of the individual instances with the listmanagedinstances method. A managed instance group can have up to 1000 VM instances per group. Please contact Cloud Support if you need an increase in this limit.
 
       Args:
         request: (ComputeInstanceGroupManagersInsertRequest) input message
@@ -5185,11 +5165,7 @@ A managed instance group can have up to 1000 VM instances per group. Please cont
     )
 
     def RecreateInstances(self, request, global_params=None):
-      r"""Flags the specified VM instances in the managed instance group to be immediately recreated. Each instance is recreated using the group's current configuration. This operation is marked as DONE when the flag is set even if the instances have not yet been recreated. You must separately verify the status of each instance by checking its currentAction field; for more information, see Checking the status of managed instances.
-
-If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.
-
-You can specify a maximum of 1000 instances with this method per request.
+      r"""Flags the specified VM instances in the managed instance group to be immediately recreated. Each instance is recreated using the group's current configuration. This operation is marked as DONE when the flag is set even if the instances have not yet been recreated. You must separately verify the status of each instance by checking its currentAction field; for more information, see Checking the status of managed instances. If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted. You can specify a maximum of 1000 instances with this method per request.
 
       Args:
         request: (ComputeInstanceGroupManagersRecreateInstancesRequest) input message
@@ -5215,15 +5191,7 @@ You can specify a maximum of 1000 instances with this method per request.
     )
 
     def Resize(self, request, global_params=None):
-      r"""Resizes the managed instance group. If you increase the size, the group creates new instances using the current instance template. If you decrease the size, the group deletes instances. The resize operation is marked DONE when the resize actions are scheduled even if the group has not yet added or deleted any instances. You must separately verify the status of the creating or deleting actions with the listmanagedinstances method.
-
-When resizing down, the instance group arbitrarily chooses the order in which VMs are deleted. The group takes into account some VM attributes when making the selection including:
-
-+ The status of the VM instance. + The health of the VM instance. + The instance template version the VM is based on. + For regional managed instance groups, the location of the VM instance.
-
-This list is subject to change.
-
-If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.
+      r"""Resizes the managed instance group. If you increase the size, the group creates new instances using the current instance template. If you decrease the size, the group deletes instances. The resize operation is marked DONE when the resize actions are scheduled even if the group has not yet added or deleted any instances. You must separately verify the status of the creating or deleting actions with the listmanagedinstances method. When resizing down, the instance group arbitrarily chooses the order in which VMs are deleted. The group takes into account some VM attributes when making the selection including: + The status of the VM instance. + The health of the VM instance. + The instance template version the VM is based on. + For regional managed instance groups, the location of the VM instance. This list is subject to change. If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.
 
       Args:
         request: (ComputeInstanceGroupManagersResizeRequest) input message
@@ -5249,11 +5217,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def ResizeAdvanced(self, request, global_params=None):
-      r"""Resizes the managed instance group with advanced configuration options like disabling creation retries. This is an extended version of the resize method.
-
-If you increase the size of the instance group, the group creates new instances using the current instance template. If you decrease the size, the group deletes instances. The resize operation is marked DONE when the resize actions are scheduled even if the group has not yet added or deleted any instances. You must separately verify the status of the creating, creatingWithoutRetries, or deleting actions with the get or listmanagedinstances method.
-
-If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.
+      r"""Resizes the managed instance group with advanced configuration options like disabling creation retries. This is an extended version of the resize method. If you increase the size of the instance group, the group creates new instances using the current instance template. If you decrease the size, the group deletes instances. The resize operation is marked DONE when the resize actions are scheduled even if the group has not yet added or deleted any instances. You must separately verify the status of the creating, creatingWithoutRetries, or deleting actions with the get or listmanagedinstances method. If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.
 
       Args:
         request: (ComputeInstanceGroupManagersResizeAdvancedRequest) input message
@@ -5445,7 +5409,7 @@ If the group is part of a backend service that has enabled connection draining, 
           }
 
     def AddInstances(self, request, global_params=None):
-      r"""Adds a list of instances to the specified instance group. All of the instances in the instance group must be in the same network/subnetwork. Read  Adding instances for more information.
+      r"""Adds a list of instances to the specified instance group. All of the instances in the instance group must be in the same network/subnetwork. Read Adding instances for more information.
 
       Args:
         request: (ComputeInstanceGroupsAddInstancesRequest) input message
@@ -5497,7 +5461,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified instance group. The instances in the group are not deleted. Note that instance group must not belong to a backend service. Read  Deleting an instance group for more information.
+      r"""Deletes the specified instance group. The instances in the group are not deleted. Note that instance group must not belong to a backend service. Read Deleting an instance group for more information.
 
       Args:
         request: (ComputeInstanceGroupsDeleteRequest) input message
@@ -5523,9 +5487,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified zonal instance group. Get a list of available zonal instance groups by making a list() request.
-
-For managed instance groups, use the instanceGroupManagers or regionInstanceGroupManagers methods instead.
+      r"""Returns the specified zonal instance group. Get a list of available zonal instance groups by making a list() request. For managed instance groups, use the instanceGroupManagers or regionInstanceGroupManagers methods instead.
 
       Args:
         request: (ComputeInstanceGroupsGetRequest) input message
@@ -5577,9 +5539,7 @@ For managed instance groups, use the instanceGroupManagers or regionInstanceGrou
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of zonal instance group resources contained within the specified zone.
-
-For managed instance groups, use the instanceGroupManagers or regionInstanceGroupManagers methods instead.
+      r"""Retrieves the list of zonal instance group resources contained within the specified zone. For managed instance groups, use the instanceGroupManagers or regionInstanceGroupManagers methods instead.
 
       Args:
         request: (ComputeInstanceGroupsListRequest) input message
@@ -5631,9 +5591,7 @@ For managed instance groups, use the instanceGroupManagers or regionInstanceGrou
     )
 
     def RemoveInstances(self, request, global_params=None):
-      r"""Removes one or more instances from the specified instance group, but does not delete those instances.
-
-If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration before the VM instance is removed or deleted.
+      r"""Removes one or more instances from the specified instance group, but does not delete those instances. If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration before the VM instance is removed or deleted.
 
       Args:
         request: (ComputeInstanceGroupsRemoveInstancesRequest) input message
@@ -7031,7 +6989,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates an instance only if the necessary resources are available. This method can update only a specific set of instance properties. See  Updating a running instance for a list of updatable instance properties.
+      r"""Updates an instance only if the necessary resources are available. This method can update only a specific set of instance properties. See Updating a running instance for a list of updatable instance properties.
 
       Args:
         request: (ComputeInstancesUpdateRequest) input message
@@ -7695,7 +7653,7 @@ If the group is part of a backend service that has enabled connection draining, 
           }
 
     def Get(self, request, global_params=None):
-      r"""Return a specified license code. License codes are mirrored across all projects that have permissions to read the License Code.  Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.
+      r"""Return a specified license code. License codes are mirrored across all projects that have permissions to read the License Code. *Caution* This resource is intended for use only by third-party partners who are creating Cloud Marketplace images. .
 
       Args:
         request: (ComputeLicenseCodesGetRequest) input message
@@ -7721,7 +7679,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource.  Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.
+      r"""Returns permissions that a caller has on the specified resource. *Caution* This resource is intended for use only by third-party partners who are creating Cloud Marketplace images. .
 
       Args:
         request: (ComputeLicenseCodesTestIamPermissionsRequest) input message
@@ -7757,7 +7715,7 @@ If the group is part of a backend service that has enabled connection draining, 
           }
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified license.  Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.
+      r"""Deletes the specified license. *Caution* This resource is intended for use only by third-party partners who are creating Cloud Marketplace images. .
 
       Args:
         request: (ComputeLicensesDeleteRequest) input message
@@ -7783,7 +7741,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Get(self, request, global_params=None):
-      r"""Returns the specified License resource.  Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.
+      r"""Returns the specified License resource. *Caution* This resource is intended for use only by third-party partners who are creating Cloud Marketplace images. .
 
       Args:
         request: (ComputeLicensesGetRequest) input message
@@ -7809,7 +7767,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.  Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.
+      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists. *Caution* This resource is intended for use only by third-party partners who are creating Cloud Marketplace images. .
 
       Args:
         request: (ComputeLicensesGetIamPolicyRequest) input message
@@ -7835,7 +7793,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Insert(self, request, global_params=None):
-      r"""Create a License resource in the specified project.  Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.
+      r"""Create a License resource in the specified project. *Caution* This resource is intended for use only by third-party partners who are creating Cloud Marketplace images. .
 
       Args:
         request: (ComputeLicensesInsertRequest) input message
@@ -7861,7 +7819,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def List(self, request, global_params=None):
-      r"""Retrieves the list of licenses available in the specified project. This method does not get any licenses that belong to other projects, including licenses attached to publicly-available images, like Debian 9. If you want to get a list of publicly-available licenses, use this method to make a request to the respective image project, such as debian-cloud or windows-cloud.  Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.
+      r"""Retrieves the list of licenses available in the specified project. This method does not get any licenses that belong to other projects, including licenses attached to publicly-available images, like Debian 9. If you want to get a list of publicly-available licenses, use this method to make a request to the respective image project, such as debian-cloud or windows-cloud. *Caution* This resource is intended for use only by third-party partners who are creating Cloud Marketplace images. .
 
       Args:
         request: (ComputeLicensesListRequest) input message
@@ -7887,7 +7845,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy.  Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy. *Caution* This resource is intended for use only by third-party partners who are creating Cloud Marketplace images. .
 
       Args:
         request: (ComputeLicensesSetIamPolicyRequest) input message
@@ -7913,7 +7871,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource.  Caution This resource is intended for use only by third-party partners who are creating Cloud Marketplace images.
+      r"""Returns permissions that a caller has on the specified resource. *Caution* This resource is intended for use only by third-party partners who are creating Cloud Marketplace images. .
 
       Args:
         request: (ComputeLicensesTestIamPermissionsRequest) input message
@@ -8759,7 +8717,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def UpdatePeering(self, request, global_params=None):
-      r"""Updates the specified network peering with the data included in the request Only the following fields can be modified: NetworkPeering.export_custom_routes, and NetworkPeering.import_custom_routes.
+      r"""Updates the specified network peering with the data included in the request. You can only modify the NetworkPeering.export_custom_routes field and the NetworkPeering.import_custom_routes field.
 
       Args:
         request: (ComputeNetworksUpdatePeeringRequest) input message
@@ -10991,7 +10949,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a regional BackendService resource in the specified project using the data included in the request. For more information, see  Backend services overview.
+      r"""Creates a regional BackendService resource in the specified project using the data included in the request. For more information, see Backend services overview.
 
       Args:
         request: (ComputeRegionBackendServicesInsertRequest) input message
@@ -11043,7 +11001,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the specified regional BackendService resource with the data included in the request. For more information, see  Understanding backend services This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+      r"""Updates the specified regional BackendService resource with the data included in the request. For more information, see Understanding backend services This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 
       Args:
         request: (ComputeRegionBackendServicesPatchRequest) input message
@@ -11121,7 +11079,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates the specified regional BackendService resource with the data included in the request. For more information, see  Backend services overview.
+      r"""Updates the specified regional BackendService resource with the data included in the request. For more information, see Backend services overview .
 
       Args:
         request: (ComputeRegionBackendServicesUpdateRequest) input message
@@ -11714,7 +11672,7 @@ If the group is part of a backend service that has enabled connection draining, 
         method_id='compute.regionDisks.update',
         ordered_params=['project', 'region', 'disk'],
         path_params=['disk', 'project', 'region'],
-        query_params=['paths', 'requestId'],
+        query_params=['paths', 'requestId', 'updateMask'],
         relative_path='projects/{project}/regions/{region}/disks/{disk}',
         request_field='diskResource',
         request_type_name='ComputeRegionDisksUpdateRequest',
@@ -12091,11 +12049,7 @@ If the group is part of a backend service that has enabled connection draining, 
           }
 
     def AbandonInstances(self, request, global_params=None):
-      r"""Flags the specified instances to be immediately removed from the managed instance group. Abandoning an instance does not delete the instance, but it does remove the instance from any target pools that are applied by the managed instance group. This method reduces the targetSize of the managed instance group by the number of instances that you abandon. This operation is marked as DONE when the action is scheduled even if the instances have not yet been removed from the group. You must separately verify the status of the abandoning action with the listmanagedinstances method.
-
-If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.
-
-You can specify a maximum of 1000 instances with this method per request.
+      r"""Flags the specified instances to be immediately removed from the managed instance group. Abandoning an instance does not delete the instance, but it does remove the instance from any target pools that are applied by the managed instance group. This method reduces the targetSize of the managed instance group by the number of instances that you abandon. This operation is marked as DONE when the action is scheduled even if the instances have not yet been removed from the group. You must separately verify the status of the abandoning action with the listmanagedinstances method. If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted. You can specify a maximum of 1000 instances with this method per request.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersAbandonInstancesRequest) input message
@@ -12199,11 +12153,7 @@ You can specify a maximum of 1000 instances with this method per request.
     )
 
     def DeleteInstances(self, request, global_params=None):
-      r"""Flags the specified instances in the managed instance group to be immediately deleted. The instances are also removed from any target pools of which they were a member. This method reduces the targetSize of the managed instance group by the number of instances that you delete. The deleteInstances operation is marked DONE if the deleteInstances request is successful. The underlying actions take additional time. You must separately verify the status of the deleting action with the listmanagedinstances method.
-
-If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.
-
-You can specify a maximum of 1000 instances with this method per request.
+      r"""Flags the specified instances in the managed instance group to be immediately deleted. The instances are also removed from any target pools of which they were a member. This method reduces the targetSize of the managed instance group by the number of instances that you delete. The deleteInstances operation is marked DONE if the deleteInstances request is successful. The underlying actions take additional time. You must separately verify the status of the deleting action with the listmanagedinstances method. If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted. You can specify a maximum of 1000 instances with this method per request.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersDeleteInstancesRequest) input message
@@ -12281,9 +12231,7 @@ You can specify a maximum of 1000 instances with this method per request.
     )
 
     def Insert(self, request, global_params=None):
-      r"""Creates a managed instance group using the information that you specify in the request. After the group is created, instances in the group are created using the specified instance template. This operation is marked as DONE when the group is created even if the instances in the group have not yet been created. You must separately verify the status of the individual instances with the listmanagedinstances method.
-
-A regional managed instance group can contain up to 2000 instances.
+      r"""Creates a managed instance group using the information that you specify in the request. After the group is created, instances in the group are created using the specified instance template. This operation is marked as DONE when the group is created even if the instances in the group have not yet been created. You must separately verify the status of the individual instances with the listmanagedinstances method. A regional managed instance group can contain up to 2000 instances.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersInsertRequest) input message
@@ -12465,11 +12413,7 @@ A regional managed instance group can contain up to 2000 instances.
     )
 
     def RecreateInstances(self, request, global_params=None):
-      r"""Flags the specified VM instances in the managed instance group to be immediately recreated. Each instance is recreated using the group's current configuration. This operation is marked as DONE when the flag is set even if the instances have not yet been recreated. You must separately verify the status of each instance by checking its currentAction field; for more information, see Checking the status of managed instances.
-
-If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.
-
-You can specify a maximum of 1000 instances with this method per request.
+      r"""Flags the specified VM instances in the managed instance group to be immediately recreated. Each instance is recreated using the group's current configuration. This operation is marked as DONE when the flag is set even if the instances have not yet been recreated. You must separately verify the status of each instance by checking its currentAction field; for more information, see Checking the status of managed instances. If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted. You can specify a maximum of 1000 instances with this method per request.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersRecreateInstancesRequest) input message
@@ -12495,11 +12439,7 @@ You can specify a maximum of 1000 instances with this method per request.
     )
 
     def Resize(self, request, global_params=None):
-      r"""Changes the intended size of the managed instance group. If you increase the size, the group creates new instances using the current instance template. If you decrease the size, the group deletes one or more instances.
-
-The resize operation is marked DONE if the resize request is successful. The underlying actions take additional time. You must separately verify the status of the creating or deleting actions with the listmanagedinstances method.
-
-If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.
+      r"""Changes the intended size of the managed instance group. If you increase the size, the group creates new instances using the current instance template. If you decrease the size, the group deletes one or more instances. The resize operation is marked DONE if the resize request is successful. The underlying actions take additional time. You must separately verify the status of the creating or deleting actions with the listmanagedinstances method. If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersResizeRequest) input message
@@ -13199,11 +13139,7 @@ If the group is part of a backend service that has enabled connection draining, 
     )
 
     def Wait(self, request, global_params=None):
-      r"""Waits for the specified Operation resource to return as `DONE` or for the request to approach the 2 minute deadline, and retrieves the specified Operation resource. This method differs from the `GET` method in that it waits for no more than the default deadline (2 minutes) and then returns the current state of the operation, which might be `DONE` or still in progress.
-
-This method is called on a best-effort basis. Specifically:  
-- In uncommon cases, when the server is overloaded, the request might return before the default deadline is reached, or might return after zero seconds. 
-- If the default deadline is reached, there is no guarantee that the operation is actually done when the method returns. Be prepared to retry if the operation is not `DONE`.
+      r"""Waits for the specified Operation resource to return as `DONE` or for the request to approach the 2 minute deadline, and retrieves the specified Operation resource. This method differs from the `GET` method in that it waits for no more than the default deadline (2 minutes) and then returns the current state of the operation, which might be `DONE` or still in progress. This method is called on a best-effort basis. Specifically: - In uncommon cases, when the server is overloaded, the request might return before the default deadline is reached, or might return after zero seconds. - If the default deadline is reached, there is no guarantee that the operation is actually done when the method returns. Be prepared to retry if the operation is not `DONE`. .
 
       Args:
         request: (ComputeRegionOperationsWaitRequest) input message
@@ -13815,9 +13751,7 @@ This method is called on a best-effort basis. Specifically:
     )
 
     def InvalidateCache(self, request, global_params=None):
-      r"""Initiates a cache invalidation operation, invalidating the specified path, scoped to the specified UrlMap.
-
-For more information, see [Invalidating cached content](/cdn/docs/invalidating-cached-content).
+      r"""Initiates a cache invalidation operation, invalidating the specified path, scoped to the specified UrlMap. For more information, see [Invalidating cached content](/cdn/docs/invalidating-cached-content).
 
       Args:
         request: (ComputeRegionUrlMapsInvalidateCacheRequest) input message
@@ -14296,7 +14230,7 @@ For more information, see [Invalidating cached content](/cdn/docs/invalidating-c
         method_id='compute.reservations.update',
         ordered_params=['project', 'zone', 'reservation'],
         path_params=['project', 'reservation', 'zone'],
-        query_params=['paths', 'requestId'],
+        query_params=['paths', 'requestId', 'updateMask'],
         relative_path='projects/{project}/zones/{zone}/reservations/{reservation}',
         request_field='reservationResource',
         request_type_name='ComputeReservationsUpdateRequest',
@@ -15535,9 +15469,7 @@ For more information, see [Invalidating cached content](/cdn/docs/invalidating-c
           }
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified Snapshot resource. Keep in mind that deleting a single snapshot might not necessarily delete all the data on that snapshot. If any data on the snapshot that is marked for deletion is needed for subsequent snapshots, the data will be moved to the next corresponding snapshot.
-
-For more information, see Deleting snapshots.
+      r"""Deletes the specified Snapshot resource. Keep in mind that deleting a single snapshot might not necessarily delete all the data on that snapshot. If any data on the snapshot that is marked for deletion is needed for subsequent snapshots, the data will be moved to the next corresponding snapshot. For more information, see Deleting snapshots.
 
       Args:
         request: (ComputeSnapshotsDeleteRequest) input message
@@ -16312,7 +16244,7 @@ For more information, see Deleting snapshots.
         method_id='compute.subnetworks.listUsable',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProject'],
         relative_path='projects/{project}/aggregated/subnetworks/listUsable',
         request_field='',
         request_type_name='ComputeSubnetworksListUsableRequest',
@@ -16731,7 +16663,7 @@ For more information, see Deleting snapshots.
     )
 
     def Patch(self, request, global_params=None):
-      r"""Patches the specified TargetHttpProxy resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules. (== suppress_warning http-rest-shadowed ==).
+      r"""Patches the specified TargetHttpProxy resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
 
       Args:
         request: (ComputeTargetHttpProxiesPatchRequest) input message
@@ -16949,7 +16881,7 @@ For more information, see Deleting snapshots.
     )
 
     def Patch(self, request, global_params=None):
-      r"""Patches the specified TargetHttpsProxy resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules. (== suppress_warning http-rest-shadowed ==).
+      r"""Patches the specified TargetHttpsProxy resource with the data included in the request. This method supports PATCH semantics and uses JSON merge patch format and processing rules.
 
       Args:
         request: (ComputeTargetHttpsProxiesPatchRequest) input message
@@ -16970,6 +16902,32 @@ For more information, see Deleting snapshots.
         relative_path='projects/{project}/global/targetHttpsProxies/{targetHttpsProxy}',
         request_field='targetHttpsProxyResource',
         request_type_name='ComputeTargetHttpsProxiesPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def SetCertificateMap(self, request, global_params=None):
+      r"""Changes the Certificate Map for TargetHttpsProxy.
+
+      Args:
+        request: (ComputeTargetHttpsProxiesSetCertificateMapRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetCertificateMap')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetCertificateMap.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.targetHttpsProxies.setCertificateMap',
+        ordered_params=['project', 'targetHttpsProxy'],
+        path_params=['project', 'targetHttpsProxy'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/targetHttpsProxies/{targetHttpsProxy}/setCertificateMap',
+        request_field='targetHttpsProxiesSetCertificateMapRequest',
+        request_type_name='ComputeTargetHttpsProxiesSetCertificateMapRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -17732,6 +17690,32 @@ For more information, see Deleting snapshots.
         supports_download=False,
     )
 
+    def SetCertificateMap(self, request, global_params=None):
+      r"""Changes the Certificate Map for TargetSslProxy.
+
+      Args:
+        request: (ComputeTargetSslProxiesSetCertificateMapRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetCertificateMap')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetCertificateMap.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.targetSslProxies.setCertificateMap',
+        ordered_params=['project', 'targetSslProxy'],
+        path_params=['project', 'targetSslProxy'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/targetSslProxies/{targetSslProxy}/setCertificateMap',
+        request_field='targetSslProxiesSetCertificateMapRequest',
+        request_type_name='ComputeTargetSslProxiesSetCertificateMapRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def SetProxyHeader(self, request, global_params=None):
       r"""Changes the ProxyHeaderType for TargetSslProxy.
 
@@ -18335,9 +18319,7 @@ For more information, see Deleting snapshots.
     )
 
     def InvalidateCache(self, request, global_params=None):
-      r"""Initiates a cache invalidation operation, invalidating the specified path, scoped to the specified UrlMap.
-
-For more information, see [Invalidating cached content](/cdn/docs/invalidating-cached-content).
+      r"""Initiates a cache invalidation operation, invalidating the specified path, scoped to the specified UrlMap. For more information, see [Invalidating cached content](/cdn/docs/invalidating-cached-content).
 
       Args:
         request: (ComputeUrlMapsInvalidateCacheRequest) input message
@@ -18991,11 +18973,7 @@ For more information, see [Invalidating cached content](/cdn/docs/invalidating-c
     )
 
     def Wait(self, request, global_params=None):
-      r"""Waits for the specified Operation resource to return as `DONE` or for the request to approach the 2 minute deadline, and retrieves the specified Operation resource. This method differs from the `GET` method in that it waits for no more than the default deadline (2 minutes) and then returns the current state of the operation, which might be `DONE` or still in progress.
-
-This method is called on a best-effort basis. Specifically:  
-- In uncommon cases, when the server is overloaded, the request might return before the default deadline is reached, or might return after zero seconds. 
-- If the default deadline is reached, there is no guarantee that the operation is actually done when the method returns. Be prepared to retry if the operation is not `DONE`.
+      r"""Waits for the specified Operation resource to return as `DONE` or for the request to approach the 2 minute deadline, and retrieves the specified Operation resource. This method differs from the `GET` method in that it waits for no more than the default deadline (2 minutes) and then returns the current state of the operation, which might be `DONE` or still in progress. This method is called on a best-effort basis. Specifically: - In uncommon cases, when the server is overloaded, the request might return before the default deadline is reached, or might return after zero seconds. - If the default deadline is reached, there is no guarantee that the operation is actually done when the method returns. Be prepared to retry if the operation is not `DONE`. .
 
       Args:
         request: (ComputeZoneOperationsWaitRequest) input message

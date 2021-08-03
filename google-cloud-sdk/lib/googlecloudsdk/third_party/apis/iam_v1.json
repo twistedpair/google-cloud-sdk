@@ -583,7 +583,7 @@
       "type": "object",
       "properties": {
         "payload": {
-          "description": "Required. Deprecated. [Migrate to Service Account Credentials API](https:\/\/cloud.google.com\/iam\/help\/credentials\/migrate-api). The JWT payload to sign. Must be a serialized JSON object that contains a JWT Claims Set. For example: `{\"sub\": \"user@example.com\", \"iat\": 313435}` If the JWT Claims Set contains an expiration time (`exp`) claim, it must be an integer timestamp that is not in the past and no more than 1 hour in the future. If the JWT Claims Set does not contain an expiration time (`exp`) claim, this claim is added automatically, with a timestamp that is 1 hour in the future.",
+          "description": "Required. Deprecated. [Migrate to Service Account Credentials API](https:\/\/cloud.google.com\/iam\/help\/credentials\/migrate-api). The JWT payload to sign. Must be a serialized JSON object that contains a JWT Claims Set. For example: `{\"sub\": \"user@example.com\", \"iat\": 313435}` If the JWT Claims Set contains an expiration time (`exp`) claim, it must be an integer timestamp that is not in the past and no more than 12 hours in the future. If the JWT Claims Set does not contain an expiration time (`exp`) claim, this claim is added automatically, with a timestamp that is 1 hour in the future.",
           "type": "string"
         }
       }
@@ -1433,7 +1433,7 @@
           "type": "boolean"
         },
         "sessionDuration": {
-          "description": "Overrides the lifespan of access tokens issued when federating using this pool. If not set, the lifespan of issued access tokens is computed based on the type of identity provider: - For AWS providers, the default access token lifespan is equal to 15 minutes. - For OIDC providers, the default access token lifespan is equal to the remaining lifespan of the exchanged OIDC ID token, with a maximum limit of 1 hour. If set, session duration must be between 2 minutes and 12 hours. Organization administrators can further restrict the maximum allowed session_duration value using the iam-workloadIdentityPoolsSessionDuration Resource Setting.",
+          "description": "Overrides the lifespan of access tokens issued when federating using this pool. If not set, the lifespan of issued access tokens is computed based on the type of identity provider: - For AWS providers, the default access token lifespan is equal to 15 minutes. - For OIDC providers, the default access token lifespan is equal to the remaining lifespan of the exchanged OIDC ID token, with a maximum limit of 1 hour. If set, session duration must be between 2 minutes and 12 hours. Organization administrators can further restrict the maximum allowed session_duration value using the iam-workloadIdentitySessionDuration Resource Setting.",
           "type": "string",
           "format": "google-duration"
         }
@@ -1561,7 +1561,7 @@
       "type": "object",
       "properties": {
         "idpMetadataXml": {
-          "description": "SAML Identity provider configuration metadata xml doc. The xml document should comply with [SAML 2.0 specification](https:\/\/docs.oasis-open.org\/security\/saml\/v2.0\/saml-metadata-2.0-os.pdf). The max size of the acceptable xml document will be bounded to 32000 characters. The metadata xml document should satisfy the following constraints: 1) Must contain an Identity Provider Entity ID. 2) Must contain at least one non-expired signing key certificate. 3) For each signing key: a) Valid from should be no more than 7 days from now. 4) Upto 3 IdP signing keys are allowed in the metadata xml. When updating the provider's metadata xml, at lease one non-expired signing key must overlap with the existing metadata. This requirement is skipped if there are no non-expired signing keys present in the existing metadata",
+          "description": "Required. SAML Identity provider configuration metadata xml doc. The xml document should comply with [SAML 2.0 specification](https:\/\/docs.oasis-open.org\/security\/saml\/v2.0\/saml-metadata-2.0-os.pdf). The max size of the acceptable xml document will be bounded to 128k characters. The metadata xml document should satisfy the following constraints: 1) Must contain an Identity Provider Entity ID. 2) Must contain at least one non-expired signing key certificate. 3) For each signing key: a) Valid from should be no more than 7 days from now. 4) Upto 3 IdP signing keys are allowed in the metadata xml. When updating the provider's metadata xml, at lease one non-expired signing key must overlap with the existing metadata. This requirement is skipped if there are no non-expired signing keys present in the existing metadata",
           "type": "string"
         }
       }

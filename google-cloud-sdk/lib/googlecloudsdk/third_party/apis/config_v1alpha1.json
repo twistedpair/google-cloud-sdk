@@ -836,6 +836,46 @@
           "description": "Output only. API version used to start the operation.",
           "readOnly": true,
           "type": "string"
+        },
+        "deploymentMetadata": {
+          "description": "Output only. Metadata about the deployment operation state.",
+          "readOnly": true,
+          "$ref": "DeploymentOperationMetadata"
+        }
+      }
+    },
+    "DeploymentOperationMetadata": {
+      "id": "DeploymentOperationMetadata",
+      "description": "Ephemeral metadata content describing the state of a deployment operation.",
+      "type": "object",
+      "properties": {
+        "step": {
+          "description": "The current step the deployment operation is running.",
+          "type": "string",
+          "enumDescriptions": [
+            "No deployment step was specified.",
+            "Checking for existence of a storage bucket and creating one in it's absence. This can take up to 7 minutes on the first deployment.",
+            "Checking for existence of a Config Controller instance and creating one in it's absence. This can take up to 20 minutes on the first deployment.",
+            "Creating a revision resource.",
+            "Blueprint is being processed.",
+            "Blueprint is being applied to Config Controller."
+          ],
+          "enum": [
+            "DEPLOYMENT_STEP_UNSPECIFIED",
+            "PREPARING_STORAGE_BUCKET",
+            "PREPARING_CONFIG_CONTROLLER",
+            "CREATING_REVISION",
+            "RUNNING_PIPELINE",
+            "RUNNING_APPLY"
+          ]
+        },
+        "pipelineResults": {
+          "description": "Locations of outputs from kpt pipeline execution.",
+          "$ref": "PipelineResults"
+        },
+        "applyResults": {
+          "description": "Locations of outputs from config application.",
+          "$ref": "ApplyResults"
         }
       }
     }

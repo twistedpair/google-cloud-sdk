@@ -521,6 +521,20 @@ class _SwitchToDigestChange(config_changes_mod.ConfigChanger):
     return resource
 
 
+class _AddDigestToImageChange(config_changes_mod.ConfigChanger):
+  """Add image digest that comes from source build."""
+
+  def __init__(self, image_digest):
+    self._image_digest = image_digest
+
+  def Adjust(self, resource):
+    if _IsDigest(resource.template.image):
+      return resource
+
+    resource.template.image = resource.template.image + '@' + self._image_digest
+    return resource
+
+
 class ServerlessOperations(object):
   """Client used by Serverless to communicate with the actual Serverless API."""
 
@@ -1099,6 +1113,8 @@ class ServerlessOperations(object):
         return
       else:
         tracker.CompleteStage(stages.BUILD_READY)
+        image_digest = response_dict['results']['images'][0]['digest']
+        config_changes.append(_AddDigestToImageChange(image_digest))
     if prefetch is None:
       serv = None
     else:

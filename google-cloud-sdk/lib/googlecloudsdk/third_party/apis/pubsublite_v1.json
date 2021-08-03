@@ -220,6 +220,10 @@
         "retentionConfig": {
           "description": "The settings for this topic's message retention.",
           "$ref": "RetentionConfig"
+        },
+        "reservationConfig": {
+          "description": "The settings for this topic's Reservation usage.",
+          "$ref": "ReservationConfig"
         }
       }
     },
@@ -275,6 +279,17 @@
           "description": "How long a published message is retained. If unset, messages will be retained as long as the bytes retained for each partition is below `per_partition_bytes`.",
           "type": "string",
           "format": "google-duration"
+        }
+      }
+    },
+    "ReservationConfig": {
+      "id": "ReservationConfig",
+      "description": "The settings for this topic's Reservation usage.",
+      "type": "object",
+      "properties": {
+        "throughputReservation": {
+          "description": "The Reservation to use for this topic's throughput capacity. Structured like: projects\/{project_number}\/locations\/{location}\/reservations\/{reservation_id}",
+          "type": "string"
         }
       }
     },
@@ -423,6 +438,58 @@
           "description": "Request the cursor of the first message with event time greater than or equal to `event_time`. If messages are missing an event time, the publish time is used as a fallback. As event times are user supplied, subsequent messages may have event times less than `event_time` and should be filtered by the client, if necessary.",
           "type": "string",
           "format": "google-datetime"
+        }
+      }
+    },
+    "Reservation": {
+      "id": "Reservation",
+      "description": "Metadata about a reservation resource.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The name of the reservation. Structured like: projects\/{project_number}\/locations\/{location}\/reservations\/{reservation_id}",
+          "type": "string"
+        },
+        "throughputCapacity": {
+          "description": "The reserved throughput capacity. Every unit of throughput capacity is equivalent to 1 MiB\/s of published messages or 2 MiB\/s of subscribed messages. Any topics which are declared as using capacity from a Reservation will consume resources from this reservation instead of being charged individually.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "ListReservationsResponse": {
+      "id": "ListReservationsResponse",
+      "description": "Response for ListReservations.",
+      "type": "object",
+      "properties": {
+        "reservations": {
+          "description": "The list of reservation in the requested parent. The order of the reservations is unspecified.",
+          "type": "array",
+          "items": {
+            "$ref": "Reservation"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token that can be sent as `page_token` to retrieve the next page of results. If this field is omitted, there are no more results.",
+          "type": "string"
+        }
+      }
+    },
+    "ListReservationTopicsResponse": {
+      "id": "ListReservationTopicsResponse",
+      "description": "Response for ListReservationTopics.",
+      "type": "object",
+      "properties": {
+        "topics": {
+          "description": "The names of topics attached to the reservation. The order of the topics is unspecified.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token that can be sent as `page_token` to retrieve the next page of results. If this field is omitted, there are no more results.",
+          "type": "string"
         }
       }
     },
@@ -1167,6 +1234,206 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Performs an out-of-band seek for a subscription to a specified target, which may be timestamps or named positions within the message backlog. Seek translates these targets to cursors for each partition and orchestrates subscribers to start consuming messages from these seek cursors. If an operation is returned, the seek has been registered and subscribers will eventually receive messages from the seek cursors (i.e. eventual consistency), as long as they are using a minimum supported client library version and not a system that tracks cursors independently of Pub\/Sub Lite (e.g. Apache Beam, Dataflow, Spark). The seek operation will fail for unsupported clients. If clients would like to know when subscribers react to the seek (or not), they can poll the operation. The seek operation will succeed and complete once subscribers are ready to receive messages from the seek cursors for all partitions of the topic. This means that the seek operation will not complete until all subscribers come online. If the previous seek operation has not yet completed, it will be aborted and the new invocation of seek will supersede it."
+                    }
+                  }
+                },
+                "reservations": {
+                  "methods": {
+                    "create": {
+                      "id": "pubsublite.admin.projects.locations.reservations.create",
+                      "path": "v1/admin/{+parent}/reservations",
+                      "flatPath": "v1/admin/projects/{projectsId}/locations/{locationsId}/reservations",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The parent location in which to create the reservation. Structured like `projects\/{project_number}\/locations\/{location}`.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "reservationId": {
+                          "description": "Required. The ID to use for the reservation, which will become the final component of the reservation's name. This value is structured like: `my-reservation-name`.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "Reservation"
+                      },
+                      "response": {
+                        "$ref": "Reservation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Creates a new reservation."
+                    },
+                    "get": {
+                      "id": "pubsublite.admin.projects.locations.reservations.get",
+                      "path": "v1/admin/{+name}",
+                      "flatPath": "v1/admin/projects/{projectsId}/locations/{locationsId}/reservations/{reservationsId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The name of the reservation whose configuration to return. Structured like: projects\/{project_number}\/locations\/{location}\/reservations\/{reservation_id}",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/reservations\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Reservation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Returns the reservation configuration."
+                    },
+                    "list": {
+                      "id": "pubsublite.admin.projects.locations.reservations.list",
+                      "path": "v1/admin/{+parent}/reservations",
+                      "flatPath": "v1/admin/projects/{projectsId}/locations/{locationsId}/reservations",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The parent whose reservations are to be listed. Structured like `projects\/{project_number}\/locations\/{location}`.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "The maximum number of reservations to return. The service may return fewer than this value. If unset or zero, all reservations for the parent will be returned.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "A page token, received from a previous `ListReservations` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListReservations` must match the call that provided the page token.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListReservationsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Returns the list of reservations for the given project."
+                    },
+                    "patch": {
+                      "id": "pubsublite.admin.projects.locations.reservations.patch",
+                      "path": "v1/admin/{+name}",
+                      "flatPath": "v1/admin/projects/{projectsId}/locations/{locationsId}/reservations/{reservationsId}",
+                      "httpMethod": "PATCH",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the reservation. Structured like: projects\/{project_number}\/locations\/{location}\/reservations\/{reservation_id}",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/reservations\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "updateMask": {
+                          "description": "Required. A mask specifying the reservation fields to change.",
+                          "location": "query",
+                          "type": "string",
+                          "format": "google-fieldmask"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "Reservation"
+                      },
+                      "response": {
+                        "$ref": "Reservation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Updates properties of the specified reservation."
+                    },
+                    "delete": {
+                      "id": "pubsublite.admin.projects.locations.reservations.delete",
+                      "path": "v1/admin/{+name}",
+                      "flatPath": "v1/admin/projects/{projectsId}/locations/{locationsId}/reservations/{reservationsId}",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The name of the reservation to delete. Structured like: projects\/{project_number}\/locations\/{location}\/reservations\/{reservation_id}",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/reservations\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Empty"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Deletes the specified reservation."
+                    }
+                  }
+                  ,
+                  "resources": {
+                    "topics": {
+                      "methods": {
+                        "list": {
+                          "id": "pubsublite.admin.projects.locations.reservations.topics.list",
+                          "path": "v1/admin/{+name}/topics",
+                          "flatPath": "v1/admin/projects/{projectsId}/locations/{locationsId}/reservations/{reservationsId}/topics",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "name": {
+                              "description": "Required. The name of the reservation whose topics to list. Structured like: projects\/{project_number}\/locations\/{location}\/reservations\/{reservation_id}",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/reservations\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            },
+                            "pageSize": {
+                              "description": "The maximum number of topics to return. The service may return fewer than this value. If unset or zero, all topics for the given reservation will be returned.",
+                              "location": "query",
+                              "type": "integer",
+                              "format": "int32"
+                            },
+                            "pageToken": {
+                              "description": "A page token, received from a previous `ListReservationTopics` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListReservationTopics` must match the call that provided the page token.",
+                              "location": "query",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "response": {
+                            "$ref": "ListReservationTopicsResponse"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Lists the topics attached to the specified reservation."
+                        }
+                      }
                     }
                   }
                 }

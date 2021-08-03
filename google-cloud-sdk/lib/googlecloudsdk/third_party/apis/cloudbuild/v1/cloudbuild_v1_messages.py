@@ -308,10 +308,10 @@ class Build(_messages.Message):
   Messages:
     SubstitutionsValue: Substitutions data for `Build` resource.
     TimingValue: Output only. Stores timing information for phases of the
-      build. Valid keys are: * BUILD: time to execute all build steps * PUSH:
+      build. Valid keys are: * BUILD: time to execute all build steps. * PUSH:
       time to push all specified images. * FETCHSOURCE: time to fetch source.
-      If the build does not specify source or images, these keys will not be
-      included.
+      * SETUPBUILD: time to set up build. If the build does not specify source
+      or images, these keys will not be included.
 
   Fields:
     approval: Output only. Describes this build's approval configuration,
@@ -371,10 +371,10 @@ class Build(_messages.Message):
       will cease and the build status will be `TIMEOUT`. `timeout` starts
       ticking from `startTime`. Default time is ten minutes.
     timing: Output only. Stores timing information for phases of the build.
-      Valid keys are: * BUILD: time to execute all build steps * PUSH: time to
-      push all specified images. * FETCHSOURCE: time to fetch source. If the
-      build does not specify source or images, these keys will not be
-      included.
+      Valid keys are: * BUILD: time to execute all build steps. * PUSH: time
+      to push all specified images. * FETCHSOURCE: time to fetch source. *
+      SETUPBUILD: time to set up build. If the build does not specify source
+      or images, these keys will not be included.
     warnings: Output only. Non-fatal problems encountered during the execution
       of the build.
   """
@@ -434,9 +434,10 @@ class Build(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class TimingValue(_messages.Message):
     r"""Output only. Stores timing information for phases of the build. Valid
-    keys are: * BUILD: time to execute all build steps * PUSH: time to push
-    all specified images. * FETCHSOURCE: time to fetch source. If the build
-    does not specify source or images, these keys will not be included.
+    keys are: * BUILD: time to execute all build steps. * PUSH: time to push
+    all specified images. * FETCHSOURCE: time to fetch source. * SETUPBUILD:
+    time to set up build. If the build does not specify source or images,
+    these keys will not be included.
 
     Messages:
       AdditionalProperty: An additional property for a TimingValue object.
@@ -2492,12 +2493,12 @@ class GitHubEnterpriseSecrets(_messages.Message):
 
 class GitHubEventsConfig(_messages.Message):
   r"""GitHubEventsConfig describes the configuration of a trigger that creates
-  a build whenever a GitHub event is received. This message is experimental.
+  a build whenever a GitHub event is received.
 
   Fields:
     enterpriseConfig: Output only. The GitHubEnterpriseConfig enterprise
       config specified in the enterprise_config_resource_name field.
-    enterpriseConfigResourceName: Optional: The resource name of the github
+    enterpriseConfigResourceName: Optional. The resource name of the github
       enterprise config that should be applied to this installation. For
       example: "projects/{$project_id}/githubEnterpriseConfig/{$config_id}"
     installationId: The installationID that emits the GitHub event.

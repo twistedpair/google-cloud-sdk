@@ -27,6 +27,7 @@ from googlecloudsdk.api_lib.container import util as c_util
 from googlecloudsdk.command_lib.compute.instance_templates import service_proxy_aux_data
 from googlecloudsdk.command_lib.container.hub import api_util
 from googlecloudsdk.command_lib.container.hub import kube_util as hub_kube_util
+from googlecloudsdk.command_lib.projects import util as project_util
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import yaml
@@ -54,12 +55,15 @@ _CLOUDRUN_ADDR_KEY = 'CLOUDRUN_ADDR'
 
 _ISTIO_DISCOVERY_PORT = '15012'
 
-# Allow non-prod meshconfig to be used.
-_MESHCONFIG_PATTERN = r'meshconfig(.*).googleapis.com(.*)'
 _WORKLOAD_PATTERN = r'(.*)\/(.*)'
 # Allow non-prod GKE Hub memberships to be specified.
 _GKEHUB_PATTERN = r'\/\/gkehub(.*).googleapis.com\/(.*)'
 _ASM_VERSION_PATTERN = r':(.*)-'
+
+_INCLUSTER_WEBHOOK_PREFIX = 'istio-sidecar-injector'
+_MCP_WEBHOOK_PREFIX = 'istiod'
+
+_MCP_ADDRESS = 'meshconfig.googleapis.com:443'
 
 ServiceProxyMetadataArgs = collections.namedtuple('ServiceProxyMetadataArgs', [
     'asm_version', 'project_id', 'expansionagateway_ip',
@@ -150,10 +154,11 @@ def _GetVMIdentityProvider(membership_manifest, workload_namespace):
   return '{}@google@{}'.format(membership.uniqueId, workload_namespace)
 
 
-def _RetrieveProxyConfig(mesh_config):
+def _RetrieveProxyConfig(is_mcp, mesh_config):
   """Retrieve proxy config from a mesh config.
 
   Args:
+    is_mcp: Whether the control plane is managed or not.
     mesh_config: A mesh config from the cluster.
 
   Returns:
@@ -161,17 +166,20 @@ def _RetrieveProxyConfig(mesh_config):
   """
   try:
     proxy_config = mesh_config['defaultConfig']
-  except KeyError:
+  except (KeyError, TypeError):
+    if is_mcp:
+      return {}
     raise exceptions.Error(
         'Proxy config cannot be found in the Anthos Service Mesh.')
 
   return proxy_config
 
 
-def _RetrieveTrustDomain(mesh_config):
+def _RetrieveTrustDomain(is_mcp, mesh_config):
   """Retrieve trust domain from a mesh config.
 
   Args:
+    is_mcp: Whether the control plane is managed or not.
     mesh_config: A mesh config from the cluster.
 
   Returns:
@@ -179,52 +187,40 @@ def _RetrieveTrustDomain(mesh_config):
   """
   try:
     trust_domain = mesh_config['trustDomain']
-  except KeyError:
+  except (KeyError, TypeError):
+    if is_mcp:
+      return None
     raise exceptions.Error(
         'Trust Domain cannot be found in the Anthos Service Mesh.')
 
   return trust_domain
 
 
-def _RetrieveMeshId(mesh_config):
+def _RetrieveMeshId(is_mcp, mesh_config):
   """Retrieve mesh id from a mesh config.
 
   Args:
+    is_mcp: Whether the control plane is managed or not.
     mesh_config: A mesh config from the cluster.
 
   Returns:
     mesh_id: The mesh id from the mesh config.
   """
-  proxy_config = _RetrieveProxyConfig(mesh_config)
+  proxy_config = _RetrieveProxyConfig(is_mcp, mesh_config)
 
   try:
     mesh_id = proxy_config['meshId']
-  except KeyError:
+  except (KeyError, TypeError):
+    if is_mcp:
+      return None
     raise exceptions.Error(
         'Mesh ID cannot be found in the Anthos Service Mesh.')
 
   return mesh_id
 
 
-def _IsMCP(mesh_config):
-  """Check if ASM control plane is managed.
-
-  Args:
-    mesh_config: A mesh config from the cluster.
-
-  Returns:
-    True if the control plane is MCP, otherwise False.
-  """
-  discovery_address = _GetDiscoveryAddress(mesh_config)
-
-  meshconfig_match = re.search(_MESHCONFIG_PATTERN, discovery_address)
-  if meshconfig_match:
-    return True
-  return False
-
-
-def _GetDiscoveryAddress(mesh_config):
-  """Get the discovery address used in the ASM installation.
+def _RetrieveDiscoveryAddress(mesh_config):
+  """Get the discovery address used in the MCP installation.
 
   Args:
     mesh_config: A mesh config from the cluster.
@@ -232,16 +228,36 @@ def _GetDiscoveryAddress(mesh_config):
   Returns:
     The discovery address.
   """
-  proxy_config = _RetrieveProxyConfig(mesh_config)
+  proxy_config = _RetrieveProxyConfig(is_mcp=True, mesh_config=mesh_config)
 
-  try:
-    discovery_address = proxy_config['discoveryAddress']
-  except KeyError:
-    raise exceptions.Error(
-        'Discovery address cannot be found for the control plane of the Anthos '
-        'Service Mesh.')
+  if proxy_config is None:
+    proxy_config = {}
 
-  return discovery_address
+  # When user does not provide a discoveryAddress in the proxy config, the
+  # default MCP discovery address is used here. We expect mesh agent to get
+  # the correct discoveryAddress during bootstrap.
+  return proxy_config.get('discoveryAddress', _MCP_ADDRESS)
+
+
+def _IsMCP(kube_client, revision):
+  """Check if ASM control plane is managed.
+
+  Args:
+    kube_client: A kubernetes client for the cluster.
+    revision: The ASM revision to check for control plane type.
+
+  Returns:
+    True if the control plane is MCP, otherwise False.
+  """
+  # MCP uses the url field in the webhook ClientConfig and In-cluster CP uses
+  # the service field instead.
+  # TODO(b/195018417): Further validate the URL format when it is using
+  # meshconfig endpoint.
+  url = kube_client.RetrieveMutatingWebhookURL(revision)
+
+  if url:
+    return True
+  return False
 
 
 def _GetWorkloadLabels(workload_manifest):
@@ -424,7 +440,7 @@ def _RetrieveServiceProxyMetadata(args, is_mcp, kube_client, project_id,
     asm_version = None
     expansionagateway_ip = None
     root_cert = None
-    service_proxy_api_server = _GetDiscoveryAddress(mesh_config)
+    service_proxy_api_server = _RetrieveDiscoveryAddress(mesh_config)
     env_config = kube_client.RetrieveEnvConfig(asm_revision)
   else:
     if _GCE_SERVICE_PROXY_ASM_VERSION_METADATA in args.metadata:
@@ -442,11 +458,11 @@ def _RetrieveServiceProxyMetadata(args, is_mcp, kube_client, project_id,
 
   service_account = _RetrieveWorkloadServiceAccount(workload_manifest)
 
-  asm_proxy_config = _RetrieveProxyConfig(mesh_config)
+  asm_proxy_config = _RetrieveProxyConfig(is_mcp, mesh_config)
 
-  trust_domain = _RetrieveTrustDomain(mesh_config)
+  trust_domain = _RetrieveTrustDomain(is_mcp, mesh_config)
 
-  mesh_id = _RetrieveMeshId(mesh_config)
+  mesh_id = _RetrieveMeshId(is_mcp, mesh_config)
 
   network = network_resource.split('/')[-1]
 
@@ -491,6 +507,8 @@ def _ModifyInstanceTemplate(args, is_mcp, metadata_args):
   service_proxy_config['service'] = {}
 
   proxy_config = metadata_args.asm_proxy_config
+  if not proxy_config:
+    proxy_config = collections.OrderedDict()
   if 'proxyMetadata' not in proxy_config:
     proxy_config['proxyMetadata'] = collections.OrderedDict()
   else:
@@ -506,14 +524,20 @@ def _ModifyInstanceTemplate(args, is_mcp, metadata_args):
   proxy_metadata['SERVICE_ACCOUNT'] = metadata_args.service_account
   proxy_metadata[
       'CREDENTIAL_IDENTITY_PROVIDER'] = metadata_args.identity_provider
-  proxy_metadata['ASM_REVISION'] = metadata_args.asm_revision
-  proxy_metadata['TRUST_DOMAIN'] = metadata_args.trust_domain
-  proxy_metadata['ISTIO_META_MESH_ID'] = metadata_args.mesh_id
+  if metadata_args.trust_domain:
+    proxy_metadata['TRUST_DOMAIN'] = metadata_args.trust_domain
+  if metadata_args.mesh_id:
+    proxy_metadata['ISTIO_META_MESH_ID'] = metadata_args.mesh_id
   proxy_metadata['ISTIO_META_NETWORK'] = '{}-{}'.format(
       metadata_args.project_id, metadata_args.network)
   proxy_metadata['CANONICAL_SERVICE'] = metadata_args.canonical_service
   proxy_metadata['CANONICAL_REVISION'] = metadata_args.canonical_revision
   proxy_metadata['ISTIO_METAJSON_LABELS'] = asm_labels_string
+
+  if metadata_args.asm_revision == 'default':
+    proxy_metadata['ASM_REVISION'] = ''
+  else:
+    proxy_metadata['ASM_REVISION'] = metadata_args.asm_revision
 
   gce_software_declaration = collections.OrderedDict()
   service_proxy_agent_recipe = collections.OrderedDict()
@@ -569,7 +593,13 @@ def _ModifyInstanceTemplate(args, is_mcp, metadata_args):
     args.labels = collections.OrderedDict()
   args.labels['asm_service_name'] = metadata_args.canonical_service
   args.labels['asm_service_namespace'] = metadata_args.workload_namespace
-  args.labels['mesh_id'] = metadata_args.mesh_id
+  if metadata_args.mesh_id:
+    args.labels['mesh_id'] = metadata_args.mesh_id
+  else:
+    # This works for now as we only support adding VM to the Fleet project. But
+    # it should be the Fleet project instead.
+    project_number = project_util.GetProjectNumber(metadata_args.project_id)
+    args.labels['mesh_id'] = 'proj-{}'.format(project_number)
   # For ASM VM usage tracking.
   args.labels['gce-service-proxy'] = 'asm-istiod'
 
@@ -579,7 +609,7 @@ def ConfigureInstanceTemplate(args, kube_client, project_id, network_resource,
                               workload_manifest, membership_manifest,
                               asm_revision, mesh_config):
   """Configure the provided instance template args with ASM metadata."""
-  is_mcp = _IsMCP(mesh_config)
+  is_mcp = _IsMCP(kube_client, asm_revision)
 
   service_proxy_metadata_args = _RetrieveServiceProxyMetadata(
       args, is_mcp, kube_client, project_id, network_resource,
@@ -913,6 +943,38 @@ class KubernetesClient(object):
           'Invalid mesh config from the cluster: {}'.format(out))
 
     return mesh_config
+
+  def RetrieveMutatingWebhookURL(self, revision):
+    """Retrieves the Mutating Webhook URL used for a revision."""
+    # There are two patterns of mutating webhook name in ASM. We check both in
+    # case they are being used interchaeably.
+    if revision == 'default':
+      incluster_webhook = _INCLUSTER_WEBHOOK_PREFIX
+    else:
+      incluster_webhook = '{}-{}'.format(_INCLUSTER_WEBHOOK_PREFIX, revision)
+
+    mcp_webhook = '{}-{}'.format(_MCP_WEBHOOK_PREFIX, revision)
+
+    incluster_out, incluster_err = self._RunKubectl(
+        ['get', 'mutatingwebhookconfiguration', incluster_webhook,
+         '-o', 'jsonpath={.webhooks[0].clientConfig.url}'], None)
+    mcp_out, mcp_err = self._RunKubectl(
+        ['get', 'mutatingwebhookconfiguration', mcp_webhook,
+         '-o', 'jsonpath={.webhooks[0].clientConfig.url}'], None)
+
+    if incluster_err and mcp_err:
+      if 'NotFound' in incluster_err and 'NotFound' in mcp_err:
+        raise ClusterError(
+            'Anthos Service Mesh revision {} is not found in '
+            'the cluster. Please install Anthos Service Mesh and '
+            'try again.'.format(revision))
+      raise exceptions.Error(
+          'Error retrieving the mutating webhook configuration from the cluster'
+          ': {}'.format(incluster_err))
+
+    if incluster_out:
+      return incluster_out
+    return mcp_out
 
   def _RunKubectl(self, args, stdin=None):
     """Runs a kubectl command with the cluster referenced by this client.

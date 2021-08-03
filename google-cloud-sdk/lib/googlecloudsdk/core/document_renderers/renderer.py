@@ -126,9 +126,11 @@ class Renderer(object):
     _title: The document title.
     _width: The output width in characters.
     command_metadata: Optional metadata of command.
+    command_node: The command object that the document is being rendered for.
   """
 
-  def __init__(self, out=None, title=None, width=80, command_metadata=None):
+  def __init__(self, out=None, title=None, width=80, command_metadata=None,
+               command_node=None):
     self._blank = True
     self._command = ['gcloud']  # use command[0] instead of literal 'gcloud'
     self._font = 0
@@ -139,6 +141,7 @@ class Renderer(object):
     self._title = title
     self._width = width
     self.command_metadata = command_metadata
+    self.command_node = command_node
 
   @property
   def command(self):

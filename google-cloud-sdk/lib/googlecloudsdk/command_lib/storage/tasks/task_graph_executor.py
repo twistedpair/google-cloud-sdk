@@ -21,6 +21,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import contextlib
 import functools
 import multiprocessing
 import os
@@ -35,8 +36,68 @@ from googlecloudsdk.command_lib.storage.tasks import task_graph as task_graph_mo
 from googlecloudsdk.command_lib.storage.tasks import task_status
 from googlecloudsdk.core import log
 from googlecloudsdk.core.credentials import creds_context_managers
+from googlecloudsdk.core.util import platforms
 
 from six.moves import queue
+
+
+if sys.version_info.major == 2:
+  # multiprocessing.get_context is only available in Python 3. We don't support
+  # Python 2, but some of our code still runs at import in Python 2 tests, so
+  # we need to provide a value here.
+  multiprocessing_context = multiprocessing
+
+else:
+  _should_force_spawn = (
+      # On MacOS, fork is unsafe: https://bugs.python.org/issue33725. The
+      # default start method is spawn on versions >= 3.8, but we need to set it
+      # explicitly for older versions.
+      platforms.OperatingSystem.Current() is platforms.OperatingSystem.MACOSX
+  )
+
+  if _should_force_spawn:
+    multiprocessing_context = multiprocessing.get_context(method='spawn')
+  else:
+    # Uses platform default.
+    multiprocessing_context = multiprocessing.get_context()
+
+  # TODO(b/194410545): Is it possible to disable importing the multiprocessing
+  # module after this point?
+
+
+_TASK_QUEUE_LOCK = threading.Lock()
+
+
+@contextlib.contextmanager
+def _task_queue_lock():
+  """Context manager which acquires a lock when queue.get is unsafe.
+
+  On Python 3.5 with spawn enabled, a race condition affects unpickling
+  objects in queue.get calls. This manifests as an AttributeError intermittently
+  thrown by ForkingPickler.loads, e.g.:
+
+  AttributeError: Can't get attribute 'FileDownloadTask' on <module
+  'googlecloudsdk.command_lib.storage.tasks.cp.file_download_task' from
+  'googlecloudsdk/command_lib/storage/tasks/cp/file_download_task.py'
+
+  Adding a lock around queue.get calls using this context manager resolves the
+  issue.
+
+  Yields:
+    None, but acquires a lock which is released on exit.
+  """
+  get_is_unsafe = (
+      sys.version_info.major == 3 and sys.version_info.minor <= 5
+      and multiprocessing_context.get_start_method() == 'spawn'
+  )
+
+  try:
+    if get_is_unsafe:
+      _TASK_QUEUE_LOCK.acquire()
+    yield
+  finally:
+    if get_is_unsafe:
+      _TASK_QUEUE_LOCK.release()
 
 
 # When threads get this value, they should prepare to exit.
@@ -68,7 +129,8 @@ def _thread_worker(task_queue, task_output_queue, task_status_queue,
       threads are busy. Useful for spawning new workers if all threads are busy.
   """
   while True:
-    task_wrapper = task_queue.get()
+    with _task_queue_lock():
+      task_wrapper = task_queue.get()
     if task_wrapper == _SHUTDOWN:
       break
     idle_thread_count.acquire()
@@ -163,7 +225,7 @@ def _process_factory(task_queue, task_output_queue, task_status_queue,
       for _ in range(thread_count):
         idle_thread_count.release()
 
-      process = multiprocessing.Process(
+      process = multiprocessing_context.Process(
           target=_process_worker,
           args=(task_queue, task_output_queue, task_status_queue,
                 thread_count, idle_thread_count, environment_variables))
@@ -244,19 +306,21 @@ class TaskGraphExecutor:
     self._progress_type = progress_type
 
     self._process_count = 0
-    self._idle_thread_count = multiprocessing.Semaphore(value=0)
+    self._idle_thread_count = multiprocessing_context.Semaphore(value=0)
 
     self._worker_count = self._max_process_count * self._thread_count
 
     # Sends task_graph.TaskWrapper instances to child processes.
     # Size must be 1. go/lazy-process-spawning-addendum.
-    self._task_queue = multiprocessing.Queue(maxsize=1)
+    self._task_queue = multiprocessing_context.Queue(maxsize=1)
 
     # Sends information about completed tasks to the main process.
-    self._task_output_queue = multiprocessing.Queue(maxsize=self._worker_count)
+    self._task_output_queue = multiprocessing_context.Queue(
+        maxsize=self._worker_count)
 
     # Queue for informing worker_process_creator to create a new process.
-    self._signal_queue = multiprocessing.Queue(maxsize=self._worker_count + 1)
+    self._signal_queue = multiprocessing_context.Queue(
+        maxsize=self._worker_count + 1)
 
     # Tracks dependencies between tasks in the executor to help ensure that
     # tasks returned by executed tasks are completed in the correct order.
@@ -349,7 +413,7 @@ class TaskGraphExecutor:
       An integer indicating the exit code. Zero indicates no fatal errors were
         raised.
     """
-    worker_process_spawner = multiprocessing.Process(
+    worker_process_spawner = multiprocessing_context.Process(
         target=_process_factory,
         args=(self._task_queue, self._task_output_queue,
               self._task_status_queue, self._thread_count,

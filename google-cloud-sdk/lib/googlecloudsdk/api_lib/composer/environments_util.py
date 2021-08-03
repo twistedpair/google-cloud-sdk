@@ -72,6 +72,8 @@ class CreateEnvironmentFlags():
       addresses to services in GKE cluster.
     max_pods_per_node: int or None, the maximum number of pods that can be
       assigned to a GKE cluster node.
+    enable_ip_masq_agent: bool or None, when enabled, the GKE IP Masq Agent is
+      deployed to the cluster.
     private_environment: bool or None, create env cluster nodes with no public
       IP addresses.
     private_endpoint: bool or None, managed env cluster using the private IP
@@ -147,6 +149,7 @@ class CreateEnvironmentFlags():
                cluster_ipv4_cidr_block=None,
                services_ipv4_cidr_block=None,
                max_pods_per_node=None,
+               enable_ip_masq_agent=None,
                private_environment=None,
                private_endpoint=None,
                master_ipv4_cidr=None,
@@ -196,6 +199,7 @@ class CreateEnvironmentFlags():
     self.cluster_ipv4_cidr_block = cluster_ipv4_cidr_block
     self.services_ipv4_cidr_block = services_ipv4_cidr_block
     self.max_pods_per_node = max_pods_per_node
+    self.enable_ip_masq_agent = enable_ip_masq_agent
     self.private_environment = private_environment
     self.private_endpoint = private_endpoint
     self.master_ipv4_cidr = master_ipv4_cidr
@@ -229,7 +233,8 @@ def _CreateNodeConfig(messages, flags):
   """Creates node config from parameters, returns None if config is empty."""
   if not (flags.location or flags.machine_type or flags.network or
           flags.subnetwork or flags.service_account or flags.oauth_scopes or
-          flags.tags or flags.disk_size_gb or flags.use_ip_aliases):
+          flags.tags or flags.disk_size_gb or flags.use_ip_aliases or
+          flags.enable_ip_masq_agent):
     return None
 
   config = messages.NodeConfig(
@@ -255,6 +260,8 @@ def _CreateNodeConfig(messages, flags):
     if flags.max_pods_per_node:
       config.maxPodsPerNode = flags.max_pods_per_node
 
+  if flags.enable_ip_masq_agent:
+    config.enableIpMasqAgent = flags.enable_ip_masq_agent
   return config
 
 

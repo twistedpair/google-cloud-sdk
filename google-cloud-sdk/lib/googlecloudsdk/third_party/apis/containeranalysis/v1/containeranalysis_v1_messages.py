@@ -1070,6 +1070,7 @@ class Detail(_messages.Message):
     sourceUpdateTime: The time this information was last changed at the
       source. This is an upstream timestamp from the underlying information
       source - e.g. Ubuntu security tracker.
+    vendor: The name of the vendor of the product.
   """
 
   affectedCpeUri = _messages.StringField(1)
@@ -1085,6 +1086,7 @@ class Detail(_messages.Message):
   severityName = _messages.StringField(11)
   source = _messages.StringField(12)
   sourceUpdateTime = _messages.StringField(13)
+  vendor = _messages.StringField(14)
 
 
 class DiscoveryNote(_messages.Message):

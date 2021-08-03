@@ -436,10 +436,6 @@
             "type": "string"
           }
         },
-        "approvalRequired": {
-          "description": "Optional. Whether or not the `Target` requires approval.",
-          "type": "boolean"
-        },
         "requireApproval": {
           "description": "Optional. Whether or not the `Target` requires approval.",
           "type": "boolean"
@@ -614,10 +610,10 @@
           "enumDescriptions": [
             "The render state is unspecified.",
             "The render operation has completed successfully. This will be removed after we are fully migrated to SUCCEEDED.",
-            "The render operation has completed successfully.",
+            "All rendering operations have completed successfully.",
             "The render operation has failed. This will be removed after we are fully migrated to FAILED.",
-            "The render operation has failed.",
-            "The render operation is in progress."
+            "All rendering operations have completed, and one or more have failed.",
+            "Rendering has started and is not complete."
           ],
           "enum": [
             "RENDER_STATE_UNSPECIFIED",
@@ -635,11 +631,6 @@
           "additionalProperties": {
             "type": "string"
           }
-        },
-        "renderBuild": {
-          "description": "Output only. The resource name of the Cloud Build `Build` object that is used to render the manifests. Format is `projects\/{project}\/locations\/{location}\/builds\/{build}`.",
-          "readOnly": true,
-          "type": "string"
         },
         "renderingBuild": {
           "description": "Output only. The resource name of the Cloud Build `Build` object that is used to render the manifests. Format is `projects\/{project}\/locations\/{location}\/builds\/{build}`.",
@@ -854,10 +845,6 @@
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
-        },
-        "target": {
-          "description": "The Target to which this `Rollout` is deploying.",
-          "type": "string"
         },
         "targetId": {
           "description": "Required. The ID of Target to which this `Rollout` is deploying.",

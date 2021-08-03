@@ -536,6 +536,11 @@
           "items": {
             "$ref": "IndexConfig"
           }
+        },
+        "linkedBigqueryDataset": {
+          "description": "Output only. The name of the BigQuery dataset this log bucket is linked to. Example: \"bigquery.googleapis.com\/projects\/PROJECT_ID\/datasets\/DATASET\"",
+          "readOnly": true,
+          "type": "string"
         }
       }
     },
@@ -549,7 +554,7 @@
           "type": "boolean"
         },
         "linkedBigqueryDataset": {
-          "description": "Output only. The name of the BigQuery dataset this log bucket is linked to. Example:\"bigquery.googleapis.com\/projects\/PROJECT_ID\/datasets\/DATASET\"",
+          "description": "Output only. The name of the BigQuery dataset this log bucket is linked to. Example:\"bigquery.googleapis.com\/projects\/PROJECT_ID\/datasets\/DATASET\" This field is deprecated, and is being replaced by the linked_bigquery_dataset field in the top level of LogBucket. Any new uses of this field should use that one. This one will be removed.",
           "readOnly": true,
           "type": "string"
         },

@@ -587,6 +587,18 @@ SERVICES_IPV4_CIDR_FLAG = base.Argument(
     Cannot be specified unless '--enable-ip-alias' is also specified.
     """)
 
+ENABLE_IP_MASQ_AGENT_FLAG = base.Argument(
+    '--enable-ip-masq-agent',
+    default=None,
+    hidden=True,
+    action='store_true',
+    help="""\
+    When enabled the IP Masq Agent is deployed to the cluster with configuration
+    to masquarade all traffic except between pods.
+
+    Cannot be specified unless '--enable-ip-alias' is also specified.
+    """)
+
 ENABLE_PRIVATE_ENVIRONMENT_FLAG = base.Argument(
     '--enable-private-environment',
     default=None,

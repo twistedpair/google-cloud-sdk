@@ -347,7 +347,7 @@ class GcsApi(cloud_api.CloudApi):
     global_params = None
     if fields_scope == cloud_api.FieldsScope.SHORT:
       global_params = self.messages.StandardQueryParameters()
-      global_params.fields = 'items/name'
+      global_params.fields = 'items/name,nextPageToken'
     # TODO(b/160238394) Decrypt metadata fields if necessary.
     bucket_iter = list_pager.YieldFromList(
         self.client.buckets,

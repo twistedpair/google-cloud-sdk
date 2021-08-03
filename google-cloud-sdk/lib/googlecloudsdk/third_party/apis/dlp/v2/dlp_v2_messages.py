@@ -3203,12 +3203,12 @@ class GooglePrivacyDlpV2CryptoHashConfig(_messages.Message):
 
 class GooglePrivacyDlpV2CryptoKey(_messages.Message):
   r"""This is a data encryption key (DEK) (as opposed to a key encryption key
-  (KEK) stored by KMS). When using KMS to wrap/unwrap DEKs, be sure to set an
-  appropriate IAM policy on the KMS CryptoKey (KEK) to ensure an attacker
-  cannot unwrap the data crypto key.
+  (KEK) stored by Cloud Key Management Service (Cloud KMS). When using Cloud
+  KMS to wrap or unwrap a DEK, be sure to set an appropriate IAM policy on the
+  KEK to ensure an attacker cannot unwrap the DEK.
 
   Fields:
-    kmsWrapped: Kms wrapped key
+    kmsWrapped: Key wrapped using Cloud KMS
     transient: Transient crypto key
     unwrapped: Unwrapped crypto key
   """
@@ -4941,7 +4941,9 @@ class GooglePrivacyDlpV2KmsWrappedCryptoKey(_messages.Message):
   following IAM permissions when sending a request to perform a crypto
   transformation using a KMS-wrapped crypto key: dlp.kms.encrypt For more
   information, see [Creating a wrapped key]
-  (https://cloud.google.com/dlp/docs/create-wrapped-key).
+  (https://cloud.google.com/dlp/docs/create-wrapped-key). Note: When you use
+  Cloud KMS for cryptographic operations, [charges
+  apply](https://cloud.google.com/kms/pricing).
 
   Fields:
     cryptoKeyName: Required. The resource name of the KMS CryptoKey to use for

@@ -302,7 +302,7 @@ def GetGradleSnippet(args):
 
   else:
     gradle_template = gradle.NO_SERVICE_ACCOUNT_TEMPLATE
-    data["extension_version"] = "2.1.0"
+    data["extension_version"] = "2.1.1"
   return gradle_template.format(**data)
 
 

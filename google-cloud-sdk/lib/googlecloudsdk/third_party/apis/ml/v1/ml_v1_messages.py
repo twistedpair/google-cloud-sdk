@@ -846,9 +846,15 @@ class GoogleCloudMlV1HyperparameterOutput(_messages.Message):
 
   Messages:
     HyperparametersValue: The hyperparameters given to this trial.
-    WebAccessUrisValue: The web URIs for the training job. Currently for debug
-      terminal access to the job. Only set for in-progress hyperparameter
-      tuning trials with web access enabled.
+    WebAccessUrisValue: URIs for accessing [interactive
+      shells](https://cloud.google.com/ai-platform/training/docs/monitor-
+      debug-interactive-shell) (one URI for each training node). Only
+      available if this trial is part of a hyperparameter tuning job and the
+      job's training_input.enable_web_access is `true`. The keys are names of
+      each node in the training job; for example, `master-replica-0` for the
+      master node, `worker-replica-0` for the first worker, and `ps-replica-0`
+      for the first parameter server. The values are the URIs for each node's
+      interactive shell.
 
   Fields:
     allMetrics: All recorded object metrics for this trial. This field is not
@@ -862,9 +868,15 @@ class GoogleCloudMlV1HyperparameterOutput(_messages.Message):
     startTime: Output only. Start time for the trial.
     state: Output only. The detailed state of the trial.
     trialId: The trial id for these results.
-    webAccessUris: The web URIs for the training job. Currently for debug
-      terminal access to the job. Only set for in-progress hyperparameter
-      tuning trials with web access enabled.
+    webAccessUris: URIs for accessing [interactive
+      shells](https://cloud.google.com/ai-platform/training/docs/monitor-
+      debug-interactive-shell) (one URI for each training node). Only
+      available if this trial is part of a hyperparameter tuning job and the
+      job's training_input.enable_web_access is `true`. The keys are names of
+      each node in the training job; for example, `master-replica-0` for the
+      master node, `worker-replica-0` for the first worker, and `ps-replica-0`
+      for the first parameter server. The values are the URIs for each node's
+      interactive shell.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -919,9 +931,14 @@ class GoogleCloudMlV1HyperparameterOutput(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class WebAccessUrisValue(_messages.Message):
-    r"""The web URIs for the training job. Currently for debug terminal access
-    to the job. Only set for in-progress hyperparameter tuning trials with web
-    access enabled.
+    r"""URIs for accessing [interactive shells](https://cloud.google.com/ai-
+    platform/training/docs/monitor-debug-interactive-shell) (one URI for each
+    training node). Only available if this trial is part of a hyperparameter
+    tuning job and the job's training_input.enable_web_access is `true`. The
+    keys are names of each node in the training job; for example, `master-
+    replica-0` for the master node, `worker-replica-0` for the first worker,
+    and `ps-replica-0` for the first parameter server. The values are the URIs
+    for each node's interactive shell.
 
     Messages:
       AdditionalProperty: An additional property for a WebAccessUrisValue
@@ -2617,8 +2634,12 @@ class GoogleCloudMlV1TrainingInput(_messages.Message):
     args: Optional. Command-line arguments passed to the training application
       when it starts. If your job uses a custom container, then the arguments
       are passed to the container's `ENTRYPOINT` command.
-    enableWebAccess: Optional. Whether to enable web access for the training
-      job.
+    enableWebAccess: Optional. Whether you want AI Platform Training to enable
+      [interactive shell access](https://cloud.google.com/ai-
+      platform/training/docs/monitor-debug-interactive-shell) to training
+      containers. If set to `true`, you can access interactive shells at the
+      URIs given by TrainingOutput.web_access_uris or
+      HyperparameterOutput.web_access_uris (within TrainingOutput.trials).
     encryptionConfig: Optional. Options for using customer-managed encryption
       keys (CMEK) to protect resources created by a training job, instead of
       using Google's default encryption. If this is set, then all resources
@@ -2843,8 +2864,14 @@ class GoogleCloudMlV1TrainingOutput(_messages.Message):
   r"""Represents results of a training job. Output only.
 
   Messages:
-    WebAccessUrisValue: Output only. The web URIs for the training job.
-      Currently for debug terminal access to the job.
+    WebAccessUrisValue: Output only. URIs for accessing [interactive
+      shells](https://cloud.google.com/ai-platform/training/docs/monitor-
+      debug-interactive-shell) (one URI for each training node). Only
+      available if training_input.enable_web_access is `true`. The keys are
+      names of each node in the training job; for example, `master-replica-0`
+      for the master node, `worker-replica-0` for the first worker, and `ps-
+      replica-0` for the first parameter server. The values are the URIs for
+      each node's interactive shell.
 
   Fields:
     builtInAlgorithmOutput: Details related to built-in algorithms jobs. Only
@@ -2862,14 +2889,26 @@ class GoogleCloudMlV1TrainingOutput(_messages.Message):
     nasJobOutput: The output of a Neural Architecture Search (NAS) job.
     trials: Results for individual Hyperparameter trials. Only set for
       hyperparameter tuning jobs.
-    webAccessUris: Output only. The web URIs for the training job. Currently
-      for debug terminal access to the job.
+    webAccessUris: Output only. URIs for accessing [interactive
+      shells](https://cloud.google.com/ai-platform/training/docs/monitor-
+      debug-interactive-shell) (one URI for each training node). Only
+      available if training_input.enable_web_access is `true`. The keys are
+      names of each node in the training job; for example, `master-replica-0`
+      for the master node, `worker-replica-0` for the first worker, and `ps-
+      replica-0` for the first parameter server. The values are the URIs for
+      each node's interactive shell.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class WebAccessUrisValue(_messages.Message):
-    r"""Output only. The web URIs for the training job. Currently for debug
-    terminal access to the job.
+    r"""Output only. URIs for accessing [interactive
+    shells](https://cloud.google.com/ai-platform/training/docs/monitor-debug-
+    interactive-shell) (one URI for each training node). Only available if
+    training_input.enable_web_access is `true`. The keys are names of each
+    node in the training job; for example, `master-replica-0` for the master
+    node, `worker-replica-0` for the first worker, and `ps-replica-0` for the
+    first parameter server. The values are the URIs for each node's
+    interactive shell.
 
     Messages:
       AdditionalProperty: An additional property for a WebAccessUrisValue

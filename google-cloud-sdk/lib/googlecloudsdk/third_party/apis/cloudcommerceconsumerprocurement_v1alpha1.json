@@ -977,7 +977,7 @@
           "description": "Cancellation policy of this request.",
           "type": "string",
           "enumDescriptions": [
-            "If unspecified, cancellation will try to cancel the order, if order cannot be immediately cancelled, auto renewal will be turned off.",
+            "If unspecified, cancellation will try to cancel the order, if order cannot be immediately cancelled, auto renewal will be turned off. However, caller should avoid using the value as it will yield a non-deterministic result. This is still supported mainly to maintain existing integrated usages and ensure backwards compatibility.",
             "Request will cancel the whole order immediately, if order cannot be immediately cancelled, the request will fail.",
             "Request will cancel the auto renewal, if order is not subscription based, the request will fail."
           ],
@@ -1392,6 +1392,76 @@
         }
       }
     },
+    "GoogleCloudCommerceConsumerProcurementV1alpha1CancelOrderMetadata": {
+      "id": "GoogleCloudCommerceConsumerProcurementV1alpha1CancelOrderMetadata",
+      "description": "Message stored in the metadata field of the Operation returned by ConsumerProcurementService.CancelOrder.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudCommerceConsumerProcurementV1alpha1CreateAccountMetadata": {
+      "id": "GoogleCloudCommerceConsumerProcurementV1alpha1CreateAccountMetadata",
+      "description": "Message stored in the metadata field of the Operation returned by ConsumerProcurementService.CreateAccount.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudCommerceConsumerProcurementV1alpha1CreateFreeTrialMetadata": {
+      "id": "GoogleCloudCommerceConsumerProcurementV1alpha1CreateFreeTrialMetadata",
+      "description": "Message stored in the metadata field of the Operation returned by ConsumerProcurementService.CreateFreeTrial.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudCommerceConsumerProcurementV1alpha1CreateOrderAllocationMetadata": {
+      "id": "GoogleCloudCommerceConsumerProcurementV1alpha1CreateOrderAllocationMetadata",
+      "description": "Message stored in the metadata field of the Operation returned by ConsumerProcurementService.CreateOrderAllocation.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudCommerceConsumerProcurementV1alpha1DeleteAccountMetadata": {
+      "id": "GoogleCloudCommerceConsumerProcurementV1alpha1DeleteAccountMetadata",
+      "description": "Message stored in the metadata field of the Operation returned by ConsumerProcurementService.DeleteAccount.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudCommerceConsumerProcurementV1alpha1DeleteOrderAllocationMetadata": {
+      "id": "GoogleCloudCommerceConsumerProcurementV1alpha1DeleteOrderAllocationMetadata",
+      "description": "Message stored in the metadata field of the Operation returned by ConsumerProcurementService.DeleteOrderAllocation.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudCommerceConsumerProcurementV1alpha1MigrateOrderMetadata": {
+      "id": "GoogleCloudCommerceConsumerProcurementV1alpha1MigrateOrderMetadata",
+      "description": "Message stored in the metadata field of the Operation returned by ConsumerProcurementService.MigrateOrder.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudCommerceConsumerProcurementV1alpha1ModifyOrderMetadata": {
+      "id": "GoogleCloudCommerceConsumerProcurementV1alpha1ModifyOrderMetadata",
+      "description": "Message stored in the metadata field of the Operation returned by ConsumerProcurementService.ModifyOrder.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudCommerceConsumerProcurementV1alpha1PlaceOrderMetadata": {
+      "id": "GoogleCloudCommerceConsumerProcurementV1alpha1PlaceOrderMetadata",
+      "description": "Message stored in the metadata field of the Operation returned by ConsumerProcurementService.PlaceOrder.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleCloudCommerceConsumerProcurementV1alpha1ReplaceOrderAllocationsMetadata": {
+      "id": "GoogleCloudCommerceConsumerProcurementV1alpha1ReplaceOrderAllocationsMetadata",
+      "description": "Message stored in the metadata field of the Operation returned by ConsumerProcurementService.ReplaceOrderAllocations.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "GoogleCloudCommerceConsumerProcurementV1alpha1ReplaceOrderAllocationsResponse": {
       "id": "GoogleCloudCommerceConsumerProcurementV1alpha1ReplaceOrderAllocationsResponse",
       "description": "Message stored in the response field of the Operation returned by ConsumerProcurementService.ReplaceOrderAllocations.",
@@ -1404,6 +1474,13 @@
             "$ref": "GoogleCloudCommerceConsumerProcurementV1alpha1OrderAllocation"
           }
         }
+      }
+    },
+    "GoogleCloudCommerceConsumerProcurementV1alpha1UpdateOrderAllocationMetadata": {
+      "id": "GoogleCloudCommerceConsumerProcurementV1alpha1UpdateOrderAllocationMetadata",
+      "description": "Message stored in the metadata field of the Operation returned by ConsumerProcurementService.UpdateOrderAllocation.",
+      "type": "object",
+      "properties": {
       }
     }
   },
@@ -1454,7 +1531,7 @@
                   "type": "string"
                 },
                 "pageSize": {
-                  "description": "The maximum number of entries that are requested.",
+                  "description": "The maximum number of entries that are requested. The default page size is 25 and the maximum page size is 200.",
                   "location": "query",
                   "type": "integer",
                   "format": "int32"
@@ -1723,7 +1800,7 @@
                   "type": "string"
                 },
                 "pageSize": {
-                  "description": "The maximum number of entries that are requested.",
+                  "description": "The maximum number of entries that are requested. The default page size is 25 and the maximum page size is 200.",
                   "location": "query",
                   "type": "integer",
                   "format": "int32"
@@ -2070,7 +2147,7 @@
                       "type": "string"
                     },
                     "pageSize": {
-                      "description": "The maximum number of entries that are requested.",
+                      "description": "The maximum number of entries that are requested. The default page size is 25 and the maximum page size is 200.",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"
@@ -2331,7 +2408,7 @@
                   "type": "string"
                 },
                 "pageSize": {
-                  "description": "The maximum number of entries that are requested.",
+                  "description": "The maximum number of entries that are requested. The default page size is 25 and the maximum page size is 200.",
                   "location": "query",
                   "type": "integer",
                   "format": "int32"
@@ -2424,7 +2501,7 @@
                   "type": "string"
                 },
                 "pageSize": {
-                  "description": "The maximum number of entries that are requested.",
+                  "description": "The maximum number of entries that are requested. The default page size is 25 and the maximum page size is 200.",
                   "location": "query",
                   "type": "integer",
                   "format": "int32"

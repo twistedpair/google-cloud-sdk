@@ -604,22 +604,22 @@ class ArgumentParser(argparse.ArgumentParser):
 
     if need_required:
       if top or have_required and not (have_optional or also_optional):
-        ai = parser_arguments.ArgumentInterceptor(self, arguments=need_required)
+        args = parser_arguments.Argument(arguments=need_required, is_group=True)
         self._Error(parser_errors.RequiredError(
             parser=self,
             argument=usage_text.GetArgUsage(
-                ai, value=False, hidden=True, top=top)))
+                args, value=False, hidden=True, top=top)))
       if have_optional or have_required:
-        have_ai = parser_arguments.ArgumentInterceptor(
-            self, arguments=have_optional + have_required)
-        need_ai = parser_arguments.ArgumentInterceptor(
-            self, arguments=need_required)
+        have_args = parser_arguments.Argument(
+            arguments=have_optional + have_required, is_group=True)
+        need_args = parser_arguments.Argument(
+            arguments=need_required, is_group=True)
         self._Error(parser_errors.ModalGroupError(
             parser=self,
             argument=usage_text.GetArgUsage(
-                have_ai, value=False, hidden=True, top=top),
+                have_args, value=False, hidden=True, top=top),
             conflict=usage_text.GetArgUsage(
-                need_ai, value=False, hidden=True, top=top)))
+                need_args, value=False, hidden=True, top=top)))
 
     # Multiple args with the same dest are counted as 1 arg.
     count = (len(self.GetDestinations(have_required)) +

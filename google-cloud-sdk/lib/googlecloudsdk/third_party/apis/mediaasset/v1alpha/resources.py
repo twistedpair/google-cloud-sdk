@@ -98,18 +98,6 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  PROJECTS_LOCATIONS_ASSETTYPES_ASSETS_TRANSFORMATIONS = (
-      'projects.locations.assetTypes.assets.transformations',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/assetTypes/'
-              '{assetTypesId}/assets/{assetsId}/transformations/'
-              '{transformationsId}',
-      },
-      ['name'],
-      True
-  )
   PROJECTS_LOCATIONS_ASSETTYPES_RULES = (
       'projects.locations.assetTypes.rules',
       '{+name}',

@@ -2576,11 +2576,11 @@ class Saml(_messages.Message):
   r"""Represents an SAML 2.0 identity provider.
 
   Fields:
-    idpMetadataXml: SAML Identity provider configuration metadata xml doc. The
-      xml document should comply with [SAML 2.0
+    idpMetadataXml: Required. SAML Identity provider configuration metadata
+      xml doc. The xml document should comply with [SAML 2.0
       specification](https://docs.oasis-open.org/security/saml/v2.0/saml-
       metadata-2.0-os.pdf). The max size of the acceptable xml document will
-      be bounded to 32000 characters. The metadata xml document should satisfy
+      be bounded to 128k characters. The metadata xml document should satisfy
       the following constraints: 1) Must contain an Identity Provider Entity
       ID. 2) Must contain at least one non-expired signing key certificate. 3)
       For each signing key: a) Valid from should be no more than 7 days from
@@ -2854,8 +2854,8 @@ class SignJwtRequest(_messages.Message):
       payload to sign. Must be a serialized JSON object that contains a JWT
       Claims Set. For example: `{"sub": "user@example.com", "iat": 313435}` If
       the JWT Claims Set contains an expiration time (`exp`) claim, it must be
-      an integer timestamp that is not in the past and no more than 1 hour in
-      the future. If the JWT Claims Set does not contain an expiration time
+      an integer timestamp that is not in the past and no more than 12 hours
+      in the future. If the JWT Claims Set does not contain an expiration time
       (`exp`) claim, this claim is added automatically, with a timestamp that
       is 1 hour in the future.
   """
@@ -3362,7 +3362,7 @@ class WorkloadIdentityPool(_messages.Message):
       of 1 hour. If set, session duration must be between 2 minutes and 12
       hours. Organization administrators can further restrict the maximum
       allowed session_duration value using the iam-
-      workloadIdentityPoolsSessionDuration Resource Setting.
+      workloadIdentitySessionDuration Resource Setting.
     state: Output only. The state of the pool.
   """
 

@@ -296,7 +296,9 @@ def AddSecretEtag(parser):
   parser.add_argument(
       _ArgOrFlag('etag', False),
       metavar='ETAG',
-      help=('Current etag of the secret.'))
+      help=(
+          'Current entity tag (ETag) of the secret. If this flag is defined, the secret is updated only if the ETag provided matched the current secret\'s ETag.'
+      ))
 
 
 def AddVersionEtag(parser):
@@ -304,7 +306,9 @@ def AddVersionEtag(parser):
   parser.add_argument(
       _ArgOrFlag('etag', False),
       metavar='ETAG',
-      help=('Current etag of the secret version.'))
+      help=(
+          'Current entity tag (ETag) of the secret version. If this flag is defined, the version is updated only if the ETag provided matched the current version\'s ETag.'
+      ))
 
 
 def _ArgOrFlag(name, positional):

@@ -645,6 +645,33 @@ class ManagedidentitiesV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Restore(self, request, global_params=None):
+      r"""RestoreBackup restores domain mentioned in the RestoreBackupRequest.
+
+      Args:
+        request: (ManagedidentitiesProjectsLocationsGlobalDomainsRestoreRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Restore')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Restore.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/global/domains/{domainsId}:restore',
+        http_method='POST',
+        method_id='managedidentities.projects.locations.global.domains.restore',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}:restore',
+        request_field='restoreDomainRequest',
+        request_type_name='ManagedidentitiesProjectsLocationsGlobalDomainsRestoreRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def SetIamPolicy(self, request, global_params=None):
       r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
 

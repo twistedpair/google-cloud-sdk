@@ -53,17 +53,112 @@ def Create(cluster_ref, cluster):
   return client.projects_instances_clusters.Create(msg)
 
 
-def Update(cluster_ref, num_nodes):
-  """Update a cluster.
+def BuildClusterAutoscalingConfig(min_nodes=None,
+                                  max_nodes=None,
+                                  cpu_target=None):
+  msgs = util.GetAdminMessages()
+  limits = msgs.AutoscalingLimits(
+      minServeNodes=min_nodes, maxServeNodes=max_nodes)
+  targets = msgs.AutoscalingTargets(cpuUtilizationPercent=cpu_target)
+  return msgs.ClusterAutoscalingConfig(
+      autoscalingLimits=limits, autoscalingTargets=targets)
+
+
+def BuildClusterConfig(autoscaling_min=None,
+                       autoscaling_max=None,
+                       autoscaling_cpu_target=None):
+  msgs = util.GetAdminMessages()
+  return msgs.ClusterConfig(
+      clusterAutoscalingConfig=BuildClusterAutoscalingConfig(
+          min_nodes=autoscaling_min,
+          max_nodes=autoscaling_max,
+          cpu_target=autoscaling_cpu_target))
+
+
+def BuildPartialUpdateClusterRequest(msgs,
+                                     name=None,
+                                     nodes=None,
+                                     autoscaling_min=None,
+                                     autoscaling_max=None,
+                                     autoscaling_cpu_target=None,
+                                     update_mask=None):
+  """Build a PartialUpdateClusterRequest."""
+  cluster = msgs.Cluster(name=name, serveNodes=nodes)
+
+  if (autoscaling_min is not None or autoscaling_max is not None or
+      autoscaling_cpu_target is not None):
+    cluster.clusterConfig = BuildClusterConfig(
+        autoscaling_min=autoscaling_min,
+        autoscaling_max=autoscaling_max,
+        autoscaling_cpu_target=autoscaling_cpu_target)
+
+  return msgs.BigtableadminProjectsInstancesClustersPartialUpdateClusterRequest(
+      cluster=cluster, name=name, updateMask=update_mask)
+
+
+def PartialUpdate(cluster_ref,
+                  nodes=None,
+                  autoscaling_min=None,
+                  autoscaling_max=None,
+                  autoscaling_cpu_target=None,
+                  disable_autoscaling=False):
+  """Partially update a cluster.
 
   Args:
     cluster_ref: A resource reference to the cluster to update.
-    num_nodes: int, The number of nodes in this cluster.
+    nodes: int, the number of nodes in this cluster.
+    autoscaling_min: int, the minimum number of nodes for autoscaling.
+    autoscaling_max: int, the maximum number of nodes for autoscaling.
+    autoscaling_cpu_target: int, the target CPU utilization percent for
+      autoscaling.
+    disable_autoscaling: bool, True means disable autoscaling if it is currently
+      enabled. False means change nothing whether it is currently enabled or
+      not.
 
   Returns:
     Long running operation.
   """
   client = util.GetAdminClient()
   msgs = util.GetAdminMessages()
-  msg = msgs.Cluster(name=cluster_ref.RelativeName(), serveNodes=num_nodes)
-  return client.projects_instances_clusters.Update(msg)
+
+  if disable_autoscaling:
+    if (autoscaling_min is not None or
+        autoscaling_max is not None or
+        autoscaling_cpu_target is not None):
+      raise ValueError('autoscaling arguments cannot be set together with '
+                       'disable_autoscaling')
+    return client.projects_instances_clusters.PartialUpdateCluster(
+        # To disable autoscaling, set clusterConfig to empty, but include it in
+        # update_mask.
+        BuildPartialUpdateClusterRequest(
+            msgs=msgs,
+            name=cluster_ref.RelativeName(),
+            nodes=nodes,
+            update_mask='serve_nodes,cluster_config'))
+
+  changed_fields = []
+  if nodes is not None:
+    changed_fields.append('serve_nodes')
+  if autoscaling_min is not None:
+    changed_fields.append(
+        'cluster_config.cluster_autoscaling_config.autoscaling_limits.min_serve_nodes'
+    )
+  if autoscaling_max is not None:
+    changed_fields.append(
+        'cluster_config.cluster_autoscaling_config.autoscaling_limits.max_serve_nodes'
+    )
+  if autoscaling_cpu_target is not None:
+    changed_fields.append(
+        'cluster_config.cluster_autoscaling_config.autoscaling_targets.cpu_utilization_percent'
+    )
+  update_mask = ','.join(changed_fields)
+
+  return client.projects_instances_clusters.PartialUpdateCluster(
+      BuildPartialUpdateClusterRequest(
+          msgs=msgs,
+          name=cluster_ref.RelativeName(),
+          nodes=nodes,
+          autoscaling_min=autoscaling_min,
+          autoscaling_max=autoscaling_max,
+          autoscaling_cpu_target=autoscaling_cpu_target,
+          update_mask=update_mask))

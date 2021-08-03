@@ -43,10 +43,29 @@ class Collections(enum.Enum):
       'admin/{+name}',
       {
           '':
-              'admin/projects/{projectsId}/locations/{locationsId}/'
-              'operations/{operationsId}',
+              'projects/{projectsId}/locations/{locationsId}/operations/'
+              '{operationsId}',
       },
       ['name'],
+      True
+  )
+  ADMIN_PROJECTS_LOCATIONS_RESERVATIONS = (
+      'admin.projects.locations.reservations',
+      'admin/{+name}',
+      {
+          '':
+              'admin/projects/{projectsId}/locations/{locationsId}/'
+              'reservations/{reservationsId}',
+      },
+      ['name'],
+      True
+  )
+  ADMIN_PROJECTS_LOCATIONS_RESERVATIONS_TOPICS = (
+      'admin.projects.locations.reservations.topics',
+      'admin/projects/{projectsId}/locations/{locationsId}/reservations/'
+      '{reservationsId}/topics',
+      {},
+      ['projectsId', 'locationsId', 'reservationsId'],
       True
   )
   ADMIN_PROJECTS_LOCATIONS_SUBSCRIPTIONS = (

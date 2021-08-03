@@ -536,6 +536,7 @@ class Function(_messages.Message):
     serviceConfig: Describes the Service being deployed. Currently deploys
       services to Cloud Run (fully managed).
     state: Output only. State of the function.
+    stateMessages: Output only. State Messages for this Cloud Function.
     updateTime: Output only. The last update timestamp of a Cloud Function.
   """
 
@@ -590,7 +591,8 @@ class Function(_messages.Message):
   name = _messages.StringField(5)
   serviceConfig = _messages.MessageField('ServiceConfig', 6)
   state = _messages.EnumField('StateValueValuesEnum', 7)
-  updateTime = _messages.StringField(8)
+  stateMessages = _messages.MessageField('GoogleCloudFunctionsV2alphaStateMessage', 8, repeated=True)
+  updateTime = _messages.StringField(9)
 
 
 class GenerateDownloadUrlRequest(_messages.Message):
@@ -701,6 +703,7 @@ class GoogleCloudFunctionsV2alphaStage(_messages.Message):
     resource: Resource of the Stage
     resourceUri: Link to the current Stage resource
     state: Current state of the Stage
+    stateMessages: State messages from the current Stage.
   """
 
   class NameValueValuesEnum(_messages.Enum):
@@ -738,6 +741,37 @@ class GoogleCloudFunctionsV2alphaStage(_messages.Message):
   resource = _messages.StringField(3)
   resourceUri = _messages.StringField(4)
   state = _messages.EnumField('StateValueValuesEnum', 5)
+  stateMessages = _messages.MessageField('GoogleCloudFunctionsV2alphaStateMessage', 6, repeated=True)
+
+
+class GoogleCloudFunctionsV2alphaStateMessage(_messages.Message):
+  r"""Informational messages about the state of the Cloud Function or
+  Operation.
+
+  Enums:
+    SeverityValueValuesEnum: Severity of the state message.
+
+  Fields:
+    message: The message.
+    severity: Severity of the state message.
+    type: One-word CamelCase type of the state message.
+  """
+
+  class SeverityValueValuesEnum(_messages.Enum):
+    r"""Severity of the state message.
+
+    Values:
+      SEVERITY_UNSPECIFIED: Not specified. Invalid severity.
+      ERROR: ERROR-level severity.
+      WARNING: WARNING-level severity.
+    """
+    SEVERITY_UNSPECIFIED = 0
+    ERROR = 1
+    WARNING = 2
+
+  message = _messages.StringField(1)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 2)
+  type = _messages.StringField(3)
 
 
 class ListFunctionsResponse(_messages.Message):

@@ -718,12 +718,50 @@
           "description": "Optional. Specifies that prefixMatch and fullPathMatch matches are case sensitive. The default value is false.",
           "type": "boolean"
         },
+        "headerMatches": {
+          "description": "Optional. Specifies a list of header match criteria, all of which must match corresponding headers in the request. You may specify up to 3 headers to match on.",
+          "type": "array",
+          "items": {
+            "$ref": "HeaderMatch"
+          }
+        },
         "queryParameterMatches": {
           "description": "Optional. Specifies a list of query parameter match criteria, all of which must match corresponding query parameters in the request. You may specify up to 5 query parameters to match on.",
           "type": "array",
           "items": {
             "$ref": "QueryParameterMatcher"
           }
+        }
+      }
+    },
+    "HeaderMatch": {
+      "id": "HeaderMatch",
+      "description": "HeaderMatch defines the match conditions for HTTP request headers.",
+      "type": "object",
+      "properties": {
+        "presentMatch": {
+          "description": "Optional. A header with the contents of headerName must exist. The match takes place whether or not the request's header has a value. Only one of exactMatch, prefixMatch, suffixMatch or presentMatch must be set.",
+          "type": "boolean"
+        },
+        "exactMatch": {
+          "description": "Optional. The value of the header should exactly match contents of exactMatch. Only one of exactMatch, prefixMatch, suffixMatch or presentMatch must be set.",
+          "type": "string"
+        },
+        "prefixMatch": {
+          "description": "Optional. The value of the header must start with the contents of prefixMatch. Only one of exactMatch, prefixMatch, suffixMatch or presentMatch must be set.",
+          "type": "string"
+        },
+        "suffixMatch": {
+          "description": "Optional. The value of the header must end with the contents of suffixMatch. Only one of exactMatch, prefixMatch, suffixMatch or presentMatch must be set.",
+          "type": "string"
+        },
+        "headerName": {
+          "description": "Required. The header name to match on.",
+          "type": "string"
+        },
+        "invertMatch": {
+          "description": "Optional. If set to false (default), the headerMatch is considered a match if the match criteria above are met. If set to true, the headerMatch is considered a match if the match criteria above are NOT met. The default setting is false.",
+          "type": "boolean"
         }
       }
     },
@@ -755,34 +793,34 @@
           "description": "Optional. Describes a header to add. You may add a maximum of 5 request headers.",
           "type": "array",
           "items": {
-            "$ref": "AddHeader"
+            "$ref": "HeaderActionAddHeader"
           }
         },
         "responseHeadersToAdd": {
           "description": "Optional. Headers to add to the response prior to sending it back to the client. You may add a maximum of 5 response headers. Response headers are only sent to the client, and do not have an effect on the cache serving the response.",
           "type": "array",
           "items": {
-            "$ref": "AddHeader"
+            "$ref": "HeaderActionAddHeader"
           }
         },
         "requestHeadersToRemove": {
           "description": "Optional. A list of header names for headers that need to be removed from the request prior to forwarding the request to the origin. You may specify up to 10 request headers to remove.",
           "type": "array",
           "items": {
-            "$ref": "RemoveHeader"
+            "$ref": "HeaderActionRemoveHeader"
           }
         },
         "responseHeadersToRemove": {
           "description": "Optional. Headers to remove from the response prior to sending it back to the client. Response headers are only sent to the client, and do not have an effect on the cache serving the response. You may specify up to 10 response headers to remove.",
           "type": "array",
           "items": {
-            "$ref": "RemoveHeader"
+            "$ref": "HeaderActionRemoveHeader"
           }
         }
       }
     },
-    "AddHeader": {
-      "id": "AddHeader",
+    "HeaderActionAddHeader": {
+      "id": "HeaderActionAddHeader",
       "description": "Describes a header to add.",
       "type": "object",
       "properties": {
@@ -800,8 +838,8 @@
         }
       }
     },
-    "RemoveHeader": {
-      "id": "RemoveHeader",
+    "HeaderActionRemoveHeader": {
+      "id": "HeaderActionRemoveHeader",
       "description": "Describes a header to remove.",
       "type": "object",
       "properties": {
@@ -870,14 +908,14 @@
         },
         "cacheKeyPolicy": {
           "description": "Optional. Defines the request parameters that contribute to the cache key.",
-          "$ref": "CacheKeyPolicy"
+          "$ref": "CDNPolicyCacheKeyPolicy"
         },
         "negativeCaching": {
           "description": "Optional. Negative caching allows per-status code TTLs to be set, in order to apply fine-grained caching for common errors or redirects. This can reduce the load on your origin and improve end-user experience by reducing response latency. By default, the CDNPolicy will apply the following default TTLs to these status codes: - HTTP 300 (Multiple Choice), 301, 308 (Permanent Redirects): 10m - HTTP 404 (Not Found), 410 (Gone), 451 (Unavailable For Legal Reasons): 120s - HTTP 405 (Method Not Found), 414 (URI Too Long), 501 (Not Implemented): 60s These defaults can be overridden in negativeCachingPolicy",
           "type": "boolean"
         },
         "negativeCachingPolicy": {
-          "description": "Optional. Sets a cache TTL for the specified HTTP status code. negativeCaching must be enabled to configure negativeCachingPolicy. - Omitting the policy and leaving negativeCaching enabled will use the default TTLs for each status code, defined in negativeCaching. - TTLs must be >= 0 (where 0 is \"always revalidate\") and <= 86400s (1 day) Note that when specifying an explicit negativeCachingPolicy, you should take care to specify a cache TTL for all response codes that you wish to cache. The CDNPolicy will not apply any default negative caching when a policy exists.",
+          "description": "Optional. Sets a cache TTL for the specified HTTP status code. negativeCaching must be enabled to configure negativeCachingPolicy. - Omitting the policy and leaving negativeCaching enabled will use the default TTLs for each status code, defined in negativeCaching. - TTLs must be >= 0 (where 0 is \"always revalidate\") and <= 86400s (1 day) Only HTTP redirection (3xx), client error (4xx), and server error (5xx) status codes may be set. Note that when specifying an explicit negativeCachingPolicy, you should take care to specify a cache TTL for all response codes that you wish to cache. The CDNPolicy will not apply any default negative caching when a policy exists.",
           "type": "object",
           "additionalProperties": {
             "type": "string",
@@ -904,8 +942,8 @@
         }
       }
     },
-    "CacheKeyPolicy": {
-      "id": "CacheKeyPolicy",
+    "CDNPolicyCacheKeyPolicy": {
+      "id": "CDNPolicyCacheKeyPolicy",
       "description": "Defines the request parameters that contribute to the cache key.",
       "type": "object",
       "properties": {

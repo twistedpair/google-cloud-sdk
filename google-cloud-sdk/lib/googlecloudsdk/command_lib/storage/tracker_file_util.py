@@ -26,10 +26,10 @@ import os
 import re
 
 from googlecloudsdk.command_lib.storage import errors
-from googlecloudsdk.command_lib.storage import hash_util
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files
+from googlecloudsdk.core.util import hashing
 
 # The maximum length of a file name can vary wildly between operating
 # systems, so always ensure that tracker files are less than 100 characters.
@@ -325,7 +325,7 @@ def hash_gcs_rewrite_parameters_for_tracker_file(
   all_parameters = mandatory_parameters + optional_parameters
   parameters_bytes = ''.join([str(parameter) for parameter in all_parameters
                              ]).encode('UTF8')
-  parameters_hash = hash_util.get_md5(parameters_bytes)
+  parameters_hash = hashing.get_md5(parameters_bytes)
   return parameters_hash.hexdigest()
 
 

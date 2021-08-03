@@ -48,13 +48,13 @@ class AwsS3Data(_messages.Message):
     path: Root path to transfer objects. Must be an empty string or full path
       name that ends with a '/'. This field is treated as an object prefix. As
       such, it should generally not begin with a '/'.
-    roleArn: Input only. The Amazon Resource Name (ARN) of the role to support
-      temporary credentials via `AssumeRoleWithWebIdentity`. For more
-      information about ARNs, see [IAM ARNs](https://docs.aws.amazon.com/IAM/l
-      atest/UserGuide/reference_identifiers.html#identifiers-arns). When a
-      role ARN is provided, Transfer Service fetches temporary credentials for
-      the session using a `AssumeRoleWithWebIdentity` call for the provided
-      role using the GoogleServiceAccount for this project.
+    roleArn: The Amazon Resource Name (ARN) of the role to support temporary
+      credentials via `AssumeRoleWithWebIdentity`. For more information about
+      ARNs, see [IAM ARNs](https://docs.aws.amazon.com/IAM/latest/UserGuide/re
+      ference_identifiers.html#identifiers-arns). When a role ARN is provided,
+      Transfer Service fetches temporary credentials for the session using a
+      `AssumeRoleWithWebIdentity` call for the provided role using the
+      GoogleServiceAccount for this project.
   """
 
   awsAccessKey = _messages.MessageField('AwsAccessKey', 1)
@@ -819,7 +819,7 @@ class StoragetransferTransferJobsGetRequest(_messages.Message):
   r"""A StoragetransferTransferJobsGetRequest object.
 
   Fields:
-    jobName: Required. " The job to get.
+    jobName: Required. The job to get.
     projectId: Required. The ID of the Google Cloud Platform Console project
       that owns the job.
   """

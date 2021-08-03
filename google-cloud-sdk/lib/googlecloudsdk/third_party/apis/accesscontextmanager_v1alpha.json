@@ -902,6 +902,13 @@
           }
         }
       }
+    },
+    "AccessContextManagerOperationMetadata": {
+      "id": "AccessContextManagerOperationMetadata",
+      "description": "Metadata of Access Context Manager's Long Running Operations.",
+      "type": "object",
+      "properties": {
+      }
     }
   },
   "resources": {

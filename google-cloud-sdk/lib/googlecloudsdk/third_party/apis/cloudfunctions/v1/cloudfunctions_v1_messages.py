@@ -159,6 +159,7 @@ class CallFunctionResponse(_messages.Message):
 class CloudFunction(_messages.Message):
   r"""Describes a Cloud Function that contains user computation executed in
   response to an event. It encapsulate function and triggers configurations.
+  Next tag: 35
 
   Enums:
     IngressSettingsValueValuesEnum: The ingress settings for the function,
@@ -194,6 +195,15 @@ class CloudFunction(_messages.Message):
       Custom Workers Builder (roles/cloudbuild.customworkers.builder) in the
       project.
     description: User-provided description of a function.
+    dockerRepository: User managed repository created in Artifact Registry
+      optionally with a customer managed encryption key. This is the
+      repository to which the function docker image will be pushed after it is
+      built by Cloud Build. If unspecified, GCF will create and use a
+      repository named 'gcf-artifacts' for every deployed region. It must
+      match the pattern
+      `projects/{project}/locations/{location}/repositories/{repository}`.
+      Cross-project repositories are not supported. Cross-location
+      repositories are not supported. Repository format must be 'DOCKER'.
     entryPoint: The name of the function (as defined in source code) that will
       be executed. Defaults to the resource name suffix, if not specified. For
       backward compatibility, if function with given name is not found, then
@@ -208,6 +218,12 @@ class CloudFunction(_messages.Message):
       URL.
     ingressSettings: The ingress settings for the function, controlling what
       traffic can reach it.
+    kmsKeyName: Resource name of a KMS crypto key (managed by the user) used
+      to encrypt/decrypt function resources. It must match the pattern `projec
+      ts/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{crypto
+      _key}`. If specified, you must also provide an artifact registry
+      repository using the `docker_repository` field that was created with the
+      same KMS crypto key.
     labels: Labels associated with this Cloud Function.
     maxInstances: The limit on the maximum number of function instances that
       may coexist at a given time. In some cases, such as rapid traffic
@@ -402,30 +418,32 @@ class CloudFunction(_messages.Message):
   buildName = _messages.StringField(4)
   buildWorkerPool = _messages.StringField(5)
   description = _messages.StringField(6)
-  entryPoint = _messages.StringField(7)
-  environmentVariables = _messages.MessageField('EnvironmentVariablesValue', 8)
-  eventTrigger = _messages.MessageField('EventTrigger', 9)
-  httpsTrigger = _messages.MessageField('HttpsTrigger', 10)
-  ingressSettings = _messages.EnumField('IngressSettingsValueValuesEnum', 11)
-  labels = _messages.MessageField('LabelsValue', 12)
-  maxInstances = _messages.IntegerField(13, variant=_messages.Variant.INT32)
-  minInstances = _messages.IntegerField(14, variant=_messages.Variant.INT32)
-  name = _messages.StringField(15)
-  network = _messages.StringField(16)
-  runtime = _messages.StringField(17)
-  secretEnvironmentVariables = _messages.MessageField('SecretEnvVar', 18, repeated=True)
-  secretVolumes = _messages.MessageField('SecretVolume', 19, repeated=True)
-  serviceAccountEmail = _messages.StringField(20)
-  sourceArchiveUrl = _messages.StringField(21)
-  sourceRepository = _messages.MessageField('SourceRepository', 22)
-  sourceToken = _messages.StringField(23)
-  sourceUploadUrl = _messages.StringField(24)
-  status = _messages.EnumField('StatusValueValuesEnum', 25)
-  timeout = _messages.StringField(26)
-  updateTime = _messages.StringField(27)
-  versionId = _messages.IntegerField(28)
-  vpcConnector = _messages.StringField(29)
-  vpcConnectorEgressSettings = _messages.EnumField('VpcConnectorEgressSettingsValueValuesEnum', 30)
+  dockerRepository = _messages.StringField(7)
+  entryPoint = _messages.StringField(8)
+  environmentVariables = _messages.MessageField('EnvironmentVariablesValue', 9)
+  eventTrigger = _messages.MessageField('EventTrigger', 10)
+  httpsTrigger = _messages.MessageField('HttpsTrigger', 11)
+  ingressSettings = _messages.EnumField('IngressSettingsValueValuesEnum', 12)
+  kmsKeyName = _messages.StringField(13)
+  labels = _messages.MessageField('LabelsValue', 14)
+  maxInstances = _messages.IntegerField(15, variant=_messages.Variant.INT32)
+  minInstances = _messages.IntegerField(16, variant=_messages.Variant.INT32)
+  name = _messages.StringField(17)
+  network = _messages.StringField(18)
+  runtime = _messages.StringField(19)
+  secretEnvironmentVariables = _messages.MessageField('SecretEnvVar', 20, repeated=True)
+  secretVolumes = _messages.MessageField('SecretVolume', 21, repeated=True)
+  serviceAccountEmail = _messages.StringField(22)
+  sourceArchiveUrl = _messages.StringField(23)
+  sourceRepository = _messages.MessageField('SourceRepository', 24)
+  sourceToken = _messages.StringField(25)
+  sourceUploadUrl = _messages.StringField(26)
+  status = _messages.EnumField('StatusValueValuesEnum', 27)
+  timeout = _messages.StringField(28)
+  updateTime = _messages.StringField(29)
+  versionId = _messages.IntegerField(30)
+  vpcConnector = _messages.StringField(31)
+  vpcConnectorEgressSettings = _messages.EnumField('VpcConnectorEgressSettingsValueValuesEnum', 32)
 
 
 class CloudfunctionsOperationsGetRequest(_messages.Message):
@@ -842,6 +860,7 @@ class GoogleCloudFunctionsV2alphaStage(_messages.Message):
     resource: Resource of the Stage
     resourceUri: Link to the current Stage resource
     state: Current state of the Stage
+    stateMessages: State messages from the current Stage.
   """
 
   class NameValueValuesEnum(_messages.Enum):
@@ -879,6 +898,37 @@ class GoogleCloudFunctionsV2alphaStage(_messages.Message):
   resource = _messages.StringField(3)
   resourceUri = _messages.StringField(4)
   state = _messages.EnumField('StateValueValuesEnum', 5)
+  stateMessages = _messages.MessageField('GoogleCloudFunctionsV2alphaStateMessage', 6, repeated=True)
+
+
+class GoogleCloudFunctionsV2alphaStateMessage(_messages.Message):
+  r"""Informational messages about the state of the Cloud Function or
+  Operation.
+
+  Enums:
+    SeverityValueValuesEnum: Severity of the state message.
+
+  Fields:
+    message: The message.
+    severity: Severity of the state message.
+    type: One-word CamelCase type of the state message.
+  """
+
+  class SeverityValueValuesEnum(_messages.Enum):
+    r"""Severity of the state message.
+
+    Values:
+      SEVERITY_UNSPECIFIED: Not specified. Invalid severity.
+      ERROR: ERROR-level severity.
+      WARNING: WARNING-level severity.
+    """
+    SEVERITY_UNSPECIFIED = 0
+    ERROR = 1
+    WARNING = 2
+
+  message = _messages.StringField(1)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 2)
+  type = _messages.StringField(3)
 
 
 class HttpsTrigger(_messages.Message):
@@ -1307,8 +1357,10 @@ class SecretEnvVar(_messages.Message):
 
   Fields:
     key: Name of the environment variable.
-    projectId: Project whose secret manager data is being referenced. Cross
-      project secrets are not supported.
+    projectId: Project identifier (preferrably project number but can also be
+      the project ID) of the project that contains the secret. If not set, it
+      will be populated with the function's project assuming that the secret
+      exists in the same project as of the function.
     secret: Name of the secret in secret manager (not the full resource name).
     version: Version of the secret (version number or the string 'latest'). It
       is recommended to use a numeric version for secret environment variables
@@ -1353,8 +1405,10 @@ class SecretVolume(_messages.Message):
       be completely shadowed and unavailable to mount any other secrets.
       Recommended mount paths: /etc/secrets Restricted mount paths: /cloudsql,
       /dev/log, /pod, /proc, /var/log
-    projectId: Project whose secret manager data is being referenced. Cross
-      project secrets are not supported.
+    projectId: Project identifier (preferrably project number but can also be
+      the project ID) of the project that contains the secret. If not set, it
+      will be populated with the function's project assuming that the secret
+      exists in the same project as of the function.
     secret: Name of the secret in secret manager (not the full resource name).
     versions: List of secret versions to mount for this secret. If empty, the
       `latest` version of the secret will be made available in a file named

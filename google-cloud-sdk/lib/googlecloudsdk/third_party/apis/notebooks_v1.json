@@ -287,7 +287,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. The resource name of the runtime. Format: `projects\/{project}\/locations\/{location}\/runtimes\/{runtime}`",
+          "description": "Output only. The resource name of the runtime. Format: `projects\/{project}\/locations\/{location}\/runtimes\/{runtimeId}`",
           "readOnly": true,
           "type": "string"
         },
@@ -500,17 +500,17 @@
       "type": "object",
       "properties": {
         "autoDelete": {
-          "description": "Output only. Specifies whether the disk will be auto-deleted when the instance is deleted (but not when the disk is detached from the instance).",
+          "description": "Optional. Output only. Specifies whether the disk will be auto-deleted when the instance is deleted (but not when the disk is detached from the instance).",
           "readOnly": true,
           "type": "boolean"
         },
         "boot": {
-          "description": "Output only. Indicates that this is a boot disk. The virtual machine will use the first partition of the disk for its root filesystem.",
+          "description": "Optional. Output only. Indicates that this is a boot disk. The virtual machine will use the first partition of the disk for its root filesystem.",
           "readOnly": true,
           "type": "boolean"
         },
         "deviceName": {
-          "description": "Output only. Specifies a unique device name of your choice that is reflected into the \/dev\/disk\/by-id\/google-* tree of a Linux operating system running within the instance. This name can be used to reference the device for mounting, resizing, and so on, from within the instance. If not specified, the server chooses a default device name to apply to this disk, in the form persistent-disk-x, where x is a number assigned by Google Compute Engine. This field is only applicable for persistent disks.",
+          "description": "Optional. Output only. Specifies a unique device name of your choice that is reflected into the \/dev\/disk\/by-id\/google-* tree of a Linux operating system running within the instance. This name can be used to reference the device for mounting, resizing, and so on, from within the instance. If not specified, the server chooses a default device name to apply to this disk, in the form persistent-disk-x, where x is a number assigned by Google Compute Engine. This field is only applicable for persistent disks.",
           "readOnly": true,
           "type": "string"
         },
@@ -523,13 +523,13 @@
           }
         },
         "index": {
-          "description": "Output only. [Output Only] A zero-based index to this disk, where 0 is reserved for the boot disk. If you have many disks attached to an instance, each disk would have a unique index number.",
+          "description": "Output only. A zero-based index to this disk, where 0 is reserved for the boot disk. If you have many disks attached to an instance, each disk would have a unique index number.",
           "readOnly": true,
           "type": "integer",
           "format": "int32"
         },
         "initializeParams": {
-          "description": "Input only. [Input Only] Specifies the parameters for a new disk that will be created alongside the new instance. Use initialization parameters to create boot disks or local SSDs attached to the new instance. This property is mutually exclusive with the source property; you can only define one or the other, but not both.",
+          "description": "Input only. Specifies the parameters for a new disk that will be created alongside the new instance. Use initialization parameters to create boot disks or local SSDs attached to the new instance. This property is mutually exclusive with the source property; you can only define one or the other, but not both.",
           "$ref": "LocalDiskInitializeParams"
         },
         "interface": {
@@ -542,7 +542,7 @@
           "type": "string"
         },
         "licenses": {
-          "description": "Output only. [Output Only] Any valid publicly visible licenses.",
+          "description": "Output only. Any valid publicly visible licenses.",
           "readOnly": true,
           "type": "array",
           "items": {
@@ -565,18 +565,18 @@
     },
     "RuntimeGuestOsFeature": {
       "id": "RuntimeGuestOsFeature",
-      "description": "A list of features to enable on the guest operating system. Applicable only for bootable images. Read Enabling guest operating system features to see a list of available options. Guest OS features for boot disk.",
+      "description": "Optional. A list of features to enable on the guest operating system. Applicable only for bootable images. Read [Enabling guest operating system features](https:\/\/cloud.google.com\/compute\/docs\/images\/create-delete-deprecate-private-images#guest-os-features) to see a list of available options. Guest OS features for boot disk.",
       "type": "object",
       "properties": {
         "type": {
-          "description": "The ID of a supported feature. Read Enabling guest operating system features to see a list of available options. Valid values: FEATURE_TYPE_UNSPECIFIED MULTI_IP_SUBNET SECURE_BOOT UEFI_COMPATIBLE VIRTIO_SCSI_MULTIQUEUE WINDOWS",
+          "description": "The ID of a supported feature. Read [Enabling guest operating system features](https:\/\/cloud.google.com\/compute\/docs\/images\/create-delete-deprecate-private-images#guest-os-features) to see a list of available options. Valid values: * FEATURE_TYPE_UNSPECIFIED * MULTI_IP_SUBNET * SECURE_BOOT * UEFI_COMPATIBLE * VIRTIO_SCSI_MULTIQUEUE * WINDOWS",
           "type": "string"
         }
       }
     },
     "LocalDiskInitializeParams": {
       "id": "LocalDiskInitializeParams",
-      "description": "[Input Only] Specifies the parameters for a new disk that will be created alongside the new instance. Use initialization parameters to create boot disks or local SSDs attached to the new runtime. This property is mutually exclusive with the source property; you can only define one or the other, but not both.",
+      "description": "Input only. Specifies the parameters for a new disk that will be created alongside the new instance. Use initialization parameters to create boot disks or local SSDs attached to the new runtime. This property is mutually exclusive with the source property; you can only define one or the other, but not both.",
       "type": "object",
       "properties": {
         "description": {
@@ -630,7 +630,7 @@
     },
     "RuntimeShieldedInstanceConfig": {
       "id": "RuntimeShieldedInstanceConfig",
-      "description": "A set of Shielded Instance options. Check [Images using supported Shielded VM features] Not all combinations are valid.",
+      "description": "A set of Shielded Instance options. Check [Images using supported Shielded VM features](https:\/\/cloud.google.com\/compute\/docs\/instances\/modifying-shielded-vm). Not all combinations are valid.",
       "type": "object",
       "properties": {
         "enableSecureBoot": {
@@ -721,7 +721,7 @@
     },
     "RuntimeSoftwareConfig": {
       "id": "RuntimeSoftwareConfig",
-      "description": "Specifies the selection and config of software inside the runtime. \/ The properties to set on runtime. Properties keys are specified in `key:value` format, for example: * idle_shutdown: idle_shutdown=true * idle_shutdown_timeout: idle_shutdown_timeout=180 * report-system-health: report-system-health=true",
+      "description": "Specifies the selection and configuration of software inside the runtime. The properties to set on runtime. Properties keys are specified in `key:value` format, for example: * `idle_shutdown: true` * `idle_shutdown_timeout: 180` * `report-system-health: true`",
       "type": "object",
       "properties": {
         "notebookUpgradeSchedule": {
@@ -733,11 +733,11 @@
           "type": "boolean"
         },
         "idleShutdown": {
-          "description": "Runtime will automatically shutdown after idle_shutdown_time. Default: False",
+          "description": "Runtime will automatically shutdown after idle_shutdown_time. Default: True",
           "type": "boolean"
         },
         "idleShutdownTimeout": {
-          "description": "Time in minutes to wait before shuting down runtime. Default: 30 minutes",
+          "description": "Time in minutes to wait before shuting down runtime. Default: 180 minutes",
           "type": "integer",
           "format": "int32"
         },
@@ -1094,6 +1094,10 @@
             "GVNIC"
           ]
         },
+        "reservationAffinity": {
+          "description": "Optional. The optional reservation affinity. Setting this field will apply the specified [Zonal Compute Reservation](https:\/\/cloud.google.com\/compute\/docs\/instances\/reserving-zonal-resources) to this notebook instance.",
+          "$ref": "ReservationAffinity"
+        },
         "createTime": {
           "description": "Output only. Instance creation time.",
           "readOnly": true,
@@ -1331,6 +1335,40 @@
         "targetVersion": {
           "description": "Target VM Version, like m63.",
           "type": "string"
+        }
+      }
+    },
+    "ReservationAffinity": {
+      "id": "ReservationAffinity",
+      "description": "Reservation Affinity for consuming Zonal reservation.",
+      "type": "object",
+      "properties": {
+        "consumeReservationType": {
+          "description": "Optional. Type of reservation to consume",
+          "type": "string",
+          "enumDescriptions": [
+            "Default type.",
+            "Do not consume from any allocated capacity.",
+            "Consume any reservation available.",
+            "Must consume from a specific reservation. Must specify key value fields for specifying the reservations."
+          ],
+          "enum": [
+            "TYPE_UNSPECIFIED",
+            "NO_RESERVATION",
+            "ANY_RESERVATION",
+            "SPECIFIC_RESERVATION"
+          ]
+        },
+        "key": {
+          "description": "Optional. Corresponds to the label key of reservation resource.",
+          "type": "string"
+        },
+        "values": {
+          "description": "Optional. Corresponds to the label values of reservation resource.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -3522,7 +3560,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. Format: `projects\/{project_id}\/locations\/{location}\/schedules\/{execution_id}`",
+                      "description": "Required. Format: `projects\/{project_id}\/locations\/{location}\/executions\/{execution_id}`",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/executions\/[^\/]+$",
                       "location": "path",
                       "required": true,

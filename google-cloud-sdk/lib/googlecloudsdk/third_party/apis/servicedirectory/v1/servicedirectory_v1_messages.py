@@ -93,13 +93,10 @@ class Endpoint(_messages.Message):
       alphanumerics between. The prefix is optional. If specified, the prefix
       must be a DNS subdomain: a series of DNS labels separated by dots (.),
       not longer than 253 characters in total, followed by a slash (/)
-      Annotations that fails to meet these requirements are rejected. * The
-      `(*.)google.com/` and `(*.)googleapis.com/` prefixes are reserved for
-      system annotations managed by Service Directory. If the user tries to
-      write to these keyspaces, those entries are silently ignored by the
-      system Note: This field is equivalent to the `metadata` field in the
-      v1beta1 API. They have the same syntax and read/write to the same
-      location in Service Directory.
+      Annotations that fails to meet these requirements are rejected. Note:
+      This field is equivalent to the `metadata` field in the v1beta1 API.
+      They have the same syntax and read/write to the same location in Service
+      Directory.
 
   Fields:
     address: Optional. An IPv4 or IPv6 address. Service Directory rejects bad
@@ -116,13 +113,10 @@ class Endpoint(_messages.Message):
       alphanumerics between. The prefix is optional. If specified, the prefix
       must be a DNS subdomain: a series of DNS labels separated by dots (.),
       not longer than 253 characters in total, followed by a slash (/)
-      Annotations that fails to meet these requirements are rejected. * The
-      `(*.)google.com/` and `(*.)googleapis.com/` prefixes are reserved for
-      system annotations managed by Service Directory. If the user tries to
-      write to these keyspaces, those entries are silently ignored by the
-      system Note: This field is equivalent to the `metadata` field in the
-      v1beta1 API. They have the same syntax and read/write to the same
-      location in Service Directory.
+      Annotations that fails to meet these requirements are rejected. Note:
+      This field is equivalent to the `metadata` field in the v1beta1 API.
+      They have the same syntax and read/write to the same location in Service
+      Directory.
     name: Immutable. The resource name for the endpoint in the format
       `projects/*/locations/*/namespaces/*/services/*/endpoints/*`.
     port: Optional. Service Directory rejects values outside of `[0, 65535]`.
@@ -141,10 +135,7 @@ class Endpoint(_messages.Message):
     optional. If specified, the prefix must be a DNS subdomain: a series of
     DNS labels separated by dots (.), not longer than 253 characters in total,
     followed by a slash (/) Annotations that fails to meet these requirements
-    are rejected. * The `(*.)google.com/` and `(*.)googleapis.com/` prefixes
-    are reserved for system annotations managed by Service Directory. If the
-    user tries to write to these keyspaces, those entries are silently ignored
-    by the system Note: This field is equivalent to the `metadata` field in
+    are rejected. Note: This field is equivalent to the `metadata` field in
     the v1beta1 API. They have the same syntax and read/write to the same
     location in Service Directory.
 
@@ -550,13 +541,10 @@ class Service(_messages.Message):
       alphanumerics between. The prefix is optional. If specified, the prefix
       must be a DNS subdomain: a series of DNS labels separated by dots (.),
       not longer than 253 characters in total, followed by a slash (/).
-      Annotations that fails to meet these requirements are rejected * The
-      `(*.)google.com/` and `(*.)googleapis.com/` prefixes are reserved for
-      system annotations managed by Service Directory. If the user tries to
-      write to these keyspaces, those entries are silently ignored by the
-      system Note: This field is equivalent to the `metadata` field in the
-      v1beta1 API. They have the same syntax and read/write to the same
-      location in Service Directory.
+      Annotations that fails to meet these requirements are rejected Note:
+      This field is equivalent to the `metadata` field in the v1beta1 API.
+      They have the same syntax and read/write to the same location in Service
+      Directory.
 
   Fields:
     annotations: Optional. Annotations for the service. This data can be
@@ -570,13 +558,10 @@ class Service(_messages.Message):
       alphanumerics between. The prefix is optional. If specified, the prefix
       must be a DNS subdomain: a series of DNS labels separated by dots (.),
       not longer than 253 characters in total, followed by a slash (/).
-      Annotations that fails to meet these requirements are rejected * The
-      `(*.)google.com/` and `(*.)googleapis.com/` prefixes are reserved for
-      system annotations managed by Service Directory. If the user tries to
-      write to these keyspaces, those entries are silently ignored by the
-      system Note: This field is equivalent to the `metadata` field in the
-      v1beta1 API. They have the same syntax and read/write to the same
-      location in Service Directory.
+      Annotations that fails to meet these requirements are rejected Note:
+      This field is equivalent to the `metadata` field in the v1beta1 API.
+      They have the same syntax and read/write to the same location in Service
+      Directory.
     endpoints: Output only. Endpoints associated with this service. Returned
       on LookupService.ResolveService. Control plane clients should use
       RegistrationService.ListEndpoints.
@@ -597,12 +582,9 @@ class Service(_messages.Message):
     optional. If specified, the prefix must be a DNS subdomain: a series of
     DNS labels separated by dots (.), not longer than 253 characters in total,
     followed by a slash (/). Annotations that fails to meet these requirements
-    are rejected * The `(*.)google.com/` and `(*.)googleapis.com/` prefixes
-    are reserved for system annotations managed by Service Directory. If the
-    user tries to write to these keyspaces, those entries are silently ignored
-    by the system Note: This field is equivalent to the `metadata` field in
-    the v1beta1 API. They have the same syntax and read/write to the same
-    location in Service Directory.
+    are rejected Note: This field is equivalent to the `metadata` field in the
+    v1beta1 API. They have the same syntax and read/write to the same location
+    in Service Directory.
 
     Messages:
       AdditionalProperty: An additional property for a AnnotationsValue

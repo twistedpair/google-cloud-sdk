@@ -7,7 +7,7 @@
   "version": "v1",
   "revision": "0",
   "title": "Cloud Monitoring API",
-  "description": "Manages your Cloud Monitoring data and configurations. Most projects must be associated with a Workspace, with a few exceptions as noted on the individual method pages. The table entries below are presented in alphabetical order, not in order of common use. For explanations of the concepts found in the table entries, read the Cloud Monitoring documentation.",
+  "description": "Manages your Cloud Monitoring data and configurations. Most projects must be associated with a Workspace, with a few exceptions as noted on the individual method pages. The table entries below are presented in alphabetical order, not in order of common use. For explanations of the concepts found in the table entries, read the Cloud Monitoring documentation (https:\/\/cloud.google.com\/monitoring\/docs).",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {
@@ -119,24 +119,6 @@
     }
   },
   "schemas": {
-    "ListOperationsResponse": {
-      "id": "ListOperationsResponse",
-      "description": "The response message for Operations.ListOperations.",
-      "type": "object",
-      "properties": {
-        "operations": {
-          "description": "A list of operations that matches the specified filter in the request.",
-          "type": "array",
-          "items": {
-            "$ref": "Operation"
-          }
-        },
-        "nextPageToken": {
-          "description": "The standard List next-page token.",
-          "type": "string"
-        }
-      }
-    },
     "Operation": {
       "id": "Operation",
       "description": "This resource represents a long-running operation that is the result of a network API call.",
@@ -197,20 +179,6 @@
             }
           }
         }
-      }
-    },
-    "Empty": {
-      "id": "Empty",
-      "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON representation for Empty is empty JSON object {}.",
-      "type": "object",
-      "properties": {
-      }
-    },
-    "CancelOperationRequest": {
-      "id": "CancelOperationRequest",
-      "description": "The request message for Operations.CancelOperation.",
-      "type": "object",
-      "properties": {
       }
     },
     "Dashboard": {
@@ -823,6 +791,13 @@
         }
       }
     },
+    "Empty": {
+      "id": "Empty",
+      "description": "A generic empty message that you can re-use to avoid defining duplicated empty messages in your APIs. A typical example is to use it as the request or the response type of an API method. For instance: service Foo { rpc Bar(google.protobuf.Empty) returns (google.protobuf.Empty); } The JSON representation for Empty is empty JSON object {}.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "AlertChart": {
       "id": "AlertChart",
       "description": "A chart that displays alert policy data.",
@@ -965,6 +940,68 @@
         "nextPageToken": {
           "description": "If there are more results than have been returned, then this field is set to a non-empty value. To see the additional results, use that value as page_token in the next call to this method.",
           "type": "string"
+        }
+      }
+    },
+    "MetricsScope": {
+      "id": "MetricsScope",
+      "description": "Represents a Metrics Scope (https:\/\/cloud.google.com\/monitoring\/settings#concept-scope) in Cloud Monitoring, which specifies one or more Google projects and zero or more AWS accounts to monitor together.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Immutable. The resource name of the Monitoring Metrics Scope. On input, the resource name can be specified with the scoping project ID or number. On output, the resource name is specified with the scoping project number. Example: locations\/global\/metricsScopes\/{SCOPING_PROJECT_ID_OR_NUMBER}",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. The time when this Metrics Scope was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The time when this Metrics Scope record was last updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "monitoredProjects": {
+          "description": "Output only. The list of projects monitored by this Metrics Scope.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "MonitoredProject"
+          }
+        }
+      }
+    },
+    "MonitoredProject": {
+      "id": "MonitoredProject",
+      "description": "A project being monitored (https:\/\/cloud.google.com\/monitoring\/settings\/multiple-projects#create-multi) by a Metrics Scope.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Immutable. The resource name of the MonitoredProject. On input, the resource name includes the scoping project ID and monitored project ID. On output, it contains the equivalent project numbers. Example: locations\/global\/metricsScopes\/{SCOPING_PROJECT_ID_OR_NUMBER}\/projects\/{MONITORED_PROJECT_ID_OR_NUMBER}",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. The time when this MonitoredProject was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "ListMetricsScopesByMonitoredProjectResponse": {
+      "id": "ListMetricsScopesByMonitoredProjectResponse",
+      "description": "Response for the ListMetricsScopesByMonitoredProject method.",
+      "type": "object",
+      "properties": {
+        "metricsScopes": {
+          "description": "A set of all metrics scopes that the specified monitored project has been added to.",
+          "type": "array",
+          "items": {
+            "$ref": "MetricsScope"
+          }
         }
       }
     },
@@ -1216,44 +1253,6 @@
   "resources": {
     "operations": {
       "methods": {
-        "list": {
-          "id": "monitoring.operations.list",
-          "path": "v1/{+name}",
-          "flatPath": "v1/operations",
-          "httpMethod": "GET",
-          "parameters": {
-            "name": {
-              "description": "The name of the operation's parent resource.",
-              "pattern": "^operations$",
-              "location": "path",
-              "required": true,
-              "type": "string"
-            },
-            "filter": {
-              "description": "The standard list filter.",
-              "location": "query",
-              "type": "string"
-            },
-            "pageSize": {
-              "description": "The standard list page size.",
-              "location": "query",
-              "type": "integer",
-              "format": "int32"
-            },
-            "pageToken": {
-              "description": "The standard list page token.",
-              "location": "query",
-              "type": "string"
-            }
-          },
-          "parameterOrder": [
-            "name"
-          ],
-          "response": {
-            "$ref": "ListOperationsResponse"
-          },
-          "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns UNIMPLEMENTED.NOTE: the name binding allows API services to override the binding to use different resource name schemes, such as users\/*\/operations. To override the binding, API services can add a binding such as \"\/v1\/{name=users\/*}\/operations\" to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
-        },
         "get": {
           "id": "monitoring.operations.get",
           "path": "v1/{+name}",
@@ -1280,53 +1279,6 @@
             "https://www.googleapis.com/auth/monitoring.read"
           ],
           "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
-        },
-        "delete": {
-          "id": "monitoring.operations.delete",
-          "path": "v1/{+name}",
-          "flatPath": "v1/operations/{operationsId}",
-          "httpMethod": "DELETE",
-          "parameters": {
-            "name": {
-              "description": "The name of the operation resource to be deleted.",
-              "pattern": "^operations\/.*$",
-              "location": "path",
-              "required": true,
-              "type": "string"
-            }
-          },
-          "parameterOrder": [
-            "name"
-          ],
-          "response": {
-            "$ref": "Empty"
-          },
-          "description": "Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns google.rpc.Code.UNIMPLEMENTED."
-        },
-        "cancel": {
-          "id": "monitoring.operations.cancel",
-          "path": "v1/{+name}:cancel",
-          "flatPath": "v1/operations/{operationsId}:cancel",
-          "httpMethod": "POST",
-          "parameters": {
-            "name": {
-              "description": "The name of the operation resource to be cancelled.",
-              "pattern": "^operations\/.*$",
-              "location": "path",
-              "required": true,
-              "type": "string"
-            }
-          },
-          "parameterOrder": [
-            "name"
-          ],
-          "request": {
-            "$ref": "CancelOperationRequest"
-          },
-          "response": {
-            "$ref": "Empty"
-          },
-          "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns google.rpc.Code.UNIMPLEMENTED. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to Code.CANCELLED."
         }
       }
     },
@@ -1367,7 +1319,7 @@
                 "https://www.googleapis.com/auth/monitoring",
                 "https://www.googleapis.com/auth/monitoring.write"
               ],
-              "description": "Creates a new custom dashboard. For examples on how you can use this API to create dashboards, see Managing dashboards by API. This method requires the monitoring.dashboards.create permission on the specified project. For more information about permissions, see Cloud Identity and Access Management."
+              "description": "Creates a new custom dashboard. For examples on how you can use this API to create dashboards, see Managing dashboards by API (https:\/\/cloud.google.com\/monitoring\/dashboards\/api-dashboard). This method requires the monitoring.dashboards.create permission on the specified project. For more information about permissions, see Cloud Identity and Access Management (https:\/\/cloud.google.com\/iam)."
             },
             "list": {
               "id": "monitoring.projects.dashboards.list",
@@ -1495,6 +1447,133 @@
                 "https://www.googleapis.com/auth/monitoring.write"
               ],
               "description": "Replaces an existing custom dashboard with a new definition.This method requires the monitoring.dashboards.update permission on the specified dashboard. For more information, see Cloud Identity and Access Management (https:\/\/cloud.google.com\/iam)."
+            }
+          }
+        }
+      }
+    },
+    "locations": {
+      "resources": {
+        "global": {
+          "resources": {
+            "metricsScopes": {
+              "methods": {
+                "get": {
+                  "id": "monitoring.locations.global.metricsScopes.get",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/locations/global/metricsScopes/{metricsScopesId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The resource name of the Metrics Scope. Example: locations\/global\/metricsScopes\/{SCOPING_PROJECT_ID_OR_NUMBER}",
+                      "pattern": "^locations\/global\/metricsScopes\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "MetricsScope"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/monitoring",
+                    "https://www.googleapis.com/auth/monitoring.read"
+                  ],
+                  "description": "Returns a specific Metrics Scope."
+                },
+                "listMetricsScopesByMonitoredProject": {
+                  "id": "monitoring.locations.global.metricsScopes.listMetricsScopesByMonitoredProject",
+                  "path": "v1/locations/global/metricsScopes:listMetricsScopesByMonitoredProject",
+                  "flatPath": "v1/locations/global/metricsScopes:listMetricsScopesByMonitoredProject",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "monitoredResourceContainer": {
+                      "description": "Required. The resource name of the Monitored Project being requested. Example: projects\/{MONITORED_PROJECT_ID_OR_NUMBER}",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                  ],
+                  "response": {
+                    "$ref": "ListMetricsScopesByMonitoredProjectResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform",
+                    "https://www.googleapis.com/auth/monitoring",
+                    "https://www.googleapis.com/auth/monitoring.read"
+                  ],
+                  "description": "Returns a list of every Metrics Scope that a specific MonitoredProject has been added to. The metrics scope representing the specified monitored project will always be the first entry in the response."
+                }
+              }
+              ,
+              "resources": {
+                "projects": {
+                  "methods": {
+                    "create": {
+                      "id": "monitoring.locations.global.metricsScopes.projects.create",
+                      "path": "v1/{+parent}/projects",
+                      "flatPath": "v1/locations/global/metricsScopes/{metricsScopesId}/projects",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The resource name of the existing Metrics Scope that will monitor this project. Example: locations\/global\/metricsScopes\/{SCOPING_PROJECT_ID_OR_NUMBER}",
+                          "pattern": "^locations\/global\/metricsScopes\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "MonitoredProject"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/monitoring",
+                        "https://www.googleapis.com/auth/monitoring.write"
+                      ],
+                      "description": "Adds a MonitoredProject with the given project ID to the specified Metrics Scope."
+                    },
+                    "delete": {
+                      "id": "monitoring.locations.global.metricsScopes.projects.delete",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/locations/global/metricsScopes/{metricsScopesId}/projects/{projectsId}",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The resource name of the MonitoredProject. Example: locations\/global\/metricsScopes\/{SCOPING_PROJECT_ID_OR_NUMBER}\/projects\/{MONITORED_PROJECT_ID_OR_NUMBER}Authorization requires the following Google IAM (https:\/\/cloud.google.com\/iam) permissions on both the Metrics Scope and on the MonitoredProject: monitoring.metricsScopes.link",
+                          "pattern": "^locations\/global\/metricsScopes\/[^\/]+\/projects\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/monitoring",
+                        "https://www.googleapis.com/auth/monitoring.write"
+                      ],
+                      "description": "Deletes a MonitoredProject from the specified Metrics Scope."
+                    }
+                  }
+                }
+              }
             }
           }
         }

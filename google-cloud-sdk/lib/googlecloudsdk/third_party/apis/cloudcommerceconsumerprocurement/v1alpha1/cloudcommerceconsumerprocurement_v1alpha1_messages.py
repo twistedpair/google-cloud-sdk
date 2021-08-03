@@ -59,7 +59,8 @@ class CloudcommerceconsumerprocurementBillingAccountsAccountsListRequest(_messag
   object.
 
   Fields:
-    pageSize: The maximum number of entries that are requested.
+    pageSize: The maximum number of entries that are requested. The default
+      page size is 25 and the maximum page size is 200.
     pageToken: The token for fetching the next page.
     parent: Required. The parent resource to query for accounts. This field is
       of the form `billingAccounts/{billing-account-id}`.
@@ -189,7 +190,8 @@ class CloudcommerceconsumerprocurementBillingAccountsOrdersListRequest(_messages
       with `OR`, and `NOT` to form more complex queries. They can also be
       grouped to force a desired evaluation order. For example,
       `display_name=abc OR display_name=def`.
-    pageSize: The maximum number of entries that are requested.
+    pageSize: The maximum number of entries that are requested. The default
+      page size is 25 and the maximum page size is 200.
     pageToken: The token for fetching the next page.
     parent: Required. The parent resource to query for orders. This field is
       of the form `billingAccounts/{billing-account-id}`.
@@ -337,7 +339,8 @@ class CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsListR
   istRequest object.
 
   Fields:
-    pageSize: The maximum number of entries that are requested.
+    pageSize: The maximum number of entries that are requested. The default
+      page size is 25 and the maximum page size is 200.
     pageToken: The token for fetching the next page.
     parent: Required. The parent resource to query for OrderAllocations. This
       field is of the form `billingAccounts/{billing-account-
@@ -458,7 +461,8 @@ class CloudcommerceconsumerprocurementProjectsEntitlementsListRequest(_messages.
   object.
 
   Fields:
-    pageSize: The maximum number of entries that are requested.
+    pageSize: The maximum number of entries that are requested. The default
+      page size is 25 and the maximum page size is 200.
     pageToken: The token for fetching the next page.
     parent: Required. The parent resource to query for Entitlements. Currently
       the only parents supported are "projects/{project-number}" and
@@ -516,7 +520,8 @@ class CloudcommerceconsumerprocurementProjectsFreeTrialsListRequest(_messages.Me
       between two predicates. For example `provider=providers/E-1234
       product_external_name=foo` is equivalent to `provider=providers/E-1234
       AND product_external_name=foo`.
-    pageSize: The maximum number of entries that are requested.
+    pageSize: The maximum number of entries that are requested. The default
+      page size is 25 and the maximum page size is 200.
     pageToken: The token for fetching the next page.
     parent: Required. The parent resource to query for FreeTrials. Currently
       the only parent supported is "projects/{project-id}".
@@ -697,6 +702,13 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1AddOnDetails(_messages.Messa
   isAddOn = _messages.BooleanField(1)
 
 
+class GoogleCloudCommerceConsumerProcurementV1alpha1CancelOrderMetadata(_messages.Message):
+  r"""Message stored in the metadata field of the Operation returned by
+  ConsumerProcurementService.CancelOrder.
+  """
+
+
+
 class GoogleCloudCommerceConsumerProcurementV1alpha1CancelOrderRequest(_messages.Message):
   r"""Request message for ConsumerProcurementService.CancelOrder.
 
@@ -716,7 +728,10 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1CancelOrderRequest(_messages
     Values:
       CANCELLATION_POLICY_UNSPECIFIED: If unspecified, cancellation will try
         to cancel the order, if order cannot be immediately cancelled, auto
-        renewal will be turned off.
+        renewal will be turned off. However, caller should avoid using the
+        value as it will yield a non-deterministic result. This is still
+        supported mainly to maintain existing integrated usages and ensure
+        backwards compatibility.
       CANCELLATION_POLICY_CANCEL_IMMEDIATELY: Request will cancel the whole
         order immediately, if order cannot be immediately cancelled, the
         request will fail.
@@ -731,6 +746,27 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1CancelOrderRequest(_messages
   etag = _messages.StringField(2)
 
 
+class GoogleCloudCommerceConsumerProcurementV1alpha1CreateAccountMetadata(_messages.Message):
+  r"""Message stored in the metadata field of the Operation returned by
+  ConsumerProcurementService.CreateAccount.
+  """
+
+
+
+class GoogleCloudCommerceConsumerProcurementV1alpha1CreateFreeTrialMetadata(_messages.Message):
+  r"""Message stored in the metadata field of the Operation returned by
+  ConsumerProcurementService.CreateFreeTrial.
+  """
+
+
+
+class GoogleCloudCommerceConsumerProcurementV1alpha1CreateOrderAllocationMetadata(_messages.Message):
+  r"""Message stored in the metadata field of the Operation returned by
+  ConsumerProcurementService.CreateOrderAllocation.
+  """
+
+
+
 class GoogleCloudCommerceConsumerProcurementV1alpha1CustomPricing(_messages.Message):
   r"""Information about custom pricing on a resource.
 
@@ -739,6 +775,20 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1CustomPricing(_messages.Mess
   """
 
   endTime = _messages.StringField(1)
+
+
+class GoogleCloudCommerceConsumerProcurementV1alpha1DeleteAccountMetadata(_messages.Message):
+  r"""Message stored in the metadata field of the Operation returned by
+  ConsumerProcurementService.DeleteAccount.
+  """
+
+
+
+class GoogleCloudCommerceConsumerProcurementV1alpha1DeleteOrderAllocationMetadata(_messages.Message):
+  r"""Message stored in the metadata field of the Operation returned by
+  ConsumerProcurementService.DeleteOrderAllocation.
+  """
+
 
 
 class GoogleCloudCommerceConsumerProcurementV1alpha1Entitlement(_messages.Message):
@@ -1250,6 +1300,13 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1ListOrdersResponse(_messages
   orders = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1Order', 2, repeated=True)
 
 
+class GoogleCloudCommerceConsumerProcurementV1alpha1MigrateOrderMetadata(_messages.Message):
+  r"""Message stored in the metadata field of the Operation returned by
+  ConsumerProcurementService.MigrateOrder.
+  """
+
+
+
 class GoogleCloudCommerceConsumerProcurementV1alpha1MigrateOrderRequest(_messages.Message):
   r"""Request message for ConsumerProcurementService.MigrateOrder.
 
@@ -1260,6 +1317,13 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1MigrateOrderRequest(_message
   """
 
   newParent = _messages.StringField(1)
+
+
+class GoogleCloudCommerceConsumerProcurementV1alpha1ModifyOrderMetadata(_messages.Message):
+  r"""Message stored in the metadata field of the Operation returned by
+  ConsumerProcurementService.ModifyOrder.
+  """
+
 
 
 class GoogleCloudCommerceConsumerProcurementV1alpha1ModifyOrderRequest(_messages.Message):
@@ -1646,6 +1710,13 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1ParameterValue(_messages.Mes
   stringValue = _messages.StringField(3)
 
 
+class GoogleCloudCommerceConsumerProcurementV1alpha1PlaceOrderMetadata(_messages.Message):
+  r"""Message stored in the metadata field of the Operation returned by
+  ConsumerProcurementService.PlaceOrder.
+  """
+
+
+
 class GoogleCloudCommerceConsumerProcurementV1alpha1PlaceOrderRequest(_messages.Message):
   r"""Request message for ConsumerProcurementService.PlaceOrder. Next Id: 11
 
@@ -1722,6 +1793,13 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1PlaceQuoteOrderRequest(_mess
   quoteExternalName = _messages.StringField(1)
 
 
+class GoogleCloudCommerceConsumerProcurementV1alpha1ReplaceOrderAllocationsMetadata(_messages.Message):
+  r"""Message stored in the metadata field of the Operation returned by
+  ConsumerProcurementService.ReplaceOrderAllocations.
+  """
+
+
+
 class GoogleCloudCommerceConsumerProcurementV1alpha1ReplaceOrderAllocationsResponse(_messages.Message):
   r"""Message stored in the response field of the Operation returned by
   ConsumerProcurementService.ReplaceOrderAllocations.
@@ -1748,6 +1826,13 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1Subscription(_messages.Messa
   autoRenewalEnabled = _messages.BooleanField(1)
   endTime = _messages.StringField(2)
   startTime = _messages.StringField(3)
+
+
+class GoogleCloudCommerceConsumerProcurementV1alpha1UpdateOrderAllocationMetadata(_messages.Message):
+  r"""Message stored in the metadata field of the Operation returned by
+  ConsumerProcurementService.UpdateOrderAllocation.
+  """
+
 
 
 class GoogleLongrunningCancelOperationRequest(_messages.Message):

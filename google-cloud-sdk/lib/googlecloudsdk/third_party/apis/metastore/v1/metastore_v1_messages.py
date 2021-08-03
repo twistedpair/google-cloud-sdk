@@ -91,6 +91,8 @@ class Backup(_messages.Message):
     name: Immutable. The relative resource name of the backup, in the
       following form:projects/{project_number}/locations/{location_id}/service
       s/{service_id}/backups/{backup_id}
+    restoringServices: Output only. Services that are restoring from the
+      backup.
     serviceRevision: Output only. The revision of the service at the time of
       backup.
     state: Output only. The current state of the backup.
@@ -118,8 +120,9 @@ class Backup(_messages.Message):
   description = _messages.StringField(2)
   endTime = _messages.StringField(3)
   name = _messages.StringField(4)
-  serviceRevision = _messages.MessageField('Service', 5)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
+  restoringServices = _messages.StringField(5, repeated=True)
+  serviceRevision = _messages.MessageField('Service', 6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
 
 
 class Binding(_messages.Message):

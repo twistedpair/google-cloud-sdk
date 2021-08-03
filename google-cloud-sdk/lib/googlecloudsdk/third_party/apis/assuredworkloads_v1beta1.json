@@ -222,7 +222,8 @@
             "FedRAMP Moderate data protection controls",
             "Assured Workloads For US Regions data protection controls",
             "Health Insurance Portability and Accountability Act controls",
-            "Health Information Trust Alliance controls"
+            "Health Information Trust Alliance controls",
+            "Assured Workloads For EU Regions and Support controls"
           ],
           "enum": [
             "COMPLIANCE_REGIME_UNSPECIFIED",
@@ -232,7 +233,8 @@
             "FEDRAMP_MODERATE",
             "US_REGIONAL_ACCESS",
             "HIPAA",
-            "HITRUST"
+            "HITRUST",
+            "EU_REGIONS_AND_SUPPORT"
           ]
         },
         "createTime": {
@@ -273,7 +275,7 @@
           }
         },
         "provisionedResourcesParent": {
-          "description": "Input only. The parent resource for the resources managed by this Assured Workload. May be either an organization or a folder. Must be the same or a child of the Workload parent. If not specified all resources are created under the Workload parent. Formats: folders\/{folder_id} organizations\/{organization_id}",
+          "description": "Input only. The parent resource for the resources managed by this Assured Workload. May be either empty or a folder resource which is a child of the Workload parent. If not specified all resources are created under the parent organization. Format: folders\/{folder_id}",
           "type": "string"
         },
         "kmsSettings": {
@@ -467,7 +469,8 @@
             "FedRAMP Moderate data protection controls",
             "Assured Workloads For US Regions data protection controls",
             "Health Insurance Portability and Accountability Act controls",
-            "Health Information Trust Alliance controls"
+            "Health Information Trust Alliance controls",
+            "Assured Workloads For EU Regions and Support controls"
           ],
           "enum": [
             "COMPLIANCE_REGIME_UNSPECIFIED",
@@ -477,7 +480,8 @@
             "FEDRAMP_MODERATE",
             "US_REGIONAL_ACCESS",
             "HIPAA",
-            "HITRUST"
+            "HITRUST",
+            "EU_REGIONS_AND_SUPPORT"
           ]
         }
       }
@@ -514,7 +518,8 @@
             "FedRAMP Moderate data protection controls",
             "Assured Workloads For US Regions data protection controls",
             "Health Insurance Portability and Accountability Act controls",
-            "Health Information Trust Alliance controls"
+            "Health Information Trust Alliance controls",
+            "Assured Workloads For EU Regions and Support controls"
           ],
           "enum": [
             "COMPLIANCE_REGIME_UNSPECIFIED",
@@ -524,7 +529,8 @@
             "FEDRAMP_MODERATE",
             "US_REGIONAL_ACCESS",
             "HIPAA",
-            "HITRUST"
+            "HITRUST",
+            "EU_REGIONS_AND_SUPPORT"
           ]
         },
         "createTime": {
@@ -549,7 +555,7 @@
           }
         },
         "provisionedResourcesParent": {
-          "description": "Input only. The parent resource for the resources managed by this Assured Workload. May be either an organization or a folder. Must be the same or a child of the Workload parent. If not specified all resources are created under the Workload parent. Formats: folders\/{folder_id} organizations\/{organization_id}",
+          "description": "Input only. The parent resource for the resources managed by this Assured Workload. May be either empty or a folder resource which is a child of the Workload parent. If not specified all resources are created under the parent organization. Format: folders\/{folder_id}",
           "type": "string"
         },
         "kmsSettings": {
@@ -670,7 +676,8 @@
             "FedRAMP Moderate data protection controls",
             "Assured Workloads For US Regions data protection controls",
             "Health Insurance Portability and Accountability Act controls",
-            "Health Information Trust Alliance controls"
+            "Health Information Trust Alliance controls",
+            "Assured Workloads For EU Regions and Support controls"
           ],
           "enum": [
             "COMPLIANCE_REGIME_UNSPECIFIED",
@@ -680,7 +687,8 @@
             "FEDRAMP_MODERATE",
             "US_REGIONAL_ACCESS",
             "HIPAA",
-            "HITRUST"
+            "HITRUST",
+            "EU_REGIONS_AND_SUPPORT"
           ]
         },
         "resourceSettings": {

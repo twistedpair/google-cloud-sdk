@@ -201,7 +201,7 @@ def _ValidateV1Flag(args):
                             '540s; received: {}s'.format(args.timeout))
 
 
-def Run(args, track=None, enable_runtime=True, enable_build_worker_pool=False):
+def Run(args, track=None, enable_runtime=True):
   """Run a function deployment with the given args."""
   flags.ValidateV1TimeoutFlag(args)
 
@@ -308,11 +308,10 @@ def Run(args, track=None, enable_runtime=True, enable_build_worker_pool=False):
             args.ingress_settings)
     function.ingressSettings = ingress_settings_enum
     updated_fields.append('ingressSettings')
-  if enable_build_worker_pool:
-    if args.build_worker_pool or args.clear_build_worker_pool:
-      function.buildWorkerPool = ('' if args.clear_build_worker_pool else
-                                  args.build_worker_pool)
-      updated_fields.append('buildWorkerPool')
+  if args.build_worker_pool or args.clear_build_worker_pool:
+    function.buildWorkerPool = ('' if args.clear_build_worker_pool else
+                                args.build_worker_pool)
+    updated_fields.append('buildWorkerPool')
   # Populate trigger properties of function based on trigger args.
   if args.trigger_http:
     function.httpsTrigger = messages.HttpsTrigger()

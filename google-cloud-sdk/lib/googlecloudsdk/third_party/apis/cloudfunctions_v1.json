@@ -217,7 +217,7 @@
     },
     "CloudFunction": {
       "id": "CloudFunction",
-      "description": "Describes a Cloud Function that contains user computation executed in response to an event. It encapsulate function and triggers configurations.",
+      "description": "Describes a Cloud Function that contains user computation executed in response to an event. It encapsulate function and triggers configurations. Next tag: 35",
       "type": "object",
       "properties": {
         "name": {
@@ -372,6 +372,10 @@
             "ALLOW_INTERNAL_AND_GCLB"
           ]
         },
+        "kmsKeyName": {
+          "description": "Resource name of a KMS crypto key (managed by the user) used to encrypt\/decrypt function resources. It must match the pattern `projects\/{project}\/locations\/{location}\/keyRings\/{key_ring}\/cryptoKeys\/{crypto_key}`. If specified, you must also provide an artifact registry repository using the `docker_repository` field that was created with the same KMS crypto key.",
+          "type": "string"
+        },
         "buildWorkerPool": {
           "description": "Name of the Cloud Build Custom Worker Pool that should be used to build the function. The format of this field is `projects\/{project}\/locations\/{region}\/workerPools\/{workerPool}` where {project} and {region} are the project id and region respectively where the worker pool is defined and {workerPool} is the short name of the worker pool. If the project id is not the same as the function, then the Cloud Functions Service Agent (service-@gcf-admin-robot.iam.gserviceaccount.com) must be granted the role Cloud Build Custom Workers Builder (roles\/cloudbuild.customworkers.builder) in the project.",
           "type": "string"
@@ -402,6 +406,10 @@
         },
         "sourceToken": {
           "description": "Input only. An identifier for Firebase function sources. Disclaimer: This field is only supported for Firebase function deployments.",
+          "type": "string"
+        },
+        "dockerRepository": {
+          "description": "User managed repository created in Artifact Registry optionally with a customer managed encryption key. This is the repository to which the function docker image will be pushed after it is built by Cloud Build. If unspecified, GCF will create and use a repository named 'gcf-artifacts' for every deployed region. It must match the pattern `projects\/{project}\/locations\/{location}\/repositories\/{repository}`. Cross-project repositories are not supported. Cross-location repositories are not supported. Repository format must be 'DOCKER'.",
           "type": "string"
         }
       }
@@ -499,7 +507,7 @@
           "type": "string"
         },
         "projectId": {
-          "description": "Project whose secret manager data is being referenced. Cross project secrets are not supported.",
+          "description": "Project identifier (preferrably project number but can also be the project ID) of the project that contains the secret. If not set, it will be populated with the function's project assuming that the secret exists in the same project as of the function.",
           "type": "string"
         },
         "secret": {
@@ -522,7 +530,7 @@
           "type": "string"
         },
         "projectId": {
-          "description": "Project whose secret manager data is being referenced. Cross project secrets are not supported.",
+          "description": "Project identifier (preferrably project number but can also be the project ID) of the project that contains the secret. If not set, it will be populated with the function's project assuming that the secret exists in the same project as of the function.",
           "type": "string"
         },
         "secret": {
@@ -1002,6 +1010,42 @@
         },
         "resourceUri": {
           "description": "Link to the current Stage resource",
+          "type": "string"
+        },
+        "stateMessages": {
+          "description": "State messages from the current Stage.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudFunctionsV2alphaStateMessage"
+          }
+        }
+      }
+    },
+    "GoogleCloudFunctionsV2alphaStateMessage": {
+      "id": "GoogleCloudFunctionsV2alphaStateMessage",
+      "description": "Informational messages about the state of the Cloud Function or Operation.",
+      "type": "object",
+      "properties": {
+        "severity": {
+          "description": "Severity of the state message.",
+          "type": "string",
+          "enumDescriptions": [
+            "Not specified. Invalid severity.",
+            "ERROR-level severity.",
+            "WARNING-level severity."
+          ],
+          "enum": [
+            "SEVERITY_UNSPECIFIED",
+            "ERROR",
+            "WARNING"
+          ]
+        },
+        "type": {
+          "description": "One-word CamelCase type of the state message.",
+          "type": "string"
+        },
+        "message": {
+          "description": "The message.",
           "type": "string"
         }
       }

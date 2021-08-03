@@ -432,7 +432,7 @@ class InternalRange(_messages.Message):
   Used to represent a private address range along with behavioral
   characterstics of that range (it's usage and peering behavior). Networking
   resources can link to this range if they are created as belonging to it.
-  Next id: 10
+  Next id: 12
 
   Enums:
     PeeringValueValuesEnum: The type of peering set for this InternalRange.
@@ -456,6 +456,16 @@ class InternalRange(_messages.Message):
       /compute/v1/projects/{project}/global/networks/{resourceId} - ID:
       network123
     peering: The type of peering set for this InternalRange.
+    prefixLength: An alternate to ip_cidr_range. Can be set when trying to
+      create a reservation that automatically finds a free range of the given
+      size. If both ip_cidr_range and prefix_length are set, it's an error if
+      the range sizes don't match. Can also be used during updates to change
+      the range size.
+    targetCidrRange: Optional. Can be set to narrow down or pick a different
+      address space while searching for a free range. If not set, defaults to
+      the "10.0.0.0/8" address space. This can be used to search in other
+      rfc-1918 address spaces like "172.16.0.0/12" and "192.168.0.0/16" or
+      non-rfc-1918 address spaces used in the VPC.
     updateTime: Time when the InternalRange was updated.
     usage: The type of usage set for this InternalRange.
   """
@@ -541,8 +551,10 @@ class InternalRange(_messages.Message):
   name = _messages.StringField(5)
   network = _messages.StringField(6)
   peering = _messages.EnumField('PeeringValueValuesEnum', 7)
-  updateTime = _messages.StringField(8)
-  usage = _messages.EnumField('UsageValueValuesEnum', 9)
+  prefixLength = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  targetCidrRange = _messages.StringField(9, repeated=True)
+  updateTime = _messages.StringField(10)
+  usage = _messages.EnumField('UsageValueValuesEnum', 11)
 
 
 class ListHubsResponse(_messages.Message):
@@ -588,22 +600,6 @@ class ListLocationsResponse(_messages.Message):
 
   locations = _messages.MessageField('Location', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
-
-
-class ListPolicyBasedRoutesResponse(_messages.Message):
-  r"""Response for PolicyBasedRouting.ListPolicyBasedRoutes method.
-
-  Fields:
-    nextPageToken: The next pagination token in the List response. It should
-      be used as page_token for the following request. An empty value means no
-      more result.
-    policyBasedRoutes: Policy based routes to be returned.
-    unreachable: Locations that could not be reached.
-  """
-
-  nextPageToken = _messages.StringField(1)
-  policyBasedRoutes = _messages.MessageField('PolicyBasedRoute', 2, repeated=True)
-  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListSpokesResponse(_messages.Message):
@@ -861,145 +857,6 @@ class NetworkconnectivityProjectsLocationsGlobalHubsTestIamPermissionsRequest(_m
   r"""A
   NetworkconnectivityProjectsLocationsGlobalHubsTestIamPermissionsRequest
   object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
-    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
-      passed as the request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
-
-
-class NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesCreateRequest(_messages.Message):
-  r"""A
-  NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesCreateRequest
-  object.
-
-  Fields:
-    parent: Required. The parent resource's name of the PolicyBasedRoute.
-    policyBasedRoute: A PolicyBasedRoute resource to be passed as the request
-      body.
-    policyBasedRouteId: Optional. Unique id for the Policy Based Route to
-      create.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-  """
-
-  parent = _messages.StringField(1, required=True)
-  policyBasedRoute = _messages.MessageField('PolicyBasedRoute', 2)
-  policyBasedRouteId = _messages.StringField(3)
-  requestId = _messages.StringField(4)
-
-
-class NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesDeleteRequest(_messages.Message):
-  r"""A
-  NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesDeleteRequest
-  object.
-
-  Fields:
-    name: Required. Name of the PolicyBasedRoute resource to delete.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes after the first
-      request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-  """
-
-  name = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
-
-
-class NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesGetIamPolicyRequest(_messages.Message):
-  r"""A NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesGetIamPolic
-  yRequest object.
-
-  Fields:
-    options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected. Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset. To learn
-      which resources support conditions in their IAM policies, see the [IAM
-      documentation](https://cloud.google.com/iam/help/conditions/resource-
-      policies).
-    resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
-  """
-
-  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  resource = _messages.StringField(2, required=True)
-
-
-class NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesGetRequest(_messages.Message):
-  r"""A NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesGetRequest
-  object.
-
-  Fields:
-    name: Required. Name of the PolicyBasedRoute resource to get.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesListRequest(_messages.Message):
-  r"""A NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesListRequest
-  object.
-
-  Fields:
-    filter: A filter expression that filters the results listed in the
-      response.
-    orderBy: Sort the results by a certain order.
-    pageSize: The maximum number of results per page that should be returned.
-    pageToken: The page token.
-    parent: Required. The parent resource's name.
-  """
-
-  filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
-
-
-class NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesSetIamPolicyRequest(_messages.Message):
-  r"""A NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesSetIamPolic
-  yRequest object.
-
-  Fields:
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
-    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
-      request body.
-  """
-
-  resource = _messages.StringField(1, required=True)
-  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
-
-
-class NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesTestIamPermissionsRequest(_messages.Message):
-  r"""A NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesTestIamPerm
-  issionsRequest object.
 
   Fields:
     resource: REQUIRED: The resource for which the policy detail is being
@@ -1509,97 +1366,6 @@ class Policy(_messages.Message):
   version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
-class PolicyBasedRoute(_messages.Message):
-  r"""Policy Based Routing is a control plane component that sits behind CCFE
-  and programs downstream components to steer customer's L4 network traffic as
-  per their request Here is the resource message of a PolicyBasedRoute. Next
-  id: 17
-
-  Messages:
-    LabelsValue: User-defined labels.
-
-  Fields:
-    createTime: Time when the PolicyBasedRoute was created.
-    description: Optional. An optional description of this resource. Provide
-      this field when you create the resource.
-    destRange: Optional. The destination IP range of outgoing packets that
-      this policy based route applies to. Only IPv4 is supported.
-    kind: Output only. Type of this resource. Always
-      networkconnectivity#policyBasedRoute for Policy Based Route resources.
-    labels: User-defined labels.
-    name: Name of the resource. Provided by the client when the resource is
-      created. The name must be 1-63 characters long, and comply with RFC1035.
-      Specifically, the name must be 1-63 characters long and match the
-      regular expression [a-z]([-a-z0-9]*[a-z0-9])?. The first character must
-      be a lowercase letter, and all following characters (except for the last
-      character) must be a dash, lowercase letter, or digit. The last
-      character must be a lowercase letter or digit.
-    network: Required. Fully-qualified URL of the network that this route
-      applies to.
-    nextHopIlbIp: Optional. The IP of a global access enabled L4 ILB that
-      should be the next hop to handle matching packets.
-    nextHopInstanceIp: Optional. The IP of an instance that should be the next
-      hop to handle matching packets.
-    priority: Optional. The priority of this policy based route. Priority is
-      used to break ties in cases where there are more than one matching
-      policy based routes found. In cases where multiple policy based routes
-      are matched, the one with the lowest-numbered priority value wins. The
-      default value is 1000. The priority value must be from 1 to 65535,
-      inclusive.
-    protocol: Optional. The IP protocol number that this policy based route
-      applies to. The valid range is [1, 255].
-    selfLink: Output only. Server-defined fully-qualified URL for this
-      resource.
-    srcRange: Optional. The source IP range of outgoing packets that this
-      policy based route applies to. Only IPv4 is supported.
-    tags: Optional. A list of instance tags to which this route applies to.
-    updateTime: Time when the PolicyBasedRoute was updated.
-    warnings: Output only. If potential misconfigurations are detected for
-      this route, this field will be populated with warning messages.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LabelsValue(_messages.Message):
-    r"""User-defined labels.
-
-    Messages:
-      AdditionalProperty: An additional property for a LabelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a LabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  createTime = _messages.StringField(1)
-  description = _messages.StringField(2)
-  destRange = _messages.StringField(3)
-  kind = _messages.StringField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  network = _messages.StringField(7)
-  nextHopIlbIp = _messages.StringField(8)
-  nextHopInstanceIp = _messages.StringField(9)
-  priority = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  protocol = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  selfLink = _messages.StringField(12)
-  srcRange = _messages.StringField(13)
-  tags = _messages.StringField(14, repeated=True)
-  updateTime = _messages.StringField(15)
-  warnings = _messages.MessageField('Warnings', 16, repeated=True)
-
-
 class RouterApplianceInstance(_messages.Message):
   r"""RouterAppliance represents a Router appliance which is specified by a VM
   URI and a NIC address.
@@ -1798,74 +1564,6 @@ class TestIamPermissionsResponse(_messages.Message):
   """
 
   permissions = _messages.StringField(1, repeated=True)
-
-
-class Warnings(_messages.Message):
-  r"""Informational warning message.
-
-  Enums:
-    CodeValueValuesEnum: Output only. A warning code, if applicable.
-
-  Messages:
-    DataValue: Output only. Metadata about this warning in key: value format.
-      The key should provides more detail on the warning being returned. For
-      example, for warnings where there are no results in a list request for a
-      particular zone, this key might be scope and the key value might be the
-      zone name. Other examples might be a key indicating a deprecated
-      resource and a suggested replacement.
-
-  Fields:
-    code: Output only. A warning code, if applicable.
-    data: Output only. Metadata about this warning in key: value format. The
-      key should provides more detail on the warning being returned. For
-      example, for warnings where there are no results in a list request for a
-      particular zone, this key might be scope and the key value might be the
-      zone name. Other examples might be a key indicating a deprecated
-      resource and a suggested replacement.
-    warningMessage: Output only. A human-readable description of the warning
-      code.
-  """
-
-  class CodeValueValuesEnum(_messages.Enum):
-    r"""Output only. A warning code, if applicable.
-
-    Values:
-      WARNING_UNSPECIFIED: Default value.
-    """
-    WARNING_UNSPECIFIED = 0
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class DataValue(_messages.Message):
-    r"""Output only. Metadata about this warning in key: value format. The key
-    should provides more detail on the warning being returned. For example,
-    for warnings where there are no results in a list request for a particular
-    zone, this key might be scope and the key value might be the zone name.
-    Other examples might be a key indicating a deprecated resource and a
-    suggested replacement.
-
-    Messages:
-      AdditionalProperty: An additional property for a DataValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type DataValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a DataValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  code = _messages.EnumField('CodeValueValuesEnum', 1)
-  data = _messages.MessageField('DataValue', 2)
-  warningMessage = _messages.StringField(3)
 
 
 encoding.AddCustomJsonFieldMapping(

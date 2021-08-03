@@ -672,6 +672,10 @@ class Instance(_messages.Message):
       Storage path (gs://path-to-file/file-name).
     proxyUri: Output only. The proxy endpoint that is used to access the
       Jupyter notebook.
+    reservationAffinity: Optional. The optional reservation affinity. Setting
+      this field will apply the specified [Zonal Compute
+      Reservation](https://cloud.google.com/compute/docs/instances/reserving-
+      zonal-resources) to this notebook instance.
     serviceAccount: The service account on this instance, giving access to
       other Google Cloud services. You can use any service account within the
       same project, but you must have the service account user permission to
@@ -855,15 +859,16 @@ class Instance(_messages.Message):
   noRemoveDataDisk = _messages.BooleanField(22)
   postStartupScript = _messages.StringField(23)
   proxyUri = _messages.StringField(24)
-  serviceAccount = _messages.StringField(25)
-  serviceAccountScopes = _messages.StringField(26, repeated=True)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 27)
-  state = _messages.EnumField('StateValueValuesEnum', 28)
-  subnet = _messages.StringField(29)
-  tags = _messages.StringField(30, repeated=True)
-  updateTime = _messages.StringField(31)
-  upgradeHistory = _messages.MessageField('UpgradeHistoryEntry', 32, repeated=True)
-  vmImage = _messages.MessageField('VmImage', 33)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 25)
+  serviceAccount = _messages.StringField(26)
+  serviceAccountScopes = _messages.StringField(27, repeated=True)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 28)
+  state = _messages.EnumField('StateValueValuesEnum', 29)
+  subnet = _messages.StringField(30)
+  tags = _messages.StringField(31, repeated=True)
+  updateTime = _messages.StringField(32)
+  upgradeHistory = _messages.MessageField('UpgradeHistoryEntry', 33, repeated=True)
+  vmImage = _messages.MessageField('VmImage', 34)
 
 
 class InstanceConfig(_messages.Message):
@@ -1015,31 +1020,32 @@ class LocalDisk(_messages.Message):
   r"""An Local attached disk resource.
 
   Fields:
-    autoDelete: Output only. Specifies whether the disk will be auto-deleted
-      when the instance is deleted (but not when the disk is detached from the
-      instance).
-    boot: Output only. Indicates that this is a boot disk. The virtual machine
-      will use the first partition of the disk for its root filesystem.
-    deviceName: Output only. Specifies a unique device name of your choice
-      that is reflected into the /dev/disk/by-id/google-* tree of a Linux
-      operating system running within the instance. This name can be used to
-      reference the device for mounting, resizing, and so on, from within the
-      instance. If not specified, the server chooses a default device name to
-      apply to this disk, in the form persistent-disk-x, where x is a number
-      assigned by Google Compute Engine. This field is only applicable for
-      persistent disks.
+    autoDelete: Optional. Output only. Specifies whether the disk will be
+      auto-deleted when the instance is deleted (but not when the disk is
+      detached from the instance).
+    boot: Optional. Output only. Indicates that this is a boot disk. The
+      virtual machine will use the first partition of the disk for its root
+      filesystem.
+    deviceName: Optional. Output only. Specifies a unique device name of your
+      choice that is reflected into the /dev/disk/by-id/google-* tree of a
+      Linux operating system running within the instance. This name can be
+      used to reference the device for mounting, resizing, and so on, from
+      within the instance. If not specified, the server chooses a default
+      device name to apply to this disk, in the form persistent-disk-x, where
+      x is a number assigned by Google Compute Engine. This field is only
+      applicable for persistent disks.
     guestOsFeatures: Output only. Indicates a list of features to enable on
       the guest operating system. Applicable only for bootable images. Read
       Enabling guest operating system features to see a list of available
       options.
-    index: Output only. [Output Only] A zero-based index to this disk, where 0
-      is reserved for the boot disk. If you have many disks attached to an
-      instance, each disk would have a unique index number.
-    initializeParams: Input only. [Input Only] Specifies the parameters for a
-      new disk that will be created alongside the new instance. Use
-      initialization parameters to create boot disks or local SSDs attached to
-      the new instance. This property is mutually exclusive with the source
-      property; you can only define one or the other, but not both.
+    index: Output only. A zero-based index to this disk, where 0 is reserved
+      for the boot disk. If you have many disks attached to an instance, each
+      disk would have a unique index number.
+    initializeParams: Input only. Specifies the parameters for a new disk that
+      will be created alongside the new instance. Use initialization
+      parameters to create boot disks or local SSDs attached to the new
+      instance. This property is mutually exclusive with the source property;
+      you can only define one or the other, but not both.
     interface: Specifies the disk interface to use for attaching this disk,
       which is either SCSI or NVME. The default is SCSI. Persistent disks must
       always use SCSI and the request will fail if you attempt to attach a
@@ -1048,7 +1054,7 @@ class LocalDisk(_messages.Message):
       Local SSD performance. Valid values: NVME SCSI
     kind: Output only. Type of the resource. Always compute#attachedDisk for
       attached disks.
-    licenses: Output only. [Output Only] Any valid publicly visible licenses.
+    licenses: Output only. Any valid publicly visible licenses.
     mode: The mode in which to attach this disk, either READ_WRITE or
       READ_ONLY. If not specified, the default is to attach the disk in
       READ_WRITE mode. Valid values: READ_ONLY READ_WRITE
@@ -1073,11 +1079,11 @@ class LocalDisk(_messages.Message):
 
 
 class LocalDiskInitializeParams(_messages.Message):
-  r"""[Input Only] Specifies the parameters for a new disk that will be
-  created alongside the new instance. Use initialization parameters to create
-  boot disks or local SSDs attached to the new runtime. This property is
-  mutually exclusive with the source property; you can only define one or the
-  other, but not both.
+  r"""Input only. Specifies the parameters for a new disk that will be created
+  alongside the new instance. Use initialization parameters to create boot
+  disks or local SSDs attached to the new runtime. This property is mutually
+  exclusive with the source property; you can only define one or the other,
+  but not both.
 
   Enums:
     DiskTypeValueValuesEnum: Input only. The type of the boot disk attached to
@@ -1320,7 +1326,7 @@ class NotebooksProjectsLocationsExecutionsGetRequest(_messages.Message):
 
   Fields:
     name: Required. Format:
-      `projects/{project_id}/locations/{location}/schedules/{execution_id}`
+      `projects/{project_id}/locations/{location}/executions/{execution_id}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -2205,6 +2211,39 @@ class ReportRuntimeEventRequest(_messages.Message):
   vmId = _messages.StringField(2)
 
 
+class ReservationAffinity(_messages.Message):
+  r"""Reservation Affinity for consuming Zonal reservation.
+
+  Enums:
+    ConsumeReservationTypeValueValuesEnum: Optional. Type of reservation to
+      consume
+
+  Fields:
+    consumeReservationType: Optional. Type of reservation to consume
+    key: Optional. Corresponds to the label key of reservation resource.
+    values: Optional. Corresponds to the label values of reservation resource.
+  """
+
+  class ConsumeReservationTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Type of reservation to consume
+
+    Values:
+      TYPE_UNSPECIFIED: Default type.
+      NO_RESERVATION: Do not consume from any allocated capacity.
+      ANY_RESERVATION: Consume any reservation available.
+      SPECIFIC_RESERVATION: Must consume from a specific reservation. Must
+        specify key value fields for specifying the reservations.
+    """
+    TYPE_UNSPECIFIED = 0
+    NO_RESERVATION = 1
+    ANY_RESERVATION = 2
+    SPECIFIC_RESERVATION = 3
+
+  consumeReservationType = _messages.EnumField('ConsumeReservationTypeValueValuesEnum', 1)
+  key = _messages.StringField(2)
+  values = _messages.StringField(3, repeated=True)
+
+
 class ResetInstanceRequest(_messages.Message):
   r"""Request for reseting a notebook instance"""
 
@@ -2238,7 +2277,7 @@ class Runtime(_messages.Message):
     metrics: Output only. Contains Runtime daemon metrics such as Service
       status and JupyterLab stats.
     name: Output only. The resource name of the runtime. Format:
-      `projects/{project}/locations/{location}/runtimes/{runtime}`
+      `projects/{project}/locations/{location}/runtimes/{runtimeId}`
     softwareConfig: The config settings for software inside the runtime.
     state: Output only. Runtime state.
     updateTime: Output only. Runtime update time.
@@ -2381,15 +2420,18 @@ class RuntimeAccessConfig(_messages.Message):
 
 
 class RuntimeGuestOsFeature(_messages.Message):
-  r"""A list of features to enable on the guest operating system. Applicable
-  only for bootable images. Read Enabling guest operating system features to
-  see a list of available options. Guest OS features for boot disk.
+  r"""Optional. A list of features to enable on the guest operating system.
+  Applicable only for bootable images. Read [Enabling guest operating system
+  features](https://cloud.google.com/compute/docs/images/create-delete-
+  deprecate-private-images#guest-os-features) to see a list of available
+  options. Guest OS features for boot disk.
 
   Fields:
-    type: The ID of a supported feature. Read Enabling guest operating system
-      features to see a list of available options. Valid values:
-      FEATURE_TYPE_UNSPECIFIED MULTI_IP_SUBNET SECURE_BOOT UEFI_COMPATIBLE
-      VIRTIO_SCSI_MULTIQUEUE WINDOWS
+    type: The ID of a supported feature. Read [Enabling guest operating system
+      features](https://cloud.google.com/compute/docs/images/create-delete-
+      deprecate-private-images#guest-os-features) to see a list of available
+      options. Valid values: * FEATURE_TYPE_UNSPECIFIED * MULTI_IP_SUBNET *
+      SECURE_BOOT * UEFI_COMPATIBLE * VIRTIO_SCSI_MULTIQUEUE * WINDOWS
   """
 
   type = _messages.StringField(1)
@@ -2436,7 +2478,9 @@ class RuntimeMetrics(_messages.Message):
 
 class RuntimeShieldedInstanceConfig(_messages.Message):
   r"""A set of Shielded Instance options. Check [Images using supported
-  Shielded VM features] Not all combinations are valid.
+  Shielded VM
+  features](https://cloud.google.com/compute/docs/instances/modifying-
+  shielded-vm). Not all combinations are valid.
 
   Fields:
     enableIntegrityMonitoring: Defines whether the instance has integrity
@@ -2459,11 +2503,10 @@ class RuntimeShieldedInstanceConfig(_messages.Message):
 
 
 class RuntimeSoftwareConfig(_messages.Message):
-  r"""Specifies the selection and config of software inside the runtime. / The
-  properties to set on runtime. Properties keys are specified in `key:value`
-  format, for example: * idle_shutdown: idle_shutdown=true *
-  idle_shutdown_timeout: idle_shutdown_timeout=180 * report-system-health:
-  report-system-health=true
+  r"""Specifies the selection and configuration of software inside the
+  runtime. The properties to set on runtime. Properties keys are specified in
+  `key:value` format, for example: * `idle_shutdown: true` *
+  `idle_shutdown_timeout: 180` * `report-system-health: true`
 
   Fields:
     customGpuDriverPath: Specify a custom Cloud Storage path where the GPU
@@ -2472,9 +2515,9 @@ class RuntimeSoftwareConfig(_messages.Message):
     enableHealthMonitoring: Verifies core internal services are running.
       Default: True
     idleShutdown: Runtime will automatically shutdown after
-      idle_shutdown_time. Default: False
+      idle_shutdown_time. Default: True
     idleShutdownTimeout: Time in minutes to wait before shuting down runtime.
-      Default: 30 minutes
+      Default: 180 minutes
     installGpuDriver: Install Nvidia Driver automatically.
     notebookUpgradeSchedule: Cron expression in UTC timezone, used to schedule
       instance auto upgrade. Please follow the [cron

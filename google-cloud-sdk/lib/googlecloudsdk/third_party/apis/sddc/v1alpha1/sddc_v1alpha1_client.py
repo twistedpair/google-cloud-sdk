@@ -207,7 +207,7 @@ class SddcV1alpha1(base_api.BaseApiClient):
     )
 
     def Create(self, request, global_params=None):
-      r"""Creates a new cluster in a given cluster group. The creation is asynchronous. You can check the returned operation to track its progress. When the operation successfully completes, the cluster has a a *READY* status and is fully functional. The returned operation is automatically deleted after a few hours, so there is no need to call `operations.delete`.
+      r"""Creates a new cluster in a given cluster group. The creation is asynchronous. You can check the returned operation to track its progress. When the operation successfully completes, the cluster has a a **READY** status and is fully functional. The returned operation is automatically deleted after a few hours, so there is no need to call `operations.delete`.
 
       Args:
         request: (SddcProjectsLocationsClusterGroupsClustersCreateRequest) input message
@@ -868,7 +868,7 @@ class SddcV1alpha1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new `PrivateCloudBackup` in a given project and location (region). The creation is asynchronous. You can check the returned operation to track its progress. When the operation successfully completes, the `PrivateCloudBackup` has a *READY* status and is fully functional. A completed `longrunning.Operation` contains the new `PrivateCloudBackup` object in the response field. The returned operation is automatically deleted after a few hours, so there is no need to call `operations.delete`.
+      r"""Creates a new `PrivateCloudBackup` in a given project and location (region). The creation is asynchronous. You can check the returned operation to track its progress. When the operation successfully completes, the `PrivateCloudBackup` has a **READY** status and is fully functional. A completed `longrunning.Operation` contains the new `PrivateCloudBackup` object in the response field. The returned operation is automatically deleted after a few hours, so there is no need to call `operations.delete`.
 
       Args:
         request: (SddcProjectsLocationsPrivateCloudBackupsCreateRequest) input message
@@ -1185,7 +1185,7 @@ class SddcV1alpha1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new `IpAddress` in a given `PrivateCloud`. The creation is asynchronous. You can check the returned operation to track its progress. When the operation successfully completes, the cluster has a a *READY* status and is fully functional. The returned operation is automatically deleted after a few hours, so there is no need to call `operations.delete`.
+      r"""Creates a new `IpAddress` in a given `PrivateCloud`. The creation is asynchronous. You can check the returned operation to track its progress. When the operation successfully completes, the cluster has a a **READY** status and is fully functional. The returned operation is automatically deleted after a few hours, so there is no need to call `operations.delete`.
 
       Args:
         request: (SddcProjectsLocationsPrivateCloudsIpAddressesCreateRequest) input message

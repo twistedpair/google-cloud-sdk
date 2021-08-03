@@ -1152,7 +1152,7 @@
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/cloud-platform.read-only"
               ],
-              "description": "Returns information about all data transfers in the project."
+              "description": "Returns information about all transfer configs owned by a project in the specified location."
             },
             "scheduleRuns": {
               "id": "bigquerydatatransfer.projects.transferConfigs.scheduleRuns",
@@ -1773,7 +1773,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/cloud-platform.read-only"
                   ],
-                  "description": "Returns information about all data transfers in the project."
+                  "description": "Returns information about all transfer configs owned by a project in the specified location."
                 },
                 "scheduleRuns": {
                   "id": "bigquerydatatransfer.projects.locations.transferConfigs.scheduleRuns",

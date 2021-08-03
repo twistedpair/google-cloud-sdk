@@ -340,7 +340,7 @@
           }
         },
         "timing": {
-          "description": "Output only. Stores timing information for phases of the build. Valid keys are: * BUILD: time to execute all build steps * PUSH: time to push all specified images. * FETCHSOURCE: time to fetch source. If the build does not specify source or images, these keys will not be included.",
+          "description": "Output only. Stores timing information for phases of the build. Valid keys are: * BUILD: time to execute all build steps. * PUSH: time to push all specified images. * FETCHSOURCE: time to fetch source. * SETUPBUILD: time to set up build. If the build does not specify source or images, these keys will not be included.",
           "readOnly": true,
           "type": "object",
           "additionalProperties": {
@@ -1390,7 +1390,7 @@
     },
     "GitHubEventsConfig": {
       "id": "GitHubEventsConfig",
-      "description": "GitHubEventsConfig describes the configuration of a trigger that creates a build whenever a GitHub event is received. This message is experimental.",
+      "description": "GitHubEventsConfig describes the configuration of a trigger that creates a build whenever a GitHub event is received.",
       "type": "object",
       "properties": {
         "installationId": {
@@ -1415,7 +1415,7 @@
           "$ref": "PushFilter"
         },
         "enterpriseConfigResourceName": {
-          "description": "Optional: The resource name of the github enterprise config that should be applied to this installation. For example: \"projects\/{$project_id}\/githubEnterpriseConfig\/{$config_id}\"",
+          "description": "Optional. The resource name of the github enterprise config that should be applied to this installation. For example: \"projects\/{$project_id}\/githubEnterpriseConfig\/{$config_id}\"",
           "type": "string"
         },
         "enterpriseConfig": {
@@ -3794,7 +3794,7 @@
                     "$ref": "GitHubEnterpriseConfig"
                   },
                   "response": {
-                    "$ref": "GitHubEnterpriseConfig"
+                    "$ref": "Operation"
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
@@ -3828,7 +3828,7 @@
                     "$ref": "GitHubEnterpriseConfig"
                   },
                   "response": {
-                    "$ref": "GitHubEnterpriseConfig"
+                    "$ref": "Operation"
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
@@ -3928,7 +3928,7 @@
                     "name"
                   ],
                   "response": {
-                    "$ref": "Empty"
+                    "$ref": "Operation"
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
@@ -5024,7 +5024,7 @@
                 "$ref": "GitHubEnterpriseConfig"
               },
               "response": {
-                "$ref": "GitHubEnterpriseConfig"
+                "$ref": "Operation"
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
@@ -5058,7 +5058,7 @@
                 "$ref": "GitHubEnterpriseConfig"
               },
               "response": {
-                "$ref": "GitHubEnterpriseConfig"
+                "$ref": "Operation"
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
@@ -5158,7 +5158,7 @@
                 "name"
               ],
               "response": {
-                "$ref": "Empty"
+                "$ref": "Operation"
               },
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"

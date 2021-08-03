@@ -490,13 +490,6 @@ apis:
         projects.regions.operations_list:
           path: projects/{projectId}/regions/{regionId}/operations
       default: true
-    v1beta2:
-      discovery_doc: dataproc_v1beta2.json
-      resources:
-        projects.regions:
-          path: projects/{projectId}/regions/{regionId}
-        projects.regions.operations_list:
-          path: projects/{projectId}/regions/{regionId}/operations
   datastore:
     v1beta1:
       discovery_doc: datastore_v1beta1.json
@@ -911,8 +904,12 @@ apis:
     v1:
       discovery_doc: pubsublite_v1.json
       resources:
+        admin.projects.locations.operations:
+          path: projects/{projectsId}/locations/{locationsId}/operations/{operationsId}
         admin.projects.locations.topics.subscriptions:
           path: admin/projects/{projectsId}/locations/{locationsId}/topics/{topicsId}/subscriptions
+        admin.projects.locations.reservations.topics:
+          path: admin/projects/{projectsId}/locations/{locationsId}/reservations/{reservationsId}/topics
         cursor.projects.locations.subscriptions:
           path: cursor/projects/{projectsId}/locations/{locationsId}/subscriptions/{subscriptionsId}
   recaptchaenterprise:

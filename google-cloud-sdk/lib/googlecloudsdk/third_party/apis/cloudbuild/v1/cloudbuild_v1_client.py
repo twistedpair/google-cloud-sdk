@@ -676,7 +676,7 @@ class CloudbuildV1(base_api.BaseApiClient):
         request: (CloudbuildProjectsGithubEnterpriseConfigsCreateRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (GitHubEnterpriseConfig) The response message.
+        (Operation) The response message.
       """
       config = self.GetMethodConfig('Create')
       return self._RunMethod(
@@ -692,7 +692,7 @@ class CloudbuildV1(base_api.BaseApiClient):
         relative_path='v1/{+parent}/githubEnterpriseConfigs',
         request_field='gitHubEnterpriseConfig',
         request_type_name='CloudbuildProjectsGithubEnterpriseConfigsCreateRequest',
-        response_type_name='GitHubEnterpriseConfig',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -703,7 +703,7 @@ class CloudbuildV1(base_api.BaseApiClient):
         request: (CloudbuildProjectsGithubEnterpriseConfigsDeleteRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Empty) The response message.
+        (Operation) The response message.
       """
       config = self.GetMethodConfig('Delete')
       return self._RunMethod(
@@ -719,7 +719,7 @@ class CloudbuildV1(base_api.BaseApiClient):
         relative_path='v1/{+name}',
         request_field='',
         request_type_name='CloudbuildProjectsGithubEnterpriseConfigsDeleteRequest',
-        response_type_name='Empty',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -811,7 +811,7 @@ class CloudbuildV1(base_api.BaseApiClient):
         request: (CloudbuildProjectsGithubEnterpriseConfigsPatchRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (GitHubEnterpriseConfig) The response message.
+        (Operation) The response message.
       """
       config = self.GetMethodConfig('Patch')
       return self._RunMethod(
@@ -827,7 +827,7 @@ class CloudbuildV1(base_api.BaseApiClient):
         relative_path='v1/{+name}',
         request_field='gitHubEnterpriseConfig',
         request_type_name='CloudbuildProjectsGithubEnterpriseConfigsPatchRequest',
-        response_type_name='GitHubEnterpriseConfig',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1461,7 +1461,7 @@ class CloudbuildV1(base_api.BaseApiClient):
         request: (CloudbuildProjectsLocationsGithubEnterpriseConfigsCreateRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (GitHubEnterpriseConfig) The response message.
+        (Operation) The response message.
       """
       config = self.GetMethodConfig('Create')
       return self._RunMethod(
@@ -1477,7 +1477,7 @@ class CloudbuildV1(base_api.BaseApiClient):
         relative_path='v1/{+parent}/githubEnterpriseConfigs',
         request_field='gitHubEnterpriseConfig',
         request_type_name='CloudbuildProjectsLocationsGithubEnterpriseConfigsCreateRequest',
-        response_type_name='GitHubEnterpriseConfig',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1488,7 +1488,7 @@ class CloudbuildV1(base_api.BaseApiClient):
         request: (CloudbuildProjectsLocationsGithubEnterpriseConfigsDeleteRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Empty) The response message.
+        (Operation) The response message.
       """
       config = self.GetMethodConfig('Delete')
       return self._RunMethod(
@@ -1504,7 +1504,7 @@ class CloudbuildV1(base_api.BaseApiClient):
         relative_path='v1/{+name}',
         request_field='',
         request_type_name='CloudbuildProjectsLocationsGithubEnterpriseConfigsDeleteRequest',
-        response_type_name='Empty',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -1596,7 +1596,7 @@ class CloudbuildV1(base_api.BaseApiClient):
         request: (CloudbuildProjectsLocationsGithubEnterpriseConfigsPatchRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (GitHubEnterpriseConfig) The response message.
+        (Operation) The response message.
       """
       config = self.GetMethodConfig('Patch')
       return self._RunMethod(
@@ -1612,7 +1612,7 @@ class CloudbuildV1(base_api.BaseApiClient):
         relative_path='v1/{+name}',
         request_field='gitHubEnterpriseConfig',
         request_type_name='CloudbuildProjectsLocationsGithubEnterpriseConfigsPatchRequest',
-        response_type_name='GitHubEnterpriseConfig',
+        response_type_name='Operation',
         supports_download=False,
     )
 

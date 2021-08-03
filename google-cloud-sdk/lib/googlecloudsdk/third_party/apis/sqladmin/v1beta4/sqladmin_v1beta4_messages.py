@@ -1407,7 +1407,7 @@ class IpConfiguration(_messages.Message):
       set, the instance ip will be created in the allocated range. The range
       name must comply with [RFC 1035](https://tools.ietf.org/html/rfc1035).
       Specifically, the name must be 1-63 characters long and match the
-      regular expression [a-z]([-a-z0-9]*[a-z0-9])?.
+      regular expression [a-z]([-a-z0-9]*[a-z0-9])?. Reserved for future use.
     authorizedNetworks: The list of external networks that are allowed to
       connect to the instance using the IP. In 'CIDR' notation, also known as
       'slash' notation (for example: *192.168.100.0/24*).
@@ -1583,6 +1583,10 @@ class MySqlReplicaConfiguration(_messages.Message):
   sslCipher = _messages.StringField(9)
   username = _messages.StringField(10)
   verifyServerCertificate = _messages.BooleanField(11)
+
+
+class MySqlSyncConfig(_messages.Message):
+  r"""MySQL-specific external server sync settings."""
 
 
 class OnPremisesConfiguration(_messages.Message):
@@ -2641,6 +2645,38 @@ class SqlInstancesRotateServerCaRequest(_messages.Message):
   project = _messages.StringField(3, required=True)
 
 
+class SqlInstancesStartExternalSyncRequest(_messages.Message):
+  r"""A SqlInstancesStartExternalSyncRequest object.
+
+  Enums:
+    SyncModeValueValuesEnum: External sync mode.
+
+  Fields:
+    mysqlSyncConfig: MySQL-specific settings for start external sync.
+    skipVerification: Whether to skip the verification step (VESS).
+    syncMode: External sync mode.
+  """
+
+  class SyncModeValueValuesEnum(_messages.Enum):
+    r"""External sync mode.
+
+    Values:
+      EXTERNAL_SYNC_MODE_UNSPECIFIED: Unknown external sync mode, will be
+        defaulted to ONLINE mode
+      ONLINE: Online external sync will set up replication after initial data
+        external sync
+      OFFLINE: Offline external sync only dumps and loads a one-time snapshot
+        of the primary instance's data
+    """
+    EXTERNAL_SYNC_MODE_UNSPECIFIED = 0
+    ONLINE = 1
+    OFFLINE = 2
+
+  mysqlSyncConfig = _messages.MessageField('MySqlSyncConfig', 1)
+  skipVerification = _messages.BooleanField(2)
+  syncMode = _messages.EnumField('SyncModeValueValuesEnum', 3)
+
+
 class SqlInstancesStartReplicaRequest(_messages.Message):
   r"""A SqlInstancesStartReplicaRequest object.
 
@@ -2693,6 +2729,39 @@ class SqlInstancesUpdateRequest(_messages.Message):
   databaseInstance = _messages.MessageField('DatabaseInstance', 1)
   instance = _messages.StringField(2, required=True)
   project = _messages.StringField(3, required=True)
+
+
+class SqlInstancesVerifyExternalSyncSettingsRequest(_messages.Message):
+  r"""A SqlInstancesVerifyExternalSyncSettingsRequest object.
+
+  Enums:
+    SyncModeValueValuesEnum: External sync mode
+
+  Fields:
+    mysqlSyncConfig: Optional. MySQL-specific settings for start external
+      sync.
+    syncMode: External sync mode
+    verifyConnectionOnly: Flag to enable verifying connection only
+  """
+
+  class SyncModeValueValuesEnum(_messages.Enum):
+    r"""External sync mode
+
+    Values:
+      EXTERNAL_SYNC_MODE_UNSPECIFIED: Unknown external sync mode, will be
+        defaulted to ONLINE mode
+      ONLINE: Online external sync will set up replication after initial data
+        external sync
+      OFFLINE: Offline external sync only dumps and loads a one-time snapshot
+        of the primary instance's data
+    """
+    EXTERNAL_SYNC_MODE_UNSPECIFIED = 0
+    ONLINE = 1
+    OFFLINE = 2
+
+  mysqlSyncConfig = _messages.MessageField('MySqlSyncConfig', 1)
+  syncMode = _messages.EnumField('SyncModeValueValuesEnum', 2)
+  verifyConnectionOnly = _messages.BooleanField(3)
 
 
 class SqlInstancesVerifyExternalSyncSettingsResponse(_messages.Message):
@@ -2796,69 +2865,33 @@ class SqlProjectsInstancesRescheduleMaintenanceRequest(_messages.Message):
 class SqlProjectsInstancesStartExternalSyncRequest(_messages.Message):
   r"""A SqlProjectsInstancesStartExternalSyncRequest object.
 
-  Enums:
-    SyncModeValueValuesEnum: External sync mode.
-
   Fields:
     instance: Cloud SQL instance ID. This does not include the project ID.
     project: ID of the project that contains the instance.
-    skipVerification: Whether to skip the verification step (VESS).
-    syncMode: External sync mode.
+    sqlInstancesStartExternalSyncRequest: A
+      SqlInstancesStartExternalSyncRequest resource to be passed as the
+      request body.
   """
-
-  class SyncModeValueValuesEnum(_messages.Enum):
-    r"""External sync mode.
-
-    Values:
-      EXTERNAL_SYNC_MODE_UNSPECIFIED: Unknown external sync mode, will be
-        defaulted to ONLINE mode
-      ONLINE: Online external sync will set up replication after initial data
-        external sync
-      OFFLINE: Offline external sync only dumps and loads a one-time snapshot
-        of the primary instance's data
-    """
-    EXTERNAL_SYNC_MODE_UNSPECIFIED = 0
-    ONLINE = 1
-    OFFLINE = 2
 
   instance = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
-  skipVerification = _messages.BooleanField(3)
-  syncMode = _messages.EnumField('SyncModeValueValuesEnum', 4)
+  sqlInstancesStartExternalSyncRequest = _messages.MessageField('SqlInstancesStartExternalSyncRequest', 3)
 
 
 class SqlProjectsInstancesVerifyExternalSyncSettingsRequest(_messages.Message):
   r"""A SqlProjectsInstancesVerifyExternalSyncSettingsRequest object.
 
-  Enums:
-    SyncModeValueValuesEnum: External sync mode
-
   Fields:
     instance: Cloud SQL instance ID. This does not include the project ID.
     project: Project ID of the project that contains the instance.
-    syncMode: External sync mode
-    verifyConnectionOnly: Flag to enable verifying connection only
+    sqlInstancesVerifyExternalSyncSettingsRequest: A
+      SqlInstancesVerifyExternalSyncSettingsRequest resource to be passed as
+      the request body.
   """
-
-  class SyncModeValueValuesEnum(_messages.Enum):
-    r"""External sync mode
-
-    Values:
-      EXTERNAL_SYNC_MODE_UNSPECIFIED: Unknown external sync mode, will be
-        defaulted to ONLINE mode
-      ONLINE: Online external sync will set up replication after initial data
-        external sync
-      OFFLINE: Offline external sync only dumps and loads a one-time snapshot
-        of the primary instance's data
-    """
-    EXTERNAL_SYNC_MODE_UNSPECIFIED = 0
-    ONLINE = 1
-    OFFLINE = 2
 
   instance = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
-  syncMode = _messages.EnumField('SyncModeValueValuesEnum', 3)
-  verifyConnectionOnly = _messages.BooleanField(4)
+  sqlInstancesVerifyExternalSyncSettingsRequest = _messages.MessageField('SqlInstancesVerifyExternalSyncSettingsRequest', 3)
 
 
 class SqlScheduledMaintenance(_messages.Message):

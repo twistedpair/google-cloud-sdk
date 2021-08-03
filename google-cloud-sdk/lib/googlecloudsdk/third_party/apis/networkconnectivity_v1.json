@@ -291,12 +291,14 @@
           "type": "string"
         },
         "createTime": {
-          "description": "The time the hub was created.",
+          "description": "Output only. The time the hub was created.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
-          "description": "The time the hub was last updated.",
+          "description": "Output only. The time the hub was last updated.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
@@ -370,12 +372,14 @@
           "type": "string"
         },
         "createTime": {
-          "description": "The time the spoke was created.",
+          "description": "Output only. The time the spoke was created.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
-          "description": "The time the spoke was last updated.",
+          "description": "Output only. The time the spoke was last updated.",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
@@ -391,7 +395,7 @@
           "type": "string"
         },
         "hub": {
-          "description": "The URI of the hub that this spoke is attached to.",
+          "description": "Immutable. The URI of the hub that this spoke is attached to.",
           "type": "string"
         },
         "linkedVpnTunnels": {

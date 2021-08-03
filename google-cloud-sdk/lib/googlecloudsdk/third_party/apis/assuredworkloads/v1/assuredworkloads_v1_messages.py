@@ -154,6 +154,8 @@ class GoogleCloudAssuredworkloadsV1CreateWorkloadOperationMetadata(_messages.Mes
         controls
       HIPAA: Health Insurance Portability and Accountability Act controls
       HITRUST: Health Information Trust Alliance controls
+      EU_REGIONS_AND_SUPPORT: Assured Workloads For EU Regions and Support
+        controls
     """
     COMPLIANCE_REGIME_UNSPECIFIED = 0
     IL4 = 1
@@ -163,6 +165,7 @@ class GoogleCloudAssuredworkloadsV1CreateWorkloadOperationMetadata(_messages.Mes
     US_REGIONAL_ACCESS = 5
     HIPAA = 6
     HITRUST = 7
+    EU_REGIONS_AND_SUPPORT = 8
 
   complianceRegime = _messages.EnumField('ComplianceRegimeValueValuesEnum', 1)
   createTime = _messages.StringField(2)
@@ -218,10 +221,10 @@ class GoogleCloudAssuredworkloadsV1Workload(_messages.Message):
       organizations/{organization}/locations/{location}/workloads/{workload}
       Read-only.
     provisionedResourcesParent: Input only. The parent resource for the
-      resources managed by this Assured Workload. May be either an
-      organization or a folder. Must be the same or a child of the Workload
-      parent. If not specified all resources are created under the Workload
-      parent. Formats: folders/{folder_id} organizations/{organization_id}
+      resources managed by this Assured Workload. May be either empty or a
+      folder resource which is a child of the Workload parent. If not
+      specified all resources are created under the parent organization.
+      Format: folders/{folder_id}
     resourceSettings: Input only. Resource properties that are used to
       customize workload resources. These properties (such as custom project
       id) will be used to create workload resources if possible. This field is
@@ -245,6 +248,8 @@ class GoogleCloudAssuredworkloadsV1Workload(_messages.Message):
         controls
       HIPAA: Health Insurance Portability and Accountability Act controls
       HITRUST: Health Information Trust Alliance controls
+      EU_REGIONS_AND_SUPPORT: Assured Workloads For EU Regions and Support
+        controls
     """
     COMPLIANCE_REGIME_UNSPECIFIED = 0
     IL4 = 1
@@ -254,6 +259,7 @@ class GoogleCloudAssuredworkloadsV1Workload(_messages.Message):
     US_REGIONAL_ACCESS = 5
     HIPAA = 6
     HITRUST = 7
+    EU_REGIONS_AND_SUPPORT = 8
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -408,6 +414,8 @@ class GoogleCloudAssuredworkloadsV1beta1CreateWorkloadOperationMetadata(_message
         controls
       HIPAA: Health Insurance Portability and Accountability Act controls
       HITRUST: Health Information Trust Alliance controls
+      EU_REGIONS_AND_SUPPORT: Assured Workloads For EU Regions and Support
+        controls
     """
     COMPLIANCE_REGIME_UNSPECIFIED = 0
     IL4 = 1
@@ -417,6 +425,7 @@ class GoogleCloudAssuredworkloadsV1beta1CreateWorkloadOperationMetadata(_message
     US_REGIONAL_ACCESS = 5
     HIPAA = 6
     HITRUST = 7
+    EU_REGIONS_AND_SUPPORT = 8
 
   complianceRegime = _messages.EnumField('ComplianceRegimeValueValuesEnum', 1)
   createTime = _messages.StringField(2)
@@ -469,10 +478,10 @@ class GoogleCloudAssuredworkloadsV1beta1Workload(_messages.Message):
       organizations/{organization}/locations/{location}/workloads/{workload}
       Read-only.
     provisionedResourcesParent: Input only. The parent resource for the
-      resources managed by this Assured Workload. May be either an
-      organization or a folder. Must be the same or a child of the Workload
-      parent. If not specified all resources are created under the Workload
-      parent. Formats: folders/{folder_id} organizations/{organization_id}
+      resources managed by this Assured Workload. May be either empty or a
+      folder resource which is a child of the Workload parent. If not
+      specified all resources are created under the parent organization.
+      Format: folders/{folder_id}
     resourceSettings: Input only. Resource properties that are used to
       customize workload resources. These properties (such as custom project
       id) will be used to create workload resources if possible. This field is
@@ -496,6 +505,8 @@ class GoogleCloudAssuredworkloadsV1beta1Workload(_messages.Message):
         controls
       HIPAA: Health Insurance Portability and Accountability Act controls
       HITRUST: Health Information Trust Alliance controls
+      EU_REGIONS_AND_SUPPORT: Assured Workloads For EU Regions and Support
+        controls
     """
     COMPLIANCE_REGIME_UNSPECIFIED = 0
     IL4 = 1
@@ -505,6 +516,7 @@ class GoogleCloudAssuredworkloadsV1beta1Workload(_messages.Message):
     US_REGIONAL_ACCESS = 5
     HIPAA = 6
     HITRUST = 7
+    EU_REGIONS_AND_SUPPORT = 8
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):

@@ -786,6 +786,9 @@ class LogBucket(_messages.Message):
     description: Describes this bucket.
     indexConfigs: A list of indexed fields and related configuration data.
     lifecycleState: Output only. The bucket lifecycle state.
+    linkedBigqueryDataset: Output only. The name of the BigQuery dataset this
+      log bucket is linked to. Example:
+      "bigquery.googleapis.com/projects/PROJECT_ID/datasets/DATASET"
     locked: Whether the bucket has been locked. The retention period on a
       locked bucket may not be changed. Locked buckets may only be deleted if
       they are empty.
@@ -829,12 +832,13 @@ class LogBucket(_messages.Message):
   description = _messages.StringField(3)
   indexConfigs = _messages.MessageField('IndexConfig', 4, repeated=True)
   lifecycleState = _messages.EnumField('LifecycleStateValueValuesEnum', 5)
-  locked = _messages.BooleanField(6)
-  logLink = _messages.MessageField('LogLink', 7)
-  name = _messages.StringField(8)
-  restrictedFields = _messages.StringField(9, repeated=True)
-  retentionDays = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  updateTime = _messages.StringField(11)
+  linkedBigqueryDataset = _messages.StringField(6)
+  locked = _messages.BooleanField(7)
+  logLink = _messages.MessageField('LogLink', 8)
+  name = _messages.StringField(9)
+  restrictedFields = _messages.StringField(10, repeated=True)
+  retentionDays = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  updateTime = _messages.StringField(12)
 
 
 class LogEntry(_messages.Message):
@@ -1228,6 +1232,9 @@ class LogLink(_messages.Message):
     linkedBigqueryDataset: Output only. The name of the BigQuery dataset this
       log bucket is linked to.
       Example:"bigquery.googleapis.com/projects/PROJECT_ID/datasets/DATASET"
+      This field is deprecated, and is being replaced by the
+      linked_bigquery_dataset field in the top level of LogBucket. Any new
+      uses of this field should use that one. This one will be removed.
     loggingServiceAccount: Output only. An IAM service account used by Cloud
       Logging to create views on the destination dataset.
   """

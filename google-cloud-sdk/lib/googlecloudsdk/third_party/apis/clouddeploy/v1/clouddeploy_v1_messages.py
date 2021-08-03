@@ -1742,9 +1742,6 @@ class Release(_messages.Message):
     name: Optional. Name of the `Release`. Format is projects/{project}/
       locations/{location}/deliveryPipelines/{deliveryPipeline}/
       releases/a-z{0,62}.
-    renderBuild: Output only. The resource name of the Cloud Build `Build`
-      object that is used to render the manifests. Format is
-      `projects/{project}/locations/{location}/builds/{build}`.
     renderEndTime: Output only. Time at which the render completed.
     renderStartTime: Output only. Time at which the render began.
     renderState: Output only. Current state of the render operation.
@@ -1776,11 +1773,12 @@ class Release(_messages.Message):
       RENDER_STATE_UNSPECIFIED: The render state is unspecified.
       SUCCESS: The render operation has completed successfully. This will be
         removed after we are fully migrated to SUCCEEDED.
-      SUCCEEDED: The render operation has completed successfully.
+      SUCCEEDED: All rendering operations have completed successfully.
       FAILURE: The render operation has failed. This will be removed after we
         are fully migrated to FAILED.
-      FAILED: The render operation has failed.
-      IN_PROGRESS: The render operation is in progress.
+      FAILED: All rendering operations have completed, and one or more have
+        failed.
+      IN_PROGRESS: Rendering has started and is not complete.
     """
     RENDER_STATE_UNSPECIFIED = 0
     SUCCESS = 1
@@ -1906,18 +1904,17 @@ class Release(_messages.Message):
   etag = _messages.StringField(6)
   labels = _messages.MessageField('LabelsValue', 7)
   name = _messages.StringField(8)
-  renderBuild = _messages.StringField(9)
-  renderEndTime = _messages.StringField(10)
-  renderStartTime = _messages.StringField(11)
-  renderState = _messages.EnumField('RenderStateValueValuesEnum', 12)
-  renderedManifests = _messages.MessageField('RenderedManifestsValue', 13)
-  renderingBuild = _messages.StringField(14)
-  skaffoldConfigPath = _messages.StringField(15)
-  skaffoldConfigUri = _messages.StringField(16)
-  skaffoldVersion = _messages.StringField(17)
-  targetArtifacts = _messages.MessageField('TargetArtifactsValue', 18)
-  targetSnapshots = _messages.MessageField('Target', 19, repeated=True)
-  uid = _messages.StringField(20)
+  renderEndTime = _messages.StringField(9)
+  renderStartTime = _messages.StringField(10)
+  renderState = _messages.EnumField('RenderStateValueValuesEnum', 11)
+  renderedManifests = _messages.MessageField('RenderedManifestsValue', 12)
+  renderingBuild = _messages.StringField(13)
+  skaffoldConfigPath = _messages.StringField(14)
+  skaffoldConfigUri = _messages.StringField(15)
+  skaffoldVersion = _messages.StringField(16)
+  targetArtifacts = _messages.MessageField('TargetArtifactsValue', 17)
+  targetSnapshots = _messages.MessageField('Target', 18, repeated=True)
+  uid = _messages.StringField(19)
 
 
 class Rollout(_messages.Message):
@@ -1972,7 +1969,6 @@ class Rollout(_messages.Message):
       locations/{location}/deliveryPipelines/{deliveryPipeline}/
       releases/{release}/rollouts/a-z{0,62}.
     state: Output only. Current state of the `Rollout`.
-    target: The Target to which this `Rollout` is deploying.
     targetId: Required. The ID of Target to which this `Rollout` is deploying.
     uid: Output only. Unique identifier of the `Rollout`.
   """
@@ -2093,9 +2089,8 @@ class Rollout(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 12)
   name = _messages.StringField(13)
   state = _messages.EnumField('StateValueValuesEnum', 14)
-  target = _messages.StringField(15)
-  targetId = _messages.StringField(16)
-  uid = _messages.StringField(17)
+  targetId = _messages.StringField(15)
+  uid = _messages.StringField(16)
 
 
 class SerialPipeline(_messages.Message):
@@ -2293,7 +2288,6 @@ class Target(_messages.Message):
       and used by the user, and not by Cloud Deploy. See
       https://google.aip.dev/128#annotations for more details such as format
       and size limitations.
-    approvalRequired: Optional. Whether or not the `Target` requires approval.
     cluster: Information specifying a GKE Cluster.
     createTime: Output only. Time at which the `Target` was created.
     description: Optional. Description of the `Target`. Max length is 255
@@ -2376,19 +2370,18 @@ class Target(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   annotations = _messages.MessageField('AnnotationsValue', 1)
-  approvalRequired = _messages.BooleanField(2)
-  cluster = _messages.MessageField('GkeCluster', 3)
-  createTime = _messages.StringField(4)
-  description = _messages.StringField(5)
-  etag = _messages.StringField(6)
-  gke = _messages.MessageField('GkeCluster', 7)
-  gkeCluster = _messages.MessageField('GKECluster', 8)
-  labels = _messages.MessageField('LabelsValue', 9)
-  name = _messages.StringField(10)
-  requireApproval = _messages.BooleanField(11)
-  targetId = _messages.StringField(12)
-  uid = _messages.StringField(13)
-  updateTime = _messages.StringField(14)
+  cluster = _messages.MessageField('GkeCluster', 2)
+  createTime = _messages.StringField(3)
+  description = _messages.StringField(4)
+  etag = _messages.StringField(5)
+  gke = _messages.MessageField('GkeCluster', 6)
+  gkeCluster = _messages.MessageField('GKECluster', 7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  name = _messages.StringField(9)
+  requireApproval = _messages.BooleanField(10)
+  targetId = _messages.StringField(11)
+  uid = _messages.StringField(12)
+  updateTime = _messages.StringField(13)
 
 
 class TargetArtifact(_messages.Message):

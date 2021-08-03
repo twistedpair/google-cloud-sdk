@@ -24,6 +24,23 @@ DOCS_URL = 'https://cloud.google.com/security-command-center'
 class Collections(enum.Enum):
   """Collections for all supported apis."""
 
+  FOLDERS = (
+      'folders',
+      'folders/{foldersId}',
+      {},
+      ['foldersId'],
+      True
+  )
+  FOLDERS_MUTECONFIGS = (
+      'folders.muteConfigs',
+      '{+name}',
+      {
+          '':
+              'folders/{foldersId}/muteConfigs/{muteConfigsId}',
+      },
+      ['name'],
+      True
+  )
   ORGANIZATIONS = (
       'organizations',
       'organizations/{organizationsId}',
@@ -36,6 +53,16 @@ class Collections(enum.Enum):
       'organizations/{organizationsId}/assets/{assetsId}',
       {},
       ['organizationsId', 'assetsId'],
+      True
+  )
+  ORGANIZATIONS_MUTECONFIGS = (
+      'organizations.muteConfigs',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/muteConfigs/{muteConfigsId}',
+      },
+      ['name'],
       True
   )
   ORGANIZATIONS_NOTIFICATIONCONFIGS = (
@@ -75,6 +102,23 @@ class Collections(enum.Enum):
       '{findingId}',
       {},
       ['organizationsId', 'sourcesId', 'findingId'],
+      True
+  )
+  PROJECTS = (
+      'projects',
+      'projects/{projectsId}',
+      {},
+      ['projectsId'],
+      True
+  )
+  PROJECTS_MUTECONFIGS = (
+      'projects.muteConfigs',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/muteConfigs/{muteConfigsId}',
+      },
+      ['name'],
       True
   )
 

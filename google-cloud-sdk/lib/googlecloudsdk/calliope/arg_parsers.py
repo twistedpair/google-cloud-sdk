@@ -54,6 +54,7 @@ from __future__ import unicode_literals
 import argparse
 import collections
 import copy
+import decimal
 import re
 
 from dateutil import tz
@@ -114,9 +115,24 @@ def _GenerateErrorMessage(error, user_input=None, error_idx=None):
                   error_idx=error_idx))
 
 
+def InvalidInputErrorMessage(unit_scales):
+  """Constructs an error message for exception thrown invalid input.
+
+  Args:
+    unit_scales: list, A list of strings with units that will be recommended to
+    user.
+
+  Returns:
+    str: The message to use for the exception.
+  """
+  return ('given value must be of the form DECIMAL[UNITS] where units can '
+          'be one of {0} and value must be a whole number of Bytes'.format(
+              ', '.join(unit_scales)))
+
+
 _VALUE_PATTERN = r"""
     ^                           # Beginning of input marker.
-    (?P<amount>\d+)             # Amount.
+    (?P<amount>\d+\.?\d*)       # Amount.
     ((?P<suffix>[-/a-zA-Z]+))?  # Optional scale and type abbr.
     $                           # End of input marker.
 """
@@ -150,6 +166,43 @@ _BINARY_SIZE_SCALES = {
     'Ti': 1 << 40,
     'Pi': 1 << 50,
 }
+
+
+_UnitToLowerUnitDict = {
+    'PiB': 'TiB',
+    'PB': 'TiB',
+    'TiB': 'GiB',
+    'TB': 'GiB',
+    'GiB': 'MiB',
+    'GB': 'MiB',
+    'MiB': 'KiB',
+    'MB': 'KiB',
+    'KiB': 'B',
+    'KB': 'B',
+}
+
+
+def ConvertToWholeNumber(amount, unit):
+  """Convert input value and units to a whole number of a lower unit.
+
+  Args:
+    amount: str, a number, for example '3.25'
+    unit: str, a binary prefix, for example 'GB' or 'GiB'
+
+  Returns:
+    (decimal.Decimal(), str), a tuple of number and suffix, converted such that
+    the number returned is an integer, or the value, in Bytes, of the amount
+    input. For example (23, 'MiB'). Note that IEC binary prefixes are always
+    assumed and returned.
+  """
+  return_amount = decimal.Decimal(amount)
+  return_unit = unit
+  while (not float(return_amount).is_integer() and return_unit and
+         return_unit in _UnitToLowerUnitDict):
+    return_amount, return_unit = (
+        # The units are binary so 1KB = 1024B
+        return_amount * 1024, _UnitToLowerUnitDict[return_unit])
+  return return_amount, return_unit
 
 
 def GetMultiCompleter(individual_completer):
@@ -239,17 +292,23 @@ def _ValueParser(scales, default_unit, lower_bound=None, upper_bound=None,
             if key + type_abbr in suggested_binary_size_scales]
 
   def Parse(value):
-    """Parses value that can contain a unit and type avvreviation."""
+    """Parses value that can contain a unit and type abbreviation."""
     match = re.match(_VALUE_PATTERN, value, re.VERBOSE)
     if not match:
-      raise ArgumentTypeError(_GenerateErrorMessage(
-          'given value must be of the form INTEGER[UNIT] where units '
-          'can be one of {0}'
-          .format(', '.join(UnitsByMagnitude(suggested_binary_size_scales))),
-          user_input=value))
-
-    amount = int(match.group('amount'))
+      raise ArgumentTypeError(
+          _GenerateErrorMessage(
+              InvalidInputErrorMessage(
+                  UnitsByMagnitude(suggested_binary_size_scales)),
+              user_input=value))
     suffix = match.group('suffix') or ''
+    amount, suffix = ConvertToWholeNumber(match.group('amount'), suffix)
+    if not float(amount).is_integer():
+      raise ArgumentTypeError(
+          _GenerateErrorMessage(
+              InvalidInputErrorMessage(
+                  UnitsByMagnitude(suggested_binary_size_scales)),
+              user_input=value))
+    amount = int(amount)
     unit = _DeleteTypeAbbr(suffix, type_abbr)
     if strict_case:
       unit_case = unit
@@ -457,16 +516,21 @@ def BinarySize(lower_bound=None, upper_bound=None,
 
   Input to the parsing function must be a string of the form:
 
-    INTEGER[UNIT]
+    DECIMAL[UNIT]
 
-  The integer must be non-negative. Valid units are "B", "KB", "MB",
-  "GB", "TB", "KiB", "MiB", "GiB", "TiB", "PiB".  If the unit is
+  The amount must be non-negative. Valid units are "B", "KB", "MB",
+  "GB", "TB", "PB", "KiB", "MiB", "GiB", "TiB", "PiB".  If the unit is
   omitted then default_unit is assumed.
 
   The result is parsed in bytes. For example:
 
     parser = BinarySize()
     assert parser('10GB') == 1073741824
+
+  Another example:
+
+    parser = BinarySize()
+    assert parser('2.5KB') == 2560
 
   Args:
     lower_bound: str, An inclusive lower bound for values.

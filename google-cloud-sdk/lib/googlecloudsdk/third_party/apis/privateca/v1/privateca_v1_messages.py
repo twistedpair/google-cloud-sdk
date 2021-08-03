@@ -1973,7 +1973,7 @@ class PrivatecaProjectsLocationsCaPoolsCertificatesCreateRequest(_messages.Messa
       ID so that if you must retry your request, the server will know to
       ignore the request if it has already been completed. The server will
       guarantee that for at least 60 minutes since the first request. For
-      example, consider a situation where you make an initial request and t he
+      example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
       was received, and if so, will ignore the second request. This prevents
@@ -2987,9 +2987,9 @@ class SubordinateConfig(_messages.Message):
 
   Fields:
     certificateAuthority: Required. This can refer to a CertificateAuthority
-      in the same project that was used to create a subordinate
-      CertificateAuthority. This field is used for information and usability
-      purposes only. The resource name is in the format
+      that was used to create a subordinate CertificateAuthority. This field
+      is used for information and usability purposes only. The resource name
+      is in the format
       `projects/*/locations/*/caPools/*/certificateAuthorities/*`.
     pemIssuerChain: Required. Contains the PEM certificate chain for the
       issuers of this CertificateAuthority, but not pem certificate for this

@@ -923,13 +923,15 @@ class PackageData(_messages.Message):
     Values:
       PACKAGE_TYPE_UNSPECIFIED: <no description>
       OS: Operating System
-      MAVEN: <no description>
-      GO: <no description>
+      MAVEN: Java packages from Maven.
+      GO: Go third-party packages.
+      GO_STDLIB: Go toolchain + standard library packages.
     """
     PACKAGE_TYPE_UNSPECIFIED = 0
     OS = 1
     MAVEN = 2
     GO = 3
+    GO_STDLIB = 4
 
   cpeUri = _messages.StringField(1)
   os = _messages.StringField(2)

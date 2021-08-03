@@ -1667,7 +1667,7 @@
     },
     "GooglePrivacyDlpV2CryptoKey": {
       "id": "GooglePrivacyDlpV2CryptoKey",
-      "description": "This is a data encryption key (DEK) (as opposed to a key encryption key (KEK) stored by KMS). When using KMS to wrap\/unwrap DEKs, be sure to set an appropriate IAM policy on the KMS CryptoKey (KEK) to ensure an attacker cannot unwrap the data crypto key.",
+      "description": "This is a data encryption key (DEK) (as opposed to a key encryption key (KEK) stored by Cloud Key Management Service (Cloud KMS). When using Cloud KMS to wrap or unwrap a DEK, be sure to set an appropriate IAM policy on the KEK to ensure an attacker cannot unwrap the DEK.",
       "type": "object",
       "properties": {
         "transient": {
@@ -1679,7 +1679,7 @@
           "$ref": "GooglePrivacyDlpV2UnwrappedCryptoKey"
         },
         "kmsWrapped": {
-          "description": "Kms wrapped key",
+          "description": "Key wrapped using Cloud KMS",
           "$ref": "GooglePrivacyDlpV2KmsWrappedCryptoKey"
         }
       }
@@ -1709,7 +1709,7 @@
     },
     "GooglePrivacyDlpV2KmsWrappedCryptoKey": {
       "id": "GooglePrivacyDlpV2KmsWrappedCryptoKey",
-      "description": "Include to use an existing data crypto key wrapped by KMS. The wrapped key must be a 128-, 192-, or 256-bit key. Authorization requires the following IAM permissions when sending a request to perform a crypto transformation using a KMS-wrapped crypto key: dlp.kms.encrypt For more information, see [Creating a wrapped key] (https:\/\/cloud.google.com\/dlp\/docs\/create-wrapped-key).",
+      "description": "Include to use an existing data crypto key wrapped by KMS. The wrapped key must be a 128-, 192-, or 256-bit key. Authorization requires the following IAM permissions when sending a request to perform a crypto transformation using a KMS-wrapped crypto key: dlp.kms.encrypt For more information, see [Creating a wrapped key] (https:\/\/cloud.google.com\/dlp\/docs\/create-wrapped-key). Note: When you use Cloud KMS for cryptographic operations, [charges apply](https:\/\/cloud.google.com\/kms\/pricing).",
       "type": "object",
       "properties": {
         "wrappedKey": {

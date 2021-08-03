@@ -47,11 +47,24 @@ def LocationAttributeConfig():
       fallthroughs=[deps.PropertyFallthrough(properties.VALUES.aws.location)])
 
 
+def OperationAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='operation', help_text='Operation for the {resource}.')
+
+
 def GetAwsClusterResourceSpec():
   return concepts.ResourceSpec(
       'gkemulticloud.projects.locations.awsClusters',
       resource_name='cluster',
       awsClustersId=AwsClusterAttributeConfig(),
+      locationsId=LocationAttributeConfig(),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
+
+
+def GetOperationResourceSpec():
+  return concepts.ResourceSpec(
+      'gkemulticloud.projects.locations.operations',
+      resource_name='operation',
       locationsId=LocationAttributeConfig(),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
 
@@ -75,7 +88,7 @@ def GetLocationResourceSpec():
 
 
 def AddAwsClusterResourceArg(parser, verb, positional=True):
-  """Add a resource argument for an AWS cluster.
+  """Adds a resource argument for an AWS cluster.
 
   Args:
     parser: The argparse parser to add the resource arg to.
@@ -91,7 +104,7 @@ def AddAwsClusterResourceArg(parser, verb, positional=True):
 
 
 def AddAwsNodePoolResourceArg(parser, verb, positional=True):
-  """Add a resource argument for an AWS node pool.
+  """Adds a resource argument for an AWS node pool.
 
   Args:
     parser: The argparse parser to add the resource arg to.
@@ -107,7 +120,7 @@ def AddAwsNodePoolResourceArg(parser, verb, positional=True):
 
 
 def AddLocationResourceArg(parser, verb):
-  """Add a resource argument for GKE Multi-cloud location.
+  """Adds a resource argument for Google Cloud location.
 
   Args:
     parser: The argparse parser to add the resource arg to.
@@ -118,3 +131,35 @@ def AddLocationResourceArg(parser, verb):
       GetLocationResourceSpec(),
       'Google Cloud location {}.'.format(verb),
       required=True).AddToParser(parser)
+
+
+def AddOperationResourceArg(parser, verb):
+  """Adds a resource argument for operation in AWS.
+
+  Args:
+    parser: The argparse parser to add the resource arg to.
+    verb: str, the verb to describe the resource, such as 'to update'.
+  """
+  concept_parsers.ConceptParser.ForResource(
+      'operation_id',
+      GetOperationResourceSpec(),
+      'AWS operation {}.'.format(verb),
+      required=True).AddToParser(parser)
+
+
+def ParseAwsClusterResourceArg(args):
+  return resources.REGISTRY.ParseRelativeName(
+      args.CONCEPTS.cluster.Parse().RelativeName(),
+      collection='gkemulticloud.projects.locations.awsClusters')
+
+
+def ParseAwsNodePoolResourceArg(args):
+  return resources.REGISTRY.ParseRelativeName(
+      args.CONCEPTS.node_pool.Parse().RelativeName(),
+      collection='gkemulticloud.projects.locations.awsClusters.awsNodePools')
+
+
+def ParseOperationResourceArg(args):
+  return resources.REGISTRY.ParseRelativeName(
+      args.CONCEPTS.operation_id.Parse().RelativeName(),
+      collection='gkemulticloud.projects.locations.operations')

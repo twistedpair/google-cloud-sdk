@@ -14,6 +14,17 @@ from apitools.base.py import extra_types
 package = 'gameservices'
 
 
+class AgonesOptions(_messages.Message):
+  r"""The options for installing Agones.
+
+  Fields:
+    install: Optional. If set to true, GCGS will attempt to install Agones in
+      the cluster.
+  """
+
+  install = _messages.BooleanField(1)
+
+
 class AuditConfig(_messages.Message):
   r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
@@ -600,12 +611,14 @@ class GameServerCluster(_messages.Message):
       game server allocations based on the relative allocation priorites set
       for each cluster, if the realm is configured for multicluster
       allocation.
+    StateValueValuesEnum: Output only. The state of the Game Server Cluster.
 
   Messages:
     LabelsValue: The labels associated with this game server cluster. Each
       label is a key-value pair.
 
   Fields:
+    agonesOptions: Optional. Options for installing Agones.
     allocationPriority: Optional. The allocation priority assigned to the game
       server cluster. Game server clusters receive new game server allocations
       based on the relative allocation priorites set for each cluster, if the
@@ -625,6 +638,7 @@ class GameServerCluster(_messages.Message):
       gameServerClusters/{cluster}`. For example, `projects/my-
       project/locations/{location}/realms/zanzibar/gameServerClusters/my-
       onprem-cluster`.
+    state: Output only. The state of the Game Server Cluster.
     updateTime: Output only. The last-modified time.
   """
 
@@ -647,6 +661,21 @@ class GameServerCluster(_messages.Message):
     P2 = 2
     P3 = 3
     P4 = 4
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the Game Server Cluster.
+
+    Values:
+      STATE_UNSPECIFIED: The default value. This value is used if the state is
+        omitted.
+      ACTIVE: The GameServerCluster has Agones installed. Google Cloud Game
+        Servers will attempt to push changes to the cluster.
+      PROVISIONING: Google Cloud Game Servers is installing Agones in the
+        cluster.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    PROVISIONING = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -673,15 +702,17 @@ class GameServerCluster(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  allocationPriority = _messages.EnumField('AllocationPriorityValueValuesEnum', 1)
-  clusterState = _messages.MessageField('KubernetesClusterState', 2)
-  connectionInfo = _messages.MessageField('GameServerClusterConnectionInfo', 3)
-  createTime = _messages.StringField(4)
-  description = _messages.StringField(5)
-  etag = _messages.StringField(6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  name = _messages.StringField(8)
-  updateTime = _messages.StringField(9)
+  agonesOptions = _messages.MessageField('AgonesOptions', 1)
+  allocationPriority = _messages.EnumField('AllocationPriorityValueValuesEnum', 2)
+  clusterState = _messages.MessageField('KubernetesClusterState', 3)
+  connectionInfo = _messages.MessageField('GameServerClusterConnectionInfo', 4)
+  createTime = _messages.StringField(5)
+  description = _messages.StringField(6)
+  etag = _messages.StringField(7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  name = _messages.StringField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  updateTime = _messages.StringField(11)
 
 
 class GameServerClusterConnectionInfo(_messages.Message):

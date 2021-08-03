@@ -272,6 +272,60 @@ class CloudkmsV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def MacSign(self, request, global_params=None):
+      r"""Signs data using a CryptoKeyVersion with CryptoKey.purpose MAC, producing a tag that can be verified by another source with the same key.
+
+      Args:
+        request: (CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsMacSignRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (MacSignResponse) The response message.
+      """
+      config = self.GetMethodConfig('MacSign')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    MacSign.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}/cryptoKeyVersions/{cryptoKeyVersionsId}:macSign',
+        http_method='POST',
+        method_id='cloudkms.projects.locations.keyRings.cryptoKeys.cryptoKeyVersions.macSign',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:macSign',
+        request_field='macSignRequest',
+        request_type_name='CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsMacSignRequest',
+        response_type_name='MacSignResponse',
+        supports_download=False,
+    )
+
+    def MacVerify(self, request, global_params=None):
+      r"""Verifies MAC tag using a CryptoKeyVersion with CryptoKey.purpose MAC, and returns a response that indicates whether or not the verification was successful.
+
+      Args:
+        request: (CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsMacVerifyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (MacVerifyResponse) The response message.
+      """
+      config = self.GetMethodConfig('MacVerify')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    MacVerify.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}/cryptoKeyVersions/{cryptoKeyVersionsId}:macVerify',
+        http_method='POST',
+        method_id='cloudkms.projects.locations.keyRings.cryptoKeys.cryptoKeyVersions.macVerify',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:macVerify',
+        request_field='macVerifyRequest',
+        request_type_name='CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsMacVerifyRequest',
+        response_type_name='MacVerifyResponse',
+        supports_download=False,
+    )
+
     def Patch(self, request, global_params=None):
       r"""Update a CryptoKeyVersion's metadata. state may be changed between ENABLED and DISABLED using this method. See DestroyCryptoKeyVersion and RestoreCryptoKeyVersion to move between other states.
 

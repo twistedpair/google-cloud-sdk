@@ -2244,33 +2244,6 @@ class AiplatformV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def PredictInternal(self, request, global_params=None):
-      r"""Perform an online prediction.
-
-      Args:
-        request: (AiplatformProjectsLocationsEndpointsPredictInternalRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudAiplatformV1alpha1PredictResponse) The response message.
-      """
-      config = self.GetMethodConfig('PredictInternal')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    PredictInternal.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/endpoints/{endpointsId}:predictInternal',
-        http_method='POST',
-        method_id='aiplatform.projects.locations.endpoints.predictInternal',
-        ordered_params=['endpoint'],
-        path_params=['endpoint'],
-        query_params=[],
-        relative_path='v1alpha1/{+endpoint}:predictInternal',
-        request_field='googleCloudAiplatformV1alpha1PredictRequest',
-        request_type_name='AiplatformProjectsLocationsEndpointsPredictInternalRequest',
-        response_type_name='GoogleCloudAiplatformV1alpha1PredictResponse',
-        supports_download=False,
-    )
-
     def UndeployModel(self, request, global_params=None):
       r"""Undeploys a Model from an Endpoint, removing a DeployedModel from it, and freeing all resources it's using.
 

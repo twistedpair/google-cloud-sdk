@@ -2630,7 +2630,7 @@
               "type": "string"
             },
             "updateMask": {
-              "description": "Required. The names of fields to update. May only contain the following fields: `display_name`, `description`, `labels`.",
+              "description": "Required. The names of fields to update. May only contain the following fields: `display_name`, `description`, `labels`, `dynamic_group_metadata`, `posix_groups`.",
               "location": "query",
               "type": "string",
               "format": "google-fieldmask"

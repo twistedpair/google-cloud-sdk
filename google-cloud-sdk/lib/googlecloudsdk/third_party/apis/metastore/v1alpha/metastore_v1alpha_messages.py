@@ -91,6 +91,8 @@ class Backup(_messages.Message):
     name: Immutable. The relative resource name of the backup, in the
       following form:projects/{project_number}/locations/{location_id}/service
       s/{service_id}/backups/{backup_id}
+    restoringServices: Output only. Services that are restoring from the
+      backup.
     serviceRevision: Output only. The revision of the service at the time of
       backup.
     state: Output only. The current state of the backup.
@@ -118,8 +120,9 @@ class Backup(_messages.Message):
   description = _messages.StringField(2)
   endTime = _messages.StringField(3)
   name = _messages.StringField(4)
-  serviceRevision = _messages.MessageField('Service', 5)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
+  restoringServices = _messages.StringField(5, repeated=True)
+  serviceRevision = _messages.MessageField('Service', 6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
 
 
 class Binding(_messages.Message):
@@ -983,6 +986,113 @@ class MetastoreProjectsLocationsServicesCreateRequest(_messages.Message):
   requestId = _messages.StringField(2)
   service = _messages.MessageField('Service', 3)
   serviceId = _messages.StringField(4)
+
+
+class MetastoreProjectsLocationsServicesDatabasesGetIamPolicyRequest(_messages.Message):
+  r"""A MetastoreProjectsLocationsServicesDatabasesGetIamPolicyRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The policy format version to be
+      returned.Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected.Requests for policies with any conditional
+      bindings must specify version 3. Policies without any conditional
+      bindings may specify any valid value or leave the field unset.To learn
+      which resources support conditions in their IAM policies, see the IAM
+      documentation (https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class MetastoreProjectsLocationsServicesDatabasesSetIamPolicyRequest(_messages.Message):
+  r"""A MetastoreProjectsLocationsServicesDatabasesSetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class MetastoreProjectsLocationsServicesDatabasesTablesGetIamPolicyRequest(_messages.Message):
+  r"""A MetastoreProjectsLocationsServicesDatabasesTablesGetIamPolicyRequest
+  object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The policy format version to be
+      returned.Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected.Requests for policies with any conditional
+      bindings must specify version 3. Policies without any conditional
+      bindings may specify any valid value or leave the field unset.To learn
+      which resources support conditions in their IAM policies, see the IAM
+      documentation (https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class MetastoreProjectsLocationsServicesDatabasesTablesSetIamPolicyRequest(_messages.Message):
+  r"""A MetastoreProjectsLocationsServicesDatabasesTablesSetIamPolicyRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class MetastoreProjectsLocationsServicesDatabasesTablesTestIamPermissionsRequest(_messages.Message):
+  r"""A
+  MetastoreProjectsLocationsServicesDatabasesTablesTestIamPermissionsRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
+class MetastoreProjectsLocationsServicesDatabasesTestIamPermissionsRequest(_messages.Message):
+  r"""A MetastoreProjectsLocationsServicesDatabasesTestIamPermissionsRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class MetastoreProjectsLocationsServicesDeleteRequest(_messages.Message):

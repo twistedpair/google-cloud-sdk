@@ -91,7 +91,7 @@ _OS_SHORT_NAMES_WITH_OS_AGENT_PREINSTALLED = (
 _SUPPORTED_AGENT_MAJOR_VERSIONS = {
     'logging': ('1',),
     'metrics': ('5', '6'),
-    'ops-agent': ('1'),
+    'ops-agent': ('1', '2'),
 }
 
 

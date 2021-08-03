@@ -467,8 +467,14 @@ def RenderDocumentAction(command, default_style=None):
         meta_data = GetCommandMetaData(command)
       else:
         meta_data = None
+
+      if style == 'devsite':
+        command_node = command
+      else:
+        command_node = None
       render_document.RenderDocument(style, md, out=out or log.out, notes=notes,
-                                     title=title, command_metadata=meta_data)
+                                     title=title, command_metadata=meta_data,
+                                     command_node=command_node)
       metrics.Ran()
       if out:
         console_io.More(out.getvalue())

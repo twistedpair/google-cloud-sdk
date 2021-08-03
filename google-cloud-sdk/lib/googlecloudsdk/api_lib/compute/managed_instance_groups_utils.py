@@ -1248,6 +1248,15 @@ def ValidateAutohealingPolicies(auto_healing_policies):
     console_io.PromptContinue(message=message, cancel_on_no=True)
 
 
+def CreateStandbyPolicy(messages, initial_delay_sec):
+  """Creates standby policy from args."""
+  # pylint: disable=g-explicit-bool-comparison
+  if initial_delay_sec is None:
+    return None
+  return messages.InstanceGroupManagerStandbyPolicy(
+      initialDelaySec=initial_delay_sec)
+
+
 def _GetInstanceTemplatesSet(*versions_lists):
   versions_set = set()
   for versions_list in versions_lists:

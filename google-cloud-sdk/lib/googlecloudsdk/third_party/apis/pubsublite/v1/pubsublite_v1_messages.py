@@ -219,6 +219,36 @@ class ListPartitionCursorsResponse(_messages.Message):
   partitionCursors = _messages.MessageField('PartitionCursor', 2, repeated=True)
 
 
+class ListReservationTopicsResponse(_messages.Message):
+  r"""Response for ListReservationTopics.
+
+  Fields:
+    nextPageToken: A token that can be sent as `page_token` to retrieve the
+      next page of results. If this field is omitted, there are no more
+      results.
+    topics: The names of topics attached to the reservation. The order of the
+      topics is unspecified.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  topics = _messages.StringField(2, repeated=True)
+
+
+class ListReservationsResponse(_messages.Message):
+  r"""Response for ListReservations.
+
+  Fields:
+    nextPageToken: A token that can be sent as `page_token` to retrieve the
+      next page of results. If this field is omitted, there are no more
+      results.
+    reservations: The list of reservation in the requested parent. The order
+      of the reservations is unspecified.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  reservations = _messages.MessageField('Reservation', 2, repeated=True)
+
+
 class ListSubscriptionsResponse(_messages.Message):
   r"""Response for ListSubscriptions.
 
@@ -473,6 +503,103 @@ class PubsubliteAdminProjectsLocationsOperationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class PubsubliteAdminProjectsLocationsReservationsCreateRequest(_messages.Message):
+  r"""A PubsubliteAdminProjectsLocationsReservationsCreateRequest object.
+
+  Fields:
+    parent: Required. The parent location in which to create the reservation.
+      Structured like `projects/{project_number}/locations/{location}`.
+    reservation: A Reservation resource to be passed as the request body.
+    reservationId: Required. The ID to use for the reservation, which will
+      become the final component of the reservation's name. This value is
+      structured like: `my-reservation-name`.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  reservation = _messages.MessageField('Reservation', 2)
+  reservationId = _messages.StringField(3)
+
+
+class PubsubliteAdminProjectsLocationsReservationsDeleteRequest(_messages.Message):
+  r"""A PubsubliteAdminProjectsLocationsReservationsDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the reservation to delete. Structured like: pr
+      ojects/{project_number}/locations/{location}/reservations/{reservation_i
+      d}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class PubsubliteAdminProjectsLocationsReservationsGetRequest(_messages.Message):
+  r"""A PubsubliteAdminProjectsLocationsReservationsGetRequest object.
+
+  Fields:
+    name: Required. The name of the reservation whose configuration to return.
+      Structured like: projects/{project_number}/locations/{location}/reservat
+      ions/{reservation_id}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class PubsubliteAdminProjectsLocationsReservationsListRequest(_messages.Message):
+  r"""A PubsubliteAdminProjectsLocationsReservationsListRequest object.
+
+  Fields:
+    pageSize: The maximum number of reservations to return. The service may
+      return fewer than this value. If unset or zero, all reservations for the
+      parent will be returned.
+    pageToken: A page token, received from a previous `ListReservations` call.
+      Provide this to retrieve the subsequent page. When paginating, all other
+      parameters provided to `ListReservations` must match the call that
+      provided the page token.
+    parent: Required. The parent whose reservations are to be listed.
+      Structured like `projects/{project_number}/locations/{location}`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class PubsubliteAdminProjectsLocationsReservationsPatchRequest(_messages.Message):
+  r"""A PubsubliteAdminProjectsLocationsReservationsPatchRequest object.
+
+  Fields:
+    name: The name of the reservation. Structured like: projects/{project_numb
+      er}/locations/{location}/reservations/{reservation_id}
+    reservation: A Reservation resource to be passed as the request body.
+    updateMask: Required. A mask specifying the reservation fields to change.
+  """
+
+  name = _messages.StringField(1, required=True)
+  reservation = _messages.MessageField('Reservation', 2)
+  updateMask = _messages.StringField(3)
+
+
+class PubsubliteAdminProjectsLocationsReservationsTopicsListRequest(_messages.Message):
+  r"""A PubsubliteAdminProjectsLocationsReservationsTopicsListRequest object.
+
+  Fields:
+    name: Required. The name of the reservation whose topics to list.
+      Structured like: projects/{project_number}/locations/{location}/reservat
+      ions/{reservation_id}
+    pageSize: The maximum number of topics to return. The service may return
+      fewer than this value. If unset or zero, all topics for the given
+      reservation will be returned.
+    pageToken: A page token, received from a previous `ListReservationTopics`
+      call. Provide this to retrieve the subsequent page. When paginating, all
+      other parameters provided to `ListReservationTopics` must match the call
+      that provided the page token.
+  """
+
+  name = _messages.StringField(1, required=True)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
 
 
 class PubsubliteAdminProjectsLocationsSubscriptionsCreateRequest(_messages.Message):
@@ -745,6 +872,35 @@ class PubsubliteTopicStatsProjectsLocationsTopicsComputeTimeCursorRequest(_messa
   topic = _messages.StringField(2, required=True)
 
 
+class Reservation(_messages.Message):
+  r"""Metadata about a reservation resource.
+
+  Fields:
+    name: The name of the reservation. Structured like: projects/{project_numb
+      er}/locations/{location}/reservations/{reservation_id}
+    throughputCapacity: The reserved throughput capacity. Every unit of
+      throughput capacity is equivalent to 1 MiB/s of published messages or 2
+      MiB/s of subscribed messages. Any topics which are declared as using
+      capacity from a Reservation will consume resources from this reservation
+      instead of being charged individually.
+  """
+
+  name = _messages.StringField(1)
+  throughputCapacity = _messages.IntegerField(2)
+
+
+class ReservationConfig(_messages.Message):
+  r"""The settings for this topic's Reservation usage.
+
+  Fields:
+    throughputReservation: The Reservation to use for this topic's throughput
+      capacity. Structured like: projects/{project_number}/locations/{location
+      }/reservations/{reservation_id}
+  """
+
+  throughputReservation = _messages.StringField(1)
+
+
 class RetentionConfig(_messages.Message):
   r"""The settings for a topic's message retention.
 
@@ -953,12 +1109,14 @@ class Topic(_messages.Message):
     name: The name of the topic. Structured like:
       projects/{project_number}/locations/{location}/topics/{topic_id}
     partitionConfig: The settings for this topic's partitions.
+    reservationConfig: The settings for this topic's Reservation usage.
     retentionConfig: The settings for this topic's message retention.
   """
 
   name = _messages.StringField(1)
   partitionConfig = _messages.MessageField('PartitionConfig', 2)
-  retentionConfig = _messages.MessageField('RetentionConfig', 3)
+  reservationConfig = _messages.MessageField('ReservationConfig', 3)
+  retentionConfig = _messages.MessageField('RetentionConfig', 4)
 
 
 class TopicPartitions(_messages.Message):

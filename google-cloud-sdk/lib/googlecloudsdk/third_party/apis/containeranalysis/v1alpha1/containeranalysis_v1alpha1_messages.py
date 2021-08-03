@@ -673,6 +673,10 @@ class ContaineranalysisProjectsOccurrencesListRequest(_messages.Message):
       UPGRADE: This represents an available software upgrade.
       COMPLIANCE: This represents a compliance check that can be applied to a
         resource.
+      SBOM: This represents a software bill of materials.
+      SPDX_PACKAGE: This represents an SPDX Package.
+      SPDX_FILE: This represents an SPDX File.
+      SPDX_RELATIONSHIP: This represents an SPDX Relationship.
     """
     KIND_UNSPECIFIED = 0
     PACKAGE_VULNERABILITY = 1
@@ -684,6 +688,10 @@ class ContaineranalysisProjectsOccurrencesListRequest(_messages.Message):
     ATTESTATION_AUTHORITY = 7
     UPGRADE = 8
     COMPLIANCE = 9
+    SBOM = 10
+    SPDX_PACKAGE = 11
+    SPDX_FILE = 12
+    SPDX_RELATIONSHIP = 13
 
   filter = _messages.StringField(1)
   kind = _messages.EnumField('KindValueValuesEnum', 2)
@@ -1160,6 +1168,10 @@ class Discovery(_messages.Message):
       UPGRADE: This represents an available software upgrade.
       COMPLIANCE: This represents a compliance check that can be applied to a
         resource.
+      SBOM: This represents a software bill of materials.
+      SPDX_PACKAGE: This represents an SPDX Package.
+      SPDX_FILE: This represents an SPDX File.
+      SPDX_RELATIONSHIP: This represents an SPDX Relationship.
     """
     KIND_UNSPECIFIED = 0
     PACKAGE_VULNERABILITY = 1
@@ -1171,6 +1183,10 @@ class Discovery(_messages.Message):
     ATTESTATION_AUTHORITY = 7
     UPGRADE = 8
     COMPLIANCE = 9
+    SBOM = 10
+    SPDX_PACKAGE = 11
+    SPDX_FILE = 12
+    SPDX_RELATIONSHIP = 13
 
   analysisKind = _messages.EnumField('AnalysisKindValueValuesEnum', 1)
 
@@ -1215,6 +1231,62 @@ class Distribution(_messages.Message):
   latestVersion = _messages.MessageField('Version', 4)
   maintainer = _messages.StringField(5)
   url = _messages.StringField(6)
+
+
+class DocumentNote(_messages.Message):
+  r"""DocumentNote represents an SPDX Document Creation Infromation section:
+  https://spdx.github.io/spdx-spec/2-document-creation-information/
+
+  Fields:
+    dataLicence: Compliance with the SPDX specification includes populating
+      the SPDX fields therein with data related to such fields ("SPDX-
+      Metadata")
+    spdxVersion: Provide a reference number that can be used to understand how
+      to parse and interpret the rest of the file
+  """
+
+  dataLicence = _messages.StringField(1)
+  spdxVersion = _messages.StringField(2)
+
+
+class DocumentOccurrence(_messages.Message):
+  r"""DocumentOccurrence represents an SPDX Document Creation Information
+  section: https://spdx.github.io/spdx-spec/2-document-creation-information/
+
+  Fields:
+    createTime: Identify when the SPDX file was originally created. The date
+      is to be specified according to combined date and time in UTC format as
+      specified in ISO 8601 standard
+    creatorComment: A field for creators of the SPDX file to provide general
+      comments about the creation of the SPDX file or any other relevant
+      comment not included in the other fields
+    creators: Identify who (or what, in the case of a tool) created the SPDX
+      file. If the SPDX file was created by an individual, indicate the
+      person's name
+    documentComment: A field for creators of the SPDX file content to provide
+      comments to the consumers of the SPDX document
+    externalDocumentRefs: Identify any external SPDX documents referenced
+      within this SPDX document
+    id: Identify the current SPDX document which may be referenced in
+      relationships by other files, packages internally and documents
+      externally
+    licenseListVersion: A field for creators of the SPDX file to provide the
+      version of the SPDX License List used when the SPDX file was created
+    namespace: Provide an SPDX document specific namespace as a unique
+      absolute Uniform Resource Identifier (URI) as specified in RFC-3986,
+      with the exception of the '#' delimiter
+    title: Identify name of this document as designated by creator
+  """
+
+  createTime = _messages.StringField(1)
+  creatorComment = _messages.StringField(2)
+  creators = _messages.StringField(3, repeated=True)
+  documentComment = _messages.StringField(4)
+  externalDocumentRefs = _messages.StringField(5, repeated=True)
+  id = _messages.StringField(6)
+  licenseListVersion = _messages.StringField(7)
+  namespace = _messages.StringField(8)
+  title = _messages.StringField(9)
 
 
 class Empty(_messages.Message):
@@ -1263,6 +1335,54 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
+class ExternalRef(_messages.Message):
+  r"""An External Reference allows a Package to reference an external source
+  of additional information, metadata, enumerations, asset identifiers, or
+  downloadable content believed to be relevant to the Package
+
+  Enums:
+    CategoryValueValuesEnum: An External Reference allows a Package to
+      reference an external source of additional information, metadata,
+      enumerations, asset identifiers, or downloadable content believed to be
+      relevant to the Package
+
+  Fields:
+    category: An External Reference allows a Package to reference an external
+      source of additional information, metadata, enumerations, asset
+      identifiers, or downloadable content believed to be relevant to the
+      Package
+    comment: Human-readable information about the purpose and target of the
+      reference
+    locator: The unique string with no spaces necessary to access the package-
+      specific information, metadata, or content within the target location
+    type: Type of category (e.g. 'npm' for the PACKAGE_MANAGER category)
+  """
+
+  class CategoryValueValuesEnum(_messages.Enum):
+    r"""An External Reference allows a Package to reference an external source
+    of additional information, metadata, enumerations, asset identifiers, or
+    downloadable content believed to be relevant to the Package
+
+    Values:
+      CATEGORY_UNSPECIFIED: Unspecified
+      SECURITY: Security (e.g. cpe22Type, cpe23Type)
+      PACKAGE_MANAGER: Package Manager (e.g. maven-central, npm, nuget, bower,
+        purl)
+      PERSISTENT_ID: Persistent-Id (e.g. swh)
+      OTHER: Other
+    """
+    CATEGORY_UNSPECIFIED = 0
+    SECURITY = 1
+    PACKAGE_MANAGER = 2
+    PERSISTENT_ID = 3
+    OTHER = 4
+
+  category = _messages.EnumField('CategoryValueValuesEnum', 1)
+  comment = _messages.StringField(2)
+  locator = _messages.StringField(3)
+  type = _messages.StringField(4)
+
+
 class FileHashes(_messages.Message):
   r"""Container message for hashes of byte content of files, used in Source
   messages to verify integrity of source input to the build.
@@ -1272,6 +1392,103 @@ class FileHashes(_messages.Message):
   """
 
   fileHash = _messages.MessageField('Hash', 1, repeated=True)
+
+
+class FileNote(_messages.Message):
+  r"""FileNote represents an SPDX File Information section:
+  https://spdx.github.io/spdx-spec/4-file-information/
+
+  Enums:
+    FileTypeValueValuesEnum: This field provides information about the type of
+      file identified
+
+  Fields:
+    checksum: Provide a unique identifier to match analysis information on
+      each specific file in a package
+    fileType: This field provides information about the type of file
+      identified
+    title: Identify the full path and filename that corresponds to the file
+      information in this section
+  """
+
+  class FileTypeValueValuesEnum(_messages.Enum):
+    r"""This field provides information about the type of file identified
+
+    Values:
+      FILE_TYPE_UNSPECIFIED: Unspecified
+      SOURCE: The file is human readable source code (.c, .html, etc.)
+      BINARY: The file is a compiled object, target image or binary executable
+        (.o, .a, etc.)
+      ARCHIVE: The file represents an archive (.tar, .jar, etc.)
+      APPLICATION: The file is associated with a specific application type
+        (MIME type of application/*)
+      AUDIO: The file is associated with an audio file (MIME type of audio/* ,
+        e.g. .mp3)
+      IMAGE: The file is associated with an picture image file (MIME type of
+        image/*, e.g., .jpg, .gif)
+      TEXT: The file is human readable text file (MIME type of text/*)
+      VIDEO: The file is associated with a video file type (MIME type of
+        video/*)
+      DOCUMENTATION: The file serves as documentation
+      SPDX: The file is an SPDX document
+      OTHER: The file doesn't fit into the above categories (generated
+        artifacts, data files, etc.)
+    """
+    FILE_TYPE_UNSPECIFIED = 0
+    SOURCE = 1
+    BINARY = 2
+    ARCHIVE = 3
+    APPLICATION = 4
+    AUDIO = 5
+    IMAGE = 6
+    TEXT = 7
+    VIDEO = 8
+    DOCUMENTATION = 9
+    SPDX = 10
+    OTHER = 11
+
+  checksum = _messages.StringField(1, repeated=True)
+  fileType = _messages.EnumField('FileTypeValueValuesEnum', 2)
+  title = _messages.StringField(3)
+
+
+class FileOccurrence(_messages.Message):
+  r"""FileOccurrence represents an SPDX File Information section:
+  https://spdx.github.io/spdx-spec/4-file-information/
+
+  Fields:
+    attributions: This field provides a place for the SPDX data creator to
+      record, at the file level, acknowledgements that may be needed to be
+      communicated in some contexts
+    comment: This field provides a place for the SPDX file creator to record
+      any general comments about the file
+    contributors: This field provides a place for the SPDX file creator to
+      record file contributors
+    copyright: Identify the copyright holder of the file, as well as any dates
+      present
+    filesLicenseInfo: This field contains the license information actually
+      found in the file, if any
+    id: Uniquely identify any element in an SPDX document which may be
+      referenced by other elements
+    licenseComments: This field provides a place for the SPDX file creator to
+      record any relevant background references or analysis that went in to
+      arriving at the Concluded License for a file
+    licenseConcluded: This field contains the license the SPDX file creator
+      has concluded as governing the file or alternative values if the
+      governing license cannot be determined
+    notice: This field provides a place for the SPDX file creator to record
+      license notices or other such related notices found in the file
+  """
+
+  attributions = _messages.StringField(1, repeated=True)
+  comment = _messages.StringField(2)
+  contributors = _messages.StringField(3, repeated=True)
+  copyright = _messages.StringField(4)
+  filesLicenseInfo = _messages.StringField(5, repeated=True)
+  id = _messages.StringField(6)
+  licenseComments = _messages.StringField(7)
+  licenseConcluded = _messages.StringField(8)
+  notice = _messages.StringField(9)
 
 
 class Fingerprint(_messages.Message):
@@ -1701,7 +1918,11 @@ class Note(_messages.Message):
       "projects/{provider_project_id}/notes/{NOTE_ID}"
     package: A note describing a package hosted by various package managers.
     relatedUrl: URLs associated with this note
+    sbom: A note describing a software bill of materials.
     shortDescription: A one sentence description of this `Note`.
+    spdxFile: A note describing an SPDX File.
+    spdxPackage: A note describing an SPDX Package.
+    spdxRelationship: A note describing a relationship between SPDX elements.
     updateTime: Output only. The time this note was last updated. This field
       can be used as a filter in list requests.
     upgrade: A note describing an upgrade.
@@ -1728,6 +1949,10 @@ class Note(_messages.Message):
       UPGRADE: This represents an available software upgrade.
       COMPLIANCE: This represents a compliance check that can be applied to a
         resource.
+      SBOM: This represents a software bill of materials.
+      SPDX_PACKAGE: This represents an SPDX Package.
+      SPDX_FILE: This represents an SPDX File.
+      SPDX_RELATIONSHIP: This represents an SPDX Relationship.
     """
     KIND_UNSPECIFIED = 0
     PACKAGE_VULNERABILITY = 1
@@ -1739,6 +1964,10 @@ class Note(_messages.Message):
     ATTESTATION_AUTHORITY = 7
     UPGRADE = 8
     COMPLIANCE = 9
+    SBOM = 10
+    SPDX_PACKAGE = 11
+    SPDX_FILE = 12
+    SPDX_RELATIONSHIP = 13
 
   attestationAuthority = _messages.MessageField('AttestationAuthority', 1)
   baseImage = _messages.MessageField('Basis', 2)
@@ -1753,10 +1982,14 @@ class Note(_messages.Message):
   name = _messages.StringField(11)
   package = _messages.MessageField('Package', 12)
   relatedUrl = _messages.MessageField('RelatedUrl', 13, repeated=True)
-  shortDescription = _messages.StringField(14)
-  updateTime = _messages.StringField(15)
-  upgrade = _messages.MessageField('UpgradeNote', 16)
-  vulnerabilityType = _messages.MessageField('VulnerabilityType', 17)
+  sbom = _messages.MessageField('DocumentNote', 14)
+  shortDescription = _messages.StringField(15)
+  spdxFile = _messages.MessageField('FileNote', 16)
+  spdxPackage = _messages.MessageField('PackageNote', 17)
+  spdxRelationship = _messages.MessageField('RelationshipNote', 18)
+  updateTime = _messages.StringField(19)
+  upgrade = _messages.MessageField('UpgradeNote', 20)
+  vulnerabilityType = _messages.MessageField('VulnerabilityType', 21)
 
 
 class Occurrence(_messages.Message):
@@ -1794,6 +2027,10 @@ class Occurrence(_messages.Message):
       `Occurrence` applies. For example,
       https://gcr.io/project/image@sha256:foo This field can be used as a
       filter in list requests.
+    sbom: Describes a specific software bill of materials document.
+    spdxFile: Describes a specific SPDX File.
+    spdxPackage: Describes a specific SPDX Package.
+    spdxRelationship: Describes a specific relationship between SPDX elements.
     updateTime: Output only. The time this `Occurrence` was last updated.
     upgrade: Describes an upgrade.
     vulnerabilityDetails: Details of a security vulnerability note.
@@ -1819,6 +2056,10 @@ class Occurrence(_messages.Message):
       UPGRADE: This represents an available software upgrade.
       COMPLIANCE: This represents a compliance check that can be applied to a
         resource.
+      SBOM: This represents a software bill of materials.
+      SPDX_PACKAGE: This represents an SPDX Package.
+      SPDX_FILE: This represents an SPDX File.
+      SPDX_RELATIONSHIP: This represents an SPDX Relationship.
     """
     KIND_UNSPECIFIED = 0
     PACKAGE_VULNERABILITY = 1
@@ -1830,6 +2071,10 @@ class Occurrence(_messages.Message):
     ATTESTATION_AUTHORITY = 7
     UPGRADE = 8
     COMPLIANCE = 9
+    SBOM = 10
+    SPDX_PACKAGE = 11
+    SPDX_FILE = 12
+    SPDX_RELATIONSHIP = 13
 
   attestation = _messages.MessageField('Attestation', 1)
   buildDetails = _messages.MessageField('BuildDetails', 2)
@@ -1845,9 +2090,13 @@ class Occurrence(_messages.Message):
   remediation = _messages.StringField(12)
   resource = _messages.MessageField('Resource', 13)
   resourceUrl = _messages.StringField(14)
-  updateTime = _messages.StringField(15)
-  upgrade = _messages.MessageField('UpgradeOccurrence', 16)
-  vulnerabilityDetails = _messages.MessageField('VulnerabilityDetails', 17)
+  sbom = _messages.MessageField('DocumentOccurrence', 15)
+  spdxFile = _messages.MessageField('FileOccurrence', 16)
+  spdxPackage = _messages.MessageField('PackageOccurrence', 17)
+  spdxRelationship = _messages.MessageField('RelationshipOccurrence', 18)
+  updateTime = _messages.StringField(19)
+  upgrade = _messages.MessageField('UpgradeOccurrence', 20)
+  vulnerabilityDetails = _messages.MessageField('VulnerabilityDetails', 21)
 
 
 class Operation(_messages.Message):
@@ -1985,6 +2234,98 @@ class PackageIssue(_messages.Message):
   affectedLocation = _messages.MessageField('VulnerabilityLocation', 1)
   fixedLocation = _messages.MessageField('VulnerabilityLocation', 2)
   severityName = _messages.StringField(3)
+
+
+class PackageNote(_messages.Message):
+  r"""PackageNote represents an SPDX Package Information section:
+  https://spdx.github.io/spdx-spec/3-package-information/
+
+  Fields:
+    analyzed: Indicates whether the file content of this package has been
+      available for or subjected to analysis when creating the SPDX document
+    attribution: A place for the SPDX data creator to record, at the package
+      level, acknowledgements that may be needed to be communicated in some
+      contexts
+    checksum: Provide an independently reproducible mechanism that permits
+      unique identification of a specific package that correlates to the data
+      in this SPDX file
+    copyright: Identify the copyright holders of the package, as well as any
+      dates present
+    detailedDescription: A more detailed description of the package
+    downloadLocation: This section identifies the download Universal Resource
+      Locator (URL), or a specific location within a version control system
+      (VCS) for the package at the time that the SPDX file was created
+    externalRefs: ExternalRef
+    filesLicenseInfo: Contain the license the SPDX file creator has concluded
+      as governing the This field is to contain a list of all licenses found
+      in the package. The relationship between licenses (i.e., conjunctive,
+      disjunctive) is not specified in this field \u2013 it is simply a
+      listing of all licenses found
+    homePage: Provide a place for the SPDX file creator to record a web site
+      that serves as the package's home page
+    licenseDeclared: List the licenses that have been declared by the authors
+      of the package
+    originator: If the package identified in the SPDX file originated from a
+      different person or organization than identified as Package Supplier,
+      this field identifies from where or whom the package originally came
+    summaryDescription: A short description of the package
+    supplier: Identify the actual distribution source for the
+      package/directory identified in the SPDX file
+    title: Identify the full name of the package as given by the Package
+      Originator
+    verificationCode: This field provides an independently reproducible
+      mechanism identifying specific contents of a package based on the actual
+      files (except the SPDX file itself, if it is included in the package)
+      that make up each package and that correlates to the data in this SPDX
+      file
+    version: Identify the version of the package
+  """
+
+  analyzed = _messages.BooleanField(1)
+  attribution = _messages.StringField(2)
+  checksum = _messages.StringField(3)
+  copyright = _messages.StringField(4)
+  detailedDescription = _messages.StringField(5)
+  downloadLocation = _messages.StringField(6)
+  externalRefs = _messages.MessageField('ExternalRef', 7, repeated=True)
+  filesLicenseInfo = _messages.StringField(8, repeated=True)
+  homePage = _messages.StringField(9)
+  licenseDeclared = _messages.StringField(10)
+  originator = _messages.StringField(11)
+  summaryDescription = _messages.StringField(12)
+  supplier = _messages.StringField(13)
+  title = _messages.StringField(14)
+  verificationCode = _messages.StringField(15)
+  version = _messages.StringField(16)
+
+
+class PackageOccurrence(_messages.Message):
+  r"""PackageOccurrence represents an SPDX Package Information section:
+  https://spdx.github.io/spdx-spec/3-package-information/
+
+  Fields:
+    comment: A place for the SPDX file creator to record any general comments
+      about the package being described
+    filename: Provide the actual file name of the package, or path of the
+      directory being treated as a package
+    id: Uniquely identify any element in an SPDX document which may be
+      referenced by other elements
+    licenseComments: This field provides a place for the SPDX file creator to
+      record any relevant background information or analysis that went in to
+      arriving at the Concluded License for a package
+    licenseConcluded: package or alternative values, if the governing license
+      cannot be determined
+    sourceInfo: Provide a place for the SPDX file creator to record any
+      relevant background information or additional comments about the origin
+      of the package
+  """
+
+  comment = _messages.StringField(1)
+  filename = _messages.StringField(2)
+  id = _messages.StringField(3)
+  licenseComments = _messages.StringField(4)
+  licenseConcluded = _messages.StringField(5)
+  sourceInfo = _messages.StringField(6)
 
 
 class PgpSignedAttestation(_messages.Message):
@@ -2128,6 +2469,166 @@ class RelatedUrl(_messages.Message):
 
   label = _messages.StringField(1)
   url = _messages.StringField(2)
+
+
+class RelationshipNote(_messages.Message):
+  r"""RelationshipNote represents an SPDX Relationship section:
+  https://spdx.github.io/spdx-spec/7-relationships-between-SPDX-elements/
+  """
+
+
+
+class RelationshipOccurrence(_messages.Message):
+  r"""RelationshipOccurrence represents an SPDX Relationship section:
+  https://spdx.github.io/spdx-spec/7-relationships-between-SPDX-elements/
+
+  Enums:
+    TypeValueValuesEnum: The type of relationship between the source and
+      target SPDX elements
+
+  Fields:
+    comment: A place for the SPDX file creator to record any general comments
+      about the relationship
+    source: Also referred to as SPDXRef-A The source SPDX element (file,
+      package, etc)
+    target: Also referred to as SPDXRef-B The target SPDC element (file,
+      package, etc) In cases where there are "known unknowns", the use of the
+      keyword NOASSERTION can be used The keywords NONE can be used to
+      indicate that an SPDX element (package/file/snippet) has no other
+      elements connected by some relationship to it
+    type: The type of relationship between the source and target SPDX elements
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""The type of relationship between the source and target SPDX elements
+
+    Values:
+      TYPE_UNSPECIFIED: Unspecified
+      DESCRIBES: Is to be used when SPDXRef-DOCUMENT describes SPDXRef-A
+      DESCRIBED_BY: Is to be used when SPDXRef-A is described by SPDXREF-
+        Document
+      CONTAINS: Is to be used when SPDXRef-A contains SPDXRef-B
+      CONTAINED_BY: Is to be used when SPDXRef-A is contained by SPDXRef-B
+      DEPENDS_ON: Is to be used when SPDXRef-A depends on SPDXRef-B
+      DEPENDENCY_OF: Is to be used when SPDXRef-A is dependency of SPDXRef-B
+      DEPENDENCY_MANIFEST_OF: Is to be used when SPDXRef-A is a manifest file
+        that lists a set of dependencies for SPDXRef-B
+      BUILD_DEPENDENCY_OF: Is to be used when SPDXRef-A is a build dependency
+        of SPDXRef-B
+      DEV_DEPENDENCY_OF: Is to be used when SPDXRef-A is a development
+        dependency of SPDXRef-B
+      OPTIONAL_DEPENDENCY_OF: Is to be used when SPDXRef-A is an optional
+        dependency of SPDXRef-B
+      PROVIDED_DEPENDENCY_OF: Is to be used when SPDXRef-A is a to be provided
+        dependency of SPDXRef-B
+      TEST_DEPENDENCY_OF: Is to be used when SPDXRef-A is a test dependency of
+        SPDXRef-B
+      RUNTIME_DEPENDENCY_OF: Is to be used when SPDXRef-A is a dependency
+        required for the execution of SPDXRef-B
+      EXAMPLE_OF: Is to be used when SPDXRef-A is an example of SPDXRef-B
+      GENERATES: Is to be used when SPDXRef-A generates SPDXRef-B
+      GENERATED_FROM: Is to be used when SPDXRef-A was generated from
+        SPDXRef-B
+      ANCESTOR_OF: Is to be used when SPDXRef-A is an ancestor (same lineage
+        but pre-dates) SPDXRef-B
+      DESCENDANT_OF: Is to be used when SPDXRef-A is a descendant of (same
+        lineage but postdates) SPDXRef-B
+      VARIANT_OF: Is to be used when SPDXRef-A is a variant of (same lineage
+        but not clear which came first) SPDXRef-B
+      DISTRIBUTION_ARTIFACT: Is to be used when distributing SPDXRef-A
+        requires that SPDXRef-B also be distributed
+      PATCH_FOR: Is to be used when SPDXRef-A is a patch file for (to be
+        applied to) SPDXRef-B
+      PATCH_APPLIED: Is to be used when SPDXRef-A is a patch file that has
+        been applied to SPDXRef-B
+      COPY_OF: Is to be used when SPDXRef-A is an exact copy of SPDXRef-B
+      FILE_ADDED: Is to be used when SPDXRef-A is a file that was added to
+        SPDXRef-B
+      FILE_DELETED: Is to be used when SPDXRef-A is a file that was deleted
+        from SPDXRef-B
+      FILE_MODIFIED: Is to be used when SPDXRef-A is a file that was modified
+        from SPDXRef-B
+      EXPANDED_FROM_ARCHIVE: Is to be used when SPDXRef-A is expanded from the
+        archive SPDXRef-B
+      DYNAMIC_LINK: Is to be used when SPDXRef-A dynamically links to
+        SPDXRef-B
+      STATIC_LINK: Is to be used when SPDXRef-A statically links to SPDXRef-B
+      DATA_FILE_OF: Is to be used when SPDXRef-A is a data file used in
+        SPDXRef-B
+      TEST_CASE_OF: Is to be used when SPDXRef-A is a test case used in
+        testing SPDXRef-B
+      BUILD_TOOL_OF: Is to be used when SPDXRef-A is used to build SPDXRef-B
+      DEV_TOOL_OF: Is to be used when SPDXRef-A is used as a development tool
+        for SPDXRef-B
+      TEST_OF: Is to be used when SPDXRef-A is used for testing SPDXRef-B
+      TEST_TOOL_OF: Is to be used when SPDXRef-A is used as a test tool for
+        SPDXRef-B
+      DOCUMENTATION_OF: Is to be used when SPDXRef-A provides documentation of
+        SPDXRef-B
+      OPTIONAL_COMPONENT_OF: Is to be used when SPDXRef-A is an optional
+        component of SPDXRef-B
+      METAFILE_OF: Is to be used when SPDXRef-A is a metafile of SPDXRef-B
+      PACKAGE_OF: Is to be used when SPDXRef-A is used as a package as part of
+        SPDXRef-B
+      AMENDS: Is to be used when (current) SPDXRef-DOCUMENT amends the SPDX
+        information in SPDXRef-B
+      PREREQUISITE_FOR: Is to be used when SPDXRef-A is a prerequisite for
+        SPDXRef-B
+      HAS_PREREQUISITE: Is to be used when SPDXRef-A has as a prerequisite
+        SPDXRef-B
+      OTHER: Is to be used for a relationship which has not been defined in
+        the formal SPDX specification. A description of the relationship
+        should be included in the Relationship comments field
+    """
+    TYPE_UNSPECIFIED = 0
+    DESCRIBES = 1
+    DESCRIBED_BY = 2
+    CONTAINS = 3
+    CONTAINED_BY = 4
+    DEPENDS_ON = 5
+    DEPENDENCY_OF = 6
+    DEPENDENCY_MANIFEST_OF = 7
+    BUILD_DEPENDENCY_OF = 8
+    DEV_DEPENDENCY_OF = 9
+    OPTIONAL_DEPENDENCY_OF = 10
+    PROVIDED_DEPENDENCY_OF = 11
+    TEST_DEPENDENCY_OF = 12
+    RUNTIME_DEPENDENCY_OF = 13
+    EXAMPLE_OF = 14
+    GENERATES = 15
+    GENERATED_FROM = 16
+    ANCESTOR_OF = 17
+    DESCENDANT_OF = 18
+    VARIANT_OF = 19
+    DISTRIBUTION_ARTIFACT = 20
+    PATCH_FOR = 21
+    PATCH_APPLIED = 22
+    COPY_OF = 23
+    FILE_ADDED = 24
+    FILE_DELETED = 25
+    FILE_MODIFIED = 26
+    EXPANDED_FROM_ARCHIVE = 27
+    DYNAMIC_LINK = 28
+    STATIC_LINK = 29
+    DATA_FILE_OF = 30
+    TEST_CASE_OF = 31
+    BUILD_TOOL_OF = 32
+    DEV_TOOL_OF = 33
+    TEST_OF = 34
+    TEST_TOOL_OF = 35
+    DOCUMENTATION_OF = 36
+    OPTIONAL_COMPONENT_OF = 37
+    METAFILE_OF = 38
+    PACKAGE_OF = 39
+    AMENDS = 40
+    PREREQUISITE_FOR = 41
+    HAS_PREREQUISITE = 42
+    OTHER = 43
+
+  comment = _messages.StringField(1)
+  source = _messages.StringField(2)
+  target = _messages.StringField(3)
+  type = _messages.EnumField('TypeValueValuesEnum', 4)
 
 
 class RepoSource(_messages.Message):

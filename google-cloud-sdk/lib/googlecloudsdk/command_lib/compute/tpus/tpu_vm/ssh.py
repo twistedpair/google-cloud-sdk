@@ -124,7 +124,7 @@ def ParseWorkerFlag(worker_flag, network_endpoints, use_internal_ips):
   return worker_ips
 
 
-def ParseHostKeySuffixes(guest_attributes_response):
+def _ParseHostKeySuffixes(guest_attributes_response):
   """Returns the host key suffixes."""
   host_key_suffixes = []
   for guest_attributes in guest_attributes_response.guestAttributes:
@@ -132,6 +132,32 @@ def ParseHostKeySuffixes(guest_attributes_response):
       if item.key == 'ssh-ed25519':
         host_key_suffixes.append(item.value[-6:])
         break
+  return host_key_suffixes
+
+
+def _ParseSingleHostKeySuffix(guest_attributes_response, worker_count, worker):
+  """Returns a list with only a single worker's host key suffix populated."""
+  suffixes = [''] * worker_count
+  for item in guest_attributes_response.guestAttributes[0].queryValue.items:
+    if item.key == 'ssh-ed25519':
+      suffixes[worker] = item.value[-6:]
+      break
+  return suffixes
+
+
+def GetHostKeySuffixes(tpu_helper, tpu_name, worker_ips, worker_count, zone):
+  """Retrieves the host key suffixes for the TPU workers."""
+  single_pod_worker = worker_count > 1 and len(worker_ips) == 1
+  if single_pod_worker:
+    # Retrieve only that worker's GuestAttributes.
+    worker_id = list(worker_ips)[0]
+    guest_attributes_response = tpu_helper.GetGuestAttributes(
+        tpu_name, zone, str(worker_id))
+    host_key_suffixes = _ParseSingleHostKeySuffix(
+        guest_attributes_response, worker_count, worker_id)
+  else:
+    guest_attributes_response = tpu_helper.GetGuestAttributes(tpu_name, zone)
+    host_key_suffixes = _ParseHostKeySuffixes(guest_attributes_response)
   return host_key_suffixes
 
 

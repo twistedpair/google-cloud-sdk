@@ -693,7 +693,7 @@ class EdgecontainerV1beta(base_api.BaseApiClient):
         method_id='edgecontainer.projects.locations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'includeUnrevealedLocations', 'pageSize', 'pageToken'],
         relative_path='v1beta/{+name}/locations',
         request_field='',
         request_type_name='EdgecontainerProjectsLocationsListRequest',

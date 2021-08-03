@@ -589,6 +589,46 @@ class Deployment(_messages.Message):
   updateTime = _messages.StringField(11)
 
 
+class DeploymentOperationMetadata(_messages.Message):
+  r"""Ephemeral metadata content describing the state of a deployment
+  operation.
+
+  Enums:
+    StepValueValuesEnum: The current step the deployment operation is running.
+
+  Fields:
+    applyResults: Locations of outputs from config application.
+    pipelineResults: Locations of outputs from kpt pipeline execution.
+    step: The current step the deployment operation is running.
+  """
+
+  class StepValueValuesEnum(_messages.Enum):
+    r"""The current step the deployment operation is running.
+
+    Values:
+      DEPLOYMENT_STEP_UNSPECIFIED: No deployment step was specified.
+      PREPARING_STORAGE_BUCKET: Checking for existence of a storage bucket and
+        creating one in it's absence. This can take up to 7 minutes on the
+        first deployment.
+      PREPARING_CONFIG_CONTROLLER: Checking for existence of a Config
+        Controller instance and creating one in it's absence. This can take up
+        to 20 minutes on the first deployment.
+      CREATING_REVISION: Creating a revision resource.
+      RUNNING_PIPELINE: Blueprint is being processed.
+      RUNNING_APPLY: Blueprint is being applied to Config Controller.
+    """
+    DEPLOYMENT_STEP_UNSPECIFIED = 0
+    PREPARING_STORAGE_BUCKET = 1
+    PREPARING_CONFIG_CONTROLLER = 2
+    CREATING_REVISION = 3
+    RUNNING_PIPELINE = 4
+    RUNNING_APPLY = 5
+
+  applyResults = _messages.MessageField('ApplyResults', 1)
+  pipelineResults = _messages.MessageField('PipelineResults', 2)
+  step = _messages.EnumField('StepValueValuesEnum', 3)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -944,6 +984,8 @@ class OperationMetadata(_messages.Message):
   Fields:
     apiVersion: Output only. API version used to start the operation.
     createTime: Output only. Time the operation was created.
+    deploymentMetadata: Output only. Metadata about the deployment operation
+      state.
     endTime: Output only. Time the operation finished running.
     requestedCancellation: Output only. Identifies whether the user has
       requested cancellation of the operation. Operations that have
@@ -958,11 +1000,12 @@ class OperationMetadata(_messages.Message):
 
   apiVersion = _messages.StringField(1)
   createTime = _messages.StringField(2)
-  endTime = _messages.StringField(3)
-  requestedCancellation = _messages.BooleanField(4)
-  statusMessage = _messages.StringField(5)
-  target = _messages.StringField(6)
-  verb = _messages.StringField(7)
+  deploymentMetadata = _messages.MessageField('DeploymentOperationMetadata', 3)
+  endTime = _messages.StringField(4)
+  requestedCancellation = _messages.BooleanField(5)
+  statusMessage = _messages.StringField(6)
+  target = _messages.StringField(7)
+  verb = _messages.StringField(8)
 
 
 class PipelineResults(_messages.Message):

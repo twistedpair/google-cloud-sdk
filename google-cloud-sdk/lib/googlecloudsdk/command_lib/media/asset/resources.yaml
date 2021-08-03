@@ -67,19 +67,6 @@ complex_type:
     attribute_name: complex_type
     help: Google Cloud Media Asset complex type.
 
-transformation:
-  name: transformation
-  collection: mediaasset.projects.locations.assetTypes.assets.transformations
-  attributes:
-  - *project
-  - *location
-  - *asset_type
-  - *asset
-  - &transformation
-    parameter_name: transformationsId
-    attribute_name: transformation
-    help: Google Cloud Media Asset asset transformation.
-
 transformer:
   name: transformer
   collection: mediaasset.projects.locations.transformers

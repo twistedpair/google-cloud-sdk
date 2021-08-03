@@ -34,6 +34,8 @@ class AddressGroup(_messages.Message):
       resource.
     name: Required. Name of the AddressGroup resource. It matches pattern
       `projects/*/locations/{location}/addressGroups/`.
+    selfLink: Output only. Server-defined fully-qualified URL for this
+      resource.
     type: Required. The type of the Address Group. Possible values are "IPv4"
       or "IPV6".
     updateTime: Output only. The timestamp when the resource was updated.
@@ -82,8 +84,9 @@ class AddressGroup(_messages.Message):
   items = _messages.StringField(4, repeated=True)
   labels = _messages.MessageField('LabelsValue', 5)
   name = _messages.StringField(6)
-  type = _messages.EnumField('TypeValueValuesEnum', 7)
-  updateTime = _messages.StringField(8)
+  selfLink = _messages.StringField(7)
+  type = _messages.EnumField('TypeValueValuesEnum', 8)
+  updateTime = _messages.StringField(9)
 
 
 class AuthorizationPolicy(_messages.Message):
@@ -782,11 +785,23 @@ class NetworksecurityProjectsLocationsAddressGroupsCreateRequest(_messages.Messa
       number. E.g. "authz_policy".
     parent: Required. The parent resource of the AddressGroup. Must be in the
       format `projects/*/locations/{location}`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and t he request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
   """
 
   addressGroup = _messages.MessageField('AddressGroup', 1)
   addressGroupId = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
 
 
 class NetworksecurityProjectsLocationsAddressGroupsDeleteRequest(_messages.Message):
@@ -795,9 +810,21 @@ class NetworksecurityProjectsLocationsAddressGroupsDeleteRequest(_messages.Messa
   Fields:
     name: Required. A name of the AddressGroup to delete. Must be in the
       format `projects/*/locations/{location}/addressGroups/*`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and t he request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
   """
 
   name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
 
 
 class NetworksecurityProjectsLocationsAddressGroupsGetIamPolicyRequest(_messages.Message):
@@ -858,6 +885,17 @@ class NetworksecurityProjectsLocationsAddressGroupsPatchRequest(_messages.Messag
     addressGroup: A AddressGroup resource to be passed as the request body.
     name: Required. Name of the AddressGroup resource. It matches pattern
       `projects/*/locations/{location}/addressGroups/`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and t he request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
     updateMask: Optional. Field mask is used to specify the fields to be
       overwritten in the AddressGroup resource by the update. The fields
       specified in the update_mask are relative to the resource, not the full
@@ -867,7 +905,8 @@ class NetworksecurityProjectsLocationsAddressGroupsPatchRequest(_messages.Messag
 
   addressGroup = _messages.MessageField('AddressGroup', 1)
   name = _messages.StringField(2, required=True)
-  updateMask = _messages.StringField(3)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
 
 
 class NetworksecurityProjectsLocationsAddressGroupsSetIamPolicyRequest(_messages.Message):

@@ -86,12 +86,37 @@ def _NormalizeDeprecatedPythonImageUriInSpec(specs):
   return updated
 
 
-def _ValidateSingleWorkerPoolSpecArgsGa(spec):
-  """Validate a single `--worker-pool-spec` flag value."""
+def _ValidateHardwareInSingleWorkerPool(spec, api_version):
+  """Validate the hardware specified in a single `--worker-pool-spec` flag."""
   if 'machine-type' not in spec:
     raise exceptions.InvalidArgumentException(
         '--worker-pool-spec',
         'Key [machine-type] required in dict arg but not provided.')
+
+  if 'accelerator-count' in spec and 'accelerator-type' not in spec:
+    raise exceptions.InvalidArgumentException(
+        '--worker-pool-spec',
+        'Key [accelerator-type] required as [accelerator-count] is specified.')
+
+  accelerator_type = spec.get('accelerator-type', None)
+  if accelerator_type:
+    type_enum = api_util.GetMessage('MachineSpec',
+                                    api_version).AcceleratorTypeValueValuesEnum
+    valid_types = [
+        type for type in type_enum.names() if type.startswith('NVIDIA')
+    ]
+    if accelerator_type not in valid_types:
+      raise exceptions.InvalidArgumentException(
+          '--worker-pool-spec',
+          ('Found invalid value of [accelerator-type]: {actual}. '
+           'Available values are [{expected}].').format(
+               actual=accelerator_type,
+               expected=', '.join(v for v in sorted(valid_types))))
+
+
+def _ValidateSingleWorkerPoolSpecArgsGa(spec):
+  """Validate a single `--worker-pool-spec` flag value."""
+  _ValidateHardwareInSingleWorkerPool(spec, constants.GA_VERSION)
 
   has_executor_image = 'executor-image-uri' in spec
   has_container_image = 'container-image-uri' in spec
@@ -116,30 +141,7 @@ def _ValidateSingleWorkerPoolSpecArgsGa(spec):
 
 def _ValidateSingleWorkerPoolSpecArgsBetaAlpha(spec):
   """Validate a single `--worker-pool-spec` flag value in alpha or beta version."""
-  if 'machine-type' not in spec:
-    raise exceptions.InvalidArgumentException(
-        '--worker-pool-spec',
-        'Key [machine-type] required in dict arg but not provided.')
-
-  if 'accelerator-count' in spec and 'accelerator-type' not in spec:
-    raise exceptions.InvalidArgumentException(
-        '--worker-pool-spec',
-        'Key [accelerator-type] required as [accelerator-count] is specified.')
-
-  accelerator_type = spec.get('accelerator-type', None)
-  if accelerator_type:
-    type_enum = api_util.GetMessage(
-        'MachineSpec', constants.BETA_VERSION).AcceleratorTypeValueValuesEnum
-    valid_types = [
-        type for type in type_enum.names() if type.startswith('NVIDIA')
-    ]
-    if accelerator_type not in valid_types:
-      raise exceptions.InvalidArgumentException(
-          '--worker-pool-spec',
-          ('Found invalid value of [accelerator-type]: {actual}. '
-           'Available values are [{expected}].').format(
-               actual=accelerator_type,
-               expected=', '.join(v for v in sorted(valid_types))))
+  _ValidateHardwareInSingleWorkerPool(spec, constants.BETA_VERSION)
 
   has_executor_image = 'executor-image-uri' in spec
   has_container_image = 'container-image-uri' in spec

@@ -85,9 +85,7 @@ def NetworkFirewallPolicyAssociationArgument(required=False,
 def AddArgsCreateAssociation(parser):
   """Adds the arguments of association creation."""
   parser.add_argument(
-      '--name',
-      required=True,
-      help=('Name of the association.'))
+      '--name', required=True, help=('Name of the association.'))
 
   parser.add_argument(
       '--network',
@@ -140,14 +138,25 @@ def NetworkFirewallPolicyRuleArgument(required=False,
                                       plural=False,
                                       operation=None):
   return compute_flags.ResourceArgument(
-      name='priority',
-      resource_name='network firewall policy rule',
-      completer=NetworkFirewallPoliciesCompleter,
+      name='--firewall-policy',
+      resource_name='firewall policy',
       plural=plural,
       required=required,
+      short_help='Firewall policy ID with which to {0} rule.'.format(operation),
       global_collection='compute.networkFirewallPolicies',
-      short_help='Priority of the network firewall policy rule to {}.'.format(
-          operation))
+      regional_collection='compute.regionNetworkFirewallPolicies')
+
+
+def NetworkSrcFirewallPolicyRuleArgument(required=False,
+                                         plural=False):
+  return compute_flags.ResourceArgument(
+      name='--source-firewall-policy',
+      resource_name='firewall policy',
+      plural=plural,
+      required=required,
+      short_help='Source Firewall policy NAME with which to clone rule.',
+      global_collection='compute.networkFirewallPolicies',
+      regional_collection='compute.regionNetworkFirewallPolicies')
 
 
 def AddAction(parser, required=True):
@@ -160,13 +169,12 @@ def AddAction(parser, required=True):
       help='Action to take if the request matches the match condition.')
 
 
-def AddFirewallPolicy(parser, required=True, operation=None):
-  """Adds the network firewall policy argument to the argparse."""
+def AddRulePriority(parser, operation=None):
+  """Adds the rule priority argument to the argparse."""
   parser.add_argument(
-      '--firewall-policy',
-      required=required,
-      help='Firewall policy name into which this rules should be '
-      '{}.'.format(operation))
+      'priority',
+      help='Priority of the rule to be {}. Valid in [0, 65535].'.format(
+          operation))
 
 
 def AddSrcIpRanges(parser, required=False):

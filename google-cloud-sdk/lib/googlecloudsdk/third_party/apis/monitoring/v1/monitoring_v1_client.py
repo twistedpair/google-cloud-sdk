@@ -39,9 +39,160 @@ class MonitoringV1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.locations_global_metricsScopes_projects = self.LocationsGlobalMetricsScopesProjectsService(self)
+    self.locations_global_metricsScopes = self.LocationsGlobalMetricsScopesService(self)
+    self.locations_global = self.LocationsGlobalService(self)
+    self.locations = self.LocationsService(self)
     self.operations = self.OperationsService(self)
     self.projects_dashboards = self.ProjectsDashboardsService(self)
     self.projects = self.ProjectsService(self)
+
+  class LocationsGlobalMetricsScopesProjectsService(base_api.BaseApiService):
+    """Service class for the locations_global_metricsScopes_projects resource."""
+
+    _NAME = 'locations_global_metricsScopes_projects'
+
+    def __init__(self, client):
+      super(MonitoringV1.LocationsGlobalMetricsScopesProjectsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Adds a MonitoredProject with the given project ID to the specified Metrics Scope.
+
+      Args:
+        request: (MonitoringLocationsGlobalMetricsScopesProjectsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/locations/global/metricsScopes/{metricsScopesId}/projects',
+        http_method='POST',
+        method_id='monitoring.locations.global.metricsScopes.projects.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/projects',
+        request_field='monitoredProject',
+        request_type_name='MonitoringLocationsGlobalMetricsScopesProjectsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a MonitoredProject from the specified Metrics Scope.
+
+      Args:
+        request: (MonitoringLocationsGlobalMetricsScopesProjectsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/locations/global/metricsScopes/{metricsScopesId}/projects/{projectsId}',
+        http_method='DELETE',
+        method_id='monitoring.locations.global.metricsScopes.projects.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='MonitoringLocationsGlobalMetricsScopesProjectsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class LocationsGlobalMetricsScopesService(base_api.BaseApiService):
+    """Service class for the locations_global_metricsScopes resource."""
+
+    _NAME = 'locations_global_metricsScopes'
+
+    def __init__(self, client):
+      super(MonitoringV1.LocationsGlobalMetricsScopesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Returns a specific Metrics Scope.
+
+      Args:
+        request: (MonitoringLocationsGlobalMetricsScopesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (MetricsScope) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/locations/global/metricsScopes/{metricsScopesId}',
+        http_method='GET',
+        method_id='monitoring.locations.global.metricsScopes.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='MonitoringLocationsGlobalMetricsScopesGetRequest',
+        response_type_name='MetricsScope',
+        supports_download=False,
+    )
+
+    def ListMetricsScopesByMonitoredProject(self, request, global_params=None):
+      r"""Returns a list of every Metrics Scope that a specific MonitoredProject has been added to. The metrics scope representing the specified monitored project will always be the first entry in the response.
+
+      Args:
+        request: (MonitoringLocationsGlobalMetricsScopesListMetricsScopesByMonitoredProjectRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListMetricsScopesByMonitoredProjectResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListMetricsScopesByMonitoredProject')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListMetricsScopesByMonitoredProject.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='monitoring.locations.global.metricsScopes.listMetricsScopesByMonitoredProject',
+        ordered_params=[],
+        path_params=[],
+        query_params=['monitoredResourceContainer'],
+        relative_path='v1/locations/global/metricsScopes:listMetricsScopesByMonitoredProject',
+        request_field='',
+        request_type_name='MonitoringLocationsGlobalMetricsScopesListMetricsScopesByMonitoredProjectRequest',
+        response_type_name='ListMetricsScopesByMonitoredProjectResponse',
+        supports_download=False,
+    )
+
+  class LocationsGlobalService(base_api.BaseApiService):
+    """Service class for the locations_global resource."""
+
+    _NAME = 'locations_global'
+
+    def __init__(self, client):
+      super(MonitoringV1.LocationsGlobalService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+  class LocationsService(base_api.BaseApiService):
+    """Service class for the locations resource."""
+
+    _NAME = 'locations'
+
+    def __init__(self, client):
+      super(MonitoringV1.LocationsService, self).__init__(client)
+      self._upload_configs = {
+          }
 
   class OperationsService(base_api.BaseApiService):
     """Service class for the operations resource."""
@@ -52,60 +203,6 @@ class MonitoringV1(base_api.BaseApiClient):
       super(MonitoringV1.OperationsService, self).__init__(client)
       self._upload_configs = {
           }
-
-    def Cancel(self, request, global_params=None):
-      r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns google.rpc.Code.UNIMPLEMENTED. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to Code.CANCELLED.
-
-      Args:
-        request: (MonitoringOperationsCancelRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Empty) The response message.
-      """
-      config = self.GetMethodConfig('Cancel')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Cancel.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/operations/{operationsId}:cancel',
-        http_method='POST',
-        method_id='monitoring.operations.cancel',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1/{+name}:cancel',
-        request_field='cancelOperationRequest',
-        request_type_name='MonitoringOperationsCancelRequest',
-        response_type_name='Empty',
-        supports_download=False,
-    )
-
-    def Delete(self, request, global_params=None):
-      r"""Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns google.rpc.Code.UNIMPLEMENTED.
-
-      Args:
-        request: (MonitoringOperationsDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Empty) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/operations/{operationsId}',
-        http_method='DELETE',
-        method_id='monitoring.operations.delete',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1/{+name}',
-        request_field='',
-        request_type_name='MonitoringOperationsDeleteRequest',
-        response_type_name='Empty',
-        supports_download=False,
-    )
 
     def Get(self, request, global_params=None):
       r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
@@ -134,33 +231,6 @@ class MonitoringV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def List(self, request, global_params=None):
-      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns UNIMPLEMENTED.NOTE: the name binding allows API services to override the binding to use different resource name schemes, such as users/*/operations. To override the binding, API services can add a binding such as "/v1/{name=users/*}/operations" to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id.
-
-      Args:
-        request: (MonitoringOperationsListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListOperationsResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/operations',
-        http_method='GET',
-        method_id='monitoring.operations.list',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
-        relative_path='v1/{+name}',
-        request_field='',
-        request_type_name='MonitoringOperationsListRequest',
-        response_type_name='ListOperationsResponse',
-        supports_download=False,
-    )
-
   class ProjectsDashboardsService(base_api.BaseApiService):
     """Service class for the projects_dashboards resource."""
 
@@ -172,7 +242,7 @@ class MonitoringV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new custom dashboard. For examples on how you can use this API to create dashboards, see Managing dashboards by API. This method requires the monitoring.dashboards.create permission on the specified project. For more information about permissions, see Cloud Identity and Access Management.
+      r"""Creates a new custom dashboard. For examples on how you can use this API to create dashboards, see Managing dashboards by API (https://cloud.google.com/monitoring/dashboards/api-dashboard). This method requires the monitoring.dashboards.create permission on the specified project. For more information about permissions, see Cloud Identity and Access Management (https://cloud.google.com/iam).
 
       Args:
         request: (MonitoringProjectsDashboardsCreateRequest) input message

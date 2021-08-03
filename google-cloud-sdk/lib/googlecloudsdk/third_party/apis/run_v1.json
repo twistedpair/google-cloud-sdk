@@ -394,12 +394,12 @@
       "type": "object",
       "properties": {
         "containerConcurrency": {
-          "description": "(Optional) ContainerConcurrency specifies the maximum allowed in-flight (concurrent) requests per container instance of the Revision. Cloud Run fully managed: supported, defaults to 80 Cloud Run for Anthos: supported, defaults to 0, which means concurrency to the application is not limited, and the system decides the target concurrency for the autoscaler.",
+          "description": "Optional. ContainerConcurrency specifies the maximum allowed in-flight (concurrent) requests per container instance of the Revision. Cloud Run fully managed: supported, defaults to 80 Cloud Run for Anthos: supported, defaults to 0, which means concurrency to the application is not limited, and the system decides the target concurrency for the autoscaler.",
           "type": "integer",
           "format": "int32"
         },
         "timeoutSeconds": {
-          "description": "TimeoutSeconds holds the max duration the instance is allowed for responding to a request. Cloud Run fully managed: defaults to 300 seconds (5 minutes). Maximum allowed value is 900 seconds (15 minutes). Cloud Run for Anthos: defaults to 300 seconds (5 minutes). Maximum allowed value is configurable by the cluster operator.",
+          "description": "TimeoutSeconds holds the max duration the instance is allowed for responding to a request. Cloud Run fully managed: defaults to 300 seconds (5 minutes). Maximum allowed value is 3600 seconds (1 hour). Cloud Run for Anthos: defaults to 300 seconds (5 minutes). Maximum allowed value is configurable by the cluster operator.",
           "type": "integer",
           "format": "int32"
         },
@@ -962,7 +962,7 @@
           }
         },
         "logUrl": {
-          "description": "Specifies the generated logging url for this particular revision based on the revision url template specified in the controller's config. +optional",
+          "description": "Optional. Specifies the generated logging url for this particular revision based on the revision url template specified in the controller's config.",
           "type": "string"
         },
         "serviceName": {
@@ -1291,7 +1291,7 @@
           "type": "string"
         },
         "url": {
-          "description": "Cloud Run fully managed: not supported Cloud Run on GKE: supported Holds the URL that will serve the traffic of the DomainMapping. +optional",
+          "description": "Optional. Cloud Run fully managed: not supported Cloud Run on GKE: supported Holds the URL that will serve the traffic of the DomainMapping.",
           "type": "string"
         }
       }
@@ -1497,11 +1497,11 @@
           "format": "int32"
         },
         "tag": {
-          "description": "Tag is optionally used to expose a dedicated url for referencing this target exclusively. +optional",
+          "description": "Optional. Tag is used to expose a dedicated url for referencing this target exclusively.",
           "type": "string"
         },
         "latestRevision": {
-          "description": "LatestRevision may be optionally provided to indicate that the latest ready Revision of the Configuration should be used for this traffic target. When provided LatestRevision must be true if RevisionName is empty; it must be false when RevisionName is non-empty. +optional",
+          "description": "Optional. LatestRevision may be provided to indicate that the latest ready Revision of the Configuration should be used for this traffic target. When provided LatestRevision must be true if RevisionName is empty; it must be false when RevisionName is non-empty.",
           "type": "boolean"
         },
         "url": {
@@ -1978,7 +1978,7 @@
                       "type": "string"
                     },
                     "limit": {
-                      "description": "The maximum number of records that should be returned.",
+                      "description": "Optional. The maximum number of records that should be returned.",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"
@@ -2009,7 +2009,7 @@
                       "type": "boolean"
                     },
                     "continue": {
-                      "description": "Optional encoded string to continue paging.",
+                      "description": "Optional. Encoded string to continue paging.",
                       "location": "query",
                       "type": "string"
                     }
@@ -2113,7 +2113,7 @@
                       "type": "string"
                     },
                     "limit": {
-                      "description": "The maximum number of records that should be returned.",
+                      "description": "Optional. The maximum number of records that should be returned.",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"
@@ -2144,7 +2144,7 @@
                       "type": "boolean"
                     },
                     "continue": {
-                      "description": "Optional encoded string to continue paging.",
+                      "description": "Optional. Encoded string to continue paging.",
                       "location": "query",
                       "type": "string"
                     }
@@ -2236,7 +2236,7 @@
                       "type": "string"
                     },
                     "limit": {
-                      "description": "The maximum number of records that should be returned.",
+                      "description": "Optional. The maximum number of records that should be returned.",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"
@@ -2267,7 +2267,7 @@
                       "type": "boolean"
                     },
                     "continue": {
-                      "description": "Optional encoded string to continue paging.",
+                      "description": "Optional. Encoded string to continue paging.",
                       "location": "query",
                       "type": "string"
                     }
@@ -2434,7 +2434,7 @@
                       "type": "string"
                     },
                     "limit": {
-                      "description": "The maximum number of records that should be returned.",
+                      "description": "Optional. The maximum number of records that should be returned.",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"
@@ -2465,7 +2465,7 @@
                       "type": "boolean"
                     },
                     "continue": {
-                      "description": "Optional encoded string to continue paging.",
+                      "description": "Optional. Encoded string to continue paging.",
                       "location": "query",
                       "type": "string"
                     }
@@ -2609,7 +2609,7 @@
                       "type": "string"
                     },
                     "limit": {
-                      "description": "The maximum number of records that should be returned.",
+                      "description": "Optional. The maximum number of records that should be returned.",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"
@@ -2640,7 +2640,7 @@
                       "type": "boolean"
                     },
                     "continue": {
-                      "description": "Optional encoded string to continue paging.",
+                      "description": "Optional. Encoded string to continue paging.",
                       "location": "query",
                       "type": "string"
                     }
@@ -2983,7 +2983,7 @@
                   "type": "string"
                 },
                 "limit": {
-                  "description": "The maximum number of records that should be returned.",
+                  "description": "Optional. The maximum number of records that should be returned.",
                   "location": "query",
                   "type": "integer",
                   "format": "int32"
@@ -3014,7 +3014,7 @@
                   "type": "boolean"
                 },
                 "continue": {
-                  "description": "Optional encoded string to continue paging.",
+                  "description": "Optional. Encoded string to continue paging.",
                   "location": "query",
                   "type": "string"
                 }
@@ -3118,7 +3118,7 @@
                   "type": "string"
                 },
                 "limit": {
-                  "description": "The maximum number of records that should be returned.",
+                  "description": "Optional. The maximum number of records that should be returned.",
                   "location": "query",
                   "type": "integer",
                   "format": "int32"
@@ -3149,7 +3149,7 @@
                   "type": "boolean"
                 },
                 "continue": {
-                  "description": "Optional encoded string to continue paging.",
+                  "description": "Optional. Encoded string to continue paging.",
                   "location": "query",
                   "type": "string"
                 }
@@ -3241,7 +3241,7 @@
                   "type": "string"
                 },
                 "limit": {
-                  "description": "The maximum number of records that should be returned.",
+                  "description": "Optional. The maximum number of records that should be returned.",
                   "location": "query",
                   "type": "integer",
                   "format": "int32"
@@ -3272,7 +3272,7 @@
                   "type": "boolean"
                 },
                 "continue": {
-                  "description": "Optional encoded string to continue paging.",
+                  "description": "Optional. Encoded string to continue paging.",
                   "location": "query",
                   "type": "string"
                 }
@@ -3376,7 +3376,7 @@
                   "type": "string"
                 },
                 "limit": {
-                  "description": "The maximum number of records that should be returned.",
+                  "description": "Optional. The maximum number of records that should be returned.",
                   "location": "query",
                   "type": "integer",
                   "format": "int32"
@@ -3407,7 +3407,7 @@
                   "type": "boolean"
                 },
                 "continue": {
-                  "description": "Optional encoded string to continue paging.",
+                  "description": "Optional. Encoded string to continue paging.",
                   "location": "query",
                   "type": "string"
                 }
@@ -3466,7 +3466,7 @@
                   "type": "string"
                 },
                 "limit": {
-                  "description": "The maximum number of records that should be returned.",
+                  "description": "Optional. The maximum number of records that should be returned.",
                   "location": "query",
                   "type": "integer",
                   "format": "int32"
@@ -3497,7 +3497,7 @@
                   "type": "boolean"
                 },
                 "continue": {
-                  "description": "Optional encoded string to continue paging.",
+                  "description": "Optional. Encoded string to continue paging.",
                   "location": "query",
                   "type": "string"
                 }

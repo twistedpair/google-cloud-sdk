@@ -94,14 +94,15 @@ def MungeBasicAuthFlags(args):
   Raises:
     util.Error, if flags conflict.
   """
-  if hasattr(args, 'enable_basic_auth') and \
-      args.IsSpecified('enable_basic_auth'):
+  if hasattr(args,
+             'enable_basic_auth') and args.IsSpecified('enable_basic_auth'):
     if not args.enable_basic_auth:
       args.username = ''
     else:
       args.username = 'admin'
-  if (hasattr(args, 'username') and hasattr(args, 'password')) and \
-      (not args.username and args.IsSpecified('password')):
+  if (hasattr(args, 'username') and
+      hasattr(args, 'password')) and (not args.username and
+                                      args.IsSpecified('password')):
     raise util.Error(constants.USERNAME_PASSWORD_ERROR_MSG)
 
 
@@ -234,9 +235,9 @@ project. Create a subscription for the topic specified to receive notification
 messages. See https://cloud.google.com/pubsub/docs/admin on how to manage
 Pub/Sub topics and subscriptions.
 
-Example:
+Examples:
 
-    $ {command} example-cluster --notification-config=pubsub=ENABLED,pubsub-topic=projects/{project}/topics/{topic-name}
+  $ {command} example-cluster --notification-config=pubsub=ENABLED,pubsub-topic=projects/{project}/topics/{topic-name}
 
 The project of the Pub/Sub topic must be the same one as the cluster. It can
 be either the project ID or the project number.
@@ -798,8 +799,10 @@ def AddCloudRunConfigFlag(parser, suppressed=False):
 Configurations for Cloud Run addon, requires `--addons=CloudRun` for create
 and `--update-addons=CloudRun=ENABLED` for update.
 
-*load-balancer-type*:::Optional Type of load-balancer-type EXTERNAL or INTERNAL
-Example:
+*load-balancer-type*::: (Optional) Type of load-balancer-type EXTERNAL or
+INTERNAL.
+
+Examples:
 
   $ {command} example-cluster --cloud-run-config=load-balancer-type=INTERNAL
 """
@@ -919,7 +922,7 @@ def AddEnableMasterSignalsFlags(parser, for_create=False):
   help_text = """\
 Set which master components logs should be sent to Cloud Operations.
 
-Example:
+Examples:
 
   $ {command} --master-logs APISERVER,SCHEDULER
 """
@@ -966,19 +969,25 @@ def AddNodeLabelsFlag(parser,
     if for_update:
       help_text = """\
 Replaces all the user specified Kubernetes labels on all nodes in an existing
-node pool with the given labels. Example:
+node pool with the given labels.
+
+Examples:
 
   $ {command} node-pool-1 --cluster=example-cluster --node-labels=label1=value1,label2=value2
 """
     else:
       help_text = """\
-Applies the given Kubernetes labels on all nodes in the new node pool. Example:
+Applies the given Kubernetes labels on all nodes in the new node pool.
+
+Examples:
 
   $ {command} node-pool-1 --cluster=example-cluster --node-labels=label1=value1,label2=value2
 """
   else:
     help_text = """\
-Applies the given Kubernetes labels on all nodes in the new node pool. Example:
+Applies the given Kubernetes labels on all nodes in the new node pool.
+
+Examples:
 
   $ {command} example-cluster --node-labels=label-a=value1,label-2=value2
 """
@@ -1022,7 +1031,9 @@ def AddLocalSSDsBetaFlags(parser, for_node_pool=False, suppressed=False):
 def AddLocalSSDVolumeConfigsFlag(parser, for_node_pool=False, help_text=''):
   """Adds a --local-ssd-volumes flag to the given parser."""
   help_text += """\
-Adds the requested local SSDs on all nodes in default node pool(s) in new cluster. Example:
+Adds the requested local SSDs on all nodes in default node pool(s) in new cluster.
+
+Examples:
 
   $ {{command}} {0} --local-ssd-volumes count=2,type=nvme,format=fs
 
@@ -1066,7 +1077,9 @@ def AddEphemeralStorageFlag(parser,
   """Adds --ephemeral-storage flag to the parser."""
   help_text += """\
 Parameters for the ephemeral storage filesystem.
-If unspecified, ephemeral storage is backed by the boot disk. Example:
+If unspecified, ephemeral storage is backed by the boot disk.
+
+Examples:
 
   $ {{command}} {0} --ephemeral-storage local-ssd-count=2
 
@@ -1094,19 +1107,28 @@ def AddNodeTaintsFlag(parser,
   if for_node_pool:
     if for_update:
       help_text = """\
-Replaces all the user specified Kubernetes taints on all nodes in an existing node pool, which can be used with tolerations for pod scheduling. Example:
+Replaces all the user specified Kubernetes taints on all nodes in an existing
+node pool, which can be used with tolerations for pod scheduling.
+
+Examples:
 
   $ {command} node-pool-1 --cluster=example-cluster --node-taints=key1=val1:NoSchedule,key2=val2:PreferNoSchedule
 """
     else:
       help_text = """\
-Applies the given kubernetes taints on all nodes in the new node pool, which can be used with tolerations for pod scheduling. Example:
+Applies the given kubernetes taints on all nodes in the new node pool, which can
+be used with tolerations for pod scheduling.
+
+Examples:
 
   $ {command} node-pool-1 --cluster=example-cluster --node-taints=key1=val1:NoSchedule,key2=val2:PreferNoSchedule
 """
   else:
     help_text = """\
-Applies the given kubernetes taints on all nodes in default node pool(s) in new cluster, which can be used with tolerations for pod scheduling. Example:
+Applies the given kubernetes taints on all nodes in default node pool(s) in new
+cluster, which can be used with tolerations for pod scheduling.
+
+Examples:
 
   $ {command} example-cluster --node-taints=key1=val1:NoSchedule,key2=val2:PreferNoSchedule
 """
@@ -1242,7 +1264,9 @@ def AddTagsCreate(parser):
   AddTagsFlag(
       parser, """\
 Applies the given Compute Engine tags (comma separated) on all nodes in the new
-node-pool. Example:
+node-pool.
+
+Examples:
 
   $ {command} example-cluster --tags=tag1,tag2
 
@@ -1257,7 +1281,9 @@ def AddTagsNodePoolUpdate(parser, hidden=False):
   """Adds a --tags flag to the given parser."""
   help_text = """\
 Replaces all the user specified Compute Engine tags on all nodes in an existing
-node pool with the given tags (comma separated). Example:
+node pool with the given tags (comma separated).
+
+Examples:
 
   $ {command} node-pool-1 --cluster=example-cluster --tags=tag1,tag2
 
@@ -1613,17 +1639,11 @@ Examples:
 +
 For a 9-5 Mon-Wed UTC-4 maintenance window:
 +
-  $ {command} example-cluster \
-  --maintenance-window-start=2000-01-01T09:00:00-04:00 \
-  --maintenance-window-end=2000-01-01T17:00:00-04:00 \
-  --maintenance-window-recurrence='FREQ=WEEKLY;BYDAY=MO,TU,WE'
+  $ {command} example-cluster --maintenance-window-start=2000-01-01T09:00:00-04:00 --maintenance-window-end=2000-01-01T17:00:00-04:00 --maintenance-window-recurrence='FREQ=WEEKLY;BYDAY=MO,TU,WE'
 +
 For a daily window from 22:00 - 04:00 UTC:
 +
-  $ {command} example-cluster \
-  --maintenance-window-start=2000-01-01T22:00:00Z \
-  --maintenance-window-end=2000-01-02T04:00:00Z \
-  --maintenance-window-recurrence=FREQ=DAILY
+  $ {command} example-cluster --maintenance-window-start=2000-01-01T22:00:00Z --maintenance-window-end=2000-01-02T04:00:00Z --maintenance-window-recurrence=FREQ=DAILY
 """)
 
   set_window_group.add_argument(
@@ -1682,7 +1702,7 @@ def AddMaintenanceExclusionFlags(parser, hidden=False):
 Sets a period of time in which maintenance should not occur. This is compatible
 with both daily and recurring maintenance windows.
 +
-Example:
+Examples:
 +
   $ {command} example-cluster \
   --add-maintenance-exclusion-name=holidays-2000 \
@@ -1741,7 +1761,8 @@ def AddLabelsFlag(parser, suppressed=False):
   help_text = """\
 Labels to apply to the Google Cloud resources in use by the Kubernetes Engine
 cluster. These are unrelated to Kubernetes labels.
-Example:
+
+Examples:
 
   $ {command} example-cluster --labels=label_a=value1,label_b=,label_c=value3
 """
@@ -1763,7 +1784,8 @@ def AddUpdateLabelsFlag(parser):
   help_text = """\
 Labels to apply to the Google Cloud resources in use by the Kubernetes Engine
 cluster. These are unrelated to Kubernetes labels.
-Example:
+
+Examples:
 
   $ {command} example-cluster --update-labels=label_a=value1,label_b=value2
 """
@@ -1784,7 +1806,8 @@ def AddRemoveLabelsFlag(parser):
   help_text = """\
 Labels to remove from the Google Cloud resources in use by the Kubernetes Engine
 cluster. These are unrelated to Kubernetes labels.
-Example:
+
+Examples:
 
   $ {command} example-cluster --remove-labels=label_a,label_b
 """
@@ -1871,20 +1894,20 @@ Examples:
 
 Create a new subnetwork with a default name and size.
 
-      $ {command} --create-subnetwork ""
+  $ {command} --create-subnetwork ""
 
 Create a new subnetwork named "my-subnet" with netmask of size 21.
 
-      $ {command} --create-subnetwork name=my-subnet,range=/21
+  $ {command} --create-subnetwork name=my-subnet,range=/21
 
 Create a new subnetwork with a default name with the primary range of
 10.100.0.0/16.
 
-      $ {command} --create-subnetwork range=10.100.0.0/16
+  $ {command} --create-subnetwork range=10.100.0.0/16
 
 Create a new subnetwork with the name "my-subnet" with a default range.
 
-      $ {command} --create-subnetwork name=my-subnet
+  $ {command} --create-subnetwork name=my-subnet
 
 Can not be specified unless '--enable-ip-alias' is also specified. Can
 not be used in conjunction with the '--subnetwork' option.
@@ -2164,7 +2187,9 @@ def AddNodeIdentityFlags(parser, example_target):
       metavar='SCOPE',
       default='gke-default',
       help="""\
-Specifies scopes for the node instances. Examples:
+Specifies scopes for the node instances.
+
+Examples:
 
   $ {{command}} {example_target} --scopes=https://www.googleapis.com/auth/devstorage.read_only
 
@@ -2367,8 +2392,9 @@ def AddIstioConfigFlag(parser, suppressed=False):
 Configurations for Istio addon, requires --addons contains Istio for create,
 or --update-addons Istio=ENABLED for update.
 
-*auth*:::Optional Type of auth MTLS_PERMISSIVE or MTLS_STRICT
-Example:
+*auth*::: (Optional) Type of auth MTLS_PERMISSIVE or MTLS_STRICT.
+
+Examples:
 
   $ {command} example-cluster --istio-config=auth=MTLS_PERMISSIVE
 """
@@ -2474,8 +2500,8 @@ The list of predefined machine types is available using the following command:
   $ gcloud compute machine-types list
 
 You can also specify custom machine types with the string "custom-CPUS-RAM"
-where ```CPUS``` is the number of virtual CPUs and ```RAM``` is the amount of
-RAM in MiB.
+where "CPUS" is the number of virtual CPUs and "RAM" is the amount of RAM in
+MiB.
 
 For example, to create a node pool using custom machines with 2 vCPUs and 12 GB
 of RAM:
@@ -2624,7 +2650,7 @@ resources is exported. A table will be created in the specified dataset to
 store cluster resource usage. The resulting table can be joined with BigQuery
 Billing Export to produce a fine-grained cost breakdown.
 
-Example:
+Examples:
 
   $ {command} example-cluster --resource-usage-bigquery-dataset=example_bigquery_dataset_name
 """
@@ -2798,7 +2824,9 @@ def AddSandboxFlag(parser, hidden=False):
       metavar='type=TYPE',
       hidden=hidden,
       help="""\
-Enables the requested sandbox on all nodes in the node pool. Example:
+Enables the requested sandbox on all nodes in the node pool.
+
+Examples:
 
   $ {command} node-pool-1 --cluster=example-cluster --sandbox="type=gvisor"
 
@@ -2822,7 +2850,7 @@ def AddSecurityProfileForCreateFlags(parser, hidden=False):
       help="""\
 Name and version of the security profile to be applied to the cluster.
 
-Example:
+Examples:
 
   $ {command} example-cluster --security-profile=default-1.0-gke.0
 """)
@@ -2858,7 +2886,7 @@ Name and version of the security profile to be applied to the cluster.
 If not specified, the current setting of security profile will be
 preserved.
 
-Example:
+Examples:
 
   $ {command} example-cluster --security-profile=default-1.0-gke.1
 """)
@@ -2884,7 +2912,7 @@ If the current security profile is not supported in the new cluster
 version, this option must be explicitly specified with a supported
 security profile, otherwise the operation will fail.
 
-Example:
+Examples:
 
   $ {command} example-cluster --security-profile=default-1.0-gke.1
 """)
@@ -3172,7 +3200,7 @@ def AddLinuxSysctlFlags(parser, for_node_pool=False):
 Linux kernel parameters to be applied to all nodes in the new node pool as well
 as the pods running on the nodes.
 
-Example:
+Examples:
 
   $ {command} node-pool-1 --linux-sysctls="net.core.somaxconn=1024,net.ipv4.tcp_rmem=4096 87380 6291456"
 """
@@ -3181,7 +3209,7 @@ Example:
 Linux kernel parameters to be applied to all nodes in the new cluster's default
 node pool as well as the pods running on the nodes.
 
-Example:
+Examples:
 
   $ {command} example-cluster --linux-sysctls="net.core.somaxconn=1024,net.ipv4.tcp_rmem=4096 87380 6291456"
 """
@@ -3339,7 +3367,7 @@ def AddSystemConfigFlag(parser, hidden=True):
 Path of the YAML/JSON file that contains the node configuration, including
 Linux kernel parameters (sysctls) and kubelet configs.
 
-Example:
+Examples:
 
     kubeletConfig:
       cpuManagerPolicy: static
@@ -3602,6 +3630,19 @@ Specifies whether to enable GCFS on {}.""".format(target)
       action='store_true')
 
 
+def AddEnableImageStreamingFlag(parser, for_node_pool=False, hidden=True):
+  """Adds the argument to handle image streaming configurations."""
+  target = 'node pool' if for_node_pool else 'cluster'
+  help_text = """\
+Specifies whether to enable image streaming on {}.""".format(target)
+  parser.add_argument(
+      '--enable-image-streaming',
+      help=help_text,
+      default=None,
+      hidden=hidden,
+      action='store_true')
+
+
 def AddDisableAutopilotFlag(parser):
   """Adds the argument to convert cluster from Autopilot mode to Standard mode."""
   help_text = """\
@@ -3709,7 +3750,7 @@ Examples:
 
 Specify a pod range called ``other-range''
 
-      $ {command} --pod-ipv4-range other-range
+  $ {command} --pod-ipv4-range other-range
 """)
   group.add_argument(
       '--create-pod-ipv4-range',
@@ -3731,20 +3772,20 @@ Examples:
 
 Create a new pod range with a default name and size.
 
-      $ {command} --create-pod-ipv4-range ""
+  $ {command} --create-pod-ipv4-range ""
 
 Create a new pod range named ``my-range'' with netmask of size 21.
 
-      $ {command} --create-pod-ipv4-range name=my-range,range=/21
+  $ {command} --create-pod-ipv4-range name=my-range,range=/21
 
 Create a new pod range with a default name with the primary range of
 10.100.0.0/16.
 
-      $ {command} --create-pod-ipv4-range range=10.100.0.0/16
+  $ {command} --create-pod-ipv4-range range=10.100.0.0/16
 
 Create a new pod range with the name ``my-range'' with a default range.
 
-      $ {command} --create-pod-ipv4-range name=my-range
+  $ {command} --create-pod-ipv4-range name=my-range
 
 Must be used in VPC native clusters. Can not be used in conjunction with the
 `--pod-ipv4-range` option.

@@ -34,6 +34,7 @@ from googlecloudsdk.command_lib.storage.tasks import task_status
 from googlecloudsdk.command_lib.storage.tasks.rm import delete_object_task
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files
+from googlecloudsdk.core.util import hashing
 from googlecloudsdk.core.util import platforms
 from googlecloudsdk.core.util import scaled_integer
 
@@ -122,7 +123,7 @@ def get_digesters(source_resource, destination_resource):
       cloud_api.Capability.CLIENT_SIDE_HASH_VALIDATION in capabilities or
       check_hashes == properties.CheckHashes.NEVER):
     return {}
-  return {hash_util.HashAlgorithm.MD5: hash_util.get_md5()}
+  return {hash_util.HashAlgorithm.MD5: hashing.get_md5()}
 
 
 def get_stream(source_resource,
@@ -188,7 +189,7 @@ def validate_uploaded_object(digesters, uploaded_resource, task_status_queue):
       digesters[hash_util.HashAlgorithm.MD5])
   try:
     hash_util.validate_object_hashes_match(
-        uploaded_resource.storage_url, calculated_digest,
+        uploaded_resource.storage_url.url_string, calculated_digest,
         uploaded_resource.md5_hash)
   except errors.HashMismatchError:
     delete_object_task.DeleteObjectTask(uploaded_resource.storage_url).execute(

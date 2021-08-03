@@ -22,7 +22,9 @@ from __future__ import unicode_literals
 import sys
 
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.command_lib.pubsub import util
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 import six
@@ -32,6 +34,7 @@ from six.moves.urllib.parse import urlparse
 PROJECTS_RESOURCE_PATH = 'projects/'
 LOCATIONS_RESOUCE_PATH = 'locations/'
 TOPICS_RESOURCE_PATH = 'topics/'
+SUBSCRIPTIONS_RESOURCE_PATH = 'subscriptions/'
 
 
 class UnexpectedResourceField(exceptions.Error):
@@ -50,6 +53,15 @@ class NoGrpcInstalled(exceptions.Error):
         'Please ensure that the gRPC module is installed and the environment '
         'is correctly configured. Run `sudo pip3 install grpcio` and set the '
         'environment variable CLOUDSDK_PYTHON_SITEPACKAGES=1.')
+
+
+class InvalidSeekTarget(exceptions.Error):
+  """Error for specifying an invalid seek target."""
+
+
+def PubsubLiteMessages():
+  """Returns the Pub/Sub Lite v1 messages module."""
+  return apis.GetMessagesModule('pubsublite', 'v1')
 
 
 def DurationToSeconds(duration):
@@ -276,6 +288,72 @@ def UpdateSkipBacklogField(resource_ref, args, request):
   if hasattr(args, 'starting_offset'):
     request.skipBacklog = (args.starting_offset == 'end')
 
+  return request
+
+
+def SetSeekTarget(resource_ref, args, request):
+  """Sets the target for a SeekSubscriptionRequest."""
+  # Unused resource reference
+  del resource_ref
+
+  psl = PubsubLiteMessages()
+
+  if args.starting_offset:
+    if args.starting_offset == 'beginning':
+      request.seekSubscriptionRequest = psl.SeekSubscriptionRequest(
+          namedTarget=psl.SeekSubscriptionRequest.NamedTargetValueValuesEnum
+          .TAIL)
+    elif args.starting_offset == 'end':
+      request.seekSubscriptionRequest = psl.SeekSubscriptionRequest(
+          namedTarget=psl.SeekSubscriptionRequest.NamedTargetValueValuesEnum
+          .HEAD)
+    else:
+      # Should already be validated.
+      raise InvalidSeekTarget(
+          'Invalid starting offset value! Must be one of: [beginning, end].')
+  elif args.publish_time:
+    request.seekSubscriptionRequest = psl.SeekSubscriptionRequest(
+        timeTarget=psl.TimeTarget(
+            publishTime=util.FormatSeekTime(args.publish_time)))
+  elif args.event_time:
+    request.seekSubscriptionRequest = psl.SeekSubscriptionRequest(
+        timeTarget=psl.TimeTarget(
+            eventTime=util.FormatSeekTime(args.event_time)))
+  else:
+    # Should already be validated.
+    raise InvalidSeekTarget('Seek target must be specified!')
+
+  log.warning(
+      'The seek operation will complete once subscribers react to the seek. ' +
+      'If subscribers are offline, `pubsub lite-operations describe` can be ' +
+      'used to check the operation status later.'
+  )
+  return request
+
+
+def UpdateListOperationsFilter(resource_ref, args, request):
+  """Updates the filter for a ListOperationsRequest."""
+  # Unused resource reference
+  del resource_ref
+
+  # If the --filter arg is specified, let gcloud handle it client-side.
+  if args.filter:
+    return request
+
+  # Otherwise build the filter if the --subscription and/or --done flags are
+  # specified. The server will handle filtering.
+  if args.subscription:
+    # Note: This relies on project ids replaced with project numbers until
+    # b/194764731 is fixed.
+    request.filter = 'target={}/{}{}'.format(request.name,
+                                             SUBSCRIPTIONS_RESOURCE_PATH,
+                                             args.subscription)
+  if args.done:
+    if request.filter:
+      request.filter += ' AND '
+    else:
+      request.filter = ''
+    request.filter += 'done={}'.format(args.done)
   return request
 
 

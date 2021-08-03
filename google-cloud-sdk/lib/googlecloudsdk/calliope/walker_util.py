@@ -154,7 +154,7 @@ class DevSiteGenerator(walker.Walker):
       render_document.RenderDocument(style='devsite',
                                      title=' '.join(command),
                                      fin=io.StringIO(md),
-                                     out=f)
+                                     out=f, command_node=node)
     _UpdateTOC()
     return parent
 

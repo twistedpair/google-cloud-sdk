@@ -593,6 +593,17 @@
         }
       }
     },
+    "RestoreDomainRequest": {
+      "id": "RestoreDomainRequest",
+      "description": "RestoreDomainRequest is the request received by RestoreDomain rpc",
+      "type": "object",
+      "properties": {
+        "backupId": {
+          "description": "Required. ID of the backup to be restored",
+          "type": "string"
+        }
+      }
+    },
     "LDAPSSettings": {
       "id": "LDAPSSettings",
       "description": "LDAPSSettings represents the ldaps settings for domain resource. LDAP is the Lightweight Directory Access Protocol, defined in https:\/\/tools.ietf.org\/html\/rfc4511. The settings object configures LDAP over SSL\/TLS, whether it is over port 636 or the StartTLS operation. If LDAPSSettings is being changed, it will be placed into the UPDATING state, which indicates that the resource is being reconciled. At this point, Get will reflect an intermediate state.",
@@ -1485,7 +1496,7 @@
           ]
         },
         "denyMaintenancePeriods": {
-          "description": "Deny Maintenance Period that is applied to resource to indicate when maintenance is forbidden. User can specify zero or more non-overlapping deny periods. For V1, Maximum number of deny_maintenance_periods is expected to be one.",
+          "description": "Deny Maintenance Period that is applied to resource to indicate when maintenance is forbidden. User can specify zero or more non-overlapping deny periods. Maximum number of deny_maintenance_periods expected is one.",
           "type": "array",
           "items": {
             "$ref": "DenyMaintenancePeriod"
@@ -2150,6 +2161,34 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Validate the trust state Operation"
+                    },
+                    "restore": {
+                      "id": "managedidentities.projects.locations.global.domains.restore",
+                      "path": "v1alpha1/{+name}:restore",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/global/domains/{domainsId}:restore",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. resource name for the domain to which the backup belongs",
+                          "pattern": "^projects\/[^\/]+\/locations\/global\/domains\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "RestoreDomainRequest"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "RestoreDomain restores domain backup mentioned in the RestoreDomainRequest"
                     },
                     "getLdapssettings": {
                       "id": "managedidentities.projects.locations.global.domains.getLdapssettings",

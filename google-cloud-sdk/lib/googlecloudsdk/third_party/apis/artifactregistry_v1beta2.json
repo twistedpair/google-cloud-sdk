@@ -739,6 +739,42 @@
         }
       }
     },
+    "UploadAptArtifactRequest": {
+      "id": "UploadAptArtifactRequest",
+      "description": "The request to upload an artifact.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "UploadAptArtifactMediaResponse": {
+      "id": "UploadAptArtifactMediaResponse",
+      "description": "The response to upload an artifact.",
+      "type": "object",
+      "properties": {
+        "operation": {
+          "description": "Operation to be returned to the user.",
+          "$ref": "Operation"
+        }
+      }
+    },
+    "UploadYumArtifactRequest": {
+      "id": "UploadYumArtifactRequest",
+      "description": "The request to upload an artifact.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "UploadYumArtifactMediaResponse": {
+      "id": "UploadYumArtifactMediaResponse",
+      "description": "The response to upload an artifact.",
+      "type": "object",
+      "properties": {
+        "operation": {
+          "description": "Operation to be returned to the user.",
+          "$ref": "Operation"
+        }
+      }
+    },
     "ImportAptArtifactsResponse": {
       "id": "ImportAptArtifactsResponse",
       "description": "The response message from importing artifacts.",
@@ -896,17 +932,6 @@
         }
       }
     },
-    "UploadAptArtifactMediaResponse": {
-      "id": "UploadAptArtifactMediaResponse",
-      "description": "The response to upload an artifact.",
-      "type": "object",
-      "properties": {
-        "operation": {
-          "description": "Operation to be returned to the user.",
-          "$ref": "Operation"
-        }
-      }
-    },
     "UploadAptArtifactResponse": {
       "id": "UploadAptArtifactResponse",
       "description": "The response of the completed artifact upload operation. This response is contained in the Operation and available to users.",
@@ -918,17 +943,6 @@
           "items": {
             "$ref": "AptArtifact"
           }
-        }
-      }
-    },
-    "UploadYumArtifactMediaResponse": {
-      "id": "UploadYumArtifactMediaResponse",
-      "description": "The response to upload an artifact.",
-      "type": "object",
-      "properties": {
-        "operation": {
-          "description": "Operation to be returned to the user.",
-          "$ref": "Operation"
         }
       }
     },
@@ -1931,6 +1945,94 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Imports Yum (RPM) artifacts. The returned Operation will complete once the resources are imported. Package, Version, and File resources are created based on the imported artifacts. Imported artifacts that conflict with existing resources are ignored."
+                    }
+                  }
+                },
+                "aptartifacts": {
+                  "methods": {
+                    "upload": {
+                      "id": "artifactregistry.projects.locations.repositories.aptartifacts.upload",
+                      "path": "v1beta2/{+parent}/aptArtifacts:create",
+                      "flatPath": "v1beta2/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/aptArtifacts:create",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "The name of the parent resource where the artifacts will be uploaded.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "supportsMediaUpload": true,
+                      "mediaUpload": {
+                        "accept": [
+                          "*/*"
+                        ],
+                        "protocols": {
+                          "simple": {
+                            "multipart": true,
+                            "path": "/upload/v1beta2/{+parent}/aptArtifacts:create"
+                          }
+                        }
+                      },
+                      "request": {
+                        "$ref": "UploadAptArtifactRequest"
+                      },
+                      "response": {
+                        "$ref": "UploadAptArtifactMediaResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Directly uploads an Apt artifact. The returned Operation will complete once the resources are uploaded. Package, Version, and File resources are created based on the imported artifact. Imported artifacts that conflict with existing resources are ignored."
+                    }
+                  }
+                },
+                "yumartifacts": {
+                  "methods": {
+                    "upload": {
+                      "id": "artifactregistry.projects.locations.repositories.yumartifacts.upload",
+                      "path": "v1beta2/{+parent}/yumArtifacts:create",
+                      "flatPath": "v1beta2/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/yumArtifacts:create",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "The name of the parent resource where the artifacts will be uploaded.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "supportsMediaUpload": true,
+                      "mediaUpload": {
+                        "accept": [
+                          "*/*"
+                        ],
+                        "protocols": {
+                          "simple": {
+                            "multipart": true,
+                            "path": "/upload/v1beta2/{+parent}/yumArtifacts:create"
+                          }
+                        }
+                      },
+                      "request": {
+                        "$ref": "UploadYumArtifactRequest"
+                      },
+                      "response": {
+                        "$ref": "UploadYumArtifactMediaResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Directly uploads a Yum artifact. The returned Operation will complete once the resources are uploaded. Package, Version, and File resources are created based on the imported artifact. Imported artifacts that conflict with existing resources are ignored."
                     }
                   }
                 }

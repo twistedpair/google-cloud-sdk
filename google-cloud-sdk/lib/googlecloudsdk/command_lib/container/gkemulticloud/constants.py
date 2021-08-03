@@ -19,3 +19,13 @@ from __future__ import division
 from __future__ import unicode_literals
 
 MAX_LRO_POLL_INTERVAL_MS = 10000
+
+LRO_KIND = 'Operation'
+
+AZURE_CLUSTER_KIND = 'Azure Cluster'
+
+AZURE_NODEPOOL_KIND = 'Azure Node Pool'
+
+AWS_CLUSTER_KIND = 'AWS Cluster'
+
+AWS_NODEPOOL_KIND = 'AWS Node Pool'

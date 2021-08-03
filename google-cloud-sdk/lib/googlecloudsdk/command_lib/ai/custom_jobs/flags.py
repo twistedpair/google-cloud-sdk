@@ -68,7 +68,6 @@ _WORKER_POOL_SPEC_BETA = base.Argument(
     '--worker-pool-spec',
     action='append',
     type=arg_parsers.ArgDict(
-        # TODO(b/184350069): check `machine－type` specified for non-empty spec.
         spec={
             'replica-count': int,
             'machine-type': str,
@@ -159,10 +158,11 @@ _WORKER_POOL_SPEC_GA = base.Argument(
     '--worker-pool-spec',
     action='append',
     type=arg_parsers.ArgDict(
-        # TODO(b/184350069): check `machine-type` specified for non-empty spec.
         spec={
             'replica-count': int,
             'machine-type': str,
+            'accelerator-type': str,
+            'accelerator-count': int,
             'container-image-uri': str,
             'executor-image-uri': str,
             'python-module': str,
@@ -171,17 +171,33 @@ _WORKER_POOL_SPEC_GA = base.Argument(
     help=textwrap.dedent("""\
       Define the worker pool configuration used by the custom job. You can
       specify multiple worker pool specs in order to create a custom job with
-      multiple worker pools. For more details, please refer to
-      https://cloud.google.com/vertex-ai/docs/training/distributed-training#configuring_a_distributed_training_job
+      multiple worker pools.
 
-      The spec can contain the following fields, which are listed with
-      corresponding fields in the WorkerPoolSpec API message:
+      The spec can contain the following fields:
 
-      *machine-type*::: (Required): machineSpec.machineType
-      *replica-count*::: replicaCount
-      *container-image-uri*::: containerSpec.imageUri
-      *executor-image-uri*::: pythonPackageSpec.executorImageUri
-      *python-module*::: pythonPackageSpec.pythonModule
+      *machine-type*:::(Required): The type of the machine.
+        see https://cloud.google.com/vertex-ai/docs/training/configure-compute#machine-types
+        for supported types. This is corresponding to the
+        `machineSpec.machineType` field in `WorkerPoolSpec` API message.
+      *replica-count*:::The number of worker replicas to use for this worker
+        pool, by default the value is 1. This is corresponding to the
+        `replicaCount` field in `WorkerPoolSpec` API message.
+      *accelerator-type*:::The type of GPUs.
+        see https://cloud.google.com/vertex-ai/docs/training/configure-compute#specifying_gpus
+        for more requirements. This is corresponding to the
+        `machineSpec.acceleratorType` field in `WorkerPoolSpec` API message.
+      *accelerator-count*:::The number of GPUs for each VM in the worker pool to
+        use, by default the value if 1. This is corresponding to the
+        `machineSpec.acceleratorCount` field in `WorkerPoolSpec` API message.
+      *container-image-uri*:::The URI of a container image to be directly run on
+        each worker replica. This is corresponding to the
+        `containerSpec.imageUri` field in `WorkerPoolSpec` API message.
+      *executor-image-uri*:::The URI of a container image that will run the
+        provided package. This is corresponding to the
+        `pythonPackageSpec.executorImageUri` field in `WorkerPoolSpec` API message.
+      *python-module*:::The Python module name to run within the provided
+        package. This is corresponding to the
+        `pythonPackageSpec.pythonModule` field in `WorkerPoolSpec` API message.
 
       For example:
       `--worker-pool-spec=replica-count=1,machine-type=n1-highmem-2,container-image-uri=gcr.io/ucaip-test/ucaip-training-test`

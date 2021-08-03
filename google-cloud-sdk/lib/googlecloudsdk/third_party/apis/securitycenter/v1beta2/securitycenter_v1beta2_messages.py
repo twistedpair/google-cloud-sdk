@@ -275,6 +275,7 @@ class Finding(_messages.Message):
   App Engine application is a finding.
 
   Enums:
+    FindingClassValueValuesEnum: The class of the finding.
     SeverityValueValuesEnum: The severity of the finding. This field is
       managed by the source that writes the finding.
     StateValueValuesEnum: The state of the finding.
@@ -309,6 +310,12 @@ class Finding(_messages.Message):
       Security Command Center where additional information about the finding
       can be found. This field is guaranteed to be either empty or a well
       formed URL.
+    findingClass: The class of the finding.
+    indicator: Represents what's commonly known as an Indicator of compromise
+      (IoC) in computer forensics. This is an artifact observed on a network
+      or in an operating system that, with high confidence, indicates a
+      computer intrusion. Reference:
+      https://en.wikipedia.org/wiki/Indicator_of_compromise
     name: The relative resource name of this finding. See:
       https://cloud.google.com/apis/design/resource_names#relative_resource_na
       me Example: "organizations/{organization_id}/sources/{source_id}/finding
@@ -335,6 +342,25 @@ class Finding(_messages.Message):
       only.
     state: The state of the finding.
   """
+
+  class FindingClassValueValuesEnum(_messages.Enum):
+    r"""The class of the finding.
+
+    Values:
+      FINDING_CLASS_UNSPECIFIED: Unspecified finding class.
+      THREAT: Describes unwanted or malicious activity.
+      VULNERABILITY: Describes a potential weakness in software that increases
+        risk to Confidentiality & Integrity & Availability.
+      MISCONFIGURATION: Describes a potential weakness in cloud resource/asset
+        configuration that increases risk.
+      OBSERVATION: Describes a security observation that is for informational
+        purposes.
+    """
+    FINDING_CLASS_UNSPECIFIED = 0
+    THREAT = 1
+    VULNERABILITY = 2
+    MISCONFIGURATION = 3
+    OBSERVATION = 4
 
   class SeverityValueValuesEnum(_messages.Enum):
     r"""The severity of the finding. This field is managed by the source that
@@ -432,13 +458,15 @@ class Finding(_messages.Message):
   createTime = _messages.StringField(3)
   eventTime = _messages.StringField(4)
   externalUri = _messages.StringField(5)
-  name = _messages.StringField(6)
-  parent = _messages.StringField(7)
-  resourceName = _messages.StringField(8)
-  securityMarks = _messages.MessageField('SecurityMarks', 9)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 10)
-  sourceProperties = _messages.MessageField('SourcePropertiesValue', 11)
-  state = _messages.EnumField('StateValueValuesEnum', 12)
+  findingClass = _messages.EnumField('FindingClassValueValuesEnum', 6)
+  indicator = _messages.MessageField('Indicator', 7)
+  name = _messages.StringField(8)
+  parent = _messages.StringField(9)
+  resourceName = _messages.StringField(10)
+  securityMarks = _messages.MessageField('SecurityMarks', 11)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 12)
+  sourceProperties = _messages.MessageField('SourcePropertiesValue', 13)
+  state = _messages.EnumField('StateValueValuesEnum', 14)
 
 
 class Folder(_messages.Message):
@@ -853,6 +881,21 @@ class GoogleCloudSecuritycenterV1p1beta1SecurityMarks(_messages.Message):
   canonicalName = _messages.StringField(1)
   marks = _messages.MessageField('MarksValue', 2)
   name = _messages.StringField(3)
+
+
+class Indicator(_messages.Message):
+  r"""Represents what's commonly known as an Indicator of compromise (IoC) in
+  computer forensics. This is an artifact observed on a network or in an
+  operating system that, with high confidence, indicates a computer intrusion.
+  Reference: https://en.wikipedia.org/wiki/Indicator_of_compromise
+
+  Fields:
+    domains: List of domains associated to the Finding.
+    ipAddresses: List of ip addresses associated to the Finding.
+  """
+
+  domains = _messages.StringField(1, repeated=True)
+  ipAddresses = _messages.StringField(2, repeated=True)
 
 
 class SecurityCenterSettings(_messages.Message):

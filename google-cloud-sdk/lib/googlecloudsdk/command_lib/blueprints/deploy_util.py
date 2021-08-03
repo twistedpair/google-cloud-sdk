@@ -22,7 +22,6 @@ from __future__ import unicode_literals
 import os
 import uuid
 
-from apitools.base.py import encoding
 from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.blueprints import blueprints_util
 from googlecloudsdk.api_lib.storage import storage_api
@@ -171,27 +170,6 @@ def _UploadSourceToGCS(
   return upload_bucket
 
 
-def _FormDefaultProcessors(messages):
-  """Returns a list of messages.Function.
-
-  This returns a processor argument that will make no changes to the blueprint.
-
-  Args:
-      messages: ModuleType, the messages module that lets us form blueprints API
-        messages based on our protos.
-  """
-  # TODO(b/191050805): Remove these processors once blueprints is kpt 1.0 only.
-  return [
-      messages.Function(
-          image='gcr.io/kpt-fn/search-replace:v0.1',
-          config=encoding.JsonToMessage(
-              messages.Function.ConfigValue,
-              '{"apiVersion": "v1", "kind": "ConfigMap", "metadata": {"name": "no-op"}}'
-          ),
-      )
-  ]
-
-
 def Apply(
     source,
     deployment_full_name,
@@ -255,8 +233,6 @@ def Apply(
             .AdditionalProperty(key=key, value=value)
             for key, value in six.iteritems(labels)
         ])
-
-  blueprint.preprocessors = _FormDefaultProcessors(messages)
 
   deployment = messages.Deployment(
       blueprint=blueprint,

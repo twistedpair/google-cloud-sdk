@@ -18,7 +18,7 @@ import enum
 
 
 BASE_URL = 'https://compute.googleapis.com/compute/v1/'
-DOCS_URL = 'https://developers.google.com/compute/docs/reference/latest/'
+DOCS_URL = 'https://cloud.google.com/compute/'
 
 
 class Collections(enum.Enum):
@@ -163,6 +163,13 @@ class Collections(enum.Enum):
       'projects/{project}/global/httpsHealthChecks/{httpsHealthCheck}',
       {},
       ['project', 'httpsHealthCheck'],
+      True
+  )
+  IMAGEFAMILYVIEWS = (
+      'imageFamilyViews',
+      'projects/{project}/zones/{zone}/imageFamilyViews/{family}',
+      {},
+      ['project', 'zone', 'family'],
       True
   )
   IMAGES = (

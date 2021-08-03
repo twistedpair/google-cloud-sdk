@@ -649,7 +649,7 @@ def RunDeploy(
     version_id = args.version or util.GenerateVersionId()
     deployed_urls = output_helpers.DisplayProposedDeployment(
         app, project, services, configs, version_id, deploy_options.promote,
-        service_account)
+        service_account, api_client.client._VERSION)
     console_io.PromptContinue(cancel_on_no=True)
     if service_infos:
       # Do generic app setup if deploying any services.

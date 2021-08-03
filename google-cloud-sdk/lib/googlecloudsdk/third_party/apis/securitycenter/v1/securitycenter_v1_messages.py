@@ -295,6 +295,9 @@ class Finding(_messages.Message):
   App Engine application is a finding.
 
   Enums:
+    FindingClassValueValuesEnum: The class of the finding.
+    MuteValueValuesEnum: Indicates the mute state of a finding (either
+      unspecified, muted, unmuted).
     SeverityValueValuesEnum: The severity of the finding. This field is
       managed by the source that writes the finding.
     StateValueValuesEnum: The state of the finding.
@@ -329,6 +332,16 @@ class Finding(_messages.Message):
       Security Command Center where additional information about the finding
       can be found. This field is guaranteed to be either empty or a well
       formed URL.
+    findingClass: The class of the finding.
+    indicator: Represents what's commonly known as an Indicator of compromise
+      (IoC) in computer forensics. This is an artifact observed on a network
+      or in an operating system that, with high confidence, indicates a
+      computer intrusion. Reference:
+      https://en.wikipedia.org/wiki/Indicator_of_compromise
+    mute: Indicates the mute state of a finding (either unspecified, muted,
+      unmuted).
+    muteAnnotation: Records additional information about the mute operation
+      e.g. mute config that muted the finding etc.
     name: The relative resource name of this finding. See:
       https://cloud.google.com/apis/design/resource_names#relative_resource_na
       me Example: "organizations/{organization_id}/sources/{source_id}/finding
@@ -355,6 +368,39 @@ class Finding(_messages.Message):
       only.
     state: The state of the finding.
   """
+
+  class FindingClassValueValuesEnum(_messages.Enum):
+    r"""The class of the finding.
+
+    Values:
+      FINDING_CLASS_UNSPECIFIED: Unspecified finding class.
+      THREAT: Describes unwanted or malicious activity.
+      VULNERABILITY: Describes a potential weakness in software that increases
+        risk to Confidentiality & Integrity & Availability.
+      MISCONFIGURATION: Describes a potential weakness in cloud resource/asset
+        configuration that increases risk.
+      OBSERVATION: Describes a security observation that is for informational
+        purposes.
+    """
+    FINDING_CLASS_UNSPECIFIED = 0
+    THREAT = 1
+    VULNERABILITY = 2
+    MISCONFIGURATION = 3
+    OBSERVATION = 4
+
+  class MuteValueValuesEnum(_messages.Enum):
+    r"""Indicates the mute state of a finding (either unspecified, muted,
+    unmuted).
+
+    Values:
+      MUTE_UNSPECIFIED: Unspecified i.e. the finding has never been
+        muted/unmuted.
+      MUTED: Finding has been muted.
+      UNMUTED: Finding has been unmuted.
+    """
+    MUTE_UNSPECIFIED = 0
+    MUTED = 1
+    UNMUTED = 2
 
   class SeverityValueValuesEnum(_messages.Enum):
     r"""The severity of the finding. This field is managed by the source that
@@ -452,13 +498,17 @@ class Finding(_messages.Message):
   createTime = _messages.StringField(3)
   eventTime = _messages.StringField(4)
   externalUri = _messages.StringField(5)
-  name = _messages.StringField(6)
-  parent = _messages.StringField(7)
-  resourceName = _messages.StringField(8)
-  securityMarks = _messages.MessageField('SecurityMarks', 9)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 10)
-  sourceProperties = _messages.MessageField('SourcePropertiesValue', 11)
-  state = _messages.EnumField('StateValueValuesEnum', 12)
+  findingClass = _messages.EnumField('FindingClassValueValuesEnum', 6)
+  indicator = _messages.MessageField('Indicator', 7)
+  mute = _messages.EnumField('MuteValueValuesEnum', 8)
+  muteAnnotation = _messages.StringField(9)
+  name = _messages.StringField(10)
+  parent = _messages.StringField(11)
+  resourceName = _messages.StringField(12)
+  securityMarks = _messages.MessageField('SecurityMarks', 13)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 14)
+  sourceProperties = _messages.MessageField('SourcePropertiesValue', 15)
+  state = _messages.EnumField('StateValueValuesEnum', 16)
 
 
 class Folder(_messages.Message):
@@ -501,6 +551,47 @@ class GetPolicyOptions(_messages.Message):
   """
 
   requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudSecuritycenterV1MuteConfig(_messages.Message):
+  r"""A mute config is a Cloud SCC resource that contains the configuration to
+  mute create/update events of findings.
+
+  Fields:
+    createTime: Output only. The time at which the mute config was created.
+      This field is set by the server and will be ignored if provided on
+      config creation.
+    description: A description of the mute config.
+    displayName: Required. The human readable name to be displayed for the
+      mute config.
+    filter: Required. An expression that defines the filter to apply across
+      create/update events of findings. While creating a filter string, be
+      mindful of the scope in which the mute configuration is being created.
+      E.g., If a filter contains project = X but is created under the project
+      = Y scope, it might not match any findings. The following field and
+      operator combinations are supported: * severity: `=`, `:` * category:
+      `=`, `:` * resource_name: `=`, `:` * resource.project_name: `=`, `:` *
+      resource.project_display_name: `=`, `:` *
+      resource.folders.resource_folder: `=`, `:` * resource.parent_name: `=`,
+      `:` * resource.parent_display_name: `=`, `:` * resource.type: `=`, `:` *
+      finding_class: `=`, `:` * indicator.ip_addresses: `=`, `:` *
+      indicator.domains: `=`, `:`
+    name: The config id is a server generated unique identifier. This field
+      will be ignored if provided on config creation. Format
+      "organizations/{organization}/muteConfigs/{mute_config}"
+      "folders/{folder}/muteConfigs/{mute_config}"
+      "projects/{project}/muteConfigs/{mute_config}"
+    updateTime: Output only. The most recent time at which the mute config was
+      updated. This field is by the server and will be ignored if provided on
+      config creation or update.
+  """
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  displayName = _messages.StringField(3)
+  filter = _messages.StringField(4)
+  name = _messages.StringField(5)
+  updateTime = _messages.StringField(6)
 
 
 class GoogleCloudSecuritycenterV1NotificationMessage(_messages.Message):
@@ -1161,6 +1252,21 @@ class IamPolicy(_messages.Message):
   policyBlob = _messages.StringField(1)
 
 
+class Indicator(_messages.Message):
+  r"""Represents what's commonly known as an Indicator of compromise (IoC) in
+  computer forensics. This is an artifact observed on a network or in an
+  operating system that, with high confidence, indicates a computer intrusion.
+  Reference: https://en.wikipedia.org/wiki/Indicator_of_compromise
+
+  Fields:
+    domains: List of domains associated to the Finding.
+    ipAddresses: List of ip addresses associated to the Finding.
+  """
+
+  domains = _messages.StringField(1, repeated=True)
+  ipAddresses = _messages.StringField(2, repeated=True)
+
+
 class ListAssetsResponse(_messages.Message):
   r"""Response message for listing assets.
 
@@ -1262,6 +1368,19 @@ class ListFindingsResult(_messages.Message):
   finding = _messages.MessageField('Finding', 1)
   resource = _messages.MessageField('Resource', 2)
   stateChange = _messages.EnumField('StateChangeValueValuesEnum', 3)
+
+
+class ListMuteConfigsResponse(_messages.Message):
+  r"""Response message for listing mute configs.
+
+  Fields:
+    muteConfigs: The mute configs from the specified parent.
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+  """
+
+  muteConfigs = _messages.MessageField('GoogleCloudSecuritycenterV1MuteConfig', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
 
 
 class ListNotificationConfigsResponse(_messages.Message):
@@ -1809,6 +1928,91 @@ class SecuritycenterFoldersAssetsUpdateSecurityMarksRequest(_messages.Message):
   updateMask = _messages.StringField(4)
 
 
+class SecuritycenterFoldersMuteConfigsCreateRequest(_messages.Message):
+  r"""A SecuritycenterFoldersMuteConfigsCreateRequest object.
+
+  Fields:
+    googleCloudSecuritycenterV1MuteConfig: A
+      GoogleCloudSecuritycenterV1MuteConfig resource to be passed as the
+      request body.
+    parent: Required. Resource name of the new mute configs's parent. Its
+      format is "organizations/[organization_id]", "folders/[folder_id]", or
+      "projects/[project_id]".
+  """
+
+  googleCloudSecuritycenterV1MuteConfig = _messages.MessageField('GoogleCloudSecuritycenterV1MuteConfig', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class SecuritycenterFoldersMuteConfigsDeleteRequest(_messages.Message):
+  r"""A SecuritycenterFoldersMuteConfigsDeleteRequest object.
+
+  Fields:
+    name: Required. Name of the mute config to delete. Its format is
+      organizations/{organization}/muteConfigs/{config_id},
+      folders/{folder}/muteConfigs/{config_id}, or
+      projects/{project}/muteConfigs/{config_id}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SecuritycenterFoldersMuteConfigsGetRequest(_messages.Message):
+  r"""A SecuritycenterFoldersMuteConfigsGetRequest object.
+
+  Fields:
+    name: Required. Name of the mute config to retrieve. Its format is
+      organizations/{organization}/muteConfigs/{config_id},
+      folders/{folder}/muteConfigs/{config_id}, or
+      projects/{project}/muteConfigs/{config_id}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SecuritycenterFoldersMuteConfigsListRequest(_messages.Message):
+  r"""A SecuritycenterFoldersMuteConfigsListRequest object.
+
+  Fields:
+    pageSize: The maximum number of configs to return. The service may return
+      fewer than this value. If unspecified, at most 10 configs will be
+      returned. The maximum value is 1000; values above 1000 will be coerced
+      to 1000.
+    pageToken: A page token, received from a previous `ListMuteConfigs` call.
+      Provide this to retrieve the subsequent page. When paginating, all other
+      parameters provided to `ListMuteConfigs` must match the call that
+      provided the page token.
+    parent: Required. The parent, which owns the collection of mute configs.
+      Its format is "organizations/[organization_id]", "folders/[folder_id]",
+      "projects/[project_id]".
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class SecuritycenterFoldersMuteConfigsPatchRequest(_messages.Message):
+  r"""A SecuritycenterFoldersMuteConfigsPatchRequest object.
+
+  Fields:
+    googleCloudSecuritycenterV1MuteConfig: A
+      GoogleCloudSecuritycenterV1MuteConfig resource to be passed as the
+      request body.
+    name: The config id is a server generated unique identifier. This field
+      will be ignored if provided on config creation. Format
+      "organizations/{organization}/muteConfigs/{mute_config}"
+      "folders/{folder}/muteConfigs/{mute_config}"
+      "projects/{project}/muteConfigs/{mute_config}"
+    updateMask: The list of fields to be updated. If empty all mutable fields
+      will be updated.
+  """
+
+  googleCloudSecuritycenterV1MuteConfig = _messages.MessageField('GoogleCloudSecuritycenterV1MuteConfig', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
 class SecuritycenterFoldersSourcesFindingsGroupRequest(_messages.Message):
   r"""A SecuritycenterFoldersSourcesFindingsGroupRequest object.
 
@@ -1939,6 +2143,24 @@ class SecuritycenterFoldersSourcesFindingsPatchRequest(_messages.Message):
   finding = _messages.MessageField('Finding', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
+
+
+class SecuritycenterFoldersSourcesFindingsSetMuteRequest(_messages.Message):
+  r"""A SecuritycenterFoldersSourcesFindingsSetMuteRequest object.
+
+  Fields:
+    name: Required. The relative resource name of the finding. See:
+      https://cloud.google.com/apis/design/resource_names#relative_resource_na
+      me Example: "organizations/{organization_id}/sources/{source_id}/finding
+      /{finding_id}",
+      "folders/{folder_id}/sources/{source_id}/finding/{finding_id}",
+      "projects/{project_id}/sources/{source_id}/finding/{finding_id}".
+    setMuteRequest: A SetMuteRequest resource to be passed as the request
+      body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  setMuteRequest = _messages.MessageField('SetMuteRequest', 2)
 
 
 class SecuritycenterFoldersSourcesFindingsSetStateRequest(_messages.Message):
@@ -2163,6 +2385,91 @@ class SecuritycenterOrganizationsGetOrganizationSettingsRequest(_messages.Messag
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class SecuritycenterOrganizationsMuteConfigsCreateRequest(_messages.Message):
+  r"""A SecuritycenterOrganizationsMuteConfigsCreateRequest object.
+
+  Fields:
+    googleCloudSecuritycenterV1MuteConfig: A
+      GoogleCloudSecuritycenterV1MuteConfig resource to be passed as the
+      request body.
+    parent: Required. Resource name of the new mute configs's parent. Its
+      format is "organizations/[organization_id]", "folders/[folder_id]", or
+      "projects/[project_id]".
+  """
+
+  googleCloudSecuritycenterV1MuteConfig = _messages.MessageField('GoogleCloudSecuritycenterV1MuteConfig', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class SecuritycenterOrganizationsMuteConfigsDeleteRequest(_messages.Message):
+  r"""A SecuritycenterOrganizationsMuteConfigsDeleteRequest object.
+
+  Fields:
+    name: Required. Name of the mute config to delete. Its format is
+      organizations/{organization}/muteConfigs/{config_id},
+      folders/{folder}/muteConfigs/{config_id}, or
+      projects/{project}/muteConfigs/{config_id}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SecuritycenterOrganizationsMuteConfigsGetRequest(_messages.Message):
+  r"""A SecuritycenterOrganizationsMuteConfigsGetRequest object.
+
+  Fields:
+    name: Required. Name of the mute config to retrieve. Its format is
+      organizations/{organization}/muteConfigs/{config_id},
+      folders/{folder}/muteConfigs/{config_id}, or
+      projects/{project}/muteConfigs/{config_id}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SecuritycenterOrganizationsMuteConfigsListRequest(_messages.Message):
+  r"""A SecuritycenterOrganizationsMuteConfigsListRequest object.
+
+  Fields:
+    pageSize: The maximum number of configs to return. The service may return
+      fewer than this value. If unspecified, at most 10 configs will be
+      returned. The maximum value is 1000; values above 1000 will be coerced
+      to 1000.
+    pageToken: A page token, received from a previous `ListMuteConfigs` call.
+      Provide this to retrieve the subsequent page. When paginating, all other
+      parameters provided to `ListMuteConfigs` must match the call that
+      provided the page token.
+    parent: Required. The parent, which owns the collection of mute configs.
+      Its format is "organizations/[organization_id]", "folders/[folder_id]",
+      "projects/[project_id]".
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class SecuritycenterOrganizationsMuteConfigsPatchRequest(_messages.Message):
+  r"""A SecuritycenterOrganizationsMuteConfigsPatchRequest object.
+
+  Fields:
+    googleCloudSecuritycenterV1MuteConfig: A
+      GoogleCloudSecuritycenterV1MuteConfig resource to be passed as the
+      request body.
+    name: The config id is a server generated unique identifier. This field
+      will be ignored if provided on config creation. Format
+      "organizations/{organization}/muteConfigs/{mute_config}"
+      "folders/{folder}/muteConfigs/{mute_config}"
+      "projects/{project}/muteConfigs/{mute_config}"
+    updateMask: The list of fields to be updated. If empty all mutable fields
+      will be updated.
+  """
+
+  googleCloudSecuritycenterV1MuteConfig = _messages.MessageField('GoogleCloudSecuritycenterV1MuteConfig', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class SecuritycenterOrganizationsNotificationConfigsCreateRequest(_messages.Message):
@@ -2449,6 +2756,24 @@ class SecuritycenterOrganizationsSourcesFindingsPatchRequest(_messages.Message):
   finding = _messages.MessageField('Finding', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
+
+
+class SecuritycenterOrganizationsSourcesFindingsSetMuteRequest(_messages.Message):
+  r"""A SecuritycenterOrganizationsSourcesFindingsSetMuteRequest object.
+
+  Fields:
+    name: Required. The relative resource name of the finding. See:
+      https://cloud.google.com/apis/design/resource_names#relative_resource_na
+      me Example: "organizations/{organization_id}/sources/{source_id}/finding
+      /{finding_id}",
+      "folders/{folder_id}/sources/{source_id}/finding/{finding_id}",
+      "projects/{project_id}/sources/{source_id}/finding/{finding_id}".
+    setMuteRequest: A SetMuteRequest resource to be passed as the request
+      body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  setMuteRequest = _messages.MessageField('SetMuteRequest', 2)
 
 
 class SecuritycenterOrganizationsSourcesFindingsSetStateRequest(_messages.Message):
@@ -2742,6 +3067,91 @@ class SecuritycenterProjectsAssetsUpdateSecurityMarksRequest(_messages.Message):
   updateMask = _messages.StringField(4)
 
 
+class SecuritycenterProjectsMuteConfigsCreateRequest(_messages.Message):
+  r"""A SecuritycenterProjectsMuteConfigsCreateRequest object.
+
+  Fields:
+    googleCloudSecuritycenterV1MuteConfig: A
+      GoogleCloudSecuritycenterV1MuteConfig resource to be passed as the
+      request body.
+    parent: Required. Resource name of the new mute configs's parent. Its
+      format is "organizations/[organization_id]", "folders/[folder_id]", or
+      "projects/[project_id]".
+  """
+
+  googleCloudSecuritycenterV1MuteConfig = _messages.MessageField('GoogleCloudSecuritycenterV1MuteConfig', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class SecuritycenterProjectsMuteConfigsDeleteRequest(_messages.Message):
+  r"""A SecuritycenterProjectsMuteConfigsDeleteRequest object.
+
+  Fields:
+    name: Required. Name of the mute config to delete. Its format is
+      organizations/{organization}/muteConfigs/{config_id},
+      folders/{folder}/muteConfigs/{config_id}, or
+      projects/{project}/muteConfigs/{config_id}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SecuritycenterProjectsMuteConfigsGetRequest(_messages.Message):
+  r"""A SecuritycenterProjectsMuteConfigsGetRequest object.
+
+  Fields:
+    name: Required. Name of the mute config to retrieve. Its format is
+      organizations/{organization}/muteConfigs/{config_id},
+      folders/{folder}/muteConfigs/{config_id}, or
+      projects/{project}/muteConfigs/{config_id}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SecuritycenterProjectsMuteConfigsListRequest(_messages.Message):
+  r"""A SecuritycenterProjectsMuteConfigsListRequest object.
+
+  Fields:
+    pageSize: The maximum number of configs to return. The service may return
+      fewer than this value. If unspecified, at most 10 configs will be
+      returned. The maximum value is 1000; values above 1000 will be coerced
+      to 1000.
+    pageToken: A page token, received from a previous `ListMuteConfigs` call.
+      Provide this to retrieve the subsequent page. When paginating, all other
+      parameters provided to `ListMuteConfigs` must match the call that
+      provided the page token.
+    parent: Required. The parent, which owns the collection of mute configs.
+      Its format is "organizations/[organization_id]", "folders/[folder_id]",
+      "projects/[project_id]".
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class SecuritycenterProjectsMuteConfigsPatchRequest(_messages.Message):
+  r"""A SecuritycenterProjectsMuteConfigsPatchRequest object.
+
+  Fields:
+    googleCloudSecuritycenterV1MuteConfig: A
+      GoogleCloudSecuritycenterV1MuteConfig resource to be passed as the
+      request body.
+    name: The config id is a server generated unique identifier. This field
+      will be ignored if provided on config creation. Format
+      "organizations/{organization}/muteConfigs/{mute_config}"
+      "folders/{folder}/muteConfigs/{mute_config}"
+      "projects/{project}/muteConfigs/{mute_config}"
+    updateMask: The list of fields to be updated. If empty all mutable fields
+      will be updated.
+  """
+
+  googleCloudSecuritycenterV1MuteConfig = _messages.MessageField('GoogleCloudSecuritycenterV1MuteConfig', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
 class SecuritycenterProjectsSourcesFindingsGroupRequest(_messages.Message):
   r"""A SecuritycenterProjectsSourcesFindingsGroupRequest object.
 
@@ -2874,6 +3284,24 @@ class SecuritycenterProjectsSourcesFindingsPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class SecuritycenterProjectsSourcesFindingsSetMuteRequest(_messages.Message):
+  r"""A SecuritycenterProjectsSourcesFindingsSetMuteRequest object.
+
+  Fields:
+    name: Required. The relative resource name of the finding. See:
+      https://cloud.google.com/apis/design/resource_names#relative_resource_na
+      me Example: "organizations/{organization_id}/sources/{source_id}/finding
+      /{finding_id}",
+      "folders/{folder_id}/sources/{source_id}/finding/{finding_id}",
+      "projects/{project_id}/sources/{source_id}/finding/{finding_id}".
+    setMuteRequest: A SetMuteRequest resource to be passed as the request
+      body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  setMuteRequest = _messages.MessageField('SetMuteRequest', 2)
+
+
 class SecuritycenterProjectsSourcesFindingsSetStateRequest(_messages.Message):
   r"""A SecuritycenterProjectsSourcesFindingsSetStateRequest object.
 
@@ -2979,6 +3407,32 @@ class SetIamPolicyRequest(_messages.Message):
 
   policy = _messages.MessageField('Policy', 1)
   updateMask = _messages.StringField(2)
+
+
+class SetMuteRequest(_messages.Message):
+  r"""Request message for updating a finding's mute status.
+
+  Enums:
+    MuteValueValuesEnum: Required. The desired state of the Mute.
+
+  Fields:
+    mute: Required. The desired state of the Mute.
+  """
+
+  class MuteValueValuesEnum(_messages.Enum):
+    r"""Required. The desired state of the Mute.
+
+    Values:
+      MUTE_UNSPECIFIED: Unspecified i.e. the finding has never been
+        muted/unmuted.
+      MUTED: Finding has been muted.
+      UNMUTED: Finding has been unmuted.
+    """
+    MUTE_UNSPECIFIED = 0
+    MUTED = 1
+    UNMUTED = 2
+
+  mute = _messages.EnumField('MuteValueValuesEnum', 1)
 
 
 class Source(_messages.Message):

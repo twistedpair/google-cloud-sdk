@@ -691,6 +691,11 @@
                   "location": "query",
                   "type": "string"
                 },
+                "includeUnrevealedLocations": {
+                  "description": "If true, the returned list will include locations which are not yet revealed.",
+                  "location": "query",
+                  "type": "boolean"
+                },
                 "pageSize": {
                   "description": "The maximum number of results to return. If not set, the service selects a default.",
                   "location": "query",

@@ -285,6 +285,10 @@
           "description": "Required. The user-defined name of the Dataset. The name can be up to 128 characters long and can be consist of any UTF-8 characters.",
           "type": "string"
         },
+        "description": {
+          "description": "Optional. The description of the Dataset.",
+          "type": "string"
+        },
         "metadataSchemaUri": {
           "description": "Required. Points to a YAML file stored on Google Cloud Storage describing additional information about the Dataset. The schema is defined as an OpenAPI 3.0.2 Schema Object. The schema files that can be used here are found in gs:\/\/google-cloud-aiplatform\/schema\/dataset\/metadata\/.",
           "type": "string"
@@ -1565,7 +1569,7 @@
           "$ref": "GoogleCloudAiplatformV1alpha1EncryptionSpec"
         },
         "webAccessUris": {
-          "description": "Output only. The web access URIs for the training job. The keys are the node names in the training jobs, e.g. workerpool0-0. The values are the URIs for each node's web portal in the job.",
+          "description": "Output only. URIs for accessing [interactive shells](https:\/\/cloud.google.com\/vertex-ai\/docs\/training\/monitor-debug-interactive-shell) (one URI for each training node). Only available if job_spec.enable_web_access is `true`. The keys are names of each node in the training job; for example, `workerpool0-0` for the primary node, `workerpool1-0` for the first node in the second worker pool, and `workerpool1-1` for the second node in the second worker pool. The values are the URIs for each node's interactive shell.",
           "readOnly": true,
           "type": "object",
           "additionalProperties": {
@@ -1599,7 +1603,7 @@
           "type": "string"
         },
         "enableWebAccess": {
-          "description": "Optional. Vertex AI will enable web portal access to the containers. The portals can be accessed on web via the URLs given by web_access_uris.",
+          "description": "Optional. Whether you want Vertex AI to enable [interactive shell access](https:\/\/cloud.google.com\/vertex-ai\/docs\/training\/monitor-debug-interactive-shell) to training containers. If set to `true`, you can access interactive shells at the URIs given by CustomJob.web_access_uris or Trial.web_access_uris (within HyperparameterTuningJob.trials).",
           "type": "boolean"
         }
       }
@@ -2420,7 +2424,7 @@
           "type": "string"
         },
         "webAccessUris": {
-          "description": "Output only. The web access URIs for the training job. The keys are the node names in the training jobs, e.g. workerpool0-0. The values are the URIs for each node's web portal in the job.",
+          "description": "Output only. URIs for accessing [interactive shells](https:\/\/cloud.google.com\/vertex-ai\/docs\/training\/monitor-debug-interactive-shell) (one URI for each training node). Only available if this trial is part of a HyperparameterTuningJob and the job's trial_job_spec.enable_web_access field is `true`. The keys are names of each node used for the trial; for example, `workerpool0-0` for the primary node, `workerpool1-0` for the first node in the second worker pool, and `workerpool1-1` for the second node in the second worker pool. The values are the URIs for each node's interactive shell.",
           "readOnly": true,
           "type": "object",
           "additionalProperties": {
@@ -2557,6 +2561,10 @@
         "generateExplanation": {
           "description": "Generate explanation with the batch prediction results. When set to `true`, the batch prediction output changes based on the `predictions_format` field of the BatchPredictionJob.output_config object: * `bigquery`: output includes a column named `explanation`. The value is a struct that conforms to the Explanation object. * `jsonl`: The JSON objects on each line include an additional entry keyed `explanation`. The value of the entry is a JSON object that conforms to the Explanation object. * `csv`: Generating explanations for CSV format is not supported. If this field is set to true, either the Model.explanation_spec or explanation_spec must be populated.",
           "type": "boolean"
+        },
+        "explanationSpec": {
+          "description": "Explanation configuration for this BatchPredictionJob. Can be specified only if generate_explanation is set to `true`. This value overrides the value of Model.explanation_spec. All fields of explanation_spec are optional in the request. If a field of the explanation_spec object is not populated, the corresponding field of the Model.explanation_spec object is inherited.",
+          "$ref": "GoogleCloudAiplatformV1alpha1ExplanationSpec"
         },
         "outputInfo": {
           "description": "Output only. Information further describing the output of this job.",
@@ -2895,7 +2903,7 @@
           ]
         },
         "modelDeploymentMonitoringObjectiveConfigs": {
-          "description": "Required. The config for monitoring objectives. This is a per DeployedModel config. Each DeployedModel needs to be configed separately.",
+          "description": "Required. The config for monitoring objectives. This is a per DeployedModel config. Each DeployedModel needs to be configured separately.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudAiplatformV1alpha1ModelDeploymentMonitoringObjectiveConfig"
@@ -3067,7 +3075,7 @@
       "type": "object",
       "properties": {
         "skewThresholds": {
-          "description": "Key is the feature name and value is the threshold. If a feature needs to be monitored for skew, a value threshold must be configed for that feature. The threshold here is against feature distribution distance between the training and prediction feature.",
+          "description": "Key is the feature name and value is the threshold. If a feature needs to be monitored for skew, a value threshold must be configured for that feature. The threshold here is against feature distribution distance between the training and prediction feature.",
           "type": "object",
           "additionalProperties": {
             "$ref": "GoogleCloudAiplatformV1alpha1ThresholdConfig"
@@ -3100,7 +3108,7 @@
       "type": "object",
       "properties": {
         "driftThresholds": {
-          "description": "Key is the feature name and value is the threshold. If a feature needs to be monitored for drift, a value threshold must be configed for that feature. The threshold here is against feature distribution distance between different time windws.",
+          "description": "Key is the feature name and value is the threshold. If a feature needs to be monitored for drift, a value threshold must be configured for that feature. The threshold here is against feature distribution distance between different time windws.",
           "type": "object",
           "additionalProperties": {
             "$ref": "GoogleCloudAiplatformV1alpha1ThresholdConfig"
@@ -5678,6 +5686,7 @@
           "format": "google-datetime"
         },
         "labels": {
+          "description": "The labels with user-defined metadata to organize your TensorboardRuns. This field will be used to filter and visualize Runs in the Tensorboard UI. For example, a Vertex AI training job can set a label aiplatform.googleapis.com\/training_job_id=xxxxx to all the runs created within that job. An end user can set a label experiment_id=xxxxx for all the runs produced in a Jupyter notebook. These runs can be grouped by a label value and visualized together in the Tensorboard UI. Label keys and values can be no longer than 64 characters (Unicode codepoints), can only contain lowercase letters, numeric characters, underscores and dashes. International characters are allowed. No more than 64 user labels can be associated with one TensorboardRun (System labels are excluded). See https:\/\/goo.gl\/xmQnxf for more information and examples of labels. System reserved label keys are prefixed with \"aiplatform.googleapis.com\/\" and are immutable.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -6384,7 +6393,7 @@
           "type": "boolean"
         },
         "monitoringInterval": {
-          "description": "Configuration of the snapshot analysis based monitoring pipeline running interval. The value is rolled up to full day.",
+          "description": "Will be deprecated by [FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval_days] soon. Configuration of the snapshot analysis based monitoring pipeline running interval. The value is rolled up to full day.",
           "type": "string",
           "format": "google-duration"
         },
@@ -7411,7 +7420,7 @@
     },
     "GoogleCloudAiplatformInternalHumanInTheLoop": {
       "id": "GoogleCloudAiplatformInternalHumanInTheLoop",
-      "description": "A human in the loop configuration describing how to trigger a human labeling job in a prediction process and properties of the human labeling job. Next id: 24",
+      "description": "A human in the loop configuration describing how to trigger a human labeling job in a prediction process and properties of the human labeling job. Next id: 25",
       "type": "object",
       "properties": {
         "documentCriteria": {
@@ -7472,6 +7481,10 @@
           "description": "Required. Number of labelers to work on each DataItem.",
           "type": "integer",
           "format": "int32"
+        },
+        "pipeliningConfig": {
+          "description": "The pipelining labeling and expert audit config. If this feature is enabled, one document may be labeled by multiple human labelers sequentially. It also supports the expert audit or QA labeling in the last stage of the pipelining labeling process.",
+          "$ref": "GoogleCloudAiplatformInternalPipeliningAndAuditConfig"
         },
         "instructionUri": {
           "description": "Required. The Google Cloud Storage location of the instruction pdf. This pdf is shared with labelers, and provides detailed description on how to label DataItems in Datasets.",
@@ -7669,6 +7682,28 @@
         }
       }
     },
+    "GoogleCloudAiplatformInternalPipeliningAndAuditConfig": {
+      "id": "GoogleCloudAiplatformInternalPipeliningAndAuditConfig",
+      "description": "Configuration of the pipelining labeling and expert auditing features.",
+      "type": "object",
+      "properties": {
+        "pipeliningProbability": {
+          "description": "The probability of triggering pipelining labeling. If it has multiple stages, only the first stage uses this probability. It means this field determines whether creates the stages 2 labeling question, but not whether creates the stage 3 and following questions. Should be in [0.0, 1.0]. The default value is 0.0.",
+          "type": "number",
+          "format": "double"
+        },
+        "maxStageNumber": {
+          "description": "The max stage number. If it reaches the number, will not create new questions. NOT counts the expert audit stage.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "expertAuditProbability": {
+          "description": "The probability of sending one question to an expert labeler for quality audit. Should be in [0.0, 1.0]. The default value is 0.0.",
+          "type": "number",
+          "format": "double"
+        }
+      }
+    },
     "GoogleCloudAiplatformInternalBatchConfig": {
       "id": "GoogleCloudAiplatformInternalBatchConfig",
       "description": "Configurations describing how to construct labeling tasks from collected prediction results.",
@@ -7811,6 +7846,96 @@
           "description": "The number of rows in input source that weren't imported due to either * Not having any featureValues. * Having a null entityId. * Having a null timestamp. * Not being parsable (applicable for CSV sources).",
           "type": "string",
           "format": "int64"
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalPurgeArtifactsMetadata": {
+      "id": "GoogleCloudAiplatformInternalPurgeArtifactsMetadata",
+      "description": "Details of operations that perform MetadataService.PurgeArtifacts.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "Operation metadata for purging Artifacts.",
+          "$ref": "GoogleCloudAiplatformInternalGenericOperationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalPurgeArtifactsResponse": {
+      "id": "GoogleCloudAiplatformInternalPurgeArtifactsResponse",
+      "description": "Response message for MetadataService.PurgeArtifacts.",
+      "type": "object",
+      "properties": {
+        "purgeCount": {
+          "description": "The number of Artifacts that this request deleted (or, if `force` is false, the number of Artifacts that will be deleted). This can be an estimate.",
+          "type": "string",
+          "format": "int64"
+        },
+        "purgeSample": {
+          "description": "A sample of the Artifact names that will be deleted. Only populated if `force` is set to false. The maximum number of samples is 100 (it is possible to return fewer).",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalPurgeContextsMetadata": {
+      "id": "GoogleCloudAiplatformInternalPurgeContextsMetadata",
+      "description": "Details of operations that perform MetadataService.PurgeContexts.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "Operation metadata for purging Contexts.",
+          "$ref": "GoogleCloudAiplatformInternalGenericOperationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalPurgeContextsResponse": {
+      "id": "GoogleCloudAiplatformInternalPurgeContextsResponse",
+      "description": "Response message for MetadataService.PurgeContexts.",
+      "type": "object",
+      "properties": {
+        "purgeCount": {
+          "description": "The number of Contexts that this request deleted (or, if `force` is false, the number of Contexts that will be deleted). This can be an estimate.",
+          "type": "string",
+          "format": "int64"
+        },
+        "purgeSample": {
+          "description": "A sample of the Context names that will be deleted. Only populated if `force` is set to false. The maximum number of samples is 100 (it is possible to return fewer).",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalPurgeExecutionsMetadata": {
+      "id": "GoogleCloudAiplatformInternalPurgeExecutionsMetadata",
+      "description": "Details of operations that perform MetadataService.PurgeExecutions.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "Operation metadata for purging Executions.",
+          "$ref": "GoogleCloudAiplatformInternalGenericOperationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalPurgeExecutionsResponse": {
+      "id": "GoogleCloudAiplatformInternalPurgeExecutionsResponse",
+      "description": "Response message for MetadataService.PurgeExecutions.",
+      "type": "object",
+      "properties": {
+        "purgeCount": {
+          "description": "The number of Executions that this request deleted (or, if `force` is false, the number of Executions that will be deleted). This can be an estimate.",
+          "type": "string",
+          "format": "int64"
+        },
+        "purgeSample": {
+          "description": "A sample of the Execution names that will be deleted. Only populated if `force` is set to false. The maximum number of samples is 100 (it is possible to return fewer).",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -8752,7 +8877,7 @@
           "type": "boolean"
         },
         "monitoringInterval": {
-          "description": "Configuration of the snapshot analysis based monitoring pipeline running interval. The value is rolled up to full day.",
+          "description": "Will be deprecated by [FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval_days] soon. Configuration of the snapshot analysis based monitoring pipeline running interval. The value is rolled up to full day.",
           "type": "string",
           "format": "google-duration"
         },
@@ -9205,6 +9330,10 @@
           "description": "Output only. Provide paths for users to send predict\/explain\/health requests directly to the deployed model services running on Cloud via private services access. This field is populated if network is configured.",
           "readOnly": true,
           "$ref": "GoogleCloudAiplatformUiPrivateEndpoints"
+        },
+        "modelMonitoringObjectiveConfig": {
+          "description": "Monitoring Config used by UI requests to enable monitoring for the newly deployed model.",
+          "$ref": "GoogleCloudAiplatformUiModelMonitoringObjectiveConfig"
         }
       }
     },
@@ -9765,6 +9894,214 @@
         }
       }
     },
+    "GoogleCloudAiplatformUiModelMonitoringObjectiveConfig": {
+      "id": "GoogleCloudAiplatformUiModelMonitoringObjectiveConfig",
+      "description": "Next ID: 6",
+      "type": "object",
+      "properties": {
+        "trainingDataset": {
+          "description": "Training dataset for models. This field has to be set only if TrainingPredictionSkewDetectionConfig is specified.",
+          "$ref": "GoogleCloudAiplatformUiModelMonitoringObjectiveConfigTrainingDataset"
+        },
+        "trainingPredictionSkewDetectionConfig": {
+          "description": "The config for skew between training data and prediction data.",
+          "$ref": "GoogleCloudAiplatformUiModelMonitoringObjectiveConfigTrainingPredictionSkewDetectionConfig"
+        },
+        "predictionDriftDetectionConfig": {
+          "description": "The config for drift of prediction data.",
+          "$ref": "GoogleCloudAiplatformUiModelMonitoringObjectiveConfigPredictionDriftDetectionConfig"
+        },
+        "explanationConfig": {
+          "description": "The config for integrated with Explainable AI.",
+          "$ref": "GoogleCloudAiplatformUiModelMonitoringObjectiveConfigExplanationConfig"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiModelMonitoringObjectiveConfigTrainingDataset": {
+      "id": "GoogleCloudAiplatformUiModelMonitoringObjectiveConfigTrainingDataset",
+      "description": "Training Dataset information.",
+      "type": "object",
+      "properties": {
+        "dataset": {
+          "description": "The resource name of the Dataset used to train this Model.",
+          "type": "string"
+        },
+        "gcsSource": {
+          "description": "The Google Cloud Storage uri of the unmanaged Dataset used to train this Model.",
+          "$ref": "GoogleCloudAiplatformUiGcsSource"
+        },
+        "bigquerySource": {
+          "description": "The BigQuery table of the unmanaged Dataset used to train this Model.",
+          "$ref": "GoogleCloudAiplatformUiBigQuerySource"
+        },
+        "dataFormat": {
+          "description": "Data format of the dataset, only applicable if the input is from Google Cloud Storage. The possible formats are: \"tf-record\" The source file is a TFRecord file. \"csv\" The source file is a CSV file.",
+          "type": "string"
+        },
+        "targetField": {
+          "description": "The target field name the model is to predict. This field will be excluded when doing Predict and (or) Explain for the training data.",
+          "type": "string"
+        },
+        "loggingSamplingStrategy": {
+          "description": "Strategy to sample data from Training Dataset. If not set, we process the whole dataset.",
+          "$ref": "GoogleCloudAiplatformUiSamplingStrategy"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiBigQuerySource": {
+      "id": "GoogleCloudAiplatformUiBigQuerySource",
+      "description": "The BigQuery location for the input content.",
+      "type": "object",
+      "properties": {
+        "inputUri": {
+          "description": "Required. BigQuery URI to a table, up to 2000 characters long. Accepted forms: * BigQuery path. For example: `bq:\/\/projectId.bqDatasetId.bqTableId`.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSamplingStrategy": {
+      "id": "GoogleCloudAiplatformUiSamplingStrategy",
+      "description": "Sampling Strategy for logging, can be for both training and prediction dataset. Next ID: 2",
+      "type": "object",
+      "properties": {
+        "randomSampleConfig": {
+          "description": "Random sample config. Will support more sampling strategies later.",
+          "$ref": "GoogleCloudAiplatformUiSamplingStrategyRandomSampleConfig"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiSamplingStrategyRandomSampleConfig": {
+      "id": "GoogleCloudAiplatformUiSamplingStrategyRandomSampleConfig",
+      "description": "Requests are randomly selected.",
+      "type": "object",
+      "properties": {
+        "sampleRate": {
+          "description": "Sample rate (0, 1]",
+          "type": "number",
+          "format": "double"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiModelMonitoringObjectiveConfigTrainingPredictionSkewDetectionConfig": {
+      "id": "GoogleCloudAiplatformUiModelMonitoringObjectiveConfigTrainingPredictionSkewDetectionConfig",
+      "description": "The config for Training & Prediction data skew detection. It specifies the training dataset sources and the skew detection parameters.",
+      "type": "object",
+      "properties": {
+        "skewThresholds": {
+          "description": "Key is the feature name and value is the threshold. If a feature needs to be monitored for skew, a value threshold must be configured for that feature. The threshold here is against feature distribution distance between the training and prediction feature.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "GoogleCloudAiplatformUiThresholdConfig"
+          }
+        },
+        "attributionScoreSkewThresholds": {
+          "description": "Key is the feature name and value is the threshold. The threshold here is against attribution score distance between the training and prediction feature.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "GoogleCloudAiplatformUiThresholdConfig"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiThresholdConfig": {
+      "id": "GoogleCloudAiplatformUiThresholdConfig",
+      "description": "The config for feature monitoring threshold. Next ID: 3",
+      "type": "object",
+      "properties": {
+        "value": {
+          "description": "Specify a threshold value that can trigger the alert. If this threshold config is for feature distribution distance: 1. For categorical feature, the distribution distance is calculated by L-inifinity norm. 2. For numerical feature, the distribution distance is calculated by Jensen\u2013Shannon divergence. Each feature must have a non-zero threshold if they need to be monitored. Otherwise no alert will be triggered for that feature.",
+          "type": "number",
+          "format": "double"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiModelMonitoringObjectiveConfigPredictionDriftDetectionConfig": {
+      "id": "GoogleCloudAiplatformUiModelMonitoringObjectiveConfigPredictionDriftDetectionConfig",
+      "description": "The config for Prediction data drift detection.",
+      "type": "object",
+      "properties": {
+        "driftThresholds": {
+          "description": "Key is the feature name and value is the threshold. If a feature needs to be monitored for drift, a value threshold must be configured for that feature. The threshold here is against feature distribution distance between different time windws.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "GoogleCloudAiplatformUiThresholdConfig"
+          }
+        },
+        "attributionScoreDriftThresholds": {
+          "description": "Key is the feature name and value is the threshold. The threshold here is against attribution score distance between different time windows.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "GoogleCloudAiplatformUiThresholdConfig"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiModelMonitoringObjectiveConfigExplanationConfig": {
+      "id": "GoogleCloudAiplatformUiModelMonitoringObjectiveConfigExplanationConfig",
+      "description": "The config for integrated with Explainable AI. Only applicable if the Model has explanation_spec populated.",
+      "type": "object",
+      "properties": {
+        "enableFeatureAttributes": {
+          "description": "If want to analyze the Explainable AI feature attribute scores or not. If set to true, Vertex AI will log the feature attributions from explain response and do the skew\/drift detection for them.",
+          "type": "boolean"
+        },
+        "explanationBaseline": {
+          "description": "Predictions generated by the BatchPredictionJob using baseline dataset.",
+          "$ref": "GoogleCloudAiplatformUiModelMonitoringObjectiveConfigExplanationConfigExplanationBaseline"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiModelMonitoringObjectiveConfigExplanationConfigExplanationBaseline": {
+      "id": "GoogleCloudAiplatformUiModelMonitoringObjectiveConfigExplanationConfigExplanationBaseline",
+      "description": "Output from BatchPredictionJob for Model Monitoring baseline dataset, which can be used to generate baseline attribution scores.",
+      "type": "object",
+      "properties": {
+        "gcs": {
+          "description": "Cloud Storage location for BatchExplain output.",
+          "$ref": "GoogleCloudAiplatformUiGcsDestination"
+        },
+        "bigquery": {
+          "description": "BigQuery location for BatchExplain output.",
+          "$ref": "GoogleCloudAiplatformUiBigQueryDestination"
+        },
+        "predictionFormat": {
+          "description": "The storage format of the predictions generated BatchPrediction job.",
+          "type": "string",
+          "enumDescriptions": [
+            "Should not be set.",
+            "Predictions are in JSONL files, consistent from the definition here (http:\/\/shortn\/_4bS0hL7ofb).",
+            "Predictions are in BigQuery."
+          ],
+          "enum": [
+            "PREDICTION_FORMAT_UNSPECIFIED",
+            "JSONL",
+            "BIGQUERY"
+          ]
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiGcsDestination": {
+      "id": "GoogleCloudAiplatformUiGcsDestination",
+      "description": "The Google Cloud Storage location where the output is to be written to.",
+      "type": "object",
+      "properties": {
+        "outputUriPrefix": {
+          "description": "Required. Google Cloud Storage URI to output directory. If the uri doesn't end with '\/', a '\/' will be automatically appended. The directory is created if it doesn't exist.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiBigQueryDestination": {
+      "id": "GoogleCloudAiplatformUiBigQueryDestination",
+      "description": "The BigQuery location for the output content.",
+      "type": "object",
+      "properties": {
+        "outputUri": {
+          "description": "Required. BigQuery URI to a project or table, up to 2000 characters long. When only the project is specified, the Dataset and Table is created. When the full table reference is specified, the Dataset must exist and table must not exist. Accepted forms: * BigQuery path. For example: `bq:\/\/projectId` or `bq:\/\/projectId.bqDatasetId` or `bq:\/\/projectId.bqDatasetId.bqTableId`.",
+          "type": "string"
+        }
+      }
+    },
     "GoogleCloudAiplatformUiExportDataOperationMetadata": {
       "id": "GoogleCloudAiplatformUiExportDataOperationMetadata",
       "description": "Runtime operation information for DatasetService.ExportData.",
@@ -9998,6 +10335,96 @@
         }
       }
     },
+    "GoogleCloudAiplatformUiPurgeArtifactsMetadata": {
+      "id": "GoogleCloudAiplatformUiPurgeArtifactsMetadata",
+      "description": "Details of operations that perform MetadataService.PurgeArtifacts.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "Operation metadata for purging Artifacts.",
+          "$ref": "GoogleCloudAiplatformUiGenericOperationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiPurgeArtifactsResponse": {
+      "id": "GoogleCloudAiplatformUiPurgeArtifactsResponse",
+      "description": "Response message for MetadataService.PurgeArtifacts.",
+      "type": "object",
+      "properties": {
+        "purgeCount": {
+          "description": "The number of Artifacts that this request deleted (or, if `force` is false, the number of Artifacts that will be deleted). This can be an estimate.",
+          "type": "string",
+          "format": "int64"
+        },
+        "purgeSample": {
+          "description": "A sample of the Artifact names that will be deleted. Only populated if `force` is set to false. The maximum number of samples is 100 (it is possible to return fewer).",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiPurgeContextsMetadata": {
+      "id": "GoogleCloudAiplatformUiPurgeContextsMetadata",
+      "description": "Details of operations that perform MetadataService.PurgeContexts.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "Operation metadata for purging Contexts.",
+          "$ref": "GoogleCloudAiplatformUiGenericOperationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiPurgeContextsResponse": {
+      "id": "GoogleCloudAiplatformUiPurgeContextsResponse",
+      "description": "Response message for MetadataService.PurgeContexts.",
+      "type": "object",
+      "properties": {
+        "purgeCount": {
+          "description": "The number of Contexts that this request deleted (or, if `force` is false, the number of Contexts that will be deleted). This can be an estimate.",
+          "type": "string",
+          "format": "int64"
+        },
+        "purgeSample": {
+          "description": "A sample of the Context names that will be deleted. Only populated if `force` is set to false. The maximum number of samples is 100 (it is possible to return fewer).",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiPurgeExecutionsMetadata": {
+      "id": "GoogleCloudAiplatformUiPurgeExecutionsMetadata",
+      "description": "Details of operations that perform MetadataService.PurgeExecutions.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "Operation metadata for purging Executions.",
+          "$ref": "GoogleCloudAiplatformUiGenericOperationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiPurgeExecutionsResponse": {
+      "id": "GoogleCloudAiplatformUiPurgeExecutionsResponse",
+      "description": "Response message for MetadataService.PurgeExecutions.",
+      "type": "object",
+      "properties": {
+        "purgeCount": {
+          "description": "The number of Executions that this request deleted (or, if `force` is false, the number of Executions that will be deleted). This can be an estimate.",
+          "type": "string",
+          "format": "int64"
+        },
+        "purgeSample": {
+          "description": "A sample of the Execution names that will be deleted. Only populated if `force` is set to false. The maximum number of samples is 100 (it is possible to return fewer).",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "GoogleCloudAiplatformUiRemoveAnnotationSpecFromSavedQueryOperationMetadata": {
       "id": "GoogleCloudAiplatformUiRemoveAnnotationSpecFromSavedQueryOperationMetadata",
       "description": "Runtime operation information for DatasetService.RemoveAnnotationSpecFromSavedQuery.",
@@ -10221,7 +10648,7 @@
           "type": "string"
         },
         "webAccessUris": {
-          "description": "Output only. The web access URIs for the training job. The keys are the node names in the training jobs, e.g. workerpool0-0. The values are the URIs for each node's web portal in the job.",
+          "description": "Output only. URIs for accessing [interactive shells](https:\/\/cloud.google.com\/vertex-ai\/docs\/training\/monitor-debug-interactive-shell) (one URI for each training node). Only available if this trial is part of a HyperparameterTuningJob and the job's trial_job_spec.enable_web_access field is `true`. The keys are names of each node used for the trial; for example, `workerpool0-0` for the primary node, `workerpool1-0` for the first node in the second worker pool, and `workerpool1-1` for the second node in the second worker pool. The values are the URIs for each node's interactive shell.",
           "readOnly": true,
           "type": "object",
           "additionalProperties": {
@@ -11229,6 +11656,11 @@
           "items": {
             "$ref": "GoogleCloudAiplatformV1alpha1NearestNeighborSearchOperationMetadataContentValidationStats"
           }
+        },
+        "dataBytesCount": {
+          "description": "The ingested data size in bytes.",
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -12689,6 +13121,11 @@
           "items": {
             "$ref": "GoogleCloudAiplatformV1beta1NearestNeighborSearchOperationMetadataContentValidationStats"
           }
+        },
+        "dataBytesCount": {
+          "description": "The ingested data size in bytes.",
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -12911,7 +13348,7 @@
           "type": "boolean"
         },
         "monitoringInterval": {
-          "description": "Configuration of the snapshot analysis based monitoring pipeline running interval. The value is rolled up to full day.",
+          "description": "Will be deprecated by [FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval_days] soon. Configuration of the snapshot analysis based monitoring pipeline running interval. The value is rolled up to full day.",
           "type": "string",
           "format": "google-duration"
         },
@@ -13930,6 +14367,96 @@
         }
       }
     },
+    "GoogleCloudAiplatformV1beta1PurgeArtifactsResponse": {
+      "id": "GoogleCloudAiplatformV1beta1PurgeArtifactsResponse",
+      "description": "Response message for MetadataService.PurgeArtifacts.",
+      "type": "object",
+      "properties": {
+        "purgeCount": {
+          "description": "The number of Artifacts that this request deleted (or, if `force` is false, the number of Artifacts that will be deleted). This can be an estimate.",
+          "type": "string",
+          "format": "int64"
+        },
+        "purgeSample": {
+          "description": "A sample of the Artifact names that will be deleted. Only populated if `force` is set to false. The maximum number of samples is 100 (it is possible to return fewer).",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1PurgeArtifactsMetadata": {
+      "id": "GoogleCloudAiplatformV1beta1PurgeArtifactsMetadata",
+      "description": "Details of operations that perform MetadataService.PurgeArtifacts.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "Operation metadata for purging Artifacts.",
+          "$ref": "GoogleCloudAiplatformV1beta1GenericOperationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1PurgeContextsMetadata": {
+      "id": "GoogleCloudAiplatformV1beta1PurgeContextsMetadata",
+      "description": "Details of operations that perform MetadataService.PurgeContexts.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "Operation metadata for purging Contexts.",
+          "$ref": "GoogleCloudAiplatformV1beta1GenericOperationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1PurgeContextsResponse": {
+      "id": "GoogleCloudAiplatformV1beta1PurgeContextsResponse",
+      "description": "Response message for MetadataService.PurgeContexts.",
+      "type": "object",
+      "properties": {
+        "purgeCount": {
+          "description": "The number of Contexts that this request deleted (or, if `force` is false, the number of Contexts that will be deleted). This can be an estimate.",
+          "type": "string",
+          "format": "int64"
+        },
+        "purgeSample": {
+          "description": "A sample of the Context names that will be deleted. Only populated if `force` is set to false. The maximum number of samples is 100 (it is possible to return fewer).",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1PurgeExecutionsResponse": {
+      "id": "GoogleCloudAiplatformV1beta1PurgeExecutionsResponse",
+      "description": "Response message for MetadataService.PurgeExecutions.",
+      "type": "object",
+      "properties": {
+        "purgeCount": {
+          "description": "The number of Executions that this request deleted (or, if `force` is false, the number of Executions that will be deleted). This can be an estimate.",
+          "type": "string",
+          "format": "int64"
+        },
+        "purgeSample": {
+          "description": "A sample of the Execution names that will be deleted. Only populated if `force` is set to false. The maximum number of samples is 100 (it is possible to return fewer).",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1PurgeExecutionsMetadata": {
+      "id": "GoogleCloudAiplatformV1beta1PurgeExecutionsMetadata",
+      "description": "Details of operations that perform MetadataService.PurgeExecutions.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "Operation metadata for purging Executions.",
+          "$ref": "GoogleCloudAiplatformV1beta1GenericOperationMetadata"
+        }
+      }
+    },
     "GoogleCloudAiplatformV1beta1SpecialistPool": {
       "id": "GoogleCloudAiplatformV1beta1SpecialistPool",
       "description": "SpecialistPool represents customers' own workforce to work on their data labeling jobs. It includes a group of specialist managers who are responsible for managing the labelers in this pool as well as customers' data labeling jobs associated with this pool. Customers create specialist pool as well as start data labeling jobs on Cloud, managers and labelers work with the jobs using CrowdCompute console.",
@@ -14106,7 +14633,7 @@
           "type": "string"
         },
         "webAccessUris": {
-          "description": "Output only. The web access URIs for the training job. The keys are the node names in the training jobs, e.g. workerpool0-0. The values are the URIs for each node's web portal in the job.",
+          "description": "Output only. URIs for accessing [interactive shells](https:\/\/cloud.google.com\/vertex-ai\/docs\/training\/monitor-debug-interactive-shell) (one URI for each training node). Only available if this trial is part of a HyperparameterTuningJob and the job's trial_job_spec.enable_web_access field is `true`. The keys are names of each node used for the trial; for example, `workerpool0-0` for the primary node, `workerpool1-0` for the first node in the second worker pool, and `workerpool1-1` for the second node in the second worker pool. The values are the URIs for each node's interactive shell.",
           "readOnly": true,
           "type": "object",
           "additionalProperties": {
@@ -15134,6 +15661,10 @@
           "description": "Output only. The actual training cost of the model, expressed in milli node hours, i.e. 1,000 value in this field means 1 node hour. Guaranteed to not exceed the train budget.",
           "type": "string",
           "format": "int64"
+        },
+        "evaluatedDataItemsBigqueryUri": {
+          "description": "BigQuery destination uri for exported evaluated examples.",
+          "type": "string"
         }
       }
     },
@@ -15784,7 +16315,7 @@
           "type": "string"
         },
         "enableWebAccess": {
-          "description": "Optional. Vertex AI will enable web portal access to the containers. The portals can be accessed on web via the URLs given by web_access_uris.",
+          "description": "Optional. Whether you want Vertex AI to enable [interactive shell access](https:\/\/cloud.google.com\/vertex-ai\/docs\/training\/monitor-debug-interactive-shell) to training containers. If set to `true`, you can access interactive shells at the URIs given by CustomJob.web_access_uris or Trial.web_access_uris (within HyperparameterTuningJob.trials).",
           "type": "boolean"
         }
       }
@@ -17401,6 +17932,10 @@
           "type": "string",
           "format": "google-datetime"
         },
+        "explanationSpec": {
+          "description": "Explanation configuration for this DeployedModel. When deploying a Model using EndpointService.DeployModel, this value overrides the value of Model.explanation_spec. All fields of explanation_spec are optional in the request. If a field of explanation_spec is not populated, the value of the same field of Model.explanation_spec is inherited. If the corresponding Model.explanation_spec is not populated, all fields of the explanation_spec will be used for the explanation configuration.",
+          "$ref": "GoogleCloudAiplatformV1ExplanationSpec"
+        },
         "serviceAccount": {
           "description": "The service account that the DeployedModel's container runs as. Specify the email address of the service account. If this service account is not specified, the container runs as a service account that doesn't have access to the resource project. Users deploying the Model must have the `iam.serviceAccounts.actAs` permission on this service account.",
           "type": "string"
@@ -17515,6 +18050,387 @@
           "description": "Immutable. The maximum number of replicas this DeployedModel may be deployed on when the traffic against it increases. If the requested value is too large, the deployment will error, but if deployment succeeds then the ability to scale the model to that many replicas is guaranteed (barring service outages). If traffic against the DeployedModel increases beyond what its replicas at maximum may handle, a portion of the traffic will be dropped. If this value is not provided, a no upper bound for scaling under heavy traffic will be assume, though Vertex AI may be unable to scale beyond certain replica number.",
           "type": "integer",
           "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1ExplanationSpec": {
+      "id": "GoogleCloudAiplatformV1ExplanationSpec",
+      "description": "Specification of Model explanation.",
+      "type": "object",
+      "properties": {
+        "parameters": {
+          "description": "Required. Parameters that configure explaining of the Model's predictions.",
+          "$ref": "GoogleCloudAiplatformV1ExplanationParameters"
+        },
+        "metadata": {
+          "description": "Required. Metadata describing the Model's input and output for explanation.",
+          "$ref": "GoogleCloudAiplatformV1ExplanationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1ExplanationParameters": {
+      "id": "GoogleCloudAiplatformV1ExplanationParameters",
+      "description": "Parameters to configure explaining for Model's predictions.",
+      "type": "object",
+      "properties": {
+        "sampledShapleyAttribution": {
+          "description": "An attribution method that approximates Shapley values for features that contribute to the label being predicted. A sampling strategy is used to approximate the value rather than considering all subsets of features. Refer to this paper for model details: https:\/\/arxiv.org\/abs\/1306.4265.",
+          "$ref": "GoogleCloudAiplatformV1SampledShapleyAttribution"
+        },
+        "integratedGradientsAttribution": {
+          "description": "An attribution method that computes Aumann-Shapley values taking advantage of the model's fully differentiable structure. Refer to this paper for more details: https:\/\/arxiv.org\/abs\/1703.01365",
+          "$ref": "GoogleCloudAiplatformV1IntegratedGradientsAttribution"
+        },
+        "xraiAttribution": {
+          "description": "An attribution method that redistributes Integrated Gradients attribution to segmented regions, taking advantage of the model's fully differentiable structure. Refer to this paper for more details: https:\/\/arxiv.org\/abs\/1906.02825 XRAI currently performs better on natural images, like a picture of a house or an animal. If the images are taken in artificial environments, like a lab or manufacturing line, or from diagnostic equipment, like x-rays or quality-control cameras, use Integrated Gradients instead.",
+          "$ref": "GoogleCloudAiplatformV1XraiAttribution"
+        },
+        "topK": {
+          "description": "If populated, returns attributions for top K indices of outputs (defaults to 1). Only applies to Models that predicts more than one outputs (e,g, multi-class Models). When set to -1, returns explanations for all outputs.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "outputIndices": {
+          "description": "If populated, only returns attributions that have output_index contained in output_indices. It must be an ndarray of integers, with the same shape of the output it's explaining. If not populated, returns attributions for top_k indices of outputs. If neither top_k nor output_indeices is populated, returns the argmax index of the outputs. Only applicable to Models that predict multiple outputs (e,g, multi-class Models that predict multiple classes).",
+          "type": "array",
+          "items": {
+            "type": "any"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SampledShapleyAttribution": {
+      "id": "GoogleCloudAiplatformV1SampledShapleyAttribution",
+      "description": "An attribution method that approximates Shapley values for features that contribute to the label being predicted. A sampling strategy is used to approximate the value rather than considering all subsets of features.",
+      "type": "object",
+      "properties": {
+        "pathCount": {
+          "description": "Required. The number of feature permutations to consider when approximating the Shapley values. Valid range of its value is [1, 50], inclusively.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1IntegratedGradientsAttribution": {
+      "id": "GoogleCloudAiplatformV1IntegratedGradientsAttribution",
+      "description": "An attribution method that computes the Aumann-Shapley value taking advantage of the model's fully differentiable structure. Refer to this paper for more details: https:\/\/arxiv.org\/abs\/1703.01365",
+      "type": "object",
+      "properties": {
+        "stepCount": {
+          "description": "Required. The number of steps for approximating the path integral. A good value to start is 50 and gradually increase until the sum to diff property is within the desired error range. Valid range of its value is [1, 100], inclusively.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "smoothGradConfig": {
+          "description": "Config for SmoothGrad approximation of gradients. When enabled, the gradients are approximated by averaging the gradients from noisy samples in the vicinity of the inputs. Adding noise can help improve the computed gradients. Refer to this paper for more details: https:\/\/arxiv.org\/pdf\/1706.03825.pdf",
+          "$ref": "GoogleCloudAiplatformV1SmoothGradConfig"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SmoothGradConfig": {
+      "id": "GoogleCloudAiplatformV1SmoothGradConfig",
+      "description": "Config for SmoothGrad approximation of gradients. When enabled, the gradients are approximated by averaging the gradients from noisy samples in the vicinity of the inputs. Adding noise can help improve the computed gradients. Refer to this paper for more details: https:\/\/arxiv.org\/pdf\/1706.03825.pdf",
+      "type": "object",
+      "properties": {
+        "noiseSigma": {
+          "description": "This is a single float value and will be used to add noise to all the features. Use this field when all features are normalized to have the same distribution: scale to range [0, 1], [-1, 1] or z-scoring, where features are normalized to have 0-mean and 1-variance. Learn more about [normalization](https:\/\/developers.google.com\/machine-learning\/data-prep\/transform\/normalization). For best results the recommended value is about 10% - 20% of the standard deviation of the input feature. Refer to section 3.2 of the SmoothGrad paper: https:\/\/arxiv.org\/pdf\/1706.03825.pdf. Defaults to 0.1. If the distribution is different per feature, set feature_noise_sigma instead for each feature.",
+          "type": "number",
+          "format": "float"
+        },
+        "featureNoiseSigma": {
+          "description": "This is similar to noise_sigma, but provides additional flexibility. A separate noise sigma can be provided for each feature, which is useful if their distributions are different. No noise is added to features that are not set. If this field is unset, noise_sigma will be used for all features.",
+          "$ref": "GoogleCloudAiplatformV1FeatureNoiseSigma"
+        },
+        "noisySampleCount": {
+          "description": "The number of gradient samples to use for approximation. The higher this number, the more accurate the gradient is, but the runtime complexity increases by this factor as well. Valid range of its value is [1, 50]. Defaults to 3.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1FeatureNoiseSigma": {
+      "id": "GoogleCloudAiplatformV1FeatureNoiseSigma",
+      "description": "Noise sigma by features. Noise sigma represents the standard deviation of the gaussian kernel that will be used to add noise to interpolated inputs prior to computing gradients.",
+      "type": "object",
+      "properties": {
+        "noiseSigma": {
+          "description": "Noise sigma per feature. No noise is added to features that are not set.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1FeatureNoiseSigmaNoiseSigmaForFeature"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1FeatureNoiseSigmaNoiseSigmaForFeature": {
+      "id": "GoogleCloudAiplatformV1FeatureNoiseSigmaNoiseSigmaForFeature",
+      "description": "Noise sigma for a single feature.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The name of the input feature for which noise sigma is provided. The features are defined in explanation metadata inputs.",
+          "type": "string"
+        },
+        "sigma": {
+          "description": "This represents the standard deviation of the Gaussian kernel that will be used to add noise to the feature prior to computing gradients. Similar to noise_sigma but represents the noise added to the current feature. Defaults to 0.1.",
+          "type": "number",
+          "format": "float"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1XraiAttribution": {
+      "id": "GoogleCloudAiplatformV1XraiAttribution",
+      "description": "An explanation method that redistributes Integrated Gradients attributions to segmented regions, taking advantage of the model's fully differentiable structure. Refer to this paper for more details: https:\/\/arxiv.org\/abs\/1906.02825 Supported only by image Models.",
+      "type": "object",
+      "properties": {
+        "stepCount": {
+          "description": "Required. The number of steps for approximating the path integral. A good value to start is 50 and gradually increase until the sum to diff property is met within the desired error range. Valid range of its value is [1, 100], inclusively.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "smoothGradConfig": {
+          "description": "Config for SmoothGrad approximation of gradients. When enabled, the gradients are approximated by averaging the gradients from noisy samples in the vicinity of the inputs. Adding noise can help improve the computed gradients. Refer to this paper for more details: https:\/\/arxiv.org\/pdf\/1706.03825.pdf",
+          "$ref": "GoogleCloudAiplatformV1SmoothGradConfig"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1ExplanationMetadata": {
+      "id": "GoogleCloudAiplatformV1ExplanationMetadata",
+      "description": "Metadata describing the Model's input and output for explanation.",
+      "type": "object",
+      "properties": {
+        "inputs": {
+          "description": "Required. Map from feature names to feature input metadata. Keys are the name of the features. Values are the specification of the feature. An empty InputMetadata is valid. It describes a text feature which has the name specified as the key in ExplanationMetadata.inputs. The baseline of the empty feature is chosen by Vertex AI. For Vertex AI-provided Tensorflow images, the key can be any friendly name of the feature. Once specified, featureAttributions are keyed by this key (if not grouped with another feature). For custom images, the key must match with the key in instance.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "GoogleCloudAiplatformV1ExplanationMetadataInputMetadata"
+          }
+        },
+        "outputs": {
+          "description": "Required. Map from output names to output metadata. For Vertex AI-provided Tensorflow images, keys can be any user defined string that consists of any UTF-8 characters. For custom images, keys are the name of the output field in the prediction to be explained. Currently only one key is allowed.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "GoogleCloudAiplatformV1ExplanationMetadataOutputMetadata"
+          }
+        },
+        "featureAttributionsSchemaUri": {
+          "description": "Points to a YAML file stored on Google Cloud Storage describing the format of the feature attributions. The schema is defined as an OpenAPI 3.0.2 [Schema Object](https:\/\/github.com\/OAI\/OpenAPI-Specification\/blob\/main\/versions\/3.0.2.md#schemaObject). AutoML tabular Models always have this field populated by Vertex AI. Note: The URI given on output may be different, including the URI scheme, than the one given on input. The output URI will point to a location where the user only has a read access.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1ExplanationMetadataInputMetadata": {
+      "id": "GoogleCloudAiplatformV1ExplanationMetadataInputMetadata",
+      "description": "Metadata of the input of a feature. Fields other than InputMetadata.input_baselines are applicable only for Models that are using Vertex AI-provided images for Tensorflow.",
+      "type": "object",
+      "properties": {
+        "inputBaselines": {
+          "description": "Baseline inputs for this feature. If no baseline is specified, Vertex AI chooses the baseline for this feature. If multiple baselines are specified, Vertex AI returns the average attributions across them in Attributions.baseline_attribution. For Vertex AI-provided Tensorflow images (both 1.x and 2.x), the shape of each baseline must match the shape of the input tensor. If a scalar is provided, we broadcast to the same shape as the input tensor. For custom images, the element of the baselines must be in the same format as the feature's input in the instance[]. The schema of any single instance may be specified via Endpoint's DeployedModels' Model's PredictSchemata's instance_schema_uri.",
+          "type": "array",
+          "items": {
+            "type": "any"
+          }
+        },
+        "inputTensorName": {
+          "description": "Name of the input tensor for this feature. Required and is only applicable to Vertex AI-provided images for Tensorflow.",
+          "type": "string"
+        },
+        "encoding": {
+          "description": "Defines how the feature is encoded into the input tensor. Defaults to IDENTITY.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value. This is the same as IDENTITY.",
+            "The tensor represents one feature.",
+            "The tensor represents a bag of features where each index maps to a feature. InputMetadata.index_feature_mapping must be provided for this encoding. For example: ``` input = [27, 6.0, 150] index_feature_mapping = [\"age\", \"height\", \"weight\"] ```",
+            "The tensor represents a bag of features where each index maps to a feature. Zero values in the tensor indicates feature being non-existent. InputMetadata.index_feature_mapping must be provided for this encoding. For example: ``` input = [2, 0, 5, 0, 1] index_feature_mapping = [\"a\", \"b\", \"c\", \"d\", \"e\"] ```",
+            "The tensor is a list of binaries representing whether a feature exists or not (1 indicates existence). InputMetadata.index_feature_mapping must be provided for this encoding. For example: ``` input = [1, 0, 1, 0, 1] index_feature_mapping = [\"a\", \"b\", \"c\", \"d\", \"e\"] ```",
+            "The tensor is encoded into a 1-dimensional array represented by an encoded tensor. InputMetadata.encoded_tensor_name must be provided for this encoding. For example: ``` input = [\"This\", \"is\", \"a\", \"test\", \".\"] encoded = [0.1, 0.2, 0.3, 0.4, 0.5] ```",
+            "Select this encoding when the input tensor is encoded into a 2-dimensional array represented by an encoded tensor. InputMetadata.encoded_tensor_name must be provided for this encoding. The first dimension of the encoded tensor's shape is the same as the input tensor's shape. For example: ``` input = [\"This\", \"is\", \"a\", \"test\", \".\"] encoded = [[0.1, 0.2, 0.3, 0.4, 0.5], [0.2, 0.1, 0.4, 0.3, 0.5], [0.5, 0.1, 0.3, 0.5, 0.4], [0.5, 0.3, 0.1, 0.2, 0.4], [0.4, 0.3, 0.2, 0.5, 0.1]] ```"
+          ],
+          "enum": [
+            "ENCODING_UNSPECIFIED",
+            "IDENTITY",
+            "BAG_OF_FEATURES",
+            "BAG_OF_FEATURES_SPARSE",
+            "INDICATOR",
+            "COMBINED_EMBEDDING",
+            "CONCAT_EMBEDDING"
+          ]
+        },
+        "modality": {
+          "description": "Modality of the feature. Valid values are: numeric, image. Defaults to numeric.",
+          "type": "string"
+        },
+        "featureValueDomain": {
+          "description": "The domain details of the input feature value. Like min\/max, original mean or standard deviation if normalized.",
+          "$ref": "GoogleCloudAiplatformV1ExplanationMetadataInputMetadataFeatureValueDomain"
+        },
+        "indicesTensorName": {
+          "description": "Specifies the index of the values of the input tensor. Required when the input tensor is a sparse representation. Refer to Tensorflow documentation for more details: https:\/\/www.tensorflow.org\/api_docs\/python\/tf\/sparse\/SparseTensor.",
+          "type": "string"
+        },
+        "denseShapeTensorName": {
+          "description": "Specifies the shape of the values of the input if the input is a sparse representation. Refer to Tensorflow documentation for more details: https:\/\/www.tensorflow.org\/api_docs\/python\/tf\/sparse\/SparseTensor.",
+          "type": "string"
+        },
+        "indexFeatureMapping": {
+          "description": "A list of feature names for each index in the input tensor. Required when the input InputMetadata.encoding is BAG_OF_FEATURES, BAG_OF_FEATURES_SPARSE, INDICATOR.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "encodedTensorName": {
+          "description": "Encoded tensor is a transformation of the input tensor. Must be provided if choosing Integrated Gradients attribution or XRAI attribution and the input tensor is not differentiable. An encoded tensor is generated if the input tensor is encoded by a lookup table.",
+          "type": "string"
+        },
+        "encodedBaselines": {
+          "description": "A list of baselines for the encoded tensor. The shape of each baseline should match the shape of the encoded tensor. If a scalar is provided, Vertex AI broadcasts to the same shape as the encoded tensor.",
+          "type": "array",
+          "items": {
+            "type": "any"
+          }
+        },
+        "visualization": {
+          "description": "Visualization configurations for image explanation.",
+          "$ref": "GoogleCloudAiplatformV1ExplanationMetadataInputMetadataVisualization"
+        },
+        "groupName": {
+          "description": "Name of the group that the input belongs to. Features with the same group name will be treated as one feature when computing attributions. Features grouped together can have different shapes in value. If provided, there will be one single attribution generated in featureAttributions, keyed by the group name.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1ExplanationMetadataInputMetadataFeatureValueDomain": {
+      "id": "GoogleCloudAiplatformV1ExplanationMetadataInputMetadataFeatureValueDomain",
+      "description": "Domain details of the input feature value. Provides numeric information about the feature, such as its range (min, max). If the feature has been pre-processed, for example with z-scoring, then it provides information about how to recover the original feature. For example, if the input feature is an image and it has been pre-processed to obtain 0-mean and stddev = 1 values, then original_mean, and original_stddev refer to the mean and stddev of the original feature (e.g. image tensor) from which input feature (with mean = 0 and stddev = 1) was obtained.",
+      "type": "object",
+      "properties": {
+        "minValue": {
+          "description": "The minimum permissible value for this feature.",
+          "type": "number",
+          "format": "float"
+        },
+        "maxValue": {
+          "description": "The maximum permissible value for this feature.",
+          "type": "number",
+          "format": "float"
+        },
+        "originalMean": {
+          "description": "If this input feature has been normalized to a mean value of 0, the original_mean specifies the mean value of the domain prior to normalization.",
+          "type": "number",
+          "format": "float"
+        },
+        "originalStddev": {
+          "description": "If this input feature has been normalized to a standard deviation of 1.0, the original_stddev specifies the standard deviation of the domain prior to normalization.",
+          "type": "number",
+          "format": "float"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1ExplanationMetadataInputMetadataVisualization": {
+      "id": "GoogleCloudAiplatformV1ExplanationMetadataInputMetadataVisualization",
+      "description": "Visualization configurations for image explanation.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "Type of the image visualization. Only applicable to Integrated Gradients attribution. OUTLINES shows regions of attribution, while PIXELS shows per-pixel attribution. Defaults to OUTLINES.",
+          "type": "string",
+          "enumDescriptions": [
+            "Should not be used.",
+            "Shows which pixel contributed to the image prediction.",
+            "Shows which region contributed to the image prediction by outlining the region."
+          ],
+          "enum": [
+            "TYPE_UNSPECIFIED",
+            "PIXELS",
+            "OUTLINES"
+          ]
+        },
+        "polarity": {
+          "description": "Whether to only highlight pixels with positive contributions, negative or both. Defaults to POSITIVE.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value. This is the same as POSITIVE.",
+            "Highlights the pixels\/outlines that were most influential to the model's prediction.",
+            "Setting polarity to negative highlights areas that does not lead to the models's current prediction.",
+            "Shows both positive and negative attributions."
+          ],
+          "enum": [
+            "POLARITY_UNSPECIFIED",
+            "POSITIVE",
+            "NEGATIVE",
+            "BOTH"
+          ]
+        },
+        "colorMap": {
+          "description": "The color scheme used for the highlighted areas. Defaults to PINK_GREEN for Integrated Gradients attribution, which shows positive attributions in green and negative in pink. Defaults to VIRIDIS for XRAI attribution, which highlights the most influential regions in yellow and the least influential in blue.",
+          "type": "string",
+          "enumDescriptions": [
+            "Should not be used.",
+            "Positive: green. Negative: pink.",
+            "Viridis color map: A perceptually uniform color mapping which is easier to see by those with colorblindness and progresses from yellow to green to blue. Positive: yellow. Negative: blue.",
+            "Positive: red. Negative: red.",
+            "Positive: green. Negative: green.",
+            "Positive: green. Negative: red.",
+            "PiYG palette."
+          ],
+          "enum": [
+            "COLOR_MAP_UNSPECIFIED",
+            "PINK_GREEN",
+            "VIRIDIS",
+            "RED",
+            "GREEN",
+            "RED_GREEN",
+            "PINK_WHITE_GREEN"
+          ]
+        },
+        "clipPercentUpperbound": {
+          "description": "Excludes attributions above the specified percentile from the highlighted areas. Using the clip_percent_upperbound and clip_percent_lowerbound together can be useful for filtering out noise and making it easier to see areas of strong attribution. Defaults to 99.9.",
+          "type": "number",
+          "format": "float"
+        },
+        "clipPercentLowerbound": {
+          "description": "Excludes attributions below the specified percentile, from the highlighted areas. Defaults to 62.",
+          "type": "number",
+          "format": "float"
+        },
+        "overlayType": {
+          "description": "How the original image is displayed in the visualization. Adjusting the overlay can help increase visual clarity if the original image makes it difficult to view the visualization. Defaults to NONE.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value. This is the same as NONE.",
+            "No overlay.",
+            "The attributions are shown on top of the original image.",
+            "The attributions are shown on top of grayscaled version of the original image.",
+            "The attributions are used as a mask to reveal predictive parts of the image and hide the un-predictive parts."
+          ],
+          "enum": [
+            "OVERLAY_TYPE_UNSPECIFIED",
+            "NONE",
+            "ORIGINAL",
+            "GRAYSCALE",
+            "MASK_BLACK"
+          ]
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1ExplanationMetadataOutputMetadata": {
+      "id": "GoogleCloudAiplatformV1ExplanationMetadataOutputMetadata",
+      "description": "Metadata of the prediction output to be explained.",
+      "type": "object",
+      "properties": {
+        "indexDisplayNameMapping": {
+          "description": "Static mapping between the index and display name. Use this if the outputs are a deterministic n-dimensional array, e.g. a list of scores of all the classes in a pre-defined order for a multi-classification Model. It's not feasible if the outputs are non-deterministic, e.g. the Model produces top-k classes or sort the outputs by their values. The shape of the value must be an n-dimensional array of strings. The number of dimensions must match that of the outputs to be explained. The Attribution.output_display_name is populated by locating in the mapping with Attribution.output_index.",
+          "type": "any"
+        },
+        "displayNameMappingKey": {
+          "description": "Specify a field name in the prediction to look for the display name. Use this if the prediction contains the display names for the outputs. The display names in the prediction must have the same shape of the outputs, so that it can be located by Attribution.output_index for a specific output.",
+          "type": "string"
+        },
+        "outputTensorName": {
+          "description": "Name of the output tensor. Required and is only applicable to AI Platform provided images for Tensorflow.",
+          "type": "string"
         }
       }
     },
@@ -18532,6 +19448,10 @@
           "description": "Output only. The actual training cost of the model, expressed in milli node hours, i.e. 1,000 value in this field means 1 node hour. Guaranteed to not exceed the train budget.",
           "type": "string",
           "format": "int64"
+        },
+        "evaluatedDataItemsBigqueryUri": {
+          "description": "BigQuery destination uri for exported evaluated examples.",
+          "type": "string"
         }
       }
     },
@@ -19176,10 +20096,6 @@
         "baseOutputDirectory": {
           "description": "The Cloud Storage location to store the output of this CustomJob or HyperparameterTuningJob. For HyperparameterTuningJob, the baseOutputDirectory of each child CustomJob backing a Trial is set to a subdirectory of name id under its parent HyperparameterTuningJob's baseOutputDirectory. The following Vertex AI environment variables will be passed to containers or python modules when this field is set: For CustomJob: * AIP_MODEL_DIR = `\/model\/` * AIP_CHECKPOINT_DIR = `\/checkpoints\/` * AIP_TENSORBOARD_LOG_DIR = `\/logs\/` For CustomJob backing a Trial of HyperparameterTuningJob: * AIP_MODEL_DIR = `\/\/model\/` * AIP_CHECKPOINT_DIR = `\/\/checkpoints\/` * AIP_TENSORBOARD_LOG_DIR = `\/\/logs\/`",
           "$ref": "GoogleCloudAiplatformV1GcsDestination"
-        },
-        "tensorboard": {
-          "description": "Optional. The name of a Vertex AI Tensorboard resource to which this CustomJob will upload Tensorboard logs. Format: `projects\/{project}\/locations\/{location}\/tensorboards\/{tensorboard}`",
-          "type": "string"
         }
       }
     },
@@ -22439,34 +23355,6 @@
                   "id": "aiplatform.projects.locations.endpoints.predict",
                   "path": "v1alpha1/{+endpoint}:predict",
                   "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/endpoints/{endpointsId}:predict",
-                  "httpMethod": "POST",
-                  "parameters": {
-                    "endpoint": {
-                      "description": "Required. The name of the Endpoint requested to serve the prediction. Format: `projects\/{project}\/locations\/{location}\/endpoints\/{endpoint}`",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/endpoints\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "endpoint"
-                  ],
-                  "request": {
-                    "$ref": "GoogleCloudAiplatformV1alpha1PredictRequest"
-                  },
-                  "response": {
-                    "$ref": "GoogleCloudAiplatformV1alpha1PredictResponse"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Perform an online prediction."
-                },
-                "predictInternal": {
-                  "id": "aiplatform.projects.locations.endpoints.predictInternal",
-                  "path": "v1alpha1/{+endpoint}:predictInternal",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/endpoints/{endpointsId}:predictInternal",
                   "httpMethod": "POST",
                   "parameters": {
                     "endpoint": {
@@ -26475,7 +27363,7 @@
                       "type": "string"
                     },
                     "filter": {
-                      "description": "Lists the PipelineJobs that match the filter expression. The following fields are supported: * `pipeline_name`: Supports `=` and `!=` comparisons. * `create_time`: Supports `=`, `!=`, `<`, `>`, `<=`, and `>=` comparisons. Values must be in RFC 3339 format. * `update_time`: Supports `=`, `!=`, `<`, `>`, `<=`, and `>=` comparisons. Values must be in RFC 3339 format. * `end_time`: Supports `=`, `!=`, `<`, `>`, `<=`, and `>=` comparisons. Values must be in RFC 3339 format. * `labels`: Supports key-value equality and key presence. Filter expressions can be combined together using logical operators (`AND` & `OR`). For example: `pipeline_name=\"test\" AND create_time>\"2020-05-18T13:30:00Z\"`. The syntax to define filter expression is based on https:\/\/google.aip.dev\/160. Examples: * `create_time>\"2021-05-18T00:00:00Z\" OR update_time>\"2020-05-18T00:00:00Z\"` PipelineJobs created or updated after 2020-05-18 00:00:00 UTC. * `labels.env = \"prod\"` PipelineJobs with label \"env\" set to \"prod\".",
+                      "description": "The standard list filter. Supported fields: * `display_name` supports = and !=. * `state` supports = and !=. Some examples of using the filter are: * `state=\"PIPELINE_STATE_SUCCEEDED\" AND display_name=\"my_pipeline\"` * `state=\"PIPELINE_STATE_RUNNING\" OR display_name=\"my_pipeline\"` * `NOT display_name=\"my_pipeline\"` * `state=\"PIPELINE_STATE_FAILED\"`",
                       "location": "query",
                       "type": "string"
                     },
@@ -26791,7 +27679,7 @@
                       "type": "string"
                     },
                     "filter": {
-                      "description": "The standard list filter. Supported fields: * `display_name` supports `=` and `!=`. * `state` supports `=` and `!=`. The following examples demonstrate how to filter the list of PipelineJobs: * `state=\"PIPELINE_STATE_SUCCEEDED\" AND display_name=\"my_pipeline\"` * `state=\"PIPELINE_STATE_RUNNING\" OR display_name=\"my_pipeline\"` * `NOT display_name=\"my_pipeline\"` * `state=\"PIPELINE_STATE_FAILED\"`",
+                      "description": "Lists the PipelineJobs that match the filter expression. The following fields are supported: * `pipeline_name`: Supports `=` and `!=` comparisons. * `create_time`: Supports `=`, `!=`, `<`, `>`, `<=`, and `>=` comparisons. Values must be in RFC 3339 format. * `update_time`: Supports `=`, `!=`, `<`, `>`, `<=`, and `>=` comparisons. Values must be in RFC 3339 format. * `end_time`: Supports `=`, `!=`, `<`, `>`, `<=`, and `>=` comparisons. Values must be in RFC 3339 format. * `labels`: Supports key-value equality and key presence. Filter expressions can be combined together using logical operators (`AND` & `OR`). For example: `pipeline_name=\"test\" AND create_time>\"2020-05-18T13:30:00Z\"`. The syntax to define filter expression is based on https:\/\/google.aip.dev\/160. Examples: * `create_time>\"2021-05-18T00:00:00Z\" OR update_time>\"2020-05-18T00:00:00Z\"` PipelineJobs created or updated after 2020-05-18 00:00:00 UTC. * `labels.env = \"prod\"` PipelineJobs with label \"env\" set to \"prod\".",
                       "location": "query",
                       "type": "string"
                     },
@@ -28002,7 +28890,7 @@
                           "httpMethod": "POST",
                           "parameters": {
                             "parent": {
-                              "description": "Required. The resource name of the Tensorboard to create the TensorboardRun in. Format: `projects\/{project}\/locations\/{location}\/tensorboards\/{tensorboard}\/experiments\/{experiment}`",
+                              "description": "Required. The resource name of the TensorboardExperiment to create the TensorboardRun in. Format: `projects\/{project}\/locations\/{location}\/tensorboards\/{tensorboard}\/experiments\/{experiment}`",
                               "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+\/experiments\/[^\/]+$",
                               "location": "path",
                               "required": true,
@@ -28095,7 +28983,7 @@
                           "httpMethod": "GET",
                           "parameters": {
                             "parent": {
-                              "description": "Required. The resource name of the Tensorboard to list TensorboardRuns. Format: 'projects\/{project}\/locations\/{location}\/tensorboards\/{tensorboard}\/experiments\/{experiment}'",
+                              "description": "Required. The resource name of the TensorboardExperiment to list TensorboardRuns. Format: 'projects\/{project}\/locations\/{location}\/tensorboards\/{tensorboard}\/experiments\/{experiment}'",
                               "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+\/experiments\/[^\/]+$",
                               "location": "path",
                               "required": true,

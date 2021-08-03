@@ -83,8 +83,8 @@ class DatacatalogEntriesLookupRequest(_messages.Message):
       apis.com/projects/{PROJECT_ID}/datasets/{DATASET_ID}/tables/{TABLE_ID}`
       * `//pubsub.googleapis.com/projects/{PROJECT_ID}/topics/{TOPIC_ID}`
     sqlResource: The SQL name of the entry. SQL names are case-sensitive.
-      Examples: * `pubsub.{PROJECT_ID}.{TOPIC_ID}` *
-      `pubsub.{PROJECT_ID}.{TOPIC.ID.SEPARATED.WITH.DOTS}` *
+      Examples: * `pubsub.topic.{PROJECT_ID}.{TOPIC_ID}` *
+      `pubsub.topic.{PROJECT_ID}.`\``{TOPIC.ID.SEPARATED.WITH.DOTS}`\` *
       `bigquery.table.{PROJECT_ID}.{DATASET_ID}.{TABLE_ID}` *
       `bigquery.dataset.{PROJECT_ID}.{DATASET_ID}` * `datacatalog.entry.{PROJE
       CT_ID}.{LOCATION_ID}.{ENTRY_GROUP_ID}.{ENTRY_ID}` Identifiers (`*_ID`)
@@ -1673,7 +1673,8 @@ class GoogleCloudDatacatalogV1KafkaClusterSpec(_messages.Message):
       format as the `bootstrap.servers` configuration property for Kafka
       clients. For example: `host1:port1,host2:port2,host3:port3`. For more
       information, see [bootstrap.servers property]
-      (https://kafka.apache.org/documentation/#bootstrap.servers).
+      (https://kafka.apache.org/documentation/#bootstrap.servers). Data
+      Catalog doesn't validate the content of this field.
   """
 
   bootstrapServers = _messages.StringField(1)
@@ -1686,8 +1687,9 @@ class GoogleCloudDatacatalogV1KafkaTopicSpec(_messages.Message):
     clusterEntry: Required. Name of the Kafka cluster entry this topic is a
       part of. Example:
       `projects/my_project/locations/us/entryGroups/kafka/entries/my_cluster`.
+      Data Catalog doesn't validate the content of this field.
     topic: Required. Name of the Kafka topic this entry represents. Example:
-      `my_topic`.
+      `my_topic`. Data Catalog doesn't validate the content of this field.
   """
 
   clusterEntry = _messages.StringField(1)
@@ -2377,7 +2379,11 @@ class GoogleCloudDatacatalogV1TagTemplate(_messages.Message):
       public tags. You can search for a public tag by value with a simple
       search query instead of using a ``tag:`` predicate. Public tag templates
       may not appear in search results depending on scope, see:
-      include_public_tag_templates
+      include_public_tag_templates Note: If an [IAM domain
+      restriction](https://cloud.google.com/resource-
+      manager/docs/organization-policy/restricting-domains) is configured in
+      the tag template's location, the public access will not be enabled but
+      the simple search for tag values will still work.
     name: The resource name of the tag template in URL format. Note: The tag
       template itself and its child resources might not be stored in the
       location specified in its name.

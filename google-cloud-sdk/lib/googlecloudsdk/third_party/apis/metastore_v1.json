@@ -893,6 +893,14 @@
         "description": {
           "description": "The description of the backup.",
           "type": "string"
+        },
+        "restoringServices": {
+          "description": "Output only. Services that are restoring from the backup.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },

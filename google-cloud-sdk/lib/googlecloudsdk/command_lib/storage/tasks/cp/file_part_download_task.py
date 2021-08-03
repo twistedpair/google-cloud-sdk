@@ -33,11 +33,13 @@ from googlecloudsdk.command_lib.storage import tracker_file_util
 from googlecloudsdk.command_lib.storage.tasks import task
 from googlecloudsdk.command_lib.storage.tasks import task_status
 from googlecloudsdk.command_lib.storage.tasks.cp import copy_component_util
+from googlecloudsdk.command_lib.storage.tasks.cp import download_util
 from googlecloudsdk.command_lib.storage.tasks.cp import file_part_task
 from googlecloudsdk.command_lib.util import crc32c
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files
+from googlecloudsdk.core.util import hashing
 
 
 _READ_SIZE = 8192  # 8 KiB.
@@ -101,7 +103,7 @@ def _get_digesters(component_number, resource):
 
   digesters = {}
   if component_number is None and resource.md5_hash:
-    digesters[hash_util.HashAlgorithm.MD5] = hash_util.get_md5()
+    digesters[hash_util.HashAlgorithm.MD5] = hashing.get_md5()
 
   elif (component_number is not None and resource.crc32c_hash and
         (crc32c.IS_FAST_GOOGLE_CRC32C_AVAILABLE or
@@ -173,9 +175,9 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
     if hash_util.HashAlgorithm.MD5 in digesters:
       calculated_digest = hash_util.get_base64_hash_digest_string(
           digesters[hash_util.HashAlgorithm.MD5])
-      hash_util.validate_object_hashes_match(self._source_resource.storage_url,
-                                             self._source_resource.md5_hash,
-                                             calculated_digest)
+      download_util.validate_download_hash_and_delete_corrupt_files(
+          self._destination_resource.storage_url.object_name,
+          self._source_resource.md5_hash, calculated_digest)
 
   def _perform_one_shot_download(self, progress_callback, digesters):
     """Sets up a basic download based on task attributes."""
@@ -186,10 +188,6 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
                            cloud_api.DownloadStrategy.ONE_SHOT, start_byte,
                            end_byte, files.BinaryFileWriterMode.TRUNCATE,
                            digesters)
-
-    # Delete orphaned tracker files in case previous strategy created them.
-    tracker_file_util.delete_download_tracker_files(
-        self._destination_resource.storage_url)
 
   def _catch_up_digesters(self, digesters, start_byte, end_byte):
     with files.BinaryFileReader(
@@ -227,6 +225,9 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
                            end_byte, write_mode, digesters)
 
   def _get_output(self, digesters):
+    if hash_util.HashAlgorithm.CRC32C not in digesters:
+      return None
+
     crc32c_checksum = crc32c.get_checksum(
         digesters[hash_util.HashAlgorithm.CRC32C])
     return task.Output(
@@ -244,6 +245,7 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
   def _perform_component_download(self, progress_callback, digesters):
     """Component download does not validate hash or delete tracker."""
     destination_url = self._destination_resource.storage_url
+    end_byte = self._offset + self._length - 1
 
     if self._strategy == cloud_api.DownloadStrategy.RESUMABLE:
       _, found_tracker_file = (
@@ -256,28 +258,28 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
           destination_url, offset=self._offset, length=self._length)
       start_byte = first_null_byte if found_tracker_file else self._offset
 
-      if start_byte >= self._source_resource.size:
-        # Component has already been downloaded.
+      if start_byte > end_byte:
+        log.status.Print('{} component {} already downloaded.'.format(
+            self._source_resource, self._component_number))
         self._catch_up_digesters(
             digesters,
             start_byte=self._offset,
             end_byte=self._source_resource.size)
         return self._get_output(digesters)
-      elif found_tracker_file and start_byte != self._offset:
+      if found_tracker_file and start_byte != self._offset:
         self._catch_up_digesters(
             digesters, start_byte=self._offset, end_byte=start_byte)
         log.status.Print('Resuming download for {} component {}'.format(
             self._source_resource, self._component_number))
     else:
+      # For non-resumable sliced downloads.
       start_byte = self._offset
 
-    end_byte = self._offset + self._length - 1
     self._perform_download(progress_callback, self._strategy, start_byte,
                            end_byte, files.BinaryFileWriterMode.MODIFY,
                            digesters)
 
-    if hash_util.HashAlgorithm.CRC32C in digesters:
-      return self._get_output(digesters)
+    return self._get_output(digesters)
 
   def execute(self, task_status_queue=None):
     """Performs download."""

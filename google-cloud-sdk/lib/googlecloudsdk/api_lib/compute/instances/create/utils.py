@@ -621,6 +621,7 @@ def _CreateLocalSsdMessage(resources,
 
 def GetBulkNetworkInterfaces(args, resource_parser, compute_client, holder,
                              project, location, scope, skip_defaults):
+  """Gets network interfaces in bulk instance API."""
   if (skip_defaults and not instance_utils.IsAnySpecified(
       args, 'network_interface', 'network', 'network_tier', 'subnet',
       'no_address')):
@@ -652,19 +653,25 @@ def GetBulkNetworkInterfaces(args, resource_parser, compute_client, holder,
 def GetNetworkInterfaces(args, client, holder, project, location, scope,
                          skip_defaults):
   """Get network interfaces."""
-  if (skip_defaults and not args.IsSpecified('network') and
-      not instance_utils.IsAnySpecified(
-          args,
-          'address',
-          'network_tier',
-          'no_address',
-          'no_public_ptr',
-          'no_public_ptr_domain',
-          'private_network_ip',
-          'public_ptr',
-          'public_ptr_domain',
-          'subnet',
-      )):
+  network_interface_args = filter(lambda flag: hasattr(args, flag), [
+      'address',
+      'ipv6_network_tier',
+      'ipv6_public_ptr_domain',
+      'network',
+      'network_tier',
+      'no_address',
+      'no_public_ptr',
+      'no_public_ptr_domain',
+      'private_network_ip',
+      'public_ptr',
+      'public_ptr_domain',
+      'stack_type',
+      'subnet',
+  ])
+  if (skip_defaults and not instance_utils.IsAnySpecified(
+      args,
+      *network_interface_args
+  )):
     return []
   return [
       CreateNetworkInterfaceMessage(
@@ -692,11 +699,26 @@ def GetNetworkInterfaces(args, client, holder, project, location, scope,
 
 def GetNetworkInterfacesAlpha(args, client, holder, project, location, scope,
                               skip_defaults):
-  if (skip_defaults and not instance_utils.IsAnySpecified(
-      args, 'network', 'subnet', 'private_network_ip', 'no_address', 'address',
-      'network_tier', 'no_public_dns', 'public_dns', 'no_public_ptr',
-      'public_ptr', 'no_public_ptr_domain', 'public_ptr_domain', 'stack_type',
-      'ipv6_network_tier')):
+  """"Get network interfaces in compute Alpha API."""
+  network_interface_args = filter(lambda flag: hasattr(args, flag), [
+      'address',
+      'ipv6_network_tier',
+      'ipv6_public_ptr_domain',
+      'network',
+      'network_tier',
+      'no_address',
+      'no_public_dns',
+      'no_public_ptr',
+      'no_public_ptr_domain',
+      'private_network_ip',
+      'public_dns',
+      'public_ptr',
+      'public_ptr_domain',
+      'stack_type',
+      'subnet',
+  ])
+  if (skip_defaults and
+      not instance_utils.IsAnySpecified(args, *network_interface_args)):
     return []
   return [
       CreateNetworkInterfaceMessage(
@@ -892,7 +914,11 @@ def CreateNetworkInterfaceMessages(resources,
               location=location,
               scope=scope,
               alias_ip_ranges_string=interface.get('aliases', None),
-              network_tier=network_tier))
+              network_tier=network_tier,
+              stack_type=interface.get('stack-type', None),
+              ipv6_network_tier=interface.get('ipv6-network-tier', None),
+              ipv6_public_ptr_domain=interface.get('ipv6-public-ptr-domain',
+                                                   None)))
   elif network_interface_json is not None:
     network_interfaces = yaml.load(network_interface_json)
     if not network_interfaces:  # Empty json.

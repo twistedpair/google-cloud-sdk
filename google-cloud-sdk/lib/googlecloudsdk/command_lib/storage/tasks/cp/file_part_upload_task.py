@@ -45,6 +45,7 @@ from googlecloudsdk.command_lib.storage.tasks.cp import upload_util
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files
+from googlecloudsdk.core.util import hashing
 from googlecloudsdk.core.util import retry
 
 
@@ -132,7 +133,7 @@ class FilePartUploadTask(file_part_task.FilePartTask):
         provider == storage_url.ProviderPrefix.S3 or
         check_hashes == properties.CheckHashes.NEVER):
       return {}
-    return {hash_util.HashAlgorithm.MD5: hash_util.get_md5()}
+    return {hash_util.HashAlgorithm.MD5: hashing.get_md5()}
 
   def _existing_destination_is_valid(self, destination_resource):
     """Returns True if a completed temporary component can be reused."""

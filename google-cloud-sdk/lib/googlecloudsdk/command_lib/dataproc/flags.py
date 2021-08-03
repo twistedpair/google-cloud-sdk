@@ -416,7 +416,7 @@ def AddTemplateResourceArg(parser, verb, api_version, positional=True):
   Args:
     parser: the argparse parser for the command.
     verb: str, the verb to describe the resource, such as 'to update'.
-    api_version: api version, for example v1 or v1beta2
+    api_version: api version, for example v1
     positional: bool, if True, means that the instance ID is a positional rather
       than a flag.
   """
@@ -449,7 +449,7 @@ def AddAutoscalingPolicyResourceArg(parser, verb, api_version):
   Args:
     parser: the argparse parser for the command.
     verb: str, the verb to apply to the resource, such as 'to update'.
-    api_version: api version, for example v1 or v1beta2
+    api_version: api version, for example v1
   """
   concept_parsers.ConceptParser.ForResource(
       'autoscaling_policy',
@@ -463,7 +463,7 @@ def AddAutoscalingPolicyResourceArgForCluster(parser, api_version):
 
   Args:
     parser: the argparse parser for the command.
-    api_version: api version, for example v1 or v1beta2
+    api_version: api version, for example v1
   """
   concept_parsers.ConceptParser.ForResource(
       '--autoscaling-policy',

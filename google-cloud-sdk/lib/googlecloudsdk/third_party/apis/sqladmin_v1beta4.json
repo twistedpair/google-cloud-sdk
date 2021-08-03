@@ -1503,7 +1503,7 @@
           "type": "string"
         },
         "allocatedIpRange": {
-          "description": "The name of the allocated ip range for the private ip CloudSQL instance. For example: \"google-managed-services-default\". If set, the instance ip will be created in the allocated range. The range name must comply with [RFC 1035](https:\/\/tools.ietf.org\/html\/rfc1035). Specifically, the name must be 1-63 characters long and match the regular expression [a-z]([-a-z0-9]*[a-z0-9])?.",
+          "description": "The name of the allocated ip range for the private ip CloudSQL instance. For example: \"google-managed-services-default\". If set, the instance ip will be created in the allocated range. The range name must comply with [RFC 1035](https:\/\/tools.ietf.org\/html\/rfc1035). Specifically, the name must be 1-63 characters long and match the regular expression [a-z]([-a-z0-9]*[a-z0-9])?. Reserved for future use.",
           "type": "string"
         }
       }
@@ -2204,6 +2204,41 @@
         }
       }
     },
+    "SqlInstancesVerifyExternalSyncSettingsRequest": {
+      "id": "SqlInstancesVerifyExternalSyncSettingsRequest",
+      "type": "object",
+      "properties": {
+        "verifyConnectionOnly": {
+          "description": "Flag to enable verifying connection only",
+          "type": "boolean"
+        },
+        "syncMode": {
+          "description": "External sync mode",
+          "type": "string",
+          "enumDescriptions": [
+            "Unknown external sync mode, will be defaulted to ONLINE mode",
+            "Online external sync will set up replication after initial data external sync",
+            "Offline external sync only dumps and loads a one-time snapshot of the primary instance's data"
+          ],
+          "enum": [
+            "EXTERNAL_SYNC_MODE_UNSPECIFIED",
+            "ONLINE",
+            "OFFLINE"
+          ]
+        },
+        "mysqlSyncConfig": {
+          "description": "Optional. MySQL-specific settings for start external sync.",
+          "$ref": "MySqlSyncConfig"
+        }
+      }
+    },
+    "MySqlSyncConfig": {
+      "id": "MySqlSyncConfig",
+      "description": "MySQL-specific external server sync settings.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "SqlInstancesVerifyExternalSyncSettingsResponse": {
       "id": "SqlInstancesVerifyExternalSyncSettingsResponse",
       "description": "Instance verify external sync settings response.",
@@ -2297,6 +2332,34 @@
         "detail": {
           "description": "Additional information about the error encountered.",
           "type": "string"
+        }
+      }
+    },
+    "SqlInstancesStartExternalSyncRequest": {
+      "id": "SqlInstancesStartExternalSyncRequest",
+      "type": "object",
+      "properties": {
+        "syncMode": {
+          "description": "External sync mode.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unknown external sync mode, will be defaulted to ONLINE mode",
+            "Online external sync will set up replication after initial data external sync",
+            "Offline external sync only dumps and loads a one-time snapshot of the primary instance's data"
+          ],
+          "enum": [
+            "EXTERNAL_SYNC_MODE_UNSPECIFIED",
+            "ONLINE",
+            "OFFLINE"
+          ]
+        },
+        "skipVerification": {
+          "description": "Whether to skip the verification step (VESS).",
+          "type": "boolean"
+        },
+        "mysqlSyncConfig": {
+          "description": "MySQL-specific settings for start external sync.",
+          "$ref": "MySqlSyncConfig"
         }
       }
     },
@@ -4023,32 +4086,15 @@
                   "location": "path",
                   "required": true,
                   "type": "string"
-                },
-                "verifyConnectionOnly": {
-                  "description": "Flag to enable verifying connection only",
-                  "location": "query",
-                  "type": "boolean"
-                },
-                "syncMode": {
-                  "description": "External sync mode",
-                  "location": "query",
-                  "type": "string",
-                  "enumDescriptions": [
-                    "Unknown external sync mode, will be defaulted to ONLINE mode",
-                    "Online external sync will set up replication after initial data external sync",
-                    "Offline external sync only dumps and loads a one-time snapshot of the primary instance's data"
-                  ],
-                  "enum": [
-                    "EXTERNAL_SYNC_MODE_UNSPECIFIED",
-                    "ONLINE",
-                    "OFFLINE"
-                  ]
                 }
               },
               "parameterOrder": [
                 "project",
                 "instance"
               ],
+              "request": {
+                "$ref": "SqlInstancesVerifyExternalSyncSettingsRequest"
+              },
               "response": {
                 "$ref": "SqlInstancesVerifyExternalSyncSettingsResponse"
               },
@@ -4075,32 +4121,15 @@
                   "location": "path",
                   "required": true,
                   "type": "string"
-                },
-                "syncMode": {
-                  "description": "External sync mode.",
-                  "location": "query",
-                  "type": "string",
-                  "enumDescriptions": [
-                    "Unknown external sync mode, will be defaulted to ONLINE mode",
-                    "Online external sync will set up replication after initial data external sync",
-                    "Offline external sync only dumps and loads a one-time snapshot of the primary instance's data"
-                  ],
-                  "enum": [
-                    "EXTERNAL_SYNC_MODE_UNSPECIFIED",
-                    "ONLINE",
-                    "OFFLINE"
-                  ]
-                },
-                "skipVerification": {
-                  "description": "Whether to skip the verification step (VESS).",
-                  "location": "query",
-                  "type": "boolean"
                 }
               },
               "parameterOrder": [
                 "project",
                 "instance"
               ],
+              "request": {
+                "$ref": "SqlInstancesStartExternalSyncRequest"
+              },
               "response": {
                 "$ref": "Operation"
               },

@@ -5,6 +5,78 @@ Copyright 2014-2021 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 351.0.0 (2021-08-03)
+
+### AI
+
+* Promoted the GPU configuration fields in `--worker-pool-spec` flag of `gcloud ai custom-jobs create` to GA.
+
+### Artifact Registry
+
+* Promoted `gcloud artifacts apt` to beta.
+* Promoted `gcloud artifacts yum` to beta.
+* Promoted `gcloud artifacts print-settings apt` and `gcloud artifacts
+  print-settings yum` to beta.
+* Changed com.google.cloud.artifactregistry.gradle-plugin from 2.1.0 to 2.1.1 in `gcloud print-settings`.
+
+### Assured Workloads
+
+*   Added EU_REGIONS_AND_SUPPORT as compliance regime options for `gcloud assured workloads create` command.
+
+### Cloud Functions
+
+*   Promoted `--build-worker-pool` and `--clear-build-worker-pool` flag of `gcloud functions deploy` to GA.
+
+### Cloud Healthcare
+
+* Added `--send-for-bulk-import` flag to the following commands:
+  * `gcloud beta healthcare dicom-stores create`
+  * `gcloud beta healthcare dicom-stores update`
+
+### Cloud Storage
+
+* Updated gsutil component to 4.66.
+
+### Compute Engine
+
+* Modified `--network-interface` flag of `gcloud compute instances create` and `gcloud compute instance-templates create` command to support IPv6 fields.
+* Promoted `user_license` flag of `gcloud compute disks insert` to beta.
+
+### Config Connector
+
+* Updated Google Cloud Config Connector to version 1.57.0.
+  See Config Connector Overview for more details [https://cloud.google.com/config-connector/docs/overview](https://cloud.google.com/config-connector/docs/overview).
+
+### GKE Hub
+
+* Promoted `gcloud container hub memberships get-credentials` to GA.
+
+### Miscellaneous
+
+* Binary Size input can contain decimal digits, provided the amount
+  is a whole multiple of a Byte.
+
+### Policy Analyzer
+
+*   Added `gcloud policy-intelligence query-activity` which queries activities. Supported activity types are service account last authentication and service account key last authentication.
+
+### Recaptcha
+
+* Promoted `gcloud recaptcha keys` to GA.
+
+### Secret Manager
+
+* Added `--etag` flag to the following commands:
+      * `gcloud secrets delete`
+      * `gcloud secrets update`
+      * `gcloud secrets versions destroy`
+      * `gcloud secrets versions disable`
+      * `gcloud secrets versions enable`
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 350.0.0 (2021-07-27)
 
 ### Cloud SDK

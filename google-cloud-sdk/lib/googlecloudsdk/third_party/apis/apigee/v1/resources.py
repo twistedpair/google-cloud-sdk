@@ -354,6 +354,17 @@ class Collections(enum.Enum):
       ['parent', 'type', 'name'],
       True
   )
+  ORGANIZATIONS_ENVIRONMENTS_SECURITYREPORTS = (
+      'organizations.environments.securityReports',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/environments/{environmentsId}/'
+              'securityReports/{securityReportsId}',
+      },
+      ['name'],
+      True
+  )
   ORGANIZATIONS_ENVIRONMENTS_STATS = (
       'organizations.environments.stats',
       '{+name}',
@@ -477,6 +488,17 @@ class Collections(enum.Enum):
       {
           '':
               'organizations/{organizationsId}/reports/{reportsId}',
+      },
+      ['name'],
+      True
+  )
+  ORGANIZATIONS_SECURITYHOSTREPORTS = (
+      'organizations.securityHostReports',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/securityHostReports/'
+              '{securityHostReportsId}',
       },
       ['name'],
       True

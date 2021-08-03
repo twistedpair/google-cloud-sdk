@@ -85,6 +85,7 @@ class ApigeeV1(base_api.BaseApiClient):
     self.organizations_environments_queries = self.OrganizationsEnvironmentsQueriesService(self)
     self.organizations_environments_references = self.OrganizationsEnvironmentsReferencesService(self)
     self.organizations_environments_resourcefiles = self.OrganizationsEnvironmentsResourcefilesService(self)
+    self.organizations_environments_securityReports = self.OrganizationsEnvironmentsSecurityReportsService(self)
     self.organizations_environments_sharedflows_deployments = self.OrganizationsEnvironmentsSharedflowsDeploymentsService(self)
     self.organizations_environments_sharedflows_revisions = self.OrganizationsEnvironmentsSharedflowsRevisionsService(self)
     self.organizations_environments_sharedflows = self.OrganizationsEnvironmentsSharedflowsService(self)
@@ -103,6 +104,7 @@ class ApigeeV1(base_api.BaseApiClient):
     self.organizations_operations = self.OrganizationsOperationsService(self)
     self.organizations_optimizedHostStats = self.OrganizationsOptimizedHostStatsService(self)
     self.organizations_reports = self.OrganizationsReportsService(self)
+    self.organizations_securityHostReports = self.OrganizationsSecurityHostReportsService(self)
     self.organizations_sharedflows_deployments = self.OrganizationsSharedflowsDeploymentsService(self)
     self.organizations_sharedflows_revisions_deployments = self.OrganizationsSharedflowsRevisionsDeploymentsService(self)
     self.organizations_sharedflows_revisions = self.OrganizationsSharedflowsRevisionsService(self)
@@ -4406,6 +4408,124 @@ class ApigeeV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class OrganizationsEnvironmentsSecurityReportsService(base_api.BaseApiService):
+    """Service class for the organizations_environments_securityReports resource."""
+
+    _NAME = 'organizations_environments_securityReports'
+
+    def __init__(self, client):
+      super(ApigeeV1.OrganizationsEnvironmentsSecurityReportsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Submit a report request to be processed in the background. If the submission succeeds, the API returns a 200 status and an ID that refer to the report request. In addition to the HTTP status 200, the `state` of "enqueued" means that the request succeeded.
+
+      Args:
+        request: (ApigeeOrganizationsEnvironmentsSecurityReportsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1SecurityReport) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/environments/{environmentsId}/securityReports',
+        http_method='POST',
+        method_id='apigee.organizations.environments.securityReports.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/securityReports',
+        request_field='googleCloudApigeeV1SecurityReportQuery',
+        request_type_name='ApigeeOrganizationsEnvironmentsSecurityReportsCreateRequest',
+        response_type_name='GoogleCloudApigeeV1SecurityReport',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Get security report status If the query is still in progress, the `state` is set to "running" After the query has completed successfully, `state` is set to "completed".
+
+      Args:
+        request: (ApigeeOrganizationsEnvironmentsSecurityReportsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1SecurityReport) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/environments/{environmentsId}/securityReports/{securityReportsId}',
+        http_method='GET',
+        method_id='apigee.organizations.environments.securityReports.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApigeeOrganizationsEnvironmentsSecurityReportsGetRequest',
+        response_type_name='GoogleCloudApigeeV1SecurityReport',
+        supports_download=False,
+    )
+
+    def GetResult(self, request, global_params=None):
+      r"""After the query is completed, use this API to retrieve the results as file. If the request succeeds, and there is a non-zero result set, the result is downloaded to the client as a zipped JSON file. The name of the downloaded file will be: OfflineQueryResult-.zip Example: `OfflineQueryResult-9cfc0d85-0f30-46d6-ae6f-318d0cb961bd.zip`.
+
+      Args:
+        request: (ApigeeOrganizationsEnvironmentsSecurityReportsGetResultRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleApiHttpBody) The response message.
+      """
+      config = self.GetMethodConfig('GetResult')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetResult.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/environments/{environmentsId}/securityReports/{securityReportsId}/result',
+        http_method='GET',
+        method_id='apigee.organizations.environments.securityReports.getResult',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApigeeOrganizationsEnvironmentsSecurityReportsGetResultRequest',
+        response_type_name='GoogleApiHttpBody',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Return a list of Security Reports.
+
+      Args:
+        request: (ApigeeOrganizationsEnvironmentsSecurityReportsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1ListSecurityReportsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/environments/{environmentsId}/securityReports',
+        http_method='GET',
+        method_id='apigee.organizations.environments.securityReports.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['dataset', 'from_', 'pageSize', 'pageToken', 'status', 'submittedBy', 'to'],
+        relative_path='v1/{+parent}/securityReports',
+        request_field='',
+        request_type_name='ApigeeOrganizationsEnvironmentsSecurityReportsListRequest',
+        response_type_name='GoogleCloudApigeeV1ListSecurityReportsResponse',
+        supports_download=False,
+    )
+
   class OrganizationsEnvironmentsSharedflowsDeploymentsService(base_api.BaseApiService):
     """Service class for the organizations_environments_sharedflows_deployments resource."""
 
@@ -6260,6 +6380,124 @@ class ApigeeV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class OrganizationsSecurityHostReportsService(base_api.BaseApiService):
+    """Service class for the organizations_securityHostReports resource."""
+
+    _NAME = 'organizations_securityHostReports'
+
+    def __init__(self, client):
+      super(ApigeeV1.OrganizationsSecurityHostReportsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Submit a query at host level to be processed in the background. If the submission of the query succeeds, the API returns a 201 status and an ID that refer to the query. In addition to the HTTP status 201, the `state` of "enqueued" means that the request succeeded.
+
+      Args:
+        request: (ApigeeOrganizationsSecurityHostReportsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1SecurityReport) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/securityHostReports',
+        http_method='POST',
+        method_id='apigee.organizations.securityHostReports.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/securityHostReports',
+        request_field='googleCloudApigeeV1SecurityReportQuery',
+        request_type_name='ApigeeOrganizationsSecurityHostReportsCreateRequest',
+        response_type_name='GoogleCloudApigeeV1SecurityReport',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Get status of a query submitted at host level. If the query is still in progress, the `state` is set to "running" After the query has completed successfully, `state` is set to "completed".
+
+      Args:
+        request: (ApigeeOrganizationsSecurityHostReportsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1SecurityReport) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/securityHostReports/{securityHostReportsId}',
+        http_method='GET',
+        method_id='apigee.organizations.securityHostReports.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApigeeOrganizationsSecurityHostReportsGetRequest',
+        response_type_name='GoogleCloudApigeeV1SecurityReport',
+        supports_download=False,
+    )
+
+    def GetResult(self, request, global_params=None):
+      r"""After the query is completed, use this API to retrieve the results. If the request succeeds, and there is a non-zero result set, the result is downloaded to the client as a zipped JSON file. The name of the downloaded file will be: OfflineQueryResult-.zip Example: `OfflineQueryResult-9cfc0d85-0f30-46d6-ae6f-318d0cb961bd.zip`.
+
+      Args:
+        request: (ApigeeOrganizationsSecurityHostReportsGetResultRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleApiHttpBody) The response message.
+      """
+      config = self.GetMethodConfig('GetResult')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetResult.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/securityHostReports/{securityHostReportsId}/result',
+        http_method='GET',
+        method_id='apigee.organizations.securityHostReports.getResult',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApigeeOrganizationsSecurityHostReportsGetResultRequest',
+        response_type_name='GoogleApiHttpBody',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Return a list of Asynchronous Queries at host level.
+
+      Args:
+        request: (ApigeeOrganizationsSecurityHostReportsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1ListSecurityReportsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/securityHostReports',
+        http_method='GET',
+        method_id='apigee.organizations.securityHostReports.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['dataset', 'envgroupHostname', 'from_', 'pageSize', 'pageToken', 'status', 'submittedBy', 'to'],
+        relative_path='v1/{+parent}/securityHostReports',
+        request_field='',
+        request_type_name='ApigeeOrganizationsSecurityHostReportsListRequest',
+        response_type_name='GoogleCloudApigeeV1ListSecurityReportsResponse',
+        supports_download=False,
+    )
+
   class OrganizationsSharedflowsDeploymentsService(base_api.BaseApiService):
     """Service class for the organizations_sharedflows_deployments resource."""
 
@@ -6986,114 +7224,6 @@ class ApigeeV1(base_api.BaseApiClient):
       super(ApigeeV1.ProjectsService, self).__init__(client)
       self._upload_configs = {
           }
-
-    def GenerateInfraMigrationPlan(self, request, global_params=None):
-      r"""Generates an Apigee X infrastructure representation from the existing Apigee Edge organization's resources. Users can modify this plan based on their needs and requirements before initating MigrateInfrastructure.
-
-      Args:
-        request: (ApigeeProjectsGenerateInfraMigrationPlanRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudApigeeV1InfraMigrationPlan) The response message.
-      """
-      config = self.GetMethodConfig('GenerateInfraMigrationPlan')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GenerateInfraMigrationPlan.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}:generateInfraMigrationPlan',
-        http_method='GET',
-        method_id='apigee.projects.generateInfraMigrationPlan',
-        ordered_params=['project'],
-        path_params=['project'],
-        query_params=['organizationId'],
-        relative_path='v1/{+project}:generateInfraMigrationPlan',
-        request_field='',
-        request_type_name='ApigeeProjectsGenerateInfraMigrationPlanRequest',
-        response_type_name='GoogleCloudApigeeV1InfraMigrationPlan',
-        supports_download=False,
-    )
-
-    def MigrateConfigData(self, request, global_params=None):
-      r"""Copies all proxy and environment configuration data from an Apigee Edge organization into Apigee X/Hybrid.
-
-      Args:
-        request: (ApigeeProjectsMigrateConfigDataRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleLongrunningOperation) The response message.
-      """
-      config = self.GetMethodConfig('MigrateConfigData')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    MigrateConfigData.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}:migrateConfigData',
-        http_method='POST',
-        method_id='apigee.projects.migrateConfigData',
-        ordered_params=['project'],
-        path_params=['project'],
-        query_params=[],
-        relative_path='v1/{+project}:migrateConfigData',
-        request_field='googleCloudApigeeV1MigrateConfigDataRequest',
-        request_type_name='ApigeeProjectsMigrateConfigDataRequest',
-        response_type_name='GoogleLongrunningOperation',
-        supports_download=False,
-    )
-
-    def MigrateDeveloperPortals(self, request, global_params=None):
-      r"""Migrates all developer portals from an Apigee edge organization into ApigeeX/Hybrid.
-
-      Args:
-        request: (ApigeeProjectsMigrateDeveloperPortalsRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleLongrunningOperation) The response message.
-      """
-      config = self.GetMethodConfig('MigrateDeveloperPortals')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    MigrateDeveloperPortals.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}:migrateDeveloperPortals',
-        http_method='POST',
-        method_id='apigee.projects.migrateDeveloperPortals',
-        ordered_params=['project'],
-        path_params=['project'],
-        query_params=[],
-        relative_path='v1/{+project}:migrateDeveloperPortals',
-        request_field='googleCloudApigeeV1MigrateDeveloperPortalsRequest',
-        request_type_name='ApigeeProjectsMigrateDeveloperPortalsRequest',
-        response_type_name='GoogleLongrunningOperation',
-        supports_download=False,
-    )
-
-    def MigrateInfrastructure(self, request, global_params=None):
-      r"""Migrates infrastructure from an Apigee Edge organization into Apigee X using InfraMigrationPlan that can be generated from GenerateInfraMigrationPlan.
-
-      Args:
-        request: (ApigeeProjectsMigrateInfrastructureRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleLongrunningOperation) The response message.
-      """
-      config = self.GetMethodConfig('MigrateInfrastructure')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    MigrateInfrastructure.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}:migrateInfrastructure',
-        http_method='POST',
-        method_id='apigee.projects.migrateInfrastructure',
-        ordered_params=['project'],
-        path_params=['project'],
-        query_params=[],
-        relative_path='v1/{+project}:migrateInfrastructure',
-        request_field='googleCloudApigeeV1MigrateInfrastructureRequest',
-        request_type_name='ApigeeProjectsMigrateInfrastructureRequest',
-        response_type_name='GoogleLongrunningOperation',
-        supports_download=False,
-    )
 
     def ProvisionOrganization(self, request, global_params=None):
       r"""Provisions a new Apigee organization with a functioning runtime. This is the standard way to create trial organizations for a free Apigee trial.

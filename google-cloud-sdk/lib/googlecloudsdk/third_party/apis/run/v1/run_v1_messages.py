@@ -476,9 +476,9 @@ class DomainMappingStatus(_messages.Message):
     resourceRecords: The resource records required to configure this domain
       mapping. These records must be added to the domain's DNS configuration
       in order to serve the application via this domain mapping.
-    url: Cloud Run fully managed: not supported Cloud Run on GKE: supported
-      Holds the URL that will serve the traffic of the DomainMapping.
-      +optional
+    url: Optional. Cloud Run fully managed: not supported Cloud Run on GKE:
+      supported Holds the URL that will serve the traffic of the
+      DomainMapping.
   """
 
   conditions = _messages.MessageField('GoogleCloudRunV1Condition', 1, repeated=True)
@@ -1452,11 +1452,11 @@ class RevisionSpec(_messages.Message):
   r"""RevisionSpec holds the desired state of the Revision (from the client).
 
   Fields:
-    containerConcurrency: (Optional) ContainerConcurrency specifies the
-      maximum allowed in-flight (concurrent) requests per container instance
-      of the Revision. Cloud Run fully managed: supported, defaults to 80
-      Cloud Run for Anthos: supported, defaults to 0, which means concurrency
-      to the application is not limited, and the system decides the target
+    containerConcurrency: Optional. ContainerConcurrency specifies the maximum
+      allowed in-flight (concurrent) requests per container instance of the
+      Revision. Cloud Run fully managed: supported, defaults to 80 Cloud Run
+      for Anthos: supported, defaults to 0, which means concurrency to the
+      application is not limited, and the system decides the target
       concurrency for the autoscaler.
     containers: Containers holds the single container that defines the unit of
       execution for this Revision. In the context of a Revision, we disallow a
@@ -1471,8 +1471,8 @@ class RevisionSpec(_messages.Message):
       default service account.
     timeoutSeconds: TimeoutSeconds holds the max duration the instance is
       allowed for responding to a request. Cloud Run fully managed: defaults
-      to 300 seconds (5 minutes). Maximum allowed value is 900 seconds (15
-      minutes). Cloud Run for Anthos: defaults to 300 seconds (5 minutes).
+      to 300 seconds (5 minutes). Maximum allowed value is 3600 seconds (1
+      hour). Cloud Run for Anthos: defaults to 300 seconds (5 minutes).
       Maximum allowed value is configurable by the cluster operator.
     volumes: A Volume attribute.
   """
@@ -1500,9 +1500,9 @@ class RevisionStatus(_messages.Message):
       within .Spec.Container.Image. The digest is resolved during the creation
       of Revision. This field holds the digest value regardless of whether a
       tag or digest was originally specified in the Container object.
-    logUrl: Specifies the generated logging url for this particular revision
-      based on the revision url template specified in the controller's config.
-      +optional
+    logUrl: Optional. Specifies the generated logging url for this particular
+      revision based on the revision url template specified in the
+      controller's config.
     observedGeneration: ObservedGeneration is the 'Generation' of the Revision
       that was last processed by the controller. Clients polling for completed
       reconciliation should poll until observedGeneration =
@@ -1714,14 +1714,14 @@ class RunNamespacesConfigurationsListRequest(_messages.Message):
   r"""A RunNamespacesConfigurationsListRequest object.
 
   Fields:
-    continue_: Optional encoded string to continue paging.
+    continue_: Optional. Encoded string to continue paging.
     fieldSelector: Allows to filter resources based on a specific value for a
       field name. Send this in a query string format. i.e.
       'metadata.name%3Dlorem'. Not currently used by Cloud Run.
     includeUninitialized: Not currently used by Cloud Run.
     labelSelector: Allows to filter resources based on a label. Supported
       operations are =, !=, exists, in, and notIn.
-    limit: The maximum number of records that should be returned.
+    limit: Optional. The maximum number of records that should be returned.
     parent: The namespace from which the configurations should be listed. For
       Cloud Run (fully managed), replace {namespace_id} with the project ID or
       number.
@@ -1796,14 +1796,14 @@ class RunNamespacesDomainmappingsListRequest(_messages.Message):
   r"""A RunNamespacesDomainmappingsListRequest object.
 
   Fields:
-    continue_: Optional encoded string to continue paging.
+    continue_: Optional. Encoded string to continue paging.
     fieldSelector: Allows to filter resources based on a specific value for a
       field name. Send this in a query string format. i.e.
       'metadata.name%3Dlorem'. Not currently used by Cloud Run.
     includeUninitialized: Not currently used by Cloud Run.
     labelSelector: Allows to filter resources based on a label. Supported
       operations are =, !=, exists, in, and notIn.
-    limit: The maximum number of records that should be returned.
+    limit: Optional. The maximum number of records that should be returned.
     parent: The namespace from which the domain mappings should be listed. For
       Cloud Run (fully managed), replace {namespace_id} with the project ID or
       number.
@@ -1861,14 +1861,14 @@ class RunNamespacesRevisionsListRequest(_messages.Message):
   r"""A RunNamespacesRevisionsListRequest object.
 
   Fields:
-    continue_: Optional encoded string to continue paging.
+    continue_: Optional. Encoded string to continue paging.
     fieldSelector: Allows to filter resources based on a specific value for a
       field name. Send this in a query string format. i.e.
       'metadata.name%3Dlorem'. Not currently used by Cloud Run.
     includeUninitialized: Not currently used by Cloud Run.
     labelSelector: Allows to filter resources based on a label. Supported
       operations are =, !=, exists, in, and notIn.
-    limit: The maximum number of records that should be returned.
+    limit: Optional. The maximum number of records that should be returned.
     parent: The namespace from which the revisions should be listed. For Cloud
       Run (fully managed), replace {namespace_id} with the project ID or
       number.
@@ -1903,14 +1903,14 @@ class RunNamespacesRoutesListRequest(_messages.Message):
   r"""A RunNamespacesRoutesListRequest object.
 
   Fields:
-    continue_: Optional encoded string to continue paging.
+    continue_: Optional. Encoded string to continue paging.
     fieldSelector: Allows to filter resources based on a specific value for a
       field name. Send this in a query string format. i.e.
       'metadata.name%3Dlorem'. Not currently used by Cloud Run.
     includeUninitialized: Not currently used by Cloud Run.
     labelSelector: Allows to filter resources based on a label. Supported
       operations are =, !=, exists, in, and notIn.
-    limit: The maximum number of records that should be returned.
+    limit: Optional. The maximum number of records that should be returned.
     parent: The namespace from which the routes should be listed. For Cloud
       Run (fully managed), replace {namespace_id} with the project ID or
       number.
@@ -1985,14 +1985,14 @@ class RunNamespacesServicesListRequest(_messages.Message):
   r"""A RunNamespacesServicesListRequest object.
 
   Fields:
-    continue_: Optional encoded string to continue paging.
+    continue_: Optional. Encoded string to continue paging.
     fieldSelector: Allows to filter resources based on a specific value for a
       field name. Send this in a query string format. i.e.
       'metadata.name%3Dlorem'. Not currently used by Cloud Run.
     includeUninitialized: Not currently used by Cloud Run.
     labelSelector: Allows to filter resources based on a label. Supported
       operations are =, !=, exists, in, and notIn.
-    limit: The maximum number of records that should be returned.
+    limit: Optional. The maximum number of records that should be returned.
     parent: The namespace from which the services should be listed. For Cloud
       Run (fully managed), replace {namespace_id} with the project ID or
       number.
@@ -2073,14 +2073,14 @@ class RunProjectsLocationsConfigurationsListRequest(_messages.Message):
   r"""A RunProjectsLocationsConfigurationsListRequest object.
 
   Fields:
-    continue_: Optional encoded string to continue paging.
+    continue_: Optional. Encoded string to continue paging.
     fieldSelector: Allows to filter resources based on a specific value for a
       field name. Send this in a query string format. i.e.
       'metadata.name%3Dlorem'. Not currently used by Cloud Run.
     includeUninitialized: Not currently used by Cloud Run.
     labelSelector: Allows to filter resources based on a label. Supported
       operations are =, !=, exists, in, and notIn.
-    limit: The maximum number of records that should be returned.
+    limit: Optional. The maximum number of records that should be returned.
     parent: The namespace from which the configurations should be listed. For
       Cloud Run (fully managed), replace {namespace_id} with the project ID or
       number.
@@ -2155,14 +2155,14 @@ class RunProjectsLocationsDomainmappingsListRequest(_messages.Message):
   r"""A RunProjectsLocationsDomainmappingsListRequest object.
 
   Fields:
-    continue_: Optional encoded string to continue paging.
+    continue_: Optional. Encoded string to continue paging.
     fieldSelector: Allows to filter resources based on a specific value for a
       field name. Send this in a query string format. i.e.
       'metadata.name%3Dlorem'. Not currently used by Cloud Run.
     includeUninitialized: Not currently used by Cloud Run.
     labelSelector: Allows to filter resources based on a label. Supported
       operations are =, !=, exists, in, and notIn.
-    limit: The maximum number of records that should be returned.
+    limit: Optional. The maximum number of records that should be returned.
     parent: The namespace from which the domain mappings should be listed. For
       Cloud Run (fully managed), replace {namespace_id} with the project ID or
       number.
@@ -2267,14 +2267,14 @@ class RunProjectsLocationsRevisionsListRequest(_messages.Message):
   r"""A RunProjectsLocationsRevisionsListRequest object.
 
   Fields:
-    continue_: Optional encoded string to continue paging.
+    continue_: Optional. Encoded string to continue paging.
     fieldSelector: Allows to filter resources based on a specific value for a
       field name. Send this in a query string format. i.e.
       'metadata.name%3Dlorem'. Not currently used by Cloud Run.
     includeUninitialized: Not currently used by Cloud Run.
     labelSelector: Allows to filter resources based on a label. Supported
       operations are =, !=, exists, in, and notIn.
-    limit: The maximum number of records that should be returned.
+    limit: Optional. The maximum number of records that should be returned.
     parent: The namespace from which the revisions should be listed. For Cloud
       Run (fully managed), replace {namespace_id} with the project ID or
       number.
@@ -2309,14 +2309,14 @@ class RunProjectsLocationsRoutesListRequest(_messages.Message):
   r"""A RunProjectsLocationsRoutesListRequest object.
 
   Fields:
-    continue_: Optional encoded string to continue paging.
+    continue_: Optional. Encoded string to continue paging.
     fieldSelector: Allows to filter resources based on a specific value for a
       field name. Send this in a query string format. i.e.
       'metadata.name%3Dlorem'. Not currently used by Cloud Run.
     includeUninitialized: Not currently used by Cloud Run.
     labelSelector: Allows to filter resources based on a label. Supported
       operations are =, !=, exists, in, and notIn.
-    limit: The maximum number of records that should be returned.
+    limit: Optional. The maximum number of records that should be returned.
     parent: The namespace from which the routes should be listed. For Cloud
       Run (fully managed), replace {namespace_id} with the project ID or
       number.
@@ -2449,14 +2449,14 @@ class RunProjectsLocationsServicesListRequest(_messages.Message):
   r"""A RunProjectsLocationsServicesListRequest object.
 
   Fields:
-    continue_: Optional encoded string to continue paging.
+    continue_: Optional. Encoded string to continue paging.
     fieldSelector: Allows to filter resources based on a specific value for a
       field name. Send this in a query string format. i.e.
       'metadata.name%3Dlorem'. Not currently used by Cloud Run.
     includeUninitialized: Not currently used by Cloud Run.
     labelSelector: Allows to filter resources based on a label. Supported
       operations are =, !=, exists, in, and notIn.
-    limit: The maximum number of records that should be returned.
+    limit: Optional. The maximum number of records that should be returned.
     parent: The namespace from which the services should be listed. For Cloud
       Run (fully managed), replace {namespace_id} with the project ID or
       number.
@@ -3041,19 +3041,18 @@ class TrafficTarget(_messages.Message):
       ready" revision to the new one. This field is never set in Route's
       status, only its spec. This is mutually exclusive with RevisionName.
       Cloud Run currently supports a single ConfigurationName.
-    latestRevision: LatestRevision may be optionally provided to indicate that
+    latestRevision: Optional. LatestRevision may be provided to indicate that
       the latest ready Revision of the Configuration should be used for this
       traffic target. When provided LatestRevision must be true if
       RevisionName is empty; it must be false when RevisionName is non-empty.
-      +optional
     percent: Percent specifies percent of the traffic to this Revision or
       Configuration. This defaults to zero if unspecified. Cloud Run currently
       requires 100 percent for a single ConfigurationName TrafficTarget entry.
     revisionName: RevisionName of a specific revision to which to send this
       portion of traffic. This is mutually exclusive with ConfigurationName.
       Providing RevisionName in spec is not currently supported by Cloud Run.
-    tag: Tag is optionally used to expose a dedicated url for referencing this
-      target exclusively. +optional
+    tag: Optional. Tag is used to expose a dedicated url for referencing this
+      target exclusively.
     url: Output only. URL displays the URL for accessing tagged traffic
       targets. URL is displayed in status, and is disallowed on spec. URL must
       contain a scheme (e.g. http://) and a hostname, but may not contain

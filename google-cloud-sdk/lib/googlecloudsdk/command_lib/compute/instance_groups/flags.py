@@ -36,6 +36,9 @@ import six
 # TODO(b/110191362): resign from passing whole args to functions in this file
 
 
+STATEFUL_IP_DEFAULT_INTERFACE_NAME = 'nic0'
+
+
 class RegionalInstanceGroupManagersCompleter(
     compute_completers.ListCommandCompleter):
 
@@ -236,34 +239,27 @@ def ValidateStatefulDisksDict(stateful_disks, flag_name):
 
 
 def ValidateStatefulIPDicts(stateful_ips, flag_name):
-  """Validate interface-name and auto-delete flags in a stateful IP."""
+  """Validate enabled, interface-name and auto-delete flags in a stateful IP."""
   interface_names = set()
   for stateful_ip in stateful_ips or []:
-    if not stateful_ip.get('interface-name'):
+    # One of: interface-name, enabled is required.
+    if (not (stateful_ip.get('interface-name')
+             or 'enabled' in stateful_ip)):
       raise exceptions.InvalidArgumentException(
-          parameter_name=flag_name, message='[interface-name] is required')
-    if stateful_ip.get('interface-name') in interface_names:
+          parameter_name=flag_name,
+          message=(
+              'one of: [interface-name], [enabled] is required.'))
+
+    interface_name = stateful_ip.get('interface-name',
+                                     STATEFUL_IP_DEFAULT_INTERFACE_NAME)
+
+    # Don't accept multiple flags affecting the same interface.
+    if interface_name in interface_names:
       raise exceptions.InvalidArgumentException(
           parameter_name=flag_name,
           message=
           '[interface-name] `{0}` is not unique in the collection'.format(
-              stateful_ip.get('interface-name')))
-    interface_names.add(stateful_ip.get('interface-name'))
-
-
-def _ValidateStatefulIPsDict(stateful_ips, flag_name):
-  """Validate interface-name and auto-delete flags in a stateful ip."""
-  interface_names = set()
-  for stateful_ip in stateful_ips or []:
-    if not stateful_ip.get('interface-name'):
-      raise exceptions.InvalidArgumentException(
-          parameter_name=flag_name, message='[interface-name] is required')
-    interface_name = stateful_ip.get('interface-name')
-    if interface_name in interface_names:
-      raise exceptions.InvalidArgumentException(
-          parameter_name=flag_name,
-          message='[interface-name] `{0}` is not unique in the collection'
-          .format(interface_name))
+              interface_name))
     interface_names.add(interface_name)
 
 
@@ -272,8 +268,8 @@ def ValidateManagedInstanceGroupStatefulDisksProperties(args):
 
 
 def ValidateManagedInstanceGroupStatefulIPsProperties(args):
-  _ValidateStatefulIPsDict(args.stateful_internal_ip, '--stateful-internal-ip')
-  _ValidateStatefulIPsDict(args.stateful_external_ip, '--stateful-external-ip')
+  ValidateStatefulIPDicts(args.stateful_internal_ip, '--stateful-internal-ip')
+  ValidateStatefulIPDicts(args.stateful_external_ip, '--stateful-external-ip')
 
 
 def GetInstanceGroupManagerArg(zones_flag=False, region_flag=True):
@@ -504,8 +500,6 @@ STATEFUL_IPS_HELP_TEMPLATE = """
       the current instance configuration, its properties are replaced by the
       newly provided ones. Otherwise, a new stateful {ip_type} IP definition
       is added to the instance configuration.
-
-      *interface-name*::: (Required) Network interface name.
       """
 
 STATEFUL_IPS_HELP_INSTANCE_CONFIGS = STATEFUL_IPS_HELP_BASE + """
@@ -524,8 +518,25 @@ STATEFUL_IPS_HELP_INSTANCE_CONFIGS_UPDATE = (
       added to the per-instance configuration.
       """)
 
-STATEFUL_IP_INTERFACE_NAME_ARG_HELP = """
-      *interface-name*::: (Required) Network interface name.
+
+STATEFUL_IP_ENABLED_ARG_HELP = """
+      *enabled*::: Marks the IP address as stateful. The network interface
+      named ``nic0'' is assumed by default when ``interface-name'' is not
+      specified. This flag can be omitted when ``interface-name'' is provided
+      explicitly.
+      """
+
+
+STATEFUL_IP_INTERFACE_NAME_ARG_WITH_ENABLED_HELP = """
+      *interface-name*::: Marks the IP address from this network interface as
+      stateful. This flag can be omitted when ``enabled'' is provided.
+      """
+
+
+STATEFUL_IP_INTERFACE_NAME_ARG_WITH_ADDRESS_HELP = """
+      *interface-name*::: (Optional) Network interface name. Can be omitted
+      when ``address'' is provided. If omitted, the default network interface
+      named ``nic0'' is assumed.
       """
 
 
@@ -542,7 +553,9 @@ STATEFUL_IP_ADDRESS_ARG_HELP = """
       automatically creates the corresponding IP address reservation. If the
       provided IP address is reserved, the group assigns the reservation to
       the instance.
+      """
 
+STATEFUL_IP_ADDRESS_ARG_OPTIONAL_HELP = STATEFUL_IP_ADDRESS_ARG_HELP + """
       The ``address'' flag is optional if an address is already defined in
       the instance's per-instance configuration. Otherwise it is required.
 
@@ -593,15 +606,23 @@ def AddMigCreateStatefulIPsFlags(parser):
       Internal IPs considered stateful by the instance group. {}
       Use this argument multiple times to make more internal IPs stateful.
 
-      *interface-name*::: (Required) Network interface name.
+      At least one of the following is required:
       {}
-      """.format(STATEFUL_IPS_HELP_BASE, STATEFUL_IP_AUTO_DELETE_ARG_HELP))
+      {}
+
+      Additional arguments:
+      {}
+      """.format(STATEFUL_IPS_HELP_BASE,
+                 STATEFUL_IP_ENABLED_ARG_HELP,
+                 STATEFUL_IP_INTERFACE_NAME_ARG_WITH_ENABLED_HELP,
+                 STATEFUL_IP_AUTO_DELETE_ARG_HELP))
   parser.add_argument(
       '--stateful-internal-ip',
       type=arg_parsers.ArgDict(
+          allow_key_only=True,
           spec={
-              'interface-name':
-                  str,
+              'enabled': None,
+              'interface-name': str,
               'auto-delete': AutoDeleteFlag.ValidatorWithFlagName(
                   '--stateful-internal-ip'),
           }),
@@ -614,15 +635,23 @@ def AddMigCreateStatefulIPsFlags(parser):
       External IPs considered stateful by the instance group. {}
       Use this argument multiple times to make more external IPs stateful.
 
-      *interface-name*::: (Required) Network interface name.
+      At least one of the following is required:
       {}
-      """.format(STATEFUL_IPS_HELP_BASE, STATEFUL_IP_AUTO_DELETE_ARG_HELP))
+      {}
+
+      Additional arguments:
+      {}
+      """.format(STATEFUL_IPS_HELP_BASE,
+                 STATEFUL_IP_ENABLED_ARG_HELP,
+                 STATEFUL_IP_INTERFACE_NAME_ARG_WITH_ENABLED_HELP,
+                 STATEFUL_IP_AUTO_DELETE_ARG_HELP))
   parser.add_argument(
       '--stateful-external-ip',
       type=arg_parsers.ArgDict(
+          allow_key_only=True,
           spec={
-              'interface-name':
-                  str,
+              'enabled': None,
+              'interface-name': str,
               'auto-delete': AutoDeleteFlag.ValidatorWithFlagName(
                   '--stateful-external-ip'),
           }),
@@ -727,7 +756,8 @@ def AddMigStatefulIPsFlagsForUpdateInstanceConfigs(parser):
   """Add args for per-instance configs update command."""
   ip_help_text = textwrap.dedent(
       (STATEFUL_IPS_HELP_INSTANCE_CONFIGS_UPDATE +
-       STATEFUL_IP_INTERFACE_NAME_ARG_HELP + STATEFUL_IP_ADDRESS_ARG_HELP +
+       STATEFUL_IP_INTERFACE_NAME_ARG_WITH_ADDRESS_HELP +
+       STATEFUL_IP_ADDRESS_ARG_OPTIONAL_HELP +
        STATEFUL_IP_AUTO_DELETE_ARG_HELP))
   remove_ip_help_text = """
       List of all stateful IP network interface names to remove from
@@ -792,10 +822,11 @@ def AddMigStatefulIPsFlagsForInstanceConfigs(parser):
       {}
       Use this argument multiple times to attach and preserve multiple IPs.
 
-      *interface-name*::: (Required) Network interface name.
+      {}
       {}
       {}
       """.format(STATEFUL_IPS_HELP_INSTANCE_CONFIGS,
+                 STATEFUL_IP_INTERFACE_NAME_ARG_WITH_ADDRESS_HELP,
                  STATEFUL_IP_ADDRESS_ARG_HELP,
                  STATEFUL_IP_AUTO_DELETE_ARG_HELP))
 
@@ -872,6 +903,7 @@ def AddCreateInstancesFlags(parser, add_stateful_ips=False):
     stateful_ips_help_text_template = textwrap.dedent(
         STATEFUL_IPS_HELP_BASE +
         STATEFUL_IPS_HELP_TEMPLATE +
+        STATEFUL_IP_INTERFACE_NAME_ARG_WITH_ADDRESS_HELP +
         STATEFUL_IP_ADDRESS_ARG_HELP +
         STATEFUL_IP_AUTO_DELETE_ARG_HELP)
 
@@ -967,20 +999,24 @@ def ValidateMigStatefulDiskFlagForInstanceConfigs(stateful_disks,
           message='[mode] can be set then and only then when [source] is given')
 
 
-def ValidateMigStatefulIpFlagForInstanceConfigs(flag_name, stateful_ips):
+def ValidateMigStatefulIpFlagForInstanceConfigs(flag_name, stateful_ips,
+                                                current_addresses):
   """Validates the values of stateful IP flags for instance configs."""
   interface_names = set()
-  for stateful_ip in stateful_ips or []:
-    if not stateful_ip.get('interface-name'):
+  for stateful_ip in (stateful_ips or []):
+    interface_name = stateful_ip.get('interface-name',
+                                     STATEFUL_IP_DEFAULT_INTERFACE_NAME)
+    if not ('address' in stateful_ip
+            or interface_name in current_addresses):
       raise exceptions.InvalidArgumentException(
-          parameter_name=flag_name, message='[interface-name] is required')
+          parameter_name=flag_name, message='[address] is required')
 
-    if stateful_ip.get('interface-name') in interface_names:
+    if interface_name in interface_names:
       raise exceptions.InvalidArgumentException(
           parameter_name=flag_name,
           message='[interface-name] `{0}` is not unique in the collection'
-          .format(stateful_ip.get('interface-name')))
-    interface_names.add(stateful_ip.get('interface-name'))
+          .format(interface_name))
+    interface_names.add(interface_name)
 
 
 def ValidateMigStatefulDisksRemovalFlagForInstanceConfigs(disks_to_remove,
@@ -1039,12 +1075,17 @@ def ValidateMigStatefulFlagsForInstanceConfigs(args,
         entries_to_update=args.stateful_metadata)
 
 
-def ValidateMigStatefulIPFlagsForInstanceConfigs(args, for_update=False):
+def ValidateMigStatefulIPFlagsForInstanceConfigs(args,
+                                                 current_internal_addresses,
+                                                 current_external_addresses,
+                                                 for_update=False):
   """Validates the values of stateful flags for instance configs, with IPs."""
   ValidateMigStatefulIpFlagForInstanceConfigs('--stateful-internal-ip',
-                                              args.stateful_internal_ip)
+                                              args.stateful_internal_ip,
+                                              current_internal_addresses)
   ValidateMigStatefulIpFlagForInstanceConfigs('--stateful-external-ip',
-                                              args.stateful_external_ip)
+                                              args.stateful_external_ip,
+                                              current_external_addresses)
   if for_update:
     ValidateMigStatefulIpsRemovalFlagForInstanceConfigs(
         flag_name='--remove-stateful-internal-ips',
@@ -1104,13 +1145,24 @@ def AddMigUpdateStatefulFlagsIPs(parser):
   stateful_ips_help_text_template = textwrap.dedent(
       STATEFUL_IPS_HELP_BASE +
       STATEFUL_IPS_HELP_TEMPLATE +
-      STATEFUL_IP_AUTO_DELETE_ARG_HELP)
+      """
+      At least one of the following is required:
+      {}
+      {}
+
+      Additional arguments:
+      {}
+      """.format(STATEFUL_IP_ENABLED_ARG_HELP,
+                 STATEFUL_IP_INTERFACE_NAME_ARG_WITH_ENABLED_HELP,
+                 STATEFUL_IP_AUTO_DELETE_ARG_HELP))
 
   stateful_internal_ip_flag_name = '--stateful-internal-ip'
   parser.add_argument(
       stateful_internal_ip_flag_name,
       type=arg_parsers.ArgDict(
+          allow_key_only=True,
           spec={
+              'enabled': None,
               'interface-name': str,
               'auto-delete': AutoDeleteFlag.ValidatorWithFlagName(
                   stateful_internal_ip_flag_name)
@@ -1123,7 +1175,9 @@ def AddMigUpdateStatefulFlagsIPs(parser):
   parser.add_argument(
       stateful_external_ip_flag_name,
       type=arg_parsers.ArgDict(
+          allow_key_only=True,
           spec={
+              'enabled': None,
               'interface-name': str,
               'auto-delete': AutoDeleteFlag.ValidatorWithFlagName(
                   stateful_external_ip_flag_name)
@@ -1192,6 +1246,7 @@ def ValidateUpdateStatefulPolicyParams(args, current_stateful_policy):
 
 def _ValidateUpdateStatefulPolicyParamsWithIPsCommon(current_interface_names,
                                                      update_flag_name,
+                                                     remove_flag_name,
                                                      update_ips,
                                                      remove_ips,
                                                      ip_type_name):
@@ -1199,22 +1254,24 @@ def _ValidateUpdateStatefulPolicyParamsWithIPsCommon(current_interface_names,
   update_interface_names = []
   if update_ips:
     ValidateStatefulIPDicts(update_ips, update_flag_name)
-    update_interface_names = [
-        stateful_ip.get('interface-name') for stateful_ip in update_ips
-    ]
-  if remove_ips:
-    if any(
-        remove_ips.count(x) > 1
-        for x in remove_ips):
-      raise exceptions.InvalidArgumentException(
-          parameter_name='update',
-          message=(
-              'When removing stateful {} IPs from Stateful Policy, please '
-              'provide each network interface name exactly once.'.format(
-                  ip_type_name)))
+    for stateful_ip in update_ips:
+      update_interface_names.append(
+          stateful_ip.get('interface-name', STATEFUL_IP_DEFAULT_INTERFACE_NAME))
+
+  remove_interface_names = remove_ips or []
+
+  if any(
+      remove_interface_names.count(x) > 1
+      for x in remove_interface_names):
+    raise exceptions.InvalidArgumentException(
+        parameter_name='update',
+        message=(
+            'When removing stateful {} IPs from Stateful Policy, please '
+            'provide each network interface name exactly once.'.format(
+                ip_type_name)))
 
   update_set = set(update_interface_names)
-  remove_set = set(remove_ips or [])
+  remove_set = set(remove_interface_names)
   intersection = update_set.intersection(remove_set)
 
   if intersection:
@@ -1242,8 +1299,8 @@ def _ValidateUpdateStatefulPolicyParamsWithInternalIPs(args,
           current_stateful_policy))
   _ValidateUpdateStatefulPolicyParamsWithIPsCommon(
       current_interface_names,
-      '--stateful-internal-ip', args.stateful_internal_ip,
-      args.remove_stateful_internal_ips, 'internal')
+      '--stateful-internal-ip', '--remove-stateful-internal-ips',
+      args.stateful_internal_ip, args.remove_stateful_internal_ips, 'internal')
 
 
 def _ValidateUpdateStatefulPolicyParamsWithExternalIPs(args,
@@ -1255,8 +1312,8 @@ def _ValidateUpdateStatefulPolicyParamsWithExternalIPs(args,
           current_stateful_policy))
   _ValidateUpdateStatefulPolicyParamsWithIPsCommon(
       current_interface_names,
-      '--stateful-external-ip', args.stateful_external_ip,
-      args.remove_stateful_external_ips, 'external')
+      '--stateful-external-ip', '--remove-stateful-external-ips',
+      args.stateful_external_ip, args.remove_stateful_external_ips, 'external')
 
 
 def ValidateUpdateStatefulPolicyParamsWithIPs(args, current_stateful_policy):

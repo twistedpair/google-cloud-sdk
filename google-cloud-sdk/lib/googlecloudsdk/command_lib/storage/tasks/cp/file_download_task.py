@@ -176,6 +176,13 @@ class FileDownloadTask(task.Task):
 
     return (download_component_task_list, finalize_sliced_download_task_list)
 
+  def _restart_download(self):
+    log.status.Print('Temporary download file corrupt.'
+                     ' Restarting download {}'.format(self._source_resource))
+    temporary_download_url = self._temporary_destination_resource.storage_url
+    os.remove(temporary_download_url.object_name)
+    tracker_file_util.delete_download_tracker_files(temporary_download_url)
+
   def execute(self, task_status_queue=None):
     """Creates appropriate download tasks."""
 
@@ -187,6 +194,12 @@ class FileDownloadTask(task.Task):
     # more information: https://github.com/GoogleCloudPlatform/gsutil/pull/1202.
     if self._destination_resource.storage_url.exists():
       os.remove(self._destination_resource.storage_url.object_name)
+    temporary_download_file_exists = (
+        self._temporary_destination_resource.storage_url.exists())
+    if temporary_download_file_exists and os.path.getsize(
+        self._temporary_destination_resource.storage_url.object_name
+    ) > self._source_resource.size:
+      self._restart_download()
 
     if _should_perform_sliced_download(self._source_resource):
       download_component_task_list, finalize_sliced_download_task_list = (
@@ -202,10 +215,9 @@ class FileDownloadTask(task.Task):
         log.debug('Resuming sliced download with {} components.'.format(
             len(download_component_task_list)))
       else:
-        if self._temporary_destination_resource.storage_url.exists():
+        if temporary_download_file_exists:
           # Component count may have changed, invalidating earlier download.
-          os.remove(
-              self._temporary_destination_resource.storage_url.object_name)
+          self._restart_download()
         log.debug('Launching sliced download with {} components.'.format(
             len(download_component_task_list)))
 

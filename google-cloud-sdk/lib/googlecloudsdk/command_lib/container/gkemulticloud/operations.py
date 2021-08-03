@@ -20,7 +20,9 @@ from __future__ import unicode_literals
 
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.container.gkemulticloud import util as api_util
+from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base
+from googlecloudsdk.command_lib.container.gkemulticloud import constants
 
 _OPERATION_TABLE_FORMAT = """\
     table(
@@ -43,7 +45,7 @@ def AddFormat(parser):
 
 
 class Client(object):
-  """Client for managing Anthos Multicloud operations."""
+  """Client for managing Anthos Multi-cloud operations."""
 
   def __init__(self, client=None, messages=None, track=base.ReleaseTrack.GA):
     self.client = client or api_util.GetClientInstance(release_track=track)
@@ -51,11 +53,10 @@ class Client(object):
     self.service = self.client.projects_locations_operations
     self.track = track
 
-  def Describe(self, args, region_ref):
-    """Describes an Anthos Mulitcloud operation."""
+  def Describe(self, operation_ref):
+    """Describes an Anthos Multi-cloud operation."""
     req = self.messages.GkemulticloudProjectsLocationsOperationsGetRequest(
-        name='{}/operations/{}'.format(region_ref.RelativeName(),
-                                       args.operation_id))
+        name=operation_ref.RelativeName())
     return self.client.projects_locations_operations.Get(req)
 
   def List(self, args, region_ref):
@@ -69,3 +70,16 @@ class Client(object):
         field='operations',
         batch_size_attribute='pageSize'):
       yield operation
+
+  def Wait(self, operation_ref, message):
+    """Waits for an Anthos Multi-cloud operation to complete.
+
+    Args:
+      operation_ref: object, passed to operation poller poll method.
+      message: str, string to display for the progress tracker.
+    """
+    waiter.WaitFor(
+        poller=waiter.CloudOperationPollerNoResources(self.service),
+        operation_ref=operation_ref,
+        message=message,
+        wait_ceiling_ms=constants.MAX_LRO_POLL_INTERVAL_MS)

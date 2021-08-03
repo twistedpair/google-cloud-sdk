@@ -1284,8 +1284,14 @@ def RunOsUpgradeBuild(args, output_filter, instance_uri, release_track):
   builder_region = _GetBuilderRegion(_GetOSUpgradeRegion, args)
   builder = _GetBuilder(_OS_UPGRADE_BUILDER_EXECUTABLE, args.docker_image_tag,
                         builder_region)
-  return _RunCloudBuild(args, builder, os_upgrade_args, build_tags,
-                        output_filter, args.log_location)
+  return _RunCloudBuild(
+      args,
+      builder,
+      os_upgrade_args,
+      build_tags,
+      output_filter,
+      args.log_location,
+      build_region=builder_region)
 
 
 def _GetOSUpgradeRegion(args):  # pylint:disable=unused-argument

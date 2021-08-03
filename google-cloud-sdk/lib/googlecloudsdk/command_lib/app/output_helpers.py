@@ -20,10 +20,13 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.app import deploy_command_util
+from googlecloudsdk.api_lib.app import exceptions
 from googlecloudsdk.api_lib.app import yaml_parsing
 from googlecloudsdk.api_lib.services import enable_api
 from googlecloudsdk.api_lib.services import exceptions as s_exceptions
 from googlecloudsdk.core import log
+from googlecloudsdk.third_party.appengine.admin.tools.conversion import convert_yaml
+import six
 
 
 DEPLOY_SERVICE_MESSAGE_TEMPLATE = """\
@@ -68,8 +71,14 @@ https://cloud.google.com/tasks/docs/queue-yaml
 """
 
 
-def DisplayProposedDeployment(app, project, services, configs, version, promote,
-                              service_account):
+def DisplayProposedDeployment(app,
+                              project,
+                              services,
+                              configs,
+                              version,
+                              promote,
+                              service_account,
+                              api_version='v1'):
   """Prints the details of the proposed deployment.
 
   Args:
@@ -82,6 +91,7 @@ def DisplayProposedDeployment(app, project, services, configs, version, promote,
     promote: Whether the newly deployed version will receive all traffic
       (this affects deployed URLs).
     service_account: The service account that the deployed version will run as.
+    api_version: Version of the yaml file parser to use. Use 'v1' by default.
 
   Returns:
     dict (str->str), a mapping of service names to deployed service URLs
@@ -100,6 +110,21 @@ def DisplayProposedDeployment(app, project, services, configs, version, promote,
           app=app, service=service.service_id,
           version=None if promote else version, use_ssl=use_ssl)
       deployed_urls[service.service_id] = url
+      schema_parser = convert_yaml.GetSchemaParser(api_version)
+      service_account_from_yaml = ''
+      try:
+        service_account_from_yaml = schema_parser.ConvertValue(
+            service.service_info.parsed.ToDict()).get('serviceAccount', None)
+      except ValueError as e:
+        raise exceptions.ConfigError(
+            '[{f}] could not be converted to the App Engine configuration '
+            'format for the following reason: {msg}'.format(
+                f=service.service_info, msg=six.text_type(e)))
+      display_service_account = 'App Engine default service account'
+      if service_account:
+        display_service_account = service_account
+      elif service_account_from_yaml:
+        display_service_account = service_account_from_yaml
       log.status.Print(
           DEPLOY_SERVICE_MESSAGE_TEMPLATE.format(
               project=project,
@@ -108,8 +133,7 @@ def DisplayProposedDeployment(app, project, services, configs, version, promote,
               descriptor=service.descriptor,
               source=service.source,
               url=url,
-              service_account=service_account
-              if service_account else 'App Engine default service account'))
+              service_account=display_service_account))
       if not promote:
         default_url = deploy_command_util.GetAppHostname(
             app=app, service=service.service_id, use_ssl=use_ssl)

@@ -498,6 +498,38 @@ class CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsListRequest(_m
   view = _messages.EnumField('ViewValueValuesEnum', 6)
 
 
+class CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsMacSignRequest(_messages.Message):
+  r"""A
+  CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsMacSignRequest
+  object.
+
+  Fields:
+    macSignRequest: A MacSignRequest resource to be passed as the request
+      body.
+    name: Required. The resource name of the CryptoKeyVersion to use for
+      signing.
+  """
+
+  macSignRequest = _messages.MessageField('MacSignRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsMacVerifyRequest(_messages.Message):
+  r"""A
+  CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsMacVerifyRequest
+  object.
+
+  Fields:
+    macVerifyRequest: A MacVerifyRequest resource to be passed as the request
+      body.
+    name: Required. The resource name of the CryptoKeyVersion to use for
+      verification.
+  """
+
+  macVerifyRequest = _messages.MessageField('MacVerifyRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsPatchRequest(_messages.Message):
   r"""A
   CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsPatchRequest
@@ -966,11 +998,13 @@ class CryptoKey(_messages.Message):
         AsymmetricSign and GetPublicKey.
       ASYMMETRIC_DECRYPT: CryptoKeys with this purpose may be used with
         AsymmetricDecrypt and GetPublicKey.
+      MAC: CryptoKeys with this purpose may be used with MacSign.
     """
     CRYPTO_KEY_PURPOSE_UNSPECIFIED = 0
     ENCRYPT_DECRYPT = 1
     ASYMMETRIC_SIGN = 2
     ASYMMETRIC_DECRYPT = 3
+    MAC = 4
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1087,6 +1121,7 @@ class CryptoKeyVersion(_messages.Message):
       EC_SIGN_P384_SHA384: ECDSA on the NIST P-384 curve with a SHA384 digest.
       EC_SIGN_SECP256K1_SHA256: ECDSA on the non-NIST secp256k1 curve. This
         curve is only supported for HSM protection level.
+      HMAC_SHA256: HMAC-SHA256 signing with a 256 bit key.
       EXTERNAL_SYMMETRIC_ENCRYPTION: Algorithm representing symmetric
         encryption by an external key manager.
     """
@@ -1107,7 +1142,8 @@ class CryptoKeyVersion(_messages.Message):
     EC_SIGN_P256_SHA256 = 14
     EC_SIGN_P384_SHA384 = 15
     EC_SIGN_SECP256K1_SHA256 = 16
-    EXTERNAL_SYMMETRIC_ENCRYPTION = 17
+    HMAC_SHA256 = 17
+    EXTERNAL_SYMMETRIC_ENCRYPTION = 18
 
   class ProtectionLevelValueValuesEnum(_messages.Enum):
     r"""Output only. The ProtectionLevel describing how crypto operations are
@@ -1230,6 +1266,7 @@ class CryptoKeyVersionTemplate(_messages.Message):
       EC_SIGN_P384_SHA384: ECDSA on the NIST P-384 curve with a SHA384 digest.
       EC_SIGN_SECP256K1_SHA256: ECDSA on the non-NIST secp256k1 curve. This
         curve is only supported for HSM protection level.
+      HMAC_SHA256: HMAC-SHA256 signing with a 256 bit key.
       EXTERNAL_SYMMETRIC_ENCRYPTION: Algorithm representing symmetric
         encryption by an external key manager.
     """
@@ -1250,7 +1287,8 @@ class CryptoKeyVersionTemplate(_messages.Message):
     EC_SIGN_P256_SHA256 = 14
     EC_SIGN_P384_SHA384 = 15
     EC_SIGN_SECP256K1_SHA256 = 16
-    EXTERNAL_SYMMETRIC_ENCRYPTION = 17
+    HMAC_SHA256 = 17
+    EXTERNAL_SYMMETRIC_ENCRYPTION = 18
 
   class ProtectionLevelValueValuesEnum(_messages.Enum):
     r"""ProtectionLevel to use when creating a CryptoKeyVersion based on this
@@ -1603,6 +1641,7 @@ class ImportCryptoKeyVersionRequest(_messages.Message):
       EC_SIGN_P384_SHA384: ECDSA on the NIST P-384 curve with a SHA384 digest.
       EC_SIGN_SECP256K1_SHA256: ECDSA on the non-NIST secp256k1 curve. This
         curve is only supported for HSM protection level.
+      HMAC_SHA256: HMAC-SHA256 signing with a 256 bit key.
       EXTERNAL_SYMMETRIC_ENCRYPTION: Algorithm representing symmetric
         encryption by an external key manager.
     """
@@ -1623,7 +1662,8 @@ class ImportCryptoKeyVersionRequest(_messages.Message):
     EC_SIGN_P256_SHA256 = 14
     EC_SIGN_P384_SHA384 = 15
     EC_SIGN_SECP256K1_SHA256 = 16
-    EXTERNAL_SYMMETRIC_ENCRYPTION = 17
+    HMAC_SHA256 = 17
+    EXTERNAL_SYMMETRIC_ENCRYPTION = 18
 
   algorithm = _messages.EnumField('AlgorithmValueValuesEnum', 1)
   importJob = _messages.StringField(2)
@@ -1975,6 +2015,181 @@ class LocationMetadata(_messages.Message):
   hsmAvailable = _messages.BooleanField(2)
 
 
+class MacSignRequest(_messages.Message):
+  r"""Request message for KeyManagementService.MacSign.
+
+  Fields:
+    data: Required. The data to sign. The MAC tag is computed over this data
+      field based on the specific algorithm.
+    dataCrc32c: Optional. An optional CRC32C checksum of the
+      MacSignRequest.data. If specified, KeyManagementService will verify the
+      integrity of the received MacSignRequest.data using this checksum.
+      KeyManagementService will report an error if the checksum verification
+      fails. If you receive a checksum error, your client should verify that
+      CRC32C(MacSignRequest.data) is equal to MacSignRequest.data_crc32c, and
+      if so, perform a limited number of retries. A persistent mismatch may
+      indicate an issue in your computation of the CRC32C checksum. Note: This
+      field is defined as int64 for reasons of compatibility across different
+      languages. However, it is a non-negative integer, which will never
+      exceed 2^32-1, and can be safely downconverted to uint32 in languages
+      that support this type.
+  """
+
+  data = _messages.BytesField(1)
+  dataCrc32c = _messages.IntegerField(2)
+
+
+class MacSignResponse(_messages.Message):
+  r"""Response message for KeyManagementService.MacSign.
+
+  Enums:
+    ProtectionLevelValueValuesEnum: The ProtectionLevel of the
+      CryptoKeyVersion used for signing.
+
+  Fields:
+    mac: The created signature.
+    macCrc32c: Integrity verification field. A CRC32C checksum of the returned
+      MacSignResponse.mac. An integrity check of MacSignResponse.mac can be
+      performed by computing the CRC32C checksum of MacSignResponse.mac and
+      comparing your results to this field. Discard the response in case of
+      non-matching checksum values, and perform a limited number of retries. A
+      persistent mismatch may indicate an issue in your computation of the
+      CRC32C checksum. Note: This field is defined as int64 for reasons of
+      compatibility across different languages. However, it is a non-negative
+      integer, which will never exceed 2^32-1, and can be safely downconverted
+      to uint32 in languages that support this type.
+    name: The resource name of the CryptoKeyVersion used for signing. Check
+      this field to verify that the intended resource was used for signing.
+    protectionLevel: The ProtectionLevel of the CryptoKeyVersion used for
+      signing.
+    verifiedDataCrc32c: Integrity verification field. A flag indicating
+      whether MacSignRequest.data_crc32c was received by KeyManagementService
+      and used for the integrity verification of the data. A false value of
+      this field indicates either that MacSignRequest.data_crc32c was left
+      unset or that it was not delivered to KeyManagementService. If you've
+      set MacSignRequest.data_crc32c but this field is still false, discard
+      the response and perform a limited number of retries.
+  """
+
+  class ProtectionLevelValueValuesEnum(_messages.Enum):
+    r"""The ProtectionLevel of the CryptoKeyVersion used for signing.
+
+    Values:
+      PROTECTION_LEVEL_UNSPECIFIED: Not specified.
+      SOFTWARE: Crypto operations are performed in software.
+      HSM: Crypto operations are performed in a Hardware Security Module.
+      EXTERNAL: Crypto operations are performed by an external key manager.
+    """
+    PROTECTION_LEVEL_UNSPECIFIED = 0
+    SOFTWARE = 1
+    HSM = 2
+    EXTERNAL = 3
+
+  mac = _messages.BytesField(1)
+  macCrc32c = _messages.IntegerField(2)
+  name = _messages.StringField(3)
+  protectionLevel = _messages.EnumField('ProtectionLevelValueValuesEnum', 4)
+  verifiedDataCrc32c = _messages.BooleanField(5)
+
+
+class MacVerifyRequest(_messages.Message):
+  r"""Request message for KeyManagementService.MacVerify.
+
+  Fields:
+    data: Required. The data used previously as a MacSignRequest.data to
+      generate the MAC tag.
+    dataCrc32c: Optional. An optional CRC32C checksum of the
+      MacVerifyRequest.data. If specified, KeyManagementService will verify
+      the integrity of the received MacVerifyRequest.data using this checksum.
+      KeyManagementService will report an error if the checksum verification
+      fails. If you receive a checksum error, your client should verify that
+      CRC32C(MacVerifyRequest.data) is equal to MacVerifyRequest.data_crc32c,
+      and if so, perform a limited number of retries. A persistent mismatch
+      may indicate an issue in your computation of the CRC32C checksum. Note:
+      This field is defined as int64 for reasons of compatibility across
+      different languages. However, it is a non-negative integer, which will
+      never exceed 2^32-1, and can be safely downconverted to uint32 in
+      languages that support this type.
+    mac: Required. The signature to verify.
+    macCrc32c: Optional. An optional CRC32C checksum of the
+      MacVerifyRequest.mac. If specified, KeyManagementService will verify the
+      integrity of the received MacVerifyRequest.mac using this checksum.
+      KeyManagementService will report an error if the checksum verification
+      fails. If you receive a checksum error, your client should verify that
+      CRC32C(MacVerifyRequest.tag) is equal to MacVerifyRequest.mac_crc32c,
+      and if so, perform a limited number of retries. A persistent mismatch
+      may indicate an issue in your computation of the CRC32C checksum. Note:
+      This field is defined as int64 for reasons of compatibility across
+      different languages. However, it is a non-negative integer, which will
+      never exceed 2^32-1, and can be safely downconverted to uint32 in
+      languages that support this type.
+  """
+
+  data = _messages.BytesField(1)
+  dataCrc32c = _messages.IntegerField(2)
+  mac = _messages.BytesField(3)
+  macCrc32c = _messages.IntegerField(4)
+
+
+class MacVerifyResponse(_messages.Message):
+  r"""Response message for KeyManagementService.MacVerify.
+
+  Enums:
+    ProtectionLevelValueValuesEnum: The ProtectionLevel of the
+      CryptoKeyVersion used for verification.
+
+  Fields:
+    name: The resource name of the CryptoKeyVersion used for verification.
+      Check this field to verify that the intended resource was used for
+      verification.
+    protectionLevel: The ProtectionLevel of the CryptoKeyVersion used for
+      verification.
+    success: This field indicates whether or not the verification operation
+      for MacVerifyRequest.mac over MacVerifyRequest.data was successful.
+    verifiedDataCrc32c: Integrity verification field. A flag indicating
+      whether MacVerifyRequest.data_crc32c was received by
+      KeyManagementService and used for the integrity verification of the
+      data. A false value of this field indicates either that
+      MacVerifyRequest.data_crc32c was left unset or that it was not delivered
+      to KeyManagementService. If you've set MacVerifyRequest.data_crc32c but
+      this field is still false, discard the response and perform a limited
+      number of retries.
+    verifiedMacCrc32c: Integrity verification field. A flag indicating whether
+      MacVerifyRequest.mac_crc32c was received by KeyManagementService and
+      used for the integrity verification of the data. A false value of this
+      field indicates either that MacVerifyRequest.mac_crc32c was left unset
+      or that it was not delivered to KeyManagementService. If you've set
+      MacVerifyRequest.mac_crc32c but this field is still false, discard the
+      response and perform a limited number of retries.
+    verifiedSuccessIntegrity: Integrity verification field. This value is used
+      for the integrity verification of [MacVerifyResponse.success]. If the
+      value of this field contradicts the value of
+      [MacVerifyResponse.success], discard the response and perform a limited
+      number of retries.
+  """
+
+  class ProtectionLevelValueValuesEnum(_messages.Enum):
+    r"""The ProtectionLevel of the CryptoKeyVersion used for verification.
+
+    Values:
+      PROTECTION_LEVEL_UNSPECIFIED: Not specified.
+      SOFTWARE: Crypto operations are performed in software.
+      HSM: Crypto operations are performed in a Hardware Security Module.
+      EXTERNAL: Crypto operations are performed by an external key manager.
+    """
+    PROTECTION_LEVEL_UNSPECIFIED = 0
+    SOFTWARE = 1
+    HSM = 2
+    EXTERNAL = 3
+
+  name = _messages.StringField(1)
+  protectionLevel = _messages.EnumField('ProtectionLevelValueValuesEnum', 2)
+  success = _messages.BooleanField(3)
+  verifiedDataCrc32c = _messages.BooleanField(4)
+  verifiedMacCrc32c = _messages.BooleanField(5)
+  verifiedSuccessIntegrity = _messages.BooleanField(6)
+
+
 class Policy(_messages.Message):
   r"""An Identity and Access Management (IAM) policy, which specifies access
   controls for Google Cloud resources. A `Policy` is a collection of
@@ -2108,6 +2323,7 @@ class PublicKey(_messages.Message):
       EC_SIGN_P384_SHA384: ECDSA on the NIST P-384 curve with a SHA384 digest.
       EC_SIGN_SECP256K1_SHA256: ECDSA on the non-NIST secp256k1 curve. This
         curve is only supported for HSM protection level.
+      HMAC_SHA256: HMAC-SHA256 signing with a 256 bit key.
       EXTERNAL_SYMMETRIC_ENCRYPTION: Algorithm representing symmetric
         encryption by an external key manager.
     """
@@ -2128,7 +2344,8 @@ class PublicKey(_messages.Message):
     EC_SIGN_P256_SHA256 = 14
     EC_SIGN_P384_SHA384 = 15
     EC_SIGN_SECP256K1_SHA256 = 16
-    EXTERNAL_SYMMETRIC_ENCRYPTION = 17
+    HMAC_SHA256 = 17
+    EXTERNAL_SYMMETRIC_ENCRYPTION = 18
 
   class ProtectionLevelValueValuesEnum(_messages.Enum):
     r"""The ProtectionLevel of the CryptoKeyVersion public key.

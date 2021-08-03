@@ -751,6 +751,8 @@
             "Maven package format.",
             "NPM package format.",
             "PyPI package format.",
+            "APT package format.",
+            "YUM package format.",
             "Python package format."
           ],
           "enum": [
@@ -759,6 +761,8 @@
             "MAVEN",
             "NPM",
             "PYPI",
+            "APT",
+            "YUM",
             "PYTHON"
           ]
         },

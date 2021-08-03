@@ -311,6 +311,7 @@ class Asset(_messages.Message):
       character minimum, 63 characters maximum 2. only contains letters,
       digits, underscore and hyphen 3. starts with a letter if length == 1,
       starts with a letter or underscore if length > 1
+    owner: The owner of the asset, set by the system.
     state: State of the asset
     updateTime: Output only. Last update time.
   """
@@ -512,84 +513,13 @@ class Asset(_messages.Message):
   metadata = _messages.MessageField('MetadataValue', 8)
   metadataInfo = _messages.MessageField('MetadataInfoValue', 9)
   name = _messages.StringField(10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  updateTime = _messages.StringField(12)
+  owner = _messages.MessageField('Owner', 11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  updateTime = _messages.StringField(13)
 
 
-class AssetTransformation(_messages.Message):
-  r"""An asset transformation resource. Asset transformation is a read-only
-  resource and is nested under an asset. It contains the status of the
-  transformations associated with an Asset. Each field contains the current
-  status of transformation execution, last invocation time and any error
-  information for the last execution.
-
-  Enums:
-    StateValueValuesEnum: State of the asset transformation.
-
-  Messages:
-    LabelsValue: The labels associated with this resource. Each label is a
-      key-value pair.
-
-  Fields:
-    createTime: Output only. The creation time.
-    labels: The labels associated with this resource. Each label is a key-
-      value pair.
-    lastRunStatus: Status of the last asset transformation run.
-    lastRunTime: Output only. Time at which the asset transformation was last
-      run.
-    name: The resource name of the asset transformation, in the following
-      form: `projects/{project}/locations/{location}/assetTypes/{type}/assets/
-      {asset}/transformations/{transformation}`.
-    state: State of the asset transformation.
-    updateTime: Output only. The last-modified time.
-  """
-
-  class StateValueValuesEnum(_messages.Enum):
-    r"""State of the asset transformation.
-
-    Values:
-      STATE_UNKNOWN: <no description>
-      QUEUED: <no description>
-      RUNNING: <no description>
-      COMPLETED: <no description>
-    """
-    STATE_UNKNOWN = 0
-    QUEUED = 1
-    RUNNING = 2
-    COMPLETED = 3
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LabelsValue(_messages.Message):
-    r"""The labels associated with this resource. Each label is a key-value
-    pair.
-
-    Messages:
-      AdditionalProperty: An additional property for a LabelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a LabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  createTime = _messages.StringField(1)
-  labels = _messages.MessageField('LabelsValue', 2)
-  lastRunStatus = _messages.MessageField('Status', 3)
-  lastRunTime = _messages.StringField(4)
-  name = _messages.StringField(5)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
-  updateTime = _messages.StringField(7)
+class AssetChange(_messages.Message):
+  r"""Specifies the asset changes that should trigger notifications."""
 
 
 class AssetType(_messages.Message):
@@ -612,8 +542,6 @@ class AssetType(_messages.Message):
     LinkSetConfigsValue: Mapping of a collection of link sets to the set
       configuration.
     MetadataConfigsValue: Mapping of field name to its configuration.
-    TransformationConfigsValue: Mapping of a transformation name to its
-      configuration.
 
   Fields:
     annotationSetConfigs: Mapping of annotationSet ID to its configuration.
@@ -640,8 +568,6 @@ class AssetType(_messages.Message):
     sortOrder: Specifies sort order for all assets of the type. If not
       specified, assets are sorted in reverse create_time order (newest
       first).
-    transformationConfigs: Mapping of a transformation name to its
-      configuration.
     updateTime: Output only. The last-modified time.
   """
 
@@ -803,32 +729,6 @@ class AssetType(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class TransformationConfigsValue(_messages.Message):
-    r"""Mapping of a transformation name to its configuration.
-
-    Messages:
-      AdditionalProperty: An additional property for a
-        TransformationConfigsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type
-        TransformationConfigsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a TransformationConfigsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A TransformationConfig attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('TransformationConfig', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
   annotationSetConfigs = _messages.MessageField('AnnotationSetConfigsValue', 1)
   createTime = _messages.StringField(2)
   indexedFieldConfigs = _messages.MessageField('IndexedFieldConfigsValue', 3)
@@ -838,8 +738,7 @@ class AssetType(_messages.Message):
   metadataConfigs = _messages.MessageField('MetadataConfigsValue', 7)
   name = _messages.StringField(8)
   sortOrder = _messages.MessageField('SortOrderConfig', 9)
-  transformationConfigs = _messages.MessageField('TransformationConfigsValue', 10)
-  updateTime = _messages.StringField(11)
+  updateTime = _messages.StringField(10)
 
 
 class AuthorizationLoggingOptions(_messages.Message):
@@ -1827,20 +1726,6 @@ class ListAnnotationsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
-class ListAssetTransformationsResponse(_messages.Message):
-  r"""Response message for
-  AssetTransformationsService.ListAssetTransformations.
-
-  Fields:
-    assetTransformations: The list of transformations.
-    nextPageToken: Token to retrieve the next page of results, or empty if
-      there are no more results in the list.
-  """
-
-  assetTransformations = _messages.MessageField('AssetTransformation', 1, repeated=True)
-  nextPageToken = _messages.StringField(2)
-
-
 class ListAssetTypesResponse(_messages.Message):
   r"""Response message for AssetTypesService.ListAssetTypes.
 
@@ -2122,6 +2007,28 @@ class MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsAnnotationsDelete
   name = _messages.StringField(2, required=True)
 
 
+class MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsAnnotationsGetIamPolicyRequest(_messages.Message):
+  r"""A MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsAnnotationsGe
+  tIamPolicyRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The policy format version to be
+      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected. Requests for policies with any conditional
+      bindings must specify version 3. Policies without any conditional
+      bindings may specify any valid value or leave the field unset. To learn
+      which resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
 class MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsAnnotationsGetRequest(_messages.Message):
   r"""A MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsAnnotationsGe
   tRequest object.
@@ -2182,39 +2089,60 @@ class MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsAnnotationsPatchR
   updateMask = _messages.StringField(4)
 
 
-class MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsCreateRequest(_messages.Message):
-  r"""A MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsCreateRequest
+class MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsAnnotationsSetIamPolicyRequest(_messages.Message):
+  r"""A MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsAnnotationsSe
+  tIamPolicyRequest object.
+
+  Fields:
+    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
+      to be passed as the request body.
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsAnnotationsTestIamPermissionsRequest(_messages.Message):
+  r"""A MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsAnnotationsTe
+  stIamPermissionsRequest object.
+
+  Fields:
+    googleIamV1TestIamPermissionsRequest: A
+      GoogleIamV1TestIamPermissionsRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+  """
+
+  googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsGetIamPolicyRequest(_messages.Message):
+  r"""A
+  MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsGetIamPolicyRequest
   object.
 
   Fields:
-    annotationSet: A AnnotationSet resource to be passed as the request body.
-    annotationSetId: Required. The ID of the annotationSet resource to be
-      created.
-    parent: Required. The parent resource where this AnnotationSet will be
-      created. Format: `projects/{project}/locations/{location}/assetTypes/{as
-      set_type}/assets/{asset}`
+    options_requestedPolicyVersion: Optional. The policy format version to be
+      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected. Requests for policies with any conditional
+      bindings must specify version 3. Policies without any conditional
+      bindings may specify any valid value or leave the field unset. To learn
+      which resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
   """
 
-  annotationSet = _messages.MessageField('AnnotationSet', 1)
-  annotationSetId = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-
-
-class MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsDeleteRequest(_messages.Message):
-  r"""A MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsDeleteRequest
-  object.
-
-  Fields:
-    etag: The current etag of the annotationSet. If an etag is provided and
-      does not match the current etag of the annotationSet, deletion will be
-      blocked and a FAILED_PRECONDITION error will be returned.
-    name: Required. The name of the annotationSet to delete. Format: `projects
-      /{project}/locations/{location}/assetTypes/{asset_type}/assets/{asset}/a
-      nnotationSets/{annotation_set}`
-  """
-
-  etag = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
 
 
 class MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsGetRequest(_messages.Message):
@@ -2255,27 +2183,38 @@ class MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsListRequest(_mess
   parent = _messages.StringField(4, required=True)
 
 
-class MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsPatchRequest(_messages.Message):
-  r"""A MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsPatchRequest
+class MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsSetIamPolicyRequest(_messages.Message):
+  r"""A
+  MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsSetIamPolicyRequest
   object.
 
   Fields:
-    annotationSet: A AnnotationSet resource to be passed as the request body.
-    name: A user-specified resource name of the annotationSet `projects/{proje
-      ct}/locations/{location}/assetTypes/{asset_type}/assets/{asset}/annotati
-      onSets/{annotation_set}`. Here {annotation_set} is a resource id.
-      Detailed rules for a resource id are: 1. 1 character minimum, 63
-      characters maximum 2. only contains letters, digits, underscore and
-      hyphen 3. starts with a letter if length == 1, starts with a letter or
-      underscore if length > 1
-    oldUpdateMask: this is temporary
-    updateMask: Required. Comma-separated list of fields to be updated.
+    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
+      to be passed as the request body.
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
   """
 
-  annotationSet = _messages.MessageField('AnnotationSet', 1)
-  name = _messages.StringField(2, required=True)
-  oldUpdateMask = _messages.StringField(3)
-  updateMask = _messages.StringField(4)
+  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsTestIamPermissionsRequest(_messages.Message):
+  r"""A MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsTestIamPermis
+  sionsRequest object.
+
+  Fields:
+    googleIamV1TestIamPermissionsRequest: A
+      GoogleIamV1TestIamPermissionsRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+  """
+
+  googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
+  resource = _messages.StringField(2, required=True)
 
 
 class MediaassetProjectsLocationsAssetTypesAssetsCreateRequest(_messages.Message):
@@ -2444,99 +2383,6 @@ class MediaassetProjectsLocationsAssetTypesAssetsSetIamPolicyRequest(_messages.M
 class MediaassetProjectsLocationsAssetTypesAssetsTestIamPermissionsRequest(_messages.Message):
   r"""A MediaassetProjectsLocationsAssetTypesAssetsTestIamPermissionsRequest
   object.
-
-  Fields:
-    googleIamV1TestIamPermissionsRequest: A
-      GoogleIamV1TestIamPermissionsRequest resource to be passed as the
-      request body.
-    resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
-  """
-
-  googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
-  resource = _messages.StringField(2, required=True)
-
-
-class MediaassetProjectsLocationsAssetTypesAssetsTransformationsGetIamPolicyRequest(_messages.Message):
-  r"""A MediaassetProjectsLocationsAssetTypesAssetsTransformationsGetIamPolicy
-  Request object.
-
-  Fields:
-    options_requestedPolicyVersion: Optional. The policy format version to be
-      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected. Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset. To learn
-      which resources support conditions in their IAM policies, see the [IAM
-      documentation](https://cloud.google.com/iam/help/conditions/resource-
-      policies).
-    resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
-  """
-
-  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  resource = _messages.StringField(2, required=True)
-
-
-class MediaassetProjectsLocationsAssetTypesAssetsTransformationsGetRequest(_messages.Message):
-  r"""A MediaassetProjectsLocationsAssetTypesAssetsTransformationsGetRequest
-  object.
-
-  Fields:
-    name: Required. The name of the asset transformation to retrieve, in the
-      following form: `projects/{project}/locations/{location}/assetTypes/{typ
-      e}/assets/{asset}/transformations/{transformation}`.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class MediaassetProjectsLocationsAssetTypesAssetsTransformationsListRequest(_messages.Message):
-  r"""A MediaassetProjectsLocationsAssetTypesAssetsTransformationsListRequest
-  object.
-
-  Fields:
-    filter: The filter to apply to list results.
-    orderBy: Specifies the ordering of results following syntax at
-      https://cloud.google.com/apis/design/design_patterns#sorting_order.
-    pageSize: The maximum number of items to return. If unspecified, server
-      will pick an appropriate default. Server may return fewer items than
-      requested. A caller should only rely on response's next_page_token to
-      determine if there are more realms left to be queried.
-    pageToken: The next_page_token value returned from a previous List
-      request, if any.
-    parent: Required. The parent resource name, in the following form: `projec
-      ts/{project}/locations/{location}/assetTypes/{type}/assets/{asset}`.
-  """
-
-  filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
-
-
-class MediaassetProjectsLocationsAssetTypesAssetsTransformationsSetIamPolicyRequest(_messages.Message):
-  r"""A MediaassetProjectsLocationsAssetTypesAssetsTransformationsSetIamPolicy
-  Request object.
-
-  Fields:
-    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
-      to be passed as the request body.
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
-  """
-
-  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
-  resource = _messages.StringField(2, required=True)
-
-
-class MediaassetProjectsLocationsAssetTypesAssetsTransformationsTestIamPermissionsRequest(_messages.Message):
-  r"""A MediaassetProjectsLocationsAssetTypesAssetsTransformationsTestIamPermi
-  ssionsRequest object.
 
   Fields:
     googleIamV1TestIamPermissionsRequest: A
@@ -3292,6 +3138,8 @@ class NotificationCriteria(_messages.Message):
   Fields:
     annotationChange: Specifies the annotations nested under the parent
       AssetType that should trigger notifications.
+    assetChange: Specifies the asset changes that should trigger
+      notifications.
     derivedAssetChange: Specifies the transformer invocations triggered by the
       derived asset rule that should publish Pub/Sub messages on event
       changes.
@@ -3301,8 +3149,9 @@ class NotificationCriteria(_messages.Message):
   """
 
   annotationChange = _messages.MessageField('AnnotationChange', 1)
-  derivedAssetChange = _messages.MessageField('DerivedAssetChange', 2)
-  transformationChange = _messages.MessageField('TransformationChange', 3)
+  assetChange = _messages.MessageField('AssetChange', 2)
+  derivedAssetChange = _messages.MessageField('DerivedAssetChange', 3)
+  transformationChange = _messages.MessageField('TransformationChange', 4)
 
 
 class NotificationDestination(_messages.Message):
@@ -3462,6 +3311,18 @@ class Output(_messages.Message):
   type = _messages.StringField(1)
 
 
+class Owner(_messages.Message):
+  r"""The owner of the asset, set by the system.
+
+  Fields:
+    linkId: The link ID in the owner asset.
+    ownerAsset: The name of the owner asset.
+  """
+
+  linkId = _messages.StringField(1)
+  ownerAsset = _messages.StringField(2)
+
+
 class PubSubDestination(_messages.Message):
   r"""Specifies the pub/sub destination to send the notifications to.
 
@@ -3530,95 +3391,8 @@ class Rule(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 3)
   name = _messages.StringField(4)
   notification = _messages.MessageField('NotificationConfig', 5)
-  transformation = _messages.MessageField('RuleTransformationConfig', 6)
+  transformation = _messages.MessageField('TransformationConfig', 6)
   updateTime = _messages.StringField(7)
-
-
-class RuleTransformationConfig(_messages.Message):
-  r"""A RuleTransformationConfig configures the associated AssetType to invoke
-  transformers on its Assets.
-
-  Messages:
-    InputsValue: Required. Key-value pairs representing input parameters to
-      the transformers. The key maps to the transformer input parameter name.
-      The value is interpreted as a literal or a path within asset if it's
-      prefixed by "$asset.", e.g. "$asset.file.url".
-    OutputsValue: Required. Key-value pairs representing output parameters
-      from the transformers. The key maps to the transformer output parameter
-      name. The value will be the path to the metadata in the asset to which
-      this output should be assigned.
-
-  Fields:
-    inputs: Required. Key-value pairs representing input parameters to the
-      transformers. The key maps to the transformer input parameter name. The
-      value is interpreted as a literal or a path within asset if it's
-      prefixed by "$asset.", e.g. "$asset.file.url".
-    outputs: Required. Key-value pairs representing output parameters from the
-      transformers. The key maps to the transformer output parameter name. The
-      value will be the path to the metadata in the asset to which this output
-      should be assigned.
-    transformer: Required. Reference to a transformer to execute, in the
-      following form:
-      `projects/{project}/locations/{location}/transformers/{name}`.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class InputsValue(_messages.Message):
-    r"""Required. Key-value pairs representing input parameters to the
-    transformers. The key maps to the transformer input parameter name. The
-    value is interpreted as a literal or a path within asset if it's prefixed
-    by "$asset.", e.g. "$asset.file.url".
-
-    Messages:
-      AdditionalProperty: An additional property for a InputsValue object.
-
-    Fields:
-      additionalProperties: Properties of the object.
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a InputsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A extra_types.JsonValue attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('extra_types.JsonValue', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class OutputsValue(_messages.Message):
-    r"""Required. Key-value pairs representing output parameters from the
-    transformers. The key maps to the transformer output parameter name. The
-    value will be the path to the metadata in the asset to which this output
-    should be assigned.
-
-    Messages:
-      AdditionalProperty: An additional property for a OutputsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type OutputsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a OutputsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  inputs = _messages.MessageField('InputsValue', 1)
-  outputs = _messages.MessageField('OutputsValue', 2)
-  transformer = _messages.StringField(3)
 
 
 class SortOrderConfig(_messages.Message):
@@ -3761,24 +3535,25 @@ class TransformationChange(_messages.Message):
 
 
 class TransformationConfig(_messages.Message):
-  r"""A TransformationConfig object.
+  r"""A TransformationConfig configures the associated AssetType to invoke
+  transformers on its Assets.
 
   Messages:
-    InputsValue: Key-value pairs representing input parameters to the
+    InputsValue: Required. Key-value pairs representing input parameters to
+      the transformers. The key maps to the transformer input parameter name.
+      The value is interpreted as a literal or a path within asset if it's
+      prefixed by "$asset.", e.g. "$asset.file.url".
+    OutputsValue: Required. Key-value pairs representing output parameters
+      from the transformers. The key maps to the transformer output parameter
+      name. The value will be the path to the metadata in the asset to which
+      this output should be assigned.
+
+  Fields:
+    inputs: Required. Key-value pairs representing input parameters to the
       transformers. The key maps to the transformer input parameter name. The
       value is interpreted as a literal or a path within asset if it's
       prefixed by "$asset.", e.g. "$asset.file.url".
-    OutputsValue: Key-value pairs representing output parameters from the
-      transformers. The key maps to the transformer output parameter name. The
-      value will be the path to the metadata in the asset to which this output
-      should be assigned.
-
-  Fields:
-    inputs: Key-value pairs representing input parameters to the transformers.
-      The key maps to the transformer input parameter name. The value is
-      interpreted as a literal or a path within asset if it's prefixed by
-      "$asset.", e.g. "$asset.file.url".
-    outputs: Key-value pairs representing output parameters from the
+    outputs: Required. Key-value pairs representing output parameters from the
       transformers. The key maps to the transformer output parameter name. The
       value will be the path to the metadata in the asset to which this output
       should be assigned.
@@ -3789,10 +3564,10 @@ class TransformationConfig(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class InputsValue(_messages.Message):
-    r"""Key-value pairs representing input parameters to the transformers. The
-    key maps to the transformer input parameter name. The value is interpreted
-    as a literal or a path within asset if it's prefixed by "$asset.", e.g.
-    "$asset.file.url".
+    r"""Required. Key-value pairs representing input parameters to the
+    transformers. The key maps to the transformer input parameter name. The
+    value is interpreted as a literal or a path within asset if it's prefixed
+    by "$asset.", e.g. "$asset.file.url".
 
     Messages:
       AdditionalProperty: An additional property for a InputsValue object.
@@ -3816,10 +3591,10 @@ class TransformationConfig(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class OutputsValue(_messages.Message):
-    r"""Key-value pairs representing output parameters from the transformers.
-    The key maps to the transformer output parameter name. The value will be
-    the path to the metadata in the asset to which this output should be
-    assigned.
+    r"""Required. Key-value pairs representing output parameters from the
+    transformers. The key maps to the transformer output parameter name. The
+    value will be the path to the metadata in the asset to which this output
+    should be assigned.
 
     Messages:
       AdditionalProperty: An additional property for a OutputsValue object.
@@ -3887,18 +3662,10 @@ class Transformer(_messages.Message):
   Messages:
     InputValue: Mapping of the input parameter name to its input definition.
       Will be replacing inputs in future.
-    InputsValue: Mapping of the input parameter name to its type. The type
-      could be one of: - Primitive types ("string", "number", "bool") - Custom
-      complex type. Format: "p/p/l/l/complexTypes/*" - Collections of the
-      above - list(), dict()
     LabelsValue: The labels associated with this resource. Each label is a
       key-value pair.
     OutputValue: Mapping of the output parameter name to its output
       definition. Will be replacing outputs in future.
-    OutputsValue: Mapping of the output parameter name to its type. The type
-      could be one of: - Primitive types ("string", "number", "bool") - Custom
-      complex type. Format: "p/p/l/l/complexTypes/*" - Collections of the
-      above - list(), dict()
 
   Fields:
     createTime: Output only. The creation time.
@@ -3906,10 +3673,6 @@ class Transformer(_messages.Message):
       invocation through the documented Transformer protocol.
     input: Mapping of the input parameter name to its input definition. Will
       be replacing inputs in future.
-    inputs: Mapping of the input parameter name to its type. The type could be
-      one of: - Primitive types ("string", "number", "bool") - Custom complex
-      type. Format: "p/p/l/l/complexTypes/*" - Collections of the above -
-      list(), dict()
     labels: The labels associated with this resource. Each label is a key-
       value pair.
     name: The resource name of the transformer, in the following form:
@@ -3920,10 +3683,6 @@ class Transformer(_messages.Message):
       == 1, starts with a letter or underscore if length > 1
     output: Mapping of the output parameter name to its output definition.
       Will be replacing outputs in future.
-    outputs: Mapping of the output parameter name to its type. The type could
-      be one of: - Primitive types ("string", "number", "bool") - Custom
-      complex type. Format: "p/p/l/l/complexTypes/*" - Collections of the
-      above - list(), dict()
     updateTime: Output only. The last-modified time.
   """
 
@@ -3949,33 +3708,6 @@ class Transformer(_messages.Message):
 
       key = _messages.StringField(1)
       value = _messages.MessageField('Input', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class InputsValue(_messages.Message):
-    r"""Mapping of the input parameter name to its type. The type could be one
-    of: - Primitive types ("string", "number", "bool") - Custom complex type.
-    Format: "p/p/l/l/complexTypes/*" - Collections of the above - list(),
-    dict()
-
-    Messages:
-      AdditionalProperty: An additional property for a InputsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type InputsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a InputsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
@@ -4029,42 +3761,13 @@ class Transformer(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class OutputsValue(_messages.Message):
-    r"""Mapping of the output parameter name to its type. The type could be
-    one of: - Primitive types ("string", "number", "bool") - Custom complex
-    type. Format: "p/p/l/l/complexTypes/*" - Collections of the above -
-    list(), dict()
-
-    Messages:
-      AdditionalProperty: An additional property for a OutputsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type OutputsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a OutputsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
   createTime = _messages.StringField(1)
   endpoint = _messages.StringField(2)
   input = _messages.MessageField('InputValue', 3)
-  inputs = _messages.MessageField('InputsValue', 4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  output = _messages.MessageField('OutputValue', 7)
-  outputs = _messages.MessageField('OutputsValue', 8)
-  updateTime = _messages.StringField(9)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  output = _messages.MessageField('OutputValue', 6)
+  updateTime = _messages.StringField(7)
 
 
 class TriggerActionRequest(_messages.Message):

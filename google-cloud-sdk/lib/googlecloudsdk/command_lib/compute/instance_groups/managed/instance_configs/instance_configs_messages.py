@@ -24,6 +24,7 @@ import re
 from googlecloudsdk.api_lib.compute import path_simplifier
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.compute.instance_groups.flags import AutoDeleteFlag
+from googlecloudsdk.command_lib.compute.instance_groups.flags import STATEFUL_IP_DEFAULT_INTERFACE_NAME
 from googlecloudsdk.command_lib.compute.instance_groups.managed.instance_configs import instance_disk_getter
 import six
 
@@ -61,14 +62,14 @@ def MakePreservedStateDiskEntry(messages, stateful_disk_data, disk_getter):
       raise exceptions.BadArgumentException('stateful_disk', error_message)
     source = disk.source
     mode = stateful_disk_data.get('mode') or disk.mode
-  preserved_disk = \
+  preserved_disk = (
       messages.PreservedStatePreservedDisk(
           autoDelete=(stateful_disk_data.get('auto-delete') or
                       AutoDeleteFlag.NEVER).GetAutoDeleteEnumValue(
                           messages.PreservedStatePreservedDisk
                           .AutoDeleteValueValuesEnum),
           source=source,
-          mode=GetMode(messages, mode))
+          mode=GetMode(messages, mode)))
   return messages.PreservedState.DisksValue.AdditionalProperty(
       key=stateful_disk_data.get('device-name'), value=preserved_disk)
 
@@ -120,14 +121,16 @@ def PatchPreservedStateNetworkIpEntry(messages, stateful_ip_to_patch,
 
 def MakePreservedStateInternalNetworkIpEntry(messages, stateful_ip):
   return messages.PreservedState.InternalIPsValue.AdditionalProperty(
-      key=stateful_ip.get('interface-name'),
+      key=stateful_ip.get('interface-name',
+                          STATEFUL_IP_DEFAULT_INTERFACE_NAME),
       value=_MakePreservedStateNetworkIpEntry(messages, stateful_ip)
   )
 
 
 def MakePreservedStateExternalNetworkIpEntry(messages, stateful_ip):
   return messages.PreservedState.ExternalIPsValue.AdditionalProperty(
-      key=stateful_ip.get('interface-name'),
+      key=stateful_ip.get('interface-name',
+                          STATEFUL_IP_DEFAULT_INTERFACE_NAME),
       value=_MakePreservedStateNetworkIpEntry(messages, stateful_ip)
   )
 
@@ -239,25 +242,25 @@ def CallCreateInstances(holder, igm_ref, per_instance_config_message):
   messages = holder.client.messages
   if igm_ref.Collection() == 'compute.instanceGroupManagers':
     service = holder.client.apitools_client.instanceGroupManagers
-    request = messages \
-      .ComputeInstanceGroupManagersCreateInstancesRequest(
-          instanceGroupManager=igm_ref.Name(),
-          instanceGroupManagersCreateInstancesRequest=
-          messages.InstanceGroupManagersCreateInstancesRequest(
-              instances=[per_instance_config_message]),
-          project=igm_ref.project,
-          zone=igm_ref.zone)
+    request = (
+        messages.ComputeInstanceGroupManagersCreateInstancesRequest(
+            instanceGroupManager=igm_ref.Name(),
+            instanceGroupManagersCreateInstancesRequest=
+            messages.InstanceGroupManagersCreateInstancesRequest(
+                instances=[per_instance_config_message]),
+            project=igm_ref.project,
+            zone=igm_ref.zone))
     operation_collection = 'compute.zoneOperations'
   elif igm_ref.Collection() == 'compute.regionInstanceGroupManagers':
     service = holder.client.apitools_client.regionInstanceGroupManagers
-    request = messages \
-      .ComputeRegionInstanceGroupManagersCreateInstancesRequest(
-          instanceGroupManager=igm_ref.Name(),
-          regionInstanceGroupManagersCreateInstancesRequest=
-          messages.RegionInstanceGroupManagersCreateInstancesRequest(
-              instances=[per_instance_config_message]),
-          project=igm_ref.project,
-          region=igm_ref.region)
+    request = (
+        messages.ComputeRegionInstanceGroupManagersCreateInstancesRequest(
+            instanceGroupManager=igm_ref.Name(),
+            regionInstanceGroupManagersCreateInstancesRequest=
+            messages.RegionInstanceGroupManagersCreateInstancesRequest(
+                instances=[per_instance_config_message]),
+            project=igm_ref.project,
+            region=igm_ref.region))
     operation_collection = 'compute.regionOperations'
   else:
     raise ValueError('Unknown reference type {0}'.format(igm_ref.Collection()))

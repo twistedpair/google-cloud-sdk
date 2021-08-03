@@ -1943,7 +1943,7 @@ class ResourceRecordSet(_messages.Message):
     routingPolicy: Configures dynamic query responses based on geo location of
       querying user or a weighted round robin based routing policy. A
       ResourceRecordSet should only have either rrdata (static) or
-      routing_policy(dynamic). An error is returned otherwise.
+      routing_policy (dynamic). An error is returned otherwise.
     rrdatas: As defined in RFC 1035 (section 5) and RFC 1034 (section 3.6.1)
       -- see examples.
     signatureRrdatas: As defined in RFC 4034 (section 3.2).

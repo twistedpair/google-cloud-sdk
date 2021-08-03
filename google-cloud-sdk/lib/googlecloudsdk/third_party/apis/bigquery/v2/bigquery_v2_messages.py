@@ -703,6 +703,8 @@ class CsvOptions(_messages.Message):
       first byte of the encoded string to split the data in its raw, binary
       state. BigQuery also supports the escape sequence "\t" to specify a tab
       separator. The default value is a comma (',').
+    null_marker: [Optional] An custom string that will represent a NULL value
+      in CSV import data.
     quote: [Optional] The value that is used to quote data sections in a CSV
       file. BigQuery converts the string to ISO-8859-1 encoding, and then uses
       the first byte of the encoded string to split the data in its raw,
@@ -728,8 +730,9 @@ class CsvOptions(_messages.Message):
   allowQuotedNewlines = _messages.BooleanField(2)
   encoding = _messages.StringField(3)
   fieldDelimiter = _messages.StringField(4)
-  quote = _messages.StringField(5, default='"')
-  skipLeadingRows = _messages.IntegerField(6)
+  null_marker = _messages.StringField(5)
+  quote = _messages.StringField(6, default='"')
+  skipLeadingRows = _messages.IntegerField(7)
 
 
 class Dataset(_messages.Message):
@@ -786,6 +789,8 @@ class Dataset(_messages.Message):
       format projectId:datasetId. The dataset name without the project name is
       given in the datasetId field. When creating a new dataset, leave this
       field blank, and instead specify the datasetId field.
+    isCaseInsensitive: [Optional] Indicates if table names are case
+      insensitive in the dataset.
     kind: [Output-only] The resource type.
     labels: The labels associated with this dataset. You can use these to
       organize and group your datasets. You can set this property when
@@ -892,12 +897,13 @@ class Dataset(_messages.Message):
   etag = _messages.StringField(8)
   friendlyName = _messages.StringField(9)
   id = _messages.StringField(10)
-  kind = _messages.StringField(11, default='bigquery#dataset')
-  labels = _messages.MessageField('LabelsValue', 12)
-  lastModifiedTime = _messages.IntegerField(13)
-  location = _messages.StringField(14)
-  satisfiesPZS = _messages.BooleanField(15)
-  selfLink = _messages.StringField(16)
+  isCaseInsensitive = _messages.BooleanField(11)
+  kind = _messages.StringField(12, default='bigquery#dataset')
+  labels = _messages.MessageField('LabelsValue', 13)
+  lastModifiedTime = _messages.IntegerField(14)
+  location = _messages.StringField(15)
+  satisfiesPZS = _messages.BooleanField(16)
+  selfLink = _messages.StringField(17)
 
 
 class DatasetAccessEntry(_messages.Message):
@@ -3221,6 +3227,8 @@ class TableFieldSchema(_messages.Message):
   Fields:
     categories: [Optional] The categories attached to this field, used for
       field-level access control.
+    collationSpec: Optional. Collation specification of the field. It only can
+      be set on string type field.
     description: [Optional] The field description. The maximum length is 1,024
       characters.
     fields: [Optional] Describes the nested schema fields if the type property
@@ -3287,15 +3295,16 @@ class TableFieldSchema(_messages.Message):
     names = _messages.StringField(1, repeated=True)
 
   categories = _messages.MessageField('CategoriesValue', 1)
-  description = _messages.StringField(2)
-  fields = _messages.MessageField('TableFieldSchema', 3, repeated=True)
-  maxLength = _messages.IntegerField(4)
-  mode = _messages.StringField(5)
-  name = _messages.StringField(6)
-  policyTags = _messages.MessageField('PolicyTagsValue', 7)
-  precision = _messages.IntegerField(8)
-  scale = _messages.IntegerField(9)
-  type = _messages.StringField(10)
+  collationSpec = _messages.StringField(2)
+  description = _messages.StringField(3)
+  fields = _messages.MessageField('TableFieldSchema', 4, repeated=True)
+  maxLength = _messages.IntegerField(5)
+  mode = _messages.StringField(6)
+  name = _messages.StringField(7)
+  policyTags = _messages.MessageField('PolicyTagsValue', 8)
+  precision = _messages.IntegerField(9)
+  scale = _messages.IntegerField(10)
+  type = _messages.StringField(11)
 
 
 class TableList(_messages.Message):

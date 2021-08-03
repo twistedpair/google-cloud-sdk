@@ -40,16 +40,19 @@ class SecuritycenterV1(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.folders_assets = self.FoldersAssetsService(self)
+    self.folders_muteConfigs = self.FoldersMuteConfigsService(self)
     self.folders_sources_findings = self.FoldersSourcesFindingsService(self)
     self.folders_sources = self.FoldersSourcesService(self)
     self.folders = self.FoldersService(self)
     self.organizations_assets = self.OrganizationsAssetsService(self)
+    self.organizations_muteConfigs = self.OrganizationsMuteConfigsService(self)
     self.organizations_notificationConfigs = self.OrganizationsNotificationConfigsService(self)
     self.organizations_operations = self.OrganizationsOperationsService(self)
     self.organizations_sources_findings = self.OrganizationsSourcesFindingsService(self)
     self.organizations_sources = self.OrganizationsSourcesService(self)
     self.organizations = self.OrganizationsService(self)
     self.projects_assets = self.ProjectsAssetsService(self)
+    self.projects_muteConfigs = self.ProjectsMuteConfigsService(self)
     self.projects_sources_findings = self.ProjectsSourcesFindingsService(self)
     self.projects_sources = self.ProjectsSourcesService(self)
     self.projects = self.ProjectsService(self)
@@ -145,6 +148,151 @@ class SecuritycenterV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class FoldersMuteConfigsService(base_api.BaseApiService):
+    """Service class for the folders_muteConfigs resource."""
+
+    _NAME = 'folders_muteConfigs'
+
+    def __init__(self, client):
+      super(SecuritycenterV1.FoldersMuteConfigsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a mute config.
+
+      Args:
+        request: (SecuritycenterFoldersMuteConfigsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudSecuritycenterV1MuteConfig) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/folders/{foldersId}/muteConfigs',
+        http_method='POST',
+        method_id='securitycenter.folders.muteConfigs.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/muteConfigs',
+        request_field='googleCloudSecuritycenterV1MuteConfig',
+        request_type_name='SecuritycenterFoldersMuteConfigsCreateRequest',
+        response_type_name='GoogleCloudSecuritycenterV1MuteConfig',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes an existing mute config.
+
+      Args:
+        request: (SecuritycenterFoldersMuteConfigsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/folders/{foldersId}/muteConfigs/{muteConfigsId}',
+        http_method='DELETE',
+        method_id='securitycenter.folders.muteConfigs.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='SecuritycenterFoldersMuteConfigsDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a mute config.
+
+      Args:
+        request: (SecuritycenterFoldersMuteConfigsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudSecuritycenterV1MuteConfig) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/folders/{foldersId}/muteConfigs/{muteConfigsId}',
+        http_method='GET',
+        method_id='securitycenter.folders.muteConfigs.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='SecuritycenterFoldersMuteConfigsGetRequest',
+        response_type_name='GoogleCloudSecuritycenterV1MuteConfig',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists mute configs.
+
+      Args:
+        request: (SecuritycenterFoldersMuteConfigsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListMuteConfigsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/folders/{foldersId}/muteConfigs',
+        http_method='GET',
+        method_id='securitycenter.folders.muteConfigs.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/muteConfigs',
+        request_field='',
+        request_type_name='SecuritycenterFoldersMuteConfigsListRequest',
+        response_type_name='ListMuteConfigsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a mute config.
+
+      Args:
+        request: (SecuritycenterFoldersMuteConfigsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudSecuritycenterV1MuteConfig) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/folders/{foldersId}/muteConfigs/{muteConfigsId}',
+        http_method='PATCH',
+        method_id='securitycenter.folders.muteConfigs.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='googleCloudSecuritycenterV1MuteConfig',
+        request_type_name='SecuritycenterFoldersMuteConfigsPatchRequest',
+        response_type_name='GoogleCloudSecuritycenterV1MuteConfig',
+        supports_download=False,
+    )
+
   class FoldersSourcesFindingsService(base_api.BaseApiService):
     """Service class for the folders_sources_findings resource."""
 
@@ -232,6 +380,33 @@ class SecuritycenterV1(base_api.BaseApiClient):
         relative_path='v1/{+name}',
         request_field='finding',
         request_type_name='SecuritycenterFoldersSourcesFindingsPatchRequest',
+        response_type_name='Finding',
+        supports_download=False,
+    )
+
+    def SetMute(self, request, global_params=None):
+      r"""Updates the mute state of a finding.
+
+      Args:
+        request: (SecuritycenterFoldersSourcesFindingsSetMuteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Finding) The response message.
+      """
+      config = self.GetMethodConfig('SetMute')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetMute.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/folders/{foldersId}/sources/{sourcesId}/findings/{findingsId}:setMute',
+        http_method='POST',
+        method_id='securitycenter.folders.sources.findings.setMute',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:setMute',
+        request_field='setMuteRequest',
+        request_type_name='SecuritycenterFoldersSourcesFindingsSetMuteRequest',
         response_type_name='Finding',
         supports_download=False,
     )
@@ -452,6 +627,151 @@ class SecuritycenterV1(base_api.BaseApiClient):
         request_field='securityMarks',
         request_type_name='SecuritycenterOrganizationsAssetsUpdateSecurityMarksRequest',
         response_type_name='SecurityMarks',
+        supports_download=False,
+    )
+
+  class OrganizationsMuteConfigsService(base_api.BaseApiService):
+    """Service class for the organizations_muteConfigs resource."""
+
+    _NAME = 'organizations_muteConfigs'
+
+    def __init__(self, client):
+      super(SecuritycenterV1.OrganizationsMuteConfigsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a mute config.
+
+      Args:
+        request: (SecuritycenterOrganizationsMuteConfigsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudSecuritycenterV1MuteConfig) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/muteConfigs',
+        http_method='POST',
+        method_id='securitycenter.organizations.muteConfigs.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/muteConfigs',
+        request_field='googleCloudSecuritycenterV1MuteConfig',
+        request_type_name='SecuritycenterOrganizationsMuteConfigsCreateRequest',
+        response_type_name='GoogleCloudSecuritycenterV1MuteConfig',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes an existing mute config.
+
+      Args:
+        request: (SecuritycenterOrganizationsMuteConfigsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/muteConfigs/{muteConfigsId}',
+        http_method='DELETE',
+        method_id='securitycenter.organizations.muteConfigs.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='SecuritycenterOrganizationsMuteConfigsDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a mute config.
+
+      Args:
+        request: (SecuritycenterOrganizationsMuteConfigsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudSecuritycenterV1MuteConfig) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/muteConfigs/{muteConfigsId}',
+        http_method='GET',
+        method_id='securitycenter.organizations.muteConfigs.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='SecuritycenterOrganizationsMuteConfigsGetRequest',
+        response_type_name='GoogleCloudSecuritycenterV1MuteConfig',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists mute configs.
+
+      Args:
+        request: (SecuritycenterOrganizationsMuteConfigsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListMuteConfigsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/muteConfigs',
+        http_method='GET',
+        method_id='securitycenter.organizations.muteConfigs.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/muteConfigs',
+        request_field='',
+        request_type_name='SecuritycenterOrganizationsMuteConfigsListRequest',
+        response_type_name='ListMuteConfigsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a mute config.
+
+      Args:
+        request: (SecuritycenterOrganizationsMuteConfigsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudSecuritycenterV1MuteConfig) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/muteConfigs/{muteConfigsId}',
+        http_method='PATCH',
+        method_id='securitycenter.organizations.muteConfigs.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='googleCloudSecuritycenterV1MuteConfig',
+        request_type_name='SecuritycenterOrganizationsMuteConfigsPatchRequest',
+        response_type_name='GoogleCloudSecuritycenterV1MuteConfig',
         supports_download=False,
     )
 
@@ -832,6 +1152,33 @@ class SecuritycenterV1(base_api.BaseApiClient):
         relative_path='v1/{+name}',
         request_field='finding',
         request_type_name='SecuritycenterOrganizationsSourcesFindingsPatchRequest',
+        response_type_name='Finding',
+        supports_download=False,
+    )
+
+    def SetMute(self, request, global_params=None):
+      r"""Updates the mute state of a finding.
+
+      Args:
+        request: (SecuritycenterOrganizationsSourcesFindingsSetMuteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Finding) The response message.
+      """
+      config = self.GetMethodConfig('SetMute')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetMute.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/sources/{sourcesId}/findings/{findingsId}:setMute',
+        http_method='POST',
+        method_id='securitycenter.organizations.sources.findings.setMute',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:setMute',
+        request_field='setMuteRequest',
+        request_type_name='SecuritycenterOrganizationsSourcesFindingsSetMuteRequest',
         response_type_name='Finding',
         supports_download=False,
     )
@@ -1244,6 +1591,151 @@ class SecuritycenterV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsMuteConfigsService(base_api.BaseApiService):
+    """Service class for the projects_muteConfigs resource."""
+
+    _NAME = 'projects_muteConfigs'
+
+    def __init__(self, client):
+      super(SecuritycenterV1.ProjectsMuteConfigsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a mute config.
+
+      Args:
+        request: (SecuritycenterProjectsMuteConfigsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudSecuritycenterV1MuteConfig) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/muteConfigs',
+        http_method='POST',
+        method_id='securitycenter.projects.muteConfigs.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/muteConfigs',
+        request_field='googleCloudSecuritycenterV1MuteConfig',
+        request_type_name='SecuritycenterProjectsMuteConfigsCreateRequest',
+        response_type_name='GoogleCloudSecuritycenterV1MuteConfig',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes an existing mute config.
+
+      Args:
+        request: (SecuritycenterProjectsMuteConfigsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/muteConfigs/{muteConfigsId}',
+        http_method='DELETE',
+        method_id='securitycenter.projects.muteConfigs.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='SecuritycenterProjectsMuteConfigsDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a mute config.
+
+      Args:
+        request: (SecuritycenterProjectsMuteConfigsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudSecuritycenterV1MuteConfig) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/muteConfigs/{muteConfigsId}',
+        http_method='GET',
+        method_id='securitycenter.projects.muteConfigs.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='SecuritycenterProjectsMuteConfigsGetRequest',
+        response_type_name='GoogleCloudSecuritycenterV1MuteConfig',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists mute configs.
+
+      Args:
+        request: (SecuritycenterProjectsMuteConfigsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListMuteConfigsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/muteConfigs',
+        http_method='GET',
+        method_id='securitycenter.projects.muteConfigs.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/muteConfigs',
+        request_field='',
+        request_type_name='SecuritycenterProjectsMuteConfigsListRequest',
+        response_type_name='ListMuteConfigsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a mute config.
+
+      Args:
+        request: (SecuritycenterProjectsMuteConfigsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudSecuritycenterV1MuteConfig) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/muteConfigs/{muteConfigsId}',
+        http_method='PATCH',
+        method_id='securitycenter.projects.muteConfigs.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='googleCloudSecuritycenterV1MuteConfig',
+        request_type_name='SecuritycenterProjectsMuteConfigsPatchRequest',
+        response_type_name='GoogleCloudSecuritycenterV1MuteConfig',
+        supports_download=False,
+    )
+
   class ProjectsSourcesFindingsService(base_api.BaseApiService):
     """Service class for the projects_sources_findings resource."""
 
@@ -1331,6 +1823,33 @@ class SecuritycenterV1(base_api.BaseApiClient):
         relative_path='v1/{+name}',
         request_field='finding',
         request_type_name='SecuritycenterProjectsSourcesFindingsPatchRequest',
+        response_type_name='Finding',
+        supports_download=False,
+    )
+
+    def SetMute(self, request, global_params=None):
+      r"""Updates the mute state of a finding.
+
+      Args:
+        request: (SecuritycenterProjectsSourcesFindingsSetMuteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Finding) The response message.
+      """
+      config = self.GetMethodConfig('SetMute')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetMute.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/sources/{sourcesId}/findings/{findingsId}:setMute',
+        http_method='POST',
+        method_id='securitycenter.projects.sources.findings.setMute',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:setMute',
+        request_field='setMuteRequest',
+        request_type_name='SecuritycenterProjectsSourcesFindingsSetMuteRequest',
         response_type_name='Finding',
         supports_download=False,
     )

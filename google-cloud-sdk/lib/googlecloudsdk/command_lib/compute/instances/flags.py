@@ -625,8 +625,8 @@ def AddBootDiskArgs(parser, enable_kms=False):
       """)
 
   if enable_kms:
-    kms_resource_args.AddKmsKeyResourceArg(parser, 'disk',
-                                           boot_disk_prefix=True)
+    kms_resource_args.AddKmsKeyResourceArg(
+        parser, 'disk', boot_disk_prefix=True)
 
 
 def AddCreateDiskArgs(parser,
@@ -1195,13 +1195,66 @@ def ValidateImageFlags(args):
         '[--image-project] flag.')
 
 
+def _ValidateNetworkInterfaceStackType(stack_type_input):
+  """Validates stack type field, throws exception if invalid."""
+  stack_type = stack_type_input.upper()
+  if stack_type in constants.NETWORK_INTERFACE_STACK_TYPE_CHOICES:
+    return stack_type
+  else:
+    raise exceptions.InvalidArgumentException(
+        '--network-interface',
+        'Invalid value for stack-type [%s].' % stack_type)
+
+
+def _ValidateNetworkTier(network_tier_input):
+  """Validates network tier field, throws exception if invalid."""
+  network_tier = network_tier_input.upper()
+  if network_tier in constants.NETWORK_TIER_CHOICES_FOR_INSTANCE:
+    return network_tier
+  else:
+    raise exceptions.InvalidArgumentException('--network-interface',
+                                              'Invalid value for network-tier')
+
+
+def _ValidateNetworkInterfaceIpv6NetworkTier(ipv6_network_tier_input):
+  """Validates IPv6 network tier field, throws exception if invalid."""
+  ipv6_network_tier = ipv6_network_tier_input.upper()
+  if (ipv6_network_tier
+      in constants.NETWORK_INTERFACE_IPV6_NETWORK_TIER_CHOICES):
+    return ipv6_network_tier
+  else:
+    raise exceptions.InvalidArgumentException(
+        '--network-interface',
+        'Invalid value for ipv6-network-tier [%s].' % ipv6_network_tier)
+
+
+def _ValidateNetworkInterfaceNicType(nic_type_input):
+  """Validates network interface type field, throws exception if invalid."""
+  nic_type = nic_type_input.upper()
+  if nic_type in constants.NETWORK_INTERFACE_NIC_TYPE_CHOICES:
+    return nic_type
+  else:
+    raise exceptions.InvalidArgumentException(
+        '--network-interface', 'Invalid value for nic-type [%s]' % nic_type)
+
+
 def AddAddressArgs(parser,
                    instances=True,
-                   multiple_network_interface_cards=True,
-                   support_network_interface_nic_type=True,
                    support_subinterface=False,
-                   instance_create=False):
-  """Adds address arguments for instances and instance-templates."""
+                   instance_create=False,
+                   containers=False):
+  """Adds address arguments for instances and instance-templates.
+
+  Args:
+    parser: gcloud command arguments parser.
+    instances: adds address arguments for instances if set to true, for instance
+      templates elsewise.
+    support_subinterface: indicates subinterface is supported or not.
+    instance_create: adds address arguments for instance creation if set to
+      true.
+    containers: adds address arguments for create-with-containers command if set
+      to true, for create command otherwise.
+  """
   addresses = parser.add_mutually_exclusive_group()
   AddNoAddressArg(addresses)
   if instances:
@@ -1221,186 +1274,194 @@ def AddAddressArgs(parser,
       'network': str,
       'no-address': None,
       'subnet': str,
+      'private-network-ip': str,
+      'aliases': str,
   }
 
-  multiple_network_interface_cards_spec['private-network-ip'] = str
+  multiple_network_interface_cards_spec['network-tier'] = _ValidateNetworkTier
 
-  def ValidateNetworkTier(network_tier_input):
-    network_tier = network_tier_input.upper()
-    if network_tier in constants.NETWORK_TIER_CHOICES_FOR_INSTANCE:
-      return network_tier
-    else:
-      raise exceptions.InvalidArgumentException(
-          '--network-interface', 'Invalid value for network-tier')
+  multiple_network_interface_cards_spec[
+      'nic-type'] = _ValidateNetworkInterfaceNicType
 
-  multiple_network_interface_cards_spec['network-tier'] = ValidateNetworkTier
-
-  def ValidateNetworkInterfaceNicType(nic_type_input):
-    nic_type = nic_type_input.upper()
-    if nic_type in constants.NETWORK_INTERFACE_NIC_TYPE_CHOICES:
-      return nic_type
-    else:
-      raise exceptions.InvalidArgumentException(
-          '--network-interface', 'Invalid value for nic-type [%s]' % nic_type)
-
-  if support_network_interface_nic_type:
+  network_interface_help_texts = []
+  # IPv6 related fields are not supported in create-with-container commands yet.
+  if not containers:
+    multiple_network_interface_cards_spec['ipv6-public-ptr-domain'] = str
     multiple_network_interface_cards_spec[
-        'nic-type'] = ValidateNetworkInterfaceNicType
+        'stack-type'] = _ValidateNetworkInterfaceStackType
+    multiple_network_interface_cards_spec[
+        'ipv6-network-tier'] = _ValidateNetworkInterfaceIpv6NetworkTier
+    network_interface_help_texts.append("""\
+      Adds a network interface to the instance. Mutually exclusive with any
+      of these flags: *--address*, *--network*, *--network-tier*, *--subnet*,
+      *--private-network-ip*, *--stack-type*, *--ipv6-network-tier*,
+      *--ipv6-public-ptr-domain*. This flag can be repeated to specify multiple
+      network interfaces.
+    """)
+  else:
+    network_interface_help_texts.append("""\
+      Adds a network interface to the instance. Mutually exclusive with any
+      of these flags: *--address*, *--network*, *--network-tier*, *--subnet*,
+      *--private-network-ip*. This flag can be repeated to specify multiple
+      network interfaces.
+    """)
+  network_interface_help_texts.append("""
+      The following keys are allowed:
+      *address*::: Assigns the given external address to the instance that is
+      created. Specifying an empty string will assign an ephemeral IP.
+      Mutually exclusive with no-address. If neither key is present the
+      instance will get an ephemeral IP.
 
-  if multiple_network_interface_cards:
-    multiple_network_interface_cards_spec['aliases'] = str
-    network_interface_help = """\
-        Adds a network interface to the instance. Mutually exclusive with any
-        of these flags: *--address*, *--network*, *--network-tier*, *--subnet*,
-        *--private-network-ip*. This flag can be repeated to specify multiple
-        network interfaces.
+      *network*::: Specifies the network that the interface will be part of.
+      If subnet is also specified it must be subnetwork of this network. If
+      neither is specified, this defaults to the "default" network.
 
-        The following keys are allowed:
-        *address*::: Assigns the given external address to the instance that is
-        created. Specifying an empty string will assign an ephemeral IP.
-        Mutually exclusive with no-address. If neither key is present the
-        instance will get an ephemeral IP.
+      *no-address*::: If specified the interface will have no external IP.
+      Mutually exclusive with address. If neither key is present the
+      instance will get an ephemeral IP.
 
-        *network*::: Specifies the network that the interface will be part of.
-        If subnet is also specified it must be subnetwork of this network. If
-        neither is specified, this defaults to the "default" network.
+      *network-tier*::: Specifies the network tier of the interface.
+      ``NETWORK_TIER'' must be one of: `PREMIUM`, `STANDARD`. The default
+      value is `PREMIUM`.
 
-        *no-address*::: If specified the interface will have no external IP.
-        Mutually exclusive with address. If neither key is present the
-        instance will get an ephemeral IP.
-        """
-    network_interface_help += """
-        *network-tier*::: Specifies the network tier of the interface.
-        ``NETWORK_TIER'' must be one of: `PREMIUM`, `STANDARD`. The default
-        value is `PREMIUM`.
-        """
+      *private-network-ip*::: Assigns the given RFC1918 IP address to the
+      interface.
 
-    network_interface_help += """
-        *private-network-ip*::: Assigns the given RFC1918 IP address to the
-        interface.
-        """
-    network_interface_help += """
-        *subnet*::: Specifies the subnet that the interface will be part of.
-        If network key is also specified this must be a subnetwork of the
-        specified network.
-        """
+      *subnet*::: Specifies the subnet that the interface will be part of.
+      If network key is also specified this must be a subnetwork of the
+      specified network.
 
-    if support_network_interface_nic_type:
-      network_interface_help += """
-        *nic-type*::: Specifies the  Network Interface Controller (NIC) type for
-        the interface. ``NIC_TYPE'' must be one of: `GVNIC`, `VIRTIO_NET`.
-        """
+      *nic-type*::: Specifies the  Network Interface Controller (NIC) type for
+      the interface. ``NIC_TYPE'' must be one of: `GVNIC`, `VIRTIO_NET`.
+      """)
 
-    network_interface_help += """
-        *aliases*::: Specifies the IP alias ranges to allocate for this
-        interface.  If there are multiple IP alias ranges, they are separated
-        by semicolons.
+  if not containers:
+    network_interface_help_texts.append("""
+      *stack-type*::: Specifies whether IPv6 is enabled on the interface.
+      ``STACK_TYPE'' must be one of: `IPV4_ONLY`, `IPV4_IPV6`. The default value
+      is `IPV4_ONLY`.
 
-        For example:
+      *ipv6-network-tier*::: Specifies the IPv6 network tier that will be used
+      to configure the instance network interface IPv6 access config.
+      ``IPV6_NETWORK_TIER'' must be `PREMIUM` (currently only one value is
+      supported).
 
-            --aliases="10.128.1.0/24;range1:/32"
+      *ipv6-public-ptr-domain*::: Assigns a custom PTR domain for the external
+      IPv6 in the IPv6 access configuration of instance. If its value is not
+      specified, the default PTR record will be used. This option can only be
+      specified for the default network interface, `nic0`.
+    """)
 
-        """
-    if instances:
-      network_interface_help += """
-          Each IP alias range consists of a range name and an IP range
-          separated by a colon, or just the IP range.
-          The range name is the name of the range within the network
-          interface's subnet from which to allocate an IP alias range. If
-          unspecified, it defaults to the primary IP range of the subnet.
-          The IP range can be a CIDR range (e.g. `192.168.100.0/24`), a single
-          IP address (e.g. `192.168.100.1`), or a netmask in CIDR format (e.g.
-          `/24`). If the IP range is specified by CIDR range or single IP
-          address, it must belong to the CIDR range specified by the range
-          name on the subnet. If the IP range is specified by netmask, the
-          IP allocator will pick an available range with the specified netmask
-          and allocate it to this network interface."""
-    else:
-      network_interface_help += """
-          Each IP alias range consists of a range name and an CIDR netmask
-          (e.g. `/24`) separated by a colon, or just the netmask.
-          The range name is the name of the range within the network
-          interface's subnet from which to allocate an IP alias range. If
-          unspecified, it defaults to the primary IP range of the subnet.
-          The IP allocator will pick an available range with the specified
-          netmask and allocate it to this network interface."""
+  network_interface_help_texts.append("""
+      *aliases*::: Specifies the IP alias ranges to allocate for this
+      interface.  If there are multiple IP alias ranges, they are separated
+      by semicolons.
 
-    if instance_create:
-      network_interfaces = parser.add_group(mutex=True)
-      network_interfaces.add_argument(
-          '--network-interface',
-          type=arg_parsers.ArgDict(
-              spec=multiple_network_interface_cards_spec,
-              allow_key_only=True,
-          ),
-          action='append',  # pylint:disable=protected-access
-          metavar='PROPERTY=VALUE',
-          help=network_interface_help)
+      For example:
 
-      if support_subinterface:
-        network_interface_file_help_text = """\
-          Same as --network-interface except that the value for the entry will
-          be read from a local file. This is used in case subinterfaces need to
-          be specified. All field names in the json follow lowerCamelCase.
+          --aliases="10.128.1.0/24;range1:/32"
 
-          The following additional key is allowed:
-           subinterfaces
-              Specifies the list of subinterfaces assigned to this network
-              interface of the instance.
+      """)
+  if instances:
+    network_interface_help_texts.append("""
+        Each IP alias range consists of a range name and an IP range
+        separated by a colon, or just the IP range.
+        The range name is the name of the range within the network
+        interface's subnet from which to allocate an IP alias range. If
+        unspecified, it defaults to the primary IP range of the subnet.
+        The IP range can be a CIDR range (e.g. `192.168.100.0/24`), a single
+        IP address (e.g. `192.168.100.1`), or a netmask in CIDR format (e.g.
+        `/24`). If the IP range is specified by CIDR range or single IP
+        address, it must belong to the CIDR range specified by the range
+        name on the subnet. If the IP range is specified by netmask, the
+        IP allocator will pick an available range with the specified netmask
+        and allocate it to this network interface.""")
+  else:
+    network_interface_help_texts.append("""
+        Each IP alias range consists of a range name and an CIDR netmask
+        (e.g. `/24`) separated by a colon, or just the netmask.
+        The range name is the name of the range within the network
+        interface's subnet from which to allocate an IP alias range. If
+        unspecified, it defaults to the primary IP range of the subnet.
+        The IP allocator will pick an available range with the specified
+        netmask and allocate it to this network interface.""")
 
-                  The following keys are allowed:
-                  subnetwork: Specifies the subnet that the subinterface will be
-                  part of. The subnet should have l2-enable set and VLAN tagged.
+  if instance_create:
+    network_interfaces = parser.add_group(mutex=True)
+    network_interfaces.add_argument(
+        '--network-interface',
+        type=arg_parsers.ArgDict(
+            spec=multiple_network_interface_cards_spec,
+            allow_key_only=True,
+        ),
+        action='append',  # pylint:disable=protected-access
+        metavar='PROPERTY=VALUE',
+        help=''.join(network_interface_help_texts))
 
-                  vlan: Specifies the VLAN of the subinterface. Can have a value
-                  between 2-4094. This should be the same VLAN as the subnet. VLAN tag
-                  within a network interface is unique.
+    if support_subinterface:
+      network_interface_file_help_text = """\
+        Same as --network-interface except that the value for the entry will
+        be read from a local file. This is used in case subinterfaces need to
+        be specified. All field names in the json follow lowerCamelCase.
 
-                  ipAddress: Optional. Specifies the ip address of the
-                  subinterface. If not specified, an ip address will be allocated from
-                  subnet ip range.
+        The following additional key is allowed:
+         subinterfaces
+            Specifies the list of subinterfaces assigned to this network
+            interface of the instance.
 
-          An example json looks like:
-          [
-           {
-            "network":"global/networks/network-example",
-            "subnetwork":"projects/example-project/regions/us-central1/subnetworks/untagged-subnet",
-            "subinterfaces":[
-               {
-                "subnetwork":"projects/example-project/regions/us-central1/subnetworks/tagged-subnet",
-                "vlan":2,
-                "ipAddress":"111.11.11.1"
-             }
-            ]
+                The following keys are allowed:
+                subnetwork: Specifies the subnet that the subinterface will be
+                part of. The subnet should have l2-enable set and VLAN tagged.
+
+                vlan: Specifies the VLAN of the subinterface. Can have a value
+                between 2-4094. This should be the same VLAN as the subnet. VLAN tag
+                within a network interface is unique.
+
+                ipAddress: Optional. Specifies the ip address of the
+                subinterface. If not specified, an ip address will be allocated from
+                subnet ip range.
+
+        An example json looks like:
+        [
+         {
+          "network":"global/networks/network-example",
+          "subnetwork":"projects/example-project/regions/us-central1/subnetworks/untagged-subnet",
+          "subinterfaces":[
+             {
+              "subnetwork":"projects/example-project/regions/us-central1/subnetworks/tagged-subnet",
+              "vlan":2,
+              "ipAddress":"111.11.11.1"
            }
           ]
-            """
-        network_interfaces.add_argument(
-            '--network-interface-from-file',
-            type=arg_parsers.FileContents(),
-            metavar='KEY=LOCAL_FILE_PATH',
-            help=network_interface_file_help_text)
+         }
+        ]
+          """
+      network_interfaces.add_argument(
+          '--network-interface-from-file',
+          type=arg_parsers.FileContents(),
+          metavar='KEY=LOCAL_FILE_PATH',
+          help=network_interface_file_help_text)
 
-        network_interface_json_help_text = """\
-          Same as --network-interface-from-file except that the value for the
-          entry will be a json string. This can also be used in case
-          subinterfaces need to be specified. All field names in the json follow
-          lowerCamelCase."""
+      network_interface_json_help_text = """\
+        Same as --network-interface-from-file except that the value for the
+        entry will be a json string. This can also be used in case
+        subinterfaces need to be specified. All field names in the json follow
+        lowerCamelCase."""
 
-        network_interfaces.add_argument(
-            '--network-interface-from-json-string',
-            metavar='NETWORK_INTERFACE_JSON_STRING',
-            help=network_interface_json_help_text)
-    else:
-      parser.add_argument(
-          '--network-interface',
-          type=arg_parsers.ArgDict(
-              spec=multiple_network_interface_cards_spec,
-              allow_key_only=True,
-          ),
-          action='append',  # pylint:disable=protected-access
-          metavar='PROPERTY=VALUE',
-          help=network_interface_help)
+      network_interfaces.add_argument(
+          '--network-interface-from-json-string',
+          metavar='NETWORK_INTERFACE_JSON_STRING',
+          help=network_interface_json_help_text)
+  else:
+    parser.add_argument(
+        '--network-interface',
+        type=arg_parsers.ArgDict(
+            spec=multiple_network_interface_cards_spec,
+            allow_key_only=True,
+        ),
+        action='append',  # pylint:disable=protected-access
+        metavar='PROPERTY=VALUE',
+        help=''.join(network_interface_help_texts))
 
 
 def AddNoAddressArg(parser):
@@ -1540,9 +1601,9 @@ def AddServiceAccountAndScopeArgs(parser,
       E.g. 'instance' or 'machine image'.
   """
   service_account_group = parser.add_mutually_exclusive_group()
-  no_sa_instance_not_exist = \
-    '{operation} {resource} without service account'.format(
-        operation=operation, resource=resource)
+  no_sa_instance_not_exist = (
+      '{operation} {resource} without service account'.format(
+          operation=operation, resource=resource))
   service_account_group.add_argument(
       '--no-service-account',
       action='store_true',
@@ -3099,8 +3160,7 @@ def ValidateNetworkPerformanceConfigsArgs(args):
 
   for config in getattr(args, 'network_performance_configs', []) or []:
     total_tier = config.get('total-egress-bandwidth-tier', '').upper()
-    if total_tier and \
-        total_tier not in constants.ADV_NETWORK_TIER_CHOICES:
+    if (total_tier and total_tier not in constants.ADV_NETWORK_TIER_CHOICES):
       raise exceptions.InvalidArgumentException(
           '--network-performance-configs',
           """Invalid total-egress-bandwidth-tier tier value, "{tier}".

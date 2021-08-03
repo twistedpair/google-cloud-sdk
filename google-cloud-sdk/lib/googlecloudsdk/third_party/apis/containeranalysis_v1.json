@@ -1450,6 +1450,10 @@
         "source": {
           "description": "The source from which the information in this Detail was obtained.",
           "type": "string"
+        },
+        "vendor": {
+          "description": "The name of the vendor of the product.",
+          "type": "string"
         }
       }
     },

@@ -416,12 +416,9 @@ class Endpoint(_messages.Message):
       alphanumerics between. The prefix is optional. If specified, the prefix
       must be a DNS subdomain: a series of DNS labels separated by dots (.),
       not longer than 253 characters in total, followed by a slash (/).
-      Metadata that fails to meet these requirements are rejected * The
-      `(*.)google.com/` and `(*.)googleapis.com/` prefixes are reserved for
-      system metadata managed by Service Directory. If the user tries to write
-      to these keyspaces, those entries are silently ignored by the system
-      Note: This field is equivalent to the `annotations` field in the v1 API.
-      They have the same syntax and read/write to the same location in Service
+      Metadata that fails to meet these requirements are rejected Note: This
+      field is equivalent to the `annotations` field in the v1 API. They have
+      the same syntax and read/write to the same location in Service
       Directory.
 
   Fields:
@@ -440,12 +437,9 @@ class Endpoint(_messages.Message):
       prefix is optional. If specified, the prefix must be a DNS subdomain: a
       series of DNS labels separated by dots (.), not longer than 253
       characters in total, followed by a slash (/). Metadata that fails to
-      meet these requirements are rejected * The `(*.)google.com/` and
-      `(*.)googleapis.com/` prefixes are reserved for system metadata managed
-      by Service Directory. If the user tries to write to these keyspaces,
-      those entries are silently ignored by the system Note: This field is
-      equivalent to the `annotations` field in the v1 API. They have the same
-      syntax and read/write to the same location in Service Directory.
+      meet these requirements are rejected Note: This field is equivalent to
+      the `annotations` field in the v1 API. They have the same syntax and
+      read/write to the same location in Service Directory.
     name: Immutable. The resource name for the endpoint in the format
       `projects/*/locations/*/namespaces/*/services/*/endpoints/*`.
     network: Immutable. The Google Compute Engine network (VPC) of the
@@ -473,10 +467,7 @@ class Endpoint(_messages.Message):
     optional. If specified, the prefix must be a DNS subdomain: a series of
     DNS labels separated by dots (.), not longer than 253 characters in total,
     followed by a slash (/). Metadata that fails to meet these requirements
-    are rejected * The `(*.)google.com/` and `(*.)googleapis.com/` prefixes
-    are reserved for system metadata managed by Service Directory. If the user
-    tries to write to these keyspaces, those entries are silently ignored by
-    the system Note: This field is equivalent to the `annotations` field in
+    are rejected Note: This field is equivalent to the `annotations` field in
     the v1 API. They have the same syntax and read/write to the same location
     in Service Directory.
 
@@ -971,12 +962,9 @@ class Service(_messages.Message):
       alphanumerics between. The prefix is optional. If specified, the prefix
       must be a DNS subdomain: a series of DNS labels separated by dots (.),
       not longer than 253 characters in total, followed by a slash (/).
-      Metadata that fails to meet these requirements are rejected * The
-      `(*.)google.com/` and `(*.)googleapis.com/` prefixes are reserved for
-      system metadata managed by Service Directory. If the user tries to write
-      to these keyspaces, those entries are silently ignored by the system
-      Note: This field is equivalent to the `annotations` field in the v1 API.
-      They have the same syntax and read/write to the same location in Service
+      Metadata that fails to meet these requirements are rejected Note: This
+      field is equivalent to the `annotations` field in the v1 API. They have
+      the same syntax and read/write to the same location in Service
       Directory.
 
   Fields:
@@ -1001,12 +989,9 @@ class Service(_messages.Message):
       prefix is optional. If specified, the prefix must be a DNS subdomain: a
       series of DNS labels separated by dots (.), not longer than 253
       characters in total, followed by a slash (/). Metadata that fails to
-      meet these requirements are rejected * The `(*.)google.com/` and
-      `(*.)googleapis.com/` prefixes are reserved for system metadata managed
-      by Service Directory. If the user tries to write to these keyspaces,
-      those entries are silently ignored by the system Note: This field is
-      equivalent to the `annotations` field in the v1 API. They have the same
-      syntax and read/write to the same location in Service Directory.
+      meet these requirements are rejected Note: This field is equivalent to
+      the `annotations` field in the v1 API. They have the same syntax and
+      read/write to the same location in Service Directory.
     name: Immutable. The resource name for the service in the format
       `projects/*/locations/*/namespaces/*/services/*`.
     serviceIdentities: Optional. Authorized Service Identities. If provided,
@@ -1034,10 +1019,7 @@ class Service(_messages.Message):
     optional. If specified, the prefix must be a DNS subdomain: a series of
     DNS labels separated by dots (.), not longer than 253 characters in total,
     followed by a slash (/). Metadata that fails to meet these requirements
-    are rejected * The `(*.)google.com/` and `(*.)googleapis.com/` prefixes
-    are reserved for system metadata managed by Service Directory. If the user
-    tries to write to these keyspaces, those entries are silently ignored by
-    the system Note: This field is equivalent to the `annotations` field in
+    are rejected Note: This field is equivalent to the `annotations` field in
     the v1 API. They have the same syntax and read/write to the same location
     in Service Directory.
 

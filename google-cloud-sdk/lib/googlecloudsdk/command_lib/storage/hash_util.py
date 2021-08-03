@@ -20,13 +20,13 @@ from __future__ import unicode_literals
 
 import base64
 import enum
-import hashlib
 import os
 
 from googlecloudsdk.command_lib import info_holder
 from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.util import crc32c
 from googlecloudsdk.core.updater import installers
+from googlecloudsdk.core.util import hashing
 
 
 class HashAlgorithm(enum.Enum):
@@ -34,29 +34,6 @@ class HashAlgorithm(enum.Enum):
 
   MD5 = 'md5'
   CRC32C = 'crc32c'
-
-
-def get_md5(byte_string=b''):
-  """Returns md5 object, avoiding incorrect FIPS error on Red Hat systems.
-
-  Examples: get_md5(b'abc')
-            get_md5(bytes('abc', encoding='utf-8'))
-
-  Args:
-    byte_string (bytes): String in bytes form to hash. Don't include for empty
-      hash object, since md5(b'').digest() == md5().digest().
-
-  Returns:
-    md5 hash object.
-  """
-  try:
-    return hashlib.md5(byte_string)
-  except ValueError:
-    # On Red Hat-based platforms, may catch a FIPS error.
-    # "usedforsecurity" flag only available on Red Hat systems or Python 3.9+.
-    # pylint:disable=unexpected-keyword-arg
-    return hashlib.md5(byte_string, usedforsecurity=False)
-    # pylint:enable=unexpected-keyword-arg
 
 
 def get_base64_hash_digest_string(hash_object):
@@ -86,7 +63,7 @@ def get_hash_from_file_stream(file_stream,
     String of base64-encoded hash digest for file.
   """
   if hash_algorithm == HashAlgorithm.MD5:
-    hash_object = get_md5()
+    hash_object = hashing.get_md5()
   elif hash_algorithm == HashAlgorithm.CRC32C:
     hash_object = crc32c.get_crc32c()
   else:
@@ -121,11 +98,11 @@ def get_hash_from_file_stream(file_stream,
   return hash_object
 
 
-def validate_object_hashes_match(object_url, source_hash, destination_hash):
+def validate_object_hashes_match(object_path, source_hash, destination_hash):
   """Confirms hashes match for copied objects.
 
   Args:
-    object_url (str): URL of object being validated.
+    object_path (str): URL of object being validated.
     source_hash (str): Hash of source object.
     destination_hash (str): Hash of destination object.
 
@@ -135,8 +112,7 @@ def validate_object_hashes_match(object_url, source_hash, destination_hash):
   if source_hash != destination_hash:
     raise errors.HashMismatchError(
         'Source hash {} does not match destination hash {}'
-        ' for object {}.'.format(source_hash, destination_hash, object_url))
-  # TODO(b/172048376): Check crc32c if md5 not available.
+        ' for object {}.'.format(source_hash, destination_hash, object_path))
 
 
 def update_digesters(digesters, data):
@@ -157,7 +133,7 @@ def reset_digesters(digesters):
   """Clears the data from every hash object in a dict of digesters."""
   for hash_algorithm in digesters:
     if hash_algorithm is HashAlgorithm.MD5:
-      digesters[hash_algorithm] = get_md5()
+      digesters[hash_algorithm] = hashing.get_md5()
     elif hash_algorithm is HashAlgorithm.CRC32C:
       digesters[hash_algorithm] = crc32c.get_crc32c()
     else:

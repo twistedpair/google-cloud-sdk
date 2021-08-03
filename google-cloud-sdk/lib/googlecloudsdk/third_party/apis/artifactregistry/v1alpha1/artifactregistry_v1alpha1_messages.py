@@ -573,6 +573,8 @@ class GoogleDevtoolsArtifactregistryV1alpha1Repository(_messages.Message):
       MAVEN: Maven package format.
       NPM: NPM package format.
       PYPI: PyPI package format.
+      APT: APT package format.
+      YUM: YUM package format.
       PYTHON: Python package format.
     """
     FORMAT_UNSPECIFIED = 0
@@ -580,7 +582,9 @@ class GoogleDevtoolsArtifactregistryV1alpha1Repository(_messages.Message):
     MAVEN = 2
     NPM = 3
     PYPI = 4
-    PYTHON = 5
+    APT = 5
+    YUM = 6
+    PYTHON = 7
 
   class ModeValueValuesEnum(_messages.Enum):
     r"""The mode of the repository.

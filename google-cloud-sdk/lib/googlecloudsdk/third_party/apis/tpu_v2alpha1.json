@@ -299,7 +299,7 @@
           "enumDescriptions": [
             "TPU node state is not known\/set.",
             "TPU node is being created.",
-            "TPU node has been created and is fully usable.",
+            "TPU node has been created.",
             "TPU node is restarting.",
             "TPU node is undergoing reimaging.",
             "TPU node is being deleted.",
@@ -731,6 +731,13 @@
         "queryPath": {
           "description": "The guest attributes path to be queried.",
           "type": "string"
+        },
+        "workerIds": {
+          "description": "The 0-based worker ID. If it is empty, all workers' GuestAttributes will be returned.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },

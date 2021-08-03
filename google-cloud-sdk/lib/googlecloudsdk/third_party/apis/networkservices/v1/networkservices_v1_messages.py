@@ -13,21 +13,6 @@ from apitools.base.py import extra_types
 package = 'networkservices'
 
 
-class AddHeader(_messages.Message):
-  r"""Describes a header to add.
-
-  Fields:
-    headerName: Required. The name of the header to add.
-    headerValue: Required. The value of the header to add.
-    replace: Optional. Whether to replace all existing headers with the same
-      name.
-  """
-
-  headerName = _messages.StringField(1)
-  headerValue = _messages.StringField(2)
-  replace = _messages.BooleanField(3)
-
-
 class AuditConfig(_messages.Message):
   r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
@@ -168,10 +153,12 @@ class CDNPolicy(_messages.Message):
       negativeCachingPolicy. - Omitting the policy and leaving negativeCaching
       enabled will use the default TTLs for each status code, defined in
       negativeCaching. - TTLs must be >= 0 (where 0 is "always revalidate")
-      and <= 86400s (1 day) Note that when specifying an explicit
-      negativeCachingPolicy, you should take care to specify a cache TTL for
-      all response codes that you wish to cache. The CDNPolicy will not apply
-      any default negative caching when a policy exists.
+      and <= 86400s (1 day) Only HTTP redirection (3xx), client error (4xx),
+      and server error (5xx) status codes may be set. Note that when
+      specifying an explicit negativeCachingPolicy, you should take care to
+      specify a cache TTL for all response codes that you wish to cache. The
+      CDNPolicy will not apply any default negative caching when a policy
+      exists.
 
   Fields:
     cacheKeyPolicy: Optional. Defines the request parameters that contribute
@@ -225,10 +212,12 @@ class CDNPolicy(_messages.Message):
       negativeCachingPolicy. - Omitting the policy and leaving negativeCaching
       enabled will use the default TTLs for each status code, defined in
       negativeCaching. - TTLs must be >= 0 (where 0 is "always revalidate")
-      and <= 86400s (1 day) Note that when specifying an explicit
-      negativeCachingPolicy, you should take care to specify a cache TTL for
-      all response codes that you wish to cache. The CDNPolicy will not apply
-      any default negative caching when a policy exists.
+      and <= 86400s (1 day) Only HTTP redirection (3xx), client error (4xx),
+      and server error (5xx) status codes may be set. Note that when
+      specifying an explicit negativeCachingPolicy, you should take care to
+      specify a cache TTL for all response codes that you wish to cache. The
+      CDNPolicy will not apply any default negative caching when a policy
+      exists.
     signedRequestKeyset: Optional. The EdgeCacheKeyset containing the set of
       public keys used to validate signed requests at the edge. For example,
       the following are both valid URLs to an EdgeCacheKeyset resource: - netw
@@ -308,11 +297,12 @@ class CDNPolicy(_messages.Message):
     negativeCaching must be enabled to configure negativeCachingPolicy. -
     Omitting the policy and leaving negativeCaching enabled will use the
     default TTLs for each status code, defined in negativeCaching. - TTLs must
-    be >= 0 (where 0 is "always revalidate") and <= 86400s (1 day) Note that
-    when specifying an explicit negativeCachingPolicy, you should take care to
-    specify a cache TTL for all response codes that you wish to cache. The
-    CDNPolicy will not apply any default negative caching when a policy
-    exists.
+    be >= 0 (where 0 is "always revalidate") and <= 86400s (1 day) Only HTTP
+    redirection (3xx), client error (4xx), and server error (5xx) status codes
+    may be set. Note that when specifying an explicit negativeCachingPolicy,
+    you should take care to specify a cache TTL for all response codes that
+    you wish to cache. The CDNPolicy will not apply any default negative
+    caching when a policy exists.
 
     Messages:
       AdditionalProperty: An additional property for a
@@ -336,7 +326,7 @@ class CDNPolicy(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  cacheKeyPolicy = _messages.MessageField('CacheKeyPolicy', 1)
+  cacheKeyPolicy = _messages.MessageField('CDNPolicyCacheKeyPolicy', 1)
   cacheMode = _messages.EnumField('CacheModeValueValuesEnum', 2)
   clientTtl = _messages.StringField(3)
   defaultTtl = _messages.StringField(4)
@@ -347,48 +337,7 @@ class CDNPolicy(_messages.Message):
   signedRequestMode = _messages.EnumField('SignedRequestModeValueValuesEnum', 9)
 
 
-class CORSPolicy(_messages.Message):
-  r"""CORSPolicy defines Cross-Origin-Resource-Sharing configuration,
-  including which CORS response headers will be set.
-
-  Fields:
-    allowCredentials: Optional. In response to a preflight request, setting
-      this to true indicates that the actual request can include user
-      credentials. This translates to the Access-Control-Allow-Credentials
-      response header.
-    allowHeaders: Optional. Specifies the content for the Access-Control-
-      Allow-Headers response header. You may specify up to 5 headers to
-      include in the Access-Control-Allow-Headers header.
-    allowMethods: Optional. Specifies the content for the Access-Control-
-      Allow-Methods response header. You may specify up to 5 allowed methods.
-    allowOrigins: Optional. Specifies the list of origins that will be allowed
-      to do CORS requests. This translates to the Access-Control-Allow-Origin
-      response header. You may specify up to 5 allowed origins.
-    disabled: Optional. If true, specifies the CORS policy is disabled. The
-      default value is false, which indicates that the CORS policy is in
-      effect.
-    exposeHeaders: Optional. Specifies the content for the Access-Control-
-      Expose-Headers response header. You may specify up to 5 headers to
-      expose in the Access-Control-Expose-Headers header.
-    maxAge: Required. Specifies how long results of a preflight request can be
-      cached by a client in seconds. Note that many browser clients enforce a
-      maximum TTL of 600s (10 minutes). - Setting the value to -1 forces a
-      pre-flight check for all requests (not recommended) - A maximum TTL of
-      86400s can be set, but note that (as above) some clients may force pre-
-      flight checks at a more regular interval. This translates to the Access-
-      Control-Max-Age header.
-  """
-
-  allowCredentials = _messages.BooleanField(1)
-  allowHeaders = _messages.StringField(2, repeated=True)
-  allowMethods = _messages.StringField(3, repeated=True)
-  allowOrigins = _messages.StringField(4, repeated=True)
-  disabled = _messages.BooleanField(5)
-  exposeHeaders = _messages.StringField(6, repeated=True)
-  maxAge = _messages.StringField(7)
-
-
-class CacheKeyPolicy(_messages.Message):
+class CDNPolicyCacheKeyPolicy(_messages.Message):
   r"""Defines the request parameters that contribute to the cache key.
 
   Fields:
@@ -432,6 +381,47 @@ class CacheKeyPolicy(_messages.Message):
   includeProtocol = _messages.BooleanField(4)
   includedHeaderNames = _messages.StringField(5, repeated=True)
   includedQueryParameters = _messages.StringField(6, repeated=True)
+
+
+class CORSPolicy(_messages.Message):
+  r"""CORSPolicy defines Cross-Origin-Resource-Sharing configuration,
+  including which CORS response headers will be set.
+
+  Fields:
+    allowCredentials: Optional. In response to a preflight request, setting
+      this to true indicates that the actual request can include user
+      credentials. This translates to the Access-Control-Allow-Credentials
+      response header.
+    allowHeaders: Optional. Specifies the content for the Access-Control-
+      Allow-Headers response header. You may specify up to 5 headers to
+      include in the Access-Control-Allow-Headers header.
+    allowMethods: Optional. Specifies the content for the Access-Control-
+      Allow-Methods response header. You may specify up to 5 allowed methods.
+    allowOrigins: Optional. Specifies the list of origins that will be allowed
+      to do CORS requests. This translates to the Access-Control-Allow-Origin
+      response header. You may specify up to 5 allowed origins.
+    disabled: Optional. If true, specifies the CORS policy is disabled. The
+      default value is false, which indicates that the CORS policy is in
+      effect.
+    exposeHeaders: Optional. Specifies the content for the Access-Control-
+      Expose-Headers response header. You may specify up to 5 headers to
+      expose in the Access-Control-Expose-Headers header.
+    maxAge: Required. Specifies how long results of a preflight request can be
+      cached by a client in seconds. Note that many browser clients enforce a
+      maximum TTL of 600s (10 minutes). - Setting the value to -1 forces a
+      pre-flight check for all requests (not recommended) - A maximum TTL of
+      86400s can be set, but note that (as above) some clients may force pre-
+      flight checks at a more regular interval. This translates to the Access-
+      Control-Max-Age header.
+  """
+
+  allowCredentials = _messages.BooleanField(1)
+  allowHeaders = _messages.StringField(2, repeated=True)
+  allowMethods = _messages.StringField(3, repeated=True)
+  allowOrigins = _messages.StringField(4, repeated=True)
+  disabled = _messages.BooleanField(5)
+  exposeHeaders = _messages.StringField(6, repeated=True)
+  maxAge = _messages.StringField(7)
 
 
 class CancelOperationRequest(_messages.Message):
@@ -833,10 +823,67 @@ class HeaderAction(_messages.Message):
       response. You may specify up to 10 response headers to remove.
   """
 
-  requestHeadersToAdd = _messages.MessageField('AddHeader', 1, repeated=True)
-  requestHeadersToRemove = _messages.MessageField('RemoveHeader', 2, repeated=True)
-  responseHeadersToAdd = _messages.MessageField('AddHeader', 3, repeated=True)
-  responseHeadersToRemove = _messages.MessageField('RemoveHeader', 4, repeated=True)
+  requestHeadersToAdd = _messages.MessageField('HeaderActionAddHeader', 1, repeated=True)
+  requestHeadersToRemove = _messages.MessageField('HeaderActionRemoveHeader', 2, repeated=True)
+  responseHeadersToAdd = _messages.MessageField('HeaderActionAddHeader', 3, repeated=True)
+  responseHeadersToRemove = _messages.MessageField('HeaderActionRemoveHeader', 4, repeated=True)
+
+
+class HeaderActionAddHeader(_messages.Message):
+  r"""Describes a header to add.
+
+  Fields:
+    headerName: Required. The name of the header to add.
+    headerValue: Required. The value of the header to add.
+    replace: Optional. Whether to replace all existing headers with the same
+      name.
+  """
+
+  headerName = _messages.StringField(1)
+  headerValue = _messages.StringField(2)
+  replace = _messages.BooleanField(3)
+
+
+class HeaderActionRemoveHeader(_messages.Message):
+  r"""Describes a header to remove.
+
+  Fields:
+    headerName: Required. The name of the header to remove.
+  """
+
+  headerName = _messages.StringField(1)
+
+
+class HeaderMatch(_messages.Message):
+  r"""HeaderMatch defines the match conditions for HTTP request headers.
+
+  Fields:
+    exactMatch: Optional. The value of the header should exactly match
+      contents of exactMatch. Only one of exactMatch, prefixMatch, suffixMatch
+      or presentMatch must be set.
+    headerName: Required. The header name to match on.
+    invertMatch: Optional. If set to false (default), the headerMatch is
+      considered a match if the match criteria above are met. If set to true,
+      the headerMatch is considered a match if the match criteria above are
+      NOT met. The default setting is false.
+    prefixMatch: Optional. The value of the header must start with the
+      contents of prefixMatch. Only one of exactMatch, prefixMatch,
+      suffixMatch or presentMatch must be set.
+    presentMatch: Optional. A header with the contents of headerName must
+      exist. The match takes place whether or not the request's header has a
+      value. Only one of exactMatch, prefixMatch, suffixMatch or presentMatch
+      must be set.
+    suffixMatch: Optional. The value of the header must end with the contents
+      of suffixMatch. Only one of exactMatch, prefixMatch, suffixMatch or
+      presentMatch must be set.
+  """
+
+  exactMatch = _messages.StringField(1)
+  headerName = _messages.StringField(2)
+  invertMatch = _messages.BooleanField(3)
+  prefixMatch = _messages.StringField(4)
+  presentMatch = _messages.BooleanField(5)
+  suffixMatch = _messages.StringField(6)
 
 
 class HostRule(_messages.Message):
@@ -1080,6 +1127,9 @@ class MatchRule(_messages.Message):
       original URL. fullPathMatch must begin with a /. The value must be
       between 1 and 1024 characters (inclusive). Exactly one of prefixMatch,
       fullPathMatch, or pathTemplateMatch must be specified.
+    headerMatches: Optional. Specifies a list of header match criteria, all of
+      which must match corresponding headers in the request. You may specify
+      up to 3 headers to match on.
     ignoreCase: Optional. Specifies that prefixMatch and fullPathMatch matches
       are case sensitive. The default value is false.
     pathTemplateMatch: Optional. For satisfying the matchRule condition, the
@@ -1101,10 +1151,11 @@ class MatchRule(_messages.Message):
   """
 
   fullPathMatch = _messages.StringField(1)
-  ignoreCase = _messages.BooleanField(2)
-  pathTemplateMatch = _messages.StringField(3)
-  prefixMatch = _messages.StringField(4)
-  queryParameterMatches = _messages.MessageField('QueryParameterMatcher', 5, repeated=True)
+  headerMatches = _messages.MessageField('HeaderMatch', 2, repeated=True)
+  ignoreCase = _messages.BooleanField(3)
+  pathTemplateMatch = _messages.StringField(4)
+  prefixMatch = _messages.StringField(5)
+  queryParameterMatches = _messages.MessageField('QueryParameterMatcher', 6, repeated=True)
 
 
 class NetworkservicesProjectsLocationsEdgeCacheKeysetsCreateRequest(_messages.Message):
@@ -1873,16 +1924,6 @@ class QueryParameterMatcher(_messages.Message):
   exactMatch = _messages.StringField(1)
   name = _messages.StringField(2)
   presentMatch = _messages.BooleanField(3)
-
-
-class RemoveHeader(_messages.Message):
-  r"""Describes a header to remove.
-
-  Fields:
-    headerName: Required. The name of the header to remove.
-  """
-
-  headerName = _messages.StringField(1)
 
 
 class RouteAction(_messages.Message):

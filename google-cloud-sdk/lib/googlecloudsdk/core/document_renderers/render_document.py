@@ -134,11 +134,12 @@ class MarkdownRenderer(object):
     _next_paragraph: The next line starts a new paragraph at same indentation.
     _renderer: The document_renderer.Renderer subclass.
     command_metadata: Optional metadata of command.
+    command_node: The command object that the document is being rendered for.
   """
   _EMPHASIS = {'*': renderer.BOLD, '_': renderer.ITALIC, '`': renderer.CODE}
 
   def __init__(self, style_renderer, fin=sys.stdin, notes=None,
-               command_metadata=None):
+               command_metadata=None, command_node=None):
     """Initializes the renderer.
 
     Args:
@@ -146,6 +147,7 @@ class MarkdownRenderer(object):
       fin: The markdown input stream.
       notes: Optional sentences for the NOTES section.
       command_metadata: Optional metadata of command.
+      command_node: The command object that the document is being rendered for.
     """
     self._renderer = style_renderer
     self._buf = ''
@@ -165,6 +167,7 @@ class MarkdownRenderer(object):
     self._example_regex = '$ gcloud'
     self._last_list_level = None
     self._in_example_section = False
+    self.command_node = command_node
 
   def _AnchorStyle1(self, buf, i):
     """Checks for link:target[text] hyperlink anchor markdown.
@@ -922,7 +925,7 @@ class MarkdownRenderer(object):
 
 
 def RenderDocument(style='text', fin=None, out=None, width=80, notes=None,
-                   title=None, command_metadata=None):
+                   title=None, command_metadata=None, command_node=None):
   """Renders markdown to a selected document style.
 
   Args:
@@ -933,14 +936,17 @@ def RenderDocument(style='text', fin=None, out=None, width=80, notes=None,
     notes: Optional sentences inserted in the NOTES section.
     title: The document title.
     command_metadata: Optional metadata of command, including available flags.
+    command_node: The command object that the document is being rendered for.
 
   Raises:
     DocumentStyleError: The markdown style was unknown.
   """
+
   if style not in STYLES:
     raise DocumentStyleError(style)
   style_renderer = STYLES[style](out=out or sys.stdout, title=title,
-                                 width=width, command_metadata=command_metadata)
+                                 width=width, command_metadata=command_metadata,
+                                 command_node=command_node)
   MarkdownRenderer(style_renderer, fin=fin or sys.stdin, notes=notes,
                    command_metadata=command_metadata).Run()
 

@@ -461,80 +461,6 @@
         }
       }
     },
-    "AssetTransformation": {
-      "id": "AssetTransformation",
-      "description": "An asset transformation resource. Asset transformation is a read-only resource and is nested under an asset. It contains the status of the transformations associated with an Asset. Each field contains the current status of transformation execution, last invocation time and any error information for the last execution.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "The resource name of the asset transformation, in the following form: `projects\/{project}\/locations\/{location}\/assetTypes\/{type}\/assets\/{asset}\/transformations\/{transformation}`.",
-          "type": "string"
-        },
-        "createTime": {
-          "description": "Output only. The creation time.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "updateTime": {
-          "description": "Output only. The last-modified time.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "labels": {
-          "description": "The labels associated with this resource. Each label is a key-value pair.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        },
-        "lastRunStatus": {
-          "description": "Status of the last asset transformation run.",
-          "$ref": "Status"
-        },
-        "lastRunTime": {
-          "description": "Output only. Time at which the asset transformation was last run.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "state": {
-          "description": "State of the asset transformation.",
-          "type": "string",
-          "enumDescriptions": [
-            "",
-            "",
-            "",
-            ""
-          ],
-          "enum": [
-            "STATE_UNKNOWN",
-            "QUEUED",
-            "RUNNING",
-            "COMPLETED"
-          ]
-        }
-      }
-    },
-    "ListAssetTransformationsResponse": {
-      "id": "ListAssetTransformationsResponse",
-      "description": "Response message for AssetTransformationsService.ListAssetTransformations.",
-      "type": "object",
-      "properties": {
-        "assetTransformations": {
-          "description": "The list of transformations.",
-          "type": "array",
-          "items": {
-            "$ref": "AssetTransformation"
-          }
-        },
-        "nextPageToken": {
-          "description": "Token to retrieve the next page of results, or empty if there are no more results in the list.",
-          "type": "string"
-        }
-      }
-    },
     "AssetType": {
       "id": "AssetType",
       "description": "An asset type resource. An asset type defines the schema for the assets.It specifies configuration of all the fields present on the asset.",
@@ -582,13 +508,6 @@
           "type": "object",
           "additionalProperties": {
             "$ref": "LinkSetConfig"
-          }
-        },
-        "transformationConfigs": {
-          "description": "Mapping of a transformation name to its configuration.",
-          "type": "object",
-          "additionalProperties": {
-            "$ref": "TransformationConfig"
           }
         },
         "indexedFieldConfigs": {
@@ -656,31 +575,6 @@
         "assetType": {
           "description": "Required. Reference to the asset type name for the type of the assets in this set, in the following form: `projects\/{project}\/locations\/{location}\/assetTypes\/{name}`.",
           "type": "string"
-        }
-      }
-    },
-    "TransformationConfig": {
-      "id": "TransformationConfig",
-      "type": "object",
-      "properties": {
-        "transformer": {
-          "description": "Required. Reference to a transformer to execute, in the following form: `projects\/{project}\/locations\/{location}\/transformers\/{name}`.",
-          "type": "string"
-        },
-        "inputs": {
-          "description": "Key-value pairs representing input parameters to the transformers. The key maps to the transformer input parameter name. The value is interpreted as a literal or a path within asset if it's prefixed by \"$asset.\", e.g. \"$asset.file.url\".",
-          "type": "object",
-          "additionalProperties": {
-            "type": "any",
-            "description": "Properties of the object."
-          }
-        },
-        "outputs": {
-          "description": "Key-value pairs representing output parameters from the transformers. The key maps to the transformer output parameter name. The value will be the path to the metadata in the asset to which this output should be assigned.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
         }
       }
     },
@@ -858,6 +752,10 @@
             "ACTIVE",
             "DELETING"
           ]
+        },
+        "owner": {
+          "description": "The owner of the asset, set by the system.",
+          "$ref": "Owner"
         }
       }
     },
@@ -899,6 +797,21 @@
         "owner": {
           "description": "Output only. The owner of the link, if it's updated by the system.",
           "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "Owner": {
+      "id": "Owner",
+      "description": "The owner of the asset, set by the system.",
+      "type": "object",
+      "properties": {
+        "ownerAsset": {
+          "description": "The name of the owner asset.",
+          "type": "string"
+        },
+        "linkId": {
+          "description": "The link ID in the owner asset.",
           "type": "string"
         }
       }
@@ -1031,7 +944,7 @@
       "properties": {
         "transformation": {
           "description": "Configures the associated AssetType to invoke transformers.",
-          "$ref": "RuleTransformationConfig"
+          "$ref": "TransformationConfig"
         },
         "notification": {
           "description": "Configures notifications for changes to resources nested under the parent AssetType (e.g., assets, actions, and annotations).",
@@ -1066,9 +979,9 @@
         }
       }
     },
-    "RuleTransformationConfig": {
-      "id": "RuleTransformationConfig",
-      "description": "A RuleTransformationConfig configures the associated AssetType to invoke transformers on its Assets.",
+    "TransformationConfig": {
+      "id": "TransformationConfig",
+      "description": "A TransformationConfig configures the associated AssetType to invoke transformers on its Assets.",
       "type": "object",
       "properties": {
         "transformer": {
@@ -1123,6 +1036,10 @@
         "transformationChange": {
           "description": "Specifies the transformer invocations triggered by the transformation rule that should publish Pub\/Sub messages on event changes.",
           "$ref": "TransformationChange"
+        },
+        "assetChange": {
+          "description": "Specifies the asset changes that should trigger notifications.",
+          "$ref": "AssetChange"
         }
       }
     },
@@ -1157,6 +1074,13 @@
           "description": "Required. Notifies for changes to any transformer invocations triggered by the transformation rule.",
           "type": "string"
         }
+      }
+    },
+    "AssetChange": {
+      "id": "AssetChange",
+      "description": "Specifies the asset changes that should trigger notifications.",
+      "type": "object",
+      "properties": {
       }
     },
     "NotificationDestination": {
@@ -1246,25 +1170,11 @@
             "type": "string"
           }
         },
-        "inputs": {
-          "description": "Mapping of the input parameter name to its type. The type could be one of: - Primitive types (\"string\", \"number\", \"bool\") - Custom complex type. Format: \"p\/p\/l\/l\/complexTypes\/*\" - Collections of the above - list(), dict()",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        },
         "input": {
           "description": "Mapping of the input parameter name to its input definition. Will be replacing inputs in future.",
           "type": "object",
           "additionalProperties": {
             "$ref": "Input"
-          }
-        },
-        "outputs": {
-          "description": "Mapping of the output parameter name to its type. The type could be one of: - Primitive types (\"string\", \"number\", \"bool\") - Custom complex type. Format: \"p\/p\/l\/l\/complexTypes\/*\" - Collections of the above - list(), dict()",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
           }
         },
         "output": {
@@ -2790,39 +2700,6 @@
                     },
                     "annotationSets": {
                       "methods": {
-                        "create": {
-                          "id": "mediaasset.projects.locations.assetTypes.assets.annotationSets.create",
-                          "path": "v1alpha/{+parent}/annotationSets",
-                          "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/assetTypes/{assetTypesId}/assets/{assetsId}/annotationSets",
-                          "httpMethod": "POST",
-                          "parameters": {
-                            "parent": {
-                              "description": "Required. The parent resource where this AnnotationSet will be created. Format: `projects\/{project}\/locations\/{location}\/assetTypes\/{asset_type}\/assets\/{asset}`",
-                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/assetTypes\/[^\/]+\/assets\/[^\/]+$",
-                              "location": "path",
-                              "required": true,
-                              "type": "string"
-                            },
-                            "annotationSetId": {
-                              "description": "Required. The ID of the annotationSet resource to be created.",
-                              "location": "query",
-                              "type": "string"
-                            }
-                          },
-                          "parameterOrder": [
-                            "parent"
-                          ],
-                          "request": {
-                            "$ref": "AnnotationSet"
-                          },
-                          "response": {
-                            "$ref": "AnnotationSet"
-                          },
-                          "scopes": [
-                            "https://www.googleapis.com/auth/cloud-platform"
-                          ],
-                          "description": "Creates a new annotationSet in a given project and location."
-                        },
                         "get": {
                           "id": "mediaasset.projects.locations.assetTypes.assets.annotationSets.get",
                           "path": "v1alpha/{+name}",
@@ -2889,74 +2766,92 @@
                           ],
                           "description": "Lists annotationSets in a given project and location."
                         },
-                        "delete": {
-                          "id": "mediaasset.projects.locations.assetTypes.assets.annotationSets.delete",
-                          "path": "v1alpha/{+name}",
-                          "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/assetTypes/{assetTypesId}/assets/{assetsId}/annotationSets/{annotationSetsId}",
-                          "httpMethod": "DELETE",
+                        "setIamPolicy": {
+                          "id": "mediaasset.projects.locations.assetTypes.assets.annotationSets.setIamPolicy",
+                          "path": "v1alpha/{+resource}:setIamPolicy",
+                          "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/assetTypes/{assetTypesId}/assets/{assetsId}/annotationSets/{annotationSetsId}:setIamPolicy",
+                          "httpMethod": "POST",
                           "parameters": {
-                            "name": {
-                              "description": "Required. The name of the annotationSet to delete. Format: `projects\/{project}\/locations\/{location}\/assetTypes\/{asset_type}\/assets\/{asset}\/annotationSets\/{annotation_set}`",
+                            "resource": {
+                              "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
                               "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/assetTypes\/[^\/]+\/assets\/[^\/]+\/annotationSets\/[^\/]+$",
                               "location": "path",
                               "required": true,
                               "type": "string"
-                            },
-                            "etag": {
-                              "description": "The current etag of the annotationSet. If an etag is provided and does not match the current etag of the annotationSet, deletion will be blocked and a FAILED_PRECONDITION error will be returned.",
-                              "location": "query",
-                              "type": "string"
                             }
                           },
                           "parameterOrder": [
-                            "name"
-                          ],
-                          "response": {
-                            "$ref": "Empty"
-                          },
-                          "scopes": [
-                            "https://www.googleapis.com/auth/cloud-platform"
-                          ],
-                          "description": "Deletes a single annotationSet."
-                        },
-                        "patch": {
-                          "id": "mediaasset.projects.locations.assetTypes.assets.annotationSets.patch",
-                          "path": "v1alpha/{+name}",
-                          "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/assetTypes/{assetTypesId}/assets/{assetsId}/annotationSets/{annotationSetsId}",
-                          "httpMethod": "PATCH",
-                          "parameters": {
-                            "name": {
-                              "description": "A user-specified resource name of the annotationSet `projects\/{project}\/locations\/{location}\/assetTypes\/{asset_type}\/assets\/{asset}\/annotationSets\/{annotation_set}`. Here {annotation_set} is a resource id. Detailed rules for a resource id are: 1. 1 character minimum, 63 characters maximum 2. only contains letters, digits, underscore and hyphen 3. starts with a letter if length == 1, starts with a letter or underscore if length > 1",
-                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/assetTypes\/[^\/]+\/assets\/[^\/]+\/annotationSets\/[^\/]+$",
-                              "location": "path",
-                              "required": true,
-                              "type": "string"
-                            },
-                            "oldUpdateMask": {
-                              "description": "this is temporary",
-                              "location": "query",
-                              "type": "string",
-                              "format": "google-fieldmask"
-                            },
-                            "updateMask": {
-                              "description": "Required. Comma-separated list of fields to be updated.",
-                              "location": "query",
-                              "type": "string"
-                            }
-                          },
-                          "parameterOrder": [
-                            "name"
+                            "resource"
                           ],
                           "request": {
-                            "$ref": "AnnotationSet"
+                            "$ref": "GoogleIamV1SetIamPolicyRequest"
                           },
                           "response": {
-                            "$ref": "AnnotationSet"
+                            "$ref": "GoogleIamV1Policy"
                           },
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "Updates the parameters of a single annotationSet."
+                          "description": "Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors."
+                        },
+                        "getIamPolicy": {
+                          "id": "mediaasset.projects.locations.assetTypes.assets.annotationSets.getIamPolicy",
+                          "path": "v1alpha/{+resource}:getIamPolicy",
+                          "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/assetTypes/{assetTypesId}/assets/{assetsId}/annotationSets/{annotationSetsId}:getIamPolicy",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "resource": {
+                              "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/assetTypes\/[^\/]+\/assets\/[^\/]+\/annotationSets\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            },
+                            "options.requestedPolicyVersion": {
+                              "description": "Optional. The policy format version to be returned. Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected. Requests for policies with any conditional bindings must specify version 3. Policies without any conditional bindings may specify any valid value or leave the field unset. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
+                              "location": "query",
+                              "type": "integer",
+                              "format": "int32"
+                            }
+                          },
+                          "parameterOrder": [
+                            "resource"
+                          ],
+                          "response": {
+                            "$ref": "GoogleIamV1Policy"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set."
+                        },
+                        "testIamPermissions": {
+                          "id": "mediaasset.projects.locations.assetTypes.assets.annotationSets.testIamPermissions",
+                          "path": "v1alpha/{+resource}:testIamPermissions",
+                          "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/assetTypes/{assetTypesId}/assets/{assetsId}/annotationSets/{annotationSetsId}:testIamPermissions",
+                          "httpMethod": "POST",
+                          "parameters": {
+                            "resource": {
+                              "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/assetTypes\/[^\/]+\/assets\/[^\/]+\/annotationSets\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "resource"
+                          ],
+                          "request": {
+                            "$ref": "GoogleIamV1TestIamPermissionsRequest"
+                          },
+                          "response": {
+                            "$ref": "GoogleIamV1TestIamPermissionsResponse"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
                         }
                       }
                       ,
@@ -3130,170 +3025,95 @@
                                 "https://www.googleapis.com/auth/cloud-platform"
                               ],
                               "description": "Updates the parameters of a single annotation."
+                            },
+                            "setIamPolicy": {
+                              "id": "mediaasset.projects.locations.assetTypes.assets.annotationSets.annotations.setIamPolicy",
+                              "path": "v1alpha/{+resource}:setIamPolicy",
+                              "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/assetTypes/{assetTypesId}/assets/{assetsId}/annotationSets/{annotationSetsId}/annotations/{annotationsId}:setIamPolicy",
+                              "httpMethod": "POST",
+                              "parameters": {
+                                "resource": {
+                                  "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/assetTypes\/[^\/]+\/assets\/[^\/]+\/annotationSets\/[^\/]+\/annotations\/[^\/]+$",
+                                  "location": "path",
+                                  "required": true,
+                                  "type": "string"
+                                }
+                              },
+                              "parameterOrder": [
+                                "resource"
+                              ],
+                              "request": {
+                                "$ref": "GoogleIamV1SetIamPolicyRequest"
+                              },
+                              "response": {
+                                "$ref": "GoogleIamV1Policy"
+                              },
+                              "scopes": [
+                                "https://www.googleapis.com/auth/cloud-platform"
+                              ],
+                              "description": "Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors."
+                            },
+                            "getIamPolicy": {
+                              "id": "mediaasset.projects.locations.assetTypes.assets.annotationSets.annotations.getIamPolicy",
+                              "path": "v1alpha/{+resource}:getIamPolicy",
+                              "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/assetTypes/{assetTypesId}/assets/{assetsId}/annotationSets/{annotationSetsId}/annotations/{annotationsId}:getIamPolicy",
+                              "httpMethod": "GET",
+                              "parameters": {
+                                "resource": {
+                                  "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/assetTypes\/[^\/]+\/assets\/[^\/]+\/annotationSets\/[^\/]+\/annotations\/[^\/]+$",
+                                  "location": "path",
+                                  "required": true,
+                                  "type": "string"
+                                },
+                                "options.requestedPolicyVersion": {
+                                  "description": "Optional. The policy format version to be returned. Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected. Requests for policies with any conditional bindings must specify version 3. Policies without any conditional bindings may specify any valid value or leave the field unset. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
+                                  "location": "query",
+                                  "type": "integer",
+                                  "format": "int32"
+                                }
+                              },
+                              "parameterOrder": [
+                                "resource"
+                              ],
+                              "response": {
+                                "$ref": "GoogleIamV1Policy"
+                              },
+                              "scopes": [
+                                "https://www.googleapis.com/auth/cloud-platform"
+                              ],
+                              "description": "Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set."
+                            },
+                            "testIamPermissions": {
+                              "id": "mediaasset.projects.locations.assetTypes.assets.annotationSets.annotations.testIamPermissions",
+                              "path": "v1alpha/{+resource}:testIamPermissions",
+                              "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/assetTypes/{assetTypesId}/assets/{assetsId}/annotationSets/{annotationSetsId}/annotations/{annotationsId}:testIamPermissions",
+                              "httpMethod": "POST",
+                              "parameters": {
+                                "resource": {
+                                  "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/assetTypes\/[^\/]+\/assets\/[^\/]+\/annotationSets\/[^\/]+\/annotations\/[^\/]+$",
+                                  "location": "path",
+                                  "required": true,
+                                  "type": "string"
+                                }
+                              },
+                              "parameterOrder": [
+                                "resource"
+                              ],
+                              "request": {
+                                "$ref": "GoogleIamV1TestIamPermissionsRequest"
+                              },
+                              "response": {
+                                "$ref": "GoogleIamV1TestIamPermissionsResponse"
+                              },
+                              "scopes": [
+                                "https://www.googleapis.com/auth/cloud-platform"
+                              ],
+                              "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
                             }
                           }
-                        }
-                      }
-                    },
-                    "transformations": {
-                      "methods": {
-                        "get": {
-                          "id": "mediaasset.projects.locations.assetTypes.assets.transformations.get",
-                          "path": "v1alpha/{+name}",
-                          "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/assetTypes/{assetTypesId}/assets/{assetsId}/transformations/{transformationsId}",
-                          "httpMethod": "GET",
-                          "parameters": {
-                            "name": {
-                              "description": "Required. The name of the asset transformation to retrieve, in the following form: `projects\/{project}\/locations\/{location}\/assetTypes\/{type}\/assets\/{asset}\/transformations\/{transformation}`.",
-                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/assetTypes\/[^\/]+\/assets\/[^\/]+\/transformations\/[^\/]+$",
-                              "location": "path",
-                              "required": true,
-                              "type": "string"
-                            }
-                          },
-                          "parameterOrder": [
-                            "name"
-                          ],
-                          "response": {
-                            "$ref": "AssetTransformation"
-                          },
-                          "scopes": [
-                            "https://www.googleapis.com/auth/cloud-platform"
-                          ],
-                          "description": "Gets details of a single asset transformation."
-                        },
-                        "list": {
-                          "id": "mediaasset.projects.locations.assetTypes.assets.transformations.list",
-                          "path": "v1alpha/{+parent}/transformations",
-                          "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/assetTypes/{assetTypesId}/assets/{assetsId}/transformations",
-                          "httpMethod": "GET",
-                          "parameters": {
-                            "parent": {
-                              "description": "Required. The parent resource name, in the following form: `projects\/{project}\/locations\/{location}\/assetTypes\/{type}\/assets\/{asset}`.",
-                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/assetTypes\/[^\/]+\/assets\/[^\/]+$",
-                              "location": "path",
-                              "required": true,
-                              "type": "string"
-                            },
-                            "pageSize": {
-                              "description": "The maximum number of items to return. If unspecified, server will pick an appropriate default. Server may return fewer items than requested. A caller should only rely on response's next_page_token to determine if there are more realms left to be queried.",
-                              "location": "query",
-                              "type": "integer",
-                              "format": "int32"
-                            },
-                            "pageToken": {
-                              "description": "The next_page_token value returned from a previous List request, if any.",
-                              "location": "query",
-                              "type": "string"
-                            },
-                            "filter": {
-                              "description": "The filter to apply to list results.",
-                              "location": "query",
-                              "type": "string"
-                            },
-                            "orderBy": {
-                              "description": "Specifies the ordering of results following syntax at https:\/\/cloud.google.com\/apis\/design\/design_patterns#sorting_order.",
-                              "location": "query",
-                              "type": "string"
-                            }
-                          },
-                          "parameterOrder": [
-                            "parent"
-                          ],
-                          "response": {
-                            "$ref": "ListAssetTransformationsResponse"
-                          },
-                          "scopes": [
-                            "https://www.googleapis.com/auth/cloud-platform"
-                          ],
-                          "description": "Lists asset transformations in a given project and location."
-                        },
-                        "setIamPolicy": {
-                          "id": "mediaasset.projects.locations.assetTypes.assets.transformations.setIamPolicy",
-                          "path": "v1alpha/{+resource}:setIamPolicy",
-                          "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/assetTypes/{assetTypesId}/assets/{assetsId}/transformations/{transformationsId}:setIamPolicy",
-                          "httpMethod": "POST",
-                          "parameters": {
-                            "resource": {
-                              "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
-                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/assetTypes\/[^\/]+\/assets\/[^\/]+\/transformations\/[^\/]+$",
-                              "location": "path",
-                              "required": true,
-                              "type": "string"
-                            }
-                          },
-                          "parameterOrder": [
-                            "resource"
-                          ],
-                          "request": {
-                            "$ref": "GoogleIamV1SetIamPolicyRequest"
-                          },
-                          "response": {
-                            "$ref": "GoogleIamV1Policy"
-                          },
-                          "scopes": [
-                            "https://www.googleapis.com/auth/cloud-platform"
-                          ],
-                          "description": "Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors."
-                        },
-                        "getIamPolicy": {
-                          "id": "mediaasset.projects.locations.assetTypes.assets.transformations.getIamPolicy",
-                          "path": "v1alpha/{+resource}:getIamPolicy",
-                          "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/assetTypes/{assetTypesId}/assets/{assetsId}/transformations/{transformationsId}:getIamPolicy",
-                          "httpMethod": "GET",
-                          "parameters": {
-                            "resource": {
-                              "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
-                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/assetTypes\/[^\/]+\/assets\/[^\/]+\/transformations\/[^\/]+$",
-                              "location": "path",
-                              "required": true,
-                              "type": "string"
-                            },
-                            "options.requestedPolicyVersion": {
-                              "description": "Optional. The policy format version to be returned. Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected. Requests for policies with any conditional bindings must specify version 3. Policies without any conditional bindings may specify any valid value or leave the field unset. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
-                              "location": "query",
-                              "type": "integer",
-                              "format": "int32"
-                            }
-                          },
-                          "parameterOrder": [
-                            "resource"
-                          ],
-                          "response": {
-                            "$ref": "GoogleIamV1Policy"
-                          },
-                          "scopes": [
-                            "https://www.googleapis.com/auth/cloud-platform"
-                          ],
-                          "description": "Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set."
-                        },
-                        "testIamPermissions": {
-                          "id": "mediaasset.projects.locations.assetTypes.assets.transformations.testIamPermissions",
-                          "path": "v1alpha/{+resource}:testIamPermissions",
-                          "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/assetTypes/{assetTypesId}/assets/{assetsId}/transformations/{transformationsId}:testIamPermissions",
-                          "httpMethod": "POST",
-                          "parameters": {
-                            "resource": {
-                              "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
-                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/assetTypes\/[^\/]+\/assets\/[^\/]+\/transformations\/[^\/]+$",
-                              "location": "path",
-                              "required": true,
-                              "type": "string"
-                            }
-                          },
-                          "parameterOrder": [
-                            "resource"
-                          ],
-                          "request": {
-                            "$ref": "GoogleIamV1TestIamPermissionsRequest"
-                          },
-                          "response": {
-                            "$ref": "GoogleIamV1TestIamPermissionsResponse"
-                          },
-                          "scopes": [
-                            "https://www.googleapis.com/auth/cloud-platform"
-                          ],
-                          "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
                         }
                       }
                     }

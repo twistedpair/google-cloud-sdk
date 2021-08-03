@@ -4,7 +4,7 @@
  "id": "bigquery:v2",
  "name": "bigquery",
  "version": "v2",
- "revision": "20210709",
+ "revision": "20210723",
  "title": "BigQuery API",
  "description": "A data platform for customers to create, manage, share and query data.",
  "ownerDomain": "google.com",
@@ -362,6 +362,10 @@
      "type": "string",
      "description": "[Optional] The separator for fields in a CSV file. BigQuery converts the string to ISO-8859-1 encoding, and then uses the first byte of the encoded string to split the data in its raw, binary state. BigQuery also supports the escape sequence \"\\t\" to specify a tab separator. The default value is a comma (',')."
     },
+    "null_marker": {
+     "type": "string",
+     "description": "[Optional] An custom string that will represent a NULL value in CSV import data."
+    },
     "quote": {
      "type": "string",
      "description": "[Optional] The value that is used to quote data sections in a CSV file. BigQuery converts the string to ISO-8859-1 encoding, and then uses the first byte of the encoded string to split the data in its raw, binary state. The default value is a double-quote ('\"'). If your data does not contain quoted sections, set the property value to an empty string. If your data contains quoted newline characters, you must also set the allowQuotedNewlines property to true.",
@@ -461,6 +465,10 @@
     "id": {
      "type": "string",
      "description": "[Output-only] The fully-qualified unique name of the dataset in the format projectId:datasetId. The dataset name without the project name is given in the datasetId field. When creating a new dataset, leave this field blank, and instead specify the datasetId field."
+    },
+    "isCaseInsensitive": {
+     "type": "boolean",
+     "description": "[Optional] Indicates if table names are case insensitive in the dataset."
     },
     "kind": {
      "type": "string",
@@ -2780,6 +2788,10 @@
        }
       }
      }
+    },
+    "collationSpec": {
+     "type": "string",
+     "description": "Optional. Collation specification of the field. It only can be set on string type field."
     },
     "description": {
      "type": "string",

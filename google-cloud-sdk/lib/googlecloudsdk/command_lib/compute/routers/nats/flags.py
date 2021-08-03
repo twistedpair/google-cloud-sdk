@@ -86,7 +86,7 @@ def AddCommonNatArgs(parser,
   _AddIpAllocationArgs(parser, for_create)
   _AddSubnetworkArgs(parser, for_create)
   _AddTimeoutsArgs(parser, for_create, with_tcp_time_wait_timeout)
-  _AddMinPortsPerVmArg(parser, for_create)
+  _AddMinPortsPerVmArg(parser, for_create, with_dynamic_port_allocation)
   _AddLoggingArgs(parser)
   _AddEndpointIndependentMappingArg(parser)
   if not for_create:
@@ -203,41 +203,56 @@ def _AddTimeoutsArgs(parser,
         'Clear timeout for TCP connections in the TIME_WAIT state')
 
 
-def _AddMinPortsPerVmArg(parser, for_create=False):
+def _AddMinPortsPerVmArg(parser,
+                         for_create=False,
+                         with_dynamic_port_allocation=False):
   """Adds an argument to specify the minimum number of ports per VM for NAT."""
+  help_text = 'Minimum ports to be allocated to a VM'
+  if with_dynamic_port_allocation:
+    help_text = textwrap.dedent("""\
+    Minimum ports to be allocated to a VM.
+
+    If Dynamic Port Allocation is disabled, this defaults to 64.
+
+    If Dynamic Port Allocation is enabled, this defaults to 32; and must be set
+    to a power of 2 that is at least 32 and lower than maxPortsPerVm.
+    """)
   _AddClearableArgument(
       parser,
       for_create,
       'min-ports-per-vm',
       arg_parsers.BoundedInt(lower_bound=2),
-      'Minimum ports to be allocated to a VM',
+      help_text,
       'Clear minimum ports to be allocated to a VM')
 
 
 def _AddDynamicPortAllocationArgs(parser, for_create=False):
   """Adds arguments for Dynamic Port Allocation to specify the maximum number of ports per VM for NAT."""
 
+  max_ports_help_text = textwrap.dedent("""\
+  Maximum ports to be allocated to a VM.
+
+  This field can only be set when Dynamic Port Allocation is enabled, and
+  defaults to 65536. It must be set to a power of 2 that is greater than
+  minPortsPerVm and at most 65536.
+  """)
   _AddClearableArgument(
       parser,
       for_create,
       'max-ports-per-vm',
       arg_parsers.BoundedInt(lower_bound=64, upper_bound=65536),
-      'Maximum ports to be allocated to a VM when Dynamic Port Allocation is enabled',
-      'Clear maximum ports to be allocated to a VM when Dynamic Port Allocation is enabled',
-      hidden=True
+      max_ports_help_text,
+      'Clear maximum ports to be allocated to a VM',
   )
-  help_text = textwrap.dedent("""\
+  dpa_help_text = textwrap.dedent("""\
   Enable dynamic port allocation.
 
   If not specified, Dynamic Port Allocation is disabled by default.
-
-  Use `--enable-dynamic-port-allocation` to enable and `--no-enable-dynamic-port-allocation` to disable.
   """)
   parser.add_argument(
       '--enable-dynamic-port-allocation',
-      hidden=True,
       action=arg_parsers.StoreTrueFalseAction,
-      help=help_text)
+      help=dpa_help_text)
 
 
 def _AddLoggingArgs(parser):
@@ -304,21 +319,17 @@ def _AddClearableArgument(parser,
                           arg_type,
                           arg_help,
                           clear_help,
-                          choices=None,
-                          hidden=False):
+                          choices=None):
   """Adds an argument for a field that can be cleared in an update."""
   if for_create:
     parser.add_argument(
-        '--{}'.format(arg_name), type=arg_type, help=arg_help, choices=choices,
-        hidden=hidden)
+        '--{}'.format(arg_name), type=arg_type, help=arg_help, choices=choices)
   else:
-    mutex = parser.add_mutually_exclusive_group(required=False, hidden=hidden)
+    mutex = parser.add_mutually_exclusive_group(required=False)
     mutex.add_argument(
-        '--{}'.format(arg_name), type=arg_type, help=arg_help, choices=choices,
-        hidden=hidden)
+        '--{}'.format(arg_name), type=arg_type, help=arg_help, choices=choices)
     mutex.add_argument(
         '--clear-{}'.format(arg_name),
         action='store_true',
         default=False,
-        help=clear_help,
-        hidden=hidden)
+        help=clear_help)

@@ -59,7 +59,6 @@ class BaseScpHelper(ssh_utils.BaseSSHCLIHelper):
         help='Specifies a destination for the source files.',
         metavar='[[USER@]INSTANCE:]DEST')
 
-    # TODO(b/21515936): Use flags.AddZoneFlag when copy_files supports URIs.
     parser.add_argument(
         '--zone',
         action=actions.StoreProperty(properties.VALUES.compute.zone),
@@ -117,6 +116,11 @@ class BaseScpHelper(ssh_utils.BaseSSHCLIHelper):
     identity_file = None
     options = None
 
+    # The client must be fetched to ensure reauth is performed as needed, even
+    # for on-prem, which doesn't use the resulting variable. Another option may
+    # be to just call "store.LoadIfEnabled()" for on-prem.
+    compute_client = compute_holder.client
+
     if on_prem:
       iap_tunnel_args = iap_tunnel.CreateOnPremSshTunnelArgs(
           args, release_track, remote.host)
@@ -127,9 +131,9 @@ class BaseScpHelper(ssh_utils.BaseSSHCLIHelper):
           args.zone,
           compute_holder.resources,
           scope_lister=instance_flags.GetInstanceZoneScopeLister(
-              compute_holder.client))[0]
-      instance = self.GetInstance(compute_holder.client, instance_ref)
-      project = self.GetProject(compute_holder.client, instance_ref.project)
+              compute_client))[0]
+      instance = self.GetInstance(compute_client, instance_ref)
+      project = self.GetProject(compute_client, instance_ref.project)
 
       if remote.user:
         username_requested = True
@@ -173,7 +177,7 @@ class BaseScpHelper(ssh_utils.BaseSSHCLIHelper):
       keys_newly_added = False
     else:
       keys_newly_added = self.EnsureSSHKeyExists(
-          compute_holder.client,
+          compute_client,
           remote.user,
           instance,
           project,

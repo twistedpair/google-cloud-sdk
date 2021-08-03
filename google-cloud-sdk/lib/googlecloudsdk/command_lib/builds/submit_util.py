@@ -256,7 +256,7 @@ def _SetSource(build_config, messages, is_specified_source, no_source, source,
           check_ownership=default_gcs_source)
     except api_exceptions.HttpForbiddenError:
       raise BucketForbiddenError(
-          'The User is forbiden from accessing the bucket [{}]. Please check '
+          'The user is forbidden from accessing the bucket [{}]. Please check '
           'your organization\'s policy.'.format(gcs_source_staging_dir.bucket))
     except storage_api.BucketInWrongProjectError:
       # If we're using the default bucket but it already exists in a different
@@ -549,6 +549,10 @@ def Build(messages, async_, build_config, hide_logs=False,
 
     log.status.Print(
         '\n{count} message(s) issued.'.format(count=len(build.warnings)))
+
+  if build.failureInfo:
+    log.status.Print('\nBUILD FAILURE: {detail}'.format(
+        detail=build.failureInfo.detail))
 
   if build.status != messages.Build.StatusValueValuesEnum.SUCCESS:
     raise FailedBuildException(build)

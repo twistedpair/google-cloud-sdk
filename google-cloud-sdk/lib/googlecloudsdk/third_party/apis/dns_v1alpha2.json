@@ -187,7 +187,7 @@
           }
         },
         "routingPolicy": {
-          "description": "Configures dynamic query responses based on geo location of querying user or a weighted round robin based routing policy. A ResourceRecordSet should only have either rrdata (static) or routing_policy(dynamic). An error is returned otherwise.",
+          "description": "Configures dynamic query responses based on geo location of querying user or a weighted round robin based routing policy. A ResourceRecordSet should only have either rrdata (static) or routing_policy (dynamic). An error is returned otherwise.",
           "$ref": "RRSetRoutingPolicy"
         },
         "kind": {

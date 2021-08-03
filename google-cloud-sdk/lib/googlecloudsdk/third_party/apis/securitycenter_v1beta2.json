@@ -523,6 +523,28 @@
         "canonicalName": {
           "description": "The canonical name of the finding. It's either \"organizations\/{organization_id}\/sources\/{source_id}\/findings\/{finding_id}\", \"folders\/{folder_id}\/sources\/{source_id}\/findings\/{finding_id}\" or \"projects\/{project_number}\/sources\/{source_id}\/findings\/{finding_id}\", depending on the closest CRM ancestor of the resource associated with the finding.",
           "type": "string"
+        },
+        "findingClass": {
+          "description": "The class of the finding.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified finding class.",
+            "Describes unwanted or malicious activity.",
+            "Describes a potential weakness in software that increases risk to Confidentiality & Integrity & Availability.",
+            "Describes a potential weakness in cloud resource\/asset configuration that increases risk.",
+            "Describes a security observation that is for informational purposes."
+          ],
+          "enum": [
+            "FINDING_CLASS_UNSPECIFIED",
+            "THREAT",
+            "VULNERABILITY",
+            "MISCONFIGURATION",
+            "OBSERVATION"
+          ]
+        },
+        "indicator": {
+          "description": "Represents what's commonly known as an Indicator of compromise (IoC) in computer forensics. This is an artifact observed on a network or in an operating system that, with high confidence, indicates a computer intrusion. Reference: https:\/\/en.wikipedia.org\/wiki\/Indicator_of_compromise",
+          "$ref": "Indicator"
         }
       }
     },
@@ -545,6 +567,27 @@
         "canonicalName": {
           "description": "The canonical name of the marks. Examples: \"organizations\/{organization_id}\/assets\/{asset_id}\/securityMarks\" \"folders\/{folder_id}\/assets\/{asset_id}\/securityMarks\" \"projects\/{project_number}\/assets\/{asset_id}\/securityMarks\" \"organizations\/{organization_id}\/sources\/{source_id}\/findings\/{finding_id}\/securityMarks\" \"folders\/{folder_id}\/sources\/{source_id}\/findings\/{finding_id}\/securityMarks\" \"projects\/{project_number}\/sources\/{source_id}\/findings\/{finding_id}\/securityMarks\"",
           "type": "string"
+        }
+      }
+    },
+    "Indicator": {
+      "id": "Indicator",
+      "description": "Represents what's commonly known as an Indicator of compromise (IoC) in computer forensics. This is an artifact observed on a network or in an operating system that, with high confidence, indicates a computer intrusion. Reference: https:\/\/en.wikipedia.org\/wiki\/Indicator_of_compromise",
+      "type": "object",
+      "properties": {
+        "ipAddresses": {
+          "description": "List of ip addresses associated to the Finding.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "domains": {
+          "description": "List of domains associated to the Finding.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },

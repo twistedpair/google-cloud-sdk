@@ -29,7 +29,6 @@ import select
 import socket
 import sys
 import threading
-import time
 
 from googlecloudsdk.api_lib.compute import iap_tunnel_websocket
 from googlecloudsdk.api_lib.compute import iap_tunnel_websocket_utils as utils
@@ -44,6 +43,7 @@ from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
 import portpicker
 import six
+from six.moves import queue
 
 
 class LocalPortUnavailableError(exceptions.Error):
@@ -312,9 +312,51 @@ class _StdinSocket(object):
   anything else.
   """
 
+  class _StdinSocketMessage(object):
+    """A class to wrap messages coming to the stdin socket for unix systems."""
+
+    def __init__(self, messageType, data):
+      self._type = messageType
+      self._data = data
+
+    def GetData(self):
+      return self._data
+
+    def GetType(self):
+      return self._type
+
+  class _EOFError(Exception):
+    pass
+
+  class _StdinClosedMessageType():
+    pass
+
+  class _ExceptionMessageType():
+    pass
+
+  class _DataMessageType():
+    pass
+
   def __init__(self):
-    # This is only used in Unix.
-    self._stdin_closed = False
+    # For linux platforms, we fire a reading thread. This is not needed for
+    # windows because on windows we open the stdin as a file, so we don't need
+    # a infinite loop with timer for that. Now for linux we do need a loop, so
+    # firing a separate thread for input reduces the number of operations
+    # per loop.
+    if not platforms.OperatingSystem.IsWindows():
+      self._stdin_closed = False
+
+      # We will use this thread-safe queue to comunicate with the input
+      # reading thread.
+      self._message_queue = queue.Queue()
+
+      # Maximum number of bytes the thread should read.
+      self._bufsize = utils.SUBPROTOCOL_MAX_DATA_FRAME_SIZE
+
+      new_thread = threading.Thread(target=
+                                    self._ReadFromStdinAndEnqueueMessageUnix)
+      new_thread.daemon = True
+      new_thread.start()
 
   def send(self, data):  # pylint: disable=invalid-name
     files.WriteStreamBytes(sys.stdout, data)
@@ -343,6 +385,7 @@ class _StdinSocket(object):
     Raises:
       IOError: On low level errors.
     """
+
     if platforms.OperatingSystem.IsWindows():
       return self._RecvWindows(bufsize)
     else:
@@ -359,6 +402,10 @@ class _StdinSocket(object):
     # Windows)
     if how in (socket.SHUT_RDWR, socket.SHUT_RD):
       self._stdin_closed = True
+      if not platforms.OperatingSystem.IsWindows():
+        # We queue the message so that the recv loop can abort
+        msg = self._StdinSocketMessage(self._StdinClosedMessageType, b'')
+        self._message_queue.put(msg)
 
   def _RecvWindows(self, bufsize):
     """Reads data from std in Windows.
@@ -383,8 +430,39 @@ class _StdinSocket(object):
       raise socket.error(errno.EIO, 'stdin ReadFile failed')
     return buf.raw[:number_of_bytes_read.value]
 
-  class _EOFError(Exception):
-    pass
+  def _ReadFromStdinAndEnqueueMessageUnix(self):
+    """Reads data from stdin on Unix, blocking on the first byte.
+
+    This method will loop until stdin is closed. Should be executed in a
+    separate thread to avoid blocking the main thread.
+    """
+
+    try:
+      while not self._stdin_closed:
+        # On Unix, the way to quickly read bytes without unnecessary blocking
+        # is to make stdin non-blocking. To ensure at least 1 byte is
+        # received, we read the first byte blocking.
+        if six.PY2:
+          first_byte = sys.stdin.read(1)
+        else:
+          first_byte = sys.stdin.buffer.read(1)
+
+        # If we close stdin, read() will return an empty byte (b'').
+        if first_byte == b'':  # pylint: disable=g-explicit-bool-comparison
+          raise _StdinSocket._EOFError
+
+        complete_msg = first_byte + self._ReadUnixNonBlocking(self._bufsize - 1)
+        msg = self._StdinSocketMessage(self._DataMessageType, complete_msg)
+        self._message_queue.put(msg)
+    except _StdinSocket._EOFError:
+      msg = self._StdinSocketMessage(self._StdinClosedMessageType, b'')
+      self._message_queue.put(msg)
+    except Exception:  # pylint: disable=broad-except
+      # We had an exception in a separate thread, so we need to notify the
+      # main thread somehow. We will add the exception to the queue,
+      # and rethrow on the main thread.
+      msg = self._StdinSocketMessage(self._ExceptionMessageType, sys.exc_info())
+      self._message_queue.put(msg)
 
   def _RecvUnix(self, bufsize):
     """Reads data from stdin on Unix.
@@ -397,19 +475,29 @@ class _StdinSocket(object):
     Raises:
       IOError: On low level errors.
     """
-    # On Unix, the way to quickly read bytes without unnecessary blocking
-    # is to make stdin non-blocking. To ensure at least 1 byte is received, we
-    # read the first byte blocking.
-    b = b''
-    try:
-      while not self._stdin_closed:
-        b = self._ReadUnixNonBlocking(bufsize)
-        if b:
-          break
-        time.sleep(0.001)
-    except _StdinSocket._EOFError:
+
+    # We don't except bufsize to be anything other than the max size of our
+    # protocol. We will log it only for now to get telemetry if this
+    # ever happens.
+    if bufsize != utils.SUBPROTOCOL_MAX_DATA_FRAME_SIZE:
+      log.info('bufsize [%s] is not max_data_frame_size', bufsize)
+
+    if self._stdin_closed:
+      return b''
+
+    # The call to Queue.get() will block if no data is available in the queue
+    # at the moment.
+    msg = self._message_queue.get()
+    msg_type = msg.GetType()
+    msg_data = msg.GetData()
+
+    if msg_type is self._ExceptionMessageType:
+      six.reraise(msg_data[0], msg_data[1], msg_data[2])
+
+    if msg_type is self._StdinClosedMessageType:
       self._stdin_closed = True
-    return b
+
+    return msg_data
 
   def _ReadUnixNonBlocking(self, bufsize):
     """Reads from stdin on Unix in a nonblocking manner.
@@ -428,6 +516,7 @@ class _StdinSocket(object):
     import fcntl  # pylint: disable=g-import-not-at-top
     old_flags = fcntl.fcntl(sys.stdin, fcntl.F_GETFL)
     try:
+      # Set up non-blocking mode to avoid getting stuck on read.
       fcntl.fcntl(sys.stdin, fcntl.F_SETFL, old_flags | os.O_NONBLOCK)
       if six.PY2:
         b = sys.stdin.read(bufsize)
@@ -454,9 +543,6 @@ class _StdinSocket(object):
       # and exiting it, or just closing the terminal.
       # If gcloud is running as an ssh ProxyCommand this problem doesn't happen.
       fcntl.fcntl(sys.stdin, fcntl.F_SETFL, old_flags)
-    if b == b'':  # pylint: disable=g-explicit-bool-comparison
-      # In python 2 and 3, EOF is indicated by returning b''.
-      raise _StdinSocket._EOFError
     if b is None:
       # Regardless of what the online python3 documentation says, it actually
       # returns None to indicate no nonblocking data available.
@@ -593,6 +679,9 @@ class IapTunnelProxyServerHelper(_BaseIapTunnelHelper):
       with execution_utils.RaisesKeyboardInterrupt():
         while True:
           self._connections.append(self._AcceptNewConnection())
+          # To fix b/189195317, we will need to erase the reference of dead
+          # tasks.
+          self._CleanDeadClientConnections()
     except KeyboardInterrupt:
       log.info('Keyboard interrupt received.')
     finally:
@@ -651,6 +740,31 @@ class IapTunnelProxyServerHelper(_BaseIapTunnelHelper):
       if close_count:
         log.status.Print('Closed [%d] local connection(s).' % close_count)
 
+  def _CleanDeadClientConnections(self):
+    """Erase reference to dead connections so they can be garbage collected."""
+    conn_still_alive = []
+    if self._connections:
+      dead_connections = 0
+      for client_thread, conn in self._connections:
+        if not client_thread.is_alive():
+          dead_connections += 1
+          try:
+            conn.close()
+          except EnvironmentError:
+            pass
+          del conn
+          del client_thread
+        else:
+          conn_still_alive.append([client_thread, conn])
+      if dead_connections:
+        log.debug('Cleaned [%d] dead connection(s).' % dead_connections)
+        self._connections = conn_still_alive
+      # We run GC mostly for windows platforms, where it seems GC is not
+      # collecting memory quick enough. For linux platforms, this is needed only
+      # to immediately clean the memory we freed above.
+      gc.collect(2)
+      log.debug('connections alive: [%d]' % len(self._connections))
+
   def _HandleNewConnection(self, conn, socket_address):
     try:
       self._RunReceiveLocalData(conn, repr(socket_address))
@@ -659,8 +773,6 @@ class IapTunnelProxyServerHelper(_BaseIapTunnelHelper):
                six.text_type(e))
     except:  # pylint: disable=bare-except
       log.exception('Error while receiving from client.')
-    # Manually run garbage collection to avoid a leak on Windows (b/189195317).
-    gc.collect(2)
 
 
 class IapTunnelStdinHelper(_BaseIapTunnelHelper):

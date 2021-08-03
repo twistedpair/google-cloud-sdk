@@ -14,6 +14,10 @@ from apitools.base.py import extra_types
 package = 'accesscontextmanager'
 
 
+class AccessContextManagerOperationMetadata(_messages.Message):
+  r"""Metadata of Access Context Manager's Long Running Operations."""
+
+
 class AccessLevel(_messages.Message):
   r"""An `AccessLevel` is a label that can be applied to requests to Google
   Cloud services, along with a list of requirements necessary for the label to

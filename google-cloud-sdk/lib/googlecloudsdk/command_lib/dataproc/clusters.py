@@ -401,7 +401,7 @@ If you want to enable all scopes use the 'cloud-platform' scope.
 
   autoscaling_group = parser.add_argument_group()
   flags.AddAutoscalingPolicyResourceArgForCluster(
-      autoscaling_group, api_version=('v1beta2' if beta else 'v1'))
+      autoscaling_group, api_version='v1')
 
   if include_ttl_config:
     parser.add_argument(

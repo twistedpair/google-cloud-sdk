@@ -1676,6 +1676,19 @@ class ManagedidentitiesProjectsLocationsGlobalDomainsResetAdminPasswordRequest(_
   resetAdminPasswordRequest = _messages.MessageField('ResetAdminPasswordRequest', 2)
 
 
+class ManagedidentitiesProjectsLocationsGlobalDomainsRestoreRequest(_messages.Message):
+  r"""A ManagedidentitiesProjectsLocationsGlobalDomainsRestoreRequest object.
+
+  Fields:
+    name: Required. resource name for the domain to which the backup belongs
+    restoreDomainRequest: A RestoreDomainRequest resource to be passed as the
+      request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  restoreDomainRequest = _messages.MessageField('RestoreDomainRequest', 2)
+
+
 class ManagedidentitiesProjectsLocationsGlobalDomainsSetIamPolicyRequest(_messages.Message):
   r"""A ManagedidentitiesProjectsLocationsGlobalDomainsSetIamPolicyRequest
   object.
@@ -2301,6 +2314,16 @@ class ResetAdminPasswordResponse(_messages.Message):
   password = _messages.StringField(1)
 
 
+class RestoreDomainRequest(_messages.Message):
+  r"""RestoreDomainRequest is the request received by RestoreDomain rpc
+
+  Fields:
+    backupId: Required. ID of the backup to be restored
+  """
+
+  backupId = _messages.StringField(1)
+
+
 class SQLIntegration(_messages.Message):
   r"""Represents the SQL instance integrated with AD.
 
@@ -2658,8 +2681,8 @@ class UpdatePolicy(_messages.Message):
     channel: Optional. Relative scheduling channel applied to resource.
     denyMaintenancePeriods: Deny Maintenance Period that is applied to
       resource to indicate when maintenance is forbidden. User can specify
-      zero or more non-overlapping deny periods. For V1, Maximum number of
-      deny_maintenance_periods is expected to be one.
+      zero or more non-overlapping deny periods. Maximum number of
+      deny_maintenance_periods expected is one.
     window: Optional. Maintenance window that is applied to resources covered
       by this policy.
   """

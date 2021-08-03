@@ -409,7 +409,7 @@ class Hub(_messages.Message):
       managing-labels#requirements).
 
   Fields:
-    createTime: The time the hub was created.
+    createTime: Output only. The time the hub was created.
     description: An optional description of the hub.
     labels: Optional labels in key:value format. For more information about
       labels, see [Requirements for labels](https://cloud.google.com/resource-
@@ -421,7 +421,7 @@ class Hub(_messages.Message):
     uniqueId: Output only. The Google-generated UUID for the hub. This value
       is unique across all hub resources. If a hub is deleted and another with
       the same name is created, the new hub is assigned a different unique_id.
-    updateTime: The time the hub was last updated.
+    updateTime: Output only. The time the hub was last updated.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -1308,9 +1308,9 @@ class Spoke(_messages.Message):
       managing-labels#requirements).
 
   Fields:
-    createTime: The time the spoke was created.
+    createTime: Output only. The time the spoke was created.
     description: An optional description of the spoke.
-    hub: The URI of the hub that this spoke is attached to.
+    hub: Immutable. The URI of the hub that this spoke is attached to.
     labels: Optional labels in key:value format. For more information about
       labels, see [Requirements for labels](https://cloud.google.com/resource-
       manager/docs/creating-managing-labels#requirements).
@@ -1328,7 +1328,7 @@ class Spoke(_messages.Message):
       is unique across all spoke resources. If a spoke is deleted and another
       with the same name is created, the new spoke is assigned a different
       unique_id.
-    updateTime: The time the spoke was last updated.
+    updateTime: Output only. The time the spoke was last updated.
   """
 
   class StateValueValuesEnum(_messages.Enum):

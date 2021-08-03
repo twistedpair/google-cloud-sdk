@@ -87,9 +87,44 @@ starting-offset:
   - arg_value: beginning
   - arg_value: end
   help_text: |
-    The offset at which a newly created subscription will start receiving messages. A subscription
-    can be initialized at the offset of the oldest retained message (`beginning`), or at the current
-    HEAD offset (`end`).
+    The offset at which a newly created or seeked subscription will start receiving messages. A
+    subscription can be initialized at the offset of the oldest retained message (`beginning`), or
+    at the current HEAD offset (`end`).
+
+publish-time:
+  arg_name: publish-time
+  type: googlecloudsdk.calliope.arg_parsers:Datetime.Parse
+  help_text: |
+    The publish time to seek a subscription to. Messages with publish time greater than or equal to
+    this time will be delivered post-seek.
+    Run $ gcloud topic datetimes for information on time formats.
+
+event-time:
+  arg_name: event-time
+  type: googlecloudsdk.calliope.arg_parsers:Datetime.Parse
+  help_text: |
+    The event time to seek a subscription to. Seeks to the first message with event time greater
+    than or equal to the specified event time. As event times are user supplied, subsequent messages
+    may have event times less than the specified event time and should be filtered by the client, if
+    necessary. Messages missing an event time use publish time as a fallback.
+    Run $ gcloud topic datetimes for information on time formats.
+
+operation-done:
+  arg_name: done
+  required: false
+  # Not a bool type to allow one of: true|false|unspecified
+  choices:
+  - arg_value: 'true'
+  - arg_value: 'false'
+  type: googlecloudsdk.command_lib.util.hooks.types:LowerCaseType
+  help_text: |
+    Filter operations by completion status. This flag is ignored if `--filter` is set.
+
+operation-subscription:
+  arg_name: subscription
+  required: false
+  help_text: |
+    Filter operations by target subscription. This flag is ignored if `--filter` is set.
 
 partition:
   api_field: commitCursorRequest.partition

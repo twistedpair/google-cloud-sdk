@@ -945,14 +945,6 @@ MAP = {
                 default_version=True,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
-        'v1beta2':
-            APIDef(
-                class_path='googlecloudsdk.third_party.apis.dataproc.v1beta2',
-                client_classpath='dataproc_v1beta2_client.DataprocV1beta2',
-                messages_modulepath='dataproc_v1beta2_messages',
-                default_version=False,
-                enable_mtls=False,
-                mtls_endpoint_override=''),
     },
     'datastore': {
         'v1':

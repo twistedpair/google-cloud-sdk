@@ -48,14 +48,28 @@ def AzureClientAttributeConfig():
 def LocationAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='location',
-      help_text='Anthos GKE Multi-cloud location for the {resource}.',
+      help_text='Google Cloud location for the {resource}.',
       fallthroughs=[deps.PropertyFallthrough(properties.VALUES.azure.location)])
+
+
+def OperationAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='operation', help_text='Operation for the {resource}.')
 
 
 def GetLocationResourceSpec():
   return concepts.ResourceSpec(
       'gkemulticloud.projects.locations',
       resource_name='location',
+      locationsId=LocationAttributeConfig(),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
+
+
+def GetOperationResourceSpec():
+  return concepts.ResourceSpec(
+      'gkemulticloud.projects.locations.operations',
+      resource_name='operation',
+      operationsId=OperationAttributeConfig(),
       locationsId=LocationAttributeConfig(),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
 
@@ -89,7 +103,7 @@ def GetAzureClientResourceSpec():
 
 
 def AddAzureClusterResourceArg(parser, verb, positional=True):
-  """Add a resource argument for an Azure cluster.
+  """Adds a resource argument for an Azure cluster.
 
   Args:
     parser: The argparse.parser to add the resource arg to.
@@ -105,14 +119,14 @@ def AddAzureClusterResourceArg(parser, verb, positional=True):
 
 
 def AddAzureNodePoolResourceArg(parser, verb, positional=True):
-  """Add a resource argument for an Azure node pool.
+  """Adds a resource argument for an Azure node pool.
 
   Args:
     parser: The argparse.parser to add the resource arg to.
     verb: str, the verb to describe the resource, such as 'to update'.
     positional: bool, whether the argument is positional or not.
   """
-  name = 'nodepool' if positional else '--nodepool'
+  name = 'node_pool' if positional else '--node-pool'
   concept_parsers.ConceptParser.ForResource(
       name,
       GetAzureNodePoolResourceSpec(),
@@ -121,7 +135,7 @@ def AddAzureNodePoolResourceArg(parser, verb, positional=True):
 
 
 def AddAzureClientResourceArg(parser, verb, positional=True):
-  """Add a resource argument for an Azure client.
+  """Adds a resource argument for an Azure client.
 
   Args:
     parser: The argparse.parser to add the resource arg to.
@@ -137,7 +151,7 @@ def AddAzureClientResourceArg(parser, verb, positional=True):
 
 
 def AddLocationResourceArg(parser, verb):
-  """Add a location resource.
+  """Adds a resource argument for Google Cloud location.
 
   Args:
     parser: The argparse.parser to add the resource arg to.
@@ -146,17 +160,44 @@ def AddLocationResourceArg(parser, verb):
   concept_parsers.ConceptParser.ForResource(
       '--location',
       GetLocationResourceSpec(),
-      'Azure location {}.'.format(verb),
+      'Google Cloud location {}.'.format(verb),
+      required=True).AddToParser(parser)
+
+
+def AddOperationResourceArg(parser, verb):
+  """Adds a resource argument for operation in Azure.
+
+  Args:
+    parser: The argparse parser to add the resource arg to.
+    verb: str, the verb to describe the resource, such as 'to update'.
+  """
+  concept_parsers.ConceptParser.ForResource(
+      'operation_id',
+      GetOperationResourceSpec(),
+      'Azure operation {}.'.format(verb),
       required=True).AddToParser(parser)
 
 
 def ParseAzureClientResourceArg(args):
-  return args.CONCEPTS.client.Parse()
+  return resources.REGISTRY.ParseRelativeName(
+      args.CONCEPTS.client.Parse().RelativeName(),
+      collection='gkemulticloud.projects.locations.azureClients')
 
 
 def ParseAzureClusterResourceArg(args):
-  return args.CONCEPTS.cluster.Parse()
+  return resources.REGISTRY.ParseRelativeName(
+      args.CONCEPTS.cluster.Parse().RelativeName(),
+      collection='gkemulticloud.projects.locations.azureClusters')
 
 
 def ParseAzureNodePoolResourceArg(args):
-  return args.CONCEPTS.nodepool.Parse()
+  return resources.REGISTRY.ParseRelativeName(
+      args.CONCEPTS.node_pool.Parse().RelativeName(),
+      collection='gkemulticloud.projects.locations.azureClusters.azureNodePools'
+  )
+
+
+def ParseOperationResourceArg(args):
+  return resources.REGISTRY.ParseRelativeName(
+      args.CONCEPTS.operation_id.Parse().RelativeName(),
+      collection='gkemulticloud.projects.locations.operations')

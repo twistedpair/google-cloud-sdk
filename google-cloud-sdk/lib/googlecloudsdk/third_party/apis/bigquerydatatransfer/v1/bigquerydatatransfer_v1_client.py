@@ -452,7 +452,7 @@ class BigquerydatatransferV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Returns information about all data transfers in the project.
+      r"""Returns information about all transfer configs owned by a project in the specified location.
 
       Args:
         request: (BigquerydatatransferProjectsLocationsTransferConfigsListRequest) input message
@@ -843,7 +843,7 @@ class BigquerydatatransferV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Returns information about all data transfers in the project.
+      r"""Returns information about all transfer configs owned by a project in the specified location.
 
       Args:
         request: (BigquerydatatransferProjectsTransferConfigsListRequest) input message

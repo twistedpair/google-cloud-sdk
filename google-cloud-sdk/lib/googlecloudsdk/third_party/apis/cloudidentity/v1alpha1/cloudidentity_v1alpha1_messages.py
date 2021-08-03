@@ -644,8 +644,9 @@ class CloudidentityGroupsPatchRequest(_messages.Message):
     name: Output only. The [resource
       name](https://cloud.google.com/apis/design/resource_names) of the
       `Group`. Shall be of the form `groups/{group_id}`.
-    updateMask: Required. The fully-qualified names of fields to update. May
-      only contain the following fields: `display_name`, `description`.
+    updateMask: Required. The names of fields to update. May only contain the
+      following fields: `display_name`, `description`, `labels`,
+      `dynamic_group_metadata`, `posix_groups`.
   """
 
   group = _messages.MessageField('Group', 1)

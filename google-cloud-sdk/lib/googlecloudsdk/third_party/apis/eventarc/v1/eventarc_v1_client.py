@@ -40,7 +40,6 @@ class EventarcV1(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.projects_locations_channels = self.ProjectsLocationsChannelsService(self)
-    self.projects_locations_ingresses = self.ProjectsLocationsIngressesService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_triggers = self.ProjectsLocationsTriggersService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
@@ -137,6 +136,33 @@ class EventarcV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
+
+      Args:
+        request: (EventarcProjectsLocationsChannelsGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/channels/{channelsId}:getIamPolicy',
+        http_method='GET',
+        method_id='eventarc.projects.locations.channels.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1/{+resource}:getIamPolicy',
+        request_field='',
+        request_type_name='EventarcProjectsLocationsChannelsGetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""List channels.
 
@@ -191,148 +217,57 @@ class EventarcV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-  class ProjectsLocationsIngressesService(base_api.BaseApiService):
-    """Service class for the projects_locations_ingresses resource."""
-
-    _NAME = 'projects_locations_ingresses'
-
-    def __init__(self, client):
-      super(EventarcV1.ProjectsLocationsIngressesService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Create(self, request, global_params=None):
-      r"""Create a new ingress in a particular project and location.
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
 
       Args:
-        request: (EventarcProjectsLocationsIngressesCreateRequest) input message
+        request: (EventarcProjectsLocationsChannelsSetIamPolicyRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (GoogleLongrunningOperation) The response message.
+        (Policy) The response message.
       """
-      config = self.GetMethodConfig('Create')
+      config = self.GetMethodConfig('SetIamPolicy')
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/ingresses',
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/channels/{channelsId}:setIamPolicy',
         http_method='POST',
-        method_id='eventarc.projects.locations.ingresses.create',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['ingressId', 'validateOnly'],
-        relative_path='v1/{+parent}/ingresses',
-        request_field='ingress',
-        request_type_name='EventarcProjectsLocationsIngressesCreateRequest',
-        response_type_name='GoogleLongrunningOperation',
-        supports_download=False,
-    )
-
-    def Delete(self, request, global_params=None):
-      r"""Delete a single ingress.
-
-      Args:
-        request: (EventarcProjectsLocationsIngressesDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleLongrunningOperation) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/ingresses/{ingressesId}',
-        http_method='DELETE',
-        method_id='eventarc.projects.locations.ingresses.delete',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['validateOnly'],
-        relative_path='v1/{+name}',
-        request_field='',
-        request_type_name='EventarcProjectsLocationsIngressesDeleteRequest',
-        response_type_name='GoogleLongrunningOperation',
-        supports_download=False,
-    )
-
-    def Get(self, request, global_params=None):
-      r"""Get a single Ingress.
-
-      Args:
-        request: (EventarcProjectsLocationsIngressesGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Ingress) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/ingresses/{ingressesId}',
-        http_method='GET',
-        method_id='eventarc.projects.locations.ingresses.get',
-        ordered_params=['name'],
-        path_params=['name'],
+        method_id='eventarc.projects.locations.channels.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path='v1/{+name}',
-        request_field='',
-        request_type_name='EventarcProjectsLocationsIngressesGetRequest',
-        response_type_name='Ingress',
+        relative_path='v1/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='EventarcProjectsLocationsChannelsSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
-    def List(self, request, global_params=None):
-      r"""List ingresses.
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
 
       Args:
-        request: (EventarcProjectsLocationsIngressesListRequest) input message
+        request: (EventarcProjectsLocationsChannelsTestIamPermissionsRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (ListIngressesResponse) The response message.
+        (TestIamPermissionsResponse) The response message.
       """
-      config = self.GetMethodConfig('List')
+      config = self.GetMethodConfig('TestIamPermissions')
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/ingresses',
-        http_method='GET',
-        method_id='eventarc.projects.locations.ingresses.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['orderBy', 'pageSize', 'pageToken'],
-        relative_path='v1/{+parent}/ingresses',
-        request_field='',
-        request_type_name='EventarcProjectsLocationsIngressesListRequest',
-        response_type_name='ListIngressesResponse',
-        supports_download=False,
-    )
-
-    def Patch(self, request, global_params=None):
-      r"""Update a single ingress.
-
-      Args:
-        request: (EventarcProjectsLocationsIngressesPatchRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleLongrunningOperation) The response message.
-      """
-      config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/ingresses/{ingressesId}',
-        http_method='PATCH',
-        method_id='eventarc.projects.locations.ingresses.patch',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['updateMask', 'validateOnly'],
-        relative_path='v1/{+name}',
-        request_field='ingress',
-        request_type_name='EventarcProjectsLocationsIngressesPatchRequest',
-        response_type_name='GoogleLongrunningOperation',
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/channels/{channelsId}:testIamPermissions',
+        http_method='POST',
+        method_id='eventarc.projects.locations.channels.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='EventarcProjectsLocationsChannelsTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 

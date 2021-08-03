@@ -1649,10 +1649,13 @@ class TestSetup(_messages.Message):
       Available network profiles can be queried by using the
       NETWORK_CONFIGURATION environment type when calling
       TestEnvironmentDiscoveryService.GetTestEnvironmentCatalog.
-    systrace: Systrace configuration for the run. If set a systrace will be
-      taken, starting on test start and lasting for the configured duration.
-      The systrace file thus obtained is put in the results bucket together
-      with the other artifacts from the run.
+    systrace: Deprecated: Systrace uses Python 2 which has been sunset
+      2020-01-01. Support of Systrace may stop at any time, at which point no
+      Systrace file will be provided in the results. Systrace configuration
+      for the run. If set a systrace will be taken, starting on test start and
+      lasting for the configured duration. The systrace file thus obtained is
+      put in the results bucket together with the other artifacts from the
+      run.
   """
 
   account = _messages.MessageField('Account', 1)

@@ -309,7 +309,7 @@ class Node(_messages.Message):
     Values:
       STATE_UNSPECIFIED: TPU node state is not known/set.
       CREATING: TPU node is being created.
-      READY: TPU node has been created and is fully usable.
+      READY: TPU node has been created.
       RESTARTING: TPU node is restarting.
       REIMAGING: TPU node is undergoing reimaging.
       DELETING: TPU node is being deleted.

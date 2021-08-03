@@ -66,6 +66,16 @@ lite_subscription:
     help: |
       The subscription name.
 
+lite_operation:
+  name: operation
+  collection: pubsublite.admin.projects.locations.operations
+  attributes:
+  - *location
+  - parameter_name: operationsId
+    attribute_name: operation
+    help: |
+      The operation name.
+
 lite_cursor_subscription:
   name: subscription
   collection: pubsublite.cursor.projects.locations.subscriptions

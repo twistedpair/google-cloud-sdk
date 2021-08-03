@@ -818,15 +818,24 @@ class GoogleCloudDataplexV1Action(_messages.Message):
     CategoryValueValuesEnum: The category of issue associated with the action.
 
   Fields:
+    asset: Output only. The relative resource name of the asset, of the form:
+      projects/{project_number}/locations/{location_id}/lakes/{lake_id}/zones/
+      {zone_id}/assets/{asset_id}
     category: The category of issue associated with the action.
+    dataLocations: The list of data locations associated with this action.
+      Cloud Storage locations are represented as URI paths(E.g.
+      gs://bucket/table1/year=2020/month=Jan/). BigQuery locations refer to
+      resource names(E.g. //bigquery.googleapis.com/projects/project-
+      id/datasets/dataset-id).
     detectTime: The time that the issue was detected.
-    failedSecurityPolicyApply: Details for issues related to one or more
-      underlying assets having a failure propagating security policy to the
-      associated managed resource. Applicable to a lake or zone resource.
+    failedSecurityPolicyApply: Details for issues related to applying security
+      policy.
     incompatibleDataSchema: Details for issues related to incompatible schemas
       detected within data.
     invalidDataFormat: Details for issues related to invalid or unsupported
       data formats.
+    invalidDataOrganization: Details for issues related to invalid data
+      arrangement.
     invalidDataPartition: Details for issues related to invalid or unsupported
       data partition structure.
     invalidDiscoveryConfig: Details for issues related to invalid discovery
@@ -837,6 +846,8 @@ class GoogleCloudDataplexV1Action(_messages.Message):
     invalidSecurityPolicy: Details for issues related to invalid security
       policy specifications.
     issue: Detailed description of the issue requiring action.
+    lake: Output only. The relative resource name of the lake, of the form:
+      projects/{project_number}/locations/{location_id}/lakes/{lake_id}
     locations: The list of data locations associated with this action. Paths
       reflect the underlying storage service. Cloud Storage locations are
       represented as URI paths. BigQuery locations refer to resource names.
@@ -846,10 +857,18 @@ class GoogleCloudDataplexV1Action(_messages.Message):
       Dataproc Metastore due to a missing metastore service instance.
     missingResource: Details for issues related to absence of a managed
       resource.
+    name: Output only. The relative resource name of the action, of the form:
+      projects/{project}/locations/{location}/lakes/{lake}/actions/{action} pr
+      ojects/{project}/locations/{location}/lakes/{lake}/zones/{zone}/actions/
+      {action} projects/{project}/locations/{location}/lakes/{lake}/zones/{zon
+      e}/assets/{asset}/actions/{action}
     unauthorizedDataset: Details for issues related to metadata publishing to
       BigQuery due to unauthorized errors.
     unauthorizedResource: Details for issues related to lack of permissions to
       access data resources.
+    zone: Output only. The relative resource name of the zone, of the form: pr
+      ojects/{project_number}/locations/{location_id}/lakes/{lake_id}/zones/{z
+      one_id}
   """
 
   class CategoryValueValuesEnum(_messages.Enum):
@@ -868,31 +887,38 @@ class GoogleCloudDataplexV1Action(_messages.Message):
     DATA_DISCOVERY = 3
     METADATA_PUBLISHING = 4
 
-  category = _messages.EnumField('CategoryValueValuesEnum', 1)
-  detectTime = _messages.StringField(2)
-  failedSecurityPolicyApply = _messages.MessageField('GoogleCloudDataplexV1ActionFailedSecurityPolicyApply', 3)
-  incompatibleDataSchema = _messages.MessageField('GoogleCloudDataplexV1ActionIncompatibleDataSchema', 4)
-  invalidDataFormat = _messages.MessageField('GoogleCloudDataplexV1ActionInvalidDataFormat', 5)
-  invalidDataPartition = _messages.MessageField('GoogleCloudDataplexV1ActionInvalidDataPartition', 6)
-  invalidDiscoveryConfig = _messages.MessageField('GoogleCloudDataplexV1ActionInvalidDiscoveryConfig', 7)
-  invalidMetastore = _messages.MessageField('GoogleCloudDataplexV1ActionInvalidMetastore', 8)
-  invalidSecurityPolicy = _messages.MessageField('GoogleCloudDataplexV1ActionInvalidSecurityPolicy', 9)
-  issue = _messages.StringField(10)
-  locations = _messages.MessageField('GoogleCloudDataplexV1ActionLocation', 11, repeated=True)
-  missingData = _messages.MessageField('GoogleCloudDataplexV1ActionMissingData', 12)
-  missingMetastore = _messages.MessageField('GoogleCloudDataplexV1ActionMissingMetastore', 13)
-  missingResource = _messages.MessageField('GoogleCloudDataplexV1ActionMissingResource', 14)
-  unauthorizedDataset = _messages.MessageField('GoogleCloudDataplexV1ActionUnauthorizedDataset', 15)
-  unauthorizedResource = _messages.MessageField('GoogleCloudDataplexV1ActionUnauthorizedResource', 16)
+  asset = _messages.StringField(1)
+  category = _messages.EnumField('CategoryValueValuesEnum', 2)
+  dataLocations = _messages.StringField(3, repeated=True)
+  detectTime = _messages.StringField(4)
+  failedSecurityPolicyApply = _messages.MessageField('GoogleCloudDataplexV1ActionFailedSecurityPolicyApply', 5)
+  incompatibleDataSchema = _messages.MessageField('GoogleCloudDataplexV1ActionIncompatibleDataSchema', 6)
+  invalidDataFormat = _messages.MessageField('GoogleCloudDataplexV1ActionInvalidDataFormat', 7)
+  invalidDataOrganization = _messages.MessageField('GoogleCloudDataplexV1ActionInvalidDataOrganization', 8)
+  invalidDataPartition = _messages.MessageField('GoogleCloudDataplexV1ActionInvalidDataPartition', 9)
+  invalidDiscoveryConfig = _messages.MessageField('GoogleCloudDataplexV1ActionInvalidDiscoveryConfig', 10)
+  invalidMetastore = _messages.MessageField('GoogleCloudDataplexV1ActionInvalidMetastore', 11)
+  invalidSecurityPolicy = _messages.MessageField('GoogleCloudDataplexV1ActionInvalidSecurityPolicy', 12)
+  issue = _messages.StringField(13)
+  lake = _messages.StringField(14)
+  locations = _messages.MessageField('GoogleCloudDataplexV1ActionLocation', 15, repeated=True)
+  missingData = _messages.MessageField('GoogleCloudDataplexV1ActionMissingData', 16)
+  missingMetastore = _messages.MessageField('GoogleCloudDataplexV1ActionMissingMetastore', 17)
+  missingResource = _messages.MessageField('GoogleCloudDataplexV1ActionMissingResource', 18)
+  name = _messages.StringField(19)
+  unauthorizedDataset = _messages.MessageField('GoogleCloudDataplexV1ActionUnauthorizedDataset', 20)
+  unauthorizedResource = _messages.MessageField('GoogleCloudDataplexV1ActionUnauthorizedResource', 21)
+  zone = _messages.StringField(22)
 
 
 class GoogleCloudDataplexV1ActionFailedSecurityPolicyApply(_messages.Message):
-  r"""One or more underlying assets has a failure propagating security policy
-  to the associated managed resource. Applicable to a lake or zone resource.
+  r"""Failed to apply security policy to the managed resource(s) under a lake,
+  zone or an asset. For a lake or zone resource, one or more underlying assets
+  has a failure applying security policy to the associated managed resource.
 
   Fields:
     asset: Resource name of one of the assets with failing security policy
-      propagation.
+      application. Populated for a lake or zone resource only.
   """
 
   asset = _messages.StringField(1)
@@ -920,6 +946,10 @@ class GoogleCloudDataplexV1ActionInvalidDataFormat(_messages.Message):
   discovery.
   """
 
+
+
+class GoogleCloudDataplexV1ActionInvalidDataOrganization(_messages.Message):
+  r"""Action details for invalid data arrangement."""
 
 
 class GoogleCloudDataplexV1ActionInvalidDataPartition(_messages.Message):
@@ -1112,6 +1142,18 @@ class GoogleCloudDataplexV1AssetDiscoverySpec(_messages.Message):
   Fields:
     enabled: Optional. Whether discovery is enabled. When inheritance_mode is
       set to INHERIT this field is unset and ignored.
+    excludePatterns: Optional. The list of patterns to apply for selecting
+      data to exclude during discovery. For Cloud Storage bucket assets, these
+      are interpreted as glob patterns used to match object names. For
+      BigQuery dataset assets, these are interpreted as patterns to match
+      table names. When inheritance_mode is set to INHERIT this field is unset
+      and ignored.
+    includePatterns: Optional. The list of patterns to apply for selecting
+      data to include during discovery if only a subset of the data should
+      considered. For Cloud Storage bucket assets, these are interpreted as
+      glob patterns used to match object names. For BigQuery dataset assets,
+      these are interpreted as patterns to match table names. When
+      inheritance_mode is set to INHERIT this field is unset and ignored.
     inheritanceMode: Optional. Inheritance behavior for this config. By
       default, all fields in this config override any values specified at the
       zone level. When configured as INHERIT some fields in this config are
@@ -1143,9 +1185,11 @@ class GoogleCloudDataplexV1AssetDiscoverySpec(_messages.Message):
     INHERIT = 2
 
   enabled = _messages.BooleanField(1)
-  inheritanceMode = _messages.EnumField('InheritanceModeValueValuesEnum', 2)
-  publishing = _messages.MessageField('GoogleCloudDataplexV1AssetDiscoverySpecMetadataPublishing', 3)
-  schedule = _messages.StringField(4)
+  excludePatterns = _messages.StringField(2, repeated=True)
+  includePatterns = _messages.StringField(3, repeated=True)
+  inheritanceMode = _messages.EnumField('InheritanceModeValueValuesEnum', 4)
+  publishing = _messages.MessageField('GoogleCloudDataplexV1AssetDiscoverySpecMetadataPublishing', 5)
+  schedule = _messages.StringField(6)
 
 
 class GoogleCloudDataplexV1AssetDiscoverySpecMetadataPublishing(_messages.Message):
@@ -1172,6 +1216,9 @@ class GoogleCloudDataplexV1AssetDiscoveryStatus(_messages.Message):
     lastRunDuration: The duration of the last run of the discovery job of the
       asset.
     lastRunTime: The time when the last discovery job started.
+    latestProcessedChangeTime: Timestamp of the latest change to data that has
+      been processed. This is only valid when discovery is in
+      PROCESSING_CHANGES state.
     message: Additional information about the current state.
     nextRunTime: The time when the next scheduled discovery job will start.
     state: The current status of the discovery feature.
@@ -1190,6 +1237,10 @@ class GoogleCloudDataplexV1AssetDiscoveryStatus(_messages.Message):
         before it can be resumed.
       ERROR: Discovery for the asset has errors.
       DISABLED: Discovery for the asset is disabled.
+      PROCESSING_DATA: Discovery for the asset is processing all the data in
+        the storage resource.
+      PROCESSING_CHANGES: Discovery for the asset is processing changes to the
+        data.
     """
     STATE_UNSPECIFIED = 0
     SCHEDULED = 1
@@ -1197,14 +1248,17 @@ class GoogleCloudDataplexV1AssetDiscoveryStatus(_messages.Message):
     PAUSED = 3
     ERROR = 4
     DISABLED = 5
+    PROCESSING_DATA = 6
+    PROCESSING_CHANGES = 7
 
   lastRunDuration = _messages.StringField(1)
   lastRunTime = _messages.StringField(2)
-  message = _messages.StringField(3)
-  nextRunTime = _messages.StringField(4)
-  state = _messages.EnumField('StateValueValuesEnum', 5)
-  stats = _messages.MessageField('GoogleCloudDataplexV1AssetDiscoveryStatusStats', 6)
-  updateTime = _messages.StringField(7)
+  latestProcessedChangeTime = _messages.StringField(3)
+  message = _messages.StringField(4)
+  nextRunTime = _messages.StringField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+  stats = _messages.MessageField('GoogleCloudDataplexV1AssetDiscoveryStatusStats', 7)
+  updateTime = _messages.StringField(8)
 
 
 class GoogleCloudDataplexV1AssetDiscoveryStatusStats(_messages.Message):
@@ -1358,11 +1412,13 @@ class GoogleCloudDataplexV1AssetSecuritySpec(_messages.Message):
 
 
 class GoogleCloudDataplexV1AssetSecurityStatus(_messages.Message):
-  r"""Security policy status of the asset.
+  r"""Security policy status of the asset. Data security policy, i.e.,
+  readers, writers & owners, should be specified in the lake/zone/asset IAM
+  policy.
 
   Enums:
     StateValueValuesEnum: The current state of the security policy applied to
-      data.
+      the attached resource.
 
   Fields:
     appliedOwnerGroups: Cumulative set of owner groups that were last applied
@@ -1375,18 +1431,23 @@ class GoogleCloudDataplexV1AssetSecurityStatus(_messages.Message):
       applied on the managed resource. These groups may have been specified at
       lake, zone or asset levels.
     message: Additional information about the current state.
-    state: The current state of the security policy applied to data.
+    state: The current state of the security policy applied to the attached
+      resource.
     updateTime: Last update time of the status.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""The current state of the security policy applied to data.
+    r"""The current state of the security policy applied to the attached
+    resource.
 
     Values:
       STATE_UNSPECIFIED: State unspecified.
-      READY: Security policy has been successfully applied to data.
-      APPLYING: Security policy is in the process of being applied to data.
-      ERROR: Security policy could not be applied to data due to errors.
+      READY: Security policy has been successfully applied to the attached
+        resource.
+      APPLYING: Security policy is in the process of being applied to the
+        attached resource.
+      ERROR: Security policy could not be applied to the attached resource due
+        to errors.
     """
     STATE_UNSPECIFIED = 0
     READY = 1
@@ -1399,6 +1460,21 @@ class GoogleCloudDataplexV1AssetSecurityStatus(_messages.Message):
   message = _messages.StringField(4)
   state = _messages.EnumField('StateValueValuesEnum', 5)
   updateTime = _messages.StringField(6)
+
+
+class GoogleCloudDataplexV1AssetStatus(_messages.Message):
+  r"""Aggregated status of the underlying assets of a lake or zone.
+
+  Fields:
+    activeAssets: Number of active assets.
+    securityPolicyApplyingAssets: Number of assets that are in process of
+      updating the security policy on attached resources.
+    updateTime: Last update time of the status.
+  """
+
+  activeAssets = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  securityPolicyApplyingAssets = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  updateTime = _messages.StringField(3)
 
 
 class GoogleCloudDataplexV1JobEvent(_messages.Message):
@@ -1458,6 +1534,8 @@ class GoogleCloudDataplexV1Lake(_messages.Message):
   Fields:
     actions: Output only. The current set of actions required of the
       administrator for this lake.
+    assetStatus: Output only. Aggregated status of the underlying assets of
+      the lake.
     createTime: Output only. The time when the lake was created.
     description: Optional. Description of the lake.
     displayName: Optional. User friendly display name.
@@ -1522,18 +1600,19 @@ class GoogleCloudDataplexV1Lake(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   actions = _messages.MessageField('GoogleCloudDataplexV1Action', 1, repeated=True)
-  createTime = _messages.StringField(2)
-  description = _messages.StringField(3)
-  displayName = _messages.StringField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  metastore = _messages.MessageField('GoogleCloudDataplexV1LakeMetastore', 6)
-  name = _messages.StringField(7)
-  securitySpec = _messages.MessageField('GoogleCloudDataplexV1LakeSecuritySpec', 8)
-  securityStatus = _messages.MessageField('GoogleCloudDataplexV1SecurityStatus', 9)
-  serviceAccount = _messages.StringField(10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  uid = _messages.StringField(12)
-  updateTime = _messages.StringField(13)
+  assetStatus = _messages.MessageField('GoogleCloudDataplexV1AssetStatus', 2)
+  createTime = _messages.StringField(3)
+  description = _messages.StringField(4)
+  displayName = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  metastore = _messages.MessageField('GoogleCloudDataplexV1LakeMetastore', 7)
+  name = _messages.StringField(8)
+  securitySpec = _messages.MessageField('GoogleCloudDataplexV1LakeSecuritySpec', 9)
+  securityStatus = _messages.MessageField('GoogleCloudDataplexV1SecurityStatus', 10)
+  serviceAccount = _messages.StringField(11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  uid = _messages.StringField(13)
+  updateTime = _messages.StringField(14)
 
 
 class GoogleCloudDataplexV1LakeMetastore(_messages.Message):
@@ -1856,6 +1935,8 @@ class GoogleCloudDataplexV1Zone(_messages.Message):
   Fields:
     actions: Output only. The current set of actions required of the
       administrator for this zone.
+    assetStatus: Output only. Aggregated status of the underlying assets of
+      the zone.
     createTime: Output only. The time when the zone was created.
     description: Optional. Description of the zone.
     discoverySpec: Optional. Specification of the discovery feature applied to
@@ -1865,7 +1946,7 @@ class GoogleCloudDataplexV1Zone(_messages.Message):
     name: Output only. The relative resource name of the zone, of the form: pr
       ojects/{project_number}/locations/{location_id}/lakes/{lake_id}/zones/{z
       one_id}
-    resourceSpec: Optional. Specification of the resources that are referenced
+    resourceSpec: Required. Specification of the resources that are referenced
       by the assets within this zone.
     securitySpec: Optional. Specification of the security policy applied to
       data in this zone. Typically it should take a few minutes for the
@@ -1937,19 +2018,20 @@ class GoogleCloudDataplexV1Zone(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   actions = _messages.MessageField('GoogleCloudDataplexV1Action', 1, repeated=True)
-  createTime = _messages.StringField(2)
-  description = _messages.StringField(3)
-  discoverySpec = _messages.MessageField('GoogleCloudDataplexV1ZoneDiscoverySpec', 4)
-  displayName = _messages.StringField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  name = _messages.StringField(7)
-  resourceSpec = _messages.MessageField('GoogleCloudDataplexV1ZoneResourceSpec', 8)
-  securitySpec = _messages.MessageField('GoogleCloudDataplexV1ZoneSecuritySpec', 9)
-  securityStatus = _messages.MessageField('GoogleCloudDataplexV1SecurityStatus', 10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  type = _messages.EnumField('TypeValueValuesEnum', 12)
-  uid = _messages.StringField(13)
-  updateTime = _messages.StringField(14)
+  assetStatus = _messages.MessageField('GoogleCloudDataplexV1AssetStatus', 2)
+  createTime = _messages.StringField(3)
+  description = _messages.StringField(4)
+  discoverySpec = _messages.MessageField('GoogleCloudDataplexV1ZoneDiscoverySpec', 5)
+  displayName = _messages.StringField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  name = _messages.StringField(8)
+  resourceSpec = _messages.MessageField('GoogleCloudDataplexV1ZoneResourceSpec', 9)
+  securitySpec = _messages.MessageField('GoogleCloudDataplexV1ZoneSecuritySpec', 10)
+  securityStatus = _messages.MessageField('GoogleCloudDataplexV1SecurityStatus', 11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  type = _messages.EnumField('TypeValueValuesEnum', 13)
+  uid = _messages.StringField(14)
+  updateTime = _messages.StringField(15)
 
 
 class GoogleCloudDataplexV1ZoneDiscoverySpec(_messages.Message):
@@ -1957,6 +2039,16 @@ class GoogleCloudDataplexV1ZoneDiscoverySpec(_messages.Message):
 
   Fields:
     enabled: Required. Whether discovery is enabled.
+    excludePatterns: Optional. The list of patterns to apply for selecting
+      data to exclude during discovery. For Cloud Storage bucket assets, these
+      are interpreted as glob patterns used to match object names. For
+      BigQuery dataset assets, these are interpreted as patterns to match
+      table names.
+    includePatterns: Optional. The list of patterns to apply for selecting
+      data to include during discovery if only a subset of the data should
+      considered. For Cloud Storage bucket assets, these are interpreted as
+      glob patterns used to match object names. For BigQuery dataset assets,
+      these are interpreted as patterns to match table names.
     publishing: Optional. Settings to manage metadata publishing from the
       zone.
     schedule: Optional. Cron schedule (https://en.wikipedia.org/wiki/Cron) for
@@ -1970,8 +2062,10 @@ class GoogleCloudDataplexV1ZoneDiscoverySpec(_messages.Message):
   """
 
   enabled = _messages.BooleanField(1)
-  publishing = _messages.MessageField('GoogleCloudDataplexV1ZoneDiscoverySpecMetadataPublishing', 2)
-  schedule = _messages.StringField(3)
+  excludePatterns = _messages.StringField(2, repeated=True)
+  includePatterns = _messages.StringField(3, repeated=True)
+  publishing = _messages.MessageField('GoogleCloudDataplexV1ZoneDiscoverySpecMetadataPublishing', 4)
+  schedule = _messages.StringField(5)
 
 
 class GoogleCloudDataplexV1ZoneDiscoverySpecMetadataPublishing(_messages.Message):

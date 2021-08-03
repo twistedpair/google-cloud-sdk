@@ -615,8 +615,11 @@ class InstallationState(object):
       return
     shutil.copyfile(my_properties, other_properties)
 
-  def CompilePythonFiles(self):
+  def CompilePythonFiles(self, force=False):
     """Attempts to compile all the python files into .pyc files.
+
+    Args:
+      force: boolean, passed to force option of compileall.compiledir,
 
     This does not raise exceptions if compiling a given file fails.
     """
@@ -674,7 +677,7 @@ class InstallationState(object):
         # implementation and bool(2) is True. Starting in python 3.5 this
         # parameter was changed to a multilevel value, where 1 hides files
         # being processed and 2 suppresses output.
-        compileall.compile_dir(d, rx=regex_exclusion, quiet=2, force=True)
+        compileall.compile_dir(d, rx=regex_exclusion, quiet=2, force=force)
 
 
 class InstallationManifest(object):

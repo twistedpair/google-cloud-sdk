@@ -43,7 +43,8 @@ def CreateNetworkInterfaceMessage(resources,
                                   network_tier=None,
                                   stack_type=None,
                                   ipv6_network_tier=None,
-                                  nic_type=None):
+                                  nic_type=None,
+                                  ipv6_public_ptr_domain=None):
   """Creates and returns a new NetworkInterface message.
 
   Args:
@@ -74,6 +75,8 @@ def CreateNetworkInterfaceMessage(resources,
     nic_type: specify the type of NetworkInterface Controller
                * GVNIC
                * VIRTIO_NET
+    ipv6_public_ptr_domain: a string represents the custom PTR domain assigned
+        to the interface.
   Returns:
     network_interface: a NetworkInterface message object
   """
@@ -121,14 +124,18 @@ def CreateNetworkInterfaceMessage(resources,
 
     network_interface.accessConfigs = [access_config]
 
-  if ipv6_network_tier is not None:
+  if ipv6_network_tier is not None or ipv6_public_ptr_domain is not None:
     ipv6_access_config = messages.AccessConfig(
         name=constants.DEFAULT_IPV6_ACCESS_CONFIG_NAME,
         type=messages.AccessConfig.TypeValueValuesEnum.DIRECT_IPV6)
+    network_interface.ipv6AccessConfigs = [ipv6_access_config]
+
+  if ipv6_network_tier is not None:
     ipv6_access_config.networkTier = (
         messages.AccessConfig.NetworkTierValueValuesEnum(ipv6_network_tier))
 
-    network_interface.ipv6AccessConfigs = [ipv6_access_config]
+  if ipv6_public_ptr_domain is not None:
+    ipv6_access_config.publicPtrDomainName = ipv6_public_ptr_domain
 
   if alias_ip_ranges_string:
     network_interface.aliasIpRanges = (
@@ -152,6 +159,7 @@ def CreateNetworkInterfaceMessages(resources, scope_lister, messages,
     messages: creates resources.
     network_interface_arg: CLI argument specifying network interfaces.
     region: region of the subnetwork.
+
   Returns:
     list, items are NetworkInterfaceMessages.
   """
@@ -168,10 +176,21 @@ def CreateNetworkInterfaceMessages(resources, scope_lister, messages,
 
       result.append(
           CreateNetworkInterfaceMessage(
-              resources, scope_lister, messages, interface.get('network', None),
-              interface.get('private-network-ip', None), region,
-              interface.get('subnet', None), address,
-              interface.get('aliases', None), network_tier, nic_type=nic_type))
+              resources,
+              scope_lister,
+              messages,
+              interface.get('network', None),
+              interface.get('private-network-ip', None),
+              region,
+              interface.get('subnet', None),
+              address,
+              interface.get('aliases', None),
+              network_tier,
+              nic_type=nic_type,
+              stack_type=interface.get('stack-type', None),
+              ipv6_network_tier=interface.get('ipv6-network-tier', None),
+              ipv6_public_ptr_domain=interface.get('ipv6-public-ptr-domain',
+                                                   None)))
   return result
 
 
