@@ -2618,15 +2618,32 @@
           "description": "Docker registry location of container image to use for the 'worker harness. Default is the container for the version of the SDK. Note this field is only valid for portable pipelines.",
           "type": "string"
         },
-        "maxNumWorkers": {
-          "description": "The maximum number of workers to cap scaling at.",
-          "type": "integer",
-          "format": "int32"
-        },
         "diskSizeGb": {
           "description": "Worker disk size, in gigabytes.",
           "type": "integer",
           "format": "int32"
+        },
+        "autoscalingAlgorithm": {
+          "description": "The algorithm to use for autoscaling",
+          "type": "string",
+          "enumDescriptions": [
+            "The algorithm is unknown, or unspecified.",
+            "Disable autoscaling.",
+            "Increase worker count over time to reduce job execution time."
+          ],
+          "enum": [
+            "AUTOSCALING_ALGORITHM_UNKNOWN",
+            "AUTOSCALING_ALGORITHM_NONE",
+            "AUTOSCALING_ALGORITHM_BASIC"
+          ]
+        },
+        "dumpHeapOnOom": {
+          "description": "If true, save a heap dump before killing a thread or process which is GC thrashing or out of memory. The location of the heap file will either be echoed back to the user, or the user will be given the opportunity to download the heap file.",
+          "type": "boolean"
+        },
+        "saveHeapDumpsToGcsPath": {
+          "description": "Cloud Storage bucket (directory) to upload heap dumps to the given location. Enabling this implies that heap dumps should be generated on OOM (dump_heap_on_oom is set to true).",
+          "type": "string"
         }
       }
     },

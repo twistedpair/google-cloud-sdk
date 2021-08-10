@@ -36,6 +36,7 @@ class _WindowsNamedTempFile(object):
   """
 
   def __init__(self, *args, **kwargs):
+    self._requested_delete = kwargs.get('delete', True)
     self._args = args
     self._kwargs = kwargs.copy()
     self._kwargs['delete'] = False
@@ -46,7 +47,7 @@ class _WindowsNamedTempFile(object):
     return self._f
 
   def __exit__(self, exc_type, exc_value, tb):
-    if self._f:
+    if self._requested_delete and self._f:
       try:
         os.unlink(self._f.name)
       except OSError:
@@ -55,22 +56,26 @@ class _WindowsNamedTempFile(object):
 
 
 @contextlib.contextmanager
-def NamedTempFile(contents):
+def NamedTempFile(contents, prefix='tmp', suffix='', delete=True):
   """Write a named temporary with given contents.
 
   Args:
     contents: (str) File contents.
+    prefix: (str) File base name prefix.
+    suffix: (str) Filename suffix.
+    delete: (bool) Delete file on __exit__.
 
   Yields:
     The temporary file object.
   """
+  common_args = dict(mode='w+t', prefix=prefix, suffix=suffix, delete=delete)
   if os.name == 'nt':
-    with _WindowsNamedTempFile(mode='w+t') as f:
+    with _WindowsNamedTempFile(**common_args) as f:
       f.write(contents)
       f.close()
       yield f
   else:
-    with tempfile.NamedTemporaryFile(mode='w+t') as f:
+    with tempfile.NamedTemporaryFile(**common_args) as f:
       f.write(contents)
       f.flush()
       yield f

@@ -381,6 +381,10 @@ class CreateServiceAccountRequest(_messages.Message):
   serviceAccount = _messages.MessageField('ServiceAccount', 2)
 
 
+class DisableServiceAccountKeyRequest(_messages.Message):
+  r"""The service account key disable request."""
+
+
 class DisableServiceAccountRequest(_messages.Message):
   r"""The service account disable request."""
 
@@ -393,6 +397,10 @@ class Empty(_messages.Message):
   representation for `Empty` is empty JSON object `{}`.
   """
 
+
+
+class EnableServiceAccountKeyRequest(_messages.Message):
+  r"""The service account key enable request."""
 
 
 class EnableServiceAccountRequest(_messages.Message):
@@ -1596,6 +1604,42 @@ class IamProjectsServiceAccountsKeysDeleteRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class IamProjectsServiceAccountsKeysDisableRequest(_messages.Message):
+  r"""A IamProjectsServiceAccountsKeysDisableRequest object.
+
+  Fields:
+    disableServiceAccountKeyRequest: A DisableServiceAccountKeyRequest
+      resource to be passed as the request body.
+    name: Required. The resource name of the service account key in the
+      following format:
+      `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}/keys/{key}`. Using `-`
+      as a wildcard for the `PROJECT_ID` will infer the project from the
+      account. The `ACCOUNT` value can be the `email` address or the
+      `unique_id` of the service account.
+  """
+
+  disableServiceAccountKeyRequest = _messages.MessageField('DisableServiceAccountKeyRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class IamProjectsServiceAccountsKeysEnableRequest(_messages.Message):
+  r"""A IamProjectsServiceAccountsKeysEnableRequest object.
+
+  Fields:
+    enableServiceAccountKeyRequest: A EnableServiceAccountKeyRequest resource
+      to be passed as the request body.
+    name: Required. The resource name of the service account key in the
+      following format:
+      `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}/keys/{key}`. Using `-`
+      as a wildcard for the `PROJECT_ID` will infer the project from the
+      account. The `ACCOUNT` value can be the `email` address or the
+      `unique_id` of the service account.
+  """
+
+  enableServiceAccountKeyRequest = _messages.MessageField('EnableServiceAccountKeyRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class IamProjectsServiceAccountsKeysGetRequest(_messages.Message):
   r"""A IamProjectsServiceAccountsKeysGetRequest object.
 
@@ -2408,6 +2452,16 @@ class PolicyDelta(_messages.Message):
   bindingDeltas = _messages.MessageField('BindingDelta', 1, repeated=True)
 
 
+class PolicyOperationMetadata(_messages.Message):
+  r"""Metadata for long-running Policy operations.
+
+  Fields:
+    createTime: Timestamp when the google.longrunning.Operation was created.
+  """
+
+  createTime = _messages.StringField(1)
+
+
 class QueryAuditableServicesRequest(_messages.Message):
   r"""A request to get the list of auditable services for a resource.
 
@@ -2704,6 +2758,7 @@ class ServiceAccountKey(_messages.Message):
       managed private keys.
 
   Fields:
+    disabled: The key status.
     keyAlgorithm: Specifies the algorithm (and possibly key size) for the key.
     keyOrigin: The key origin.
     keyType: The key type.
@@ -2783,15 +2838,16 @@ class ServiceAccountKey(_messages.Message):
     TYPE_PKCS12_FILE = 1
     TYPE_GOOGLE_CREDENTIALS_FILE = 2
 
-  keyAlgorithm = _messages.EnumField('KeyAlgorithmValueValuesEnum', 1)
-  keyOrigin = _messages.EnumField('KeyOriginValueValuesEnum', 2)
-  keyType = _messages.EnumField('KeyTypeValueValuesEnum', 3)
-  name = _messages.StringField(4)
-  privateKeyData = _messages.BytesField(5)
-  privateKeyType = _messages.EnumField('PrivateKeyTypeValueValuesEnum', 6)
-  publicKeyData = _messages.BytesField(7)
-  validAfterTime = _messages.StringField(8)
-  validBeforeTime = _messages.StringField(9)
+  disabled = _messages.BooleanField(1)
+  keyAlgorithm = _messages.EnumField('KeyAlgorithmValueValuesEnum', 2)
+  keyOrigin = _messages.EnumField('KeyOriginValueValuesEnum', 3)
+  keyType = _messages.EnumField('KeyTypeValueValuesEnum', 4)
+  name = _messages.StringField(5)
+  privateKeyData = _messages.BytesField(6)
+  privateKeyType = _messages.EnumField('PrivateKeyTypeValueValuesEnum', 7)
+  publicKeyData = _messages.BytesField(8)
+  validAfterTime = _messages.StringField(9)
+  validBeforeTime = _messages.StringField(10)
 
 
 class SetIamPolicyRequest(_messages.Message):

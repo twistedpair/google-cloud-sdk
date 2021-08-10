@@ -21,8 +21,8 @@ from __future__ import unicode_literals
 import re
 
 from googlecloudsdk.calliope import arg_parsers
-from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.command_lib.compute import completers as compute_completers
+from googlecloudsdk.command_lib.compute import exceptions
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
 # The default output format for the list sub-command.
@@ -128,7 +128,7 @@ def AddCreateExternalVpnGatewayArgs(parser):
 def ParseInterfaces(interfaces, message_classes):
   """Parses id=ip_address mappings from --interfaces command line."""
   if len(interfaces) != 1 and len(interfaces) != 2 and len(interfaces) != 4:
-    raise calliope_exceptions.ToolException(
+    raise exceptions.ArgumentError(
         'Number of interfaces must be either one, two, or four; received [{0}] '
         'interface(s).'
         .format(len(interfaces)))
@@ -137,7 +137,7 @@ def ParseInterfaces(interfaces, message_classes):
   for spec in interfaces or []:
     match = LEGAL_SPECS.match(spec)
     if not match:
-      raise calliope_exceptions.ToolException(
+      raise exceptions.ArgumentError(
           'Interfaces must be of the form {0}, ID must be an integer value in '
           '[0,1,2,3], IP_ADDRESS must be a valid IPV4 address; received [{1}].'
           .format(ALLOWED_METAVAR, spec))

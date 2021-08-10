@@ -12,7 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Support library for creating deployments."""
 
 from __future__ import absolute_import
@@ -38,11 +37,7 @@ from googlecloudsdk.core.util import times
 import six
 
 
-def _UploadSourceDirToGCS(
-    gcs_client,
-    source,
-    gcs_source_staging,
-    ignore_file):
+def _UploadSourceDirToGCS(gcs_client, source, gcs_source_staging, ignore_file):
   """Uploads a local directory to GCS.
 
   Uploads one file at a time rather than tarballing/zipping for compatibility
@@ -59,30 +54,24 @@ def _UploadSourceDirToGCS(
   source_snapshot = deterministic_snapshot.DeterministicSnapshot(
       source, ignore_file=ignore_file)
 
-  size_str = resource_transform.TransformSize(
-      source_snapshot.uncompressed_size)
-  log.status.Print(
-      'Uploading {num_files} file(s)'
-      ' totalling {size}.'.format(
-          num_files=len(source_snapshot.files), size=size_str))
+  size_str = resource_transform.TransformSize(source_snapshot.uncompressed_size)
+  log.status.Print('Uploading {num_files} file(s)'
+                   ' totalling {size}.'.format(
+                       num_files=len(source_snapshot.files), size=size_str))
 
   for file_metadata in source_snapshot.GetSortedFiles():
     full_local_path = os.path.join(file_metadata.root, file_metadata.path)
 
-    target_obj_ref = 'gs://{0}/{1}/{2}'.format(
-        gcs_source_staging.bucket,
-        gcs_source_staging.object,
-        file_metadata.path)
+    target_obj_ref = 'gs://{0}/{1}/{2}'.format(gcs_source_staging.bucket,
+                                               gcs_source_staging.object,
+                                               file_metadata.path)
     target_obj_ref = resources.REGISTRY.Parse(
         target_obj_ref, collection='storage.objects')
 
     gcs_client.CopyFileToGCS(full_local_path, target_obj_ref)
 
 
-def _UploadSourceToGCS(
-    source,
-    stage_bucket,
-    ignore_file):
+def _UploadSourceToGCS(source, stage_bucket, ignore_file):
   """Uploads local content to GCS.
 
   This will ensure that the source and destination exist before triggering the
@@ -90,10 +79,10 @@ def _UploadSourceToGCS(
 
   Args:
     source: string, a local path.
-    stage_bucket: optional string. When not provided, the default staging
-      bucket will be used (see GetDefaultStagingBucket). This string is of the
+    stage_bucket: optional string. When not provided, the default staging bucket
+      will be used (see GetDefaultStagingBucket). This string is of the
       format "gs://bucket-name/". A "source" object will be created under this
-      bucket, and any uploaded artifacts will be stored there.
+        bucket, and any uploaded artifacts will be stored there.
     ignore_file: string, a path to a gcloudignore file.
 
   Returns:
@@ -111,9 +100,8 @@ def _UploadSourceToGCS(
   if stage_bucket is None:
     used_default_bucket_name = True
     gcs_source_bucket_name = staging_bucket_util.GetDefaultStagingBucket()
-    gcs_source_staging_dir = 'gs://{0}/{1}'.format(
-        gcs_source_bucket_name,
-        gcs_object_name)
+    gcs_source_staging_dir = 'gs://{0}/{1}'.format(gcs_source_bucket_name,
+                                                   gcs_object_name)
   else:
     used_default_bucket_name = False
     gcs_source_bucket_name = stage_bucket
@@ -133,8 +121,7 @@ def _UploadSourceToGCS(
     # If we're using the default bucket but it already exists in a different
     # project, then it could belong to a malicious attacker (b/33046325).
     raise c_exceptions.RequiredArgumentException(
-        'stage-bucket',
-        'A bucket with name {} already exists and is owned by '
+        'stage-bucket', 'A bucket with name {} already exists and is owned by '
         'another project. Specify a bucket using '
         '--stage-bucket.'.format(gcs_source_staging_dir_ref.bucket))
 
@@ -163,23 +150,22 @@ def _UploadSourceToGCS(
 
   _UploadSourceDirToGCS(gcs_client, source, gcs_source_staging, ignore_file)
 
-  upload_bucket = 'gs://{0}/{1}'.format(
-      gcs_source_staging.bucket,
-      gcs_source_staging.object)
+  upload_bucket = 'gs://{0}/{1}'.format(gcs_source_staging.bucket,
+                                        gcs_source_staging.object)
 
   return upload_bucket
 
 
-def Apply(
-    source,
-    deployment_full_name,
-    stage_bucket,
-    labels,
-    messages,
-    location,
-    ignore_file,
-    async_,
-    source_git_subdir='.'):
+def Apply(source,
+          deployment_full_name,
+          stage_bucket,
+          labels,
+          messages,
+          location,
+          ignore_file,
+          async_,
+          reconcile_timeout,
+          source_git_subdir='.'):
   """Updates the deployment if one exists, otherwise one will be created.
 
   Bundles parameters for creating/updating a deployment.
@@ -198,6 +184,8 @@ def Apply(
     ignore_file: optional string, a path to a gcloudignore file.
     async_: bool, if True, gcloud will return immediately, otherwise it will
       wait on the long-running operation.
+    reconcile_timeout: timeout in seconds. If the blueprint apply step takes
+      longer than this timeout, the deployment will fail. 0 implies no timeout.
     source_git_subdir: optional string. If "source" represents a Git repo, then
       this argument represents the directory within that Git repo to use.
 
@@ -227,16 +215,16 @@ def Apply(
   # Whichever labels the user provides will become the full set of labels in the
   # resulting deployment.
   if labels is not None:
-    labels_message = messages.Deployment.LabelsValue(
-        additionalProperties=[
-            messages.Deployment.LabelsValue
-            .AdditionalProperty(key=key, value=value)
-            for key, value in six.iteritems(labels)
-        ])
+    labels_message = messages.Deployment.LabelsValue(additionalProperties=[
+        messages.Deployment.LabelsValue.AdditionalProperty(
+            key=key, value=value) for key, value in six.iteritems(labels)
+    ])
 
   deployment = messages.Deployment(
       blueprint=blueprint,
       labels=labels_message,
+      reconcileTimeout=six.text_type(reconcile_timeout) +
+      's' if reconcile_timeout > 0 else None,
   )
 
   # Check if a deployment with the given name already exists. If it does, we'll
@@ -257,10 +245,8 @@ def Apply(
   if is_creating_deployment:
     log.info('Creating the deployment')
 
-    op = blueprints_util.CreateDeployment(
-        deployment,
-        deployment_id,
-        parent_resource.RelativeName())
+    op = blueprints_util.CreateDeployment(deployment, deployment_id,
+                                          parent_resource.RelativeName())
   else:
     log.info('Updating the existing deployment')
 
@@ -270,9 +256,7 @@ def Apply(
     if labels is None:
       deployment.labels = existing_deployment.labels
 
-    op = blueprints_util.UpdateDeployment(
-        deployment,
-        deployment_full_name)
+    op = blueprints_util.UpdateDeployment(deployment, deployment_full_name)
 
   log.debug('LRO: %s', op.name)
 
@@ -280,8 +264,7 @@ def Apply(
   # the automatically-generated Delete command issues and return immediately.
   if async_:
     log.status.Print('{0} request issued for: [{1}]'.format(
-        'Create' if is_creating_deployment else 'Update',
-        deployment_id))
+        'Create' if is_creating_deployment else 'Update', deployment_id))
 
     log.status.Print('Check operation [{}] for status.'.format(op.name))
 
@@ -290,8 +273,8 @@ def Apply(
   progress_message = '{} the deployment'.format(
       'Creating' if is_creating_deployment else 'Updating')
 
-  applied_deployment = blueprints_util.WaitForDeploymentOperation(
-      op, True, progress_message)
+  applied_deployment = blueprints_util.WaitForApplyDeploymentOperation(
+      op, progress_message)
 
   if applied_deployment.state == messages.Deployment.StateValueValuesEnum.FAILED:
     error_handling.DeploymentFailed(applied_deployment)

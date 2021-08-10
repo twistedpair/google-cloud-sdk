@@ -104,7 +104,7 @@
     "oauth2": {
       "scopes": {
         "https://www.googleapis.com/auth/cloud-platform": {
-          "description": "See, edit, configure, and delete your Google Cloud Platform data"
+          "description": "See, edit, configure, and delete your Google Cloud data and see the email address for your Google Account."
         }
       }
     }
@@ -458,6 +458,24 @@
             "type": "string"
           }
         },
+        "nicType": {
+          "description": "Optional. The type of vNIC to be used on this interface. This may be gVNIC or VirtioNet.",
+          "type": "string",
+          "enumDescriptions": [
+            "No type specified. Default should be UNSPECIFIED_NIC_TYPE.",
+            "VIRTIO. Default in Notebooks DLVM.",
+            "GVNIC. Alternative to VIRTIO. https:\/\/github.com\/GoogleCloudPlatform\/compute-virtual-ethernet-linux"
+          ],
+          "enum": [
+            "UNSPECIFIED_NIC_TYPE",
+            "VIRTIO_NET",
+            "GVNIC"
+          ]
+        },
+        "reservationAffinity": {
+          "description": "Optional. The optional reservation affinity. Setting this field will apply the specified [Zonal Compute Reservation](https:\/\/cloud.google.com\/compute\/docs\/instances\/reserving-zonal-resources) to this notebook instance.",
+          "$ref": "ReservationAffinity"
+        },
         "createTime": {
           "description": "Output only. Instance creation time.",
           "readOnly": true,
@@ -545,6 +563,40 @@
           "description": "Count of cores of this accelerator.",
           "type": "string",
           "format": "int64"
+        }
+      }
+    },
+    "ReservationAffinity": {
+      "id": "ReservationAffinity",
+      "description": "Reservation Affinity for consuming Zonal reservation.",
+      "type": "object",
+      "properties": {
+        "consumeReservationType": {
+          "description": "Optional. Type of reservation to consume",
+          "type": "string",
+          "enumDescriptions": [
+            "Default type.",
+            "Do not consume from any allocated capacity.",
+            "Consume any reservation available.",
+            "Must consume from a specific reservation. Must specify key value fields for specifying the reservations."
+          ],
+          "enum": [
+            "TYPE_UNSPECIFIED",
+            "NO_RESERVATION",
+            "ANY_RESERVATION",
+            "SPECIFIC_RESERVATION"
+          ]
+        },
+        "key": {
+          "description": "Optional. Corresponds to the label key of reservation resource.",
+          "type": "string"
+        },
+        "values": {
+          "description": "Optional. Corresponds to the label values of reservation resource.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },

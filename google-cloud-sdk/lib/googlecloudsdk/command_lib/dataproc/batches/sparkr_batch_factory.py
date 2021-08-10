@@ -46,6 +46,10 @@ class SparkRBatchFactory(object):
 
     Returns:
       A SparkRBatch message.
+
+    Raises:
+      AttributeError: Bucket is required to upload local files, but not
+      specified.
     """
     kwargs = {}
 
@@ -63,7 +67,10 @@ class SparkRBatchFactory(object):
     if args.archives:
       dependencies['archiveUris'] = args.archives
 
-    dependencies = local_file_uploader.Upload(args.bucket, dependencies)
+    if local_file_uploader.HasLocalFiles(dependencies):
+      if not args.bucket:
+        raise AttributeError('--bucket was not specified.')
+      dependencies = local_file_uploader.Upload(args.bucket, dependencies)
 
     # Get mainRFileUri out of the list for message construction.
     dependencies['mainRFileUri'] = dependencies['mainRFileUri'][0]
@@ -79,6 +86,4 @@ def AddArguments(parser):
   flags.AddArgs(parser)
   flags.AddOtherFiles(parser)
   flags.AddArchives(parser)
-  # Cloud Storage bucket to upload workload dependencies.
-  # It is required until we figure out a place to upload user files.
   flags.AddBucket(parser)

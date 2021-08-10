@@ -14,7 +14,7 @@
     "x16": "http://www.google.com/images/icons/product/search-16.gif",
     "x32": "http://www.google.com/images/icons/product/search-32.gif"
    },
-  "documentationLink": "https://cloud.google.com/access-approval/docs",
+  "documentationLink": "https://cloud.google.com/cloud-provider-access-management/access-approval/docs",
   "protocol": "rest",
   "rootUrl": "https://accessapproval.googleapis.com/",
   "mtlsRootUrl": "https://accessapproval.mtls.googleapis.com/",

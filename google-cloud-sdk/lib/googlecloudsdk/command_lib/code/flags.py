@@ -204,9 +204,15 @@ class CommonFlags(FlagDefs):
         help=(
             'service.yaml filename override. Defaults to the first file '
             'matching ```*service.dev.yaml``` then ```*service.yaml```, if any '
-            'exist.'
-        ),
+            'exist.'),
     )
+
+  def AddAllowSecretManagerFlag(self):
+    self._AddFlag(
+        '--allow-secret-manager',
+        action=arg_parsers.StoreTrueFalseAction,
+        help=('Suppress warnings if secrets need to be pulled from secret '
+              'manager'))
 
   def _GetGroup(self, klass):
     if klass not in self._group_cache:
@@ -246,6 +252,7 @@ class CommonFlags(FlagDefs):
     self.BuildersGroup().AddBuilder()
     self.EnvVarsGroup().AddEnvVars()
     self.EnvVarsGroup().AddEnvVarsFile()
+    self.AddAllowSecretManagerFlag()
 
 
 class InvalidFlagError(exceptions.Error):

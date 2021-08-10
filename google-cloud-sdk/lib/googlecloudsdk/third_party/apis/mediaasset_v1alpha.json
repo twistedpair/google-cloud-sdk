@@ -104,7 +104,7 @@
     "oauth2": {
       "scopes": {
         "https://www.googleapis.com/auth/cloud-platform": {
-          "description": "See, edit, configure, and delete your Google Cloud Platform data"
+          "description": "See, edit, configure, and delete your Google Cloud data and see the email address for your Google Account."
         }
       }
     }
@@ -217,6 +217,10 @@
           "description": "Status of derived asset action.",
           "$ref": "DerivedAssetStatus"
         },
+        "notification": {
+          "description": "Status of notification action.",
+          "$ref": "NotificationStatus"
+        },
         "name": {
           "description": "The resource name of the action, in the following form: `projects\/{project}\/locations\/{location}\/assetTypes\/{type}\/assets\/{asset}\/actions\/{action}`.",
           "type": "string"
@@ -299,6 +303,24 @@
             "RUNNING",
             "COMPLETED"
           ]
+        }
+      }
+    },
+    "NotificationStatus": {
+      "id": "NotificationStatus",
+      "description": "Status of notification action",
+      "type": "object",
+      "properties": {
+        "status": {
+          "description": "Output only. Status of the last pub\/sub action.",
+          "readOnly": true,
+          "$ref": "Status"
+        },
+        "lastUpdateTime": {
+          "description": "Output only. Time at which the last pub\/sub action occurred.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },
@@ -440,6 +462,21 @@
             "type": "any",
             "description": "Properties of the object."
           }
+        },
+        "state": {
+          "description": "Output only. State of the annotation.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "STATE_UNSPECIFIED means state of the annotation is unclear.",
+            "ACTIVE means the annotation is created and ready to be used.",
+            "DELETING means the annotation is being deleted. This state only shows up in the annotation in pub sub notification when DeleteAnnotation method is called."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "ACTIVE",
+            "DELETING"
+          ]
         }
       }
     },
@@ -2323,13 +2360,13 @@
                           "required": true,
                           "type": "string"
                         },
-                        "readMask": {
+                        "oldReadMask": {
                           "description": "This is temporary.",
                           "location": "query",
                           "type": "string",
                           "format": "google-fieldmask"
                         },
-                        "newReadMask": {
+                        "readMask": {
                           "description": "Extra fields to be poplulated as part of the asset resource in the response. Currently, this only supports populating asset metadata (no wildcards and no contents of the entire asset).",
                           "location": "query",
                           "type": "string"
@@ -2410,13 +2447,13 @@
                           "location": "query",
                           "type": "string"
                         },
-                        "readMask": {
+                        "oldReadMask": {
                           "description": "This is temporary.",
                           "location": "query",
                           "type": "string",
                           "format": "google-fieldmask"
                         },
-                        "newReadMask": {
+                        "readMask": {
                           "description": "Extra fields to be poplulated as part of the asset resource in the response. Currently, this only supports populating asset metadata (no wildcards and no contents of the entire asset).",
                           "location": "query",
                           "type": "string"

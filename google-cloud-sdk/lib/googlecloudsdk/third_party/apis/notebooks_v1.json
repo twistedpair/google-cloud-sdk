@@ -104,7 +104,7 @@
     "oauth2": {
       "scopes": {
         "https://www.googleapis.com/auth/cloud-platform": {
-          "description": "See, edit, configure, and delete your Google Cloud Platform data"
+          "description": "See, edit, configure, and delete your Google Cloud data and see the email address for your Google Account."
         }
       }
     }
@@ -1841,6 +1841,24 @@
         "serviceAccount": {
           "description": "The email address of a service account to use when running the execution. You must have the `iam.serviceAccounts.actAs` permission for the specified service account.",
           "type": "string"
+        },
+        "jobType": {
+          "description": "The type of Job to be used on this execution.",
+          "type": "string",
+          "enumDescriptions": [
+            "No type specified.",
+            "Custom Job in `aiplatform.googleapis.com`. Default value for an execution.",
+            "Run execution on a cluster with Dataproc as a job. https:\/\/cloud.google.com\/dataproc\/docs\/reference\/rest\/v1\/projects.regions.jobs"
+          ],
+          "enum": [
+            "JOB_TYPE_UNSPECIFIED",
+            "VERTEX_AI",
+            "DATAPROC"
+          ]
+        },
+        "dataprocParameters": {
+          "description": "Parameters used in Dataproc JobType executions.",
+          "$ref": "DataprocParameters"
         }
       }
     },
@@ -1877,6 +1895,17 @@
           "description": "Count of cores of this accelerator.",
           "type": "string",
           "format": "int64"
+        }
+      }
+    },
+    "DataprocParameters": {
+      "id": "DataprocParameters",
+      "description": "Parameters used in Dataproc JobType executions.",
+      "type": "object",
+      "properties": {
+        "cluster": {
+          "description": "URI for cluster used to run Dataproc execution. Format: 'projects\/{PROJECT_ID}\/regions\/{REGION}\/clusters\/{CLUSTER_NAME}",
+          "type": "string"
         }
       }
     },

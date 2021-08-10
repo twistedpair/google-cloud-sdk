@@ -59,11 +59,14 @@ class LocalRuntimeFiles(object):
       cpu_request = None
 
     code_generators = [
-        local.AppContainerGenerator(self._settings.service_name,
-                                    self._settings.image,
-                                    self._settings.env_vars,
-                                    self._settings.memory, self._settings.cpu,
-                                    cpu_request, self._settings.readiness_probe)
+        local.AppContainerGenerator(
+            self._settings.service_name, self._settings.image,
+            self._settings.env_vars, self._settings.env_vars_secrets,
+            self._settings.memory, self._settings.cpu, cpu_request,
+            self._settings.readiness_probe),
+        local.SecretsGenerator(self._settings.env_vars_secrets,
+                               self._settings.namespace,
+                               self._settings.allow_secret_manager)
     ]
 
     credential_generator = None

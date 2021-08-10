@@ -2753,9 +2753,11 @@ class SddcProjectsLocationsClusterGroupsDeleteRequest(_messages.Message):
 
   Fields:
     name: Required. The resource name of the `ClusterGroup` to be deleted.
+    requestId: UUID of this invocation for idempotent operation.
   """
 
   name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
 
 
 class SddcProjectsLocationsClusterGroupsGetIamPolicyRequest(_messages.Message):

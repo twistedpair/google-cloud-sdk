@@ -96,9 +96,9 @@ class VMStatusTroubleshooter(ssh_troubleshooter.SshTroubleshooter):
 
     response = self.monitoring_client.projects_timeSeries.List(request=request)
     if response.timeSeries:
-      points = response.timeSeries[0].Points
+      points = response.timeSeries[0].points
       cpu_utilizatian = sum(
-          point.value.doublevalue for point in points) / len(points)
+          point.value.doubleValue for point in points) / len(points)
       if cpu_utilizatian > CPU_THRESHOLD:
         self.issues['cpu'] = CPU_MESSAGE
 

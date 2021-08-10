@@ -153,7 +153,7 @@ class CloudschedulerV1alpha1(base_api.BaseApiClient):
         method_id='cloudscheduler.projects.locations.jobs.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['legacyAppEngineCron', 'pageSize', 'pageToken'],
+        query_params=['filter', 'legacyAppEngineCron', 'pageSize', 'pageToken'],
         relative_path='v1alpha1/{+parent}/jobs',
         request_field='',
         request_type_name='CloudschedulerProjectsLocationsJobsListRequest',

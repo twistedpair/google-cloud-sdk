@@ -22,6 +22,9 @@ from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.core.util import debug_output
 
 
+DEFAULT_CONTENT_TYPE = 'application/octet-stream'
+
+
 class UserRequestArgs:
   """Class contains user flags and should be passed to RequestConfig factory.
 
@@ -302,7 +305,10 @@ def get_request_config(url,
         user_request_args.predefined_default_acl_string)
 
     if user_request_args.content_type is not None:
-      request_config.content_type = user_request_args.content_type
+      if not user_request_args.content_type:
+        request_config.content_type = DEFAULT_CONTENT_TYPE
+      else:
+        request_config.content_type = user_request_args.content_type
     if user_request_args.md5_hash is not None:
       request_config.md5_hash = user_request_args.md5_hash
 

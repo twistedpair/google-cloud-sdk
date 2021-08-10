@@ -148,6 +148,13 @@
           "additionalProperties": {
             "$ref": "SshPublicKey"
           }
+        },
+        "securityKeys": {
+          "description": "The registered security key credentials for a user.",
+          "type": "array",
+          "items": {
+            "$ref": "SecurityKey"
+          }
         }
       }
     },
@@ -238,6 +245,51 @@
         "name": {
           "description": "Output only. The canonical resource name.",
           "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "SecurityKey": {
+      "id": "SecurityKey",
+      "description": "The credential information for a Google registered security key.",
+      "type": "object",
+      "properties": {
+        "publicKey": {
+          "description": "Public key text in SSH format, defined by [RFC4253](\"https:\/\/www.ietf.org\/rfc\/rfc4253.txt\") section 6.6.",
+          "type": "string"
+        },
+        "privateKey": {
+          "description": "Hardware-backed private key text in SSH format.",
+          "type": "string"
+        },
+        "universalTwoFactor": {
+          "description": "The U2F protocol type.",
+          "$ref": "UniversalTwoFactor"
+        },
+        "webAuthn": {
+          "description": "The Web Authentication protocol type.",
+          "$ref": "WebAuthn"
+        }
+      }
+    },
+    "UniversalTwoFactor": {
+      "id": "UniversalTwoFactor",
+      "description": "Security key information specific to the U2F protocol.",
+      "type": "object",
+      "properties": {
+        "appId": {
+          "description": "Application ID for the U2F protocol.",
+          "type": "string"
+        }
+      }
+    },
+    "WebAuthn": {
+      "id": "WebAuthn",
+      "description": "Security key information specific to the Web Authentication protocol.",
+      "type": "object",
+      "properties": {
+        "rpId": {
+          "description": "Relying party ID for Web Authentication.",
           "type": "string"
         }
       }

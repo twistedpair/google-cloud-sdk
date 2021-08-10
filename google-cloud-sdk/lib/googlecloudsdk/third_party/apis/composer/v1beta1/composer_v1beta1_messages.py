@@ -252,8 +252,11 @@ class ComposerProjectsLocationsEnvironmentsPatchRequest(_messages.Message):
       mask of this form and the `labels` mask. * `config.nodeCount` *
       Horizontally scale the number of nodes in the environment. An integer
       greater than or equal to 3 must be provided in the `config.nodeCount`
-      field. * `config.webServerNetworkAccessControl` * Replace the
-      environment's current WebServerNetworkAccessControl. *
+      field. Supported for Cloud Composer environments in versions
+      composer-1.*.*-airflow-*.*.*. * `config.webServerNetworkAccessControl` *
+      Replace the environment's current WebServerNetworkAccessControl.
+      Supported for Cloud Composer environments in versions
+      composer-1.*.*-airflow-*.*.*. *
       `config.softwareConfig.airflowConfigOverrides` * Replace all Apache
       Airflow config overrides. If a replacement config overrides map is not
       included in `environment`, all config overrides are cleared. It is an
@@ -281,14 +284,23 @@ class ComposerProjectsLocationsEnvironmentsPatchRequest(_messages.Message):
       `config.softwareConfig.schedulerCount` * Horizontally scale the number
       of schedulers in Airflow. A positive integer not greater than the number
       of nodes must be provided in the `config.softwareConfig.schedulerCount`
-      field. * `config.databaseConfig.machineType` * Cloud SQL machine type
-      used by Airflow database. It has to be one of: db-n1-standard-2,
-      db-n1-standard-4, db-n1-standard-8 or db-n1-standard-16. *
-      `config.webServerConfig.machineType` * Machine type on which Airflow web
-      server is running. It has to be one of: composer-n1-webserver-2,
-      composer-n1-webserver-4 or composer-n1-webserver-8. *
-      `config.maintenanceWindow` * Maintenance window during which Cloud
-      Composer components may be under maintenance.
+      field. Supported for Cloud Composer environments in versions
+      composer-1.*.*-airflow-2.*.*. * `config.databaseConfig.machineType` *
+      Cloud SQL machine type used by Airflow database. It has to be one of:
+      db-n1-standard-2, db-n1-standard-4, db-n1-standard-8 or
+      db-n1-standard-16. Supported for Cloud Composer environments in versions
+      composer-1.*.*-airflow-*.*.*. * `config.webServerConfig.machineType` *
+      Machine type on which Airflow web server is running. It has to be one
+      of: composer-n1-webserver-2, composer-n1-webserver-4 or
+      composer-n1-webserver-8. Supported for Cloud Composer environments in
+      versions composer-1.*.*-airflow-*.*.*. * `config.maintenanceWindow` *
+      Maintenance window during which Cloud Composer components may be under
+      maintenance. * `config.workloadsConfig` * The workloads configuration
+      settings for the GKE cluster associated with the Cloud Composer
+      environment. Supported for Cloud Composer environments in versions
+      composer-2.*.*-airflow-*.*.* and newer. * `config.environmentSize` * The
+      size of the Cloud Composer environment. Supported for Cloud Composer
+      environments in versions composer-2.*.*-airflow-*.*.* and newer.
   """
 
   environment = _messages.MessageField('Environment', 1)
@@ -368,7 +380,8 @@ class ComposerProjectsLocationsOperationsListRequest(_messages.Message):
 
 class DatabaseConfig(_messages.Message):
   r"""The configuration of Cloud SQL instance that is used by the Apache
-  Airflow software.
+  Airflow software. Supported for Cloud Composer environments in versions
+  composer-1.*.*-airflow-*.*.*.
 
   Fields:
     machineType: Optional. Cloud SQL machine type used by Airflow database. It
@@ -416,7 +429,8 @@ class Empty(_messages.Message):
 
 class EncryptionConfig(_messages.Message):
   r"""The encryption options for the Cloud Composer environment and its
-  dependencies.
+  dependencies. Supported for Cloud Composer environments in versions
+  composer-1.*.*-airflow-*.*.*.
 
   Fields:
     kmsKeyName: Optional. Customer-managed Encryption Key available through
@@ -538,9 +552,13 @@ class EnvironmentConfig(_messages.Message):
       name prefixes. DAG objects for this environment reside in a simulated
       directory with the given prefix.
     databaseConfig: Optional. The configuration settings for Cloud SQL
-      instance used internally by Apache Airflow software.
+      instance used internally by Apache Airflow software. This field is
+      supported for Cloud Composer environments in versions
+      composer-1.*.*-airflow-*.*.*.
     encryptionConfig: Optional. The encryption options for the Cloud Composer
-      environment and its dependencies. Cannot be updated.
+      environment and its dependencies. Cannot be updated. This field is
+      supported for Cloud Composer environments in versions
+      composer-1.*.*-airflow-*.*.*.
     environmentSize: Optional. The size of the Cloud Composer environment.
       This field is supported for Cloud Composer environments in versions
       composer-2.*.*-airflow-*.*.* and newer.
@@ -557,16 +575,19 @@ class EnvironmentConfig(_messages.Message):
       be subject to maintenance at any time.
     nodeConfig: The configuration used for the Kubernetes Engine cluster.
     nodeCount: The number of nodes in the Kubernetes Engine cluster that will
-      be used to run this environment.
+      be used to run this environment. This field is supported for Cloud
+      Composer environments in versions composer-1.*.*-airflow-*.*.*.
     privateEnvironmentConfig: The configuration used for the Private IP Cloud
       Composer environment.
     softwareConfig: The configuration settings for software inside the
       environment.
     webServerConfig: Optional. The configuration settings for the Airflow web
-      server App Engine instance.
+      server App Engine instance. This field is supported for Cloud Composer
+      environments in versions composer-1.*.*-airflow-*.*.*.
     webServerNetworkAccessControl: Optional. The network-level access control
       policy for the Airflow web server. If unspecified, no network-level
-      access restrictions will be applied.
+      access restrictions will be applied. This field is supported for Cloud
+      Composer environments in versions composer-1.*.*-airflow-*.*.*.
     workloadsConfig: Optional. The workloads configuration settings for the
       GKE cluster associated with the Cloud Composer environment. The GKE
       cluster runs Airflow scheduler, web server and workers workloads. This
@@ -613,6 +634,8 @@ class IPAllocationPolicy(_messages.Message):
   Fields:
     clusterIpv4CidrBlock: Optional. The IP address range used to allocate IP
       addresses to pods in the cluster. This field is applicable only when
+      `use_ip_aliases` is true. For Cloud Composer environments in versions
+      composer-1.*.*-airflow-*.*.*, this field is applicable only when
       `use_ip_aliases` is true. Set to blank to have GKE choose a range with
       the default size. Set to /netmask (e.g. `/14`) to have GKE choose a
       range with a specific netmask. Set to a
@@ -624,9 +647,13 @@ class IPAllocationPolicy(_messages.Message):
     clusterSecondaryRangeName: Optional. The name of the cluster's secondary
       range used to allocate IP addresses to pods. Specify either
       `cluster_secondary_range_name` or `cluster_ipv4_cidr_block` but not
-      both. This field is applicable only when `use_ip_aliases` is true.
+      both. This field is applicable only when `use_ip_aliases` is true. For
+      Cloud Composer environments in versions composer-1.*.*-airflow-*.*.*,
+      this field is applicable only when `use_ip_aliases` is true.
     servicesIpv4CidrBlock: Optional. The IP address range of the services IP
       addresses in this cluster. This field is applicable only when
+      `use_ip_aliases` is true. For Cloud Composer environments in versions
+      composer-1.*.*-airflow-*.*.*, this field is applicable only when
       `use_ip_aliases` is true. Set to blank to have GKE choose a range with
       the default size. Set to /netmask (e.g. `/14`) to have GKE choose a
       range with a specific netmask. Set to a
@@ -638,9 +665,14 @@ class IPAllocationPolicy(_messages.Message):
     servicesSecondaryRangeName: Optional. The name of the services' secondary
       range used to allocate IP addresses to the cluster. Specify either
       `services_secondary_range_name` or `services_ipv4_cidr_block` but not
-      both. This field is applicable only when `use_ip_aliases` is true.
+      both. This field is applicable only when `use_ip_aliases` is true. For
+      Cloud Composer environments in versions composer-1.*.*-airflow-*.*.*,
+      this field is applicable only when `use_ip_aliases` is true.
     useIpAliases: Optional. Whether or not to enable Alias IPs in the GKE
-      cluster. If `true`, a VPC-native cluster is created.
+      cluster. If `true`, a VPC-native cluster is created. This field is only
+      supported for Cloud Composer environments in versions
+      composer-1.*.*-airflow-*.*.*. Environments in newer versions always use
+      VPC-native GKE clusters.
   """
 
   clusterIpv4CidrBlock = _messages.StringField(1)
@@ -745,7 +777,9 @@ class NodeConfig(_messages.Message):
 
   Fields:
     diskSizeGb: Optional. The disk size in GB used for node VMs. Minimum size
-      is 20GB. If unspecified, defaults to 100GB. Cannot be updated.
+      is 20GB. If unspecified, defaults to 100GB. Cannot be updated. This
+      field is supported for Cloud Composer environments in versions
+      composer-1.*.*-airflow-*.*.*.
     ipAllocationPolicy: Optional. The IPAllocationPolicy fields for the GKE
       cluster.
     location: Optional. The Compute Engine [zone](/compute/docs/regions-zones)
@@ -760,7 +794,8 @@ class NodeConfig(_messages.Message):
       Composer location, and propagate that choice to both fields. If only one
       field (`location` or `nodeConfig.machineType`) is specified, the
       location information from the specified field will be propagated to the
-      unspecified field.
+      unspecified field. This field is supported for Cloud Composer
+      environments in versions composer-1.*.*-airflow-*.*.*.
     machineType: Optional. The Compute Engine [machine
       type](/compute/docs/machine-types) used for cluster instances, specified
       as a [relative resource
@@ -776,7 +811,8 @@ class NodeConfig(_messages.Message):
       propagated to the unspecified field. The `machineTypeId` must not be a
       [shared-core machine type](/compute/docs/machine-types#sharedcore). If
       this field is unspecified, the `machineTypeId` defaults to
-      "n1-standard-1".
+      "n1-standard-1". This field is supported for Cloud Composer environments
+      in versions composer-1.*.*-airflow-*.*.*.
     maxPodsPerNode: Optional. The maximum number of pods per node in the Cloud
       Composer GKE cluster. The value must be between 8 and 110 and it can be
       set only if the environment is VPC-native. The default value is 32.
@@ -786,7 +822,8 @@ class NodeConfig(_messages.Message):
       value is not explicitly set during node pool creation. For more
       information, see [Optimizing IP address allocation]
       (https://cloud.google.com/kubernetes-engine/docs/how-to/flexible-pod-
-      cidr). Cannot be updated.
+      cidr). Cannot be updated. This field is supported for Cloud Composer
+      environments in versions composer-1.*.*-airflow-*.*.*.
     network: Optional. The Compute Engine network to be used for machine
       communications, specified as a [relative resource
       name](/apis/design/resource_names#relative_resource_name). For example:
@@ -799,6 +836,8 @@ class NodeConfig(_messages.Message):
     oauthScopes: Optional. The set of Google API scopes to be made available
       on all node VMs. If `oauth_scopes` is empty, defaults to
       ["https://www.googleapis.com/auth/cloud-platform"]. Cannot be updated.
+      This field is supported for Cloud Composer environments in versions
+      composer-1.*.*-airflow-*.*.*.
     serviceAccount: Optional. The Google Cloud Platform Service Account to be
       used by the workloads. If a service account is not specified, the
       "default" Compute Engine service account is used. Cannot be updated.
@@ -812,7 +851,9 @@ class NodeConfig(_messages.Message):
     tags: Optional. The list of instance tags applied to all node VMs. Tags
       are used to identify valid sources or targets for network firewalls.
       Each tag within the list must comply with
-      [RFC1035](https://www.ietf.org/rfc/rfc1035.txt). Cannot be updated.
+      [RFC1035](https://www.ietf.org/rfc/rfc1035.txt). Cannot be updated. This
+      field is supported for Cloud Composer environments in versions
+      composer-1.*.*-airflow-*.*.*.
   """
 
   diskSizeGb = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1037,15 +1078,18 @@ class PrivateEnvironmentConfig(_messages.Message):
       web_server_ipv4_cidr_block
     enablePrivateEnvironment: Optional. If `true`, a Private IP Cloud Composer
       environment is created. If this field is set to true,
-      `IPAllocationPolicy.use_ip_aliases` must be set to true .
+      `IPAllocationPolicy.use_ip_aliases` must be set to true for Cloud
+      Composer environments in versions composer-1.*.*-airflow-*.*.*.
     privateClusterConfig: Optional. Configuration for the private GKE cluster
       for a Private IP Cloud Composer environment.
     webServerIpv4CidrBlock: Optional. The CIDR block from which IP range for
       web server will be reserved. Needs to be disjoint from
       private_cluster_config.master_ipv4_cidr_block and
-      cloud_sql_ipv4_cidr_block.
+      cloud_sql_ipv4_cidr_block. This field is supported for Cloud Composer
+      environments in versions composer-1.*.*-airflow-*.*.*.
     webServerIpv4ReservedRange: Output only. The IP range reserved for the
-      tenant project's App Engine VMs.
+      tenant project's App Engine VMs. This field is supported for Cloud
+      Composer environments in versions composer-1.*.*-airflow-*.*.*.
   """
 
   cloudComposerNetworkIpv4CidrBlock = _messages.StringField(1)
@@ -1163,7 +1207,12 @@ class SoftwareConfig(_messages.Message):
     pythonVersion: Optional. The major version of Python used to run the
       Apache Airflow scheduler, worker, and webserver processes. Can be set to
       '2' or '3'. If not specified, the default is '3'. Cannot be updated.
-    schedulerCount: Optional. The number of schedulers for Airflow.
+      This field is only supported for Cloud Composer environments in versions
+      composer-1.*.*-airflow-*.*.*. Environments in newer versions always use
+      Python major version 3.
+    schedulerCount: Optional. The number of schedulers for Airflow. This field
+      is supported for Cloud Composer environments in versions
+      composer-1.*.*-airflow-2.*.*.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -1391,7 +1440,8 @@ class Status(_messages.Message):
 
 class WebServerConfig(_messages.Message):
   r"""The configuration settings for the Airflow web server App Engine
-  instance.
+  instance. Supported for Cloud Composer environments in versions
+  composer-1.*.*-airflow-*.*.*.
 
   Fields:
     machineType: Optional. Machine type on which Airflow web server is
@@ -1407,6 +1457,8 @@ class WebServerConfig(_messages.Message):
 
 class WebServerNetworkAccessControl(_messages.Message):
   r"""Network-level access control policy for the Airflow web server.
+  Supported for Cloud Composer environments in versions
+  composer-1.*.*-airflow-*.*.*.
 
   Fields:
     allowedIpRanges: A collection of allowed IP ranges with descriptions.

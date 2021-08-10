@@ -480,6 +480,18 @@
           "type": "string"
         }
       }
+    },
+    "GoogleIamV2mainPolicyOperationMetadata": {
+      "id": "GoogleIamV2mainPolicyOperationMetadata",
+      "description": "Metadata for long-running Policy operations.",
+      "type": "object",
+      "properties": {
+        "createTime": {
+          "description": "Timestamp when the google.longrunning.Operation was created.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
     }
   },
   "resources": {

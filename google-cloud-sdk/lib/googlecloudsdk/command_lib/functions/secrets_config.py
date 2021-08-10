@@ -160,6 +160,68 @@ def _SecretsValueType(value):
   return _CanonicalizeValue(value)
 
 
+def _SecretsDiffer(project1, secret1, project2, secret2):
+  """Returns true if the two secrets differ.
+
+  The secrets can be considered as different if either the secret name is
+  different or the project is different with the secret name being the same. If
+  one project is represented using the project number and the other is
+  represented using its project id, then it may not be possible to determine if
+  the two projects are the same, so the validation is relaxed.
+
+  Args:
+    project1: Project ID or number of the first secret.
+    secret1: Secret name of the first secret.
+    project2: Project ID or number of the second secret.
+    secret2: Secret name of the second secret.
+
+  Returns:
+    True if the two secrets differ, False otherwise.
+  """
+  return (secret1 != secret2 or
+          (project1 != project2 and
+           project1.isnumeric() == project2.isnumeric() and
+           project1 != _DEFAULT_PROJECT_IDENTIFIER and
+           project2 != _DEFAULT_PROJECT_IDENTIFIER))
+
+
+def _ValidateSecrets(secrets_dict):
+  """Additional secrets validations that require the entire dict.
+
+  Args:
+    secrets_dict: Secrets configuration dict to validate.
+  """
+  mount_path_to_secret = collections.defaultdict(list)
+  for key, value in six.iteritems(secrets_dict):
+    if _SECRET_PATH_PATTERN.search(key):
+      mount_path = key.split(':')[0]
+      secret_res1 = _SECRET_VERSION_SECRET_RESOURCE_PATTERN.search(value).group(
+          'secret_resource')
+
+      if mount_path in mount_path_to_secret:
+        secret_res_match1 = _SECRET_RESOURCE_PATTERN.search(secret_res1)
+        project1 = secret_res_match1.group('project')
+        secret1 = secret_res_match1.group('secret')
+
+        for secret_res2 in mount_path_to_secret[mount_path]:
+          secret_res_match2 = _SECRET_RESOURCE_PATTERN.search(secret_res2)
+          project2 = secret_res_match2.group('project')
+          secret2 = secret_res_match2.group('secret')
+
+          if _SecretsDiffer(project1, secret1, project2, secret2):
+            raise ArgumentTypeError(
+                'More than one secret is configured for the mount path '
+                "'{mount_path}' [violating secrets: {secret1},{secret2}]."
+                .format(
+                    mount_path=mount_path,
+                    secret1=secret1
+                    if project1 == _DEFAULT_PROJECT_IDENTIFIER else secret_res1,
+                    secret2=secret2 if project2 == _DEFAULT_PROJECT_IDENTIFIER
+                    else secret_res2))
+      else:
+        mount_path_to_secret[mount_path].append(secret_res1)
+
+
 class ArgSecretsDict(arg_parsers.ArgDict):
   """ArgDict customized for holding secrets configuration."""
 
@@ -183,53 +245,10 @@ class ArgSecretsDict(arg_parsers.ArgDict):
         required_keys=required_keys,
         operators=operators)
 
-  @staticmethod
-  def ValidateSecrets(secrets_dict):
-    """Additional secrets validations that require the entire dict.
-
-    This method is static so that it can be used to validate secrets dict
-    generated from secrets args.
-
-    Args:
-      secrets_dict: Secrets configuration dict to validate.
-    """
-    mount_path_to_secret = collections.defaultdict(list)
-    for key, value in six.iteritems(secrets_dict):
-      if _SECRET_PATH_PATTERN.search(key):
-        mount_path = key.split(':')[0]
-        secret_res1 = _SECRET_VERSION_SECRET_RESOURCE_PATTERN.search(
-            value).group('secret_resource')
-
-        if mount_path in mount_path_to_secret:
-          secret_res_match1 = _SECRET_RESOURCE_PATTERN.search(secret_res1)
-          project1 = secret_res_match1.group('project')
-          secret1 = secret_res_match1.group('secret')
-
-          for secret_res2 in mount_path_to_secret[mount_path]:
-            secret_res_match2 = _SECRET_RESOURCE_PATTERN.search(secret_res2)
-            project2 = secret_res_match2.group('project')
-            secret2 = secret_res_match2.group('secret')
-
-            if secret1 != secret2 or (project1 != project2 and
-                                      project1 != _DEFAULT_PROJECT_IDENTIFIER
-                                      and
-                                      project2 != _DEFAULT_PROJECT_IDENTIFIER):
-              raise ArgumentTypeError(
-                  'More than one secret is configured for the mount path '
-                  "'{mount_path}' [violating secrets: {secret1},{secret2}]."
-                  .format(
-                      mount_path=mount_path,
-                      secret1=secret1 if project1 == _DEFAULT_PROJECT_IDENTIFIER
-                      else secret_res1,
-                      secret2=secret2 if project2 == _DEFAULT_PROJECT_IDENTIFIER
-                      else secret_res2))
-        else:
-          mount_path_to_secret[mount_path].append(secret_res1)
-
   def __call__(self, arg_value):  # pylint:disable=missing-docstring
     secrets_dict = collections.OrderedDict(
         sorted(six.iteritems(super(ArgSecretsDict, self).__call__(arg_value))))
-    ArgSecretsDict.ValidateSecrets(secrets_dict)
+    _ValidateSecrets(secrets_dict)
     return secrets_dict
 
 
@@ -256,39 +275,39 @@ def ConfigureFlags(parser):
       Existing secrets configuration will be overwritten.
 
       You can reference a secret value referred to as `SECRET_VALUE_REF` in the
-      help text in following ways.
+      help text in the following ways.
 
-      * Use `SECRET:VERSION` if you are referencing a secret in the same
-        project. E.g., use `SECRET_FOO:1` to reference version `1` of the secret
-        `SECRET_FOO` which exists in the same project as of the function.
+      * Use `${SECRET}:${VERSION}` if you are referencing a secret in the same
+        project, where `${SECRET}` is the name of the secret in secret manager
+        (not the full resource name) and `${VERSION}` is the version of the
+        secret which is either a `positive integer` or the label `latest`.
+        For example, use `SECRET_FOO:1` to reference version `1` of the secret
+        `SECRET_FOO` which exists in the same project as the function.
 
-      * You can also use the full resource name of the secret version. Use
-        `projects/${PROJECT}/secrets/${SECRET}/versions/${VERSION}` or
-        `projects/${PROJECT}/secrets/${SECRET}:${VERSION}`. This is especially
-        useful if the secret exists in a different project.
-        E.g., use `projects/1234567890/secrets/SECRET_FOO/versions/1` or
-        `projects/project_id/secrets/SECRET_FOO/versions/1` to reference
-        version `1` of the secret `SECRET_FOO` that exists in the project
-        `1234567890` or `project_id` respectively.
+      * Use `projects/${PROJECT}/secrets/${SECRET}/versions/${VERSION}` or
+        `projects/${PROJECT}/secrets/${SECRET}:${VERSION}` to reference a secret
+        version using the full resource name, where `${PROJECT}` is either the
+        project number (`preferred`) or the project ID of the project which
+        contains the secret, `${SECRET}` is the name of the secret in secret
+        manager (not the full resource name) and `${VERSION}` is the version of
+        the secret which is either a `positive integer` or the label `latest`.
+        For example, use `projects/1234567890/secrets/SECRET_FOO/versions/1` or
+        `projects/project_id/secrets/SECRET_FOO/versions/1` to reference version
+        `1` of the secret `SECRET_FOO` that exists in the project `1234567890`
+        or `project_id` respectively.
+        This format is useful when the secret exists in a different project.
 
-      where `${PROJECT}` is either the project ID or the project number of the
-      project which contains the secret, `${SECRET}` is the name of the secret
-      in secret manager (not the full resource name) and `${VERSION}` is the
-      version of the secret which is either a `positive integer` or the label
-      `latest`. It is recommended to use either the project ID or project number
-      `consistently` to avoid validation errors and conflicts.
-
-      To set the secret as an environment variable, use
-      `SECRET_ENV_VAR=SECRET_VALUE_REF`. To use the value of the secret, you can
-      read the environment variable `SECRET_ENV_VAR` as you would normally do in
-      the function's programming language.
+      To configure the secret as an environment variable, use
+      `SECRET_ENV_VAR=SECRET_VALUE_REF`. To use the value of the secret, read
+      the environment variable `SECRET_ENV_VAR` as you would normally do in the
+      function's programming language.
 
       To mount the secret within a volume use `/secret_path=SECRET_VALUE_REF` or
       `/mount_path:/secret_file_path=SECRET_VALUE_REF`. To use the value of the
-      secret, you have to read the file at `/secret_path` as you would normally
-      do in the function's programming language.
+      secret, read the file at `/secret_path` as you would normally do in the
+      function's programming language.
 
-      E.g., `/etc/secrets/secret_foo=SECRET_FOO:latest` or
+      For example, `/etc/secrets/secret_foo=SECRET_FOO:latest` or
       `/etc/secrets:/secret_foo=SECRET_FOO:latest` will make the value of the
       `latest` version of the secret `SECRET_FOO` available in a file
       `secret_foo` under the directory `/etc/secrets`. `/etc/secrets` will be
@@ -319,17 +338,33 @@ def ConfigureFlags(parser):
       Existing secrets configuration of secret environment variable names and
       secret paths not specified in this list will be preserved.
 
-      For removing a secret environment variable, use the name of the
-      environment variable `SECRET_ENV_VAR`.
+      To remove a secret environment variable, use the name of the environment
+      variable `SECRET_ENV_VAR`.
 
-      For removing a file within a secret volume or the volume itself, use the
-      secret path as the key i.e., either `/secret_path` or
-      `/mount_path:/secret_file_path`.""")
+      To remove a file within a secret volume or the volume itself, use the
+      secret path as the key (either `/secret_path` or
+      `/mount_path:/secret_file_path`).""")
 
   flag_group.add_argument(
       '--clear-secrets',
       action='store_true',
       help='Remove all secret environment variables and volumes.')
+
+
+def IsArgsSpecified(args):
+  """Returns true if at least one of the flags for secrets is specified.
+
+  Args:
+    args: Argparse namespace.
+
+  Returns:
+    True if at least one of the flags for secrets is specified.
+  """
+  secrets_flags = {
+      '--set-secrets', '--update-secrets', '--remove-secrets', '--clear-secrets'
+  }
+  specified_flags = set(args.GetSpecifiedArgNames())
+  return bool(specified_flags.intersection(secrets_flags))
 
 
 def _SplitSecretsDict(secrets_dict):
@@ -388,27 +423,37 @@ def _CanonicalizedDict(secrets_dict):
           })))
 
 
-def _SubstituteDefaultProject(secret_version_ref, default_project):
-  """Replaces the default project ID in place of *.
+def _SubstituteDefaultProject(secret_version_ref, default_project_id,
+                              default_project_number):
+  """Replaces the default project number in place of * or project ID.
 
   Args:
     secret_version_ref: Secret value reference.
-    default_project: Default project ID.
+    default_project_id: The project ID of the project to which the function is
+      deployed.
+    default_project_number: The project number of the project to which the
+      function is deployed.
 
   Returns:
-    Secret value reference with * replaced by the default project.
+    Secret value reference with * or project ID replaced by the default project.
   """
-  return secret_version_ref.replace(
-      'projects/*', 'projects/{project}'.format(project=default_project))
+  return re.sub(
+      r'projects/([*]|{project_id})/'.format(project_id=default_project_id),
+      'projects/{project_number}/'.format(
+          project_number=default_project_number), secret_version_ref)
 
 
-def ApplyFlags(old_secrets_dict, args, default_project):
+def ApplyFlags(old_secrets_dict, args, default_project_id,
+               default_project_number):
   """Applies the current flags to existing secrets configuration.
 
   Args:
     old_secrets_dict: Existing secrets configuration dict.
-    args: All CLI arguments.
-    default_project: The project to which the function is deployed.
+    args: Argparse namespace.
+    default_project_id: The project ID of the project to which the function is
+      deployed.
+    default_project_number: The project number of the project to which the
+      function is deployed.
 
   Returns:
     new_secrets_dict_by_type: A new dict of ordered dicts, one for every secret
@@ -453,14 +498,15 @@ def ApplyFlags(old_secrets_dict, args, default_project):
     }
 
   new_secrets_dict = {
-      secrets_key: _SubstituteDefaultProject(secrets_value, default_project)
+      secrets_key: _SubstituteDefaultProject(secrets_value, default_project_id,
+                                             default_project_number)
       for secrets_key, secrets_value in six.iteritems(new_secrets_dict)
   }
   new_secrets_dict = collections.OrderedDict(
       sorted(six.iteritems(new_secrets_dict)))
   # Handles the case when the newly configured secrets could conflict with
   # existing secrets.
-  ArgSecretsDict.ValidateSecrets(new_secrets_dict)
+  _ValidateSecrets(new_secrets_dict)
 
   new_secrets_dict_by_type = _SplitSecretsDict(new_secrets_dict)
   needs_update['secret_environment_variables'] = old_secrets_dict_by_type[

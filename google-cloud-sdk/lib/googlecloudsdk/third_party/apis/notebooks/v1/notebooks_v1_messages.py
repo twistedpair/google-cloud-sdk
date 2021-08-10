@@ -136,6 +136,17 @@ class ContainerImage(_messages.Message):
   tag = _messages.StringField(2)
 
 
+class DataprocParameters(_messages.Message):
+  r"""Parameters used in Dataproc JobType executions.
+
+  Fields:
+    cluster: URI for cluster used to run Dataproc execution. Format:
+      'projects/{PROJECT_ID}/regions/{REGION}/clusters/{CLUSTER_NAME}
+  """
+
+  cluster = _messages.StringField(1)
+
+
 class Disk(_messages.Message):
   r"""An instance-attached disk resource.
 
@@ -339,6 +350,7 @@ class ExecutionTemplate(_messages.Message):
   r"""The description a notebook execution workload.
 
   Enums:
+    JobTypeValueValuesEnum: The type of Job to be used on this execution.
     ScaleTierValueValuesEnum: Required. Scale tier of the hardware used for
       notebook execution. DEPRECATED Will be discontinued. As right now only
       CUSTOM is supported.
@@ -356,10 +368,12 @@ class ExecutionTemplate(_messages.Message):
       'gcr.io/deeplearning-platform-release/base-cu100' More examples can be
       found at: https://cloud.google.com/ai-platform/deep-learning-
       containers/docs/choosing-container
+    dataprocParameters: Parameters used in Dataproc JobType executions.
     inputNotebookFile: Path to the notebook file to execute. Must be in a
       Google Cloud Storage bucket. Format:
       gs://{project_id}/{folder}/{notebook_file_name} Ex:
       gs://notebook_user/scheduled_notebooks/sentiment_notebook.ipynb
+    jobType: The type of Job to be used on this execution.
     labels: Labels for execution. If execution is scheduled, a field included
       will be 'nbs-scheduled'. Otherwise, it is an immediate execution, and an
       included field will be 'nbs-immediate'. Use fields to efficiently index
@@ -396,6 +410,20 @@ class ExecutionTemplate(_messages.Message):
       the execution. You must have the `iam.serviceAccounts.actAs` permission
       for the specified service account.
   """
+
+  class JobTypeValueValuesEnum(_messages.Enum):
+    r"""The type of Job to be used on this execution.
+
+    Values:
+      JOB_TYPE_UNSPECIFIED: No type specified.
+      VERTEX_AI: Custom Job in `aiplatform.googleapis.com`. Default value for
+        an execution.
+      DATAPROC: Run execution on a cluster with Dataproc as a job. https://clo
+        ud.google.com/dataproc/docs/reference/rest/v1/projects.regions.jobs
+    """
+    JOB_TYPE_UNSPECIFIED = 0
+    VERTEX_AI = 1
+    DATAPROC = 2
 
   class ScaleTierValueValuesEnum(_messages.Enum):
     r"""Required. Scale tier of the hardware used for notebook execution.
@@ -465,14 +493,16 @@ class ExecutionTemplate(_messages.Message):
 
   acceleratorConfig = _messages.MessageField('SchedulerAcceleratorConfig', 1)
   containerImageUri = _messages.StringField(2)
-  inputNotebookFile = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  masterType = _messages.StringField(5)
-  outputNotebookFolder = _messages.StringField(6)
-  parameters = _messages.StringField(7)
-  paramsYamlFile = _messages.StringField(8)
-  scaleTier = _messages.EnumField('ScaleTierValueValuesEnum', 9)
-  serviceAccount = _messages.StringField(10)
+  dataprocParameters = _messages.MessageField('DataprocParameters', 3)
+  inputNotebookFile = _messages.StringField(4)
+  jobType = _messages.EnumField('JobTypeValueValuesEnum', 5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  masterType = _messages.StringField(7)
+  outputNotebookFolder = _messages.StringField(8)
+  parameters = _messages.StringField(9)
+  paramsYamlFile = _messages.StringField(10)
+  scaleTier = _messages.EnumField('ScaleTierValueValuesEnum', 11)
+  serviceAccount = _messages.StringField(12)
 
 
 class Expr(_messages.Message):

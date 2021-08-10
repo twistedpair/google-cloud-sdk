@@ -148,7 +148,8 @@
             "This represents a software bill of materials.",
             "This represents an SPDX Package.",
             "This represents an SPDX File.",
-            "This represents an SPDX Relationship."
+            "This represents an SPDX Relationship.",
+            "This represents a DSSE attestation Note"
           ],
           "enum": [
             "KIND_UNSPECIFIED",
@@ -164,7 +165,8 @@
             "SBOM",
             "SPDX_PACKAGE",
             "SPDX_FILE",
-            "SPDX_RELATIONSHIP"
+            "SPDX_RELATIONSHIP",
+            "DSSE_ATTESTATION"
           ]
         },
         "vulnerabilityDetails": {
@@ -219,6 +221,10 @@
           "description": "Describes a specific relationship between SPDX elements.",
           "$ref": "RelationshipOccurrence"
         },
+        "dsseAttestation": {
+          "description": "This represents a DSSE attestation occurrence",
+          "$ref": "DSSEAttestationOccurrence"
+        },
         "remediation": {
           "description": "A description of actions that can be taken to remedy the `Note`",
           "type": "string"
@@ -232,6 +238,10 @@
           "description": "Output only. The time this `Occurrence` was last updated.",
           "type": "string",
           "format": "google-datetime"
+        },
+        "envelope": {
+          "description": "https:\/\/github.com\/secure-systems-lab\/dsse",
+          "$ref": "Envelope"
         }
       }
     },
@@ -428,6 +438,10 @@
         "provenanceBytes": {
           "description": "Serialized JSON representation of the provenance, used in generating the `BuildSignature` in the corresponding Result. After verifying the signature, `provenance_bytes` can be unmarshalled and compared to the provenance to confirm that it is unchanged. A base64-encoded string representation of the provenance bytes is used for the signature in order to interoperate with openssl which expects this format for signature verification. The serialized form is captured both to avoid ambiguity in how the provenance is marshalled to json as well to prevent incompatibilities with future changes.",
           "type": "string"
+        },
+        "intotoProvenance": {
+          "description": "In-toto Provenance representation as defined in spec.",
+          "$ref": "InTotoProvenance"
         }
       }
     },
@@ -803,6 +817,121 @@
         "revisionId": {
           "description": "Required. Git commit hash.",
           "type": "string"
+        }
+      }
+    },
+    "InTotoProvenance": {
+      "id": "InTotoProvenance",
+      "type": "object",
+      "properties": {
+        "builderConfig": {
+          "description": "required",
+          "$ref": "BuilderConfig"
+        },
+        "recipe": {
+          "description": "Identifies the configuration used for the build. When combined with materials, this SHOULD fully describe the build, such that re-running this recipe results in bit-for-bit identical output (if the build is reproducible). required",
+          "$ref": "Recipe"
+        },
+        "metadata": {
+          "$ref": "Metadata"
+        },
+        "materials": {
+          "description": "The collection of artifacts that influenced the build including sources, dependencies, build tools, base images, and so on. This is considered to be incomplete unless metadata.completeness.materials is true. Unset or null is equivalent to empty.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "BuilderConfig": {
+      "id": "BuilderConfig",
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string"
+        }
+      }
+    },
+    "Recipe": {
+      "id": "Recipe",
+      "description": "Steps taken to build the artifact. For a TaskRun, typically each container corresponds to one step in the recipe.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "URI indicating what type of recipe was performed. It determines the meaning of recipe.entryPoint, recipe.arguments, recipe.environment, and materials.",
+          "type": "string"
+        },
+        "definedInMaterial": {
+          "description": "Index in materials containing the recipe steps that are not implied by recipe.type. For example, if the recipe type were \"make\", then this would point to the source containing the Makefile, not the make program itself. Set to -1 if the recipe doesn't come from a material, as zero is default unset value for int64.",
+          "type": "string",
+          "format": "int64"
+        },
+        "entryPoint": {
+          "description": "String identifying the entry point into the build. This is often a path to a configuration file and\/or a target label within that file. The syntax and meaning are defined by recipe.type. For example, if the recipe type were \"make\", then this would reference the directory in which to run make as well as which target to use.",
+          "type": "string"
+        },
+        "arguments": {
+          "description": "Collection of all external inputs that influenced the build on top of recipe.definedInMaterial and recipe.entryPoint. For example, if the recipe type were \"make\", then this might be the flags passed to make aside from the target, which is captured in recipe.entryPoint.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "environment": {
+          "description": "Any other builder-controlled inputs necessary for correctly evaluating the recipe. Usually only needed for reproducing the build but not evaluated as part of policy.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "Metadata": {
+      "id": "Metadata",
+      "description": "Other properties of the build.",
+      "type": "object",
+      "properties": {
+        "buildInvocationId": {
+          "description": "Identifies the particular build invocation, which can be useful for finding associated logs or other ad-hoc analysis. The value SHOULD be globally unique, per in-toto Provenance spec.",
+          "type": "string"
+        },
+        "buildStartedOn": {
+          "description": "The timestamp of when the build started.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "buildFinishedOn": {
+          "description": "The timestamp of when the build completed.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "completeness": {
+          "description": "Indicates that the builder claims certain fields in this message to be complete.",
+          "$ref": "Completeness"
+        },
+        "reproducible": {
+          "description": "If true, the builder claims that running the recipe on materials will produce bit-for-bit identical output.",
+          "type": "boolean"
+        }
+      }
+    },
+    "Completeness": {
+      "id": "Completeness",
+      "description": "Indicates that the builder claims certain fields in this message to be complete.",
+      "type": "object",
+      "properties": {
+        "arguments": {
+          "description": "If true, the builder claims that recipe.arguments is complete, meaning that all external inputs are properly captured in the recipe.",
+          "type": "boolean"
+        },
+        "environment": {
+          "description": "If true, the builder claims that recipe.environment is claimed to be complete.",
+          "type": "boolean"
+        },
+        "materials": {
+          "description": "If true, the builder claims that materials are complete, usually through some controls to prevent network access. Sometimes called \"hermetic\".",
+          "type": "boolean"
         }
       }
     },
@@ -1481,6 +1610,99 @@
         }
       }
     },
+    "DSSEAttestationOccurrence": {
+      "id": "DSSEAttestationOccurrence",
+      "description": "An occurrence describing an attestation on a resource",
+      "type": "object",
+      "properties": {
+        "envelope": {
+          "description": "If doing something security critical, make sure to verify the signatures in this metadata.",
+          "$ref": "Envelope"
+        },
+        "statement": {
+          "$ref": "InTotoStatement"
+        }
+      }
+    },
+    "Envelope": {
+      "id": "Envelope",
+      "description": "MUST match https:\/\/github.com\/secure-systems-lab\/dsse\/blob\/master\/envelope.proto. An authenticated message of arbitrary type.",
+      "type": "object",
+      "properties": {
+        "payload": {
+          "description": "The bytes being signed",
+          "type": "string",
+          "format": "byte"
+        },
+        "payloadType": {
+          "description": "The type of payload being signed",
+          "type": "string"
+        },
+        "signatures": {
+          "description": "The signatures over the payload",
+          "type": "array",
+          "items": {
+            "$ref": "EnvelopeSignature"
+          }
+        }
+      }
+    },
+    "EnvelopeSignature": {
+      "id": "EnvelopeSignature",
+      "description": "A DSSE signature",
+      "type": "object",
+      "properties": {
+        "sig": {
+          "description": "The signature itself",
+          "type": "string",
+          "format": "byte"
+        },
+        "keyid": {
+          "description": "A reference id to the key being used for signing",
+          "type": "string"
+        }
+      }
+    },
+    "InTotoStatement": {
+      "id": "InTotoStatement",
+      "description": "Spec defined at https:\/\/github.com\/in-toto\/attestation\/tree\/main\/spec#statement The serialized InTotoStatement will be stored as Envelope.payload. Envelope.payloadType is always \"application\/vnd.in-toto+json\".",
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "Always \"https:\/\/in-toto.io\/Statement\/v0.1\".",
+          "type": "string"
+        },
+        "subject": {
+          "type": "array",
+          "items": {
+            "$ref": "Subject"
+          }
+        },
+        "predicateType": {
+          "description": "\"https:\/\/in-toto.io\/Provenance\/v0.1\" for InTotoProvenance.",
+          "type": "string"
+        },
+        "provenance": {
+          "$ref": "InTotoProvenance"
+        }
+      }
+    },
+    "Subject": {
+      "id": "Subject",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string"
+        },
+        "digest": {
+          "description": "\"\": \"\"",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "ListOccurrencesResponse": {
       "id": "ListOccurrencesResponse",
       "description": "Response including listed active occurrences.",
@@ -1540,7 +1762,8 @@
             "This represents a software bill of materials.",
             "This represents an SPDX Package.",
             "This represents an SPDX File.",
-            "This represents an SPDX Relationship."
+            "This represents an SPDX Relationship.",
+            "This represents a DSSE attestation Note"
           ],
           "enum": [
             "KIND_UNSPECIFIED",
@@ -1556,7 +1779,8 @@
             "SBOM",
             "SPDX_PACKAGE",
             "SPDX_FILE",
-            "SPDX_RELATIONSHIP"
+            "SPDX_RELATIONSHIP",
+            "DSSE_ATTESTATION"
           ]
         },
         "vulnerabilityType": {
@@ -1610,6 +1834,10 @@
         "spdxRelationship": {
           "description": "A note describing a relationship between SPDX elements.",
           "$ref": "RelationshipNote"
+        },
+        "dsseAttestation": {
+          "description": "A note describing a dsse attestation note.",
+          "$ref": "DSSEAttestationNote"
         },
         "relatedUrl": {
           "description": "URLs associated with this note",
@@ -1883,7 +2111,8 @@
             "This represents a software bill of materials.",
             "This represents an SPDX Package.",
             "This represents an SPDX File.",
-            "This represents an SPDX Relationship."
+            "This represents an SPDX Relationship.",
+            "This represents a DSSE attestation Note"
           ],
           "enum": [
             "KIND_UNSPECIFIED",
@@ -1899,7 +2128,8 @@
             "SBOM",
             "SPDX_PACKAGE",
             "SPDX_FILE",
-            "SPDX_RELATIONSHIP"
+            "SPDX_RELATIONSHIP",
+            "DSSE_ATTESTATION"
           ]
         }
       }
@@ -2217,6 +2447,28 @@
       "description": "RelationshipNote represents an SPDX Relationship section: https:\/\/spdx.github.io\/spdx-spec\/7-relationships-between-SPDX-elements\/",
       "type": "object",
       "properties": {
+      }
+    },
+    "DSSEAttestationNote": {
+      "id": "DSSEAttestationNote",
+      "description": "A note describing an attestation",
+      "type": "object",
+      "properties": {
+        "hint": {
+          "description": "DSSEHint hints at the purpose of the attestation authority.",
+          "$ref": "DSSEHint"
+        }
+      }
+    },
+    "DSSEHint": {
+      "id": "DSSEHint",
+      "description": "This submessage provides human-readable hints about the purpose of the authority. Because the name of a note acts as its resource reference, it is important to disambiguate the canonical name of the Note (which might be a UUID for security purposes) from \"readable\" names more suitable for debug output. Note that these hints should not be used to look up authorities in security sensitive contexts, such as when looking up attestations to verify.",
+      "type": "object",
+      "properties": {
+        "humanReadableName": {
+          "description": "Required. The human readable name of this attestation authority, for example \"cloudbuild-prod\".",
+          "type": "string"
+        }
       }
     },
     "RelatedUrl": {
@@ -2625,7 +2877,8 @@
                     "This represents a software bill of materials.",
                     "This represents an SPDX Package.",
                     "This represents an SPDX File.",
-                    "This represents an SPDX Relationship."
+                    "This represents an SPDX Relationship.",
+                    "This represents a DSSE attestation Note"
                   ],
                   "enum": [
                     "KIND_UNSPECIFIED",
@@ -2641,7 +2894,8 @@
                     "SBOM",
                     "SPDX_PACKAGE",
                     "SPDX_FILE",
-                    "SPDX_RELATIONSHIP"
+                    "SPDX_RELATIONSHIP",
+                    "DSSE_ATTESTATION"
                   ]
                 }
               },

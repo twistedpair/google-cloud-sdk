@@ -46,8 +46,15 @@ class PySparkBatchFactory(object):
 
     Returns:
       PySparkBatch: A PySparkBatch message.
+
+    Raises:
+      AttributeError: Bucket is required to upload local files, but not
+      specified.
     """
     kwargs = {}
+
+    if args.args:
+      kwargs['args'] = args.args
 
     dependencies = {}
 
@@ -66,10 +73,10 @@ class PySparkBatchFactory(object):
     if args.archives:
       dependencies['archiveUris'] = args.archives
 
-    if args.args:
-      kwargs['args'] = args.args
-
-    dependencies = local_file_uploader.Upload(args.bucket, dependencies)
+    if local_file_uploader.HasLocalFiles(dependencies):
+      if not args.bucket:
+        raise AttributeError('--bucket was not specified.')
+      dependencies = local_file_uploader.Upload(args.bucket, dependencies)
 
     # Move mainPythonFileUri out of the list.
     dependencies['mainPythonFileUri'] = dependencies['mainPythonFileUri'][0]

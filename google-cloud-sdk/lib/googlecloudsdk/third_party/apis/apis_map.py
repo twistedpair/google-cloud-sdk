@@ -310,6 +310,16 @@ MAP = {
                 enable_mtls=False,
                 mtls_endpoint_override=''),
     },
+    'baremetalsolution': {
+        'v2':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.baremetalsolution.v2',
+                client_classpath='baremetalsolution_v2_client.BaremetalsolutionV2',
+                messages_modulepath='baremetalsolution_v2_messages',
+                default_version=True,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
+    },
     'bigquery': {
         'v2':
             APIDef(

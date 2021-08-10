@@ -81,7 +81,6 @@ def AddClearConfigArgument(parser):
 def ExtractModuleConfigFlags(parser):
   parent_group = parser.add_group(
       mutex=True,
-      required=True,
       help='Config value group in Security Command Center.')
   AddConfigArgument(parent_group)
   AddClearConfigArgument(parent_group)

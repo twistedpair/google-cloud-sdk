@@ -421,9 +421,8 @@ class AiplatformProjectsLocationsDatasetsPatchRequest(_messages.Message):
       to be passed as the request body.
     name: Output only. The resource name of the Dataset.
     updateMask: Required. The update mask applies to the resource. For the
-      `FieldMask` definition, see
-      [FieldMask](https://tinyurl.com/protobufs/google.protobuf#fieldmask).
-      Updatable fields: * `display_name` * `description` * `labels`
+      `FieldMask` definition, see google.protobuf.FieldMask. Updatable fields:
+      * `display_name` * `description` * `labels`
   """
 
   googleCloudAiplatformV1Dataset = _messages.MessageField('GoogleCloudAiplatformV1Dataset', 1)
@@ -470,6 +469,22 @@ class AiplatformProjectsLocationsEndpointsDeployModelRequest(_messages.Message):
 
   endpoint = _messages.StringField(1, required=True)
   googleCloudAiplatformV1DeployModelRequest = _messages.MessageField('GoogleCloudAiplatformV1DeployModelRequest', 2)
+
+
+class AiplatformProjectsLocationsEndpointsExplainRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsEndpointsExplainRequest object.
+
+  Fields:
+    endpoint: Required. The name of the Endpoint requested to serve the
+      explanation. Format:
+      `projects/{project}/locations/{location}/endpoints/{endpoint}`
+    googleCloudAiplatformV1ExplainRequest: A
+      GoogleCloudAiplatformV1ExplainRequest resource to be passed as the
+      request body.
+  """
+
+  endpoint = _messages.StringField(1, required=True)
+  googleCloudAiplatformV1ExplainRequest = _messages.MessageField('GoogleCloudAiplatformV1ExplainRequest', 2)
 
 
 class AiplatformProjectsLocationsEndpointsGetRequest(_messages.Message):
@@ -525,7 +540,7 @@ class AiplatformProjectsLocationsEndpointsPatchRequest(_messages.Message):
       resource to be passed as the request body.
     name: Output only. The resource name of the Endpoint.
     updateMask: Required. The update mask applies to the resource. See
-      [FieldMask](https://tinyurl.com/protobufs/google.protobuf#fieldmask).
+      google.protobuf.FieldMask.
   """
 
   googleCloudAiplatformV1Endpoint = _messages.MessageField('GoogleCloudAiplatformV1Endpoint', 1)
@@ -675,7 +690,7 @@ class AiplatformProjectsLocationsMigratableResourcesSearchRequest(_messages.Mess
       GoogleCloudAiplatformV1SearchMigratableResourcesRequest resource to be
       passed as the request body.
     parent: Required. The location that the migratable resources should be
-      searched from. It's the AI Platform location that the resources can be
+      searched from. It's the Vertex AI location that the resources can be
       migrated to, not the resources' original location. Format:
       `projects/{project}/locations/{location}`
   """
@@ -830,8 +845,7 @@ class AiplatformProjectsLocationsModelsPatchRequest(_messages.Message):
       be passed as the request body.
     name: The resource name of the Model.
     updateMask: Required. The update mask applies to the resource. For the
-      `FieldMask` definition, see
-      [FieldMask](https://tinyurl.com/protobufs/google.protobuf#fieldmask).
+      `FieldMask` definition, see google.protobuf.FieldMask.
   """
 
   googleCloudAiplatformV1Model = _messages.MessageField('GoogleCloudAiplatformV1Model', 1)
@@ -913,6 +927,97 @@ class AiplatformProjectsLocationsOperationsWaitRequest(_messages.Message):
 
   name = _messages.StringField(1, required=True)
   timeout = _messages.StringField(2)
+
+
+class AiplatformProjectsLocationsPipelineJobsCancelRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsPipelineJobsCancelRequest object.
+
+  Fields:
+    googleCloudAiplatformV1CancelPipelineJobRequest: A
+      GoogleCloudAiplatformV1CancelPipelineJobRequest resource to be passed as
+      the request body.
+    name: Required. The name of the PipelineJob to cancel. Format:
+      `projects/{project}/locations/{location}/pipelineJobs/{pipeline_job}`
+  """
+
+  googleCloudAiplatformV1CancelPipelineJobRequest = _messages.MessageField('GoogleCloudAiplatformV1CancelPipelineJobRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class AiplatformProjectsLocationsPipelineJobsCreateRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsPipelineJobsCreateRequest object.
+
+  Fields:
+    googleCloudAiplatformV1PipelineJob: A GoogleCloudAiplatformV1PipelineJob
+      resource to be passed as the request body.
+    parent: Required. The resource name of the Location to create the
+      PipelineJob in. Format: `projects/{project}/locations/{location}`
+    pipelineJobId: The ID to use for the PipelineJob, which will become the
+      final component of the PipelineJob name. If not provided, an ID will be
+      automatically generated. This value should be less than 128 characters,
+      and valid characters are /a-z-/.
+  """
+
+  googleCloudAiplatformV1PipelineJob = _messages.MessageField('GoogleCloudAiplatformV1PipelineJob', 1)
+  parent = _messages.StringField(2, required=True)
+  pipelineJobId = _messages.StringField(3)
+
+
+class AiplatformProjectsLocationsPipelineJobsDeleteRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsPipelineJobsDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the PipelineJob resource to be deleted.
+      Format:
+      `projects/{project}/locations/{location}/pipelineJobs/{pipeline_job}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsPipelineJobsGetRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsPipelineJobsGetRequest object.
+
+  Fields:
+    name: Required. The name of the PipelineJob resource. Format:
+      `projects/{project}/locations/{location}/pipelineJobs/{pipeline_job}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsPipelineJobsListRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsPipelineJobsListRequest object.
+
+  Fields:
+    filter: Lists the PipelineJobs that match the filter expression. The
+      following fields are supported: * `pipeline_name`: Supports `=` and `!=`
+      comparisons. * `create_time`: Supports `=`, `!=`, `<`, `>`, `<=`, and
+      `>=` comparisons. Values must be in RFC 3339 format. * `update_time`:
+      Supports `=`, `!=`, `<`, `>`, `<=`, and `>=` comparisons. Values must be
+      in RFC 3339 format. * `end_time`: Supports `=`, `!=`, `<`, `>`, `<=`,
+      and `>=` comparisons. Values must be in RFC 3339 format. * `labels`:
+      Supports key-value equality and key presence. Filter expressions can be
+      combined together using logical operators (`AND` & `OR`). For example:
+      `pipeline_name="test" AND create_time>"2020-05-18T13:30:00Z"`. The
+      syntax to define filter expression is based on
+      https://google.aip.dev/160. Examples: *
+      `create_time>"2021-05-18T00:00:00Z" OR
+      update_time>"2020-05-18T00:00:00Z"` PipelineJobs created or updated
+      after 2020-05-18 00:00:00 UTC. * `labels.env = "prod"` PipelineJobs with
+      label "env" set to "prod".
+    pageSize: The standard list page size.
+    pageToken: The standard list page token. Typically obtained via
+      ListPipelineJobsResponse.next_page_token of the previous
+      PipelineService.ListPipelineJobs call.
+    parent: Required. The resource name of the Location to list the
+      PipelineJobs from. Format: `projects/{project}/locations/{location}`
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class AiplatformProjectsLocationsSpecialistPoolsCreateRequest(_messages.Message):
@@ -1142,8 +1247,9 @@ class GoogleCloudAiplatformV1Annotation(_messages.Message):
       payload_schema.
     payloadSchemaUri: Required. Google Cloud Storage URI points to a YAML file
       describing payload. The schema is defined as an [OpenAPI 3.0.2 Schema
-      Object](https://tinyurl.com/y538mdwt). The schema files that can be used
-      here are found in gs://google-cloud-
+      Object](https://github.com/OAI/OpenAPI-
+      Specification/blob/main/versions/3.0.2.md#schemaObject). The schema
+      files that can be used here are found in gs://google-cloud-
       aiplatform/schema/dataset/annotation/, note that the chosen schema must
       be consistent with the parent Dataset's metadata.
     updateTime: Output only. Timestamp when this Annotation was last updated.
@@ -1216,9 +1322,170 @@ class GoogleCloudAiplatformV1AnnotationSpec(_messages.Message):
   updateTime = _messages.StringField(5)
 
 
+class GoogleCloudAiplatformV1Artifact(_messages.Message):
+  r"""Instance of a general artifact.
+
+  Enums:
+    StateValueValuesEnum: The state of this Artifact. This is a property of
+      the Artifact, and does not imply or capture any ongoing process. This
+      property is managed by clients (such as Vertex Pipelines), and the
+      system does not prescribe or check the validity of state transitions.
+
+  Messages:
+    LabelsValue: The labels with user-defined metadata to organize your
+      Artifacts. Label keys and values can be no longer than 64 characters
+      (Unicode codepoints), can only contain lowercase letters, numeric
+      characters, underscores and dashes. International characters are
+      allowed. No more than 64 user labels can be associated with one Artifact
+      (System labels are excluded).
+
+  Fields:
+    createTime: Output only. Timestamp when this Artifact was created.
+    displayName: User provided display name of the Artifact. May be up to 128
+      Unicode characters.
+    etag: An eTag used to perform consistent read-modify-write updates. If not
+      set, a blind "overwrite" update happens.
+    labels: The labels with user-defined metadata to organize your Artifacts.
+      Label keys and values can be no longer than 64 characters (Unicode
+      codepoints), can only contain lowercase letters, numeric characters,
+      underscores and dashes. International characters are allowed. No more
+      than 64 user labels can be associated with one Artifact (System labels
+      are excluded).
+    name: Output only. The resource name of the Artifact.
+    state: The state of this Artifact. This is a property of the Artifact, and
+      does not imply or capture any ongoing process. This property is managed
+      by clients (such as Vertex Pipelines), and the system does not prescribe
+      or check the validity of state transitions.
+    updateTime: Output only. Timestamp when this Artifact was last updated.
+    uri: The uniform resource identifier of the artifact file. May be empty if
+      there is no actual artifact file.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""The state of this Artifact. This is a property of the Artifact, and
+    does not imply or capture any ongoing process. This property is managed by
+    clients (such as Vertex Pipelines), and the system does not prescribe or
+    check the validity of state transitions.
+
+    Values:
+      STATE_UNSPECIFIED: Unspecified state for the Artifact.
+      PENDING: A state used by systems like Vertex Pipelines to indicate that
+        the underlying data item represented by this Artifact is being
+        created.
+      LIVE: A state indicating that the Artifact should exist, unless
+        something external to the system deletes it.
+    """
+    STATE_UNSPECIFIED = 0
+    PENDING = 1
+    LIVE = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""The labels with user-defined metadata to organize your Artifacts.
+    Label keys and values can be no longer than 64 characters (Unicode
+    codepoints), can only contain lowercase letters, numeric characters,
+    underscores and dashes. International characters are allowed. No more than
+    64 user labels can be associated with one Artifact (System labels are
+    excluded).
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  etag = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+  updateTime = _messages.StringField(7)
+  uri = _messages.StringField(8)
+
+
+class GoogleCloudAiplatformV1Attribution(_messages.Message):
+  r"""Attribution that explains a particular prediction output.
+
+  Fields:
+    approximationError: Output only. Error of feature_attributions caused by
+      approximation used in the explanation method. Lower value means more
+      precise attributions. * For Sampled Shapley attribution, increasing
+      path_count might reduce the error. * For Integrated Gradients
+      attribution, increasing step_count might reduce the error. * For XRAI
+      attribution, increasing step_count might reduce the error. See [this
+      introduction](/vertex-ai/docs/explainable-ai/overview) for more
+      information.
+    baselineOutputValue: Output only. Model predicted output if the input
+      instance is constructed from the baselines of all the features defined
+      in ExplanationMetadata.inputs. The field name of the output is
+      determined by the key in ExplanationMetadata.outputs. If the Model's
+      predicted output has multiple dimensions (rank > 1), this is the value
+      in the output located by output_index. If there are multiple baselines,
+      their output values are averaged.
+    featureAttributions: Output only. Attributions of each explained feature.
+      Features are extracted from the prediction instances according to
+      explanation metadata for inputs. The value is a struct, whose keys are
+      the name of the feature. The values are how much the feature in the
+      instance contributed to the predicted result. The format of the value is
+      determined by the feature's input format: * If the feature is a scalar
+      value, the attribution value is a floating number. * If the feature is
+      an array of scalar values, the attribution value is an array. * If the
+      feature is a struct, the attribution value is a struct. The keys in the
+      attribution value struct are the same as the keys in the feature struct.
+      The formats of the values in the attribution struct are determined by
+      the formats of the values in the feature struct. The
+      ExplanationMetadata.feature_attributions_schema_uri field, pointed to by
+      the ExplanationSpec field of the Endpoint.deployed_models object, points
+      to the schema file that describes the features and their attribution
+      values (if it is populated).
+    instanceOutputValue: Output only. Model predicted output on the
+      corresponding explanation instance. The field name of the output is
+      determined by the key in ExplanationMetadata.outputs. If the Model
+      predicted output has multiple dimensions, this is the value in the
+      output located by output_index.
+    outputDisplayName: Output only. The display name of the output identified
+      by output_index. For example, the predicted class name by a multi-
+      classification Model. This field is only populated iff the Model
+      predicts display names as a separate field along with the explained
+      output. The predicted display name must has the same shape of the
+      explained output, and can be located using output_index.
+    outputIndex: Output only. The index that locates the explained prediction
+      output. If the prediction output is a scalar value, output_index is not
+      populated. If the prediction output has multiple dimensions, the length
+      of the output_index list is the same as the number of dimensions of the
+      output. The i-th element in output_index is the element index of the
+      i-th dimension of the output vector. Indices start from 0.
+    outputName: Output only. Name of the explain output. Specified as the key
+      in ExplanationMetadata.outputs.
+  """
+
+  approximationError = _messages.FloatField(1)
+  baselineOutputValue = _messages.FloatField(2)
+  featureAttributions = _messages.MessageField('extra_types.JsonValue', 3)
+  instanceOutputValue = _messages.FloatField(4)
+  outputDisplayName = _messages.StringField(5)
+  outputIndex = _messages.IntegerField(6, repeated=True, variant=_messages.Variant.INT32)
+  outputName = _messages.StringField(7)
+
+
 class GoogleCloudAiplatformV1AutomaticResources(_messages.Message):
-  r"""A description of resources that to large degree are decided by AI
-  Platform, and require only a modest additional configuration. Each Model
+  r"""A description of resources that to large degree are decided by Vertex
+  AI, and require only a modest additional configuration. Each Model
   supporting these resources documents its specific guidelines.
 
   Fields:
@@ -1230,7 +1497,7 @@ class GoogleCloudAiplatformV1AutomaticResources(_messages.Message):
       DeployedModel increases beyond what its replicas at maximum may handle,
       a portion of the traffic will be dropped. If this value is not provided,
       a no upper bound for scaling under heavy traffic will be assume, though
-      AI Platform may be unable to scale beyond certain replica number.
+      Vertex AI may be unable to scale beyond certain replica number.
     minReplicaCount: Immutable. The minimum number of replicas this
       DeployedModel will be always deployed on. If traffic against it
       increases, it may dynamically be deployed onto more replicas up to
@@ -1243,6 +1510,26 @@ class GoogleCloudAiplatformV1AutomaticResources(_messages.Message):
   minReplicaCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
+class GoogleCloudAiplatformV1AutoscalingMetricSpec(_messages.Message):
+  r"""The metric specification that defines the target resource utilization
+  (CPU utilization, accelerator's duty cycle, and so on) for calculating the
+  desired replica count.
+
+  Fields:
+    metricName: Required. The resource metric name. Supported metrics: * For
+      Online Prediction: *
+      `aiplatform.googleapis.com/prediction/online/accelerator/duty_cycle` *
+      `aiplatform.googleapis.com/prediction/online/cpu/utilization`
+    target: The target resource utilization in percentage (1% - 100%) for the
+      given metric; once the real usage deviates from the target by a certain
+      percentage, the machine replicas change. The default value is 60
+      (representing 60%) if not provided.
+  """
+
+  metricName = _messages.StringField(1)
+  target = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
 class GoogleCloudAiplatformV1BatchDedicatedResources(_messages.Message):
   r"""A description of resources that are used for performing batch
   operations, are dedicated to a Model, and need manual configuration.
@@ -1252,8 +1539,8 @@ class GoogleCloudAiplatformV1BatchDedicatedResources(_messages.Message):
     maxReplicaCount: Immutable. The maximum number of machine replicas the
       batch operation may be scaled to. The default value is 10.
     startingReplicaCount: Immutable. The number of machine replicas used at
-      the start of the batch operation. If not set, AI Platform decides
-      starting number, not greater than max_replica_count
+      the start of the batch operation. If not set, Vertex AI decides starting
+      number, not greater than max_replica_count
   """
 
   machineSpec = _messages.MessageField('GoogleCloudAiplatformV1MachineSpec', 1)
@@ -1348,6 +1635,23 @@ class GoogleCloudAiplatformV1BatchPredictionJob(_messages.Message):
       `JOB_STATE_CANCELLED`.
     error: Output only. Only populated when the job's state is
       JOB_STATE_FAILED or JOB_STATE_CANCELLED.
+    explanationSpec: Explanation configuration for this BatchPredictionJob.
+      Can be specified only if generate_explanation is set to `true`. This
+      value overrides the value of Model.explanation_spec. All fields of
+      explanation_spec are optional in the request. If a field of the
+      explanation_spec object is not populated, the corresponding field of the
+      Model.explanation_spec object is inherited.
+    generateExplanation: Generate explanation with the batch prediction
+      results. When set to `true`, the batch prediction output changes based
+      on the `predictions_format` field of the
+      BatchPredictionJob.output_config object: * `bigquery`: output includes a
+      column named `explanation`. The value is a struct that conforms to the
+      Explanation object. * `jsonl`: The JSON objects on each line include an
+      additional entry keyed `explanation`. The value of the entry is a JSON
+      object that conforms to the Explanation object. * `csv`: Generating
+      explanations for CSV format is not supported. If this field is set to
+      true, either the Model.explanation_spec or explanation_spec must be
+      populated.
     inputConfig: Required. Input configuration of the instances on which
       predictions are performed. The schema of any single instance may be
       specified via the Model's PredictSchemata's instance_schema_uri.
@@ -1359,7 +1663,7 @@ class GoogleCloudAiplatformV1BatchPredictionJob(_messages.Message):
       labels.
     manualBatchTuningParameters: Immutable. Parameters configuring the batch
       behavior. Currently only applicable when dedicated_resources are used
-      (in other cases AI Platform does the tuning itself).
+      (in other cases Vertex AI does the tuning itself).
     model: Required. The name of the Model that produces the predictions via
       this job, must share the same ancestor Location. Starting this job has
       no impact on any existing deployments of the Model and their resources.
@@ -1403,6 +1707,7 @@ class GoogleCloudAiplatformV1BatchPredictionJob(_messages.Message):
         `JOB_STATE_CANCELLED`.
       JOB_STATE_CANCELLED: The job has been cancelled.
       JOB_STATE_PAUSED: The job has been stopped, and can be resumed.
+      JOB_STATE_EXPIRED: The job has expired.
     """
     JOB_STATE_UNSPECIFIED = 0
     JOB_STATE_QUEUED = 1
@@ -1413,6 +1718,7 @@ class GoogleCloudAiplatformV1BatchPredictionJob(_messages.Message):
     JOB_STATE_CANCELLING = 6
     JOB_STATE_CANCELLED = 7
     JOB_STATE_PAUSED = 8
+    JOB_STATE_EXPIRED = 9
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1449,19 +1755,21 @@ class GoogleCloudAiplatformV1BatchPredictionJob(_messages.Message):
   encryptionSpec = _messages.MessageField('GoogleCloudAiplatformV1EncryptionSpec', 5)
   endTime = _messages.StringField(6)
   error = _messages.MessageField('GoogleRpcStatus', 7)
-  inputConfig = _messages.MessageField('GoogleCloudAiplatformV1BatchPredictionJobInputConfig', 8)
-  labels = _messages.MessageField('LabelsValue', 9)
-  manualBatchTuningParameters = _messages.MessageField('GoogleCloudAiplatformV1ManualBatchTuningParameters', 10)
-  model = _messages.StringField(11)
-  modelParameters = _messages.MessageField('extra_types.JsonValue', 12)
-  name = _messages.StringField(13)
-  outputConfig = _messages.MessageField('GoogleCloudAiplatformV1BatchPredictionJobOutputConfig', 14)
-  outputInfo = _messages.MessageField('GoogleCloudAiplatformV1BatchPredictionJobOutputInfo', 15)
-  partialFailures = _messages.MessageField('GoogleRpcStatus', 16, repeated=True)
-  resourcesConsumed = _messages.MessageField('GoogleCloudAiplatformV1ResourcesConsumed', 17)
-  startTime = _messages.StringField(18)
-  state = _messages.EnumField('StateValueValuesEnum', 19)
-  updateTime = _messages.StringField(20)
+  explanationSpec = _messages.MessageField('GoogleCloudAiplatformV1ExplanationSpec', 8)
+  generateExplanation = _messages.BooleanField(9)
+  inputConfig = _messages.MessageField('GoogleCloudAiplatformV1BatchPredictionJobInputConfig', 10)
+  labels = _messages.MessageField('LabelsValue', 11)
+  manualBatchTuningParameters = _messages.MessageField('GoogleCloudAiplatformV1ManualBatchTuningParameters', 12)
+  model = _messages.StringField(13)
+  modelParameters = _messages.MessageField('extra_types.JsonValue', 14)
+  name = _messages.StringField(15)
+  outputConfig = _messages.MessageField('GoogleCloudAiplatformV1BatchPredictionJobOutputConfig', 16)
+  outputInfo = _messages.MessageField('GoogleCloudAiplatformV1BatchPredictionJobOutputInfo', 17)
+  partialFailures = _messages.MessageField('GoogleRpcStatus', 18, repeated=True)
+  resourcesConsumed = _messages.MessageField('GoogleCloudAiplatformV1ResourcesConsumed', 19)
+  startTime = _messages.StringField(20)
+  state = _messages.EnumField('StateValueValuesEnum', 21)
+  updateTime = _messages.StringField(22)
 
 
 class GoogleCloudAiplatformV1BatchPredictionJobInputConfig(_messages.Message):
@@ -1490,20 +1798,20 @@ class GoogleCloudAiplatformV1BatchPredictionJobOutputConfig(_messages.Message):
   predictions are expressed via any of them.
 
   Fields:
-    bigqueryDestination: The BigQuery project location where the output is to
-      be written to. In the given project a new dataset is created with name
-      `prediction__` where is made BigQuery-dataset-name compatible (for
-      example, most special characters become underscores), and timestamp is
-      in YYYY_MM_DDThh_mm_ss_sssZ "based on ISO-8601" format. In the dataset
-      two tables will be created, `predictions`, and `errors`. If the Model
-      has both instance and prediction schemata defined then the tables have
-      columns as follows: The `predictions` table contains instances for which
-      the prediction succeeded, it has columns as per a concatenation of the
-      Model's instance and prediction schemata. The `errors` table contains
-      rows for which the prediction has failed, it has instance columns, as
-      per the instance schema, followed by a single "errors" column, which as
-      values has [`google.rpc.Status`](Status) represented as a STRUCT, and
-      containing only `code` and `message`.
+    bigqueryDestination: The BigQuery project or dataset location where the
+      output is to be written to. If project is provided, a new dataset is
+      created with name `prediction__` where is made BigQuery-dataset-name
+      compatible (for example, most special characters become underscores),
+      and timestamp is in YYYY_MM_DDThh_mm_ss_sssZ "based on ISO-8601" format.
+      In the dataset two tables will be created, `predictions`, and `errors`.
+      If the Model has both instance and prediction schemata defined then the
+      tables have columns as follows: The `predictions` table contains
+      instances for which the prediction succeeded, it has columns as per a
+      concatenation of the Model's instance and prediction schemata. The
+      `errors` table contains rows for which the prediction has failed, it has
+      instance columns, as per the instance schema, followed by a single
+      "errors" column, which as values has google.rpc.Status represented as a
+      STRUCT, and containing only `code` and `message`.
     gcsDestination: The Cloud Storage location of the directory where the
       output is to be written to. In the given directory a new directory is
       created. Its name is `prediction--`, where timestamp is in YYYY-MM-
@@ -1518,9 +1826,8 @@ class GoogleCloudAiplatformV1BatchPredictionJobOutputConfig(_messages.Message):
       `errors_N.` files are created (N depends on total number of failed
       predictions). These files contain the failed instances, as per their
       schema, followed by an additional `error` field which as value has
-      [`google.rpc.Status`](Status) containing only `code` and `message`
-      fields.
-    predictionsFormat: Required. The format in which AI Platform gives the
+      google.rpc.Status containing only `code` and `message` fields.
+    predictionsFormat: Required. The format in which Vertex AI gives the
       predictions, must be one of the Model's
       supported_output_storage_formats.
   """
@@ -1537,12 +1844,16 @@ class GoogleCloudAiplatformV1BatchPredictionJobOutputInfo(_messages.Message):
     bigqueryOutputDataset: Output only. The path of the BigQuery dataset
       created, in `bq://projectId.bqDatasetId` format, into which the
       prediction output is written.
+    bigqueryOutputTable: Output only. The name of the BigQuery table created,
+      in `predictions_` format, into which the prediction output is written.
+      Can be used by UI to generate the BigQuery output path, for example.
     gcsOutputDirectory: Output only. The full path of the Cloud Storage
       directory created, into which the prediction output is written.
   """
 
   bigqueryOutputDataset = _messages.StringField(1)
-  gcsOutputDirectory = _messages.StringField(2)
+  bigqueryOutputTable = _messages.StringField(2)
+  gcsOutputDirectory = _messages.StringField(3)
 
 
 class GoogleCloudAiplatformV1BigQueryDestination(_messages.Message):
@@ -1553,7 +1864,7 @@ class GoogleCloudAiplatformV1BigQueryDestination(_messages.Message):
       characters long. When only the project is specified, the Dataset and
       Table is created. When the full table reference is specified, the
       Dataset must exist and table must not exist. Accepted forms: * BigQuery
-      path. For example: `bq://projectId` or
+      path. For example: `bq://projectId` or `bq://projectId.bqDatasetId` or
       `bq://projectId.bqDatasetId.bqTableId`.
   """
 
@@ -1581,11 +1892,15 @@ class GoogleCloudAiplatformV1CancelCustomJobRequest(_messages.Message):
 
 
 class GoogleCloudAiplatformV1CancelDataLabelingJobRequest(_messages.Message):
-  r"""Request message for DataLabelingJobService.CancelDataLabelingJob."""
+  r"""Request message for JobService.CancelDataLabelingJob."""
 
 
 class GoogleCloudAiplatformV1CancelHyperparameterTuningJobRequest(_messages.Message):
   r"""Request message for JobService.CancelHyperparameterTuningJob."""
+
+
+class GoogleCloudAiplatformV1CancelPipelineJobRequest(_messages.Message):
+  r"""Request message for PipelineService.CancelPipelineJob."""
 
 
 class GoogleCloudAiplatformV1CancelTrainingPipelineRequest(_messages.Message):
@@ -1647,6 +1962,72 @@ class GoogleCloudAiplatformV1ContainerSpec(_messages.Message):
   imageUri = _messages.StringField(4)
 
 
+class GoogleCloudAiplatformV1Context(_messages.Message):
+  r"""Instance of a general context.
+
+  Messages:
+    LabelsValue: The labels with user-defined metadata to organize your
+      Contexts. Label keys and values can be no longer than 64 characters
+      (Unicode codepoints), can only contain lowercase letters, numeric
+      characters, underscores and dashes. International characters are
+      allowed. No more than 64 user labels can be associated with one Context
+      (System labels are excluded).
+
+  Fields:
+    createTime: Output only. Timestamp when this Context was created.
+    displayName: User provided display name of the Context. May be up to 128
+      Unicode characters.
+    etag: An eTag used to perform consistent read-modify-write updates. If not
+      set, a blind "overwrite" update happens.
+    labels: The labels with user-defined metadata to organize your Contexts.
+      Label keys and values can be no longer than 64 characters (Unicode
+      codepoints), can only contain lowercase letters, numeric characters,
+      underscores and dashes. International characters are allowed. No more
+      than 64 user labels can be associated with one Context (System labels
+      are excluded).
+    name: Output only. The resource name of the Context.
+    parentContexts: Output only. A list of resource names of Contexts that are
+      parents of this Context. A Context may have at most 10 parent_contexts.
+    updateTime: Output only. Timestamp when this Context was last updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""The labels with user-defined metadata to organize your Contexts. Label
+    keys and values can be no longer than 64 characters (Unicode codepoints),
+    can only contain lowercase letters, numeric characters, underscores and
+    dashes. International characters are allowed. No more than 64 user labels
+    can be associated with one Context (System labels are excluded).
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  etag = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  parentContexts = _messages.StringField(6, repeated=True)
+  updateTime = _messages.StringField(7)
+
+
 class GoogleCloudAiplatformV1CreateDatasetOperationMetadata(_messages.Message):
   r"""Runtime operation information for DatasetService.CreateDataset.
 
@@ -1665,6 +2046,30 @@ class GoogleCloudAiplatformV1CreateEndpointOperationMetadata(_messages.Message):
   """
 
   genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1GenericOperationMetadata', 1)
+
+
+class GoogleCloudAiplatformV1CreateIndexEndpointOperationMetadata(_messages.Message):
+  r"""Runtime operation information for
+  IndexEndpointService.CreateIndexEndpoint.
+
+  Fields:
+    genericMetadata: The operation generic information.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1GenericOperationMetadata', 1)
+
+
+class GoogleCloudAiplatformV1CreateIndexOperationMetadata(_messages.Message):
+  r"""Runtime operation information for IndexService.CreateIndex.
+
+  Fields:
+    genericMetadata: The operation generic information.
+    nearestNeighborSearchOperationMetadata: The operation metadata with regard
+      to Matching Engine Index operation.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1GenericOperationMetadata', 1)
+  nearestNeighborSearchOperationMetadata = _messages.MessageField('GoogleCloudAiplatformV1NearestNeighborSearchOperationMetadata', 2)
 
 
 class GoogleCloudAiplatformV1CreateSpecialistPoolOperationMetadata(_messages.Message):
@@ -1736,6 +2141,7 @@ class GoogleCloudAiplatformV1CustomJob(_messages.Message):
         `JOB_STATE_CANCELLED`.
       JOB_STATE_CANCELLED: The job has been cancelled.
       JOB_STATE_PAUSED: The job has been stopped, and can be resumed.
+      JOB_STATE_EXPIRED: The job has expired.
     """
     JOB_STATE_UNSPECIFIED = 0
     JOB_STATE_QUEUED = 1
@@ -1746,6 +2152,7 @@ class GoogleCloudAiplatformV1CustomJob(_messages.Message):
     JOB_STATE_CANCELLING = 6
     JOB_STATE_CANCELLED = 7
     JOB_STATE_PAUSED = 8
+    JOB_STATE_EXPIRED = 9
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1796,9 +2203,9 @@ class GoogleCloudAiplatformV1CustomJobSpec(_messages.Message):
       this CustomJob or HyperparameterTuningJob. For HyperparameterTuningJob,
       the baseOutputDirectory of each child CustomJob backing a Trial is set
       to a subdirectory of name id under its parent HyperparameterTuningJob's
-      baseOutputDirectory. The following AI Platform environment variables
-      will be passed to containers or python modules when this field is set:
-      For CustomJob: * AIP_MODEL_DIR = `/model/` * AIP_CHECKPOINT_DIR =
+      baseOutputDirectory. The following Vertex AI environment variables will
+      be passed to containers or python modules when this field is set: For
+      CustomJob: * AIP_MODEL_DIR = `/model/` * AIP_CHECKPOINT_DIR =
       `/checkpoints/` * AIP_TENSORBOARD_LOG_DIR = `/logs/` For CustomJob
       backing a Trial of HyperparameterTuningJob: * AIP_MODEL_DIR = `//model/`
       * AIP_CHECKPOINT_DIR = `//checkpoints/` * AIP_TENSORBOARD_LOG_DIR =
@@ -1815,8 +2222,9 @@ class GoogleCloudAiplatformV1CustomJobSpec(_messages.Message):
     scheduling: Scheduling options for a CustomJob.
     serviceAccount: Specifies the service account for workload run-as account.
       Users submitting jobs must have act-as permission on this run-as
-      account. If unspecified, the AI Platform Custom Code Service Agent for
-      the CustomJob's project is used.
+      account. If unspecified, the [Vertex AI Custom Code Service
+      Agent](https://cloud.google.com/vertex-ai/docs/general/access-
+      control#service-agents) for the CustomJob's project is used.
     workerPoolSpecs: Required. The spec of the worker pools including machine
       type and Docker image. All worker pools except the first one are
       optional and can be skipped by providing an empty value.
@@ -1999,6 +2407,7 @@ class GoogleCloudAiplatformV1DataLabelingJob(_messages.Message):
         `JOB_STATE_CANCELLED`.
       JOB_STATE_CANCELLED: The job has been cancelled.
       JOB_STATE_PAUSED: The job has been stopped, and can be resumed.
+      JOB_STATE_EXPIRED: The job has expired.
     """
     JOB_STATE_UNSPECIFIED = 0
     JOB_STATE_QUEUED = 1
@@ -2009,6 +2418,7 @@ class GoogleCloudAiplatformV1DataLabelingJob(_messages.Message):
     JOB_STATE_CANCELLING = 6
     JOB_STATE_CANCELLED = 7
     JOB_STATE_PAUSED = 8
+    JOB_STATE_EXPIRED = 9
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationLabelsValue(_messages.Message):
@@ -2112,6 +2522,7 @@ class GoogleCloudAiplatformV1Dataset(_messages.Message):
 
   Fields:
     createTime: Output only. Timestamp when this Dataset was created.
+    description: Optional. The description of the Dataset.
     displayName: Required. The user-defined name of the Dataset. The name can
       be up to 128 characters long and can be consist of any UTF-8 characters.
     encryptionSpec: Customer-managed encryption key spec for a Dataset. If
@@ -2174,14 +2585,15 @@ class GoogleCloudAiplatformV1Dataset(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  displayName = _messages.StringField(2)
-  encryptionSpec = _messages.MessageField('GoogleCloudAiplatformV1EncryptionSpec', 3)
-  etag = _messages.StringField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  metadata = _messages.MessageField('extra_types.JsonValue', 6)
-  metadataSchemaUri = _messages.StringField(7)
-  name = _messages.StringField(8)
-  updateTime = _messages.StringField(9)
+  description = _messages.StringField(2)
+  displayName = _messages.StringField(3)
+  encryptionSpec = _messages.MessageField('GoogleCloudAiplatformV1EncryptionSpec', 4)
+  etag = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  metadata = _messages.MessageField('extra_types.JsonValue', 7)
+  metadataSchemaUri = _messages.StringField(8)
+  name = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
 
 
 class GoogleCloudAiplatformV1DedicatedResources(_messages.Message):
@@ -2189,6 +2601,21 @@ class GoogleCloudAiplatformV1DedicatedResources(_messages.Message):
   that need a higher degree of manual configuration.
 
   Fields:
+    autoscalingMetricSpecs: Immutable. The metric specifications that
+      overrides a resource utilization metric (CPU utilization, accelerator's
+      duty cycle, and so on) target value (default to 60 if not set). At most
+      one entry is allowed per metric. If machine_spec.accelerator_count is
+      above 0, the autoscaling will be based on both CPU utilization and
+      accelerator's duty cycle metrics and scale up when either metrics
+      exceeds its target value while scale down if both metrics are under
+      their target value. The default target value is 60 for both metrics. If
+      machine_spec.accelerator_count is 0, the autoscaling will be based on
+      CPU utilization metric only with default target value 60 if not
+      explicitly set. For example, in the case of Online Prediction, if you
+      want to override target CPU utilization to 80, you should set
+      autoscaling_metric_specs.metric_name to
+      `aiplatform.googleapis.com/prediction/online/cpu/utilization` and
+      autoscaling_metric_specs.target to `80`.
     machineSpec: Required. Immutable. The specification of a single machine
       used by the prediction.
     maxReplicaCount: Immutable. The maximum number of replicas this
@@ -2200,16 +2627,16 @@ class GoogleCloudAiplatformV1DedicatedResources(_messages.Message):
       a portion of the traffic will be dropped. If this value is not provided,
       will use min_replica_count as the default value.
     minReplicaCount: Required. Immutable. The minimum number of machine
-      replicas this DeployedModel will be always deployed on. If traffic
-      against it increases, it may dynamically be deployed onto more replicas,
-      and as traffic decreases, some of these extra replicas may be freed.
-      Note: if machine_spec.accelerator_count is above 0, currently the model
-      will be always deployed precisely on min_replica_count.
+      replicas this DeployedModel will be always deployed on. This value must
+      be greater than or equal to 1. If traffic against the DeployedModel
+      increases, it may dynamically be deployed onto more replicas, and as
+      traffic decreases, some of these extra replicas may be freed.
   """
 
-  machineSpec = _messages.MessageField('GoogleCloudAiplatformV1MachineSpec', 1)
-  maxReplicaCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  minReplicaCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  autoscalingMetricSpecs = _messages.MessageField('GoogleCloudAiplatformV1AutoscalingMetricSpec', 1, repeated=True)
+  machineSpec = _messages.MessageField('GoogleCloudAiplatformV1MachineSpec', 2)
+  maxReplicaCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  minReplicaCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudAiplatformV1DeleteOperationMetadata(_messages.Message):
@@ -2220,6 +2647,29 @@ class GoogleCloudAiplatformV1DeleteOperationMetadata(_messages.Message):
   """
 
   genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1GenericOperationMetadata', 1)
+
+
+class GoogleCloudAiplatformV1DeployIndexOperationMetadata(_messages.Message):
+  r"""Runtime operation information for IndexEndpointService.DeployIndex.
+
+  Fields:
+    deployedIndexId: The unique index id specified by user
+    genericMetadata: The operation generic information.
+  """
+
+  deployedIndexId = _messages.StringField(1)
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1GenericOperationMetadata', 2)
+
+
+class GoogleCloudAiplatformV1DeployIndexResponse(_messages.Message):
+  r"""Response message for IndexEndpointService.DeployIndex.
+
+  Fields:
+    deployedIndex: The DeployedIndex that had been deployed in the
+      IndexEndpoint.
+  """
+
+  deployedIndex = _messages.MessageField('GoogleCloudAiplatformV1DeployedIndex', 1)
 
 
 class GoogleCloudAiplatformV1DeployModelOperationMetadata(_messages.Message):
@@ -2305,12 +2755,118 @@ class GoogleCloudAiplatformV1DeployModelResponse(_messages.Message):
   deployedModel = _messages.MessageField('GoogleCloudAiplatformV1DeployedModel', 1)
 
 
+class GoogleCloudAiplatformV1DeployedIndex(_messages.Message):
+  r"""A deployment of an Index. IndexEndpoints contain one or more
+  DeployedIndexes.
+
+  Fields:
+    automaticResources: Optional. A description of resources that the
+      DeployedIndex uses, which to large degree are decided by Vertex AI, and
+      optionally allows only a modest additional configuration. If
+      min_replica_count is not set, the default value is 1. If
+      max_replica_count is not set, the default value is min_replica_count.
+      The max allowed replica count is 1000. The user is billed for the
+      resources (at least their minimal amount) even if the DeployedIndex
+      receives no traffic.
+    createTime: Output only. Timestamp when the DeployedIndex was created.
+    deployedIndexAuthConfig: Optional. If set, the authentication is enabled
+      for the private endpoint.
+    deploymentGroup: Optional. The deployment group can be no longer than 64
+      characters (eg: 'test', 'prod'). If not set, we will use the 'default'
+      deployment group. Creating `deployment_groups` with `reserved_ip_ranges`
+      is a recommended practice when the peered network has multiple peering
+      ranges. This creates your deployments from predictable IP spaces for
+      easier traffic administration. Also, one deployment_group (except
+      'default') can only be used with the same reserved_ip_ranges which means
+      if the deployment_group has been used with reserved_ip_ranges: [a, b,
+      c], using it with [a, b] or [d, e] is disallowed. Note: we only support
+      up to 5 deployment groups(not including 'default').
+    displayName: The display name of the DeployedIndex. If not provided upon
+      creation, the Index's display_name is used.
+    enableAccessLogging: Optional. If true, private endpoint's access logs are
+      sent to StackDriver Logging. These logs are like standard server access
+      logs, containing information like timestamp and latency for each
+      MatchRequest. Note that Stackdriver logs may incur a cost, especially if
+      the deployed index receives a high queries per second rate (QPS).
+      Estimate your costs before enabling this option.
+    id: Required. The user specified ID of the DeployedIndex. The ID can be up
+      to 128 characters long and must start with a letter and only contain
+      letters, numbers, and underscores. The ID must be unique within the
+      project it is created in.
+    index: Required. The name of the Index this is the deployment of. We may
+      refer to this Index as the DeployedIndex's "original" Index.
+    indexSyncTime: Output only. The DeployedIndex may depend on various data
+      on its original Index. Additionally when certain changes to the original
+      Index are being done (e.g. when what the Index contains is being
+      changed) the DeployedIndex may be asynchronously updated in the
+      background to reflect this changes. If this timestamp's value is at
+      least the Index.update_time of the original Index, it means that this
+      DeployedIndex and the original Index are in sync. If this timestamp is
+      older, then to see which updates this DeployedIndex already contains
+      (and which not), one must list Operations working on the original Index.
+      Only the successfully completed Operations with
+      Operations.metadata.generic_metadata.update_time equal or before this
+      sync time are contained in this DeployedIndex.
+    privateEndpoints: Output only. Provides paths for users to send requests
+      directly to the deployed index services running on Cloud via private
+      services access. This field is populated if network is configured.
+    reservedIpRanges: Optional. A list of reserved ip ranges under the VPC
+      network that can be used for this DeployedIndex. If set, we will deploy
+      the index within the provided ip ranges. Otherwise, the index might be
+      deployed to any ip ranges under the provided VPC network. The value
+      sohuld be the name of the address
+      (https://cloud.google.com/compute/docs/reference/rest/v1/addresses)
+      Example: 'vertex-ai-ip-range'.
+  """
+
+  automaticResources = _messages.MessageField('GoogleCloudAiplatformV1AutomaticResources', 1)
+  createTime = _messages.StringField(2)
+  deployedIndexAuthConfig = _messages.MessageField('GoogleCloudAiplatformV1DeployedIndexAuthConfig', 3)
+  deploymentGroup = _messages.StringField(4)
+  displayName = _messages.StringField(5)
+  enableAccessLogging = _messages.BooleanField(6)
+  id = _messages.StringField(7)
+  index = _messages.StringField(8)
+  indexSyncTime = _messages.StringField(9)
+  privateEndpoints = _messages.MessageField('GoogleCloudAiplatformV1IndexPrivateEndpoints', 10)
+  reservedIpRanges = _messages.StringField(11, repeated=True)
+
+
+class GoogleCloudAiplatformV1DeployedIndexAuthConfig(_messages.Message):
+  r"""Used to set up the auth on the DeployedIndex's private endpoint.
+
+  Fields:
+    authProvider: Defines the authentication provider that the DeployedIndex
+      uses.
+  """
+
+  authProvider = _messages.MessageField('GoogleCloudAiplatformV1DeployedIndexAuthConfigAuthProvider', 1)
+
+
+class GoogleCloudAiplatformV1DeployedIndexAuthConfigAuthProvider(_messages.Message):
+  r"""Configuration for an authentication provider, including support for
+  [JSON Web Token (JWT)](https://tools.ietf.org/html/draft-ietf-oauth-json-
+  web-token-32).
+
+  Fields:
+    allowedIssuers: A list of allowed JWT issuers. Each entry must be a valid
+      Google service account, in the following format: `service-account-
+      name@project-id.iam.gserviceaccount.com`
+    audiences: The list of JWT [audiences](https://tools.ietf.org/html/draft-
+      ietf-oauth-json-web-token-32#section-4.1.3). that are allowed to access.
+      A JWT containing any of these audiences will be accepted.
+  """
+
+  allowedIssuers = _messages.StringField(1, repeated=True)
+  audiences = _messages.StringField(2, repeated=True)
+
+
 class GoogleCloudAiplatformV1DeployedModel(_messages.Message):
   r"""A deployment of a Model. Endpoints contain one or more DeployedModels.
 
   Fields:
     automaticResources: A description of resources that to large degree are
-      decided by AI Platform, and require only a modest additional
+      decided by Vertex AI, and require only a modest additional
       configuration.
     createTime: Output only. Timestamp when the DeployedModel was created.
     dedicatedResources: A description of resources that are dedicated to the
@@ -2328,6 +2884,14 @@ class GoogleCloudAiplatformV1DeployedModel(_messages.Message):
       request. Note that Stackdriver logs may incur a cost, especially if your
       project receives prediction requests at a high queries per second rate
       (QPS). Estimate your costs before enabling this option.
+    explanationSpec: Explanation configuration for this DeployedModel. When
+      deploying a Model using EndpointService.DeployModel, this value
+      overrides the value of Model.explanation_spec. All fields of
+      explanation_spec are optional in the request. If a field of
+      explanation_spec is not populated, the value of the same field of
+      Model.explanation_spec is inherited. If the corresponding
+      Model.explanation_spec is not populated, all fields of the
+      explanation_spec will be used for the explanation configuration.
     id: Output only. The ID of the DeployedModel.
     model: Required. The name of the Model that this is the deployment of.
       Note that the Model may be in a different location than the
@@ -2346,9 +2910,10 @@ class GoogleCloudAiplatformV1DeployedModel(_messages.Message):
   disableContainerLogging = _messages.BooleanField(4)
   displayName = _messages.StringField(5)
   enableAccessLogging = _messages.BooleanField(6)
-  id = _messages.StringField(7)
-  model = _messages.StringField(8)
-  serviceAccount = _messages.StringField(9)
+  explanationSpec = _messages.MessageField('GoogleCloudAiplatformV1ExplanationSpec', 7)
+  id = _messages.StringField(8)
+  model = _messages.StringField(9)
+  serviceAccount = _messages.StringField(10)
 
 
 class GoogleCloudAiplatformV1DeployedModelRef(_messages.Message):
@@ -2428,6 +2993,11 @@ class GoogleCloudAiplatformV1Endpoint(_messages.Message):
       codepoints), can only contain lowercase letters, numeric characters,
       underscores and dashes. International characters are allowed. See
       https://goo.gl/xmQnxf for more information and examples of labels.
+    modelDeploymentMonitoringJob: Output only. Resource name of the Model
+      Monitoring job associated with this Endpoint if monitoring is enabled by
+      CreateModelDeploymentMonitoringJob. Format: `projects/{project}/location
+      s/{location}/modelDeploymentMonitoringJobs/{model_deployment_monitoring_
+      job}`
     name: Output only. The resource name of the Endpoint.
     trafficSplit: A map from a DeployedModel's ID to the percentage of this
       Endpoint's traffic that should be forwarded to that DeployedModel. If a
@@ -2501,9 +3071,10 @@ class GoogleCloudAiplatformV1Endpoint(_messages.Message):
   encryptionSpec = _messages.MessageField('GoogleCloudAiplatformV1EncryptionSpec', 5)
   etag = _messages.StringField(6)
   labels = _messages.MessageField('LabelsValue', 7)
-  name = _messages.StringField(8)
-  trafficSplit = _messages.MessageField('TrafficSplitValue', 9)
-  updateTime = _messages.StringField(10)
+  modelDeploymentMonitoringJob = _messages.StringField(8)
+  name = _messages.StringField(9)
+  trafficSplit = _messages.MessageField('TrafficSplitValue', 10)
+  updateTime = _messages.StringField(11)
 
 
 class GoogleCloudAiplatformV1EnvVar(_messages.Message):
@@ -2524,6 +3095,712 @@ class GoogleCloudAiplatformV1EnvVar(_messages.Message):
 
   name = _messages.StringField(1)
   value = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformV1Execution(_messages.Message):
+  r"""Instance of a general execution.
+
+  Enums:
+    StateValueValuesEnum: The state of this Execution. This is a property of
+      the Execution, and does not imply or capture any ongoing process. This
+      property is managed by clients (such as Vertex Pipelines) and the system
+      does not prescribe or check the validity of state transitions.
+
+  Messages:
+    LabelsValue: The labels with user-defined metadata to organize your
+      Executions. Label keys and values can be no longer than 64 characters
+      (Unicode codepoints), can only contain lowercase letters, numeric
+      characters, underscores and dashes. International characters are
+      allowed. No more than 64 user labels can be associated with one
+      Execution (System labels are excluded).
+
+  Fields:
+    createTime: Output only. Timestamp when this Execution was created.
+    displayName: User provided display name of the Execution. May be up to 128
+      Unicode characters.
+    etag: An eTag used to perform consistent read-modify-write updates. If not
+      set, a blind "overwrite" update happens.
+    labels: The labels with user-defined metadata to organize your Executions.
+      Label keys and values can be no longer than 64 characters (Unicode
+      codepoints), can only contain lowercase letters, numeric characters,
+      underscores and dashes. International characters are allowed. No more
+      than 64 user labels can be associated with one Execution (System labels
+      are excluded).
+    name: Output only. The resource name of the Execution.
+    state: The state of this Execution. This is a property of the Execution,
+      and does not imply or capture any ongoing process. This property is
+      managed by clients (such as Vertex Pipelines) and the system does not
+      prescribe or check the validity of state transitions.
+    updateTime: Output only. Timestamp when this Execution was last updated.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""The state of this Execution. This is a property of the Execution, and
+    does not imply or capture any ongoing process. This property is managed by
+    clients (such as Vertex Pipelines) and the system does not prescribe or
+    check the validity of state transitions.
+
+    Values:
+      STATE_UNSPECIFIED: Unspecified Execution state
+      NEW: The Execution is new
+      RUNNING: The Execution is running
+      COMPLETE: The Execution has finished running
+      FAILED: The Execution has failed
+      CACHED: The Execution completed through Cache hit.
+      CANCELLED: The Execution was cancelled.
+    """
+    STATE_UNSPECIFIED = 0
+    NEW = 1
+    RUNNING = 2
+    COMPLETE = 3
+    FAILED = 4
+    CACHED = 5
+    CANCELLED = 6
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""The labels with user-defined metadata to organize your Executions.
+    Label keys and values can be no longer than 64 characters (Unicode
+    codepoints), can only contain lowercase letters, numeric characters,
+    underscores and dashes. International characters are allowed. No more than
+    64 user labels can be associated with one Execution (System labels are
+    excluded).
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  etag = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+  updateTime = _messages.StringField(7)
+
+
+class GoogleCloudAiplatformV1ExplainRequest(_messages.Message):
+  r"""Request message for PredictionService.Explain.
+
+  Fields:
+    deployedModelId: If specified, this ExplainRequest will be served by the
+      chosen DeployedModel, overriding Endpoint.traffic_split.
+    explanationSpecOverride: If specified, overrides the explanation_spec of
+      the DeployedModel. Can be used for explaining prediction results with
+      different configurations, such as: - Explaining top-5 predictions
+      results as opposed to top-1; - Increasing path count or step count of
+      the attribution methods to reduce approximate errors; - Using different
+      baselines for explaining the prediction results.
+    instances: Required. The instances that are the input to the explanation
+      call. A DeployedModel may have an upper limit on the number of instances
+      it supports per request, and when it is exceeded the explanation call
+      errors in case of AutoML Models, or, in case of customer created Models,
+      the behaviour is as documented by that Model. The schema of any single
+      instance may be specified via Endpoint's DeployedModels' Model's
+      PredictSchemata's instance_schema_uri.
+    parameters: The parameters that govern the prediction. The schema of the
+      parameters may be specified via Endpoint's DeployedModels' Model's
+      PredictSchemata's parameters_schema_uri.
+  """
+
+  deployedModelId = _messages.StringField(1)
+  explanationSpecOverride = _messages.MessageField('GoogleCloudAiplatformV1ExplanationSpecOverride', 2)
+  instances = _messages.MessageField('extra_types.JsonValue', 3, repeated=True)
+  parameters = _messages.MessageField('extra_types.JsonValue', 4)
+
+
+class GoogleCloudAiplatformV1ExplainResponse(_messages.Message):
+  r"""Response message for PredictionService.Explain.
+
+  Fields:
+    deployedModelId: ID of the Endpoint's DeployedModel that served this
+      explanation.
+    explanations: The explanations of the Model's PredictResponse.predictions.
+      It has the same number of elements as instances to be explained.
+    predictions: The predictions that are the output of the predictions call.
+      Same as PredictResponse.predictions.
+  """
+
+  deployedModelId = _messages.StringField(1)
+  explanations = _messages.MessageField('GoogleCloudAiplatformV1Explanation', 2, repeated=True)
+  predictions = _messages.MessageField('extra_types.JsonValue', 3, repeated=True)
+
+
+class GoogleCloudAiplatformV1Explanation(_messages.Message):
+  r"""Explanation of a prediction (provided in PredictResponse.predictions)
+  produced by the Model on a given instance.
+
+  Fields:
+    attributions: Output only. Feature attributions grouped by predicted
+      outputs. For Models that predict only one output, such as regression
+      Models that predict only one score, there is only one attibution that
+      explains the predicted output. For Models that predict multiple outputs,
+      such as multiclass Models that predict multiple classes, each element
+      explains one specific item. Attribution.output_index can be used to
+      identify which output this attribution is explaining. If users set
+      ExplanationParameters.top_k, the attributions are sorted by
+      instance_output_value in descending order. If
+      ExplanationParameters.output_indices is specified, the attributions are
+      stored by Attribution.output_index in the same order as they appear in
+      the output_indices.
+  """
+
+  attributions = _messages.MessageField('GoogleCloudAiplatformV1Attribution', 1, repeated=True)
+
+
+class GoogleCloudAiplatformV1ExplanationMetadata(_messages.Message):
+  r"""Metadata describing the Model's input and output for explanation.
+
+  Messages:
+    InputsValue: Required. Map from feature names to feature input metadata.
+      Keys are the name of the features. Values are the specification of the
+      feature. An empty InputMetadata is valid. It describes a text feature
+      which has the name specified as the key in ExplanationMetadata.inputs.
+      The baseline of the empty feature is chosen by Vertex AI. For Vertex AI-
+      provided Tensorflow images, the key can be any friendly name of the
+      feature. Once specified, featureAttributions are keyed by this key (if
+      not grouped with another feature). For custom images, the key must match
+      with the key in instance.
+    OutputsValue: Required. Map from output names to output metadata. For
+      Vertex AI-provided Tensorflow images, keys can be any user defined
+      string that consists of any UTF-8 characters. For custom images, keys
+      are the name of the output field in the prediction to be explained.
+      Currently only one key is allowed.
+
+  Fields:
+    featureAttributionsSchemaUri: Points to a YAML file stored on Google Cloud
+      Storage describing the format of the feature attributions. The schema is
+      defined as an OpenAPI 3.0.2 [Schema
+      Object](https://github.com/OAI/OpenAPI-
+      Specification/blob/main/versions/3.0.2.md#schemaObject). AutoML tabular
+      Models always have this field populated by Vertex AI. Note: The URI
+      given on output may be different, including the URI scheme, than the one
+      given on input. The output URI will point to a location where the user
+      only has a read access.
+    inputs: Required. Map from feature names to feature input metadata. Keys
+      are the name of the features. Values are the specification of the
+      feature. An empty InputMetadata is valid. It describes a text feature
+      which has the name specified as the key in ExplanationMetadata.inputs.
+      The baseline of the empty feature is chosen by Vertex AI. For Vertex AI-
+      provided Tensorflow images, the key can be any friendly name of the
+      feature. Once specified, featureAttributions are keyed by this key (if
+      not grouped with another feature). For custom images, the key must match
+      with the key in instance.
+    outputs: Required. Map from output names to output metadata. For Vertex
+      AI-provided Tensorflow images, keys can be any user defined string that
+      consists of any UTF-8 characters. For custom images, keys are the name
+      of the output field in the prediction to be explained. Currently only
+      one key is allowed.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class InputsValue(_messages.Message):
+    r"""Required. Map from feature names to feature input metadata. Keys are
+    the name of the features. Values are the specification of the feature. An
+    empty InputMetadata is valid. It describes a text feature which has the
+    name specified as the key in ExplanationMetadata.inputs. The baseline of
+    the empty feature is chosen by Vertex AI. For Vertex AI-provided
+    Tensorflow images, the key can be any friendly name of the feature. Once
+    specified, featureAttributions are keyed by this key (if not grouped with
+    another feature). For custom images, the key must match with the key in
+    instance.
+
+    Messages:
+      AdditionalProperty: An additional property for a InputsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type InputsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a InputsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A GoogleCloudAiplatformV1ExplanationMetadataInputMetadata
+          attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('GoogleCloudAiplatformV1ExplanationMetadataInputMetadata', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class OutputsValue(_messages.Message):
+    r"""Required. Map from output names to output metadata. For Vertex AI-
+    provided Tensorflow images, keys can be any user defined string that
+    consists of any UTF-8 characters. For custom images, keys are the name of
+    the output field in the prediction to be explained. Currently only one key
+    is allowed.
+
+    Messages:
+      AdditionalProperty: An additional property for a OutputsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type OutputsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a OutputsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A GoogleCloudAiplatformV1ExplanationMetadataOutputMetadata
+          attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('GoogleCloudAiplatformV1ExplanationMetadataOutputMetadata', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  featureAttributionsSchemaUri = _messages.StringField(1)
+  inputs = _messages.MessageField('InputsValue', 2)
+  outputs = _messages.MessageField('OutputsValue', 3)
+
+
+class GoogleCloudAiplatformV1ExplanationMetadataInputMetadata(_messages.Message):
+  r"""Metadata of the input of a feature. Fields other than
+  InputMetadata.input_baselines are applicable only for Models that are using
+  Vertex AI-provided images for Tensorflow.
+
+  Enums:
+    EncodingValueValuesEnum: Defines how the feature is encoded into the input
+      tensor. Defaults to IDENTITY.
+
+  Fields:
+    denseShapeTensorName: Specifies the shape of the values of the input if
+      the input is a sparse representation. Refer to Tensorflow documentation
+      for more details:
+      https://www.tensorflow.org/api_docs/python/tf/sparse/SparseTensor.
+    encodedBaselines: A list of baselines for the encoded tensor. The shape of
+      each baseline should match the shape of the encoded tensor. If a scalar
+      is provided, Vertex AI broadcasts to the same shape as the encoded
+      tensor.
+    encodedTensorName: Encoded tensor is a transformation of the input tensor.
+      Must be provided if choosing Integrated Gradients attribution or XRAI
+      attribution and the input tensor is not differentiable. An encoded
+      tensor is generated if the input tensor is encoded by a lookup table.
+    encoding: Defines how the feature is encoded into the input tensor.
+      Defaults to IDENTITY.
+    featureValueDomain: The domain details of the input feature value. Like
+      min/max, original mean or standard deviation if normalized.
+    groupName: Name of the group that the input belongs to. Features with the
+      same group name will be treated as one feature when computing
+      attributions. Features grouped together can have different shapes in
+      value. If provided, there will be one single attribution generated in
+      Attribution.feature_attributions, keyed by the group name.
+    indexFeatureMapping: A list of feature names for each index in the input
+      tensor. Required when the input InputMetadata.encoding is
+      BAG_OF_FEATURES, BAG_OF_FEATURES_SPARSE, INDICATOR.
+    indicesTensorName: Specifies the index of the values of the input tensor.
+      Required when the input tensor is a sparse representation. Refer to
+      Tensorflow documentation for more details:
+      https://www.tensorflow.org/api_docs/python/tf/sparse/SparseTensor.
+    inputBaselines: Baseline inputs for this feature. If no baseline is
+      specified, Vertex AI chooses the baseline for this feature. If multiple
+      baselines are specified, Vertex AI returns the average attributions
+      across them in Attribution.feature_attributions. For Vertex AI-provided
+      Tensorflow images (both 1.x and 2.x), the shape of each baseline must
+      match the shape of the input tensor. If a scalar is provided, we
+      broadcast to the same shape as the input tensor. For custom images, the
+      element of the baselines must be in the same format as the feature's
+      input in the instance[]. The schema of any single instance may be
+      specified via Endpoint's DeployedModels' Model's PredictSchemata's
+      instance_schema_uri.
+    inputTensorName: Name of the input tensor for this feature. Required and
+      is only applicable to Vertex AI-provided images for Tensorflow.
+    modality: Modality of the feature. Valid values are: numeric, image.
+      Defaults to numeric.
+    visualization: Visualization configurations for image explanation.
+  """
+
+  class EncodingValueValuesEnum(_messages.Enum):
+    r"""Defines how the feature is encoded into the input tensor. Defaults to
+    IDENTITY.
+
+    Values:
+      ENCODING_UNSPECIFIED: Default value. This is the same as IDENTITY.
+      IDENTITY: The tensor represents one feature.
+      BAG_OF_FEATURES: The tensor represents a bag of features where each
+        index maps to a feature. InputMetadata.index_feature_mapping must be
+        provided for this encoding. For example: ``` input = [27, 6.0, 150]
+        index_feature_mapping = ["age", "height", "weight"] ```
+      BAG_OF_FEATURES_SPARSE: The tensor represents a bag of features where
+        each index maps to a feature. Zero values in the tensor indicates
+        feature being non-existent. InputMetadata.index_feature_mapping must
+        be provided for this encoding. For example: ``` input = [2, 0, 5, 0,
+        1] index_feature_mapping = ["a", "b", "c", "d", "e"] ```
+      INDICATOR: The tensor is a list of binaries representing whether a
+        feature exists or not (1 indicates existence).
+        InputMetadata.index_feature_mapping must be provided for this
+        encoding. For example: ``` input = [1, 0, 1, 0, 1]
+        index_feature_mapping = ["a", "b", "c", "d", "e"] ```
+      COMBINED_EMBEDDING: The tensor is encoded into a 1-dimensional array
+        represented by an encoded tensor. InputMetadata.encoded_tensor_name
+        must be provided for this encoding. For example: ``` input = ["This",
+        "is", "a", "test", "."] encoded = [0.1, 0.2, 0.3, 0.4, 0.5] ```
+      CONCAT_EMBEDDING: Select this encoding when the input tensor is encoded
+        into a 2-dimensional array represented by an encoded tensor.
+        InputMetadata.encoded_tensor_name must be provided for this encoding.
+        The first dimension of the encoded tensor's shape is the same as the
+        input tensor's shape. For example: ``` input = ["This", "is", "a",
+        "test", "."] encoded = [[0.1, 0.2, 0.3, 0.4, 0.5], [0.2, 0.1, 0.4,
+        0.3, 0.5], [0.5, 0.1, 0.3, 0.5, 0.4], [0.5, 0.3, 0.1, 0.2, 0.4], [0.4,
+        0.3, 0.2, 0.5, 0.1]] ```
+    """
+    ENCODING_UNSPECIFIED = 0
+    IDENTITY = 1
+    BAG_OF_FEATURES = 2
+    BAG_OF_FEATURES_SPARSE = 3
+    INDICATOR = 4
+    COMBINED_EMBEDDING = 5
+    CONCAT_EMBEDDING = 6
+
+  denseShapeTensorName = _messages.StringField(1)
+  encodedBaselines = _messages.MessageField('extra_types.JsonValue', 2, repeated=True)
+  encodedTensorName = _messages.StringField(3)
+  encoding = _messages.EnumField('EncodingValueValuesEnum', 4)
+  featureValueDomain = _messages.MessageField('GoogleCloudAiplatformV1ExplanationMetadataInputMetadataFeatureValueDomain', 5)
+  groupName = _messages.StringField(6)
+  indexFeatureMapping = _messages.StringField(7, repeated=True)
+  indicesTensorName = _messages.StringField(8)
+  inputBaselines = _messages.MessageField('extra_types.JsonValue', 9, repeated=True)
+  inputTensorName = _messages.StringField(10)
+  modality = _messages.StringField(11)
+  visualization = _messages.MessageField('GoogleCloudAiplatformV1ExplanationMetadataInputMetadataVisualization', 12)
+
+
+class GoogleCloudAiplatformV1ExplanationMetadataInputMetadataFeatureValueDomain(_messages.Message):
+  r"""Domain details of the input feature value. Provides numeric information
+  about the feature, such as its range (min, max). If the feature has been
+  pre-processed, for example with z-scoring, then it provides information
+  about how to recover the original feature. For example, if the input feature
+  is an image and it has been pre-processed to obtain 0-mean and stddev = 1
+  values, then original_mean, and original_stddev refer to the mean and stddev
+  of the original feature (e.g. image tensor) from which input feature (with
+  mean = 0 and stddev = 1) was obtained.
+
+  Fields:
+    maxValue: The maximum permissible value for this feature.
+    minValue: The minimum permissible value for this feature.
+    originalMean: If this input feature has been normalized to a mean value of
+      0, the original_mean specifies the mean value of the domain prior to
+      normalization.
+    originalStddev: If this input feature has been normalized to a standard
+      deviation of 1.0, the original_stddev specifies the standard deviation
+      of the domain prior to normalization.
+  """
+
+  maxValue = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  minValue = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  originalMean = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+  originalStddev = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
+
+
+class GoogleCloudAiplatformV1ExplanationMetadataInputMetadataVisualization(_messages.Message):
+  r"""Visualization configurations for image explanation.
+
+  Enums:
+    ColorMapValueValuesEnum: The color scheme used for the highlighted areas.
+      Defaults to PINK_GREEN for Integrated Gradients attribution, which shows
+      positive attributions in green and negative in pink. Defaults to VIRIDIS
+      for XRAI attribution, which highlights the most influential regions in
+      yellow and the least influential in blue.
+    OverlayTypeValueValuesEnum: How the original image is displayed in the
+      visualization. Adjusting the overlay can help increase visual clarity if
+      the original image makes it difficult to view the visualization.
+      Defaults to NONE.
+    PolarityValueValuesEnum: Whether to only highlight pixels with positive
+      contributions, negative or both. Defaults to POSITIVE.
+    TypeValueValuesEnum: Type of the image visualization. Only applicable to
+      Integrated Gradients attribution. OUTLINES shows regions of attribution,
+      while PIXELS shows per-pixel attribution. Defaults to OUTLINES.
+
+  Fields:
+    clipPercentLowerbound: Excludes attributions below the specified
+      percentile, from the highlighted areas. Defaults to 62.
+    clipPercentUpperbound: Excludes attributions above the specified
+      percentile from the highlighted areas. Using the clip_percent_upperbound
+      and clip_percent_lowerbound together can be useful for filtering out
+      noise and making it easier to see areas of strong attribution. Defaults
+      to 99.9.
+    colorMap: The color scheme used for the highlighted areas. Defaults to
+      PINK_GREEN for Integrated Gradients attribution, which shows positive
+      attributions in green and negative in pink. Defaults to VIRIDIS for XRAI
+      attribution, which highlights the most influential regions in yellow and
+      the least influential in blue.
+    overlayType: How the original image is displayed in the visualization.
+      Adjusting the overlay can help increase visual clarity if the original
+      image makes it difficult to view the visualization. Defaults to NONE.
+    polarity: Whether to only highlight pixels with positive contributions,
+      negative or both. Defaults to POSITIVE.
+    type: Type of the image visualization. Only applicable to Integrated
+      Gradients attribution. OUTLINES shows regions of attribution, while
+      PIXELS shows per-pixel attribution. Defaults to OUTLINES.
+  """
+
+  class ColorMapValueValuesEnum(_messages.Enum):
+    r"""The color scheme used for the highlighted areas. Defaults to
+    PINK_GREEN for Integrated Gradients attribution, which shows positive
+    attributions in green and negative in pink. Defaults to VIRIDIS for XRAI
+    attribution, which highlights the most influential regions in yellow and
+    the least influential in blue.
+
+    Values:
+      COLOR_MAP_UNSPECIFIED: Should not be used.
+      PINK_GREEN: Positive: green. Negative: pink.
+      VIRIDIS: Viridis color map: A perceptually uniform color mapping which
+        is easier to see by those with colorblindness and progresses from
+        yellow to green to blue. Positive: yellow. Negative: blue.
+      RED: Positive: red. Negative: red.
+      GREEN: Positive: green. Negative: green.
+      RED_GREEN: Positive: green. Negative: red.
+      PINK_WHITE_GREEN: PiYG palette.
+    """
+    COLOR_MAP_UNSPECIFIED = 0
+    PINK_GREEN = 1
+    VIRIDIS = 2
+    RED = 3
+    GREEN = 4
+    RED_GREEN = 5
+    PINK_WHITE_GREEN = 6
+
+  class OverlayTypeValueValuesEnum(_messages.Enum):
+    r"""How the original image is displayed in the visualization. Adjusting
+    the overlay can help increase visual clarity if the original image makes
+    it difficult to view the visualization. Defaults to NONE.
+
+    Values:
+      OVERLAY_TYPE_UNSPECIFIED: Default value. This is the same as NONE.
+      NONE: No overlay.
+      ORIGINAL: The attributions are shown on top of the original image.
+      GRAYSCALE: The attributions are shown on top of grayscaled version of
+        the original image.
+      MASK_BLACK: The attributions are used as a mask to reveal predictive
+        parts of the image and hide the un-predictive parts.
+    """
+    OVERLAY_TYPE_UNSPECIFIED = 0
+    NONE = 1
+    ORIGINAL = 2
+    GRAYSCALE = 3
+    MASK_BLACK = 4
+
+  class PolarityValueValuesEnum(_messages.Enum):
+    r"""Whether to only highlight pixels with positive contributions, negative
+    or both. Defaults to POSITIVE.
+
+    Values:
+      POLARITY_UNSPECIFIED: Default value. This is the same as POSITIVE.
+      POSITIVE: Highlights the pixels/outlines that were most influential to
+        the model's prediction.
+      NEGATIVE: Setting polarity to negative highlights areas that does not
+        lead to the models's current prediction.
+      BOTH: Shows both positive and negative attributions.
+    """
+    POLARITY_UNSPECIFIED = 0
+    POSITIVE = 1
+    NEGATIVE = 2
+    BOTH = 3
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Type of the image visualization. Only applicable to Integrated
+    Gradients attribution. OUTLINES shows regions of attribution, while PIXELS
+    shows per-pixel attribution. Defaults to OUTLINES.
+
+    Values:
+      TYPE_UNSPECIFIED: Should not be used.
+      PIXELS: Shows which pixel contributed to the image prediction.
+      OUTLINES: Shows which region contributed to the image prediction by
+        outlining the region.
+    """
+    TYPE_UNSPECIFIED = 0
+    PIXELS = 1
+    OUTLINES = 2
+
+  clipPercentLowerbound = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  clipPercentUpperbound = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  colorMap = _messages.EnumField('ColorMapValueValuesEnum', 3)
+  overlayType = _messages.EnumField('OverlayTypeValueValuesEnum', 4)
+  polarity = _messages.EnumField('PolarityValueValuesEnum', 5)
+  type = _messages.EnumField('TypeValueValuesEnum', 6)
+
+
+class GoogleCloudAiplatformV1ExplanationMetadataOutputMetadata(_messages.Message):
+  r"""Metadata of the prediction output to be explained.
+
+  Fields:
+    displayNameMappingKey: Specify a field name in the prediction to look for
+      the display name. Use this if the prediction contains the display names
+      for the outputs. The display names in the prediction must have the same
+      shape of the outputs, so that it can be located by
+      Attribution.output_index for a specific output.
+    indexDisplayNameMapping: Static mapping between the index and display
+      name. Use this if the outputs are a deterministic n-dimensional array,
+      e.g. a list of scores of all the classes in a pre-defined order for a
+      multi-classification Model. It's not feasible if the outputs are non-
+      deterministic, e.g. the Model produces top-k classes or sort the outputs
+      by their values. The shape of the value must be an n-dimensional array
+      of strings. The number of dimensions must match that of the outputs to
+      be explained. The Attribution.output_display_name is populated by
+      locating in the mapping with Attribution.output_index.
+    outputTensorName: Name of the output tensor. Required and is only
+      applicable to Vertex AI provided images for Tensorflow.
+  """
+
+  displayNameMappingKey = _messages.StringField(1)
+  indexDisplayNameMapping = _messages.MessageField('extra_types.JsonValue', 2)
+  outputTensorName = _messages.StringField(3)
+
+
+class GoogleCloudAiplatformV1ExplanationMetadataOverride(_messages.Message):
+  r"""The ExplanationMetadata entries that can be overridden at online
+  explanation time.
+
+  Messages:
+    InputsValue: Required. Overrides the input metadata of the features. The
+      key is the name of the feature to be overridden. The keys specified here
+      must exist in the input metadata to be overridden. If a feature is not
+      specified here, the corresponding feature's input metadata is not
+      overridden.
+
+  Fields:
+    inputs: Required. Overrides the input metadata of the features. The key is
+      the name of the feature to be overridden. The keys specified here must
+      exist in the input metadata to be overridden. If a feature is not
+      specified here, the corresponding feature's input metadata is not
+      overridden.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class InputsValue(_messages.Message):
+    r"""Required. Overrides the input metadata of the features. The key is the
+    name of the feature to be overridden. The keys specified here must exist
+    in the input metadata to be overridden. If a feature is not specified
+    here, the corresponding feature's input metadata is not overridden.
+
+    Messages:
+      AdditionalProperty: An additional property for a InputsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type InputsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a InputsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A GoogleCloudAiplatformV1ExplanationMetadataOverrideInputMetada
+          taOverride attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('GoogleCloudAiplatformV1ExplanationMetadataOverrideInputMetadataOverride', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  inputs = _messages.MessageField('InputsValue', 1)
+
+
+class GoogleCloudAiplatformV1ExplanationMetadataOverrideInputMetadataOverride(_messages.Message):
+  r"""The input metadata entries to be overridden.
+
+  Fields:
+    inputBaselines: Baseline inputs for this feature. This overrides the
+      `input_baseline` field of the ExplanationMetadata.InputMetadata object
+      of the corresponding feature's input metadata. If it's not specified,
+      the original baselines are not overridden.
+  """
+
+  inputBaselines = _messages.MessageField('extra_types.JsonValue', 1, repeated=True)
+
+
+class GoogleCloudAiplatformV1ExplanationParameters(_messages.Message):
+  r"""Parameters to configure explaining for Model's predictions.
+
+  Fields:
+    integratedGradientsAttribution: An attribution method that computes
+      Aumann-Shapley values taking advantage of the model's fully
+      differentiable structure. Refer to this paper for more details:
+      https://arxiv.org/abs/1703.01365
+    outputIndices: If populated, only returns attributions that have
+      output_index contained in output_indices. It must be an ndarray of
+      integers, with the same shape of the output it's explaining. If not
+      populated, returns attributions for top_k indices of outputs. If neither
+      top_k nor output_indeices is populated, returns the argmax index of the
+      outputs. Only applicable to Models that predict multiple outputs (e,g,
+      multi-class Models that predict multiple classes).
+    sampledShapleyAttribution: An attribution method that approximates Shapley
+      values for features that contribute to the label being predicted. A
+      sampling strategy is used to approximate the value rather than
+      considering all subsets of features. Refer to this paper for model
+      details: https://arxiv.org/abs/1306.4265.
+    topK: If populated, returns attributions for top K indices of outputs
+      (defaults to 1). Only applies to Models that predicts more than one
+      outputs (e,g, multi-class Models). When set to -1, returns explanations
+      for all outputs.
+    xraiAttribution: An attribution method that redistributes Integrated
+      Gradients attribution to segmented regions, taking advantage of the
+      model's fully differentiable structure. Refer to this paper for more
+      details: https://arxiv.org/abs/1906.02825 XRAI currently performs better
+      on natural images, like a picture of a house or an animal. If the images
+      are taken in artificial environments, like a lab or manufacturing line,
+      or from diagnostic equipment, like x-rays or quality-control cameras,
+      use Integrated Gradients instead.
+  """
+
+  integratedGradientsAttribution = _messages.MessageField('GoogleCloudAiplatformV1IntegratedGradientsAttribution', 1)
+  outputIndices = _messages.MessageField('extra_types.JsonValue', 2, repeated=True)
+  sampledShapleyAttribution = _messages.MessageField('GoogleCloudAiplatformV1SampledShapleyAttribution', 3)
+  topK = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  xraiAttribution = _messages.MessageField('GoogleCloudAiplatformV1XraiAttribution', 5)
+
+
+class GoogleCloudAiplatformV1ExplanationSpec(_messages.Message):
+  r"""Specification of Model explanation.
+
+  Fields:
+    metadata: Required. Metadata describing the Model's input and output for
+      explanation.
+    parameters: Required. Parameters that configure explaining of the Model's
+      predictions.
+  """
+
+  metadata = _messages.MessageField('GoogleCloudAiplatformV1ExplanationMetadata', 1)
+  parameters = _messages.MessageField('GoogleCloudAiplatformV1ExplanationParameters', 2)
+
+
+class GoogleCloudAiplatformV1ExplanationSpecOverride(_messages.Message):
+  r"""The ExplanationSpec entries that can be overridden at online
+  explanation[google.cloud.aiplatform.v1.PredictionService.Explain] time.
+
+  Fields:
+    metadata: The metadata to be overridden. If not specified, no metadata is
+      overridden.
+    parameters: The parameters to be overridden. Note that the method cannot
+      be changed. If not specified, no parameter is overridden.
+  """
+
+  metadata = _messages.MessageField('GoogleCloudAiplatformV1ExplanationMetadataOverride', 1)
+  parameters = _messages.MessageField('GoogleCloudAiplatformV1ExplanationParameters', 2)
 
 
 class GoogleCloudAiplatformV1ExportDataConfig(_messages.Message):
@@ -2653,6 +3930,35 @@ class GoogleCloudAiplatformV1ExportModelResponse(_messages.Message):
   r"""Response message of ModelService.ExportModel operation."""
 
 
+class GoogleCloudAiplatformV1FeatureNoiseSigma(_messages.Message):
+  r"""Noise sigma by features. Noise sigma represents the standard deviation
+  of the gaussian kernel that will be used to add noise to interpolated inputs
+  prior to computing gradients.
+
+  Fields:
+    noiseSigma: Noise sigma per feature. No noise is added to features that
+      are not set.
+  """
+
+  noiseSigma = _messages.MessageField('GoogleCloudAiplatformV1FeatureNoiseSigmaNoiseSigmaForFeature', 1, repeated=True)
+
+
+class GoogleCloudAiplatformV1FeatureNoiseSigmaNoiseSigmaForFeature(_messages.Message):
+  r"""Noise sigma for a single feature.
+
+  Fields:
+    name: The name of the input feature for which noise sigma is provided. The
+      features are defined in explanation metadata inputs.
+    sigma: This represents the standard deviation of the Gaussian kernel that
+      will be used to add noise to the feature prior to computing gradients.
+      Similar to noise_sigma but represents the noise added to the current
+      feature. Defaults to 0.1.
+  """
+
+  name = _messages.StringField(1)
+  sigma = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+
+
 class GoogleCloudAiplatformV1FilterSplit(_messages.Message):
   r"""Assigns input data to training, validation, and test sets based on the
   given filters, data pieces not matched by any filter are ignored. Currently
@@ -2691,7 +3997,7 @@ class GoogleCloudAiplatformV1FractionSplit(_messages.Message):
   given fractions. Any of `training_fraction`, `validation_fraction` and
   `test_fraction` may optionally be provided, they must sum to up to 1. If the
   provided ones sum to less than 1, the remainder is assigned to sets as
-  decided by AI Platform. If none of the fractions are set, by default roughly
+  decided by Vertex AI. If none of the fractions are set, by default roughly
   80% of data is used for training, 10% for validation, and 10% for test.
 
   Fields:
@@ -2788,7 +4094,7 @@ class GoogleCloudAiplatformV1HyperparameterTuningJob(_messages.Message):
       allowed. See https://goo.gl/xmQnxf for more information and examples of
       labels.
     maxFailedTrialCount: The number of failed Trials that need to be seen
-      before failing the HyperparameterTuningJob. If set to 0, AI Platform
+      before failing the HyperparameterTuningJob. If set to 0, Vertex AI
       decides how many Trials must fail before the whole job fails.
     maxTrialCount: Required. The desired total number of Trials.
     name: Output only. Resource name of the HyperparameterTuningJob.
@@ -2821,6 +4127,7 @@ class GoogleCloudAiplatformV1HyperparameterTuningJob(_messages.Message):
         `JOB_STATE_CANCELLED`.
       JOB_STATE_CANCELLED: The job has been cancelled.
       JOB_STATE_PAUSED: The job has been stopped, and can be resumed.
+      JOB_STATE_EXPIRED: The job has expired.
     """
     JOB_STATE_UNSPECIFIED = 0
     JOB_STATE_QUEUED = 1
@@ -2831,6 +4138,7 @@ class GoogleCloudAiplatformV1HyperparameterTuningJob(_messages.Message):
     JOB_STATE_CANCELLING = 6
     JOB_STATE_CANCELLED = 7
     JOB_STATE_PAUSED = 8
+    JOB_STATE_EXPIRED = 9
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -2913,7 +4221,8 @@ class GoogleCloudAiplatformV1ImportDataConfig(_messages.Message):
     importSchemaUri: Required. Points to a YAML file stored on Google Cloud
       Storage describing the import format. Validation will be done against
       the schema. The schema is defined as an [OpenAPI 3.0.2 Schema
-      Object](https://tinyurl.com/y538mdwt).
+      Object](https://github.com/OAI/OpenAPI-
+      Specification/blob/main/versions/3.0.2.md#schemaObject).
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -2981,32 +4290,45 @@ class GoogleCloudAiplatformV1ImportDataResponse(_messages.Message):
   r"""Response message for DatasetService.ImportData."""
 
 
+class GoogleCloudAiplatformV1IndexPrivateEndpoints(_messages.Message):
+  r"""IndexPrivateEndpoints proto is used to provide paths for users to send
+  requests via private services access.
+
+  Fields:
+    matchGrpcAddress: Output only. The ip address used to send match gRPC
+      requests.
+  """
+
+  matchGrpcAddress = _messages.StringField(1)
+
+
 class GoogleCloudAiplatformV1InputDataConfig(_messages.Message):
-  r"""Specifies AI Platform owned input data to be used for training, and
+  r"""Specifies Vertex AI owned input data to be used for training, and
   possibly evaluating, the Model.
 
   Fields:
     annotationSchemaUri: Applicable only to custom training with Datasets that
       have DataItems and Annotations. Cloud Storage URI that points to a YAML
       file describing the annotation schema. The schema is defined as an
-      OpenAPI 3.0.2 [Schema Object](https://tinyurl.com/y538mdwt#schema-
-      object). The schema files that can be used here are found in
-      gs://google-cloud-aiplatform/schema/dataset/annotation/ , note that the
-      chosen schema must be consistent with metadata of the Dataset specified
-      by dataset_id. Only Annotations that both match this schema and belong
-      to DataItems not ignored by the split method are used in respectively
-      training, validation or test role, depending on the role of the DataItem
-      they are on. When used in conjunction with annotations_filter, the
-      Annotations used for training are filtered by both annotations_filter
-      and annotation_schema_uri.
+      OpenAPI 3.0.2 [Schema Object](https://github.com/OAI/OpenAPI-
+      Specification/blob/main/versions/3.0.2.md#schemaObject). The schema
+      files that can be used here are found in gs://google-cloud-
+      aiplatform/schema/dataset/annotation/ , note that the chosen schema must
+      be consistent with metadata of the Dataset specified by dataset_id. Only
+      Annotations that both match this schema and belong to DataItems not
+      ignored by the split method are used in respectively training,
+      validation or test role, depending on the role of the DataItem they are
+      on. When used in conjunction with annotations_filter, the Annotations
+      used for training are filtered by both annotations_filter and
+      annotation_schema_uri.
     annotationsFilter: Applicable only to Datasets that have DataItems and
       Annotations. A filter on Annotations of the Dataset. Only Annotations
       that both match this filter and belong to DataItems not ignored by the
       split method are used in respectively training, validation or test role,
       depending on the role of the DataItem they are on (for the auto-assigned
-      that role is decided by AI Platform). A filter with same syntax as the
-      one used in ListAnnotations may be used, but note here it filters across
-      all Annotations of the Dataset, and not just within a single DataItem.
+      that role is decided by Vertex AI). A filter with same syntax as the one
+      used in ListAnnotations may be used, but note here it filters across all
+      Annotations of the Dataset, and not just within a single DataItem.
     bigqueryDestination: Only applicable to custom training with tabular
       Dataset with BigQuery source. The BigQuery project location where the
       training data is to be written to. In the given project a new dataset is
@@ -3029,11 +4351,10 @@ class GoogleCloudAiplatformV1InputDataConfig(_messages.Message):
       be written to. In the given directory a new directory is created with
       name: `dataset---` where timestamp is in YYYY-MM-DDThh:mm:ss.sssZ
       ISO-8601 format. All training input data is written into that directory.
-      The AI Platform environment variables representing Cloud Storage data
-      URIs are represented in the Cloud Storage wildcard format to support
-      sharded data. e.g.: "gs://.../training-*.jsonl" * AIP_DATA_FORMAT =
-      "jsonl" for non-tabular data, "csv" for tabular data *
-      AIP_TRAINING_DATA_URI =
+      The Vertex AI environment variables representing Cloud Storage data URIs
+      are represented in the Cloud Storage wildcard format to support sharded
+      data. e.g.: "gs://.../training-*.jsonl" * AIP_DATA_FORMAT = "jsonl" for
+      non-tabular data, "csv" for tabular data * AIP_TRAINING_DATA_URI =
       "gcs_destination/dataset---/training-*.${AIP_DATA_FORMAT}" *
       AIP_VALIDATION_DATA_URI =
       "gcs_destination/dataset---/validation-*.${AIP_DATA_FORMAT}" *
@@ -3054,6 +4375,27 @@ class GoogleCloudAiplatformV1InputDataConfig(_messages.Message):
   gcsDestination = _messages.MessageField('GoogleCloudAiplatformV1GcsDestination', 7)
   predefinedSplit = _messages.MessageField('GoogleCloudAiplatformV1PredefinedSplit', 8)
   timestampSplit = _messages.MessageField('GoogleCloudAiplatformV1TimestampSplit', 9)
+
+
+class GoogleCloudAiplatformV1IntegratedGradientsAttribution(_messages.Message):
+  r"""An attribution method that computes the Aumann-Shapley value taking
+  advantage of the model's fully differentiable structure. Refer to this paper
+  for more details: https://arxiv.org/abs/1703.01365
+
+  Fields:
+    smoothGradConfig: Config for SmoothGrad approximation of gradients. When
+      enabled, the gradients are approximated by averaging the gradients from
+      noisy samples in the vicinity of the inputs. Adding noise can help
+      improve the computed gradients. Refer to this paper for more details:
+      https://arxiv.org/pdf/1706.03825.pdf
+    stepCount: Required. The number of steps for approximating the path
+      integral. A good value to start is 50 and gradually increase until the
+      sum to diff property is within the desired error range. Valid range of
+      its value is [1, 100], inclusively.
+  """
+
+  smoothGradConfig = _messages.MessageField('GoogleCloudAiplatformV1SmoothGradConfig', 1)
+  stepCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudAiplatformV1ListAnnotationsResponse(_messages.Message):
@@ -3201,6 +4543,19 @@ class GoogleCloudAiplatformV1ListModelsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class GoogleCloudAiplatformV1ListPipelineJobsResponse(_messages.Message):
+  r"""Response message for PipelineService.ListPipelineJobs
+
+  Fields:
+    nextPageToken: A token to retrieve the next page of results. Pass to
+      ListPipelineJobsRequest.page_token to obtain that page.
+    pipelineJobs: List of PipelineJobs in the requested page.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  pipelineJobs = _messages.MessageField('GoogleCloudAiplatformV1PipelineJob', 2, repeated=True)
+
+
 class GoogleCloudAiplatformV1ListSpecialistPoolsResponse(_messages.Message):
   r"""Response message for SpecialistPoolService.ListSpecialistPools.
 
@@ -3238,13 +4593,14 @@ class GoogleCloudAiplatformV1MachineSpec(_messages.Message):
     acceleratorCount: The number of accelerators to attach to the machine.
     acceleratorType: Immutable. The type of accelerator(s) that may be
       attached to the machine as per accelerator_count.
-    machineType: Immutable. The type of the machine. For the machine types
-      supported for prediction, see https://tinyurl.com/aip-
-      docs/predictions/machine-types. For machine types supported for creating
-      a custom training job, see https://tinyurl.com/aip-
-      docs/training/configure-compute. For DeployedModel this field is
-      optional, and the default value is `n1-standard-2`. For
-      BatchPredictionJob or as part of WorkerPoolSpec this field is required.
+    machineType: Immutable. The type of the machine. See the [list of machine
+      types supported for prediction](https://cloud.google.com/vertex-
+      ai/docs/predictions/configure-compute#machine-types) See the [list of
+      machine types supported for custom
+      training](https://cloud.google.com/vertex-ai/docs/training/configure-
+      compute#machine-types). For DeployedModel this field is optional, and
+      the default value is `n1-standard-2`. For BatchPredictionJob or as part
+      of WorkerPoolSpec this field is required.
   """
 
   class AcceleratorTypeValueValuesEnum(_messages.Enum):
@@ -3259,8 +4615,7 @@ class GoogleCloudAiplatformV1MachineSpec(_messages.Message):
       NVIDIA_TESLA_V100: Nvidia Tesla V100 GPU.
       NVIDIA_TESLA_P4: Nvidia Tesla P4 GPU.
       NVIDIA_TESLA_T4: Nvidia Tesla T4 GPU.
-      TPU_V2: TPU v2.
-      TPU_V3: TPU v3.
+      NVIDIA_TESLA_A100: Nvidia Tesla A100 GPU.
     """
     ACCELERATOR_TYPE_UNSPECIFIED = 0
     NVIDIA_TESLA_K80 = 1
@@ -3268,8 +4623,7 @@ class GoogleCloudAiplatformV1MachineSpec(_messages.Message):
     NVIDIA_TESLA_V100 = 3
     NVIDIA_TESLA_P4 = 4
     NVIDIA_TESLA_T4 = 5
-    TPU_V2 = 6
-    TPU_V3 = 7
+    NVIDIA_TESLA_A100 = 6
 
   acceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   acceleratorType = _messages.EnumField('AcceleratorTypeValueValuesEnum', 2)
@@ -3296,14 +4650,17 @@ class GoogleCloudAiplatformV1Measurement(_messages.Message):
   the Metrics got by executing a Trial using suggested hyperparameter values.
 
   Fields:
+    elapsedDuration: Output only. Time that the Trial has been running at the
+      point of this Measurement.
     metrics: Output only. A list of metrics got by evaluating the objective
       functions using suggested Parameter values.
     stepCount: Output only. The number of steps the machine learning model has
       been trained for. Must be non-negative.
   """
 
-  metrics = _messages.MessageField('GoogleCloudAiplatformV1MeasurementMetric', 1, repeated=True)
-  stepCount = _messages.IntegerField(2)
+  elapsedDuration = _messages.StringField(1)
+  metrics = _messages.MessageField('GoogleCloudAiplatformV1MeasurementMetric', 2, repeated=True)
+  stepCount = _messages.IntegerField(3)
 
 
 class GoogleCloudAiplatformV1MeasurementMetric(_messages.Message):
@@ -3422,17 +4779,17 @@ class GoogleCloudAiplatformV1MigratableResourceMlEngineModelVersion(_messages.Me
 
 class GoogleCloudAiplatformV1MigrateResourceRequest(_messages.Message):
   r"""Config of migrating one resource from automl.googleapis.com,
-  datalabeling.googleapis.com and ml.googleapis.com to AI Platform.
+  datalabeling.googleapis.com and ml.googleapis.com to Vertex AI.
 
   Fields:
     migrateAutomlDatasetConfig: Config for migrating Dataset in
-      automl.googleapis.com to AI Platform's Dataset.
+      automl.googleapis.com to Vertex AI's Dataset.
     migrateAutomlModelConfig: Config for migrating Model in
-      automl.googleapis.com to AI Platform's Model.
+      automl.googleapis.com to Vertex AI's Model.
     migrateDataLabelingDatasetConfig: Config for migrating Dataset in
-      datalabeling.googleapis.com to AI Platform's Dataset.
+      datalabeling.googleapis.com to Vertex AI's Dataset.
     migrateMlEngineModelVersionConfig: Config for migrating Version in
-      ml.googleapis.com to AI Platform's Model.
+      ml.googleapis.com to Vertex AI's Model.
   """
 
   migrateAutomlDatasetConfig = _messages.MessageField('GoogleCloudAiplatformV1MigrateResourceRequestMigrateAutomlDatasetConfig', 1)
@@ -3442,13 +4799,13 @@ class GoogleCloudAiplatformV1MigrateResourceRequest(_messages.Message):
 
 
 class GoogleCloudAiplatformV1MigrateResourceRequestMigrateAutomlDatasetConfig(_messages.Message):
-  r"""Config for migrating Dataset in automl.googleapis.com to AI Platform's
+  r"""Config for migrating Dataset in automl.googleapis.com to Vertex AI's
   Dataset.
 
   Fields:
     dataset: Required. Full resource name of automl Dataset. Format:
       `projects/{project}/locations/{location}/datasets/{dataset}`.
-    datasetDisplayName: Required. Display name of the Dataset in AI Platform.
+    datasetDisplayName: Required. Display name of the Dataset in Vertex AI.
       System will pick a display name if unspecified.
   """
 
@@ -3457,14 +4814,14 @@ class GoogleCloudAiplatformV1MigrateResourceRequestMigrateAutomlDatasetConfig(_m
 
 
 class GoogleCloudAiplatformV1MigrateResourceRequestMigrateAutomlModelConfig(_messages.Message):
-  r"""Config for migrating Model in automl.googleapis.com to AI Platform's
+  r"""Config for migrating Model in automl.googleapis.com to Vertex AI's
   Model.
 
   Fields:
     model: Required. Full resource name of automl Model. Format:
       `projects/{project}/locations/{location}/models/{model}`.
-    modelDisplayName: Optional. Display name of the model in AI Platform.
-      System will pick a display name if unspecified.
+    modelDisplayName: Optional. Display name of the model in Vertex AI. System
+      will pick a display name if unspecified.
   """
 
   model = _messages.StringField(1)
@@ -3472,18 +4829,18 @@ class GoogleCloudAiplatformV1MigrateResourceRequestMigrateAutomlModelConfig(_mes
 
 
 class GoogleCloudAiplatformV1MigrateResourceRequestMigrateDataLabelingDatasetConfig(_messages.Message):
-  r"""Config for migrating Dataset in datalabeling.googleapis.com to AI
-  Platform's Dataset.
+  r"""Config for migrating Dataset in datalabeling.googleapis.com to Vertex
+  AI's Dataset.
 
   Fields:
     dataset: Required. Full resource name of data labeling Dataset. Format:
       `projects/{project}/datasets/{dataset}`.
-    datasetDisplayName: Optional. Display name of the Dataset in AI Platform.
+    datasetDisplayName: Optional. Display name of the Dataset in Vertex AI.
       System will pick a display name if unspecified.
     migrateDataLabelingAnnotatedDatasetConfigs: Optional. Configs for
-      migrating AnnotatedDataset in datalabeling.googleapis.com to AI
-      Platform's SavedQuery. The specified AnnotatedDatasets have to belong to
-      the datalabeling Dataset.
+      migrating AnnotatedDataset in datalabeling.googleapis.com to Vertex AI's
+      SavedQuery. The specified AnnotatedDatasets have to belong to the
+      datalabeling Dataset.
   """
 
   dataset = _messages.StringField(1)
@@ -3493,7 +4850,7 @@ class GoogleCloudAiplatformV1MigrateResourceRequestMigrateDataLabelingDatasetCon
 
 class GoogleCloudAiplatformV1MigrateResourceRequestMigrateDataLabelingDatasetConfigMigrateDataLabelingAnnotatedDatasetConfig(_messages.Message):
   r"""Config for migrating AnnotatedDataset in datalabeling.googleapis.com to
-  AI Platform's SavedQuery.
+  Vertex AI's SavedQuery.
 
   Fields:
     annotatedDataset: Required. Full resource name of data labeling
@@ -3505,16 +4862,15 @@ class GoogleCloudAiplatformV1MigrateResourceRequestMigrateDataLabelingDatasetCon
 
 
 class GoogleCloudAiplatformV1MigrateResourceRequestMigrateMlEngineModelVersionConfig(_messages.Message):
-  r"""Config for migrating version in ml.googleapis.com to AI Platform's
-  Model.
+  r"""Config for migrating version in ml.googleapis.com to Vertex AI's Model.
 
   Fields:
     endpoint: Required. The ml.googleapis.com endpoint that this model version
       should be migrated from. Example values: * ml.googleapis.com * us-
       centrall-ml.googleapis.com * europe-west4-ml.googleapis.com * asia-
       east1-ml.googleapis.com
-    modelDisplayName: Required. Display name of the model in AI Platform.
-      System will pick a display name if unspecified.
+    modelDisplayName: Required. Display name of the model in Vertex AI. System
+      will pick a display name if unspecified.
     modelVersion: Required. Full resource name of ml engine model version.
       Format: `projects/{project}/models/{model}/versions/{version}`.
   """
@@ -3559,9 +4915,9 @@ class GoogleCloudAiplatformV1Model(_messages.Message):
     containerSpec: Input only. The specification of the container that is to
       be used when deploying this Model. The specification is ingested upon
       ModelService.UploadModel, and all binaries it contains are copied and
-      stored internally by AI Platform. Not present for AutoML Models.
-    createTime: Output only. Timestamp when this Model was uploaded into AI
-      Platform.
+      stored internally by Vertex AI. Not present for AutoML Models.
+    createTime: Output only. Timestamp when this Model was uploaded into
+      Vertex AI.
     deployedModels: Output only. The pointers to DeployedModels created from
       this Model. Note that Model could have been deployed to Endpoints in
       different Locations.
@@ -3573,6 +4929,16 @@ class GoogleCloudAiplatformV1Model(_messages.Message):
       key.
     etag: Used to perform consistent read-modify-write updates. If not set, a
       blind "overwrite" update happens.
+    explanationSpec: The default explanation specification for this Model. The
+      Model can be used for requesting explanation after being deployed if it
+      is populated. The Model can be used for batch explanation if it is
+      populated. All fields of the explanation_spec can be overridden by
+      explanation_spec of DeployModelRequest.deployed_model, or
+      explanation_spec of BatchPredictionJob. If the default explanation
+      specification is not set for this Model, this Model can still be used
+      for requesting explanation by setting explanation_spec of
+      DeployModelRequest.deployed_model and for batch explanation by setting
+      explanation_spec of BatchPredictionJob.
     labels: The labels with user-defined metadata to organize your Models.
       Label keys and values can be no longer than 64 characters (Unicode
       codepoints), can only contain lowercase letters, numeric characters,
@@ -3585,11 +4951,12 @@ class GoogleCloudAiplatformV1Model(_messages.Message):
       Storage describing additional information about the Model, that is
       specific to it. Unset if the Model does not have any additional
       information. The schema is defined as an OpenAPI 3.0.2 [Schema
-      Object](https://tinyurl.com/y538mdwt#schema-object). AutoML Models
-      always have this field populated by AI Platform, if no additional
-      metadata is needed, this field is set to an empty string. Note: The URI
-      given on output will be immutable and probably different, including the
-      URI scheme, than the one given on input. The output URI will point to a
+      Object](https://github.com/OAI/OpenAPI-
+      Specification/blob/main/versions/3.0.2.md#schemaObject). AutoML Models
+      always have this field populated by Vertex AI, if no additional metadata
+      is needed, this field is set to an empty string. Note: The URI given on
+      output will be immutable and probably different, including the URI
+      scheme, than the one given on input. The output URI will point to a
       location where the user only has a read access.
     name: The resource name of the Model.
     predictSchemata: The schemata that describe formats of the Model's
@@ -3654,8 +5021,8 @@ class GoogleCloudAiplatformV1Model(_messages.Message):
       DEPLOYMENT_RESOURCES_TYPE_UNSPECIFIED: Should not be used.
       DEDICATED_RESOURCES: Resources that are dedicated to the DeployedModel,
         and that need a higher degree of manual configuration.
-      AUTOMATIC_RESOURCES: Resources that to large degree are decided by AI
-        Platform, and require only a modest additional configuration.
+      AUTOMATIC_RESOURCES: Resources that to large degree are decided by
+        Vertex AI, and require only a modest additional configuration.
     """
     DEPLOYMENT_RESOURCES_TYPE_UNSPECIFIED = 0
     DEDICATED_RESOURCES = 1
@@ -3697,23 +5064,25 @@ class GoogleCloudAiplatformV1Model(_messages.Message):
   displayName = _messages.StringField(6)
   encryptionSpec = _messages.MessageField('GoogleCloudAiplatformV1EncryptionSpec', 7)
   etag = _messages.StringField(8)
-  labels = _messages.MessageField('LabelsValue', 9)
-  metadata = _messages.MessageField('extra_types.JsonValue', 10)
-  metadataSchemaUri = _messages.StringField(11)
-  name = _messages.StringField(12)
-  predictSchemata = _messages.MessageField('GoogleCloudAiplatformV1PredictSchemata', 13)
-  supportedDeploymentResourcesTypes = _messages.EnumField('SupportedDeploymentResourcesTypesValueListEntryValuesEnum', 14, repeated=True)
-  supportedExportFormats = _messages.MessageField('GoogleCloudAiplatformV1ModelExportFormat', 15, repeated=True)
-  supportedInputStorageFormats = _messages.StringField(16, repeated=True)
-  supportedOutputStorageFormats = _messages.StringField(17, repeated=True)
-  trainingPipeline = _messages.StringField(18)
-  updateTime = _messages.StringField(19)
+  explanationSpec = _messages.MessageField('GoogleCloudAiplatformV1ExplanationSpec', 9)
+  labels = _messages.MessageField('LabelsValue', 10)
+  metadata = _messages.MessageField('extra_types.JsonValue', 11)
+  metadataSchemaUri = _messages.StringField(12)
+  name = _messages.StringField(13)
+  predictSchemata = _messages.MessageField('GoogleCloudAiplatformV1PredictSchemata', 14)
+  supportedDeploymentResourcesTypes = _messages.EnumField('SupportedDeploymentResourcesTypesValueListEntryValuesEnum', 15, repeated=True)
+  supportedExportFormats = _messages.MessageField('GoogleCloudAiplatformV1ModelExportFormat', 16, repeated=True)
+  supportedInputStorageFormats = _messages.StringField(17, repeated=True)
+  supportedOutputStorageFormats = _messages.StringField(18, repeated=True)
+  trainingPipeline = _messages.StringField(19)
+  updateTime = _messages.StringField(20)
 
 
 class GoogleCloudAiplatformV1ModelContainerSpec(_messages.Message):
-  r"""Specification of a container for serving predictions. This message is a
-  subset of the Kubernetes Container v1 core
-  [specification](https://tinyurl.com/k8s-io-api/v1.18/#container-v1-core).
+  r"""Specification of a container for serving predictions. Some fields in
+  this message correspond to fields in the [Kubernetes Container v1 core speci
+  fication](https://v1-18.docs.kubernetes.io/docs/reference/generated/kubernet
+  es-api/v1.18/#container-v1-core).
 
   Fields:
     args: Immutable. Specifies arguments for the command that runs when the
@@ -3722,26 +5091,29 @@ class GoogleCloudAiplatformV1ModelContainerSpec(_messages.Message):
       this field as an array of executable and arguments, similar to a Docker
       `CMD`'s "default parameters" form. If you don't specify this field but
       do specify the command field, then the command from the `command` field
-      runs without any additional arguments. See the [Kubernetes
-      documentation](https://tinyurl.com/y8bvllf4) about how the `command` and
-      `args` fields interact with a container's `ENTRYPOINT` and `CMD`. If you
-      don't specify this field and don't specify the `command` field, then the
+      runs without any additional arguments. See the [Kubernetes documentation
+      about how the `command` and `args` fields interact with a container's
+      `ENTRYPOINT` and `CMD`](https://kubernetes.io/docs/tasks/inject-data-
+      application/define-command-argument-container/#notes). If you don't
+      specify this field and don't specify the `command` field, then the
       container's
       [`ENTRYPOINT`](https://docs.docker.com/engine/reference/builder/#cmd)
       and `CMD` determine what runs based on their default behavior. See the
-      Docker documentation about how `CMD` and `ENTRYPOINT`
-      [interact](https://tinyurl.com/h3kdcgs). In this field, you can
-      reference environment variables [set by AI
-      Platform](https://tinyurl.com/cust-cont-reqs#aip-variables) and
-      environment variables set in the env field. You cannot reference
-      environment variables set in the Docker image. In order for environment
-      variables to be expanded, reference them by using the following syntax:
-      $(VARIABLE_NAME) Note that this differs from Bash variable expansion,
-      which does not use parentheses. If a variable cannot be resolved, the
-      reference in the input string is used unchanged. To avoid variable
-      expansion, you can escape this syntax with `$$`; for example:
-      $$(VARIABLE_NAME) This field corresponds to the `args` field of the
-      Kubernetes Containers [v1 core API](https://tinyurl.com/k8s-io-
+      Docker documentation about [how `CMD` and `ENTRYPOINT`
+      interact](https://docs.docker.com/engine/reference/builder/#understand-
+      how-cmd-and-entrypoint-interact). In this field, you can reference
+      [environment variables set by Vertex
+      AI](https://cloud.google.com/vertex-ai/docs/predictions/custom-
+      container-requirements#aip-variables) and environment variables set in
+      the env field. You cannot reference environment variables set in the
+      Docker image. In order for environment variables to be expanded,
+      reference them by using the following syntax: $( VARIABLE_NAME) Note
+      that this differs from Bash variable expansion, which does not use
+      parentheses. If a variable cannot be resolved, the reference in the
+      input string is used unchanged. To avoid variable expansion, you can
+      escape this syntax with `$$`; for example: $$(VARIABLE_NAME) This field
+      corresponds to the `args` field of the Kubernetes Containers [v1 core AP
+      I](https://v1-18.docs.kubernetes.io/docs/reference/generated/kubernetes-
       api/v1.18/#container-v1-core).
     command: Immutable. Specifies the command that runs when the container
       starts. This overrides the container's [ENTRYPOINT](https://docs.docker.
@@ -3752,25 +5124,29 @@ class GoogleCloudAiplatformV1ModelContainerSpec(_messages.Message):
       field or the container's
       [`CMD`](https://docs.docker.com/engine/reference/builder/#cmd), if
       either exists. If this field is not specified and the container does not
-      have an `ENTRYPOINT`, then refer to the Docker documentation about how
-      `CMD` and `ENTRYPOINT` [interact](https://tinyurl.com/h3kdcgs). If you
-      specify this field, then you can also specify the `args` field to
-      provide additional arguments for this command. However, if you specify
-      this field, then the container's `CMD` is ignored. See the [Kubernetes
-      documentation](https://tinyurl.com/y8bvllf4) about how the `command` and
-      `args` fields interact with a container's `ENTRYPOINT` and `CMD`. In
-      this field, you can reference environment variables [set by AI
-      Platform](https://tinyurl.com/cust-cont-reqs#aip-variables) and
-      environment variables set in the env field. You cannot reference
-      environment variables set in the Docker image. In order for environment
-      variables to be expanded, reference them by using the following syntax:
-      $(VARIABLE_NAME) Note that this differs from Bash variable expansion,
-      which does not use parentheses. If a variable cannot be resolved, the
-      reference in the input string is used unchanged. To avoid variable
-      expansion, you can escape this syntax with `$$`; for example:
-      $$(VARIABLE_NAME) This field corresponds to the `command` field of the
-      Kubernetes Containers [v1 core API](https://tinyurl.com/k8s-io-
-      api/v1.18/#container-v1-core).
+      have an `ENTRYPOINT`, then refer to the Docker documentation about [how
+      `CMD` and `ENTRYPOINT`
+      interact](https://docs.docker.com/engine/reference/builder/#understand-
+      how-cmd-and-entrypoint-interact). If you specify this field, then you
+      can also specify the `args` field to provide additional arguments for
+      this command. However, if you specify this field, then the container's
+      `CMD` is ignored. See the [Kubernetes documentation about how the
+      `command` and `args` fields interact with a container's `ENTRYPOINT` and
+      `CMD`](https://kubernetes.io/docs/tasks/inject-data-application/define-
+      command-argument-container/#notes). In this field, you can reference
+      [environment variables set by Vertex
+      AI](https://cloud.google.com/vertex-ai/docs/predictions/custom-
+      container-requirements#aip-variables) and environment variables set in
+      the env field. You cannot reference environment variables set in the
+      Docker image. In order for environment variables to be expanded,
+      reference them by using the following syntax: $( VARIABLE_NAME) Note
+      that this differs from Bash variable expansion, which does not use
+      parentheses. If a variable cannot be resolved, the reference in the
+      input string is used unchanged. To avoid variable expansion, you can
+      escape this syntax with `$$`; for example: $$(VARIABLE_NAME) This field
+      corresponds to the `command` field of the Kubernetes Containers [v1 core
+      API](https://v1-18.docs.kubernetes.io/docs/reference/generated/kubernete
+      s-api/v1.18/#container-v1-core).
     env: Immutable. List of environment variables to set in the container.
       After the container starts running, code running in the container can
       read these environment variables. Additionally, the command and args
@@ -3780,67 +5156,74 @@ class GoogleCloudAiplatformV1ModelContainerSpec(_messages.Message):
       "VAR_1", "value": "foo" }, { "name": "VAR_2", "value": "$(VAR_1) bar" }
       ] ``` If you switch the order of the variables in the example, then the
       expansion does not occur. This field corresponds to the `env` field of
-      the Kubernetes Containers [v1 core API](https://tinyurl.com/k8s-io-
-      api/v1.18/#container-v1-core).
+      the Kubernetes Containers [v1 core API](https://v1-18.docs.kubernetes.io
+      /docs/reference/generated/kubernetes-api/v1.18/#container-v1-core).
     healthRoute: Immutable. HTTP path on the container to send health checks
-      to. AI Platform intermittently sends GET requests to this path on the
+      to. Vertex AI intermittently sends GET requests to this path on the
       container's IP address and port to check that the container is healthy.
-      Read more about [health checks](https://tinyurl.com/cust-cont-
-      reqs#checks). For example, if you set this field to `/bar`, then AI
-      Platform intermittently sends a GET request to the `/bar` path on the
-      port of your container specified by the first value of this
-      `ModelContainerSpec`'s ports field. If you don't specify this field, it
-      defaults to the following value when you deploy this Model to an
-      Endpoint: /v1/endpoints/ENDPOINT/deployedModels/DEPLOYED_MODEL :predict
-      The placeholders in this value are replaced as follows: * ENDPOINT: The
-      last segment (following `endpoints/`)of the Endpoint.name][] field of
-      the Endpoint where this Model has been deployed. (AI Platform makes this
-      value available to your container code as the
-      [`AIP_ENDPOINT_ID`](https://tinyurl.com/cust-cont-reqs#aip-variables)
-      environment variable.) * DEPLOYED_MODEL: DeployedModel.id of the
-      `DeployedModel`. (AI Platform makes this value available to your
-      container code as the
-      [`AIP_DEPLOYED_MODEL_ID`](https://tinyurl.com/cust-cont-reqs#aip-
-      variables) environment variable.)
+      Read more about [health checks](https://cloud.google.com/vertex-
+      ai/docs/predictions/custom-container-requirements#health). For example,
+      if you set this field to `/bar`, then Vertex AI intermittently sends a
+      GET request to the `/bar` path on the port of your container specified
+      by the first value of this `ModelContainerSpec`'s ports field. If you
+      don't specify this field, it defaults to the following value when you
+      deploy this Model to an Endpoint: /v1/endpoints/ENDPOINT/deployedModels/
+      DEPLOYED_MODEL:predict The placeholders in this value are replaced as
+      follows: * ENDPOINT: The last segment (following `endpoints/`)of the
+      Endpoint.name][] field of the Endpoint where this Model has been
+      deployed. (Vertex AI makes this value available to your container code
+      as the [`AIP_ENDPOINT_ID` environment
+      variable](https://cloud.google.com/vertex-ai/docs/predictions/custom-
+      container-requirements#aip-variables).) * DEPLOYED_MODEL:
+      DeployedModel.id of the `DeployedModel`. (Vertex AI makes this value
+      available to your container code as the [`AIP_DEPLOYED_MODEL_ID`
+      environment variable](https://cloud.google.com/vertex-
+      ai/docs/predictions/custom-container-requirements#aip-variables).)
     imageUri: Required. Immutable. URI of the Docker image to be used as the
       custom container for serving predictions. This URI must identify an
       image in Artifact Registry or Container Registry. Learn more about the
-      container publishing requirements, including permissions requirements
-      for the AI Platform Service Agent, [here](https://tinyurl.com/cust-cont-
-      reqs#publishing). The container image is ingested upon
-      ModelService.UploadModel, stored internally, and this original path is
-      afterwards not used. To learn about the requirements for the Docker
-      image itself, see [Custom container
-      requirements](https://tinyurl.com/cust-cont-reqs).
-    ports: Immutable. List of ports to expose from the container. AI Platform
+      [container publishing requirements](https://cloud.google.com/vertex-
+      ai/docs/predictions/custom-container-requirements#publishing), including
+      permissions requirements for the Vertex AI Service Agent. The container
+      image is ingested upon ModelService.UploadModel, stored internally, and
+      this original path is afterwards not used. To learn about the
+      requirements for the Docker image itself, see [Custom container
+      requirements](https://cloud.google.com/vertex-
+      ai/docs/predictions/custom-container-requirements#). You can use the URI
+      to one of Vertex AI's [pre-built container images for
+      prediction](https://cloud.google.com/vertex-ai/docs/predictions/pre-
+      built-containers) in this field.
+    ports: Immutable. List of ports to expose from the container. Vertex AI
       sends any prediction requests that it receives to the first port on this
-      list. AI Platform also sends [liveness and health
-      checks](https://tinyurl.com/cust-cont-reqs#health) to this port. If you
-      do not specify this field, it defaults to following value: ```json [ {
-      "containerPort": 8080 } ] ``` AI Platform does not use ports other than
-      the first one listed. This field corresponds to the `ports` field of the
-      Kubernetes Containers [v1 core API](https://tinyurl.com/k8s-io-
-      api/v1.18/#container-v1-core).
+      list. Vertex AI also sends [liveness and health
+      checks](https://cloud.google.com/vertex-ai/docs/predictions/custom-
+      container-requirements#liveness) to this port. If you do not specify
+      this field, it defaults to following value: ```json [ { "containerPort":
+      8080 } ] ``` Vertex AI does not use ports other than the first one
+      listed. This field corresponds to the `ports` field of the Kubernetes
+      Containers [v1 core API](https://v1-18.docs.kubernetes.io/docs/reference
+      /generated/kubernetes-api/v1.18/#container-v1-core).
     predictRoute: Immutable. HTTP path on the container to send prediction
-      requests to. AI Platform forwards requests sent using
+      requests to. Vertex AI forwards requests sent using
       projects.locations.endpoints.predict to this path on the container's IP
-      address and port. AI Platform then returns the container's response in
-      the API response. For example, if you set this field to `/foo`, then
-      when AI Platform receives a prediction request, it forwards the request
-      body in a POST request to the `/foo` path on the port of your container
+      address and port. Vertex AI then returns the container's response in the
+      API response. For example, if you set this field to `/foo`, then when
+      Vertex AI receives a prediction request, it forwards the request body in
+      a POST request to the `/foo` path on the port of your container
       specified by the first value of this `ModelContainerSpec`'s ports field.
       If you don't specify this field, it defaults to the following value when
       you deploy this Model to an Endpoint:
       /v1/endpoints/ENDPOINT/deployedModels/DEPLOYED_MODEL:predict The
       placeholders in this value are replaced as follows: * ENDPOINT: The last
       segment (following `endpoints/`)of the Endpoint.name][] field of the
-      Endpoint where this Model has been deployed. (AI Platform makes this
-      value available to your container code as the
-      [`AIP_ENDPOINT_ID`](https://tinyurl.com/cust-cont-reqs#aip-variables)
-      environment variable.) * DEPLOYED_MODEL: DeployedModel.id of the
-      `DeployedModel`. (AI Platform makes this value available to your
-      container code as the [`AIP_DEPLOYED_MODEL_ID` environment
-      variable](https://tinyurl.com/cust-cont-reqs#aip-variables).)
+      Endpoint where this Model has been deployed. (Vertex AI makes this value
+      available to your container code as the [`AIP_ENDPOINT_ID` environment
+      variable](https://cloud.google.com/vertex-ai/docs/predictions/custom-
+      container-requirements#aip-variables).) * DEPLOYED_MODEL:
+      DeployedModel.id of the `DeployedModel`. (Vertex AI makes this value
+      available to your container code as the [`AIP_DEPLOYED_MODEL_ID`
+      environment variable](https://cloud.google.com/vertex-
+      ai/docs/predictions/custom-container-requirements#aip-variables).)
   """
 
   args = _messages.StringField(1, repeated=True)
@@ -3858,12 +5241,19 @@ class GoogleCloudAiplatformV1ModelEvaluation(_messages.Message):
 
   Fields:
     createTime: Output only. Timestamp when this ModelEvaluation was created.
+    explanationSpecs: Output only. Describes the values of ExplanationSpec
+      that are used for explaining the predicted values on the evaluated data.
     metrics: Output only. Evaluation metrics of the Model. The schema of the
       metrics is stored in metrics_schema_uri
     metricsSchemaUri: Output only. Points to a YAML file stored on Google
       Cloud Storage describing the metrics of this ModelEvaluation. The schema
       is defined as an OpenAPI 3.0.2 [Schema
-      Object](https://tinyurl.com/y538mdwt#schema-object).
+      Object](https://github.com/OAI/OpenAPI-
+      Specification/blob/main/versions/3.0.2.md#schemaObject).
+    modelExplanation: Output only. Aggregated explanation metrics for the
+      Model's prediction output over the data this ModelEvaluation uses. This
+      field is populated only if the Model is evaluated with explanations, and
+      only for AutoML tabular Models.
     name: Output only. The resource name of the ModelEvaluation.
     sliceDimensions: Output only. All possible dimensions of
       ModelEvaluationSlices. The dimensions can be used as the filter of the
@@ -3872,10 +5262,26 @@ class GoogleCloudAiplatformV1ModelEvaluation(_messages.Message):
   """
 
   createTime = _messages.StringField(1)
-  metrics = _messages.MessageField('extra_types.JsonValue', 2)
-  metricsSchemaUri = _messages.StringField(3)
-  name = _messages.StringField(4)
-  sliceDimensions = _messages.StringField(5, repeated=True)
+  explanationSpecs = _messages.MessageField('GoogleCloudAiplatformV1ModelEvaluationModelEvaluationExplanationSpec', 2, repeated=True)
+  metrics = _messages.MessageField('extra_types.JsonValue', 3)
+  metricsSchemaUri = _messages.StringField(4)
+  modelExplanation = _messages.MessageField('GoogleCloudAiplatformV1ModelExplanation', 5)
+  name = _messages.StringField(6)
+  sliceDimensions = _messages.StringField(7, repeated=True)
+
+
+class GoogleCloudAiplatformV1ModelEvaluationModelEvaluationExplanationSpec(_messages.Message):
+  r"""A GoogleCloudAiplatformV1ModelEvaluationModelEvaluationExplanationSpec
+  object.
+
+  Fields:
+    explanationSpec: Explanation spec details.
+    explanationType: Explanation type. For AutoML Image Classification models,
+      possible values are: * `image-integrated-gradients` * `image-xrai`
+  """
+
+  explanationSpec = _messages.MessageField('GoogleCloudAiplatformV1ExplanationSpec', 1)
+  explanationType = _messages.StringField(2)
 
 
 class GoogleCloudAiplatformV1ModelEvaluationSlice(_messages.Message):
@@ -3890,7 +5296,8 @@ class GoogleCloudAiplatformV1ModelEvaluationSlice(_messages.Message):
     metricsSchemaUri: Output only. Points to a YAML file stored on Google
       Cloud Storage describing the metrics of this ModelEvaluationSlice. The
       schema is defined as an OpenAPI 3.0.2 [Schema
-      Object](https://tinyurl.com/y538mdwt#schema-object).
+      Object](https://github.com/OAI/OpenAPI-
+      Specification/blob/main/versions/3.0.2.md#schemaObject).
     name: Output only. The resource name of the ModelEvaluationSlice.
     slice: Output only. The slice of the test data that is used to evaluate
       the Model.
@@ -3916,6 +5323,28 @@ class GoogleCloudAiplatformV1ModelEvaluationSliceSlice(_messages.Message):
 
   dimension = _messages.StringField(1)
   value = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformV1ModelExplanation(_messages.Message):
+  r"""Aggregated explanation metrics for a Model over a set of instances.
+
+  Fields:
+    meanAttributions: Output only. Aggregated attributions explaining the
+      Model's prediction outputs over the set of instances. The attributions
+      are grouped by outputs. For Models that predict only one output, such as
+      regression Models that predict only one score, there is only one
+      attibution that explains the predicted output. For Models that predict
+      multiple outputs, such as multiclass Models that predict multiple
+      classes, each element explains one specific item.
+      Attribution.output_index can be used to identify which output this
+      attribution is explaining. The baselineOutputValue, instanceOutputValue
+      and featureAttributions fields are averaged over the test data. NOTE:
+      Currently AutoML tabular classification Models produce only one
+      attribution, which averages attributions over all the classes it
+      predicts. Attribution.approximation_error is not populated.
+  """
+
+  meanAttributions = _messages.MessageField('GoogleCloudAiplatformV1Attribution', 1, repeated=True)
 
 
 class GoogleCloudAiplatformV1ModelExportFormat(_messages.Message):
@@ -3956,6 +5385,483 @@ class GoogleCloudAiplatformV1ModelExportFormat(_messages.Message):
 
   exportableContents = _messages.EnumField('ExportableContentsValueListEntryValuesEnum', 1, repeated=True)
   id = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformV1NearestNeighborSearchOperationMetadata(_messages.Message):
+  r"""Runtime operation metadata with regard to Matching Engine Index.
+
+  Fields:
+    contentValidationStats: The validation stats of the content (per file) to
+      be inserted or updated on the Matching Engine Index resource. Populated
+      if contentsDeltaUri is provided as part of Index.metadata. Please note
+      that, currently for those files that are broken or has unsupported file
+      format, we will not have the stats for those files.
+    dataBytesCount: The ingested data size in bytes.
+  """
+
+  contentValidationStats = _messages.MessageField('GoogleCloudAiplatformV1NearestNeighborSearchOperationMetadataContentValidationStats', 1, repeated=True)
+  dataBytesCount = _messages.IntegerField(2)
+
+
+class GoogleCloudAiplatformV1NearestNeighborSearchOperationMetadataContentValidationStats(_messages.Message):
+  r"""A GoogleCloudAiplatformV1NearestNeighborSearchOperationMetadataContentVa
+  lidationStats object.
+
+  Fields:
+    invalidRecordCount: Number of records in this file we skipped due to
+      validate errors.
+    partialErrors: The detail information of the partial failures encountered
+      for those invalid records that couldn't be parsed. Up to 50 partial
+      errors will be reported.
+    sourceGcsUri: Cloud Storage URI pointing to the original file in user's
+      bucket.
+    validRecordCount: Number of records in this file that were successfully
+      processed.
+  """
+
+  invalidRecordCount = _messages.IntegerField(1)
+  partialErrors = _messages.MessageField('GoogleCloudAiplatformV1NearestNeighborSearchOperationMetadataRecordError', 2, repeated=True)
+  sourceGcsUri = _messages.StringField(3)
+  validRecordCount = _messages.IntegerField(4)
+
+
+class GoogleCloudAiplatformV1NearestNeighborSearchOperationMetadataRecordError(_messages.Message):
+  r"""A
+  GoogleCloudAiplatformV1NearestNeighborSearchOperationMetadataRecordError
+  object.
+
+  Enums:
+    ErrorTypeValueValuesEnum: The error type of this record.
+
+  Fields:
+    embeddingId: Empty if the embedding id is failed to parse.
+    errorMessage: A human-readable message that is shown to the user to help
+      them fix the error. Note that this message may change from time to time,
+      your code should check against error_type as the source of truth.
+    errorType: The error type of this record.
+    rawRecord: The original content of this record.
+    sourceGcsUri: Cloud Storage URI pointing to the original file in user's
+      bucket.
+  """
+
+  class ErrorTypeValueValuesEnum(_messages.Enum):
+    r"""The error type of this record.
+
+    Values:
+      ERROR_TYPE_UNSPECIFIED: Default, shall not be used.
+      EMPTY_LINE: The record is empty.
+      INVALID_JSON_SYNTAX: Invalid json format.
+      INVALID_CSV_SYNTAX: Invalid csv format.
+      INVALID_AVRO_SYNTAX: Invalid avro format.
+      INVALID_EMBEDDING_ID: The embedding id is not valid.
+      EMBEDDING_SIZE_MISMATCH: The size of the embedding vectors does not
+        match with the specified dimension.
+      NAMESPACE_MISSING: The `namespace` field is missing.
+    """
+    ERROR_TYPE_UNSPECIFIED = 0
+    EMPTY_LINE = 1
+    INVALID_JSON_SYNTAX = 2
+    INVALID_CSV_SYNTAX = 3
+    INVALID_AVRO_SYNTAX = 4
+    INVALID_EMBEDDING_ID = 5
+    EMBEDDING_SIZE_MISMATCH = 6
+    NAMESPACE_MISSING = 7
+
+  embeddingId = _messages.StringField(1)
+  errorMessage = _messages.StringField(2)
+  errorType = _messages.EnumField('ErrorTypeValueValuesEnum', 3)
+  rawRecord = _messages.StringField(4)
+  sourceGcsUri = _messages.StringField(5)
+
+
+class GoogleCloudAiplatformV1PipelineJob(_messages.Message):
+  r"""An instance of a machine learning PipelineJob.
+
+  Enums:
+    StateValueValuesEnum: Output only. The detailed state of the job.
+
+  Messages:
+    LabelsValue: The labels with user-defined metadata to organize
+      PipelineJob. Label keys and values can be no longer than 64 characters
+      (Unicode codepoints), can only contain lowercase letters, numeric
+      characters, underscores and dashes. International characters are
+      allowed. See https://goo.gl/xmQnxf for more information and examples of
+      labels.
+    PipelineSpecValue: Required. The spec of the pipeline.
+
+  Fields:
+    createTime: Output only. Pipeline creation time.
+    displayName: The display name of the Pipeline. The name can be up to 128
+      characters long and can be consist of any UTF-8 characters.
+    encryptionSpec: Customer-managed encryption key spec for a pipelineJob. If
+      set, this PipelineJob and all of its sub-resources will be secured by
+      this key.
+    endTime: Output only. Pipeline end time.
+    error: Output only. The error that occurred during pipeline execution.
+      Only populated when the pipeline's state is FAILED or CANCELLED.
+    jobDetail: Output only. The details of pipeline run. Not available in the
+      list view.
+    labels: The labels with user-defined metadata to organize PipelineJob.
+      Label keys and values can be no longer than 64 characters (Unicode
+      codepoints), can only contain lowercase letters, numeric characters,
+      underscores and dashes. International characters are allowed. See
+      https://goo.gl/xmQnxf for more information and examples of labels.
+    name: Output only. The resource name of the PipelineJob.
+    network: The full name of the Compute Engine
+      [network](/compute/docs/networks-and-firewalls#networks) to which the
+      Pipeline Job's workload should be peered. For example,
+      `projects/12345/global/networks/myVPC`.
+      [Format](/compute/docs/reference/rest/v1/networks/insert) is of the form
+      `projects/{project}/global/networks/{network}`. Where {project} is a
+      project number, as in `12345`, and {network} is a network name. Private
+      services access must already be configured for the network. Pipeline job
+      will apply the network configuration to the GCP resources being
+      launched, if applied, such as Vertex AI Training or Dataflow job. If
+      left unspecified, the workload is not peered with any network.
+    pipelineSpec: Required. The spec of the pipeline.
+    runtimeConfig: Runtime config of the pipeline.
+    serviceAccount: The service account that the pipeline workload runs as. If
+      not specified, the Compute Engine default service account in the project
+      will be used. See https://cloud.google.com/compute/docs/access/service-
+      accounts#default_service_account Users starting the pipeline must have
+      the `iam.serviceAccounts.actAs` permission on this service account.
+    startTime: Output only. Pipeline start time.
+    state: Output only. The detailed state of the job.
+    updateTime: Output only. Timestamp when this PipelineJob was most recently
+      updated.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The detailed state of the job.
+
+    Values:
+      PIPELINE_STATE_UNSPECIFIED: The pipeline state is unspecified.
+      PIPELINE_STATE_QUEUED: The pipeline has been created or resumed, and
+        processing has not yet begun.
+      PIPELINE_STATE_PENDING: The service is preparing to run the pipeline.
+      PIPELINE_STATE_RUNNING: The pipeline is in progress.
+      PIPELINE_STATE_SUCCEEDED: The pipeline completed successfully.
+      PIPELINE_STATE_FAILED: The pipeline failed.
+      PIPELINE_STATE_CANCELLING: The pipeline is being cancelled. From this
+        state, the pipeline may only go to either PIPELINE_STATE_SUCCEEDED,
+        PIPELINE_STATE_FAILED or PIPELINE_STATE_CANCELLED.
+      PIPELINE_STATE_CANCELLED: The pipeline has been cancelled.
+      PIPELINE_STATE_PAUSED: The pipeline has been stopped, and can be
+        resumed.
+    """
+    PIPELINE_STATE_UNSPECIFIED = 0
+    PIPELINE_STATE_QUEUED = 1
+    PIPELINE_STATE_PENDING = 2
+    PIPELINE_STATE_RUNNING = 3
+    PIPELINE_STATE_SUCCEEDED = 4
+    PIPELINE_STATE_FAILED = 5
+    PIPELINE_STATE_CANCELLING = 6
+    PIPELINE_STATE_CANCELLED = 7
+    PIPELINE_STATE_PAUSED = 8
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""The labels with user-defined metadata to organize PipelineJob. Label
+    keys and values can be no longer than 64 characters (Unicode codepoints),
+    can only contain lowercase letters, numeric characters, underscores and
+    dashes. International characters are allowed. See https://goo.gl/xmQnxf
+    for more information and examples of labels.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class PipelineSpecValue(_messages.Message):
+    r"""Required. The spec of the pipeline.
+
+    Messages:
+      AdditionalProperty: An additional property for a PipelineSpecValue
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a PipelineSpecValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  encryptionSpec = _messages.MessageField('GoogleCloudAiplatformV1EncryptionSpec', 3)
+  endTime = _messages.StringField(4)
+  error = _messages.MessageField('GoogleRpcStatus', 5)
+  jobDetail = _messages.MessageField('GoogleCloudAiplatformV1PipelineJobDetail', 6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  name = _messages.StringField(8)
+  network = _messages.StringField(9)
+  pipelineSpec = _messages.MessageField('PipelineSpecValue', 10)
+  runtimeConfig = _messages.MessageField('GoogleCloudAiplatformV1PipelineJobRuntimeConfig', 11)
+  serviceAccount = _messages.StringField(12)
+  startTime = _messages.StringField(13)
+  state = _messages.EnumField('StateValueValuesEnum', 14)
+  updateTime = _messages.StringField(15)
+
+
+class GoogleCloudAiplatformV1PipelineJobDetail(_messages.Message):
+  r"""The runtime detail of PipelineJob.
+
+  Fields:
+    pipelineContext: Output only. The context of the pipeline.
+    pipelineRunContext: Output only. The context of the current pipeline run.
+    taskDetails: Output only. The runtime details of the tasks under the
+      pipeline.
+  """
+
+  pipelineContext = _messages.MessageField('GoogleCloudAiplatformV1Context', 1)
+  pipelineRunContext = _messages.MessageField('GoogleCloudAiplatformV1Context', 2)
+  taskDetails = _messages.MessageField('GoogleCloudAiplatformV1PipelineTaskDetail', 3, repeated=True)
+
+
+class GoogleCloudAiplatformV1PipelineJobRuntimeConfig(_messages.Message):
+  r"""The runtime config of a PipelineJob.
+
+  Messages:
+    ParametersValue: The runtime parameters of the PipelineJob. The parameters
+      will be passed into PipelineJob.pipeline_spec to replace the
+      placeholders at runtime.
+
+  Fields:
+    gcsOutputDirectory: Required. A path in a Cloud Storage bucket, which will
+      be treated as the root output directory of the pipeline. It is used by
+      the system to generate the paths of output artifacts. The artifact paths
+      are generated with a sub-path pattern `{job_id}/{task_id}/{output_key}`
+      under the specified output directory. The service account specified in
+      this pipeline must have the `storage.objects.get` and
+      `storage.objects.create` permissions for this bucket.
+    parameters: The runtime parameters of the PipelineJob. The parameters will
+      be passed into PipelineJob.pipeline_spec to replace the placeholders at
+      runtime.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ParametersValue(_messages.Message):
+    r"""The runtime parameters of the PipelineJob. The parameters will be
+    passed into PipelineJob.pipeline_spec to replace the placeholders at
+    runtime.
+
+    Messages:
+      AdditionalProperty: An additional property for a ParametersValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type ParametersValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ParametersValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A GoogleCloudAiplatformV1Value attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('GoogleCloudAiplatformV1Value', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  gcsOutputDirectory = _messages.StringField(1)
+  parameters = _messages.MessageField('ParametersValue', 2)
+
+
+class GoogleCloudAiplatformV1PipelineTaskDetail(_messages.Message):
+  r"""The runtime detail of a task execution.
+
+  Enums:
+    StateValueValuesEnum: Output only. State of the task.
+
+  Messages:
+    InputsValue: Output only. The runtime input artifacts of the task.
+    OutputsValue: Output only. The runtime output artifacts of the task.
+
+  Fields:
+    createTime: Output only. Task create time.
+    endTime: Output only. Task end time.
+    error: Output only. The error that occurred during task execution. Only
+      populated when the task's state is FAILED or CANCELLED.
+    execution: Output only. The execution metadata of the task.
+    executorDetail: Output only. The detailed execution info.
+    inputs: Output only. The runtime input artifacts of the task.
+    outputs: Output only. The runtime output artifacts of the task.
+    parentTaskId: Output only. The id of the parent task if the task is within
+      a component scope. Empty if the task is at the root level.
+    startTime: Output only. Task start time.
+    state: Output only. State of the task.
+    taskId: Output only. The system generated ID of the task.
+    taskName: Output only. The user specified name of the task that is defined
+      in PipelineJob.spec.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. State of the task.
+
+    Values:
+      STATE_UNSPECIFIED: Unspecified.
+      PENDING: Specifies pending state for the task.
+      RUNNING: Specifies task is being executed.
+      SUCCEEDED: Specifies task completed successfully.
+      CANCEL_PENDING: Specifies Task cancel is in pending state.
+      CANCELLING: Specifies task is being cancelled.
+      CANCELLED: Specifies task was cancelled.
+      FAILED: Specifies task failed.
+      SKIPPED: Specifies task was skipped due to cache hit.
+      NOT_TRIGGERED: Specifies that the task was not triggered because the
+        task's trigger policy is not satisfied. The trigger policy is
+        specified in the `condition` field of PipelineJob.pipeline_spec.
+    """
+    STATE_UNSPECIFIED = 0
+    PENDING = 1
+    RUNNING = 2
+    SUCCEEDED = 3
+    CANCEL_PENDING = 4
+    CANCELLING = 5
+    CANCELLED = 6
+    FAILED = 7
+    SKIPPED = 8
+    NOT_TRIGGERED = 9
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class InputsValue(_messages.Message):
+    r"""Output only. The runtime input artifacts of the task.
+
+    Messages:
+      AdditionalProperty: An additional property for a InputsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type InputsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a InputsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A GoogleCloudAiplatformV1PipelineTaskDetailArtifactList
+          attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('GoogleCloudAiplatformV1PipelineTaskDetailArtifactList', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class OutputsValue(_messages.Message):
+    r"""Output only. The runtime output artifacts of the task.
+
+    Messages:
+      AdditionalProperty: An additional property for a OutputsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type OutputsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a OutputsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A GoogleCloudAiplatformV1PipelineTaskDetailArtifactList
+          attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('GoogleCloudAiplatformV1PipelineTaskDetailArtifactList', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  endTime = _messages.StringField(2)
+  error = _messages.MessageField('GoogleRpcStatus', 3)
+  execution = _messages.MessageField('GoogleCloudAiplatformV1Execution', 4)
+  executorDetail = _messages.MessageField('GoogleCloudAiplatformV1PipelineTaskExecutorDetail', 5)
+  inputs = _messages.MessageField('InputsValue', 6)
+  outputs = _messages.MessageField('OutputsValue', 7)
+  parentTaskId = _messages.IntegerField(8)
+  startTime = _messages.StringField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  taskId = _messages.IntegerField(11)
+  taskName = _messages.StringField(12)
+
+
+class GoogleCloudAiplatformV1PipelineTaskDetailArtifactList(_messages.Message):
+  r"""A list of artifact metadata.
+
+  Fields:
+    artifacts: Output only. A list of artifact metadata.
+  """
+
+  artifacts = _messages.MessageField('GoogleCloudAiplatformV1Artifact', 1, repeated=True)
+
+
+class GoogleCloudAiplatformV1PipelineTaskExecutorDetail(_messages.Message):
+  r"""The runtime detail of a pipeline executor.
+
+  Fields:
+    containerDetail: Output only. The detailed info for a container executor.
+    customJobDetail: Output only. The detailed info for a custom job executor.
+  """
+
+  containerDetail = _messages.MessageField('GoogleCloudAiplatformV1PipelineTaskExecutorDetailContainerDetail', 1)
+  customJobDetail = _messages.MessageField('GoogleCloudAiplatformV1PipelineTaskExecutorDetailCustomJobDetail', 2)
+
+
+class GoogleCloudAiplatformV1PipelineTaskExecutorDetailContainerDetail(_messages.Message):
+  r"""The detail of a container execution. It contains the job names of the
+  lifecycle of a container execution.
+
+  Fields:
+    mainJob: Output only. The name of the CustomJob for the main container
+      execution.
+    preCachingCheckJob: Output only. The name of the CustomJob for the pre-
+      caching-check container execution. This job will be available if the
+      PipelineJob.pipeline_spec specifies the `pre_caching_check` hook in the
+      lifecycle events.
+  """
+
+  mainJob = _messages.StringField(1)
+  preCachingCheckJob = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformV1PipelineTaskExecutorDetailCustomJobDetail(_messages.Message):
+  r"""The detailed info for a custom job executor.
+
+  Fields:
+    job: Output only. The name of the CustomJob.
+  """
+
+  job = _messages.StringField(1)
 
 
 class GoogleCloudAiplatformV1Port(_messages.Message):
@@ -4029,28 +5935,31 @@ class GoogleCloudAiplatformV1PredictSchemata(_messages.Message):
       Storage describing the format of a single instance, which are used in
       PredictRequest.instances, ExplainRequest.instances and
       BatchPredictionJob.input_config. The schema is defined as an OpenAPI
-      3.0.2 [Schema Object](https://tinyurl.com/y538mdwt#schema-object).
-      AutoML Models always have this field populated by AI Platform. Note: The
-      URI given on output will be immutable and probably different, including
-      the URI scheme, than the one given on input. The output URI will point
-      to a location where the user only has a read access.
+      3.0.2 [Schema Object](https://github.com/OAI/OpenAPI-
+      Specification/blob/main/versions/3.0.2.md#schemaObject). AutoML Models
+      always have this field populated by Vertex AI. Note: The URI given on
+      output will be immutable and probably different, including the URI
+      scheme, than the one given on input. The output URI will point to a
+      location where the user only has a read access.
     parametersSchemaUri: Immutable. Points to a YAML file stored on Google
       Cloud Storage describing the parameters of prediction and explanation
       via PredictRequest.parameters, ExplainRequest.parameters and
       BatchPredictionJob.model_parameters. The schema is defined as an OpenAPI
-      3.0.2 [Schema Object](https://tinyurl.com/y538mdwt#schema-object).
-      AutoML Models always have this field populated by AI Platform, if no
-      parameters are supported, then it is set to an empty string. Note: The
-      URI given on output will be immutable and probably different, including
-      the URI scheme, than the one given on input. The output URI will point
-      to a location where the user only has a read access.
+      3.0.2 [Schema Object](https://github.com/OAI/OpenAPI-
+      Specification/blob/main/versions/3.0.2.md#schemaObject). AutoML Models
+      always have this field populated by Vertex AI, if no parameters are
+      supported, then it is set to an empty string. Note: The URI given on
+      output will be immutable and probably different, including the URI
+      scheme, than the one given on input. The output URI will point to a
+      location where the user only has a read access.
     predictionSchemaUri: Immutable. Points to a YAML file stored on Google
       Cloud Storage describing the format of a single prediction produced by
       this Model, which are returned via PredictResponse.predictions,
       ExplainResponse.explanations, and BatchPredictionJob.output_config. The
       schema is defined as an OpenAPI 3.0.2 [Schema
-      Object](https://tinyurl.com/y538mdwt#schema-object). AutoML Models
-      always have this field populated by AI Platform. Note: The URI given on
+      Object](https://github.com/OAI/OpenAPI-
+      Specification/blob/main/versions/3.0.2.md#schemaObject). AutoML Models
+      always have this field populated by Vertex AI. Note: The URI given on
       output will be immutable and probably different, including the URI
       scheme, than the one given on input. The output URI will point to a
       location where the user only has a read access.
@@ -4067,10 +5976,12 @@ class GoogleCloudAiplatformV1PythonPackageSpec(_messages.Message):
   Fields:
     args: Command line arguments to be passed to the Python task.
     env: Environment variables to be passed to the python module.
-    executorImageUri: Required. The URI of a container image in the Container
-      Registry that will run the provided python package. AI Platform provides
+    executorImageUri: Required. The URI of a container image in Artifact
+      Registry that will run the provided Python package. Vertex AI provides a
       wide range of executor images with pre-installed packages to meet users'
-      various use cases. Only one of the provided images can be set here.
+      various use cases. See the list of [pre-built containers for
+      training](https://cloud.google.com/vertex-ai/docs/training/pre-built-
+      containers). You must use an image from this list.
     packageUris: Required. The Google Cloud Storage location of the Python
       package files which are the training program and its dependent packages.
       The maximum number of package URIs is 100.
@@ -4130,6 +6041,20 @@ class GoogleCloudAiplatformV1SampleConfig(_messages.Message):
   followingBatchSamplePercentage = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   initialBatchSamplePercentage = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   sampleStrategy = _messages.EnumField('SampleStrategyValueValuesEnum', 3)
+
+
+class GoogleCloudAiplatformV1SampledShapleyAttribution(_messages.Message):
+  r"""An attribution method that approximates Shapley values for features that
+  contribute to the label being predicted. A sampling strategy is used to
+  approximate the value rather than considering all subsets of features.
+
+  Fields:
+    pathCount: Required. The number of feature permutations to consider when
+      approximating the Shapley values. Valid range of its value is [1, 50],
+      inclusively.
+  """
+
+  pathCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudAiplatformV1Scheduling(_messages.Message):
@@ -4299,7 +6224,7 @@ class GoogleCloudAiplatformV1SchemaPredictInstanceImageClassificationPredictionI
   r"""Prediction input format for Image Classification.
 
   Fields:
-    content: The image bytes or GCS URI to make the prediction on.
+    content: The image bytes or Cloud Storage URI to make the prediction on.
     mimeType: The MIME type of the content of the image. Only the images in
       below listed MIME types are supported. - image/jpeg - image/gif -
       image/png - image/webp - image/bmp - image/tiff -
@@ -4314,7 +6239,7 @@ class GoogleCloudAiplatformV1SchemaPredictInstanceImageObjectDetectionPrediction
   r"""Prediction input format for Image Object Detection.
 
   Fields:
-    content: The image bytes or GCS URI to make the prediction on.
+    content: The image bytes or Cloud Storage URI to make the prediction on.
     mimeType: The MIME type of the content of the image. Only the images in
       below listed MIME types are supported. - image/jpeg - image/gif -
       image/png - image/webp - image/bmp - image/tiff -
@@ -4358,8 +6283,8 @@ class GoogleCloudAiplatformV1SchemaPredictInstanceTextExtractionPredictionInstan
     content: The text snippet to make the predictions on.
     key: This field is only used for batch prediction. If a key is provided,
       the batch prediction result will by mapped to this key. If omitted, then
-      the batch prediction result will contain the entire input instance. AI
-      Platform will not check if keys in the request are duplicates, so it is
+      the batch prediction result will contain the entire input instance.
+      Vertex AI will not check if keys in the request are duplicates, so it is
       up to the caller to ensure the keys are unique.
     mimeType: The MIME type of the text snippet. The supported MIME types are
       listed below. - text/plain
@@ -4527,20 +6452,20 @@ class GoogleCloudAiplatformV1SchemaPredictParamsVideoClassificationPredictionPar
       score, predictions per instance. If this number is very high, the Model
       may return fewer predictions. Default value is 10,000.
     oneSecIntervalClassification: Set to true to request classification for a
-      video at one-second intervals. AI Platform returns labels and their
+      video at one-second intervals. Vertex AI returns labels and their
       confidence scores for each second of the entire time segment of the
       video that user specified in the input WARNING: Model evaluation is not
       done for this classification type, the quality of it depends on the
       training data, but there are no metrics provided to describe that
       quality. Default value is false
     segmentClassification: Set to true to request segment-level
-      classification. AI Platform returns labels and their confidence scores
-      for the entire time segment of the video that user specified in the
-      input instance. Default value is true
-    shotClassification: Set to true to request shot-level classification. AI
-      Platform determines the boundaries for each camera shot in the entire
-      time segment of the video that user specified in the input instance. AI
-      Platform then returns labels and their confidence scores for each
+      classification. Vertex AI returns labels and their confidence scores for
+      the entire time segment of the video that user specified in the input
+      instance. Default value is true
+    shotClassification: Set to true to request shot-level classification.
+      Vertex AI determines the boundaries for each camera shot in the entire
+      time segment of the video that user specified in the input instance.
+      Vertex AI then returns labels and their confidence scores for each
       detected shot, along with the start and end time of the shot. WARNING:
       Model evaluation is not done for this classification type, the quality
       of it depends on the training data, but there are no metrics provided to
@@ -4581,8 +6506,7 @@ class GoogleCloudAiplatformV1SchemaPredictPredictionClassificationPredictionResu
       higher value means higher confidence. Order matches the Ids.
     displayNames: The display names of the AnnotationSpecs that had been
       identified, order matches the IDs.
-    ids: The resource IDs of the AnnotationSpecs that had been identified,
-      ordered by the confidence score descendingly.
+    ids: The resource IDs of the AnnotationSpecs that had been identified.
   """
 
   confidences = _messages.FloatField(1, repeated=True, variant=_messages.Variant.FLOAT)
@@ -4960,11 +6884,11 @@ class GoogleCloudAiplatformV1SchemaPredictionResultError(_messages.Message):
         following guidelines to decide between `FAILED_PRECONDITION`,
         `ABORTED`, and `UNAVAILABLE`: (a) Use `UNAVAILABLE` if the client can
         retry just the failing call. (b) Use `ABORTED` if the client should
-        retry at a higher level (e.g., when a client-specified test-and-set
-        fails, indicating the client should restart a read-modify-write
-        sequence). (c) Use `FAILED_PRECONDITION` if the client should not
-        retry until the system state has been explicitly fixed. E.g., if an
-        "rmdir" fails because the directory is non-empty,
+        retry at a higher level. For example, when a client-specified test-
+        and-set fails, indicating the client should restart a read-modify-
+        write sequence. (c) Use `FAILED_PRECONDITION` if the client should not
+        retry until the system state has been explicitly fixed. For example,
+        if an "rmdir" fails because the directory is non-empty,
         `FAILED_PRECONDITION` should be returned since the client should not
         retry unless the files are deleted from the directory. HTTP Mapping:
         400 Bad Request
@@ -5268,54 +7192,48 @@ class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputs(
   object.
 
   Fields:
+    additionalExperiments: Additional experiment flags for the time series
+      forcasting training.
+    availableAtForecastColumns: Names of columns that are available and
+      provided when a forecast is requested. These columns contain information
+      for the given entity (identified by the time_series_identifier_column
+      column) that is known at forecast. For example, predicted weather for a
+      specific day.
+    contextWindow: The amount of time into the past training and prediction
+      data is used for model training and prediction respectively. Expressed
+      in number of units defined by the `data_granularity` field.
+    dataGranularity: Expected difference in time granularity between rows in
+      the data.
     exportEvaluatedDataItemsConfig: Configuration for exporting test set
       predictions to a BigQuery table. If this configuration is absent, then
       the export is not performed.
-    forecastWindowEnd: The number of periods offset into the future as the end
-      of the forecast window (the window of future values to predict, relative
-      to the present.), where each period is one unit of granularity as
-      defined by the `period` field above. Inclusive.
-    forecastWindowStart: The number of periods offset into the future as the
-      start of the forecast window (the window of future values to predict,
-      relative to the present.), where each period is one unit of granularity
-      as defined by the `period` field above. Default to 0. Inclusive.
+    forecastHorizon: The amount of time into the future for which forecasted
+      values for the target are returned. Expressed in number of units defined
+      by the `data_granularity` field.
     optimizationObjective: Objective function the model is optimizing towards.
       The training process creates a model that optimizes the value of the
       objective function over the validation set. The supported optimization
-      objectives: "minimize-rmse" (default) - Minimize root-mean-squared error
-      (RMSE). "minimize-mae" - Minimize mean-absolute error (MAE). "minimize-
-      rmsle" - Minimize root-mean-squared log error (RMSLE). "minimize-rmspe"
-      - Minimize root-mean-squared percentage error (RMSPE). "minimize-wape-
-      mae" - Minimize the combination of weighted absolute percentage error
-      (WAPE) and mean-absolute-error (MAE). "minimize-quantile-loss" -
-      Minimize the quantile loss at the quantiles defined in `quantiles`.
-    pastHorizon: The number of periods offset into the past to restrict past
-      sequence, where each period is one unit of granularity as defined by the
-      `period`. Default value 0 means that it lets algorithm to define the
-      value. Inclusive.
-    period: Expected difference in time granularity between rows in the data.
-      If it is not set, the period is inferred from data.
+      objectives: * "minimize-rmse" (default) - Minimize root-mean-squared
+      error (RMSE). * "minimize-mae" - Minimize mean-absolute error (MAE). *
+      "minimize-rmsle" - Minimize root-mean-squared log error (RMSLE). *
+      "minimize-rmspe" - Minimize root-mean-squared percentage error (RMSPE).
+      * "minimize-wape-mae" - Minimize the combination of weighted absolute
+      percentage error (WAPE) and mean-absolute-error (MAE). * "minimize-
+      quantile-loss" - Minimize the quantile loss at the quantiles defined in
+      `quantiles`.
     quantiles: Quantiles to use for minimize-quantile-loss
       `optimization_objective`. Up to 5 quantiles are allowed of values
       between 0 and 1, exclusive. Required if the value of
       optimization_objective is minimize-quantile-loss. Represents the percent
       quantiles to use for that objective. Quantiles must be unique.
-    staticColumns: Column names that should be used as static columns. The
-      value of these columns are static per time series.
     targetColumn: The name of the column that the model is to predict.
     timeColumn: The name of the column that identifies time order in the time
       series.
+    timeSeriesAttributeColumns: Column names that should be used as attribute
+      columns. The value of these columns does not vary as a function of time.
+      For example, store ID or item color.
     timeSeriesIdentifierColumn: The name of the column that identifies the
       time series.
-    timeVariantPastAndFutureColumns: Column names that should be used as time
-      variant past and future columns. This column contains information for
-      the given entity (identified by the key column) that is known for the
-      past and the future
-    timeVariantPastOnlyColumns: Column names that should be used as time
-      variant past only columns. This column contains information for the
-      given entity (identified by the time_series_identifier_column) that is
-      known for the past but not the future (e.g. population of a city in a
-      given year, or weather on a given day).
     trainBudgetMilliNodeHours: Required. The train budget of creating this
       model, expressed in milli node hours i.e. 1,000 value in this field
       means 1 node hour. The training cost of the model will not exceed this
@@ -5330,9 +7248,13 @@ class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputs(
       given input column. And the result will be used for training. When
       creating transformation for BigQuery Struct column, the column should be
       flattened using "." as the delimiter.
+    unavailableAtForecastColumns: Names of columns that are unavailable when a
+      forecast is requested. This column contains information for the given
+      entity (identified by the time_series_identifier_column) that is unknown
+      before the forecast For example, actual weather on a given day.
     validationOptions: Validation options for the data validation component.
-      The available options are: "fail-pipeline" - default, will validate
-      against the validation and fail the pipeline if it fails. "ignore-
+      The available options are: * "fail-pipeline" - default, will validate
+      against the validation and fail the pipeline if it fails. * "ignore-
       validation" - ignore the results of the validation and continue
     weightColumn: Column name that should be used as the weight column. Higher
       values in this column give more importance to the row during model
@@ -5341,32 +7263,34 @@ class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputs(
       field is not set, then all rows are assumed to have equal weight of 1.
   """
 
-  exportEvaluatedDataItemsConfig = _messages.MessageField('GoogleCloudAiplatformV1SchemaTrainingjobDefinitionExportEvaluatedDataItemsConfig', 1)
-  forecastWindowEnd = _messages.IntegerField(2)
-  forecastWindowStart = _messages.IntegerField(3)
-  optimizationObjective = _messages.StringField(4)
-  pastHorizon = _messages.IntegerField(5)
-  period = _messages.MessageField('GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsPeriod', 6)
-  quantiles = _messages.FloatField(7, repeated=True)
-  staticColumns = _messages.StringField(8, repeated=True)
+  additionalExperiments = _messages.StringField(1, repeated=True)
+  availableAtForecastColumns = _messages.StringField(2, repeated=True)
+  contextWindow = _messages.IntegerField(3)
+  dataGranularity = _messages.MessageField('GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsGranularity', 4)
+  exportEvaluatedDataItemsConfig = _messages.MessageField('GoogleCloudAiplatformV1SchemaTrainingjobDefinitionExportEvaluatedDataItemsConfig', 5)
+  forecastHorizon = _messages.IntegerField(6)
+  optimizationObjective = _messages.StringField(7)
+  quantiles = _messages.FloatField(8, repeated=True)
   targetColumn = _messages.StringField(9)
   timeColumn = _messages.StringField(10)
-  timeSeriesIdentifierColumn = _messages.StringField(11)
-  timeVariantPastAndFutureColumns = _messages.StringField(12, repeated=True)
-  timeVariantPastOnlyColumns = _messages.StringField(13, repeated=True)
-  trainBudgetMilliNodeHours = _messages.IntegerField(14)
-  transformations = _messages.MessageField('GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformation', 15, repeated=True)
+  timeSeriesAttributeColumns = _messages.StringField(11, repeated=True)
+  timeSeriesIdentifierColumn = _messages.StringField(12)
+  trainBudgetMilliNodeHours = _messages.IntegerField(13)
+  transformations = _messages.MessageField('GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformation', 14, repeated=True)
+  unavailableAtForecastColumns = _messages.StringField(15, repeated=True)
   validationOptions = _messages.StringField(16)
   weightColumn = _messages.StringField(17)
 
 
-class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsPeriod(_messages.Message):
+class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsGranularity(_messages.Message):
   r"""A duration of time expressed in time granularity units.
 
   Fields:
-    quantity: The number of units per period, e.g. 3 weeks or 2 months.
-    unit: The time granularity unit of this time period. The supported unit
-      are: "minute" "hour" "day" "week" "month" "year"
+    quantity: The number of granularity_units between data points in the
+      training data. If `granularity_unit` is `minute`, can be 1, 5, 10, 15,
+      or 30. For all other values of `granularity_unit`, must be 1.
+    unit: The time granularity unit of this time period. The supported units
+      are: * "minute" * "hour" * "day" * "week" * "month" * "year"
   """
 
   quantity = _messages.IntegerField(1)
@@ -5384,13 +7308,6 @@ class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsT
       ecastingInputsTransformationCategoricalTransformation attribute.
     numeric: A GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecas
       tingInputsTransformationNumericTransformation attribute.
-    repeatedCategorical: A GoogleCloudAiplatformV1SchemaTrainingjobDefinitionA
-      utoMlForecastingInputsTransformationCategoricalArrayTransformation
-      attribute.
-    repeatedNumeric: A GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoM
-      lForecastingInputsTransformationNumericArrayTransformation attribute.
-    repeatedText: A GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlFo
-      recastingInputsTransformationTextArrayTransformation attribute.
     text: A GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastin
       gInputsTransformationTextTransformation attribute.
     timestamp: A GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForec
@@ -5400,30 +7317,13 @@ class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsT
   auto = _messages.MessageField('GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationAutoTransformation', 1)
   categorical = _messages.MessageField('GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationCategoricalTransformation', 2)
   numeric = _messages.MessageField('GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationNumericTransformation', 3)
-  repeatedCategorical = _messages.MessageField('GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationCategoricalArrayTransformation', 4)
-  repeatedNumeric = _messages.MessageField('GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationNumericArrayTransformation', 5)
-  repeatedText = _messages.MessageField('GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationTextArrayTransformation', 6)
-  text = _messages.MessageField('GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationTextTransformation', 7)
-  timestamp = _messages.MessageField('GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationTimestampTransformation', 8)
+  text = _messages.MessageField('GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationTextTransformation', 4)
+  timestamp = _messages.MessageField('GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationTimestampTransformation', 5)
 
 
 class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationAutoTransformation(_messages.Message):
   r"""Training pipeline will infer the proper transformation based on the
   statistic of dataset.
-
-  Fields:
-    columnName: A string attribute.
-  """
-
-  columnName = _messages.StringField(1)
-
-
-class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationCategoricalArrayTransformation(_messages.Message):
-  r"""Treats the column as categorical array and performs following
-  transformation functions. * For each element in the array, convert the
-  category name to a dictionary lookup index and generate an embedding for
-  each index. Combine the embedding of all elements into a single embedding
-  using the mean. * Empty arrays treated as an embedding of zeroes.
 
   Fields:
     columnName: A string attribute.
@@ -5448,24 +7348,6 @@ class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsT
   columnName = _messages.StringField(1)
 
 
-class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationNumericArrayTransformation(_messages.Message):
-  r"""Treats the column as numerical array and performs following
-  transformation functions. * All transformations for Numerical types applied
-  to the average of the all elements. * The average of empty arrays is treated
-  as zero.
-
-  Fields:
-    columnName: A string attribute.
-    invalidValuesAllowed: If invalid values is allowed, the training pipeline
-      will create a boolean feature that indicated whether the value is valid.
-      Otherwise, the training pipeline will discard the input row from
-      trainining data.
-  """
-
-  columnName = _messages.StringField(1)
-  invalidValuesAllowed = _messages.BooleanField(2)
-
-
 class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationNumericTransformation(_messages.Message):
   r"""Training pipeline will perform following transformation functions. * The
   value converted to float32. * The z_score of the value. * log(value+1) when
@@ -5477,25 +7359,6 @@ class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsT
 
   Fields:
     columnName: A string attribute.
-    invalidValuesAllowed: If invalid values is allowed, the training pipeline
-      will create a boolean feature that indicated whether the value is valid.
-      Otherwise, the training pipeline will discard the input row from
-      trainining data.
-  """
-
-  columnName = _messages.StringField(1)
-  invalidValuesAllowed = _messages.BooleanField(2)
-
-
-class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationTextArrayTransformation(_messages.Message):
-  r"""Treats the column as text array and performs following transformation
-  functions. * Concatenate all text values in the array into a single text
-  value using a space (" ") as a delimiter, and then treat the result as a
-  single text value. Apply the transformations for Text columns. * Empty
-  arrays treated as an empty text.
-
-  Fields:
-    columnName: A string attribute.
   """
 
   columnName = _messages.StringField(1)
@@ -5504,11 +7367,8 @@ class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsT
 class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationTextTransformation(_messages.Message):
   r"""Training pipeline will perform following transformation functions. * The
   text as is--no change to case, punctuation, spelling, tense, and so on. *
-  Tokenize text to words. Convert each words to a dictionary lookup index and
-  generate an embedding for each index. Combine the embedding of all elements
-  into a single embedding using the mean. * Tokenization is based on unicode
-  script boundaries. * Missing values get their own lookup index and resulting
-  embedding. * Stop-words receive no special treatment and are not removed.
+  Convert the category name to a dictionary lookup index and generate an
+  embedding for each index.
 
   Fields:
     columnName: A string attribute.
@@ -5520,17 +7380,13 @@ class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsT
 class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationTimestampTransformation(_messages.Message):
   r"""Training pipeline will perform following transformation functions. *
   Apply the transformation functions for Numerical columns. * Determine the
-  year, month, day,and weekday. Treat each value from the * timestamp as a
+  year, month, day,and weekday. Treat each value from the timestamp as a
   Categorical column. * Invalid numerical values (for example, values that
   fall outside of a typical timestamp range, or are extreme values) receive no
   special treatment and are not removed.
 
   Fields:
     columnName: A string attribute.
-    invalidValuesAllowed: If invalid values is allowed, the training pipeline
-      will create a boolean feature that indicated whether the value is valid.
-      Otherwise, the training pipeline will discard the input row from
-      trainining data.
     timeFormat: The format in which that time field is expressed. The
       time_format must either be one of: * `unix-seconds` * `unix-
       milliseconds` * `unix-microseconds` * `unix-nanoseconds` (for
@@ -5542,20 +7398,22 @@ class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputsT
   """
 
   columnName = _messages.StringField(1)
-  invalidValuesAllowed = _messages.BooleanField(2)
-  timeFormat = _messages.StringField(3)
+  timeFormat = _messages.StringField(2)
 
 
 class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingMetadata(_messages.Message):
   r"""Model metadata specific to AutoML Forecasting.
 
   Fields:
+    evaluatedDataItemsBigqueryUri: BigQuery destination uri for exported
+      evaluated examples.
     trainCostMilliNodeHours: Output only. The actual training cost of the
       model, expressed in milli node hours, i.e. 1,000 value in this field
       means 1 node hour. Guaranteed to not exceed the train budget.
   """
 
-  trainCostMilliNodeHours = _messages.IntegerField(1)
+  evaluatedDataItemsBigqueryUri = _messages.StringField(1)
+  trainCostMilliNodeHours = _messages.IntegerField(2)
 
 
 class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlImageClassification(_messages.Message):
@@ -5911,6 +7769,8 @@ class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlTablesInputs(_mess
   object.
 
   Fields:
+    additionalExperiments: Additional experiment flags for the Tables training
+      pipeline.
     disableEarlyStopping: Use the entire training budget. This disables the
       early stopping feature. By default, the early stopping feature is
       enabled, which means that AutoML Tables might stop training before the
@@ -5966,16 +7826,17 @@ class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlTablesInputs(_mess
       field is not set, then all rows are assumed to have equal weight of 1.
   """
 
-  disableEarlyStopping = _messages.BooleanField(1)
-  exportEvaluatedDataItemsConfig = _messages.MessageField('GoogleCloudAiplatformV1SchemaTrainingjobDefinitionExportEvaluatedDataItemsConfig', 2)
-  optimizationObjective = _messages.StringField(3)
-  optimizationObjectivePrecisionValue = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
-  optimizationObjectiveRecallValue = _messages.FloatField(5, variant=_messages.Variant.FLOAT)
-  predictionType = _messages.StringField(6)
-  targetColumn = _messages.StringField(7)
-  trainBudgetMilliNodeHours = _messages.IntegerField(8)
-  transformations = _messages.MessageField('GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlTablesInputsTransformation', 9, repeated=True)
-  weightColumnName = _messages.StringField(10)
+  additionalExperiments = _messages.StringField(1, repeated=True)
+  disableEarlyStopping = _messages.BooleanField(2)
+  exportEvaluatedDataItemsConfig = _messages.MessageField('GoogleCloudAiplatformV1SchemaTrainingjobDefinitionExportEvaluatedDataItemsConfig', 3)
+  optimizationObjective = _messages.StringField(4)
+  optimizationObjectivePrecisionValue = _messages.FloatField(5, variant=_messages.Variant.FLOAT)
+  optimizationObjectiveRecallValue = _messages.FloatField(6, variant=_messages.Variant.FLOAT)
+  predictionType = _messages.StringField(7)
+  targetColumn = _messages.StringField(8)
+  trainBudgetMilliNodeHours = _messages.IntegerField(9)
+  transformations = _messages.MessageField('GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlTablesInputsTransformation', 10, repeated=True)
+  weightColumnName = _messages.StringField(11)
 
 
 class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlTablesInputsTransformation(_messages.Message):
@@ -6263,10 +8124,19 @@ class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlVideoActionRecogni
         Google Cloud, can also be exported (see ModelService.ExportModel) as a
         TensorFlow or TensorFlow Lite model and used on a mobile or edge
         device afterwards.
+      MOBILE_JETSON_VERSATILE_1: A model that, in addition to being available
+        within Google Cloud, can also be exported (see
+        ModelService.ExportModel) to a Jetson device afterwards.
+      MOBILE_CORAL_VERSATILE_1: A model that, in addition to being available
+        within Google Cloud, can also be exported (see
+        ModelService.ExportModel) as a TensorFlow or TensorFlow Lite model and
+        used on a Coral device afterwards.
     """
     MODEL_TYPE_UNSPECIFIED = 0
     CLOUD = 1
     MOBILE_VERSATILE_1 = 2
+    MOBILE_JETSON_VERSATILE_1 = 3
+    MOBILE_CORAL_VERSATILE_1 = 4
 
   modelType = _messages.EnumField('ModelTypeValueValuesEnum', 1)
 
@@ -6435,7 +8305,7 @@ class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionHyperparameterTuningJobS
 
   Fields:
     maxFailedTrialCount: The number of failed Trials that need to be seen
-      before failing the HyperparameterTuningJob. If set to 0, AI Platform
+      before failing the HyperparameterTuningJob. If set to 0, Vertex AI
       decides how many Trials must fail before the whole job fails.
     maxTrialCount: The desired total number of Trials.
     parallelTrialCount: The desired number of Trials to run in parallel.
@@ -6590,12 +8460,14 @@ class GoogleCloudAiplatformV1SearchMigratableResourcesRequest(_messages.Message)
   r"""Request message for MigrationService.SearchMigratableResources.
 
   Fields:
-    filter: Supported filters are: * Resource type: For a specific type of
-      MigratableResource. * `ml_engine_model_version:*` * `automl_model:*`, *
-      `automl_dataset:*` * `data_labeling_dataset:*`. * Migrated or not:
-      Filter migrated resource or not by last_migrate_time. *
-      `last_migrate_time:*` will filter migrated resources. * `NOT
-      last_migrate_time:*` will filter not yet migrated resources.
+    filter: A filter for your search. You can use the following types of
+      filters: * Resource type filters. The following strings filter for a
+      specific type of MigratableResource: * `ml_engine_model_version:*` *
+      `automl_model:*` * `automl_dataset:*` * `data_labeling_dataset:*` *
+      "Migrated or not" filters. The following strings filter for resources
+      that either have or have not already been migrated: *
+      `last_migrate_time:*` filters for migrated resources. * `NOT
+      last_migrate_time:*` filters for not yet migrated resources.
     pageSize: The standard page size. The default and maximum value is 100.
     pageToken: The standard page token.
   """
@@ -6618,6 +8490,41 @@ class GoogleCloudAiplatformV1SearchMigratableResourcesResponse(_messages.Message
 
   migratableResources = _messages.MessageField('GoogleCloudAiplatformV1MigratableResource', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformV1SmoothGradConfig(_messages.Message):
+  r"""Config for SmoothGrad approximation of gradients. When enabled, the
+  gradients are approximated by averaging the gradients from noisy samples in
+  the vicinity of the inputs. Adding noise can help improve the computed
+  gradients. Refer to this paper for more details:
+  https://arxiv.org/pdf/1706.03825.pdf
+
+  Fields:
+    featureNoiseSigma: This is similar to noise_sigma, but provides additional
+      flexibility. A separate noise sigma can be provided for each feature,
+      which is useful if their distributions are different. No noise is added
+      to features that are not set. If this field is unset, noise_sigma will
+      be used for all features.
+    noiseSigma: This is a single float value and will be used to add noise to
+      all the features. Use this field when all features are normalized to
+      have the same distribution: scale to range [0, 1], [-1, 1] or z-scoring,
+      where features are normalized to have 0-mean and 1-variance. Learn more
+      about [normalization](https://developers.google.com/machine-
+      learning/data-prep/transform/normalization). For best results the
+      recommended value is about 10% - 20% of the standard deviation of the
+      input feature. Refer to section 3.2 of the SmoothGrad paper:
+      https://arxiv.org/pdf/1706.03825.pdf. Defaults to 0.1. If the
+      distribution is different per feature, set feature_noise_sigma instead
+      for each feature.
+    noisySampleCount: The number of gradient samples to use for approximation.
+      The higher this number, the more accurate the gradient is, but the
+      runtime complexity increases by this factor as well. Valid range of its
+      value is [1, 50]. Defaults to 3.
+  """
+
+  featureNoiseSigma = _messages.MessageField('GoogleCloudAiplatformV1FeatureNoiseSigma', 1)
+  noiseSigma = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  noisySampleCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudAiplatformV1SpecialistPool(_messages.Message):
@@ -6655,18 +8562,12 @@ class GoogleCloudAiplatformV1StudySpec(_messages.Message):
     AlgorithmValueValuesEnum: The search algorithm specified for the Study.
     MeasurementSelectionTypeValueValuesEnum: Describe which measurement
       selection type will be used
-    ObservationNoiseValueValuesEnum: The observation noise level of the study.
-      Currently only supported by the Vizier service. Not supported by
-      HyperparamterTuningJob or TrainingPipeline.
 
   Fields:
     algorithm: The search algorithm specified for the Study.
     measurementSelectionType: Describe which measurement selection type will
       be used
     metrics: Required. Metric specs for the Study.
-    observationNoise: The observation noise level of the study. Currently only
-      supported by the Vizier service. Not supported by HyperparamterTuningJob
-      or TrainingPipeline.
     parameters: Required. The set of parameters to tune.
   """
 
@@ -6674,8 +8575,10 @@ class GoogleCloudAiplatformV1StudySpec(_messages.Message):
     r"""The search algorithm specified for the Study.
 
     Values:
-      ALGORITHM_UNSPECIFIED: The default algorithm used by AI Platform
-        Optimization service.
+      ALGORITHM_UNSPECIFIED: The default algorithm used by Vertex AI for
+        [hyperparameter tuning](https://cloud.google.com/vertex-
+        ai/docs/training/hyperparameter-tuning-overview) and [Vertex
+        Vizier](https://cloud.google.com/vertex-ai/docs/vizier).
       GRID_SEARCH: Simple grid search within the feasible space. To use grid
         search, all parameters must be `INTEGER`, `CATEGORICAL`, or
         `DISCRETE`.
@@ -6698,29 +8601,10 @@ class GoogleCloudAiplatformV1StudySpec(_messages.Message):
     LAST_MEASUREMENT = 1
     BEST_MEASUREMENT = 2
 
-  class ObservationNoiseValueValuesEnum(_messages.Enum):
-    r"""The observation noise level of the study. Currently only supported by
-    the Vizier service. Not supported by HyperparamterTuningJob or
-    TrainingPipeline.
-
-    Values:
-      OBSERVATION_NOISE_UNSPECIFIED: The default noise level chosen by the AI
-        Platform service.
-      LOW: AI Platform Vizier assumes that the objective function is (nearly)
-        perfectly reproducible, and will never repeat the same Trial
-        parameters.
-      HIGH: AI Platform Vizier will estimate the amount of noise in metric
-        evaluations, it may repeat the same Trial parameters more than once.
-    """
-    OBSERVATION_NOISE_UNSPECIFIED = 0
-    LOW = 1
-    HIGH = 2
-
   algorithm = _messages.EnumField('AlgorithmValueValuesEnum', 1)
   measurementSelectionType = _messages.EnumField('MeasurementSelectionTypeValueValuesEnum', 2)
   metrics = _messages.MessageField('GoogleCloudAiplatformV1StudySpecMetricSpec', 3, repeated=True)
-  observationNoise = _messages.EnumField('ObservationNoiseValueValuesEnum', 4)
-  parameters = _messages.MessageField('GoogleCloudAiplatformV1StudySpecParameterSpec', 5, repeated=True)
+  parameters = _messages.MessageField('GoogleCloudAiplatformV1StudySpecParameterSpec', 4, repeated=True)
 
 
 class GoogleCloudAiplatformV1StudySpecMetricSpec(_messages.Message):
@@ -6944,8 +8828,8 @@ class GoogleCloudAiplatformV1TrainingConfig(_messages.Message):
 class GoogleCloudAiplatformV1TrainingPipeline(_messages.Message):
   r"""The TrainingPipeline orchestrates tasks associated with training a
   Model. It always executes the training task, and optionally may also export
-  data from AI Platform's Dataset which becomes the training input, upload the
-  Model to AI Platform, and evaluate the Model.
+  data from Vertex AI's Dataset which becomes the training input, upload the
+  Model to Vertex AI, and evaluate the Model.
 
   Enums:
     StateValueValuesEnum: Output only. The detailed state of the pipeline.
@@ -6970,8 +8854,8 @@ class GoogleCloudAiplatformV1TrainingPipeline(_messages.Message):
       `PIPELINE_STATE_CANCELLED`.
     error: Output only. Only populated when the pipeline's state is
       `PIPELINE_STATE_FAILED` or `PIPELINE_STATE_CANCELLED`.
-    inputDataConfig: Specifies AI Platform owned input data that may be used
-      for training the Model. The TrainingPipeline's training_task_definition
+    inputDataConfig: Specifies Vertex AI owned input data that may be used for
+      training the Model. The TrainingPipeline's training_task_definition
       should make clear whether this config is used and if there are any
       special requirements on how it should be filled. If nothing about this
       config is mentioned in the training_task_definition, then it should be
@@ -6992,7 +8876,7 @@ class GoogleCloudAiplatformV1TrainingPipeline(_messages.Message):
       Model without a need of this information, or that training task does not
       support uploading a Model as part of the pipeline. When the Pipeline's
       state becomes `PIPELINE_STATE_SUCCEEDED` and the trained Model had been
-      uploaded into AI Platform, then the model_to_upload's resource name is
+      uploaded into Vertex AI, then the model_to_upload's resource name is
       populated. The Model is always uploaded into the Project and Location in
       which this pipeline is.
     name: Output only. Resource name of the TrainingPipeline.
@@ -7024,14 +8908,14 @@ class GoogleCloudAiplatformV1TrainingPipeline(_messages.Message):
 
     Values:
       PIPELINE_STATE_UNSPECIFIED: The pipeline state is unspecified.
-      PIPELINE_STATE_QUEUED: The pipeline has been just created or resumed and
+      PIPELINE_STATE_QUEUED: The pipeline has been created or resumed, and
         processing has not yet begun.
       PIPELINE_STATE_PENDING: The service is preparing to run the pipeline.
       PIPELINE_STATE_RUNNING: The pipeline is in progress.
       PIPELINE_STATE_SUCCEEDED: The pipeline completed successfully.
       PIPELINE_STATE_FAILED: The pipeline failed.
       PIPELINE_STATE_CANCELLING: The pipeline is being cancelled. From this
-        state the pipeline may only go to either PIPELINE_STATE_SUCCEEDED,
+        state, the pipeline may only go to either PIPELINE_STATE_SUCCEEDED,
         PIPELINE_STATE_FAILED or PIPELINE_STATE_CANCELLED.
       PIPELINE_STATE_CANCELLED: The pipeline has been cancelled.
       PIPELINE_STATE_PAUSED: The pipeline has been stopped, and can be
@@ -7101,6 +8985,14 @@ class GoogleCloudAiplatformV1Trial(_messages.Message):
     StateValueValuesEnum: Output only. The detailed state of the Trial.
 
   Fields:
+    clientId: Output only. The identifier of the client that originally
+      requested this Trial. Each client is identified by a unique client_id.
+      When a client asks for a suggestion, Vizier will assign it a Trial. The
+      client should evaluate the Trial, complete it, and report back to
+      Vizier. If suggestion is asked again by same client_id before the Trial
+      is completed, the same Trial will be returned. Multiple clients with
+      different client_ids can ask for suggestions simultaneously, each of
+      them will get their own Trial.
     customJob: Output only. The CustomJob name linked to the Trial. It's set
       for a HyperparameterTuningJob's Trial.
     endTime: Output only. Time when the Trial's status changed to `SUCCEEDED`
@@ -7108,6 +9000,11 @@ class GoogleCloudAiplatformV1Trial(_messages.Message):
     finalMeasurement: Output only. The final measurement containing the
       objective value.
     id: Output only. The identifier of the Trial assigned by the service.
+    infeasibleReason: Output only. A human readable string describing why the
+      Trial is infeasible. This is set only if Trial state is `INFEASIBLE`.
+    measurements: Output only. A list of measurements that are strictly
+      lexicographically ordered by their induced tuples (steps,
+      elapsed_duration). These are used for early stopping computations.
     name: Output only. Resource name of the Trial assigned by the service.
     parameters: Output only. The parameters of the Trial.
     startTime: Output only. Time when the Trial was started.
@@ -7135,14 +9032,17 @@ class GoogleCloudAiplatformV1Trial(_messages.Message):
     SUCCEEDED = 4
     INFEASIBLE = 5
 
-  customJob = _messages.StringField(1)
-  endTime = _messages.StringField(2)
-  finalMeasurement = _messages.MessageField('GoogleCloudAiplatformV1Measurement', 3)
-  id = _messages.StringField(4)
-  name = _messages.StringField(5)
-  parameters = _messages.MessageField('GoogleCloudAiplatformV1TrialParameter', 6, repeated=True)
-  startTime = _messages.StringField(7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
+  clientId = _messages.StringField(1)
+  customJob = _messages.StringField(2)
+  endTime = _messages.StringField(3)
+  finalMeasurement = _messages.MessageField('GoogleCloudAiplatformV1Measurement', 4)
+  id = _messages.StringField(5)
+  infeasibleReason = _messages.StringField(6)
+  measurements = _messages.MessageField('GoogleCloudAiplatformV1Measurement', 7, repeated=True)
+  name = _messages.StringField(8)
+  parameters = _messages.MessageField('GoogleCloudAiplatformV1TrialParameter', 9, repeated=True)
+  startTime = _messages.StringField(10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
 
 
 class GoogleCloudAiplatformV1TrialParameter(_messages.Message):
@@ -7159,6 +9059,20 @@ class GoogleCloudAiplatformV1TrialParameter(_messages.Message):
 
   parameterId = _messages.StringField(1)
   value = _messages.MessageField('extra_types.JsonValue', 2)
+
+
+class GoogleCloudAiplatformV1UndeployIndexOperationMetadata(_messages.Message):
+  r"""Runtime operation information for IndexEndpointService.UndeployIndex.
+
+  Fields:
+    genericMetadata: The operation generic information.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1GenericOperationMetadata', 1)
+
+
+class GoogleCloudAiplatformV1UndeployIndexResponse(_messages.Message):
+  r"""Response message for IndexEndpointService.UndeployIndex."""
 
 
 class GoogleCloudAiplatformV1UndeployModelOperationMetadata(_messages.Message):
@@ -7232,6 +9146,19 @@ class GoogleCloudAiplatformV1UndeployModelResponse(_messages.Message):
   r"""Response message for EndpointService.UndeployModel."""
 
 
+class GoogleCloudAiplatformV1UpdateIndexOperationMetadata(_messages.Message):
+  r"""Runtime operation information for IndexService.UpdateIndex.
+
+  Fields:
+    genericMetadata: The operation generic information.
+    nearestNeighborSearchOperationMetadata: The operation metadata with regard
+      to Matching Engine Index operation.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1GenericOperationMetadata', 1)
+  nearestNeighborSearchOperationMetadata = _messages.MessageField('GoogleCloudAiplatformV1NearestNeighborSearchOperationMetadata', 2)
+
+
 class GoogleCloudAiplatformV1UpdateSpecialistPoolOperationMetadata(_messages.Message):
   r"""Runtime operation metadata for
   SpecialistPoolService.UpdateSpecialistPool.
@@ -7286,8 +9213,8 @@ class GoogleCloudAiplatformV1UserActionReference(_messages.Message):
     dataLabelingJob: For API calls that start a LabelingJob. Resource name of
       the LabelingJob. Format: 'projects/{project}/locations/{location}/dataLa
       belingJobs/{data_labeling_job}'
-    method: The method name of the API call. For example,
-      "/google.cloud.aiplatform.v1alpha1.DatasetService.CreateDataset"
+    method: The method name of the API RPC call. For example,
+      "/google.cloud.aiplatform.{apiVersion}.DatasetService.CreateDataset"
     operation: For API calls that return a long running operation. Resource
       name of the long running operation. Format:
       'projects/{project}/locations/{location}/operations/{operation}'
@@ -7296,6 +9223,20 @@ class GoogleCloudAiplatformV1UserActionReference(_messages.Message):
   dataLabelingJob = _messages.StringField(1)
   method = _messages.StringField(2)
   operation = _messages.StringField(3)
+
+
+class GoogleCloudAiplatformV1Value(_messages.Message):
+  r"""Value is the value of the field.
+
+  Fields:
+    doubleValue: A double value.
+    intValue: An integer value.
+    stringValue: A string value.
+  """
+
+  doubleValue = _messages.FloatField(1)
+  intValue = _messages.IntegerField(2)
+  stringValue = _messages.StringField(3)
 
 
 class GoogleCloudAiplatformV1WorkerPoolSpec(_messages.Message):
@@ -7317,1574 +9258,31 @@ class GoogleCloudAiplatformV1WorkerPoolSpec(_messages.Message):
   replicaCount = _messages.IntegerField(5)
 
 
-class GoogleCloudAiplatformV1alpha1AutomaticResources(_messages.Message):
-  r"""A description of resources that to large degree are decided by AI
-  Platform, and require only a modest additional configuration. Each Model
-  supporting these resources documents its specific guidelines.
-
-  Fields:
-    maxReplicaCount: Immutable. The maximum number of replicas this
-      DeployedModel may be deployed on when the traffic against it increases.
-      If the requested value is too large, the deployment will error, but if
-      deployment succeeds then the ability to scale the model to that many
-      replicas is guaranteed (barring service outages). If traffic against the
-      DeployedModel increases beyond what its replicas at maximum may handle,
-      a portion of the traffic will be dropped. If this value is not provided,
-      a no upper bound for scaling under heavy traffic will be assume, though
-      AI Platform may be unable to scale beyond certain replica number.
-    minReplicaCount: Immutable. The minimum number of replicas this
-      DeployedModel will be always deployed on. If traffic against it
-      increases, it may dynamically be deployed onto more replicas up to
-      max_replica_count, and as traffic decreases, some of these extra
-      replicas may be freed. If the requested value is too large, the
-      deployment will error.
-  """
-
-  maxReplicaCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  minReplicaCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-
-
-class GoogleCloudAiplatformV1alpha1BatchMigrateResourcesOperationMetadata(_messages.Message):
-  r"""Runtime operation information for
-  MigrationService.BatchMigrateResources.
-
-  Fields:
-    genericMetadata: The common part of the operation metadata.
-    partialResults: Partial results that reflect the latest migration
-      operation progress.
-  """
-
-  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1alpha1GenericOperationMetadata', 1)
-  partialResults = _messages.MessageField('GoogleCloudAiplatformV1alpha1BatchMigrateResourcesOperationMetadataPartialResult', 2, repeated=True)
-
-
-class GoogleCloudAiplatformV1alpha1BatchMigrateResourcesOperationMetadataPartialResult(_messages.Message):
-  r"""Represents a partial result in batch migration operation for one
-  MigrateResourceRequest.
-
-  Fields:
-    dataset: Migrated dataset resource name.
-    error: The error result of the migration request in case of failure.
-    model: Migrated model resource name.
-    request: It's the same as the value in
-      MigrateResourceRequest.migrate_resource_requests.
-  """
-
-  dataset = _messages.StringField(1)
-  error = _messages.MessageField('GoogleRpcStatus', 2)
-  model = _messages.StringField(3)
-  request = _messages.MessageField('GoogleCloudAiplatformV1alpha1MigrateResourceRequest', 4)
-
-
-class GoogleCloudAiplatformV1alpha1BatchMigrateResourcesResponse(_messages.Message):
-  r"""Response message for MigrationService.BatchMigrateResources.
-
-  Fields:
-    migrateResourceResponses: Successfully migrated resources.
-  """
-
-  migrateResourceResponses = _messages.MessageField('GoogleCloudAiplatformV1alpha1MigrateResourceResponse', 1, repeated=True)
-
-
-class GoogleCloudAiplatformV1alpha1CreateDatasetOperationMetadata(_messages.Message):
-  r"""Runtime operation information for DatasetService.CreateDataset.
-
-  Fields:
-    genericMetadata: The operation generic information.
-  """
-
-  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1alpha1GenericOperationMetadata', 1)
-
-
-class GoogleCloudAiplatformV1alpha1CreateEndpointOperationMetadata(_messages.Message):
-  r"""Runtime operation information for EndpointService.CreateEndpoint.
-
-  Fields:
-    genericMetadata: The operation generic information.
-  """
-
-  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1alpha1GenericOperationMetadata', 1)
-
-
-class GoogleCloudAiplatformV1alpha1CreateIndexEndpointOperationMetadata(_messages.Message):
-  r"""Runtime operation information for
-  IndexEndpointService.CreateIndexEndpoint.
-
-  Fields:
-    genericMetadata: The operation generic information.
-  """
-
-  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1alpha1GenericOperationMetadata', 1)
-
-
-class GoogleCloudAiplatformV1alpha1CreateIndexOperationMetadata(_messages.Message):
-  r"""Runtime operation information for IndexService.CreateIndex.
-
-  Fields:
-    genericMetadata: The operation generic information.
-    nearestNeighborSearchOperationMetadata: The operation metadata with regard
-      to ScaNN Index operation.
-  """
-
-  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1alpha1GenericOperationMetadata', 1)
-  nearestNeighborSearchOperationMetadata = _messages.MessageField('GoogleCloudAiplatformV1alpha1NearestNeighborSearchOperationMetadata', 2)
-
-
-class GoogleCloudAiplatformV1alpha1CreateSpecialistPoolOperationMetadata(_messages.Message):
-  r"""Runtime operation information for
-  SpecialistPoolService.CreateSpecialistPool.
-
-  Fields:
-    genericMetadata: The operation generic information.
-  """
-
-  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1alpha1GenericOperationMetadata', 1)
-
-
-class GoogleCloudAiplatformV1alpha1DedicatedResources(_messages.Message):
-  r"""A description of resources that are dedicated to a DeployedModel, and
-  that need a higher degree of manual configuration.
-
-  Fields:
-    machineSpec: Required. Immutable. The specification of a single machine
-      used by the prediction.
-    minReplicaCount: Required. Immutable. The minimum number of machine
-      replicas this DeployedModel will be always deployed on. If traffic
-      against it increases, it may dynamically be deployed onto more replicas,
-      and as traffic decreases, some of these extra replicas may be freed.
-      Note: if machine_spec.accelerator_count is above 0, currently the model
-      will be always deployed precisely on min_replica_count.
-  """
-
-  machineSpec = _messages.MessageField('GoogleCloudAiplatformV1alpha1MachineSpec', 1)
-  minReplicaCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-
-
-class GoogleCloudAiplatformV1alpha1DeleteOperationMetadata(_messages.Message):
-  r"""Details of operations that perform deletes of any entities.
-
-  Fields:
-    genericMetadata: The common part of the operation metadata.
-  """
-
-  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1alpha1GenericOperationMetadata', 1)
-
-
-class GoogleCloudAiplatformV1alpha1DeployIndexOperationMetadata(_messages.Message):
-  r"""Runtime operation information for IndexEndpointService.DeployIndex.
-
-  Fields:
-    genericMetadata: The operation generic information.
-  """
-
-  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1alpha1GenericOperationMetadata', 1)
-
-
-class GoogleCloudAiplatformV1alpha1DeployIndexResponse(_messages.Message):
-  r"""Response message for IndexEndpointService.DeployIndex.
-
-  Fields:
-    deployedIndex: The DeployedIndex that had been deployed in the
-      IndexEndpoint.
-  """
-
-  deployedIndex = _messages.MessageField('GoogleCloudAiplatformV1alpha1DeployedIndex', 1)
-
-
-class GoogleCloudAiplatformV1alpha1DeployModelOperationMetadata(_messages.Message):
-  r"""Runtime operation information for EndpointService.DeployModel.
-
-  Fields:
-    genericMetadata: The operation generic information.
-  """
-
-  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1alpha1GenericOperationMetadata', 1)
-
-
-class GoogleCloudAiplatformV1alpha1DeployModelResponse(_messages.Message):
-  r"""Response message for EndpointService.DeployModel.
-
-  Fields:
-    deployedModel: The DeployedModel that had been deployed in the Endpoint.
-  """
-
-  deployedModel = _messages.MessageField('GoogleCloudAiplatformV1alpha1DeployedModel', 1)
-
-
-class GoogleCloudAiplatformV1alpha1DeployedIndex(_messages.Message):
-  r"""A deployment of an Index. IndexEndpoints contain one or more
-  DeployedIndexes.
-
-  Fields:
-    automaticResources: Optional. A description of resources that the
-      DeployedIndex uses, which to large degree are decided by AI Platform,
-      and optionally allows only a modest additional configuration. If
-      min_replica_count is not set, the default value is 1. If
-      max_replica_count is not set, the default value is min_replica_count.
-      The max allowed replica count is 1000. The user is billed for the
-      resources (at least their minimal amount) even if the DeployedIndex
-      receives no traffic.
-    createTime: Output only. Timestamp when the DeployedIndex was created.
-    displayName: The display name of the DeployedIndex. If not provided upon
-      creation, the Index's display_name is used.
-    id: Required. The user specified ID of the DeployedIndex. The ID can be up
-      to 128 characters long and must start with a letter and only contain
-      letters, numbers, and underscores. The ID must be unique within the
-      project it is created in.
-    index: Required. The name of the Index this is the deployment of. We may
-      refer to this Index as the DeployedIndex's "original" Index.
-    indexSyncTime: Output only. The DeployedIndex may depend on various data
-      on its original Index. Additionally when certain changes to the original
-      Index are being done (e.g. when what the Index contains is being
-      changed) the DeployedIndex may be asynchronously updated in the
-      background to reflect this changes. If this timestamp's value is at
-      least the Index.update_time of the original Index, it means that this
-      DeployedIndex and the original Index are in sync. If this timestamp is
-      older, then to see which updates this DeployedIndex already contains
-      (and which not), one must list Operations working on the original Index.
-      Only the successfully completed Operations with
-      Operations.metadata.generic_metadata.update_time equal or before this
-      sync time are contained in this DeployedIndex.
-    privateEndpoints: Output only. Provides paths for users to send requests
-      directly to the deployed index services running on Cloud via private
-      services access. This field is populated if network is configured.
-  """
-
-  automaticResources = _messages.MessageField('GoogleCloudAiplatformV1alpha1AutomaticResources', 1)
-  createTime = _messages.StringField(2)
-  displayName = _messages.StringField(3)
-  id = _messages.StringField(4)
-  index = _messages.StringField(5)
-  indexSyncTime = _messages.StringField(6)
-  privateEndpoints = _messages.MessageField('GoogleCloudAiplatformV1alpha1IndexPrivateEndpoints', 7)
-
-
-class GoogleCloudAiplatformV1alpha1DeployedModel(_messages.Message):
-  r"""A deployment of a Model. Endpoints contain one or more DeployedModels.
-
-  Fields:
-    automaticResources: A description of resources that to large degree are
-      decided by AI Platform, and require only a modest additional
-      configuration.
-    createTime: Output only. Timestamp when the DeployedModel was created.
-    dedicatedResources: A description of resources that are dedicated to the
-      DeployedModel, and that need a higher degree of manual configuration.
-    displayName: The display name of the DeployedModel. If not provided upon
-      creation, the Model's display_name is used.
-    explanationSpec: Explanation configuration for this DeployedModel. When
-      deploying a Model using EndpointService.DeployModel, this value
-      overrides the value of Model.explanation_spec. All fields of
-      explanation_spec are optional in the request. If a field of
-      explanation_spec is not populated, the value of the same field of
-      Model.explanation_spec is inherited. If the corresponding
-      Model.explanation_spec is not populated, all fields of the
-      explanation_spec will be used for the explanation configuration.
-    id: Output only. The ID of the DeployedModel.
-    model: Required. The name of the Model that this is the deployment of.
-      Note that the Model may be in a different location than the
-      DeployedModel's Endpoint.
-  """
-
-  automaticResources = _messages.MessageField('GoogleCloudAiplatformV1alpha1AutomaticResources', 1)
-  createTime = _messages.StringField(2)
-  dedicatedResources = _messages.MessageField('GoogleCloudAiplatformV1alpha1DedicatedResources', 3)
-  displayName = _messages.StringField(4)
-  explanationSpec = _messages.MessageField('GoogleCloudAiplatformV1alpha1ExplanationSpec', 5)
-  id = _messages.StringField(6)
-  model = _messages.StringField(7)
-
-
-class GoogleCloudAiplatformV1alpha1ExplanationMetadata(_messages.Message):
-  r"""Metadata describing the Model's input and output for explanation.
-
-  Messages:
-    InputsValue: Required. Map from feature names to feature input metadata.
-      Keys are the name of the features. Values are the specification of the
-      feature. An empty InputMetadata is valid. It describes a text feature
-      which has the name specified as the key in ExplanationMetadata.inputs.
-      The baseline of the empty feature is chosen by AI Platform. For AI
-      Platform provided Tensorflow images, the key can be any friendly name of
-      the feature. Once specified, featureAttributions are keyed by this key
-      (if not grouped with another feature). For custom images, the key must
-      match with the key in instance.
-    OutputsValue: Required. Map from output names to output metadata. For AI
-      Platform provided Tensorflow images, keys can be any string user
-      defines. For custom images, keys are the name of the output field in the
-      prediction to be explained. Currently only one key is allowed.
-
-  Fields:
-    featureAttributionsSchemaUri: Points to a YAML file stored on Google Cloud
-      Storage describing the format of the feature attributions. The schema is
-      defined as an OpenAPI 3.0.2 [Schema
-      Object](https://tinyurl.com/y538mdwt#schema-object). AutoML tabular
-      Models always have this field populated by AI Platform. Note: The URI
-      given on output may be different, including the URI scheme, than the one
-      given on input. The output URI will point to a location where the user
-      only has a read access.
-    inputs: Required. Map from feature names to feature input metadata. Keys
-      are the name of the features. Values are the specification of the
-      feature. An empty InputMetadata is valid. It describes a text feature
-      which has the name specified as the key in ExplanationMetadata.inputs.
-      The baseline of the empty feature is chosen by AI Platform. For AI
-      Platform provided Tensorflow images, the key can be any friendly name of
-      the feature. Once specified, featureAttributions are keyed by this key
-      (if not grouped with another feature). For custom images, the key must
-      match with the key in instance.
-    outputs: Required. Map from output names to output metadata. For AI
-      Platform provided Tensorflow images, keys can be any string user
-      defines. For custom images, keys are the name of the output field in the
-      prediction to be explained. Currently only one key is allowed.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class InputsValue(_messages.Message):
-    r"""Required. Map from feature names to feature input metadata. Keys are
-    the name of the features. Values are the specification of the feature. An
-    empty InputMetadata is valid. It describes a text feature which has the
-    name specified as the key in ExplanationMetadata.inputs. The baseline of
-    the empty feature is chosen by AI Platform. For AI Platform provided
-    Tensorflow images, the key can be any friendly name of the feature. Once
-    specified, featureAttributions are keyed by this key (if not grouped with
-    another feature). For custom images, the key must match with the key in
-    instance.
-
-    Messages:
-      AdditionalProperty: An additional property for a InputsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type InputsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a InputsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A GoogleCloudAiplatformV1alpha1ExplanationMetadataInputMetadata
-          attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('GoogleCloudAiplatformV1alpha1ExplanationMetadataInputMetadata', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class OutputsValue(_messages.Message):
-    r"""Required. Map from output names to output metadata. For AI Platform
-    provided Tensorflow images, keys can be any string user defines. For
-    custom images, keys are the name of the output field in the prediction to
-    be explained. Currently only one key is allowed.
-
-    Messages:
-      AdditionalProperty: An additional property for a OutputsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type OutputsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a OutputsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A
-          GoogleCloudAiplatformV1alpha1ExplanationMetadataOutputMetadata
-          attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('GoogleCloudAiplatformV1alpha1ExplanationMetadataOutputMetadata', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  featureAttributionsSchemaUri = _messages.StringField(1)
-  inputs = _messages.MessageField('InputsValue', 2)
-  outputs = _messages.MessageField('OutputsValue', 3)
-
-
-class GoogleCloudAiplatformV1alpha1ExplanationMetadataInputMetadata(_messages.Message):
-  r"""Metadata of the input of a feature. Fields other than
-  InputMetadata.input_baselines are applicable only for Models that are using
-  AI Platform-provided images for Tensorflow.
-
-  Fields:
-    inputBaselines: Baseline inputs for this feature. If no baseline is
-      specified, AI Platform chooses the baseline for this feature. If
-      multiple baselines are specified, AI Platform returns the average
-      attributions across them in Attributions.baseline_attribution. For AI
-      Platform provided Tensorflow images (both 1.x and 2.x), the shape of
-      each baseline must match the shape of the input tensor. If a scalar is
-      provided, we broadcast to the same shape as the input tensor. For custom
-      images, the element of the baselines must be in the same format as the
-      feature's input in the instance[]. The schema of any single instance may
-      be specified via Endpoint's DeployedModels' Model's PredictSchemata's
-      instance_schema_uri.
-  """
-
-  inputBaselines = _messages.MessageField('extra_types.JsonValue', 1, repeated=True)
-
-
-class GoogleCloudAiplatformV1alpha1ExplanationMetadataOutputMetadata(_messages.Message):
-  r"""Metadata of the prediction output to be explained.
-
-  Fields:
-    displayNameMappingKey: Specify a field name in the prediction to look for
-      the display name. Use this if the prediction contains the display names
-      for the outputs. The display names in the prediction must have the same
-      shape of the outputs, so that it can be located by
-      Attribution.output_index for a specific output.
-    indexDisplayNameMapping: Static mapping between the index and display
-      name. Use this if the outputs are a deterministic n-dimensional array,
-      e.g. a list of scores of all the classes in a pre-defined order for a
-      multi-classification Model. It's not feasible if the outputs are non-
-      deterministic, e.g. the Model produces top-k classes or sort the outputs
-      by their values. The shape of the value must be an n-dimensional array
-      of strings. The number of dimensions must match that of the outputs to
-      be explained. The Attribution.output_display_name is populated by
-      locating in the mapping with Attribution.output_index.
-  """
-
-  displayNameMappingKey = _messages.StringField(1)
-  indexDisplayNameMapping = _messages.MessageField('extra_types.JsonValue', 2)
-
-
-class GoogleCloudAiplatformV1alpha1ExplanationParameters(_messages.Message):
-  r"""Parameters to configure explaining for Model's predictions.
-
-  Fields:
-    sampledShapleyAttribution: An attribution method that approximates Shapley
-      values for features that contribute to the label being predicted. A
-      sampling strategy is used to approximate the value rather than
-      considering all subsets of features. Refer to this paper for model
-      details: https://arxiv.org/abs/1306.4265.
-  """
-
-  sampledShapleyAttribution = _messages.MessageField('GoogleCloudAiplatformV1alpha1SampledShapleyAttribution', 1)
-
-
-class GoogleCloudAiplatformV1alpha1ExplanationSpec(_messages.Message):
-  r"""Specification of Model explanation.
-
-  Fields:
-    metadata: Required. Metadata describing the Model's input and output for
-      explanation.
-    parameters: Required. Parameters that configure explaining of the Model's
-      predictions.
-  """
-
-  metadata = _messages.MessageField('GoogleCloudAiplatformV1alpha1ExplanationMetadata', 1)
-  parameters = _messages.MessageField('GoogleCloudAiplatformV1alpha1ExplanationParameters', 2)
-
-
-class GoogleCloudAiplatformV1alpha1ExportDataOperationMetadata(_messages.Message):
-  r"""Runtime operation information for DatasetService.ExportData.
-
-  Fields:
-    gcsOutputDirectory: A Google Cloud Storage directory which path ends with
-      '/'. The exported data is stored in the directory.
-    genericMetadata: The common part of the operation metadata.
-  """
-
-  gcsOutputDirectory = _messages.StringField(1)
-  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1alpha1GenericOperationMetadata', 2)
-
-
-class GoogleCloudAiplatformV1alpha1ExportDataResponse(_messages.Message):
-  r"""Response message for DatasetService.ExportData.
-
-  Fields:
-    exportedFiles: All of the files that are exported in this export
-      operation.
-  """
-
-  exportedFiles = _messages.StringField(1, repeated=True)
-
-
-class GoogleCloudAiplatformV1alpha1ExportEvaluatedDataItemsOperationMetadata(_messages.Message):
-  r"""Details of ModelService.ExportEvaluatedDataItems operation.
-
-  Fields:
-    genericMetadata: The common part of the operation metadata.
-    outputInfo: Output only. Information further describing the output of this
-      operation.
-  """
-
-  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1alpha1GenericOperationMetadata', 1)
-  outputInfo = _messages.MessageField('GoogleCloudAiplatformV1alpha1ExportEvaluatedDataItemsOperationMetadataOutputInfo', 2)
-
-
-class GoogleCloudAiplatformV1alpha1ExportEvaluatedDataItemsOperationMetadataOutputInfo(_messages.Message):
-  r"""Further describes this operation's output. Supplements
-  ExportEvaluatedDataItemsRequest.output_config.
-
-  Fields:
-    bigqueryOutputDataset: Output only. The path of the BigQuery dataset
-      created, in bq://projectId.bqDatasetId.tableId format, into which the
-      evaluated DataItems are exported.
-  """
-
-  bigqueryOutputDataset = _messages.StringField(1)
-
-
-class GoogleCloudAiplatformV1alpha1ExportEvaluatedDataItemsOperationResponse(_messages.Message):
-  r"""Response of ModelService.ExportEvaluatedDataItems operation."""
-
-
-class GoogleCloudAiplatformV1alpha1ExportModelOperationMetadata(_messages.Message):
-  r"""Details of ModelService.ExportModel operation.
-
-  Fields:
-    genericMetadata: The common part of the operation metadata.
-    outputInfo: Output only. Information further describing the output of this
-      Model export.
-  """
-
-  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1alpha1GenericOperationMetadata', 1)
-  outputInfo = _messages.MessageField('GoogleCloudAiplatformV1alpha1ExportModelOperationMetadataOutputInfo', 2)
-
-
-class GoogleCloudAiplatformV1alpha1ExportModelOperationMetadataOutputInfo(_messages.Message):
-  r"""Further describes the output of the ExportModel. Supplements
-  ExportModelRequest.OutputConfig.
-
-  Fields:
-    gcsOutputDirectory: Output only. If the Model is being exported to Google
-      Cloud Storage this is the full path of the directory created, into which
-      the Model files are being written to.
-  """
-
-  gcsOutputDirectory = _messages.StringField(1)
-
-
-class GoogleCloudAiplatformV1alpha1ExportModelResponse(_messages.Message):
-  r"""Response message of ModelService.ExportModel operation."""
-
-
-class GoogleCloudAiplatformV1alpha1GenericOperationMetadata(_messages.Message):
-  r"""Generic Metadata shared by all operations.
-
-  Fields:
-    createTime: Output only. Time when the operation was created.
-    partialFailures: Output only. Partial failures encountered. E.g. single
-      files that couldn't be read. This field should never exceed 20 entries.
-      Status details field will contain standard GCP error details.
-    updateTime: Output only. Time when the operation was updated for the last
-      time. If the operation has finished (successfully or not), this is the
-      finish time.
-  """
-
-  createTime = _messages.StringField(1)
-  partialFailures = _messages.MessageField('GoogleRpcStatus', 2, repeated=True)
-  updateTime = _messages.StringField(3)
-
-
-class GoogleCloudAiplatformV1alpha1ImportDataOperationMetadata(_messages.Message):
-  r"""Runtime operation information for DatasetService.ImportData.
-
-  Fields:
-    genericMetadata: The common part of the operation metadata.
-  """
-
-  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1alpha1GenericOperationMetadata', 1)
-
-
-class GoogleCloudAiplatformV1alpha1ImportDataResponse(_messages.Message):
-  r"""Response message for DatasetService.ImportData."""
-
-
-class GoogleCloudAiplatformV1alpha1IndexPrivateEndpoints(_messages.Message):
-  r"""IndexPrivateEndpoints proto is used to provide paths for users to send
-  requests via private services access.
-
-  Fields:
-    matchGrpcAddress: Output only. The ip address used to send match gRPC
-      requests.
-  """
-
-  matchGrpcAddress = _messages.StringField(1)
-
-
-class GoogleCloudAiplatformV1alpha1MachineSpec(_messages.Message):
-  r"""Specification of a single machine.
-
-  Enums:
-    AcceleratorTypeValueValuesEnum: Immutable. The type of accelerator(s) that
-      may be attached to the machine as per accelerator_count.
-
-  Fields:
-    acceleratorCount: The number of accelerators to attach to the machine.
-    acceleratorType: Immutable. The type of accelerator(s) that may be
-      attached to the machine as per accelerator_count.
-    machineType: Immutable. The type of the machine. For the machine types
-      supported for prediction, see https://tinyurl.com/aip-
-      docs/predictions/machine-types. For machine types supported for creating
-      a custom training job, see https://tinyurl.com/aip-
-      docs/training/configure-compute. For DeployedModel this field is
-      optional, and the default value is `n1-standard-2`. For
-      BatchPredictionJob or as part of WorkerPoolSpec this field is required.
-  """
-
-  class AcceleratorTypeValueValuesEnum(_messages.Enum):
-    r"""Immutable. The type of accelerator(s) that may be attached to the
-    machine as per accelerator_count.
-
-    Values:
-      ACCELERATOR_TYPE_UNSPECIFIED: Unspecified accelerator type, which means
-        no accelerator.
-      NVIDIA_TESLA_K80: Nvidia Tesla K80 GPU.
-      NVIDIA_TESLA_P100: Nvidia Tesla P100 GPU.
-      NVIDIA_TESLA_V100: Nvidia Tesla V100 GPU.
-      NVIDIA_TESLA_P4: Nvidia Tesla P4 GPU.
-      NVIDIA_TESLA_T4: Nvidia Tesla T4 GPU.
-      TPU_V2: TPU v2.
-      TPU_V3: TPU v3.
-    """
-    ACCELERATOR_TYPE_UNSPECIFIED = 0
-    NVIDIA_TESLA_K80 = 1
-    NVIDIA_TESLA_P100 = 2
-    NVIDIA_TESLA_V100 = 3
-    NVIDIA_TESLA_P4 = 4
-    NVIDIA_TESLA_T4 = 5
-    TPU_V2 = 6
-    TPU_V3 = 7
-
-  acceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  acceleratorType = _messages.EnumField('AcceleratorTypeValueValuesEnum', 2)
-  machineType = _messages.StringField(3)
-
-
-class GoogleCloudAiplatformV1alpha1MigratableResource(_messages.Message):
-  r"""Represents one resource that exists in automl.googleapis.com,
-  datalabeling.googleapis.com or ml.googleapis.com.
-
-  Fields:
-    automlDataset: Output only. Represents one Dataset in
-      automl.googleapis.com.
-    automlModel: Output only. Represents one Model in automl.googleapis.com.
-    dataLabelingDataset: Output only. Represents one Dataset in
-      datalabeling.googleapis.com.
-    lastMigrateTime: Output only. Timestamp when the last migration attempt on
-      this MigratableResource started. Will not be set if there's no migration
-      attempt on this MigratableResource.
-    lastUpdateTime: Output only. Timestamp when this MigratableResource was
-      last updated.
-    mlEngineModelVersion: Output only. Represents one Version in
-      ml.googleapis.com.
-  """
-
-  automlDataset = _messages.MessageField('GoogleCloudAiplatformV1alpha1MigratableResourceAutomlDataset', 1)
-  automlModel = _messages.MessageField('GoogleCloudAiplatformV1alpha1MigratableResourceAutomlModel', 2)
-  dataLabelingDataset = _messages.MessageField('GoogleCloudAiplatformV1alpha1MigratableResourceDataLabelingDataset', 3)
-  lastMigrateTime = _messages.StringField(4)
-  lastUpdateTime = _messages.StringField(5)
-  mlEngineModelVersion = _messages.MessageField('GoogleCloudAiplatformV1alpha1MigratableResourceMlEngineModelVersion', 6)
-
-
-class GoogleCloudAiplatformV1alpha1MigratableResourceAutomlDataset(_messages.Message):
-  r"""Represents one Dataset in automl.googleapis.com.
-
-  Fields:
-    dataset: Full resource name of automl Dataset. Format:
-      `projects/{project}/locations/{location}/datasets/{dataset}`.
-    datasetDisplayName: The Dataset's display name in automl.googleapis.com.
-  """
-
-  dataset = _messages.StringField(1)
-  datasetDisplayName = _messages.StringField(2)
-
-
-class GoogleCloudAiplatformV1alpha1MigratableResourceAutomlModel(_messages.Message):
-  r"""Represents one Model in automl.googleapis.com.
-
-  Fields:
-    model: Full resource name of automl Model. Format:
-      `projects/{project}/locations/{location}/models/{model}`.
-    modelDisplayName: The Model's display name in automl.googleapis.com.
-  """
-
-  model = _messages.StringField(1)
-  modelDisplayName = _messages.StringField(2)
-
-
-class GoogleCloudAiplatformV1alpha1MigratableResourceDataLabelingDataset(_messages.Message):
-  r"""Represents one Dataset in datalabeling.googleapis.com.
-
-  Fields:
-    dataLabelingAnnotatedDatasets: The migratable AnnotatedDataset in
-      datalabeling.googleapis.com belongs to the data labeling Dataset.
-    dataset: Full resource name of data labeling Dataset. Format:
-      `projects/{project}/datasets/{dataset}`.
-    datasetDisplayName: The Dataset's display name in
-      datalabeling.googleapis.com.
-  """
-
-  dataLabelingAnnotatedDatasets = _messages.MessageField('GoogleCloudAiplatformV1alpha1MigratableResourceDataLabelingDatasetDataLabelingAnnotatedDataset', 1, repeated=True)
-  dataset = _messages.StringField(2)
-  datasetDisplayName = _messages.StringField(3)
-
-
-class GoogleCloudAiplatformV1alpha1MigratableResourceDataLabelingDatasetDataLabelingAnnotatedDataset(_messages.Message):
-  r"""Represents one AnnotatedDataset in datalabeling.googleapis.com.
-
-  Fields:
-    annotatedDataset: Full resource name of data labeling AnnotatedDataset.
-      Format: `projects/{project}/datasets/{dataset}/annotatedDatasets/{annota
-      ted_dataset}`.
-    annotatedDatasetDisplayName: The AnnotatedDataset's display name in
-      datalabeling.googleapis.com.
-  """
-
-  annotatedDataset = _messages.StringField(1)
-  annotatedDatasetDisplayName = _messages.StringField(2)
-
-
-class GoogleCloudAiplatformV1alpha1MigratableResourceMlEngineModelVersion(_messages.Message):
-  r"""Represents one model Version in ml.googleapis.com.
-
-  Fields:
-    endpoint: The ml.googleapis.com endpoint that this model Version currently
-      lives in. Example values: * ml.googleapis.com * us-centrall-
-      ml.googleapis.com * europe-west4-ml.googleapis.com * asia-
-      east1-ml.googleapis.com
-    version: Full resource name of ml engine model Version. Format:
-      `projects/{project}/models/{model}/versions/{version}`.
-  """
-
-  endpoint = _messages.StringField(1)
-  version = _messages.StringField(2)
-
-
-class GoogleCloudAiplatformV1alpha1MigrateResourceRequest(_messages.Message):
-  r"""Config of migrating one resource from automl.googleapis.com,
-  datalabeling.googleapis.com and ml.googleapis.com to AI Platform.
-
-  Fields:
-    migrateAutomlDatasetConfig: Config for migrating Dataset in
-      automl.googleapis.com to AI Platform's Dataset.
-    migrateAutomlModelConfig: Config for migrating Model in
-      automl.googleapis.com to AI Platform's Model.
-    migrateDataLabelingDatasetConfig: Config for migrating Dataset in
-      datalabeling.googleapis.com to AI Platform's Dataset.
-    migrateMlEngineModelVersionConfig: Config for migrating Version in
-      ml.googleapis.com to AI Platform's Model.
-  """
-
-  migrateAutomlDatasetConfig = _messages.MessageField('GoogleCloudAiplatformV1alpha1MigrateResourceRequestMigrateAutomlDatasetConfig', 1)
-  migrateAutomlModelConfig = _messages.MessageField('GoogleCloudAiplatformV1alpha1MigrateResourceRequestMigrateAutomlModelConfig', 2)
-  migrateDataLabelingDatasetConfig = _messages.MessageField('GoogleCloudAiplatformV1alpha1MigrateResourceRequestMigrateDataLabelingDatasetConfig', 3)
-  migrateMlEngineModelVersionConfig = _messages.MessageField('GoogleCloudAiplatformV1alpha1MigrateResourceRequestMigrateMlEngineModelVersionConfig', 4)
-
-
-class GoogleCloudAiplatformV1alpha1MigrateResourceRequestMigrateAutomlDatasetConfig(_messages.Message):
-  r"""Config for migrating Dataset in automl.googleapis.com to AI Platform's
-  Dataset.
-
-  Fields:
-    dataset: Required. Full resource name of automl Dataset. Format:
-      `projects/{project}/locations/{location}/datasets/{dataset}`.
-    datasetDisplayName: Required. Display name of the Dataset in AI Platform.
-      System will pick a display name if unspecified.
-  """
-
-  dataset = _messages.StringField(1)
-  datasetDisplayName = _messages.StringField(2)
-
-
-class GoogleCloudAiplatformV1alpha1MigrateResourceRequestMigrateAutomlModelConfig(_messages.Message):
-  r"""Config for migrating Model in automl.googleapis.com to AI Platform's
-  Model.
-
-  Fields:
-    model: Required. Full resource name of automl Model. Format:
-      `projects/{project}/locations/{location}/models/{model}`.
-    modelDisplayName: Optional. Display name of the model in AI Platform.
-      System will pick a display name if unspecified.
-  """
-
-  model = _messages.StringField(1)
-  modelDisplayName = _messages.StringField(2)
-
-
-class GoogleCloudAiplatformV1alpha1MigrateResourceRequestMigrateDataLabelingDatasetConfig(_messages.Message):
-  r"""Config for migrating Dataset in datalabeling.googleapis.com to AI
-  Platform's Dataset.
-
-  Fields:
-    dataset: Required. Full resource name of data labeling Dataset. Format:
-      `projects/{project}/datasets/{dataset}`.
-    datasetDisplayName: Optional. Display name of the Dataset in AI Platform.
-      System will pick a display name if unspecified.
-    migrateDataLabelingAnnotatedDatasetConfigs: Optional. Configs for
-      migrating AnnotatedDataset in datalabeling.googleapis.com to AI
-      Platform's SavedQuery. The specified AnnotatedDatasets have to belong to
-      the datalabeling Dataset.
-  """
-
-  dataset = _messages.StringField(1)
-  datasetDisplayName = _messages.StringField(2)
-  migrateDataLabelingAnnotatedDatasetConfigs = _messages.MessageField('GoogleCloudAiplatformV1alpha1MigrateResourceRequestMigrateDataLabelingDatasetConfigMigrateDataLabelingAnnotatedDatasetConfig', 3, repeated=True)
-
-
-class GoogleCloudAiplatformV1alpha1MigrateResourceRequestMigrateDataLabelingDatasetConfigMigrateDataLabelingAnnotatedDatasetConfig(_messages.Message):
-  r"""Config for migrating AnnotatedDataset in datalabeling.googleapis.com to
-  AI Platform's SavedQuery.
-
-  Fields:
-    annotatedDataset: Required. Full resource name of data labeling
-      AnnotatedDataset. Format: `projects/{project}/datasets/{dataset}/annotat
-      edDatasets/{annotated_dataset}`.
-  """
-
-  annotatedDataset = _messages.StringField(1)
-
-
-class GoogleCloudAiplatformV1alpha1MigrateResourceRequestMigrateMlEngineModelVersionConfig(_messages.Message):
-  r"""Config for migrating version in ml.googleapis.com to AI Platform's
-  Model.
-
-  Fields:
-    endpoint: Required. The ml.googleapis.com endpoint that this model version
-      should be migrated from. Example values: * ml.googleapis.com * us-
-      centrall-ml.googleapis.com * europe-west4-ml.googleapis.com * asia-
-      east1-ml.googleapis.com
-    modelDisplayName: Required. Display name of the model in AI Platform.
-      System will pick a display name if unspecified.
-    modelVersion: Required. Full resource name of ml engine model version.
-      Format: `projects/{project}/models/{model}/versions/{version}`.
-  """
-
-  endpoint = _messages.StringField(1)
-  modelDisplayName = _messages.StringField(2)
-  modelVersion = _messages.StringField(3)
-
-
-class GoogleCloudAiplatformV1alpha1MigrateResourceResponse(_messages.Message):
-  r"""Describes a successfully migrated resource.
-
-  Fields:
-    dataset: Migrated Dataset's resource name.
-    migratableResource: Before migration, the identifier in ml.googleapis.com,
-      automl.googleapis.com or datalabeling.googleapis.com.
-    model: Migrated Model's resource name.
-  """
-
-  dataset = _messages.StringField(1)
-  migratableResource = _messages.MessageField('GoogleCloudAiplatformV1alpha1MigratableResource', 2)
-  model = _messages.StringField(3)
-
-
-class GoogleCloudAiplatformV1alpha1NearestNeighborSearchOperationMetadata(_messages.Message):
-  r"""Runtime operation metadata with regard to ScaNN Index.
-
-  Fields:
-    contentValidationStats: The validation stats of the content (per file) to
-      be inserted or updated on the ScaNN Index resource. Populated if
-      contentsDeltaUri is provided as part of Index.metadata. Please note
-      that, currently for those files that are broken or has unsupported file
-      format, we will not have the stats for those files.
-  """
-
-  contentValidationStats = _messages.MessageField('GoogleCloudAiplatformV1alpha1NearestNeighborSearchOperationMetadataContentValidationStats', 1, repeated=True)
-
-
-class GoogleCloudAiplatformV1alpha1NearestNeighborSearchOperationMetadataContentValidationStats(_messages.Message):
-  r"""A GoogleCloudAiplatformV1alpha1NearestNeighborSearchOperationMetadataCon
-  tentValidationStats object.
-
-  Fields:
-    invalidRecordCount: Number of records in this file we skipped due to
-      validate errors.
-    partialErrors: The detail information of the partial failures encountered
-      for those invalid records that couldn't be parsed. Up to 50 partial
-      errors will be reported.
-    sourceGcsUri: GCS uri pointing to the original file in user's bucket.
-    validRecordCount: Number of records in this file that were successfully
-      processed.
-  """
-
-  invalidRecordCount = _messages.IntegerField(1)
-  partialErrors = _messages.MessageField('GoogleCloudAiplatformV1alpha1NearestNeighborSearchOperationMetadataRecordError', 2, repeated=True)
-  sourceGcsUri = _messages.StringField(3)
-  validRecordCount = _messages.IntegerField(4)
-
-
-class GoogleCloudAiplatformV1alpha1NearestNeighborSearchOperationMetadataRecordError(_messages.Message):
-  r"""A GoogleCloudAiplatformV1alpha1NearestNeighborSearchOperationMetadataRec
-  ordError object.
-
-  Enums:
-    ErrorTypeValueValuesEnum: The error type of this record.
-
-  Fields:
-    embeddingId: Empty if the embedding id is failed to parse.
-    errorMessage: A human-readable message that is shown to the user to help
-      them fix the error. Note that this message may change from time to time,
-      your code should check against error_type as the source of truth.
-    errorType: The error type of this record.
-    rawRecord: The original content of this record.
-    sourceGcsUri: GCS uri pointing to the original file in user's bucket.
-  """
-
-  class ErrorTypeValueValuesEnum(_messages.Enum):
-    r"""The error type of this record.
-
-    Values:
-      ERROR_TYPE_UNSPECIFIED: Default, shall not be used.
-      EMPTY_LINE: The record is empty.
-      INVALID_JSON_SYNTAX: Invalid json format.
-      INVALID_CSV_SYNTAX: Invalid csv format.
-      INVALID_AVRO_SYNTAX: Invalid avro format.
-      INVALID_EMBEDDING_ID: The embedding id is not valid.
-      EMBEDDING_SIZE_MISMATCH: The size of the embedding vectors does not
-        match with the specified dimension.
-      NAMESPACE_MISSING: The `namespace` field is missing.
-    """
-    ERROR_TYPE_UNSPECIFIED = 0
-    EMPTY_LINE = 1
-    INVALID_JSON_SYNTAX = 2
-    INVALID_CSV_SYNTAX = 3
-    INVALID_AVRO_SYNTAX = 4
-    INVALID_EMBEDDING_ID = 5
-    EMBEDDING_SIZE_MISMATCH = 6
-    NAMESPACE_MISSING = 7
-
-  embeddingId = _messages.StringField(1)
-  errorMessage = _messages.StringField(2)
-  errorType = _messages.EnumField('ErrorTypeValueValuesEnum', 3)
-  rawRecord = _messages.StringField(4)
-  sourceGcsUri = _messages.StringField(5)
-
-
-class GoogleCloudAiplatformV1alpha1SampledShapleyAttribution(_messages.Message):
-  r"""An attribution method that approximates Shapley values for features that
-  contribute to the label being predicted. A sampling strategy is used to
-  approximate the value rather than considering all subsets of features.
-
-  Fields:
-    pathCount: Required. The number of feature permutations to consider when
-      approximating the Shapley values. Valid range of its value is [1, 50],
-      inclusively.
-  """
-
-  pathCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-
-
-class GoogleCloudAiplatformV1alpha1SchemaAnnotationSpecColor(_messages.Message):
-  r"""An entry of mapping between color and AnnotationSpec. The mapping is
-  used in segmentation mask.
-
-  Fields:
-    color: The color of the AnnotationSpec in a segmentation mask.
-    displayName: The display name of the AnnotationSpec represented by the
-      color in the segmentation mask.
-    id: The ID of the AnnotationSpec represented by the color in the
-      segmentation mask.
-  """
-
-  color = _messages.MessageField('GoogleTypeColor', 1)
-  displayName = _messages.StringField(2)
-  id = _messages.StringField(3)
-
-
-class GoogleCloudAiplatformV1alpha1SchemaImageBoundingBoxAnnotation(_messages.Message):
-  r"""Annotation details specific to image object detection.
-
-  Fields:
-    annotationSpecId: The resource Id of the AnnotationSpec that this
-      Annotation pertains to.
-    displayName: The display name of the AnnotationSpec that this Annotation
-      pertains to.
-    xMax: The rightmost coordinate of the bounding box.
-    xMin: The leftmost coordinate of the bounding box.
-    yMax: The bottommost coordinate of the bounding box.
-    yMin: The topmost coordinate of the bounding box.
-  """
-
-  annotationSpecId = _messages.StringField(1)
-  displayName = _messages.StringField(2)
-  xMax = _messages.FloatField(3)
-  xMin = _messages.FloatField(4)
-  yMax = _messages.FloatField(5)
-  yMin = _messages.FloatField(6)
-
-
-class GoogleCloudAiplatformV1alpha1SchemaImageClassificationAnnotation(_messages.Message):
-  r"""Annotation details specific to image classification.
-
-  Fields:
-    annotationSpecId: The resource Id of the AnnotationSpec that this
-      Annotation pertains to.
-    displayName: The display name of the AnnotationSpec that this Annotation
-      pertains to.
-  """
-
-  annotationSpecId = _messages.StringField(1)
-  displayName = _messages.StringField(2)
-
-
-class GoogleCloudAiplatformV1alpha1SchemaImageDataItem(_messages.Message):
-  r"""Payload of Image DataItem.
-
-  Fields:
-    gcsUri: Required. Google Cloud Storage URI points to the original image in
-      user's bucket. The image is up to 30MB in size.
-    mimeType: Output only. The mime type of the content of the image. Only the
-      images in below listed mime types are supported. - image/jpeg -
-      image/gif - image/png - image/webp - image/bmp - image/tiff -
-      image/vnd.microsoft.icon
-  """
-
-  gcsUri = _messages.StringField(1)
-  mimeType = _messages.StringField(2)
-
-
-class GoogleCloudAiplatformV1alpha1SchemaImageDatasetMetadata(_messages.Message):
-  r"""The metadata of Datasets that contain Image DataItems.
-
-  Fields:
-    dataItemSchemaUri: Points to a YAML file stored on Google Cloud Storage
-      describing payload of the Image DataItems that belong to this Dataset.
-    gcsBucket: Google Cloud Storage Bucket name that contains the blob data of
-      this Dataset.
-  """
-
-  dataItemSchemaUri = _messages.StringField(1)
-  gcsBucket = _messages.StringField(2)
-
-
-class GoogleCloudAiplatformV1alpha1SchemaImageSegmentationAnnotation(_messages.Message):
-  r"""Annotation details specific to image segmentation.
-
-  Fields:
-    maskAnnotation: Mask based segmentation annotation. Only one mask
-      annotation can exist for one image.
-    polygonAnnotation: Polygon annotation.
-    polylineAnnotation: Polyline annotation.
-  """
-
-  maskAnnotation = _messages.MessageField('GoogleCloudAiplatformV1alpha1SchemaImageSegmentationAnnotationMaskAnnotation', 1)
-  polygonAnnotation = _messages.MessageField('GoogleCloudAiplatformV1alpha1SchemaImageSegmentationAnnotationPolygonAnnotation', 2)
-  polylineAnnotation = _messages.MessageField('GoogleCloudAiplatformV1alpha1SchemaImageSegmentationAnnotationPolylineAnnotation', 3)
-
-
-class GoogleCloudAiplatformV1alpha1SchemaImageSegmentationAnnotationMaskAnnotation(_messages.Message):
-  r"""The mask based segmentation annotation.
-
-  Fields:
-    annotationSpecColors: The mapping between color and AnnotationSpec for
-      this Annotation.
-    maskGcsUri: Google Cloud Storage URI that points to the mask image. The
-      image must be in PNG format. It must have the same size as the
-      DataItem's image. Each pixel in the image mask represents the
-      AnnotationSpec which the pixel in the image DataItem belong to. Each
-      color is mapped to one AnnotationSpec based on annotation_spec_colors.
-  """
-
-  annotationSpecColors = _messages.MessageField('GoogleCloudAiplatformV1alpha1SchemaAnnotationSpecColor', 1, repeated=True)
-  maskGcsUri = _messages.StringField(2)
-
-
-class GoogleCloudAiplatformV1alpha1SchemaImageSegmentationAnnotationPolygonAnnotation(_messages.Message):
-  r"""Represents a polygon in image.
-
-  Fields:
-    annotationSpecId: The resource Id of the AnnotationSpec that this
-      Annotation pertains to.
-    displayName: The display name of the AnnotationSpec that this Annotation
-      pertains to.
-    vertexes: The vertexes are connected one by one and the last vertex is
-      connected to the first one to represent a polygon.
-  """
-
-  annotationSpecId = _messages.StringField(1)
-  displayName = _messages.StringField(2)
-  vertexes = _messages.MessageField('GoogleCloudAiplatformV1alpha1SchemaVertex', 3, repeated=True)
-
-
-class GoogleCloudAiplatformV1alpha1SchemaImageSegmentationAnnotationPolylineAnnotation(_messages.Message):
-  r"""Represents a polyline in image.
-
-  Fields:
-    annotationSpecId: The resource Id of the AnnotationSpec that this
-      Annotation pertains to.
-    displayName: The display name of the AnnotationSpec that this Annotation
-      pertains to.
-    vertexes: The vertexes are connected one by one and the last vertex in not
-      connected to the first one.
-  """
-
-  annotationSpecId = _messages.StringField(1)
-  displayName = _messages.StringField(2)
-  vertexes = _messages.MessageField('GoogleCloudAiplatformV1alpha1SchemaVertex', 3, repeated=True)
-
-
-class GoogleCloudAiplatformV1alpha1SchemaTablesDatasetMetadata(_messages.Message):
-  r"""The metadata of Datasets that contain tables data.
-
-  Fields:
-    inputConfig: A
-      GoogleCloudAiplatformV1alpha1SchemaTablesDatasetMetadataInputConfig
-      attribute.
-  """
-
-  inputConfig = _messages.MessageField('GoogleCloudAiplatformV1alpha1SchemaTablesDatasetMetadataInputConfig', 1)
-
-
-class GoogleCloudAiplatformV1alpha1SchemaTablesDatasetMetadataBigQuerySource(_messages.Message):
-  r"""A GoogleCloudAiplatformV1alpha1SchemaTablesDatasetMetadataBigQuerySource
-  object.
-
-  Fields:
-    uri: The URI of a BigQuery table. e.g.
-      bq://projectId.bqDatasetId.bqTableId
-  """
-
-  uri = _messages.StringField(1)
-
-
-class GoogleCloudAiplatformV1alpha1SchemaTablesDatasetMetadataGcsSource(_messages.Message):
-  r"""A GoogleCloudAiplatformV1alpha1SchemaTablesDatasetMetadataGcsSource
-  object.
-
-  Fields:
-    uri: Cloud Storage URI of one or more files. Only CSV files are supported.
-      The first line of the CSV file is used as the header. If there are
-      multiple files, the header is the first line of the lexicographically
-      first file, the other files must either contain the exact same header or
-      omit the header.
-  """
-
-  uri = _messages.StringField(1, repeated=True)
-
-
-class GoogleCloudAiplatformV1alpha1SchemaTablesDatasetMetadataInputConfig(_messages.Message):
-  r"""The tables Dataset's data source. The Dataset doesn't store the data
-  directly, but only pointer(s) to its data.
-
-  Fields:
-    bigquerySource: A
-      GoogleCloudAiplatformV1alpha1SchemaTablesDatasetMetadataBigQuerySource
-      attribute.
-    gcsSource: A
-      GoogleCloudAiplatformV1alpha1SchemaTablesDatasetMetadataGcsSource
-      attribute.
-  """
-
-  bigquerySource = _messages.MessageField('GoogleCloudAiplatformV1alpha1SchemaTablesDatasetMetadataBigQuerySource', 1)
-  gcsSource = _messages.MessageField('GoogleCloudAiplatformV1alpha1SchemaTablesDatasetMetadataGcsSource', 2)
-
-
-class GoogleCloudAiplatformV1alpha1SchemaTextClassificationAnnotation(_messages.Message):
-  r"""Annotation details specific to text classification.
-
-  Fields:
-    annotationSpecId: The resource Id of the AnnotationSpec that this
-      Annotation pertains to.
-    displayName: The display name of the AnnotationSpec that this Annotation
-      pertains to.
-  """
-
-  annotationSpecId = _messages.StringField(1)
-  displayName = _messages.StringField(2)
-
-
-class GoogleCloudAiplatformV1alpha1SchemaTextDataItem(_messages.Message):
-  r"""Payload of Text DataItem.
-
-  Fields:
-    gcsUri: Output only. Google Cloud Storage URI points to the original text
-      in user's bucket. The text file is up to 10MB in size.
-  """
-
-  gcsUri = _messages.StringField(1)
-
-
-class GoogleCloudAiplatformV1alpha1SchemaTextDatasetMetadata(_messages.Message):
-  r"""The metadata of Datasets that contain Text DataItems.
-
-  Fields:
-    dataItemSchemaUri: Points to a YAML file stored on Google Cloud Storage
-      describing payload of the Text DataItems that belong to this Dataset.
-    gcsBucket: Google Cloud Storage Bucket name that contains the blob data of
-      this Dataset.
-  """
-
-  dataItemSchemaUri = _messages.StringField(1)
-  gcsBucket = _messages.StringField(2)
-
-
-class GoogleCloudAiplatformV1alpha1SchemaTextExtractionAnnotation(_messages.Message):
-  r"""Annotation details specific to text extraction.
-
-  Fields:
-    annotationSpecId: The resource Id of the AnnotationSpec that this
-      Annotation pertains to.
-    displayName: The display name of the AnnotationSpec that this Annotation
-      pertains to.
-    textSegment: The segment of the text content.
-  """
-
-  annotationSpecId = _messages.StringField(1)
-  displayName = _messages.StringField(2)
-  textSegment = _messages.MessageField('GoogleCloudAiplatformV1alpha1SchemaTextSegment', 3)
-
-
-class GoogleCloudAiplatformV1alpha1SchemaTextSegment(_messages.Message):
-  r"""The text segment inside of DataItem.
-
-  Fields:
-    content: The text content in the segment for output only.
-    endOffset: Zero-based character index of the first character past the end
-      of the text segment (counting character from the beginning of the text).
-      The character at the end_offset is NOT included in the text segment.
-    startOffset: Zero-based character index of the first character of the text
-      segment (counting characters from the beginning of the text).
-  """
-
-  content = _messages.StringField(1)
-  endOffset = _messages.IntegerField(2, variant=_messages.Variant.UINT64)
-  startOffset = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
-
-
-class GoogleCloudAiplatformV1alpha1SchemaTextSentimentAnnotation(_messages.Message):
-  r"""Annotation details specific to text sentiment.
-
-  Fields:
-    annotationSpecId: The resource Id of the AnnotationSpec that this
-      Annotation pertains to.
-    displayName: The display name of the AnnotationSpec that this Annotation
-      pertains to.
-    sentiment: The sentiment score for text.
-    sentimentMax: The sentiment max score for text.
-  """
-
-  annotationSpecId = _messages.StringField(1)
-  displayName = _messages.StringField(2)
-  sentiment = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  sentimentMax = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-
-
-class GoogleCloudAiplatformV1alpha1SchemaTextSentimentSavedQueryMetadata(_messages.Message):
-  r"""The metadata of SavedQuery contains TextSentiment Annotations.
-
-  Fields:
-    sentimentMax: The maximum sentiment of sentiment Anntoation in this
-      SavedQuery.
-  """
-
-  sentimentMax = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-
-
-class GoogleCloudAiplatformV1alpha1SchemaTimeSegment(_messages.Message):
-  r"""A time period inside of a DataItem that has a time dimension (e.g.
-  video).
-
-  Fields:
-    endTimeOffset: End of the time segment (exclusive), represented as the
-      duration since the start of the DataItem.
-    startTimeOffset: Start of the time segment (inclusive), represented as the
-      duration since the start of the DataItem.
-  """
-
-  endTimeOffset = _messages.StringField(1)
-  startTimeOffset = _messages.StringField(2)
-
-
-class GoogleCloudAiplatformV1alpha1SchemaTimeSeriesDatasetMetadata(_messages.Message):
-  r"""The metadata of Datasets that contain time series data.
-
-  Fields:
-    inputConfig: A
-      GoogleCloudAiplatformV1alpha1SchemaTimeSeriesDatasetMetadataInputConfig
-      attribute.
-    timeColumn: The column name of the time column that identifies time order
-      in the time series.
-    timeSeriesIdentifierColumn: The column name of the time series identifier
-      column that identifies the time series.
-  """
-
-  inputConfig = _messages.MessageField('GoogleCloudAiplatformV1alpha1SchemaTimeSeriesDatasetMetadataInputConfig', 1)
-  timeColumn = _messages.StringField(2)
-  timeSeriesIdentifierColumn = _messages.StringField(3)
-
-
-class GoogleCloudAiplatformV1alpha1SchemaTimeSeriesDatasetMetadataBigQuerySource(_messages.Message):
-  r"""A
-  GoogleCloudAiplatformV1alpha1SchemaTimeSeriesDatasetMetadataBigQuerySource
-  object.
-
-  Fields:
-    uri: The URI of a BigQuery table.
-  """
-
-  uri = _messages.StringField(1)
-
-
-class GoogleCloudAiplatformV1alpha1SchemaTimeSeriesDatasetMetadataGcsSource(_messages.Message):
-  r"""A GoogleCloudAiplatformV1alpha1SchemaTimeSeriesDatasetMetadataGcsSource
-  object.
-
-  Fields:
-    uri: Cloud Storage URI of one or more files. Only CSV files are supported.
-      The first line of the CSV file is used as the header. If there are
-      multiple files, the header is the first line of the lexicographically
-      first file, the other files must either contain the exact same header or
-      omit the header.
-  """
-
-  uri = _messages.StringField(1, repeated=True)
-
-
-class GoogleCloudAiplatformV1alpha1SchemaTimeSeriesDatasetMetadataInputConfig(_messages.Message):
-  r"""The time series Dataset's data source. The Dataset doesn't store the
-  data directly, but only pointer(s) to its data.
-
-  Fields:
-    bigquerySource: A
-      GoogleCloudAiplatformV1alpha1SchemaTimeSeriesDatasetMetadataBigQuerySour
-      ce attribute.
-    gcsSource: A
-      GoogleCloudAiplatformV1alpha1SchemaTimeSeriesDatasetMetadataGcsSource
-      attribute.
-  """
-
-  bigquerySource = _messages.MessageField('GoogleCloudAiplatformV1alpha1SchemaTimeSeriesDatasetMetadataBigQuerySource', 1)
-  gcsSource = _messages.MessageField('GoogleCloudAiplatformV1alpha1SchemaTimeSeriesDatasetMetadataGcsSource', 2)
-
-
-class GoogleCloudAiplatformV1alpha1SchemaVertex(_messages.Message):
-  r"""A vertex represents a 2D point in the image. NOTE: the normalized vertex
-  coordinates are relative to the original image and range from 0 to 1.
-
-  Fields:
-    x: X coordinate.
-    y: Y coordinate.
-  """
-
-  x = _messages.FloatField(1)
-  y = _messages.FloatField(2)
-
-
-class GoogleCloudAiplatformV1alpha1SchemaVideoActionRecognitionAnnotation(_messages.Message):
-  r"""Annotation details specific to video action recognition.
-
-  Fields:
-    annotationSpecId: The resource Id of the AnnotationSpec that this
-      Annotation pertains to.
-    displayName: The display name of the AnnotationSpec that this Annotation
-      pertains to.
-    timeSegment: This Annotation applies to the time period represented by the
-      TimeSegment. If it's not set, the Annotation applies to the whole video.
-  """
-
-  annotationSpecId = _messages.StringField(1)
-  displayName = _messages.StringField(2)
-  timeSegment = _messages.MessageField('GoogleCloudAiplatformV1alpha1SchemaTimeSegment', 3)
-
-
-class GoogleCloudAiplatformV1alpha1SchemaVideoClassificationAnnotation(_messages.Message):
-  r"""Annotation details specific to video classification.
-
-  Fields:
-    annotationSpecId: The resource Id of the AnnotationSpec that this
-      Annotation pertains to.
-    displayName: The display name of the AnnotationSpec that this Annotation
-      pertains to.
-    timeSegment: This Annotation applies to the time period represented by the
-      TimeSegment. If it's not set, the Annotation applies to the whole video.
-  """
-
-  annotationSpecId = _messages.StringField(1)
-  displayName = _messages.StringField(2)
-  timeSegment = _messages.MessageField('GoogleCloudAiplatformV1alpha1SchemaTimeSegment', 3)
-
-
-class GoogleCloudAiplatformV1alpha1SchemaVideoDataItem(_messages.Message):
-  r"""Payload of Video DataItem.
-
-  Fields:
-    gcsUri: Required. Google Cloud Storage URI points to the original video in
-      user's bucket. The video is up to 50 GB in size and up to 3 hour in
-      duration.
-    mimeType: Output only. The mime type of the content of the video. Only the
-      videos in below listed mime types are supported. Supported mime_type: -
-      video/mp4 - video/avi - video/quicktime
-  """
-
-  gcsUri = _messages.StringField(1)
-  mimeType = _messages.StringField(2)
-
-
-class GoogleCloudAiplatformV1alpha1SchemaVideoDatasetMetadata(_messages.Message):
-  r"""The metadata of Datasets that contain Video DataItems.
-
-  Fields:
-    dataItemSchemaUri: Points to a YAML file stored on Google Cloud Storage
-      describing payload of the Video DataItems that belong to this Dataset.
-    gcsBucket: Google Cloud Storage Bucket name that contains the blob data of
-      this Dataset.
-  """
-
-  dataItemSchemaUri = _messages.StringField(1)
-  gcsBucket = _messages.StringField(2)
-
-
-class GoogleCloudAiplatformV1alpha1SchemaVideoObjectTrackingAnnotation(_messages.Message):
-  r"""Annotation details specific to video object tracking.
-
-  Fields:
-    annotationSpecId: The resource Id of the AnnotationSpec that this
-      Annotation pertains to.
-    displayName: The display name of the AnnotationSpec that this Annotation
-      pertains to.
-    instanceId: The instance of the object, expressed as a positive integer.
-      Used to track the same object across different frames.
-    timeOffset: A time (frame) of a video to which this annotation pertains.
-      Represented as the duration since the video's start.
-    xMax: The rightmost coordinate of the bounding box.
-    xMin: The leftmost coordinate of the bounding box.
-    yMax: The bottommost coordinate of the bounding box.
-    yMin: The topmost coordinate of the bounding box.
-  """
-
-  annotationSpecId = _messages.StringField(1)
-  displayName = _messages.StringField(2)
-  instanceId = _messages.IntegerField(3)
-  timeOffset = _messages.StringField(4)
-  xMax = _messages.FloatField(5)
-  xMin = _messages.FloatField(6)
-  yMax = _messages.FloatField(7)
-  yMin = _messages.FloatField(8)
-
-
-class GoogleCloudAiplatformV1alpha1SchemaVisualInspectionClassificationLabelSavedQueryMetadata(_messages.Message):
-  r"""A GoogleCloudAiplatformV1alpha1SchemaVisualInspectionClassificationLabel
-  SavedQueryMetadata object.
-
-  Fields:
-    multiLabel: Whether or not the classification label is multi_label.
-  """
-
-  multiLabel = _messages.BooleanField(1)
-
-
-class GoogleCloudAiplatformV1alpha1SchemaVisualInspectionMaskSavedQueryMetadata(_messages.Message):
-  r"""A
-  GoogleCloudAiplatformV1alpha1SchemaVisualInspectionMaskSavedQueryMetadata
-  object.
-  """
-
-
-
-class GoogleCloudAiplatformV1alpha1SpecialistPool(_messages.Message):
-  r"""SpecialistPool represents customers' own workforce to work on their data
-  labeling jobs. It includes a group of specialist managers who are
-  responsible for managing the labelers in this pool as well as customers'
-  data labeling jobs associated with this pool. Customers create specialist
-  pool as well as start data labeling jobs on Cloud, managers and labelers
-  work with the jobs using CrowdCompute console.
-
-  Fields:
-    displayName: Required. The user-defined name of the SpecialistPool. The
-      name can be up to 128 characters long and can be consist of any UTF-8
-      characters. This field should be unique on project-level.
-    name: Required. The resource name of the SpecialistPool.
-    pendingDataLabelingJobs: Output only. The resource name of the pending
-      data labeling jobs.
-    specialistManagerEmails: The email addresses of the specialists in the
-      SpecialistPool.
-    specialistManagersCount: Output only. The number of Specialists in this
-      SpecialistPool.
-  """
-
-  displayName = _messages.StringField(1)
-  name = _messages.StringField(2)
-  pendingDataLabelingJobs = _messages.StringField(3, repeated=True)
-  specialistManagerEmails = _messages.StringField(4, repeated=True)
-  specialistManagersCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-
-
-class GoogleCloudAiplatformV1alpha1UndeployIndexOperationMetadata(_messages.Message):
-  r"""Runtime operation information for IndexEndpointService.UndeployIndex.
-
-  Fields:
-    genericMetadata: The operation generic information.
-  """
-
-  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1alpha1GenericOperationMetadata', 1)
-
-
-class GoogleCloudAiplatformV1alpha1UndeployIndexResponse(_messages.Message):
-  r"""Response message for IndexEndpointService.UndeployIndex."""
-
-
-class GoogleCloudAiplatformV1alpha1UndeployModelOperationMetadata(_messages.Message):
-  r"""Runtime operation information for EndpointService.UndeployModel.
-
-  Fields:
-    genericMetadata: The operation generic information.
-  """
-
-  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1alpha1GenericOperationMetadata', 1)
-
-
-class GoogleCloudAiplatformV1alpha1UndeployModelResponse(_messages.Message):
-  r"""Response message for EndpointService.UndeployModel."""
-
-
-class GoogleCloudAiplatformV1alpha1UpdateIndexOperationMetadata(_messages.Message):
-  r"""Runtime operation information for IndexService.UpdateIndex.
-
-  Fields:
-    genericMetadata: The operation generic information.
-    nearestNeighborSearchOperationMetadata: The operation metadata with regard
-      to ScaNN Index operation.
-  """
-
-  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1alpha1GenericOperationMetadata', 1)
-  nearestNeighborSearchOperationMetadata = _messages.MessageField('GoogleCloudAiplatformV1alpha1NearestNeighborSearchOperationMetadata', 2)
-
-
-class GoogleCloudAiplatformV1alpha1UpdateSpecialistPoolOperationMetadata(_messages.Message):
-  r"""Runtime operation metadata for
-  SpecialistPoolService.UpdateSpecialistPool.
-
-  Fields:
-    genericMetadata: The operation generic information.
-    specialistPool: Output only. The name of the SpecialistPool to which the
-      specialists are being added. Format: `projects/{project_id}/locations/{l
-      ocation_id}/specialistPools/{specialist_pool}`
-  """
-
-  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1alpha1GenericOperationMetadata', 1)
-  specialistPool = _messages.StringField(2)
-
-
-class GoogleCloudAiplatformV1alpha1UploadModelOperationMetadata(_messages.Message):
-  r"""Details of ModelService.UploadModel operation.
-
-  Fields:
-    genericMetadata: The common part of the operation metadata.
-  """
-
-  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1alpha1GenericOperationMetadata', 1)
-
-
-class GoogleCloudAiplatformV1alpha1UploadModelResponse(_messages.Message):
-  r"""Response message of ModelService.UploadModel operation.
-
-  Fields:
-    model: The name of the uploaded Model resource. Format:
-      `projects/{project}/locations/{location}/models/{model}`
-  """
-
-  model = _messages.StringField(1)
+class GoogleCloudAiplatformV1XraiAttribution(_messages.Message):
+  r"""An explanation method that redistributes Integrated Gradients
+  attributions to segmented regions, taking advantage of the model's fully
+  differentiable structure. Refer to this paper for more details:
+  https://arxiv.org/abs/1906.02825 Supported only by image Models.
+
+  Fields:
+    smoothGradConfig: Config for SmoothGrad approximation of gradients. When
+      enabled, the gradients are approximated by averaging the gradients from
+      noisy samples in the vicinity of the inputs. Adding noise can help
+      improve the computed gradients. Refer to this paper for more details:
+      https://arxiv.org/pdf/1706.03825.pdf
+    stepCount: Required. The number of steps for approximating the path
+      integral. A good value to start is 50 and gradually increase until the
+      sum to diff property is met within the desired error range. Valid range
+      of its value is [1, 100], inclusively.
+  """
+
+  smoothGradConfig = _messages.MessageField('GoogleCloudAiplatformV1SmoothGradConfig', 1)
+  stepCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudAiplatformV1beta1AutomaticResources(_messages.Message):
-  r"""A description of resources that to large degree are decided by AI
-  Platform, and require only a modest additional configuration. Each Model
+  r"""A description of resources that to large degree are decided by Vertex
+  AI, and require only a modest additional configuration. Each Model
   supporting these resources documents its specific guidelines.
 
   Fields:
@@ -8896,7 +9294,7 @@ class GoogleCloudAiplatformV1beta1AutomaticResources(_messages.Message):
       DeployedModel increases beyond what its replicas at maximum may handle,
       a portion of the traffic will be dropped. If this value is not provided,
       a no upper bound for scaling under heavy traffic will be assume, though
-      AI Platform may be unable to scale beyond certain replica number.
+      Vertex AI may be unable to scale beyond certain replica number.
     minReplicaCount: Immutable. The minimum number of replicas this
       DeployedModel will be always deployed on. If traffic against it
       increases, it may dynamically be deployed onto more replicas up to
@@ -8907,6 +9305,46 @@ class GoogleCloudAiplatformV1beta1AutomaticResources(_messages.Message):
 
   maxReplicaCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   minReplicaCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudAiplatformV1beta1AutoscalingMetricSpec(_messages.Message):
+  r"""The metric specification that defines the target resource utilization
+  (CPU utilization, accelerator's duty cycle, and so on) for calculating the
+  desired replica count.
+
+  Fields:
+    metricName: Required. The resource metric name. Supported metrics: * For
+      Online Prediction: *
+      `aiplatform.googleapis.com/prediction/online/accelerator/duty_cycle` *
+      `aiplatform.googleapis.com/prediction/online/cpu/utilization`
+    target: The target resource utilization in percentage (1% - 100%) for the
+      given metric; once the real usage deviates from the target by a certain
+      percentage, the machine replicas change. The default value is 60
+      (representing 60%) if not provided.
+  """
+
+  metricName = _messages.StringField(1)
+  target = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudAiplatformV1beta1BatchCreateFeaturesOperationMetadata(_messages.Message):
+  r"""Details of operations that perform batch create Features.
+
+  Fields:
+    genericMetadata: Operation metadata for Feature.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 1)
+
+
+class GoogleCloudAiplatformV1beta1BatchCreateFeaturesResponse(_messages.Message):
+  r"""Response message for FeaturestoreService.BatchCreateFeatures.
+
+  Fields:
+    features: The Features created.
+  """
+
+  features = _messages.MessageField('GoogleCloudAiplatformV1beta1Feature', 1, repeated=True)
 
 
 class GoogleCloudAiplatformV1beta1BatchMigrateResourcesOperationMetadata(_messages.Message):
@@ -8951,6 +9389,47 @@ class GoogleCloudAiplatformV1beta1BatchMigrateResourcesResponse(_messages.Messag
   migrateResourceResponses = _messages.MessageField('GoogleCloudAiplatformV1beta1MigrateResourceResponse', 1, repeated=True)
 
 
+class GoogleCloudAiplatformV1beta1BatchReadFeatureValuesOperationMetadata(_messages.Message):
+  r"""Details of operations that batch reads Feature values.
+
+  Fields:
+    genericMetadata: Operation metadata for Featurestore batch read Features
+      values.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 1)
+
+
+class GoogleCloudAiplatformV1beta1BatchReadFeatureValuesResponse(_messages.Message):
+  r"""Response message for FeaturestoreService.BatchReadFeatureValues."""
+
+
+class GoogleCloudAiplatformV1beta1CheckTrialEarlyStoppingStateMetatdata(_messages.Message):
+  r"""This message will be placed in the metadata field of a
+  google.longrunning.Operation associated with a CheckTrialEarlyStoppingState
+  request.
+
+  Fields:
+    genericMetadata: Operation metadata for suggesting Trials.
+    study: The name of the Study that the Trial belongs to.
+    trial: The Trial name.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 1)
+  study = _messages.StringField(2)
+  trial = _messages.StringField(3)
+
+
+class GoogleCloudAiplatformV1beta1CheckTrialEarlyStoppingStateResponse(_messages.Message):
+  r"""Response message for VizierService.CheckTrialEarlyStoppingState.
+
+  Fields:
+    shouldStop: True if the Trial should stop.
+  """
+
+  shouldStop = _messages.BooleanField(1)
+
+
 class GoogleCloudAiplatformV1beta1ContainerSpec(_messages.Message):
   r"""The spec of a Container.
 
@@ -8987,6 +9466,36 @@ class GoogleCloudAiplatformV1beta1CreateEndpointOperationMetadata(_messages.Mess
   genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 1)
 
 
+class GoogleCloudAiplatformV1beta1CreateEntityTypeOperationMetadata(_messages.Message):
+  r"""Details of operations that perform create EntityType.
+
+  Fields:
+    genericMetadata: Operation metadata for EntityType.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 1)
+
+
+class GoogleCloudAiplatformV1beta1CreateFeatureOperationMetadata(_messages.Message):
+  r"""Details of operations that perform create Feature.
+
+  Fields:
+    genericMetadata: Operation metadata for Feature.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 1)
+
+
+class GoogleCloudAiplatformV1beta1CreateFeaturestoreOperationMetadata(_messages.Message):
+  r"""Details of operations that perform create Featurestore.
+
+  Fields:
+    genericMetadata: Operation metadata for Featurestore.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 1)
+
+
 class GoogleCloudAiplatformV1beta1CreateIndexEndpointOperationMetadata(_messages.Message):
   r"""Runtime operation information for
   IndexEndpointService.CreateIndexEndpoint.
@@ -9004,11 +9513,21 @@ class GoogleCloudAiplatformV1beta1CreateIndexOperationMetadata(_messages.Message
   Fields:
     genericMetadata: The operation generic information.
     nearestNeighborSearchOperationMetadata: The operation metadata with regard
-      to ScaNN Index operation.
+      to Matching Engine Index operation.
   """
 
   genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 1)
   nearestNeighborSearchOperationMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1NearestNeighborSearchOperationMetadata', 2)
+
+
+class GoogleCloudAiplatformV1beta1CreateMetadataStoreOperationMetadata(_messages.Message):
+  r"""Details of operations that perform MetadataService.CreateMetadataStore.
+
+  Fields:
+    genericMetadata: Operation metadata for creating a MetadataStore.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 1)
 
 
 class GoogleCloudAiplatformV1beta1CreateSpecialistPoolOperationMetadata(_messages.Message):
@@ -9022,6 +9541,16 @@ class GoogleCloudAiplatformV1beta1CreateSpecialistPoolOperationMetadata(_message
   genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 1)
 
 
+class GoogleCloudAiplatformV1beta1CreateTensorboardOperationMetadata(_messages.Message):
+  r"""Details of operations that perform create Tensorboard.
+
+  Fields:
+    genericMetadata: Operation metadata for Tensorboard.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 1)
+
+
 class GoogleCloudAiplatformV1beta1CustomJobSpec(_messages.Message):
   r"""Represents the spec of a CustomJob.
 
@@ -9030,13 +9559,19 @@ class GoogleCloudAiplatformV1beta1CustomJobSpec(_messages.Message):
       this CustomJob or HyperparameterTuningJob. For HyperparameterTuningJob,
       the baseOutputDirectory of each child CustomJob backing a Trial is set
       to a subdirectory of name id under its parent HyperparameterTuningJob's
-      baseOutputDirectory. The following AI Platform environment variables
-      will be passed to containers or python modules when this field is set:
-      For CustomJob: * AIP_MODEL_DIR = `/model/` * AIP_CHECKPOINT_DIR =
+      baseOutputDirectory. The following Vertex AI environment variables will
+      be passed to containers or python modules when this field is set: For
+      CustomJob: * AIP_MODEL_DIR = `/model/` * AIP_CHECKPOINT_DIR =
       `/checkpoints/` * AIP_TENSORBOARD_LOG_DIR = `/logs/` For CustomJob
       backing a Trial of HyperparameterTuningJob: * AIP_MODEL_DIR = `//model/`
       * AIP_CHECKPOINT_DIR = `//checkpoints/` * AIP_TENSORBOARD_LOG_DIR =
       `//logs/`
+    enableWebAccess: Optional. Whether you want Vertex AI to enable
+      [interactive shell access](https://cloud.google.com/vertex-
+      ai/docs/training/monitor-debug-interactive-shell) to training
+      containers. If set to `true`, you can access interactive shells at the
+      URIs given by CustomJob.web_access_uris or Trial.web_access_uris (within
+      HyperparameterTuningJob.trials).
     network: The full name of the Compute Engine
       [network](/compute/docs/networks-and-firewalls#networks) to which the
       Job should be peered. For example,
@@ -9049,18 +9584,24 @@ class GoogleCloudAiplatformV1beta1CustomJobSpec(_messages.Message):
     scheduling: Scheduling options for a CustomJob.
     serviceAccount: Specifies the service account for workload run-as account.
       Users submitting jobs must have act-as permission on this run-as
-      account. If unspecified, the AI Platform Custom Code Service Agent for
-      the CustomJob's project is used.
+      account. If unspecified, the [Vertex AI Custom Code Service
+      Agent](https://cloud.google.com/vertex-ai/docs/general/access-
+      control#service-agents) for the CustomJob's project is used.
+    tensorboard: Optional. The name of a Vertex AI Tensorboard resource to
+      which this CustomJob will upload Tensorboard logs. Format:
+      `projects/{project}/locations/{location}/tensorboards/{tensorboard}`
     workerPoolSpecs: Required. The spec of the worker pools including machine
       type and Docker image. All worker pools except the first one are
       optional and can be skipped by providing an empty value.
   """
 
   baseOutputDirectory = _messages.MessageField('GoogleCloudAiplatformV1beta1GcsDestination', 1)
-  network = _messages.StringField(2)
-  scheduling = _messages.MessageField('GoogleCloudAiplatformV1beta1Scheduling', 3)
-  serviceAccount = _messages.StringField(4)
-  workerPoolSpecs = _messages.MessageField('GoogleCloudAiplatformV1beta1WorkerPoolSpec', 5, repeated=True)
+  enableWebAccess = _messages.BooleanField(2)
+  network = _messages.StringField(3)
+  scheduling = _messages.MessageField('GoogleCloudAiplatformV1beta1Scheduling', 4)
+  serviceAccount = _messages.StringField(5)
+  tensorboard = _messages.StringField(6)
+  workerPoolSpecs = _messages.MessageField('GoogleCloudAiplatformV1beta1WorkerPoolSpec', 7, repeated=True)
 
 
 class GoogleCloudAiplatformV1beta1DedicatedResources(_messages.Message):
@@ -9068,6 +9609,21 @@ class GoogleCloudAiplatformV1beta1DedicatedResources(_messages.Message):
   that need a higher degree of manual configuration.
 
   Fields:
+    autoscalingMetricSpecs: Immutable. The metric specifications that
+      overrides a resource utilization metric (CPU utilization, accelerator's
+      duty cycle, and so on) target value (default to 60 if not set). At most
+      one entry is allowed per metric. If machine_spec.accelerator_count is
+      above 0, the autoscaling will be based on both CPU utilization and
+      accelerator's duty cycle metrics and scale up when either metrics
+      exceeds its target value while scale down if both metrics are under
+      their target value. The default target value is 60 for both metrics. If
+      machine_spec.accelerator_count is 0, the autoscaling will be based on
+      CPU utilization metric only with default target value 60 if not
+      explicitly set. For example, in the case of Online Prediction, if you
+      want to override target CPU utilization to 80, you should set
+      autoscaling_metric_specs.metric_name to
+      `aiplatform.googleapis.com/prediction/online/cpu/utilization` and
+      autoscaling_metric_specs.target to `80`.
     machineSpec: Required. Immutable. The specification of a single machine
       used by the prediction.
     maxReplicaCount: Immutable. The maximum number of replicas this
@@ -9079,16 +9635,26 @@ class GoogleCloudAiplatformV1beta1DedicatedResources(_messages.Message):
       a portion of the traffic will be dropped. If this value is not provided,
       will use min_replica_count as the default value.
     minReplicaCount: Required. Immutable. The minimum number of machine
-      replicas this DeployedModel will be always deployed on. If traffic
-      against it increases, it may dynamically be deployed onto more replicas,
-      and as traffic decreases, some of these extra replicas may be freed.
-      Note: if machine_spec.accelerator_count is above 0, currently the model
-      will be always deployed precisely on min_replica_count.
+      replicas this DeployedModel will be always deployed on. This value must
+      be greater than or equal to 1. If traffic against the DeployedModel
+      increases, it may dynamically be deployed onto more replicas, and as
+      traffic decreases, some of these extra replicas may be freed.
   """
 
-  machineSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1MachineSpec', 1)
-  maxReplicaCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  minReplicaCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  autoscalingMetricSpecs = _messages.MessageField('GoogleCloudAiplatformV1beta1AutoscalingMetricSpec', 1, repeated=True)
+  machineSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1MachineSpec', 2)
+  maxReplicaCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  minReplicaCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudAiplatformV1beta1DeleteMetadataStoreOperationMetadata(_messages.Message):
+  r"""Details of operations that perform MetadataService.DeleteMetadataStore.
+
+  Fields:
+    genericMetadata: Operation metadata for deleting a MetadataStore.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 1)
 
 
 class GoogleCloudAiplatformV1beta1DeleteOperationMetadata(_messages.Message):
@@ -9105,10 +9671,12 @@ class GoogleCloudAiplatformV1beta1DeployIndexOperationMetadata(_messages.Message
   r"""Runtime operation information for IndexEndpointService.DeployIndex.
 
   Fields:
+    deployedIndexId: The unique index id specified by user
     genericMetadata: The operation generic information.
   """
 
-  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 1)
+  deployedIndexId = _messages.StringField(1)
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 2)
 
 
 class GoogleCloudAiplatformV1beta1DeployIndexResponse(_messages.Message):
@@ -9148,16 +9716,34 @@ class GoogleCloudAiplatformV1beta1DeployedIndex(_messages.Message):
 
   Fields:
     automaticResources: Optional. A description of resources that the
-      DeployedIndex uses, which to large degree are decided by AI Platform,
-      and optionally allows only a modest additional configuration. If
+      DeployedIndex uses, which to large degree are decided by Vertex AI, and
+      optionally allows only a modest additional configuration. If
       min_replica_count is not set, the default value is 1. If
       max_replica_count is not set, the default value is min_replica_count.
       The max allowed replica count is 1000. The user is billed for the
       resources (at least their minimal amount) even if the DeployedIndex
       receives no traffic.
     createTime: Output only. Timestamp when the DeployedIndex was created.
+    deployedIndexAuthConfig: Optional. If set, the authentication is enabled
+      for the private endpoint.
+    deploymentGroup: Optional. The deployment group can be no longer than 64
+      characters (eg: 'test', 'prod'). If not set, we will use the 'default'
+      deployment group. Creating `deployment_groups` with `reserved_ip_ranges`
+      is a recommended practice when the peered network has multiple peering
+      ranges. This creates your deployments from predictable IP spaces for
+      easier traffic administration. Also, one deployment_group (except
+      'default') can only be used with the same reserved_ip_ranges which means
+      if the deployment_group has been used with reserved_ip_ranges: [a, b,
+      c], using it with [a, b] or [d, e] is disallowed. Note: we only support
+      up to 5 deployment groups(not including 'default').
     displayName: The display name of the DeployedIndex. If not provided upon
       creation, the Index's display_name is used.
+    enableAccessLogging: Optional. If true, private endpoint's access logs are
+      sent to StackDriver Logging. These logs are like standard server access
+      logs, containing information like timestamp and latency for each
+      MatchRequest. Note that Stackdriver logs may incur a cost, especially if
+      the deployed index receives a high queries per second rate (QPS).
+      Estimate your costs before enabling this option.
     id: Required. The user specified ID of the DeployedIndex. The ID can be up
       to 128 characters long and must start with a letter and only contain
       letters, numbers, and underscores. The ID must be unique within the
@@ -9179,15 +9765,55 @@ class GoogleCloudAiplatformV1beta1DeployedIndex(_messages.Message):
     privateEndpoints: Output only. Provides paths for users to send requests
       directly to the deployed index services running on Cloud via private
       services access. This field is populated if network is configured.
+    reservedIpRanges: Optional. A list of reserved ip ranges under the VPC
+      network that can be used for this DeployedIndex. If set, we will deploy
+      the index within the provided ip ranges. Otherwise, the index might be
+      deployed to any ip ranges under the provided VPC network. The value
+      sohuld be the name of the address
+      (https://cloud.google.com/compute/docs/reference/rest/v1/addresses)
+      Example: 'vertex-ai-ip-range'.
   """
 
   automaticResources = _messages.MessageField('GoogleCloudAiplatformV1beta1AutomaticResources', 1)
   createTime = _messages.StringField(2)
-  displayName = _messages.StringField(3)
-  id = _messages.StringField(4)
-  index = _messages.StringField(5)
-  indexSyncTime = _messages.StringField(6)
-  privateEndpoints = _messages.MessageField('GoogleCloudAiplatformV1beta1IndexPrivateEndpoints', 7)
+  deployedIndexAuthConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1DeployedIndexAuthConfig', 3)
+  deploymentGroup = _messages.StringField(4)
+  displayName = _messages.StringField(5)
+  enableAccessLogging = _messages.BooleanField(6)
+  id = _messages.StringField(7)
+  index = _messages.StringField(8)
+  indexSyncTime = _messages.StringField(9)
+  privateEndpoints = _messages.MessageField('GoogleCloudAiplatformV1beta1IndexPrivateEndpoints', 10)
+  reservedIpRanges = _messages.StringField(11, repeated=True)
+
+
+class GoogleCloudAiplatformV1beta1DeployedIndexAuthConfig(_messages.Message):
+  r"""Used to set up the auth on the DeployedIndex's private endpoint.
+
+  Fields:
+    authProvider: Defines the authentication provider that the DeployedIndex
+      uses.
+  """
+
+  authProvider = _messages.MessageField('GoogleCloudAiplatformV1beta1DeployedIndexAuthConfigAuthProvider', 1)
+
+
+class GoogleCloudAiplatformV1beta1DeployedIndexAuthConfigAuthProvider(_messages.Message):
+  r"""Configuration for an authentication provider, including support for
+  [JSON Web Token (JWT)](https://tools.ietf.org/html/draft-ietf-oauth-json-
+  web-token-32).
+
+  Fields:
+    allowedIssuers: A list of allowed JWT issuers. Each entry must be a valid
+      Google service account, in the following format: `service-account-
+      name@project-id.iam.gserviceaccount.com`
+    audiences: The list of JWT [audiences](https://tools.ietf.org/html/draft-
+      ietf-oauth-json-web-token-32#section-4.1.3). that are allowed to access.
+      A JWT containing any of these audiences will be accepted.
+  """
+
+  allowedIssuers = _messages.StringField(1, repeated=True)
+  audiences = _messages.StringField(2, repeated=True)
 
 
 class GoogleCloudAiplatformV1beta1DeployedModel(_messages.Message):
@@ -9195,7 +9821,7 @@ class GoogleCloudAiplatformV1beta1DeployedModel(_messages.Message):
 
   Fields:
     automaticResources: A description of resources that to large degree are
-      decided by AI Platform, and require only a modest additional
+      decided by Vertex AI, and require only a modest additional
       configuration.
     createTime: Output only. Timestamp when the DeployedModel was created.
     dedicatedResources: A description of resources that are dedicated to the
@@ -9223,6 +9849,10 @@ class GoogleCloudAiplatformV1beta1DeployedModel(_messages.Message):
     model: Required. The name of the Model that this is the deployment of.
       Note that the Model may be in a different location than the
       DeployedModel's Endpoint.
+    privateEndpoints: Output only. Provide paths for users to send
+      predict/explain/health requests directly to the deployed model services
+      running on Cloud via private services access. This field is populated if
+      network is configured.
     serviceAccount: The service account that the DeployedModel's container
       runs as. Specify the email address of the service account. If this
       service account is not specified, the container runs as a service
@@ -9240,7 +9870,8 @@ class GoogleCloudAiplatformV1beta1DeployedModel(_messages.Message):
   explanationSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1ExplanationSpec', 7)
   id = _messages.StringField(8)
   model = _messages.StringField(9)
-  serviceAccount = _messages.StringField(10)
+  privateEndpoints = _messages.MessageField('GoogleCloudAiplatformV1beta1PrivateEndpoints', 10)
+  serviceAccount = _messages.StringField(11)
 
 
 class GoogleCloudAiplatformV1beta1DiskSpec(_messages.Message):
@@ -9265,22 +9896,24 @@ class GoogleCloudAiplatformV1beta1ExplanationMetadata(_messages.Message):
       Keys are the name of the features. Values are the specification of the
       feature. An empty InputMetadata is valid. It describes a text feature
       which has the name specified as the key in ExplanationMetadata.inputs.
-      The baseline of the empty feature is chosen by AI Platform. For AI
-      Platform provided Tensorflow images, the key can be any friendly name of
-      the feature. Once specified, featureAttributions are keyed by this key
-      (if not grouped with another feature). For custom images, the key must
-      match with the key in instance.
-    OutputsValue: Required. Map from output names to output metadata. For AI
-      Platform provided Tensorflow images, keys can be any string user
-      defines. For custom images, keys are the name of the output field in the
-      prediction to be explained. Currently only one key is allowed.
+      The baseline of the empty feature is chosen by Vertex AI. For Vertex AI-
+      provided Tensorflow images, the key can be any friendly name of the
+      feature. Once specified, featureAttributions are keyed by this key (if
+      not grouped with another feature). For custom images, the key must match
+      with the key in instance.
+    OutputsValue: Required. Map from output names to output metadata. For
+      Vertex AI-provided Tensorflow images, keys can be any user defined
+      string that consists of any UTF-8 characters. For custom images, keys
+      are the name of the output field in the prediction to be explained.
+      Currently only one key is allowed.
 
   Fields:
     featureAttributionsSchemaUri: Points to a YAML file stored on Google Cloud
       Storage describing the format of the feature attributions. The schema is
       defined as an OpenAPI 3.0.2 [Schema
-      Object](https://tinyurl.com/y538mdwt#schema-object). AutoML tabular
-      Models always have this field populated by AI Platform. Note: The URI
+      Object](https://github.com/OAI/OpenAPI-
+      Specification/blob/main/versions/3.0.2.md#schemaObject). AutoML tabular
+      Models always have this field populated by Vertex AI. Note: The URI
       given on output may be different, including the URI scheme, than the one
       given on input. The output URI will point to a location where the user
       only has a read access.
@@ -9288,15 +9921,16 @@ class GoogleCloudAiplatformV1beta1ExplanationMetadata(_messages.Message):
       are the name of the features. Values are the specification of the
       feature. An empty InputMetadata is valid. It describes a text feature
       which has the name specified as the key in ExplanationMetadata.inputs.
-      The baseline of the empty feature is chosen by AI Platform. For AI
-      Platform provided Tensorflow images, the key can be any friendly name of
-      the feature. Once specified, featureAttributions are keyed by this key
-      (if not grouped with another feature). For custom images, the key must
-      match with the key in instance.
-    outputs: Required. Map from output names to output metadata. For AI
-      Platform provided Tensorflow images, keys can be any string user
-      defines. For custom images, keys are the name of the output field in the
-      prediction to be explained. Currently only one key is allowed.
+      The baseline of the empty feature is chosen by Vertex AI. For Vertex AI-
+      provided Tensorflow images, the key can be any friendly name of the
+      feature. Once specified, featureAttributions are keyed by this key (if
+      not grouped with another feature). For custom images, the key must match
+      with the key in instance.
+    outputs: Required. Map from output names to output metadata. For Vertex
+      AI-provided Tensorflow images, keys can be any user defined string that
+      consists of any UTF-8 characters. For custom images, keys are the name
+      of the output field in the prediction to be explained. Currently only
+      one key is allowed.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -9305,7 +9939,7 @@ class GoogleCloudAiplatformV1beta1ExplanationMetadata(_messages.Message):
     the name of the features. Values are the specification of the feature. An
     empty InputMetadata is valid. It describes a text feature which has the
     name specified as the key in ExplanationMetadata.inputs. The baseline of
-    the empty feature is chosen by AI Platform. For AI Platform provided
+    the empty feature is chosen by Vertex AI. For Vertex AI-provided
     Tensorflow images, the key can be any friendly name of the feature. Once
     specified, featureAttributions are keyed by this key (if not grouped with
     another feature). For custom images, the key must match with the key in
@@ -9334,10 +9968,11 @@ class GoogleCloudAiplatformV1beta1ExplanationMetadata(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class OutputsValue(_messages.Message):
-    r"""Required. Map from output names to output metadata. For AI Platform
-    provided Tensorflow images, keys can be any string user defines. For
-    custom images, keys are the name of the output field in the prediction to
-    be explained. Currently only one key is allowed.
+    r"""Required. Map from output names to output metadata. For Vertex AI-
+    provided Tensorflow images, keys can be any user defined string that
+    consists of any UTF-8 characters. For custom images, keys are the name of
+    the output field in the prediction to be explained. Currently only one key
+    is allowed.
 
     Messages:
       AdditionalProperty: An additional property for a OutputsValue object.
@@ -9368,7 +10003,7 @@ class GoogleCloudAiplatformV1beta1ExplanationMetadata(_messages.Message):
 class GoogleCloudAiplatformV1beta1ExplanationMetadataInputMetadata(_messages.Message):
   r"""Metadata of the input of a feature. Fields other than
   InputMetadata.input_baselines are applicable only for Models that are using
-  AI Platform-provided images for Tensorflow.
+  Vertex AI-provided images for Tensorflow.
 
   Enums:
     EncodingValueValuesEnum: Defines how the feature is encoded into the input
@@ -9381,7 +10016,7 @@ class GoogleCloudAiplatformV1beta1ExplanationMetadataInputMetadata(_messages.Mes
       https://www.tensorflow.org/api_docs/python/tf/sparse/SparseTensor.
     encodedBaselines: A list of baselines for the encoded tensor. The shape of
       each baseline should match the shape of the encoded tensor. If a scalar
-      is provided, AI Platform broadcast to the same shape as the encoded
+      is provided, Vertex AI broadcasts to the same shape as the encoded
       tensor.
     encodedTensorName: Encoded tensor is a transformation of the input tensor.
       Must be provided if choosing Integrated Gradients attribution or XRAI
@@ -9395,7 +10030,7 @@ class GoogleCloudAiplatformV1beta1ExplanationMetadataInputMetadata(_messages.Mes
       same group name will be treated as one feature when computing
       attributions. Features grouped together can have different shapes in
       value. If provided, there will be one single attribution generated in
-      featureAttributions, keyed by the group name.
+      Attribution.feature_attributions, keyed by the group name.
     indexFeatureMapping: A list of feature names for each index in the input
       tensor. Required when the input InputMetadata.encoding is
       BAG_OF_FEATURES, BAG_OF_FEATURES_SPARSE, INDICATOR.
@@ -9404,18 +10039,18 @@ class GoogleCloudAiplatformV1beta1ExplanationMetadataInputMetadata(_messages.Mes
       Tensorflow documentation for more details:
       https://www.tensorflow.org/api_docs/python/tf/sparse/SparseTensor.
     inputBaselines: Baseline inputs for this feature. If no baseline is
-      specified, AI Platform chooses the baseline for this feature. If
-      multiple baselines are specified, AI Platform returns the average
-      attributions across them in Attributions.baseline_attribution. For AI
-      Platform provided Tensorflow images (both 1.x and 2.x), the shape of
-      each baseline must match the shape of the input tensor. If a scalar is
-      provided, we broadcast to the same shape as the input tensor. For custom
-      images, the element of the baselines must be in the same format as the
-      feature's input in the instance[]. The schema of any single instance may
-      be specified via Endpoint's DeployedModels' Model's PredictSchemata's
+      specified, Vertex AI chooses the baseline for this feature. If multiple
+      baselines are specified, Vertex AI returns the average attributions
+      across them in Attribution.feature_attributions. For Vertex AI-provided
+      Tensorflow images (both 1.x and 2.x), the shape of each baseline must
+      match the shape of the input tensor. If a scalar is provided, we
+      broadcast to the same shape as the input tensor. For custom images, the
+      element of the baselines must be in the same format as the feature's
+      input in the instance[]. The schema of any single instance may be
+      specified via Endpoint's DeployedModels' Model's PredictSchemata's
       instance_schema_uri.
     inputTensorName: Name of the input tensor for this feature. Required and
-      is only applicable to AI Platform provided images for Tensorflow.
+      is only applicable to Vertex AI-provided images for Tensorflow.
     modality: Modality of the feature. Valid values are: numeric, image.
       Defaults to numeric.
     visualization: Visualization configurations for image explanation.
@@ -9525,7 +10160,7 @@ class GoogleCloudAiplatformV1beta1ExplanationMetadataInputMetadataVisualization(
 
   Fields:
     clipPercentLowerbound: Excludes attributions below the specified
-      percentile, from the highlighted areas. Defaults to 35.
+      percentile, from the highlighted areas. Defaults to 62.
     clipPercentUpperbound: Excludes attributions above the specified
       percentile from the highlighted areas. Using the clip_percent_upperbound
       and clip_percent_lowerbound together can be useful for filtering out
@@ -9651,7 +10286,7 @@ class GoogleCloudAiplatformV1beta1ExplanationMetadataOutputMetadata(_messages.Me
       be explained. The Attribution.output_display_name is populated by
       locating in the mapping with Attribution.output_index.
     outputTensorName: Name of the output tensor. Required and is only
-      applicable to AI Platform provided images for Tensorflow.
+      applicable to Vertex AI provided images for Tensorflow.
   """
 
   displayNameMappingKey = _messages.StringField(1)
@@ -9738,6 +10373,21 @@ class GoogleCloudAiplatformV1beta1ExportDataResponse(_messages.Message):
   exportedFiles = _messages.StringField(1, repeated=True)
 
 
+class GoogleCloudAiplatformV1beta1ExportFeatureValuesOperationMetadata(_messages.Message):
+  r"""Details of operations that exports Features values.
+
+  Fields:
+    genericMetadata: Operation metadata for Featurestore export Feature
+      values.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 1)
+
+
+class GoogleCloudAiplatformV1beta1ExportFeatureValuesResponse(_messages.Message):
+  r"""Response message for FeaturestoreService.ExportFeatureValues."""
+
+
 class GoogleCloudAiplatformV1beta1ExportModelOperationMetadata(_messages.Message):
   r"""Details of ModelService.ExportModel operation.
 
@@ -9772,6 +10422,126 @@ class GoogleCloudAiplatformV1beta1ExportModelResponse(_messages.Message):
   r"""Response message of ModelService.ExportModel operation."""
 
 
+class GoogleCloudAiplatformV1beta1Feature(_messages.Message):
+  r"""Feature Metadata information that describes an attribute of an entity
+  type. For example, apple is an entity type, and color is a feature that
+  describes apple.
+
+  Enums:
+    ValueTypeValueValuesEnum: Required. Immutable. Type of Feature value.
+
+  Messages:
+    LabelsValue: Optional. The labels with user-defined metadata to organize
+      your Features. Label keys and values can be no longer than 64 characters
+      (Unicode codepoints), can only contain lowercase letters, numeric
+      characters, underscores and dashes. International characters are
+      allowed. See https://goo.gl/xmQnxf for more information on and examples
+      of labels. No more than 64 user labels can be associated with one
+      Feature (System labels are excluded)." System reserved label keys are
+      prefixed with "aiplatform.googleapis.com/" and are immutable.
+
+  Fields:
+    createTime: Output only. Timestamp when this EntityType was created.
+    description: Description of the Feature.
+    etag: Used to perform a consistent read-modify-write updates. If not set,
+      a blind "overwrite" update happens.
+    labels: Optional. The labels with user-defined metadata to organize your
+      Features. Label keys and values can be no longer than 64 characters
+      (Unicode codepoints), can only contain lowercase letters, numeric
+      characters, underscores and dashes. International characters are
+      allowed. See https://goo.gl/xmQnxf for more information on and examples
+      of labels. No more than 64 user labels can be associated with one
+      Feature (System labels are excluded)." System reserved label keys are
+      prefixed with "aiplatform.googleapis.com/" and are immutable.
+    monitoringConfig: Optional. The custom monitoring configuration for this
+      Feature, if not set, use the monitoring_config defined for the
+      EntityType this Feature belongs to. If this is populated with
+      FeaturestoreMonitoringConfig.disabled = true, snapshot analysis
+      monitoring is disabled; if
+      FeaturestoreMonitoringConfig.monitoring_interval specified, snapshot
+      analysis monitoring is enabled. Otherwise, snapshot analysis monitoring
+      config is same as the EntityType's this Feature belongs to.
+    monitoringStats: Output only. A list of historical Snapshot Analysis stats
+      requested by user, sorted by FeatureStatsAnomaly.start_time descending.
+    name: Immutable. Name of the Feature. Format: `projects/{project}/location
+      s/{location}/featurestores/{featurestore}/entityTypes/{entity_type}/feat
+      ures/{feature}` The last part feature is assigned by the client. The
+      feature can be up to 64 characters long and can consist only of ASCII
+      Latin letters A-Z and a-z, underscore(_), and ASCII digits 0-9 starting
+      with a letter. The value will be unique given an entity type.
+    updateTime: Output only. Timestamp when this EntityType was most recently
+      updated.
+    valueType: Required. Immutable. Type of Feature value.
+  """
+
+  class ValueTypeValueValuesEnum(_messages.Enum):
+    r"""Required. Immutable. Type of Feature value.
+
+    Values:
+      VALUE_TYPE_UNSPECIFIED: The value type is unspecified.
+      BOOL: Used for Feature that is a boolean.
+      BOOL_ARRAY: Used for Feature that is a list of boolean.
+      DOUBLE: Used for Feature that is double.
+      DOUBLE_ARRAY: Used for Feature that is a list of double.
+      INT64: Used for Feature that is INT64.
+      INT64_ARRAY: Used for Feature that is a list of INT64.
+      STRING: Used for Feature that is string.
+      STRING_ARRAY: Used for Feature that is a list of String.
+      BYTES: Used for Feature that is bytes.
+    """
+    VALUE_TYPE_UNSPECIFIED = 0
+    BOOL = 1
+    BOOL_ARRAY = 2
+    DOUBLE = 3
+    DOUBLE_ARRAY = 4
+    INT64 = 5
+    INT64_ARRAY = 6
+    STRING = 7
+    STRING_ARRAY = 8
+    BYTES = 9
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. The labels with user-defined metadata to organize your
+    Features. Label keys and values can be no longer than 64 characters
+    (Unicode codepoints), can only contain lowercase letters, numeric
+    characters, underscores and dashes. International characters are allowed.
+    See https://goo.gl/xmQnxf for more information on and examples of labels.
+    No more than 64 user labels can be associated with one Feature (System
+    labels are excluded)." System reserved label keys are prefixed with
+    "aiplatform.googleapis.com/" and are immutable.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  etag = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  monitoringConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1FeaturestoreMonitoringConfig', 5)
+  monitoringStats = _messages.MessageField('GoogleCloudAiplatformV1beta1FeatureStatsAnomaly', 6, repeated=True)
+  name = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
+  valueType = _messages.EnumField('ValueTypeValueValuesEnum', 9)
+
+
 class GoogleCloudAiplatformV1beta1FeatureNoiseSigma(_messages.Message):
   r"""Noise sigma by features. Noise sigma represents the standard deviation
   of the gaussian kernel that will be used to add noise to interpolated inputs
@@ -9799,6 +10569,107 @@ class GoogleCloudAiplatformV1beta1FeatureNoiseSigmaNoiseSigmaForFeature(_message
 
   name = _messages.StringField(1)
   sigma = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+
+
+class GoogleCloudAiplatformV1beta1FeatureStatsAnomaly(_messages.Message):
+  r"""Stats and Anomaly generated at specific timestamp for specific Feature.
+  The start_time and end_time are used to define the time range of the dataset
+  that current stats belongs to, e.g. prediction traffic is bucketed into
+  prediction datasets by time window. If the Dataset is not defined by time
+  window, start_time = end_time. Timestamp of the stats and anomalies always
+  refers to end_time. Raw stats and anomalies are stored in stats_uri or
+  anomaly_uri in the tensorflow defined protos. Field data_stats contains
+  almost identical information with the raw stats in Vertex AI defined proto,
+  for UI to display.
+
+  Fields:
+    anomalyDetectionThreshold: This is the threshold used when detecting
+      anomalies. The threshold can be changed by user, so this one might be
+      different from ThresholdConfig.value.
+    anomalyUri: Path of the anomaly file for current feature values in Cloud
+      Storage bucket. Format: gs:////anomalies. Example:
+      gs://monitoring_bucket/feature_name/anomalies. Stats are stored as
+      binary format with Protobuf message Anoamlies are stored as binary
+      format with Protobuf message [tensorflow.metadata.v0.AnomalyInfo] (https
+      ://github.com/tensorflow/metadata/blob/master/tensorflow_metadata/proto/
+      v0/anomalies.proto).
+    distributionDeviation: Deviation from the current stats to baseline stats.
+      1. For categorical feature, the distribution distance is calculated by
+      L-inifinity norm. 2. For numerical feature, the distribution distance is
+      calculated by Jensen\u2013Shannon divergence.
+    endTime: The end timestamp of window where stats were generated. For
+      objectives where time window doesn't make sense (e.g. Featurestore
+      Snapshot Monitoring), end_time indicates the timestamp of the data used
+      to generate stats (e.g. timestamp we take snapshots for feature values).
+    score: Feature importance score, only populated when cross-feature
+      monitoring is enabled. For now only used to represent feature
+      attribution score within range [0, 1] for
+      ModelDeploymentMonitoringObjectiveType.FEATURE_ATTRIBUTION_SKEW and
+      ModelDeploymentMonitoringObjectiveType.FEATURE_ATTRIBUTION_DRIFT.
+    startTime: The start timestamp of window where stats were generated. For
+      objectives where time window doesn't make sense (e.g. Featurestore
+      Snapshot Monitoring), start_time is only used to indicate the monitoring
+      intervals, so it always equals to (end_time - monitoring_interval).
+    statsUri: Path of the stats file for current feature values in Cloud
+      Storage bucket. Format: gs:////stats. Example:
+      gs://monitoring_bucket/feature_name/stats. Stats are stored as binary
+      format with Protobuf message [tensorflow.metadata.v0.FeatureNameStatisti
+      cs](https://github.com/tensorflow/metadata/blob/master/tensorflow_metada
+      ta/proto/v0/statistics.proto).
+  """
+
+  anomalyDetectionThreshold = _messages.FloatField(1)
+  anomalyUri = _messages.StringField(2)
+  distributionDeviation = _messages.FloatField(3)
+  endTime = _messages.StringField(4)
+  score = _messages.FloatField(5)
+  startTime = _messages.StringField(6)
+  statsUri = _messages.StringField(7)
+
+
+class GoogleCloudAiplatformV1beta1FeaturestoreMonitoringConfig(_messages.Message):
+  r"""Configuration of how features in Featurestore are monitored.
+
+  Fields:
+    snapshotAnalysis: The config for Snapshot Analysis Based Feature
+      Monitoring.
+  """
+
+  snapshotAnalysis = _messages.MessageField('GoogleCloudAiplatformV1beta1FeaturestoreMonitoringConfigSnapshotAnalysis', 1)
+
+
+class GoogleCloudAiplatformV1beta1FeaturestoreMonitoringConfigSnapshotAnalysis(_messages.Message):
+  r"""Configuration of the Featurestore's Snapshot Analysis Based Monitoring.
+  This type of analysis generates statistics for each Feature based on a
+  snapshot of the latest feature value of each entities every
+  monitoring_interval.
+
+  Fields:
+    disabled: The monitoring schedule for snapshot analysis. For EntityType-
+      level config: unset / disabled = true indicates disabled by default for
+      Features under it; otherwise by default enable snapshot analysis
+      monitoring with monitoring_interval for Features under it. Feature-level
+      config: disabled = true indicates disabled regardless of the EntityType-
+      level config; unset monitoring_interval indicates going with EntityType-
+      level config; otherwise run snapshot analysis monitoring with
+      monitoring_interval regardless of the EntityType-level config.
+      Explicitly Disable the snapshot analysis based monitoring.
+    monitoringInterval: Configuration of the snapshot analysis based
+      monitoring pipeline running interval. The value is rolled up to full
+      day.
+    monitoringIntervalDays: Configuration of the snapshot analysis based
+      monitoring pipeline running interval. The value indicates number of
+      days. If both
+      FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval_days
+      and FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval
+      are set when creating/updating EntityTypes/Features,
+      FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval_days
+      will be used.
+  """
+
+  disabled = _messages.BooleanField(1)
+  monitoringInterval = _messages.StringField(2)
+  monitoringIntervalDays = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudAiplatformV1beta1GcsDestination(_messages.Message):
@@ -9845,6 +10716,47 @@ class GoogleCloudAiplatformV1beta1ImportDataResponse(_messages.Message):
   r"""Response message for DatasetService.ImportData."""
 
 
+class GoogleCloudAiplatformV1beta1ImportFeatureValuesOperationMetadata(_messages.Message):
+  r"""Details of operations that perform import feature values.
+
+  Fields:
+    genericMetadata: Operation metadata for Featurestore import feature
+      values.
+    importedEntityCount: Number of entities that have been imported by the
+      operation.
+    importedFeatureValueCount: Number of feature values that have been
+      imported by the operation.
+    invalidRowCount: The number of rows in input source that weren't imported
+      due to either * Not having any featureValues. * Having a null entityId.
+      * Having a null timestamp. * Not being parsable (applicable for CSV
+      sources).
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 1)
+  importedEntityCount = _messages.IntegerField(2)
+  importedFeatureValueCount = _messages.IntegerField(3)
+  invalidRowCount = _messages.IntegerField(4)
+
+
+class GoogleCloudAiplatformV1beta1ImportFeatureValuesResponse(_messages.Message):
+  r"""Response message for FeaturestoreService.ImportFeatureValues.
+
+  Fields:
+    importedEntityCount: Number of entities that have been imported by the
+      operation.
+    importedFeatureValueCount: Number of Feature values that have been
+      imported by the operation.
+    invalidRowCount: The number of rows in input source that weren't imported
+      due to either * Not having any featureValues. * Having a null entityId.
+      * Having a null timestamp. * Not being parsable (applicable for CSV
+      sources).
+  """
+
+  importedEntityCount = _messages.IntegerField(1)
+  importedFeatureValueCount = _messages.IntegerField(2)
+  invalidRowCount = _messages.IntegerField(3)
+
+
 class GoogleCloudAiplatformV1beta1IndexPrivateEndpoints(_messages.Message):
   r"""IndexPrivateEndpoints proto is used to provide paths for users to send
   requests via private services access.
@@ -9889,13 +10801,14 @@ class GoogleCloudAiplatformV1beta1MachineSpec(_messages.Message):
     acceleratorCount: The number of accelerators to attach to the machine.
     acceleratorType: Immutable. The type of accelerator(s) that may be
       attached to the machine as per accelerator_count.
-    machineType: Immutable. The type of the machine. For the machine types
-      supported for prediction, see https://tinyurl.com/aip-
-      docs/predictions/machine-types. For machine types supported for creating
-      a custom training job, see https://tinyurl.com/aip-
-      docs/training/configure-compute. For DeployedModel this field is
-      optional, and the default value is `n1-standard-2`. For
-      BatchPredictionJob or as part of WorkerPoolSpec this field is required.
+    machineType: Immutable. The type of the machine. See the [list of machine
+      types supported for prediction](https://cloud.google.com/vertex-
+      ai/docs/predictions/configure-compute#machine-types) See the [list of
+      machine types supported for custom
+      training](https://cloud.google.com/vertex-ai/docs/training/configure-
+      compute#machine-types). For DeployedModel this field is optional, and
+      the default value is `n1-standard-2`. For BatchPredictionJob or as part
+      of WorkerPoolSpec this field is required.
   """
 
   class AcceleratorTypeValueValuesEnum(_messages.Enum):
@@ -9910,8 +10823,7 @@ class GoogleCloudAiplatformV1beta1MachineSpec(_messages.Message):
       NVIDIA_TESLA_V100: Nvidia Tesla V100 GPU.
       NVIDIA_TESLA_P4: Nvidia Tesla P4 GPU.
       NVIDIA_TESLA_T4: Nvidia Tesla T4 GPU.
-      TPU_V2: TPU v2.
-      TPU_V3: TPU v3.
+      NVIDIA_TESLA_A100: Nvidia Tesla A100 GPU.
     """
     ACCELERATOR_TYPE_UNSPECIFIED = 0
     NVIDIA_TESLA_K80 = 1
@@ -9919,12 +10831,42 @@ class GoogleCloudAiplatformV1beta1MachineSpec(_messages.Message):
     NVIDIA_TESLA_V100 = 3
     NVIDIA_TESLA_P4 = 4
     NVIDIA_TESLA_T4 = 5
-    TPU_V2 = 6
-    TPU_V3 = 7
+    NVIDIA_TESLA_A100 = 6
 
   acceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   acceleratorType = _messages.EnumField('AcceleratorTypeValueValuesEnum', 2)
   machineType = _messages.StringField(3)
+
+
+class GoogleCloudAiplatformV1beta1Measurement(_messages.Message):
+  r"""A message representing a Measurement of a Trial. A Measurement contains
+  the Metrics got by executing a Trial using suggested hyperparameter values.
+
+  Fields:
+    elapsedDuration: Output only. Time that the Trial has been running at the
+      point of this Measurement.
+    metrics: Output only. A list of metrics got by evaluating the objective
+      functions using suggested Parameter values.
+    stepCount: Output only. The number of steps the machine learning model has
+      been trained for. Must be non-negative.
+  """
+
+  elapsedDuration = _messages.StringField(1)
+  metrics = _messages.MessageField('GoogleCloudAiplatformV1beta1MeasurementMetric', 2, repeated=True)
+  stepCount = _messages.IntegerField(3)
+
+
+class GoogleCloudAiplatformV1beta1MeasurementMetric(_messages.Message):
+  r"""A message representing a metric in the measurement.
+
+  Fields:
+    metricId: Output only. The ID of the Metric. The Metric should be defined
+      in StudySpec's Metrics.
+    value: Output only. The value for this metric.
+  """
+
+  metricId = _messages.StringField(1)
+  value = _messages.FloatField(2)
 
 
 class GoogleCloudAiplatformV1beta1MigratableResource(_messages.Message):
@@ -10030,17 +10972,17 @@ class GoogleCloudAiplatformV1beta1MigratableResourceMlEngineModelVersion(_messag
 
 class GoogleCloudAiplatformV1beta1MigrateResourceRequest(_messages.Message):
   r"""Config of migrating one resource from automl.googleapis.com,
-  datalabeling.googleapis.com and ml.googleapis.com to AI Platform.
+  datalabeling.googleapis.com and ml.googleapis.com to Vertex AI.
 
   Fields:
     migrateAutomlDatasetConfig: Config for migrating Dataset in
-      automl.googleapis.com to AI Platform's Dataset.
+      automl.googleapis.com to Vertex AI's Dataset.
     migrateAutomlModelConfig: Config for migrating Model in
-      automl.googleapis.com to AI Platform's Model.
+      automl.googleapis.com to Vertex AI's Model.
     migrateDataLabelingDatasetConfig: Config for migrating Dataset in
-      datalabeling.googleapis.com to AI Platform's Dataset.
+      datalabeling.googleapis.com to Vertex AI's Dataset.
     migrateMlEngineModelVersionConfig: Config for migrating Version in
-      ml.googleapis.com to AI Platform's Model.
+      ml.googleapis.com to Vertex AI's Model.
   """
 
   migrateAutomlDatasetConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1MigrateResourceRequestMigrateAutomlDatasetConfig', 1)
@@ -10050,13 +10992,13 @@ class GoogleCloudAiplatformV1beta1MigrateResourceRequest(_messages.Message):
 
 
 class GoogleCloudAiplatformV1beta1MigrateResourceRequestMigrateAutomlDatasetConfig(_messages.Message):
-  r"""Config for migrating Dataset in automl.googleapis.com to AI Platform's
+  r"""Config for migrating Dataset in automl.googleapis.com to Vertex AI's
   Dataset.
 
   Fields:
     dataset: Required. Full resource name of automl Dataset. Format:
       `projects/{project}/locations/{location}/datasets/{dataset}`.
-    datasetDisplayName: Required. Display name of the Dataset in AI Platform.
+    datasetDisplayName: Required. Display name of the Dataset in Vertex AI.
       System will pick a display name if unspecified.
   """
 
@@ -10065,14 +11007,14 @@ class GoogleCloudAiplatformV1beta1MigrateResourceRequestMigrateAutomlDatasetConf
 
 
 class GoogleCloudAiplatformV1beta1MigrateResourceRequestMigrateAutomlModelConfig(_messages.Message):
-  r"""Config for migrating Model in automl.googleapis.com to AI Platform's
+  r"""Config for migrating Model in automl.googleapis.com to Vertex AI's
   Model.
 
   Fields:
     model: Required. Full resource name of automl Model. Format:
       `projects/{project}/locations/{location}/models/{model}`.
-    modelDisplayName: Optional. Display name of the model in AI Platform.
-      System will pick a display name if unspecified.
+    modelDisplayName: Optional. Display name of the model in Vertex AI. System
+      will pick a display name if unspecified.
   """
 
   model = _messages.StringField(1)
@@ -10080,18 +11022,18 @@ class GoogleCloudAiplatformV1beta1MigrateResourceRequestMigrateAutomlModelConfig
 
 
 class GoogleCloudAiplatformV1beta1MigrateResourceRequestMigrateDataLabelingDatasetConfig(_messages.Message):
-  r"""Config for migrating Dataset in datalabeling.googleapis.com to AI
-  Platform's Dataset.
+  r"""Config for migrating Dataset in datalabeling.googleapis.com to Vertex
+  AI's Dataset.
 
   Fields:
     dataset: Required. Full resource name of data labeling Dataset. Format:
       `projects/{project}/datasets/{dataset}`.
-    datasetDisplayName: Optional. Display name of the Dataset in AI Platform.
+    datasetDisplayName: Optional. Display name of the Dataset in Vertex AI.
       System will pick a display name if unspecified.
     migrateDataLabelingAnnotatedDatasetConfigs: Optional. Configs for
-      migrating AnnotatedDataset in datalabeling.googleapis.com to AI
-      Platform's SavedQuery. The specified AnnotatedDatasets have to belong to
-      the datalabeling Dataset.
+      migrating AnnotatedDataset in datalabeling.googleapis.com to Vertex AI's
+      SavedQuery. The specified AnnotatedDatasets have to belong to the
+      datalabeling Dataset.
   """
 
   dataset = _messages.StringField(1)
@@ -10101,7 +11043,7 @@ class GoogleCloudAiplatformV1beta1MigrateResourceRequestMigrateDataLabelingDatas
 
 class GoogleCloudAiplatformV1beta1MigrateResourceRequestMigrateDataLabelingDatasetConfigMigrateDataLabelingAnnotatedDatasetConfig(_messages.Message):
   r"""Config for migrating AnnotatedDataset in datalabeling.googleapis.com to
-  AI Platform's SavedQuery.
+  Vertex AI's SavedQuery.
 
   Fields:
     annotatedDataset: Required. Full resource name of data labeling
@@ -10113,16 +11055,15 @@ class GoogleCloudAiplatformV1beta1MigrateResourceRequestMigrateDataLabelingDatas
 
 
 class GoogleCloudAiplatformV1beta1MigrateResourceRequestMigrateMlEngineModelVersionConfig(_messages.Message):
-  r"""Config for migrating version in ml.googleapis.com to AI Platform's
-  Model.
+  r"""Config for migrating version in ml.googleapis.com to Vertex AI's Model.
 
   Fields:
     endpoint: Required. The ml.googleapis.com endpoint that this model version
       should be migrated from. Example values: * ml.googleapis.com * us-
       centrall-ml.googleapis.com * europe-west4-ml.googleapis.com * asia-
       east1-ml.googleapis.com
-    modelDisplayName: Required. Display name of the model in AI Platform.
-      System will pick a display name if unspecified.
+    modelDisplayName: Required. Display name of the model in Vertex AI. System
+      will pick a display name if unspecified.
     modelVersion: Required. Full resource name of ml engine model version.
       Format: `projects/{project}/models/{model}/versions/{version}`.
   """
@@ -10148,17 +11089,19 @@ class GoogleCloudAiplatformV1beta1MigrateResourceResponse(_messages.Message):
 
 
 class GoogleCloudAiplatformV1beta1NearestNeighborSearchOperationMetadata(_messages.Message):
-  r"""Runtime operation metadata with regard to ScaNN Index.
+  r"""Runtime operation metadata with regard to Matching Engine Index.
 
   Fields:
     contentValidationStats: The validation stats of the content (per file) to
-      be inserted or updated on the ScaNN Index resource. Populated if
-      contentsDeltaUri is provided as part of Index.metadata. Please note
+      be inserted or updated on the Matching Engine Index resource. Populated
+      if contentsDeltaUri is provided as part of Index.metadata. Please note
       that, currently for those files that are broken or has unsupported file
       format, we will not have the stats for those files.
+    dataBytesCount: The ingested data size in bytes.
   """
 
   contentValidationStats = _messages.MessageField('GoogleCloudAiplatformV1beta1NearestNeighborSearchOperationMetadataContentValidationStats', 1, repeated=True)
+  dataBytesCount = _messages.IntegerField(2)
 
 
 class GoogleCloudAiplatformV1beta1NearestNeighborSearchOperationMetadataContentValidationStats(_messages.Message):
@@ -10171,7 +11114,8 @@ class GoogleCloudAiplatformV1beta1NearestNeighborSearchOperationMetadataContentV
     partialErrors: The detail information of the partial failures encountered
       for those invalid records that couldn't be parsed. Up to 50 partial
       errors will be reported.
-    sourceGcsUri: GCS uri pointing to the original file in user's bucket.
+    sourceGcsUri: Cloud Storage URI pointing to the original file in user's
+      bucket.
     validRecordCount: Number of records in this file that were successfully
       processed.
   """
@@ -10196,7 +11140,8 @@ class GoogleCloudAiplatformV1beta1NearestNeighborSearchOperationMetadataRecordEr
       your code should check against error_type as the source of truth.
     errorType: The error type of this record.
     rawRecord: The original content of this record.
-    sourceGcsUri: GCS uri pointing to the original file in user's bucket.
+    sourceGcsUri: Cloud Storage URI pointing to the original file in user's
+      bucket.
   """
 
   class ErrorTypeValueValuesEnum(_messages.Enum):
@@ -10229,15 +11174,110 @@ class GoogleCloudAiplatformV1beta1NearestNeighborSearchOperationMetadataRecordEr
   sourceGcsUri = _messages.StringField(5)
 
 
+class GoogleCloudAiplatformV1beta1PrivateEndpoints(_messages.Message):
+  r"""PrivateEndpoints is used to provide paths for users to send requests via
+  private services access.
+
+  Fields:
+    explainHttpUri: Output only. Http(s) path to send explain requests.
+    healthHttpUri: Output only. Http(s) path to send health check requests.
+    predictHttpUri: Output only. Http(s) path to send prediction requests.
+  """
+
+  explainHttpUri = _messages.StringField(1)
+  healthHttpUri = _messages.StringField(2)
+  predictHttpUri = _messages.StringField(3)
+
+
+class GoogleCloudAiplatformV1beta1PurgeArtifactsMetadata(_messages.Message):
+  r"""Details of operations that perform MetadataService.PurgeArtifacts.
+
+  Fields:
+    genericMetadata: Operation metadata for purging Artifacts.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 1)
+
+
+class GoogleCloudAiplatformV1beta1PurgeArtifactsResponse(_messages.Message):
+  r"""Response message for MetadataService.PurgeArtifacts.
+
+  Fields:
+    purgeCount: The number of Artifacts that this request deleted (or, if
+      `force` is false, the number of Artifacts that will be deleted). This
+      can be an estimate.
+    purgeSample: A sample of the Artifact names that will be deleted. Only
+      populated if `force` is set to false. The maximum number of samples is
+      100 (it is possible to return fewer).
+  """
+
+  purgeCount = _messages.IntegerField(1)
+  purgeSample = _messages.StringField(2, repeated=True)
+
+
+class GoogleCloudAiplatformV1beta1PurgeContextsMetadata(_messages.Message):
+  r"""Details of operations that perform MetadataService.PurgeContexts.
+
+  Fields:
+    genericMetadata: Operation metadata for purging Contexts.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 1)
+
+
+class GoogleCloudAiplatformV1beta1PurgeContextsResponse(_messages.Message):
+  r"""Response message for MetadataService.PurgeContexts.
+
+  Fields:
+    purgeCount: The number of Contexts that this request deleted (or, if
+      `force` is false, the number of Contexts that will be deleted). This can
+      be an estimate.
+    purgeSample: A sample of the Context names that will be deleted. Only
+      populated if `force` is set to false. The maximum number of samples is
+      100 (it is possible to return fewer).
+  """
+
+  purgeCount = _messages.IntegerField(1)
+  purgeSample = _messages.StringField(2, repeated=True)
+
+
+class GoogleCloudAiplatformV1beta1PurgeExecutionsMetadata(_messages.Message):
+  r"""Details of operations that perform MetadataService.PurgeExecutions.
+
+  Fields:
+    genericMetadata: Operation metadata for purging Executions.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 1)
+
+
+class GoogleCloudAiplatformV1beta1PurgeExecutionsResponse(_messages.Message):
+  r"""Response message for MetadataService.PurgeExecutions.
+
+  Fields:
+    purgeCount: The number of Executions that this request deleted (or, if
+      `force` is false, the number of Executions that will be deleted). This
+      can be an estimate.
+    purgeSample: A sample of the Execution names that will be deleted. Only
+      populated if `force` is set to false. The maximum number of samples is
+      100 (it is possible to return fewer).
+  """
+
+  purgeCount = _messages.IntegerField(1)
+  purgeSample = _messages.StringField(2, repeated=True)
+
+
 class GoogleCloudAiplatformV1beta1PythonPackageSpec(_messages.Message):
   r"""The spec of a Python packaged code.
 
   Fields:
     args: Command line arguments to be passed to the Python task.
-    executorImageUri: Required. The URI of a container image in the Container
-      Registry that will run the provided python package. AI Platform provides
+    executorImageUri: Required. The URI of a container image in Artifact
+      Registry that will run the provided Python package. Vertex AI provides a
       wide range of executor images with pre-installed packages to meet users'
-      various use cases. Only one of the provided images can be set here.
+      various use cases. See the list of [pre-built containers for
+      training](https://cloud.google.com/vertex-ai/docs/training/pre-built-
+      containers). You must use an image from this list.
     packageUris: Required. The Google Cloud Storage location of the Python
       package files which are the training program and its dependent packages.
       The maximum number of package URIs is 100.
@@ -10432,7 +11472,7 @@ class GoogleCloudAiplatformV1beta1SchemaPredictInstanceImageClassificationPredic
   r"""Prediction input format for Image Classification.
 
   Fields:
-    content: The image bytes or GCS URI to make the prediction on.
+    content: The image bytes or Cloud Storage URI to make the prediction on.
     mimeType: The MIME type of the content of the image. Only the images in
       below listed MIME types are supported. - image/jpeg - image/gif -
       image/png - image/webp - image/bmp - image/tiff -
@@ -10447,7 +11487,7 @@ class GoogleCloudAiplatformV1beta1SchemaPredictInstanceImageObjectDetectionPredi
   r"""Prediction input format for Image Object Detection.
 
   Fields:
-    content: The image bytes or GCS URI to make the prediction on.
+    content: The image bytes or Cloud Storage URI to make the prediction on.
     mimeType: The MIME type of the content of the image. Only the images in
       below listed MIME types are supported. - image/jpeg - image/gif -
       image/png - image/webp - image/bmp - image/tiff -
@@ -10491,8 +11531,8 @@ class GoogleCloudAiplatformV1beta1SchemaPredictInstanceTextExtractionPredictionI
     content: The text snippet to make the predictions on.
     key: This field is only used for batch prediction. If a key is provided,
       the batch prediction result will by mapped to this key. If omitted, then
-      the batch prediction result will contain the entire input instance. AI
-      Platform will not check if keys in the request are duplicates, so it is
+      the batch prediction result will contain the entire input instance.
+      Vertex AI will not check if keys in the request are duplicates, so it is
       up to the caller to ensure the keys are unique.
     mimeType: The MIME type of the text snippet. The supported MIME types are
       listed below. - text/plain
@@ -10660,20 +11700,20 @@ class GoogleCloudAiplatformV1beta1SchemaPredictParamsVideoClassificationPredicti
       score, predictions per instance. If this number is very high, the Model
       may return fewer predictions. Default value is 10,000.
     oneSecIntervalClassification: Set to true to request classification for a
-      video at one-second intervals. AI Platform returns labels and their
+      video at one-second intervals. Vertex AI returns labels and their
       confidence scores for each second of the entire time segment of the
       video that user specified in the input WARNING: Model evaluation is not
       done for this classification type, the quality of it depends on the
       training data, but there are no metrics provided to describe that
       quality. Default value is false
     segmentClassification: Set to true to request segment-level
-      classification. AI Platform returns labels and their confidence scores
-      for the entire time segment of the video that user specified in the
-      input instance. Default value is true
-    shotClassification: Set to true to request shot-level classification. AI
-      Platform determines the boundaries for each camera shot in the entire
-      time segment of the video that user specified in the input instance. AI
-      Platform then returns labels and their confidence scores for each
+      classification. Vertex AI returns labels and their confidence scores for
+      the entire time segment of the video that user specified in the input
+      instance. Default value is true
+    shotClassification: Set to true to request shot-level classification.
+      Vertex AI determines the boundaries for each camera shot in the entire
+      time segment of the video that user specified in the input instance.
+      Vertex AI then returns labels and their confidence scores for each
       detected shot, along with the start and end time of the shot. WARNING:
       Model evaluation is not done for this classification type, the quality
       of it depends on the training data, but there are no metrics provided to
@@ -10714,8 +11754,7 @@ class GoogleCloudAiplatformV1beta1SchemaPredictPredictionClassificationPredictio
       higher value means higher confidence. Order matches the Ids.
     displayNames: The display names of the AnnotationSpecs that had been
       identified, order matches the IDs.
-    ids: The resource IDs of the AnnotationSpecs that had been identified,
-      ordered by the confidence score descendingly.
+    ids: The resource IDs of the AnnotationSpecs that had been identified.
   """
 
   confidences = _messages.FloatField(1, repeated=True, variant=_messages.Variant.FLOAT)
@@ -11093,11 +12132,11 @@ class GoogleCloudAiplatformV1beta1SchemaPredictionResultError(_messages.Message)
         following guidelines to decide between `FAILED_PRECONDITION`,
         `ABORTED`, and `UNAVAILABLE`: (a) Use `UNAVAILABLE` if the client can
         retry just the failing call. (b) Use `ABORTED` if the client should
-        retry at a higher level (e.g., when a client-specified test-and-set
-        fails, indicating the client should restart a read-modify-write
-        sequence). (c) Use `FAILED_PRECONDITION` if the client should not
-        retry until the system state has been explicitly fixed. E.g., if an
-        "rmdir" fails because the directory is non-empty,
+        retry at a higher level. For example, when a client-specified test-
+        and-set fails, indicating the client should restart a read-modify-
+        write sequence. (c) Use `FAILED_PRECONDITION` if the client should not
+        retry until the system state has been explicitly fixed. For example,
+        if an "rmdir" fails because the directory is non-empty,
         `FAILED_PRECONDITION` should be returned since the client should not
         retry unless the files are deleted from the directory. HTTP Mapping:
         400 Bad Request
@@ -11404,54 +12443,48 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingIn
   ngInputs object.
 
   Fields:
+    additionalExperiments: Additional experiment flags for the time series
+      forcasting training.
+    availableAtForecastColumns: Names of columns that are available and
+      provided when a forecast is requested. These columns contain information
+      for the given entity (identified by the time_series_identifier_column
+      column) that is known at forecast. For example, predicted weather for a
+      specific day.
+    contextWindow: The amount of time into the past training and prediction
+      data is used for model training and prediction respectively. Expressed
+      in number of units defined by the `data_granularity` field.
+    dataGranularity: Expected difference in time granularity between rows in
+      the data.
     exportEvaluatedDataItemsConfig: Configuration for exporting test set
       predictions to a BigQuery table. If this configuration is absent, then
       the export is not performed.
-    forecastWindowEnd: The number of periods offset into the future as the end
-      of the forecast window (the window of future values to predict, relative
-      to the present.), where each period is one unit of granularity as
-      defined by the `period` field above. Inclusive.
-    forecastWindowStart: The number of periods offset into the future as the
-      start of the forecast window (the window of future values to predict,
-      relative to the present.), where each period is one unit of granularity
-      as defined by the `period` field above. Default to 0. Inclusive.
+    forecastHorizon: The amount of time into the future for which forecasted
+      values for the target are returned. Expressed in number of units defined
+      by the `data_granularity` field.
     optimizationObjective: Objective function the model is optimizing towards.
       The training process creates a model that optimizes the value of the
       objective function over the validation set. The supported optimization
-      objectives: "minimize-rmse" (default) - Minimize root-mean-squared error
-      (RMSE). "minimize-mae" - Minimize mean-absolute error (MAE). "minimize-
-      rmsle" - Minimize root-mean-squared log error (RMSLE). "minimize-rmspe"
-      - Minimize root-mean-squared percentage error (RMSPE). "minimize-wape-
-      mae" - Minimize the combination of weighted absolute percentage error
-      (WAPE) and mean-absolute-error (MAE). "minimize-quantile-loss" -
-      Minimize the quantile loss at the quantiles defined in `quantiles`.
-    pastHorizon: The number of periods offset into the past to restrict past
-      sequence, where each period is one unit of granularity as defined by the
-      `period`. Default value 0 means that it lets algorithm to define the
-      value. Inclusive.
-    period: Expected difference in time granularity between rows in the data.
-      If it is not set, the period is inferred from data.
+      objectives: * "minimize-rmse" (default) - Minimize root-mean-squared
+      error (RMSE). * "minimize-mae" - Minimize mean-absolute error (MAE). *
+      "minimize-rmsle" - Minimize root-mean-squared log error (RMSLE). *
+      "minimize-rmspe" - Minimize root-mean-squared percentage error (RMSPE).
+      * "minimize-wape-mae" - Minimize the combination of weighted absolute
+      percentage error (WAPE) and mean-absolute-error (MAE). * "minimize-
+      quantile-loss" - Minimize the quantile loss at the quantiles defined in
+      `quantiles`.
     quantiles: Quantiles to use for minimize-quantile-loss
       `optimization_objective`. Up to 5 quantiles are allowed of values
       between 0 and 1, exclusive. Required if the value of
       optimization_objective is minimize-quantile-loss. Represents the percent
       quantiles to use for that objective. Quantiles must be unique.
-    staticColumns: Column names that should be used as static columns. The
-      value of these columns are static per time series.
     targetColumn: The name of the column that the model is to predict.
     timeColumn: The name of the column that identifies time order in the time
       series.
+    timeSeriesAttributeColumns: Column names that should be used as attribute
+      columns. The value of these columns does not vary as a function of time.
+      For example, store ID or item color.
     timeSeriesIdentifierColumn: The name of the column that identifies the
       time series.
-    timeVariantPastAndFutureColumns: Column names that should be used as time
-      variant past and future columns. This column contains information for
-      the given entity (identified by the key column) that is known for the
-      past and the future
-    timeVariantPastOnlyColumns: Column names that should be used as time
-      variant past only columns. This column contains information for the
-      given entity (identified by the time_series_identifier_column) that is
-      known for the past but not the future (e.g. population of a city in a
-      given year, or weather on a given day).
     trainBudgetMilliNodeHours: Required. The train budget of creating this
       model, expressed in milli node hours i.e. 1,000 value in this field
       means 1 node hour. The training cost of the model will not exceed this
@@ -11466,9 +12499,13 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingIn
       given input column. And the result will be used for training. When
       creating transformation for BigQuery Struct column, the column should be
       flattened using "." as the delimiter.
+    unavailableAtForecastColumns: Names of columns that are unavailable when a
+      forecast is requested. This column contains information for the given
+      entity (identified by the time_series_identifier_column) that is unknown
+      before the forecast For example, actual weather on a given day.
     validationOptions: Validation options for the data validation component.
-      The available options are: "fail-pipeline" - default, will validate
-      against the validation and fail the pipeline if it fails. "ignore-
+      The available options are: * "fail-pipeline" - default, will validate
+      against the validation and fail the pipeline if it fails. * "ignore-
       validation" - ignore the results of the validation and continue
     weightColumn: Column name that should be used as the weight column. Higher
       values in this column give more importance to the row during model
@@ -11477,32 +12514,34 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingIn
       field is not set, then all rows are assumed to have equal weight of 1.
   """
 
-  exportEvaluatedDataItemsConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionExportEvaluatedDataItemsConfig', 1)
-  forecastWindowEnd = _messages.IntegerField(2)
-  forecastWindowStart = _messages.IntegerField(3)
-  optimizationObjective = _messages.StringField(4)
-  pastHorizon = _messages.IntegerField(5)
-  period = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputsPeriod', 6)
-  quantiles = _messages.FloatField(7, repeated=True)
-  staticColumns = _messages.StringField(8, repeated=True)
+  additionalExperiments = _messages.StringField(1, repeated=True)
+  availableAtForecastColumns = _messages.StringField(2, repeated=True)
+  contextWindow = _messages.IntegerField(3)
+  dataGranularity = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputsGranularity', 4)
+  exportEvaluatedDataItemsConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionExportEvaluatedDataItemsConfig', 5)
+  forecastHorizon = _messages.IntegerField(6)
+  optimizationObjective = _messages.StringField(7)
+  quantiles = _messages.FloatField(8, repeated=True)
   targetColumn = _messages.StringField(9)
   timeColumn = _messages.StringField(10)
-  timeSeriesIdentifierColumn = _messages.StringField(11)
-  timeVariantPastAndFutureColumns = _messages.StringField(12, repeated=True)
-  timeVariantPastOnlyColumns = _messages.StringField(13, repeated=True)
-  trainBudgetMilliNodeHours = _messages.IntegerField(14)
-  transformations = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformation', 15, repeated=True)
+  timeSeriesAttributeColumns = _messages.StringField(11, repeated=True)
+  timeSeriesIdentifierColumn = _messages.StringField(12)
+  trainBudgetMilliNodeHours = _messages.IntegerField(13)
+  transformations = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformation', 14, repeated=True)
+  unavailableAtForecastColumns = _messages.StringField(15, repeated=True)
   validationOptions = _messages.StringField(16)
   weightColumn = _messages.StringField(17)
 
 
-class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputsPeriod(_messages.Message):
+class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputsGranularity(_messages.Message):
   r"""A duration of time expressed in time granularity units.
 
   Fields:
-    quantity: The number of units per period, e.g. 3 weeks or 2 months.
-    unit: The time granularity unit of this time period. The supported unit
-      are: "minute" "hour" "day" "week" "month" "year"
+    quantity: The number of granularity_units between data points in the
+      training data. If `granularity_unit` is `minute`, can be 1, 5, 10, 15,
+      or 30. For all other values of `granularity_unit`, must be 1.
+    unit: The time granularity unit of this time period. The supported units
+      are: * "minute" * "hour" * "day" * "week" * "month" * "year"
   """
 
   quantity = _messages.IntegerField(1)
@@ -11520,14 +12559,6 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingIn
       MlForecastingInputsTransformationCategoricalTransformation attribute.
     numeric: A GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlFo
       recastingInputsTransformationNumericTransformation attribute.
-    repeatedCategorical: A GoogleCloudAiplatformV1beta1SchemaTrainingjobDefini
-      tionAutoMlForecastingInputsTransformationCategoricalArrayTransformation
-      attribute.
-    repeatedNumeric: A GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinition
-      AutoMlForecastingInputsTransformationNumericArrayTransformation
-      attribute.
-    repeatedText: A GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAut
-      oMlForecastingInputsTransformationTextArrayTransformation attribute.
     text: A GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForec
       astingInputsTransformationTextTransformation attribute.
     timestamp: A GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMl
@@ -11537,30 +12568,13 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingIn
   auto = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationAutoTransformation', 1)
   categorical = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationCategoricalTransformation', 2)
   numeric = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationNumericTransformation', 3)
-  repeatedCategorical = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationCategoricalArrayTransformation', 4)
-  repeatedNumeric = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationNumericArrayTransformation', 5)
-  repeatedText = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationTextArrayTransformation', 6)
-  text = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationTextTransformation', 7)
-  timestamp = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationTimestampTransformation', 8)
+  text = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationTextTransformation', 4)
+  timestamp = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationTimestampTransformation', 5)
 
 
 class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationAutoTransformation(_messages.Message):
   r"""Training pipeline will infer the proper transformation based on the
   statistic of dataset.
-
-  Fields:
-    columnName: A string attribute.
-  """
-
-  columnName = _messages.StringField(1)
-
-
-class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationCategoricalArrayTransformation(_messages.Message):
-  r"""Treats the column as categorical array and performs following
-  transformation functions. * For each element in the array, convert the
-  category name to a dictionary lookup index and generate an embedding for
-  each index. Combine the embedding of all elements into a single embedding
-  using the mean. * Empty arrays treated as an embedding of zeroes.
 
   Fields:
     columnName: A string attribute.
@@ -11585,24 +12599,6 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingIn
   columnName = _messages.StringField(1)
 
 
-class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationNumericArrayTransformation(_messages.Message):
-  r"""Treats the column as numerical array and performs following
-  transformation functions. * All transformations for Numerical types applied
-  to the average of the all elements. * The average of empty arrays is treated
-  as zero.
-
-  Fields:
-    columnName: A string attribute.
-    invalidValuesAllowed: If invalid values is allowed, the training pipeline
-      will create a boolean feature that indicated whether the value is valid.
-      Otherwise, the training pipeline will discard the input row from
-      trainining data.
-  """
-
-  columnName = _messages.StringField(1)
-  invalidValuesAllowed = _messages.BooleanField(2)
-
-
 class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationNumericTransformation(_messages.Message):
   r"""Training pipeline will perform following transformation functions. * The
   value converted to float32. * The z_score of the value. * log(value+1) when
@@ -11614,25 +12610,6 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingIn
 
   Fields:
     columnName: A string attribute.
-    invalidValuesAllowed: If invalid values is allowed, the training pipeline
-      will create a boolean feature that indicated whether the value is valid.
-      Otherwise, the training pipeline will discard the input row from
-      trainining data.
-  """
-
-  columnName = _messages.StringField(1)
-  invalidValuesAllowed = _messages.BooleanField(2)
-
-
-class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationTextArrayTransformation(_messages.Message):
-  r"""Treats the column as text array and performs following transformation
-  functions. * Concatenate all text values in the array into a single text
-  value using a space (" ") as a delimiter, and then treat the result as a
-  single text value. Apply the transformations for Text columns. * Empty
-  arrays treated as an empty text.
-
-  Fields:
-    columnName: A string attribute.
   """
 
   columnName = _messages.StringField(1)
@@ -11641,11 +12618,8 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingIn
 class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationTextTransformation(_messages.Message):
   r"""Training pipeline will perform following transformation functions. * The
   text as is--no change to case, punctuation, spelling, tense, and so on. *
-  Tokenize text to words. Convert each words to a dictionary lookup index and
-  generate an embedding for each index. Combine the embedding of all elements
-  into a single embedding using the mean. * Tokenization is based on unicode
-  script boundaries. * Missing values get their own lookup index and resulting
-  embedding. * Stop-words receive no special treatment and are not removed.
+  Convert the category name to a dictionary lookup index and generate an
+  embedding for each index.
 
   Fields:
     columnName: A string attribute.
@@ -11657,17 +12631,13 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingIn
 class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingInputsTransformationTimestampTransformation(_messages.Message):
   r"""Training pipeline will perform following transformation functions. *
   Apply the transformation functions for Numerical columns. * Determine the
-  year, month, day,and weekday. Treat each value from the * timestamp as a
+  year, month, day,and weekday. Treat each value from the timestamp as a
   Categorical column. * Invalid numerical values (for example, values that
   fall outside of a typical timestamp range, or are extreme values) receive no
   special treatment and are not removed.
 
   Fields:
     columnName: A string attribute.
-    invalidValuesAllowed: If invalid values is allowed, the training pipeline
-      will create a boolean feature that indicated whether the value is valid.
-      Otherwise, the training pipeline will discard the input row from
-      trainining data.
     timeFormat: The format in which that time field is expressed. The
       time_format must either be one of: * `unix-seconds` * `unix-
       milliseconds` * `unix-microseconds` * `unix-nanoseconds` (for
@@ -11679,20 +12649,22 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingIn
   """
 
   columnName = _messages.StringField(1)
-  invalidValuesAllowed = _messages.BooleanField(2)
-  timeFormat = _messages.StringField(3)
+  timeFormat = _messages.StringField(2)
 
 
 class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingMetadata(_messages.Message):
   r"""Model metadata specific to AutoML Forecasting.
 
   Fields:
+    evaluatedDataItemsBigqueryUri: BigQuery destination uri for exported
+      evaluated examples.
     trainCostMilliNodeHours: Output only. The actual training cost of the
       model, expressed in milli node hours, i.e. 1,000 value in this field
       means 1 node hour. Guaranteed to not exceed the train budget.
   """
 
-  trainCostMilliNodeHours = _messages.IntegerField(1)
+  evaluatedDataItemsBigqueryUri = _messages.StringField(1)
+  trainCostMilliNodeHours = _messages.IntegerField(2)
 
 
 class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageClassification(_messages.Message):
@@ -11738,11 +12710,6 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageClassifi
       early stopping feature. When false the early stopping feature is
       enabled, which means that AutoML Image Classification might stop
       training before the entire training budget has been used.
-    evaluationExplanationSpec: Specification for explaining the evaluation
-      results. If specified, the ModelEvaluation of the trained Model will
-      include explanations for predictions on the test data. Each prediction
-      will be explained twice, using integrated gradients and XRAI attribution
-      methods respectively.
     modelType: A ModelTypeValueValuesEnum attribute.
     multiLabel: If false, a single-label (multi-class) Model will be trained
       (i.e. assuming that for each image just up to one annotation may be
@@ -11782,9 +12749,8 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageClassifi
   baseModelId = _messages.StringField(1)
   budgetMilliNodeHours = _messages.IntegerField(2)
   disableEarlyStopping = _messages.BooleanField(3)
-  evaluationExplanationSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageExplanationSpecGroup', 4)
-  modelType = _messages.EnumField('ModelTypeValueValuesEnum', 5)
-  multiLabel = _messages.BooleanField(6)
+  modelType = _messages.EnumField('ModelTypeValueValuesEnum', 4)
+  multiLabel = _messages.BooleanField(5)
 
 
 class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageClassificationMetadata(_messages.Message):
@@ -11819,41 +12785,6 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageClassifi
 
   costMilliNodeHours = _messages.IntegerField(1)
   successfulStopReason = _messages.EnumField('SuccessfulStopReasonValueValuesEnum', 2)
-
-
-class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageExplanationSpec(_messages.Message):
-  r"""Specification of a specified explanation attribution method.
-
-  Fields:
-    stepCount: The number of steps for approximating the path integral. A good
-      value to start is 50 and gradually increase until the sum to diff
-      property is within the desired error range. Valid range of its value is
-      [1, 100], inclusively.
-    visualization: Visualization configurations for image explanation.
-  """
-
-  stepCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  visualization = _messages.MessageField('GoogleCloudAiplatformV1beta1ExplanationMetadataInputMetadataVisualization', 2)
-
-
-class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageExplanationSpecGroup(_messages.Message):
-  r"""Specification for explaining the evaluation results.
-
-  Fields:
-    imageGcsDestination: The Cloud Storage location to store the images
-      explaining the evaluation result of the images in the test data.
-    integratedGradients: Specification for explaining the evaluation results
-      using integrated gradients attribution method. The full ExplanationSpec
-      used for explaining the evaluation can be found in the
-      ModelEvaluation.explanationSpecs object.
-    xrai: Specification for explaining the evaluation results using XRAI
-      attribution method. The full ExplanationSpec used for explaining the
-      evaluation can be found in the ModelEvaluation.explanationSpecs object.
-  """
-
-  imageGcsDestination = _messages.StringField(1)
-  integratedGradients = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageExplanationSpec', 2)
-  xrai = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageExplanationSpec', 3)
 
 
 class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlImageObjectDetection(_messages.Message):
@@ -12090,6 +13021,8 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlTablesInputs(
   object.
 
   Fields:
+    additionalExperiments: Additional experiment flags for the Tables training
+      pipeline.
     disableEarlyStopping: Use the entire training budget. This disables the
       early stopping feature. By default, the early stopping feature is
       enabled, which means that AutoML Tables might stop training before the
@@ -12145,16 +13078,17 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlTablesInputs(
       field is not set, then all rows are assumed to have equal weight of 1.
   """
 
-  disableEarlyStopping = _messages.BooleanField(1)
-  exportEvaluatedDataItemsConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionExportEvaluatedDataItemsConfig', 2)
-  optimizationObjective = _messages.StringField(3)
-  optimizationObjectivePrecisionValue = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
-  optimizationObjectiveRecallValue = _messages.FloatField(5, variant=_messages.Variant.FLOAT)
-  predictionType = _messages.StringField(6)
-  targetColumn = _messages.StringField(7)
-  trainBudgetMilliNodeHours = _messages.IntegerField(8)
-  transformations = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlTablesInputsTransformation', 9, repeated=True)
-  weightColumnName = _messages.StringField(10)
+  additionalExperiments = _messages.StringField(1, repeated=True)
+  disableEarlyStopping = _messages.BooleanField(2)
+  exportEvaluatedDataItemsConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionExportEvaluatedDataItemsConfig', 3)
+  optimizationObjective = _messages.StringField(4)
+  optimizationObjectivePrecisionValue = _messages.FloatField(5, variant=_messages.Variant.FLOAT)
+  optimizationObjectiveRecallValue = _messages.FloatField(6, variant=_messages.Variant.FLOAT)
+  predictionType = _messages.StringField(7)
+  targetColumn = _messages.StringField(8)
+  trainBudgetMilliNodeHours = _messages.IntegerField(9)
+  transformations = _messages.MessageField('GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlTablesInputsTransformation', 10, repeated=True)
+  weightColumnName = _messages.StringField(11)
 
 
 class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlTablesInputsTransformation(_messages.Message):
@@ -12441,10 +13375,19 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlVideoActionRe
         Google Cloud, can also be exported (see ModelService.ExportModel) as a
         TensorFlow or TensorFlow Lite model and used on a mobile or edge
         device afterwards.
+      MOBILE_JETSON_VERSATILE_1: A model that, in addition to being available
+        within Google Cloud, can also be exported (see
+        ModelService.ExportModel) to a Jetson device afterwards.
+      MOBILE_CORAL_VERSATILE_1: A model that, in addition to being available
+        within Google Cloud, can also be exported (see
+        ModelService.ExportModel) as a TensorFlow or TensorFlow Lite model and
+        used on a Coral device afterwards.
     """
     MODEL_TYPE_UNSPECIFIED = 0
     CLOUD = 1
     MOBILE_VERSATILE_1 = 2
+    MOBILE_JETSON_VERSATILE_1 = 3
+    MOBILE_CORAL_VERSATILE_1 = 4
 
   modelType = _messages.EnumField('ModelTypeValueValuesEnum', 1)
 
@@ -12614,7 +13557,7 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionHyperparameterTunin
 
   Fields:
     maxFailedTrialCount: The number of failed Trials that need to be seen
-      before failing the HyperparameterTuningJob. If set to 0, AI Platform
+      before failing the HyperparameterTuningJob. If set to 0, Vertex AI
       decides how many Trials must fail before the whole job fails.
     maxTrialCount: The desired total number of Trials.
     parallelTrialCount: The desired number of Trials to run in parallel.
@@ -12782,11 +13725,12 @@ class GoogleCloudAiplatformV1beta1SmoothGradConfig(_messages.Message):
     noiseSigma: This is a single float value and will be used to add noise to
       all the features. Use this field when all features are normalized to
       have the same distribution: scale to range [0, 1], [-1, 1] or z-scoring,
-      where features are normalized to have 0-mean and 1-variance. For more
-      details about normalization: https://tinyurl.com/dgc-normalization. For
-      best results the recommended value is about 10% - 20% of the standard
-      deviation of the input feature. Refer to section 3.2 of the SmoothGrad
-      paper: https://arxiv.org/pdf/1706.03825.pdf. Defaults to 0.1. If the
+      where features are normalized to have 0-mean and 1-variance. Learn more
+      about [normalization](https://developers.google.com/machine-
+      learning/data-prep/transform/normalization). For best results the
+      recommended value is about 10% - 20% of the standard deviation of the
+      input feature. Refer to section 3.2 of the SmoothGrad paper:
+      https://arxiv.org/pdf/1706.03825.pdf. Defaults to 0.1. If the
       distribution is different per feature, set feature_noise_sigma instead
       for each feature.
     noisySampleCount: The number of gradient samples to use for approximation.
@@ -12841,8 +13785,13 @@ class GoogleCloudAiplatformV1beta1StudySpec(_messages.Message):
 
   Fields:
     algorithm: The search algorithm specified for the Study.
+    convexStopConfig: The automated early stopping using convex stopping rule.
+    decayCurveStoppingSpec: The automated early stopping spec using decay
+      curve rule.
     measurementSelectionType: Describe which measurement selection type will
       be used
+    medianAutomatedStoppingSpec: The automated early stopping spec using
+      median rule.
     metrics: Required. Metric specs for the Study.
     observationNoise: The observation noise level of the study. Currently only
       supported by the Vizier service. Not supported by HyperparamterTuningJob
@@ -12854,8 +13803,10 @@ class GoogleCloudAiplatformV1beta1StudySpec(_messages.Message):
     r"""The search algorithm specified for the Study.
 
     Values:
-      ALGORITHM_UNSPECIFIED: The default algorithm used by AI Platform
-        Optimization service.
+      ALGORITHM_UNSPECIFIED: The default algorithm used by Vertex AI for
+        [hyperparameter tuning](https://cloud.google.com/vertex-
+        ai/docs/training/hyperparameter-tuning-overview) and [Vertex
+        Vizier](https://cloud.google.com/vertex-ai/docs/vizier).
       GRID_SEARCH: Simple grid search within the feasible space. To use grid
         search, all parameters must be `INTEGER`, `CATEGORICAL`, or
         `DISCRETE`.
@@ -12884,23 +13835,95 @@ class GoogleCloudAiplatformV1beta1StudySpec(_messages.Message):
     TrainingPipeline.
 
     Values:
-      OBSERVATION_NOISE_UNSPECIFIED: The default noise level chosen by the AI
-        Platform service.
-      LOW: AI Platform Vizier assumes that the objective function is (nearly)
-        perfectly reproducible, and will never repeat the same Trial
-        parameters.
-      HIGH: AI Platform Vizier will estimate the amount of noise in metric
-        evaluations, it may repeat the same Trial parameters more than once.
+      OBSERVATION_NOISE_UNSPECIFIED: The default noise level chosen by Vertex
+        AI.
+      LOW: Vertex AI assumes that the objective function is (nearly) perfectly
+        reproducible, and will never repeat the same Trial parameters.
+      HIGH: Vertex AI will estimate the amount of noise in metric evaluations,
+        it may repeat the same Trial parameters more than once.
     """
     OBSERVATION_NOISE_UNSPECIFIED = 0
     LOW = 1
     HIGH = 2
 
   algorithm = _messages.EnumField('AlgorithmValueValuesEnum', 1)
-  measurementSelectionType = _messages.EnumField('MeasurementSelectionTypeValueValuesEnum', 2)
-  metrics = _messages.MessageField('GoogleCloudAiplatformV1beta1StudySpecMetricSpec', 3, repeated=True)
-  observationNoise = _messages.EnumField('ObservationNoiseValueValuesEnum', 4)
-  parameters = _messages.MessageField('GoogleCloudAiplatformV1beta1StudySpecParameterSpec', 5, repeated=True)
+  convexStopConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1StudySpecConvexStopConfig', 2)
+  decayCurveStoppingSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1StudySpecDecayCurveAutomatedStoppingSpec', 3)
+  measurementSelectionType = _messages.EnumField('MeasurementSelectionTypeValueValuesEnum', 4)
+  medianAutomatedStoppingSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1StudySpecMedianAutomatedStoppingSpec', 5)
+  metrics = _messages.MessageField('GoogleCloudAiplatformV1beta1StudySpecMetricSpec', 6, repeated=True)
+  observationNoise = _messages.EnumField('ObservationNoiseValueValuesEnum', 7)
+  parameters = _messages.MessageField('GoogleCloudAiplatformV1beta1StudySpecParameterSpec', 8, repeated=True)
+
+
+class GoogleCloudAiplatformV1beta1StudySpecConvexStopConfig(_messages.Message):
+  r"""Configuration for ConvexStopPolicy.
+
+  Fields:
+    autoregressiveOrder: The number of Trial measurements used in
+      autoregressive model for value prediction. A trial won't be considered
+      early stopping if has fewer measurement points.
+    learningRateParameterName: The hyper-parameter name used in the tuning job
+      that stands for learning rate. Leave it blank if learning rate is not in
+      a parameter in tuning. The learning_rate is used to estimate the
+      objective value of the ongoing trial.
+    maxNumSteps: Steps used in predicting the final objective for early
+      stopped trials. In general, it's set to be the same as the defined steps
+      in training / tuning. When use_steps is false, this field is set to the
+      maximum elapsed seconds.
+    minNumSteps: Minimum number of steps for a trial to complete. Trials which
+      do not have a measurement with num_steps > min_num_steps won't be
+      considered for early stopping. It's ok to set it to 0, and a trial can
+      be early stopped at any stage. By default, min_num_steps is set to be
+      one-tenth of the max_num_steps. When use_steps is false, this field is
+      set to the minimum elapsed seconds.
+    useSeconds: This bool determines whether or not the rule is applied based
+      on elapsed_secs or steps. If use_seconds==false, the early stopping
+      decision is made according to the predicted objective values according
+      to the target steps. If use_seconds==true, elapsed_secs is used instead
+      of steps. Also, in this case, the parameters max_num_steps and
+      min_num_steps are overloaded to contain max_elapsed_seconds and
+      min_elapsed_seconds.
+  """
+
+  autoregressiveOrder = _messages.IntegerField(1)
+  learningRateParameterName = _messages.StringField(2)
+  maxNumSteps = _messages.IntegerField(3)
+  minNumSteps = _messages.IntegerField(4)
+  useSeconds = _messages.BooleanField(5)
+
+
+class GoogleCloudAiplatformV1beta1StudySpecDecayCurveAutomatedStoppingSpec(_messages.Message):
+  r"""The decay curve automated stopping rule builds a Gaussian Process
+  Regressor to predict the final objective value of a Trial based on the
+  already completed Trials and the intermediate measurements of the current
+  Trial. Early stopping is requested for the current Trial if there is very
+  low probability to exceed the optimal value found so far.
+
+  Fields:
+    useElapsedDuration: True if Measurement.elapsed_duration is used as the
+      x-axis of each Trials Decay Curve. Otherwise, Measurement.step_count
+      will be used as the x-axis.
+  """
+
+  useElapsedDuration = _messages.BooleanField(1)
+
+
+class GoogleCloudAiplatformV1beta1StudySpecMedianAutomatedStoppingSpec(_messages.Message):
+  r"""The median automated stopping rule stops a pending Trial if the Trial's
+  best objective_value is strictly below the median 'performance' of all
+  completed Trials reported up to the Trial's last measurement. Currently,
+  'performance' refers to the running average of the objective values reported
+  by the Trial in each measurement.
+
+  Fields:
+    useElapsedDuration: True if median automated stopping rule applies on
+      Measurement.elapsed_duration. It means that elapsed_duration field of
+      latest measurement of current Trial is used to compute median objective
+      value for each completed Trials.
+  """
+
+  useElapsedDuration = _messages.BooleanField(1)
 
 
 class GoogleCloudAiplatformV1beta1StudySpecMetricSpec(_messages.Message):
@@ -12985,10 +14008,16 @@ class GoogleCloudAiplatformV1beta1StudySpecParameterSpecCategoricalValueSpec(_me
   r"""Value specification for a parameter in `CATEGORICAL` type.
 
   Fields:
+    defaultValue: A default value for a `CATEGORICAL` parameter that is
+      assumed to be a relatively good starting point. Unset value signals that
+      there is no offered starting point. Currently only supported by the
+      Vizier service. Not supported by HyperparamterTuningJob or
+      TrainingPipeline.
     values: Required. The list of possible categories.
   """
 
-  values = _messages.StringField(1, repeated=True)
+  defaultValue = _messages.StringField(1)
+  values = _messages.StringField(2, repeated=True)
 
 
 class GoogleCloudAiplatformV1beta1StudySpecParameterSpecConditionalParameterSpec(_messages.Message):
@@ -13049,37 +14078,241 @@ class GoogleCloudAiplatformV1beta1StudySpecParameterSpecDiscreteValueSpec(_messa
   r"""Value specification for a parameter in `DISCRETE` type.
 
   Fields:
+    defaultValue: A default value for a `DISCRETE` parameter that is assumed
+      to be a relatively good starting point. Unset value signals that there
+      is no offered starting point. It automatically rounds to the nearest
+      feasible discrete point. Currently only supported by the Vizier service.
+      Not supported by HyperparamterTuningJob or TrainingPipeline.
     values: Required. A list of possible values. The list should be in
       increasing order and at least 1e-10 apart. For instance, this parameter
       might have possible settings of 1.5, 2.5, and 4.0. This list should not
       contain more than 1,000 values.
   """
 
-  values = _messages.FloatField(1, repeated=True)
+  defaultValue = _messages.FloatField(1)
+  values = _messages.FloatField(2, repeated=True)
 
 
 class GoogleCloudAiplatformV1beta1StudySpecParameterSpecDoubleValueSpec(_messages.Message):
   r"""Value specification for a parameter in `DOUBLE` type.
 
   Fields:
+    defaultValue: A default value for a `DOUBLE` parameter that is assumed to
+      be a relatively good starting point. Unset value signals that there is
+      no offered starting point. Currently only supported by the Vizier
+      service. Not supported by HyperparamterTuningJob or TrainingPipeline.
     maxValue: Required. Inclusive maximum value of the parameter.
     minValue: Required. Inclusive minimum value of the parameter.
   """
 
-  maxValue = _messages.FloatField(1)
-  minValue = _messages.FloatField(2)
+  defaultValue = _messages.FloatField(1)
+  maxValue = _messages.FloatField(2)
+  minValue = _messages.FloatField(3)
 
 
 class GoogleCloudAiplatformV1beta1StudySpecParameterSpecIntegerValueSpec(_messages.Message):
   r"""Value specification for a parameter in `INTEGER` type.
 
   Fields:
+    defaultValue: A default value for an `INTEGER` parameter that is assumed
+      to be a relatively good starting point. Unset value signals that there
+      is no offered starting point. Currently only supported by the Vizier
+      service. Not supported by HyperparamterTuningJob or TrainingPipeline.
     maxValue: Required. Inclusive maximum value of the parameter.
     minValue: Required. Inclusive minimum value of the parameter.
   """
 
-  maxValue = _messages.IntegerField(1)
-  minValue = _messages.IntegerField(2)
+  defaultValue = _messages.IntegerField(1)
+  maxValue = _messages.IntegerField(2)
+  minValue = _messages.IntegerField(3)
+
+
+class GoogleCloudAiplatformV1beta1SuggestTrialsMetadata(_messages.Message):
+  r"""Details of operations that perform Trials suggestion.
+
+  Fields:
+    clientId: The identifier of the client that is requesting the suggestion.
+      If multiple SuggestTrialsRequests have the same `client_id`, the service
+      will return the identical suggested Trial if the Trial is pending, and
+      provide a new Trial if the last suggested Trial was completed.
+    genericMetadata: Operation metadata for suggesting Trials.
+  """
+
+  clientId = _messages.StringField(1)
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 2)
+
+
+class GoogleCloudAiplatformV1beta1SuggestTrialsResponse(_messages.Message):
+  r"""Response message for VizierService.SuggestTrials.
+
+  Enums:
+    StudyStateValueValuesEnum: The state of the Study.
+
+  Fields:
+    endTime: The time at which operation processing completed.
+    startTime: The time at which the operation was started.
+    studyState: The state of the Study.
+    trials: A list of Trials.
+  """
+
+  class StudyStateValueValuesEnum(_messages.Enum):
+    r"""The state of the Study.
+
+    Values:
+      STATE_UNSPECIFIED: The study state is unspecified.
+      ACTIVE: The study is active.
+      INACTIVE: The study is stopped due to an internal error.
+      COMPLETED: The study is done when the service exhausts the parameter
+        search space or max_trial_count is reached.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    INACTIVE = 2
+    COMPLETED = 3
+
+  endTime = _messages.StringField(1)
+  startTime = _messages.StringField(2)
+  studyState = _messages.EnumField('StudyStateValueValuesEnum', 3)
+  trials = _messages.MessageField('GoogleCloudAiplatformV1beta1Trial', 4, repeated=True)
+
+
+class GoogleCloudAiplatformV1beta1Trial(_messages.Message):
+  r"""A message representing a Trial. A Trial contains a unique set of
+  Parameters that has been or will be evaluated, along with the objective
+  metrics got by running the Trial.
+
+  Enums:
+    StateValueValuesEnum: Output only. The detailed state of the Trial.
+
+  Messages:
+    WebAccessUrisValue: Output only. URIs for accessing [interactive
+      shells](https://cloud.google.com/vertex-ai/docs/training/monitor-debug-
+      interactive-shell) (one URI for each training node). Only available if
+      this trial is part of a HyperparameterTuningJob and the job's
+      trial_job_spec.enable_web_access field is `true`. The keys are names of
+      each node used for the trial; for example, `workerpool0-0` for the
+      primary node, `workerpool1-0` for the first node in the second worker
+      pool, and `workerpool1-1` for the second node in the second worker pool.
+      The values are the URIs for each node's interactive shell.
+
+  Fields:
+    clientId: Output only. The identifier of the client that originally
+      requested this Trial. Each client is identified by a unique client_id.
+      When a client asks for a suggestion, Vizier will assign it a Trial. The
+      client should evaluate the Trial, complete it, and report back to
+      Vizier. If suggestion is asked again by same client_id before the Trial
+      is completed, the same Trial will be returned. Multiple clients with
+      different client_ids can ask for suggestions simultaneously, each of
+      them will get their own Trial.
+    customJob: Output only. The CustomJob name linked to the Trial. It's set
+      for a HyperparameterTuningJob's Trial.
+    endTime: Output only. Time when the Trial's status changed to `SUCCEEDED`
+      or `INFEASIBLE`.
+    finalMeasurement: Output only. The final measurement containing the
+      objective value.
+    id: Output only. The identifier of the Trial assigned by the service.
+    infeasibleReason: Output only. A human readable string describing why the
+      Trial is infeasible. This is set only if Trial state is `INFEASIBLE`.
+    measurements: Output only. A list of measurements that are strictly
+      lexicographically ordered by their induced tuples (steps,
+      elapsed_duration). These are used for early stopping computations.
+    name: Output only. Resource name of the Trial assigned by the service.
+    parameters: Output only. The parameters of the Trial.
+    startTime: Output only. Time when the Trial was started.
+    state: Output only. The detailed state of the Trial.
+    webAccessUris: Output only. URIs for accessing [interactive
+      shells](https://cloud.google.com/vertex-ai/docs/training/monitor-debug-
+      interactive-shell) (one URI for each training node). Only available if
+      this trial is part of a HyperparameterTuningJob and the job's
+      trial_job_spec.enable_web_access field is `true`. The keys are names of
+      each node used for the trial; for example, `workerpool0-0` for the
+      primary node, `workerpool1-0` for the first node in the second worker
+      pool, and `workerpool1-1` for the second node in the second worker pool.
+      The values are the URIs for each node's interactive shell.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The detailed state of the Trial.
+
+    Values:
+      STATE_UNSPECIFIED: The Trial state is unspecified.
+      REQUESTED: Indicates that a specific Trial has been requested, but it
+        has not yet been suggested by the service.
+      ACTIVE: Indicates that the Trial has been suggested.
+      STOPPING: Indicates that the Trial should stop according to the service.
+      SUCCEEDED: Indicates that the Trial is completed successfully.
+      INFEASIBLE: Indicates that the Trial should not be attempted again. The
+        service will set a Trial to INFEASIBLE when it's done but missing the
+        final_measurement.
+    """
+    STATE_UNSPECIFIED = 0
+    REQUESTED = 1
+    ACTIVE = 2
+    STOPPING = 3
+    SUCCEEDED = 4
+    INFEASIBLE = 5
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class WebAccessUrisValue(_messages.Message):
+    r"""Output only. URIs for accessing [interactive
+    shells](https://cloud.google.com/vertex-ai/docs/training/monitor-debug-
+    interactive-shell) (one URI for each training node). Only available if
+    this trial is part of a HyperparameterTuningJob and the job's
+    trial_job_spec.enable_web_access field is `true`. The keys are names of
+    each node used for the trial; for example, `workerpool0-0` for the primary
+    node, `workerpool1-0` for the first node in the second worker pool, and
+    `workerpool1-1` for the second node in the second worker pool. The values
+    are the URIs for each node's interactive shell.
+
+    Messages:
+      AdditionalProperty: An additional property for a WebAccessUrisValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type WebAccessUrisValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a WebAccessUrisValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  clientId = _messages.StringField(1)
+  customJob = _messages.StringField(2)
+  endTime = _messages.StringField(3)
+  finalMeasurement = _messages.MessageField('GoogleCloudAiplatformV1beta1Measurement', 4)
+  id = _messages.StringField(5)
+  infeasibleReason = _messages.StringField(6)
+  measurements = _messages.MessageField('GoogleCloudAiplatformV1beta1Measurement', 7, repeated=True)
+  name = _messages.StringField(8)
+  parameters = _messages.MessageField('GoogleCloudAiplatformV1beta1TrialParameter', 9, repeated=True)
+  startTime = _messages.StringField(10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  webAccessUris = _messages.MessageField('WebAccessUrisValue', 12)
+
+
+class GoogleCloudAiplatformV1beta1TrialParameter(_messages.Message):
+  r"""A message representing a parameter to be tuned.
+
+  Fields:
+    parameterId: Output only. The ID of the parameter. The parameter should be
+      defined in StudySpec's Parameters.
+    value: Output only. The value of the parameter. `number_value` will be set
+      if a parameter defined in StudySpec is in type 'INTEGER', 'DOUBLE' or
+      'DISCRETE'. `string_value` will be set if a parameter defined in
+      StudySpec is in type 'CATEGORICAL'.
+  """
+
+  parameterId = _messages.StringField(1)
+  value = _messages.MessageField('extra_types.JsonValue', 2)
 
 
 class GoogleCloudAiplatformV1beta1UndeployIndexOperationMetadata(_messages.Message):
@@ -13110,17 +14343,38 @@ class GoogleCloudAiplatformV1beta1UndeployModelResponse(_messages.Message):
   r"""Response message for EndpointService.UndeployModel."""
 
 
+class GoogleCloudAiplatformV1beta1UpdateFeaturestoreOperationMetadata(_messages.Message):
+  r"""Details of operations that perform update Featurestore.
+
+  Fields:
+    genericMetadata: Operation metadata for Featurestore.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 1)
+
+
 class GoogleCloudAiplatformV1beta1UpdateIndexOperationMetadata(_messages.Message):
   r"""Runtime operation information for IndexService.UpdateIndex.
 
   Fields:
     genericMetadata: The operation generic information.
     nearestNeighborSearchOperationMetadata: The operation metadata with regard
-      to ScaNN Index operation.
+      to Matching Engine Index operation.
   """
 
   genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 1)
   nearestNeighborSearchOperationMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1NearestNeighborSearchOperationMetadata', 2)
+
+
+class GoogleCloudAiplatformV1beta1UpdateModelDeploymentMonitoringJobOperationMetadata(_messages.Message):
+  r"""Runtime operation information for
+  JobService.UpdateModelDeploymentMonitoringJob.
+
+  Fields:
+    genericMetadata: The operation generic information.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 1)
 
 
 class GoogleCloudAiplatformV1beta1UpdateSpecialistPoolOperationMetadata(_messages.Message):
@@ -13136,6 +14390,16 @@ class GoogleCloudAiplatformV1beta1UpdateSpecialistPoolOperationMetadata(_message
 
   genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 1)
   specialistPool = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformV1beta1UpdateTensorboardOperationMetadata(_messages.Message):
+  r"""Details of operations that perform update Tensorboard.
+
+  Fields:
+    genericMetadata: Operation metadata for Tensorboard.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 1)
 
 
 class GoogleCloudAiplatformV1beta1UploadModelOperationMetadata(_messages.Message):
@@ -13385,18 +14649,18 @@ class GoogleRpcStatus(_messages.Message):
 class GoogleTypeColor(_messages.Message):
   r"""Represents a color in the RGBA color space. This representation is
   designed for simplicity of conversion to/from color representations in
-  various languages over compactness; for example, the fields of this
+  various languages over compactness. For example, the fields of this
   representation can be trivially provided to the constructor of
-  "java.awt.Color" in Java; it can also be trivially provided to UIColor's
-  "+colorWithRed:green:blue:alpha" method in iOS; and, with just a little
-  work, it can be easily formatted into a CSS "rgba()" string in JavaScript,
-  as well. Note: this proto does not carry information about the absolute
-  color space that should be used to interpret the RGB value (e.g. sRGB, Adobe
-  RGB, DCI-P3, BT.2020, etc.). By default, applications SHOULD assume the sRGB
-  color space. Note: when color equality needs to be decided, implementations,
-  unless documented otherwise, will treat two colors to be equal if all their
-  red, green, blue and alpha values each differ by at most 1e-5. Example
-  (Java): import com.google.type.Color; // ... public static java.awt.Color
+  `java.awt.Color` in Java; it can also be trivially provided to UIColor's
+  `+colorWithRed:green:blue:alpha` method in iOS; and, with just a little
+  work, it can be easily formatted into a CSS `rgba()` string in JavaScript.
+  This reference page doesn't carry information about the absolute color space
+  that should be used to interpret the RGB value (e.g. sRGB, Adobe RGB,
+  DCI-P3, BT.2020, etc.). By default, applications should assume the sRGB
+  color space. When color equality needs to be decided, implementations,
+  unless documented otherwise, treat two colors as equal if all their red,
+  green, blue, and alpha values each differ by at most 1e-5. Example (Java):
+  import com.google.type.Color; // ... public static java.awt.Color
   fromProto(Color protocolor) { float alpha = protocolor.hasAlpha() ?
   protocolor.getAlpha().getValue() : 1.0; return new java.awt.Color(
   protocolor.getRed(), protocolor.getGreen(), protocolor.getBlue(), alpha); }
@@ -13422,10 +14686,10 @@ class GoogleTypeColor(_messages.Message):
   0.0; var greenFrac = rgb_color.green || 0.0; var blueFrac = rgb_color.blue
   || 0.0; var red = Math.floor(redFrac * 255); var green =
   Math.floor(greenFrac * 255); var blue = Math.floor(blueFrac * 255); if
-  (!('alpha' in rgb_color)) { return rgbToCssColor_(red, green, blue); } var
+  (!('alpha' in rgb_color)) { return rgbToCssColor(red, green, blue); } var
   alphaFrac = rgb_color.alpha.value || 0.0; var rgbParams = [red, green,
   blue].join(','); return ['rgba(', rgbParams, ',', alphaFrac, ')'].join('');
-  }; var rgbToCssColor_ = function(red, green, blue) { var rgbNumber = new
+  }; var rgbToCssColor = function(red, green, blue) { var rgbNumber = new
   Number((red << 16) | (green << 8) | blue); var hexString =
   rgbNumber.toString(16); var missingZeros = 6 - hexString.length; var
   resultBuilder = ['#']; for (var i = 0; i < missingZeros; i++) {
@@ -13434,14 +14698,14 @@ class GoogleTypeColor(_messages.Message):
 
   Fields:
     alpha: The fraction of this color that should be applied to the pixel.
-      That is, the final pixel color is defined by the equation: pixel color =
-      alpha * (this color) + (1.0 - alpha) * (background color) This means
+      That is, the final pixel color is defined by the equation: `pixel color
+      = alpha * (this color) + (1.0 - alpha) * (background color)` This means
       that a value of 1.0 corresponds to a solid color, whereas a value of 0.0
       corresponds to a completely transparent color. This uses a wrapper
       message rather than a simple float scalar so that it is possible to
       distinguish between a default value and the value being unset. If
-      omitted, this color object is to be rendered as a solid color (as if the
-      alpha value had been explicitly given with a value of 1.0).
+      omitted, this color object is rendered as a solid color (as if the alpha
+      value had been explicitly given a value of 1.0).
     blue: The amount of blue in the color as a value in the interval [0, 1].
     green: The amount of green in the color as a value in the interval [0, 1].
     red: The amount of red in the color as a value in the interval [0, 1].

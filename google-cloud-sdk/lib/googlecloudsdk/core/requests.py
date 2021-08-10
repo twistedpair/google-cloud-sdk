@@ -33,6 +33,7 @@ from googlecloudsdk.core.util import http_proxy_types
 import httplib2
 import requests
 import six
+from six.moves import http_client as httplib
 from six.moves import urllib
 import socks
 from urllib3.util.ssl_ import create_urllib3_context
@@ -394,6 +395,10 @@ class _ApitoolsRequests():
   def ResponseHook(self, response, *args, **kwargs):
     """Response hook to be used if response_handler has been set."""
     del args, kwargs  # Unused.
+    if response.status_code not in (httplib.OK, httplib.PARTIAL_CONTENT):
+      log.debug('Skipping response_handler as response is invalid.')
+      return
+
     if (self._response_handler.use_stream and
         properties.VALUES.core.log_http.GetBool() and
         properties.VALUES.core.log_http_streaming_body.GetBool()):

@@ -79,7 +79,9 @@ class S3Api(cloud_api.CloudApi):
   def __init__(self):
     # Using a lock since the boto3.client creation is not thread-safe.
     with BOTO3_CLIENT_LOCK:
-      self.client = boto3.client(storage_url.ProviderPrefix.S3.value)
+      self.client = boto3.client(
+          storage_url.ProviderPrefix.S3.value,
+          endpoint_url=properties.VALUES.storage.s3_endpoint_url.Get())
 
   @_catch_client_error_raise_s3_api_error()
   def create_bucket(self, bucket_resource, fields_scope=None):
@@ -98,10 +100,12 @@ class S3Api(cloud_api.CloudApi):
       )
 
     if bucket_resource.location:
-      # Create client with appropriate endpoint for creating regional bucket.
-      client = boto3.client(
-          storage_url.ProviderPrefix.S3.value,
-          region_name=bucket_resource.location)
+      with BOTO3_CLIENT_LOCK:
+        # Create client with appropriate endpoint for creating regional bucket.
+        client = boto3.client(
+            storage_url.ProviderPrefix.S3.value,
+            region_name=bucket_resource.location,
+            endpoint_url=properties.VALUES.storage.s3_endpoint_url.Get())
       create_bucket_configuration = {
           'LocationConstraint': bucket_resource.location
       }
@@ -363,9 +367,9 @@ class S3Api(cloud_api.CloudApi):
   def download_object(self,
                       cloud_resource,
                       download_stream,
-                      compressed_encoding=False,
                       decryption_wrapper=None,
                       digesters=None,
+                      do_not_decompress=False,
                       download_strategy=cloud_api.DownloadStrategy.ONE_SHOT,
                       progress_callback=None,
                       start_byte=0,

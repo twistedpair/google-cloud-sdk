@@ -22,8 +22,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import os
-
 from googlecloudsdk.command_lib.storage import tracker_file_util
 from googlecloudsdk.command_lib.storage.tasks import task
 from googlecloudsdk.command_lib.storage.tasks.cp import download_util
@@ -35,8 +33,11 @@ from googlecloudsdk.core import properties
 class FinalizeSlicedDownloadTask(task.Task):
   """Performs final steps of sliced download."""
 
-  def __init__(self, source_resource, temporary_destination_resource,
-               final_destination_resource):
+  def __init__(self,
+               source_resource,
+               temporary_destination_resource,
+               final_destination_resource,
+               do_not_decompress=False):
     """Initializes task.
 
     Args:
@@ -47,11 +48,14 @@ class FinalizeSlicedDownloadTask(task.Task):
         transfers.
       final_destination_resource (resource_reference.FileObjectResource): Must
         contain local filesystem path to the final download destination.
+      do_not_decompress (bool): Prevents automatically decompressing
+        downloaded gzips.
     """
     super(FinalizeSlicedDownloadTask, self).__init__()
     self._source_resource = source_resource
     self._temporary_destination_resource = temporary_destination_resource
     self._final_destination_resource = final_destination_resource
+    self._do_not_decompress = do_not_decompress
 
   def execute(self, task_status_queue=None):
     """Validates and clean ups after sliced download."""
@@ -96,13 +100,11 @@ class FinalizeSlicedDownloadTask(task.Task):
             temporary_object_path, self._source_resource.crc32c_hash,
             downloaded_file_hash_digest)
 
-    if download_util.decompress_gzip_if_necessary(
-        self._source_resource, temporary_object_path,
-        final_destination_object_path):
-      os.remove(temporary_object_path)
-
-    if os.path.exists(temporary_object_path):
-      os.rename(temporary_object_path, final_destination_object_path)
+    download_util.decompress_or_rename_file(
+        self._source_resource,
+        temporary_object_path,
+        final_destination_object_path,
+        do_not_decompress_flag=self._do_not_decompress)
 
     tracker_file_util.delete_download_tracker_files(
         self._temporary_destination_resource.storage_url)

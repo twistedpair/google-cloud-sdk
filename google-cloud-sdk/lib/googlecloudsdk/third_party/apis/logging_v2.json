@@ -467,11 +467,11 @@
     },
     "LogBucket": {
       "id": "LogBucket",
-      "description": "Describes a repository of logs.",
+      "description": "Describes a repository in which log entries are stored.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. The resource name of the bucket. For example: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\" The supported locations are: global, us-central1, us-east1, us-west1, asia-east1, europe-west1.For the location of global it is unspecified where logs are actually stored. Once a bucket has been created, the location can not be changed.",
+          "description": "Output only. The resource name of the bucket.For example:projects\/my-project\/locations\/global\/buckets\/my-bucketFor a list of supported locations, see Supported Regions (https:\/\/cloud.google.com\/logging\/docs\/region-support)For the location of global it is unspecified where log entries are actually stored.After a bucket has been created, the location cannot be changed.",
           "readOnly": true,
           "type": "string"
         },
@@ -497,7 +497,7 @@
           "format": "int32"
         },
         "locked": {
-          "description": "Whether the bucket has been locked. The retention period on a locked bucket may not be changed. Locked buckets may only be deleted if they are empty.",
+          "description": "Whether the bucket is locked.The retention period on a locked bucket cannot be changed. Locked buckets may only be deleted if they are empty.",
           "type": "boolean"
         },
         "lifecycleState": {
@@ -516,15 +516,15 @@
           ]
         },
         "analyticsEnabled": {
-          "description": "Whether the bucket is opted in to advanced log analytics. This field may only be set at bucket creation and cannot be changed later.",
+          "description": "Whether advanced log analytics is enabled for this bucket.This field may only be set at bucket creation and cannot be changed later.",
           "type": "boolean"
         },
         "logLink": {
-          "description": "Configures a linked dataset in BigQuery corresponding to this log bucket. Requires analytics_enabled to be True. A log link can only be enabled by updating an existing bucket with analytics enabled.",
+          "description": "Configures a linked dataset in BigQuery corresponding to this log bucket.Requires analytics_enabled to be true. A log link can only be enabled by updating an existing bucket with analytics enabled.",
           "$ref": "LogLink"
         },
         "restrictedFields": {
-          "description": "Log entry field paths that are denied access in this bucket. The following fields and their children are eligible: textPayload, jsonPayload, protoPayload, httpRequest, labels, sourceLocation. Restricting a repeated field will restrict all values. Adding a parent will block all child fields e.g. foo.bar will block foo.bar.baz.",
+          "description": "Log entry field paths that are denied access in this bucket.The following fields and their children are eligible: textPayload, jsonPayload, protoPayload, httpRequest, labels, sourceLocation.Restricting a repeated field will restrict all values. Adding a parent will block all child fields. (e.g. foo.bar will block foo.bar.baz)",
           "type": "array",
           "items": {
             "type": "string"
@@ -538,7 +538,7 @@
           }
         },
         "linkedBigqueryDataset": {
-          "description": "Output only. The name of the BigQuery dataset this log bucket is linked to. Example: \"bigquery.googleapis.com\/projects\/PROJECT_ID\/datasets\/DATASET\"",
+          "description": "Output only. The name of the BigQuery dataset this log bucket is linked to.For example:bigquery.googleapis.com\/projects\/[PROJECT_ID]\/datasets\/[DATASET]",
           "readOnly": true,
           "type": "string"
         }
@@ -546,17 +546,12 @@
     },
     "LogLink": {
       "id": "LogLink",
-      "description": "This is used to link logs managed by Cloud Logging with a customer's dataset in BigQuery. Once linked, authorized views are created in the destination dataset that give read-access to the log data.WARNING: LogLinks are still experimental, and may change its behavior in the future.",
+      "description": "This is used to link logs managed by Cloud Logging with a customer's dataset in BigQuery. Once linked, authorized views are created in the destination dataset that give read-access to the log data.WARNING: LogLinks are still experimental, and may change their behavior in the future.",
       "type": "object",
       "properties": {
         "enabled": {
           "description": "Enables a log link, and creates a BigQuery dataset in the same parent project as the log bucket. The dataset will be named the same as the log bucket name, and will contain views to access the logs in the bucket.If an active log link is disabled, the dataset and views are deleted.",
           "type": "boolean"
-        },
-        "linkedBigqueryDataset": {
-          "description": "Output only. The name of the BigQuery dataset this log bucket is linked to. Example:\"bigquery.googleapis.com\/projects\/PROJECT_ID\/datasets\/DATASET\" This field is deprecated, and is being replaced by the linked_bigquery_dataset field in the top level of LogBucket. Any new uses of this field should use that one. This one will be removed.",
-          "readOnly": true,
-          "type": "string"
         },
         "loggingServiceAccount": {
           "description": "Output only. An IAM service account used by Cloud Logging to create views on the destination dataset.",
@@ -571,7 +566,7 @@
       "type": "object",
       "properties": {
         "fieldPath": {
-          "description": "Required. The LogEntry field path to index.Note that some paths are automatically indexed, and other paths are not candidate for indexing. See indexing documentation for details.For example: jsonPayload.request.status",
+          "description": "Required. The LogEntry field path to index.Note that some paths are automatically indexed, and other paths are not eligible for indexing. See indexing documentation( https:\/\/cloud.google.com\/logging\/docs\/view\/advanced-queries#indexed-fields) for details.For example: jsonPayload.request.status",
           "type": "string"
         },
         "type": {
@@ -589,7 +584,7 @@
           ]
         },
         "createTime": {
-          "description": "Output only. The timestamp when the index was last modified.This is used to return the timestamp, and will be ignored if supplied during update. It is likely that before this goes into alpha, the indexconfig message will be updated with another distinct timestamp in order to provide information on when the index took effect.",
+          "description": "Output only. The timestamp when the index was last modified.This is used to return the timestamp, and will be ignored if supplied during update.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
@@ -623,11 +618,11 @@
     },
     "LogView": {
       "id": "LogView",
-      "description": "Describes a view over logs in a bucket.",
+      "description": "Describes a view over log entries in a bucket.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "The resource name of the view. For example \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\/views\/my-view",
+          "description": "The resource name of the view.For example:projects\/my-project\/locations\/global\/buckets\/my-bucket\/views\/my-view",
           "type": "string"
         },
         "description": {
@@ -647,11 +642,11 @@
           "format": "google-datetime"
         },
         "filter": {
-          "description": "Filter that restricts which log entries in a bucket are visible in this view. Filters are restricted to be a logical AND of ==\/!= of any of the following: originating project\/folder\/organization\/billing account. resource type log id Example: SOURCE(\"projects\/myproject\") AND resource.type = \"gce_instance\" AND LOG_ID(\"stdout\")",
+          "description": "Filter that restricts which log entries in a bucket are visible in this view.Filters are restricted to be a logical AND of ==\/!= of any of the following: originating project\/folder\/organization\/billing account. resource type log idFor example:SOURCE(\"projects\/myproject\") AND resource.type = \"gce_instance\" AND LOG_ID(\"stdout\")",
           "type": "string"
         },
         "schema": {
-          "description": "Output only. Describes the schema of the logs stored in the bucket that are accessible via this view. This field is only populated for views in analytics-enabled buckets.",
+          "description": "Output only. Describes the schema of the logs stored in the bucket that are accessible via this view.This field is only populated for views in analytics-enabled buckets.",
           "readOnly": true,
           "$ref": "TableSchema"
         }
@@ -677,11 +672,11 @@
     },
     "LogSink": {
       "id": "LogSink",
-      "description": "Describes a sink used to export log entries to one of the following destinations in any project: a Cloud Storage bucket, a BigQuery dataset, a Cloud Pub\/Sub topic or a Cloud Logging Bucket. A logs filter controls which log entries are exported. The sink must be created within a project, organization, billing account, or folder.",
+      "description": "Describes a sink used to export log entries to one of the following destinations in any project: a Cloud Storage bucket, a BigQuery dataset, a Pub\/Sub topic or a Cloud Logging log bucket. A logs filter controls which log entries are exported. The sink must be created within a project, organization, billing account, or folder.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Required. The client-assigned sink identifier, unique within the project. Example: \"my-syslog-errors-to-pubsub\". Sink identifiers are limited to 100 characters and can include only the following characters: upper and lower-case alphanumeric characters, underscores, hyphens, and periods. First character has to be alphanumeric.",
+          "description": "Required. The client-assigned sink identifier, unique within the project.For example: \"my-syslog-errors-to-pubsub\". Sink identifiers are limited to 100 characters and can include only the following characters: upper and lower-case alphanumeric characters, underscores, hyphens, and periods. First character has to be alphanumeric.",
           "type": "string"
         },
         "destination": {
@@ -689,19 +684,19 @@
           "type": "string"
         },
         "filter": {
-          "description": "Optional. An advanced logs filter (https:\/\/cloud.google.com\/logging\/docs\/view\/advanced-queries). The only exported log entries are those that are in the resource owning the sink and that match the filter. For example: logName=\"projects\/[PROJECT_ID]\/logs\/[LOG_ID]\" AND severity>=ERROR ",
+          "description": "Optional. An advanced logs filter (https:\/\/cloud.google.com\/logging\/docs\/view\/advanced-queries). The only exported log entries are those that are in the resource owning the sink and that match the filter.For example:logName=\"projects\/[PROJECT_ID]\/logs\/[LOG_ID]\" AND severity>=ERROR",
           "type": "string"
         },
         "description": {
-          "description": "Optional. A description of this sink. The maximum length of the description is 8000 characters.",
+          "description": "Optional. A description of this sink.The maximum length of the description is 8000 characters.",
           "type": "string"
         },
         "disabled": {
-          "description": "Optional. If set to True, then this sink is disabled and it does not export any log entries.",
+          "description": "Optional. If set to true, then this sink is disabled and it does not export any log entries.",
           "type": "boolean"
         },
         "exclusions": {
-          "description": "Optional. Log entries that match any of the exclusion filters will not be exported. If a log entry is matched by both filter and one of exclusion_filters it will not be exported.",
+          "description": "Optional. Log entries that match any of these exclusion filters will not be exported.If a log entry is matched by both filter and one of exclusion_filters it will not be exported.",
           "type": "array",
           "items": {
             "$ref": "LogExclusion"
@@ -722,21 +717,17 @@
           ]
         },
         "writerIdentity": {
-          "description": "Output only. An IAM identity\u2014a service account or group\u2014under which Logging writes the exported log entries to the sink's destination. This field is set by sinks.create and sinks.update based on the value of unique_writer_identity in those methods.Until you grant this identity write-access to the destination, log entry exports from this sink will fail. For more information, see Granting Access for a Resource (https:\/\/cloud.google.com\/iam\/docs\/granting-roles-to-service-accounts#granting_access_to_a_service_account_for_a_resource). Consult the destination service's documentation to determine the appropriate IAM roles to assign to the identity.",
+          "description": "Output only. An IAM identity\u2014a service account or group\u2014under which Cloud Logging writes the exported log entries to the sink's destination. This field is set by sinks.create and sinks.update based on the value of unique_writer_identity in those methods.Until you grant this identity write-access to the destination, log entry exports from this sink will fail. For more information, see Granting Access for a Resource (https:\/\/cloud.google.com\/iam\/docs\/granting-roles-to-service-accounts#granting_access_to_a_service_account_for_a_resource). Consult the destination service's documentation to determine the appropriate IAM roles to assign to the identity.",
           "readOnly": true,
           "type": "string"
         },
         "includeChildren": {
-          "description": "Optional. This field applies only to sinks owned by organizations and folders. If the field is false, the default, only the logs owned by the sink's parent resource are available for export. If the field is true, then logs from all the projects, folders, and billing accounts contained in the sink's parent resource are also available for export. Whether a particular log entry from the children is exported depends on the sink's filter expression. For example, if this field is true, then the filter resource.type=gce_instance would export all Compute Engine VM instance log entries from all projects in the sink's parent. To only export entries from certain child projects, filter on the project part of the log name: logName:(\"projects\/test-project1\/\" OR \"projects\/test-project2\/\") AND resource.type=gce_instance ",
+          "description": "Optional. This field applies only to sinks owned by organizations and folders. If the field is false, the default, only the logs owned by the sink's parent resource are available for export. If the field is true, then log entries from all the projects, folders, and billing accounts contained in the sink's parent resource are also available for export. Whether a particular log entry from the children is exported depends on the sink's filter expression.For example, if this field is true, then the filter resource.type=gce_instance would export all Compute Engine VM instance log entries from all projects in the sink's parent.To only export entries from certain child projects, filter on the project part of the log name:logName:(\"projects\/test-project1\/\" OR \"projects\/test-project2\/\") AND resource.type=gce_instance",
           "type": "boolean"
         },
         "bigqueryOptions": {
           "description": "Optional. Options that affect sinks exporting data to BigQuery.",
           "$ref": "BigQueryOptions"
-        },
-        "dlpOptions": {
-          "description": "Optional. Settings for Data Loss Prevention (DLP) (https:\/\/cloud.google.com\/dlp\/docs\/) enabled sinks.",
-          "$ref": "DlpOptions"
         },
         "createTime": {
           "description": "Output only. The creation timestamp of the sink.This field may not be present for older sinks.",
@@ -754,7 +745,7 @@
     },
     "LogExclusion": {
       "id": "LogExclusion",
-      "description": "Specifies a set of log entries that are not to be stored in Logging. If your GCP resource receives a large volume of logs, you can use exclusions to reduce your chargeable logs. Exclusions are processed after log sinks, so you can export log entries before they are excluded. Note that organization-level and folder-level exclusions don't apply to child resources, and that you can't exclude audit log entries.",
+      "description": "Specifies a set of log entries that are not to be stored in Cloud Logging. If your GCP resource receives a large volume of log entries, you can use exclusions to reduce your chargeable logs. Exclusions are processed after log sinks, so you can export log entries before they are excluded. Note that organization-level and folder-level exclusions don't apply to child resources, and that you can't exclude audit log entries.",
       "type": "object",
       "properties": {
         "name": {
@@ -766,7 +757,7 @@
           "type": "string"
         },
         "filter": {
-          "description": "Required. An advanced logs filter (https:\/\/cloud.google.com\/logging\/docs\/view\/advanced-queries) that matches the log entries to be excluded. By using the sample function (https:\/\/cloud.google.com\/logging\/docs\/view\/advanced-queries#sample), you can exclude less than 100% of the matching log entries. For example, the following query matches 99% of low-severity log entries from Google Cloud Storage buckets:\"resource.type=gcs_bucket severity<ERROR sample(insertId, 0.99)\"",
+          "description": "Required. An advanced logs filter (https:\/\/cloud.google.com\/logging\/docs\/view\/advanced-queries) that matches the log entries to be excluded. By using the sample function (https:\/\/cloud.google.com\/logging\/docs\/view\/advanced-queries#sample), you can exclude less than 100% of the matching log entries.For example, the following query matches 99% of low-severity log entries from Google Cloud Storage buckets:resource.type=gcs_bucket severity<ERROR sample(insertId, 0.99)",
           "type": "string"
         },
         "disabled": {
@@ -793,35 +784,13 @@
       "type": "object",
       "properties": {
         "usePartitionedTables": {
-          "description": "Optional. Whether to use BigQuery's partition tables (https:\/\/cloud.google.com\/bigquery\/docs\/partitioned-tables). By default, Logging creates dated tables based on the log entries' timestamps, e.g. syslog_20170523. With partitioned tables the date suffix is no longer present and special query syntax (https:\/\/cloud.google.com\/bigquery\/docs\/querying-partitioned-tables) has to be used instead. In both cases, tables are sharded based on UTC timezone.",
+          "description": "Optional. Whether to use BigQuery's partition tables (https:\/\/cloud.google.com\/bigquery\/docs\/partitioned-tables). By default, Cloud Logging creates dated tables based on the log entries' timestamps, e.g. syslog_20170523. With partitioned tables the date suffix is no longer present and special query syntax (https:\/\/cloud.google.com\/bigquery\/docs\/querying-partitioned-tables) has to be used instead. In both cases, tables are sharded based on UTC timezone.",
           "type": "boolean"
         },
         "usesTimestampColumnPartitioning": {
-          "description": "Output only. True if new timestamp column based partitioning is in use, false if legacy ingestion-time partitioning is in use. All new sinks will have this field set true and will use timestamp column based partitioning. If use_partitioned_tables is false, this value has no meaning and will be false. Legacy sinks using partitioned tables will have this field set to false.",
+          "description": "Output only. True if new timestamp column based partitioning is in use, false if legacy ingestion-time partitioning is in use.All new sinks will have this field set true and will use timestamp column based partitioning. If use_partitioned_tables is false, this value has no meaning and will be false. Legacy sinks using partitioned tables will have this field set to false.",
           "readOnly": true,
           "type": "boolean"
-        }
-      }
-    },
-    "DlpOptions": {
-      "id": "DlpOptions",
-      "description": "Options specific to sinks that require de-identification by the Data Loss Prevention (DLP) API.",
-      "type": "object",
-      "properties": {
-        "inspectTemplateName": {
-          "description": "Required. DLP template used to specify what types of data within a log to inspect. See Creating Cloud DLP inspection templates (https:\/\/cloud.google.com\/dlp\/docs\/creating-templates). For example: \"projects\/[PROJECT_ID]\/inspectTemplates\/[TEMPLATE_ID]\" ",
-          "type": "string"
-        },
-        "deidentifyTemplateName": {
-          "description": "Required. DLP template used to specify how to perform the de-identification of log data. See Creating Cloud DLP de-identification templates (https:\/\/cloud.google.com\/dlp\/docs\/creating-templates-deid). For example: \"projects\/[PROJECT_ID]\/deidentifyTemplates\/[TEMPLATE_ID]\" ",
-          "type": "string"
-        },
-        "includedFields": {
-          "description": "Optional. Fields within the log entries to include in DLP de-identification. Each field is identified using the advanced logs filter (https:\/\/cloud.google.com\/logging\/docs\/view\/advanced-queries) syntax. If any fields are specified, the de-identification will only be applied to these fields and other fields will remain unmodified. If no fields are specified, payload and http_request fields will be included in the de-identification. Specifying included fields is useful for limiting the amount of billable data sent to the DLP API. For example:\"httpRequest.remoteIp\" \"jsonPayload.user.phoneNumber\" \"jsonPayload.person.socialSecurityNumber\"",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
         }
       }
     },
@@ -854,7 +823,7 @@
           "type": "string"
         },
         "kmsKeyName": {
-          "description": "The resource name for the configured Cloud KMS key.KMS key name format: \"projects\/PROJECT_ID\/locations\/LOCATION\/keyRings\/KEYRING\/cryptoKeys\/KEY\"For example: \"projects\/my-project-id\/locations\/my-region\/keyRings\/key-ring-name\/cryptoKeys\/key-name\"To enable CMEK for the Logs Router, set this field to a valid kms_key_name for which the associated service account has the required roles\/cloudkms.cryptoKeyEncrypterDecrypter role assigned for the key.The Cloud KMS key used by the Log Router can be updated by changing the kms_key_name to a new valid key name. Encryption operations that are in progress will be completed with the key that was in use when they started. Decryption operations will be completed using the key that was used at the time of encryption unless access to that key has been revoked.To disable CMEK for the Logs Router, set this field to an empty string.See Enabling CMEK for Logs Router (https:\/\/cloud.google.com\/logging\/docs\/routing\/managed-encryption) for more information.",
+          "description": "The resource name for the configured Cloud KMS key.KMS key name format: \"projects\/[PROJECT_ID]\/locations\/[LOCATION]\/keyRings\/[KEYRING]\/cryptoKeys\/[KEY]\" For example:\"projects\/my-project\/locations\/us-central1\/keyRings\/my-ring\/cryptoKeys\/my-key\"To enable CMEK for the Logs Router, set this field to a valid kms_key_name for which the associated service account has the required roles\/cloudkms.cryptoKeyEncrypterDecrypter role assigned for the key.The Cloud KMS key used by the Log Router can be updated by changing the kms_key_name to a new valid key name. Encryption operations that are in progress will be completed with the key that was in use when they started. Decryption operations will be completed using the key that was used at the time of encryption unless access to that key has been revoked.To disable CMEK for the Logs Router, set this field to an empty string.See Enabling CMEK for Logs Router (https:\/\/cloud.google.com\/logging\/docs\/routing\/managed-encryption) for more information.",
           "type": "string"
         },
         "serviceAccountId": {
@@ -870,7 +839,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Required. Bucket from which to copy logs. e.g. \"projects\/my-project\/locations\/my-location\/buckets\/my-source-bucket",
+          "description": "Required. Log bucket from which to copy log entries.For example:\"projects\/my-project\/locations\/global\/buckets\/my-source-bucket\"",
           "type": "string"
         },
         "filter": {
@@ -878,7 +847,7 @@
           "type": "string"
         },
         "destination": {
-          "description": "Required. Destination to which to copy logs.",
+          "description": "Required. Destination to which to copy log entries.",
           "type": "string"
         }
       }
@@ -1330,7 +1299,7 @@
           "type": "string"
         },
         "type": {
-          "description": "Required. The monitored resource type. For example, the type \"cloudsql_database\" represents databases in Google Cloud SQL.",
+          "description": "Required. The monitored resource type. For example, the type \"cloudsql_database\" represents databases in Google Cloud SQL. For a list of types, see Monitoring resource types (https:\/\/cloud.google.com\/monitoring\/api\/resources) and Logging resource types (https:\/\/cloud.google.com\/logging\/docs\/api\/v2\/resource-list).",
           "type": "string"
         },
         "displayName": {
@@ -2087,7 +2056,7 @@
           "format": "int32"
         },
         "writerIdentity": {
-          "description": "The IAM identity of a service account that must be granted access to the destination. If the service account is not granted permission to the destination within an hour, the operation will be cancelled. Example: \"serviceAccount:foo@bar.com\"",
+          "description": "The IAM identity of a service account that must be granted access to the destination.If the service account is not granted permission to the destination within an hour, the operation will be cancelled.For example: \"serviceAccount:foo@bar.com\"",
           "type": "string"
         }
       }
@@ -2157,7 +2126,7 @@
       "type": "object",
       "properties": {
         "parent": {
-          "description": "Required. The resource in which to create the bucket: \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\" Example: \"projects\/my-logging-project\/locations\/global\"",
+          "description": "Required. The resource in which to create the log bucket: \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\" For example:\"projects\/my-project\/locations\/global\"",
           "type": "string"
         },
         "bucketId": {
@@ -2176,7 +2145,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Required. The full resource name of the bucket to update. \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" Example: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\". Also requires permission \"resourcemanager.projects.updateLiens\" to set the locked property",
+          "description": "Required. The full resource name of the bucket to update. \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" For example:\"projects\/my-project\/locations\/global\/buckets\/my-bucket\"",
           "type": "string"
         },
         "bucket": {
@@ -2184,7 +2153,7 @@
           "$ref": "LogBucket"
         },
         "updateMask": {
-          "description": "Required. Field mask that specifies the fields in bucket that need an update. A bucket field will be overwritten if, and only if, it is in the update mask. name and output only fields cannot be updated.For a detailed FieldMask definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#google.protobuf.FieldMaskExample: updateMask=retention_days.",
+          "description": "Required. Field mask that specifies the fields in bucket that need an update. A bucket field will be overwritten if, and only if, it is in the update mask. name and output only fields cannot be updated.For a detailed FieldMask definition, see: https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#google.protobuf.FieldMaskFor example: updateMask=retention_days",
           "type": "string",
           "format": "google-fieldmask"
         }
@@ -2242,7 +2211,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "sinkName": {
-                  "description": "Required. The resource name of the sink: \"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\" \"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\" \"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\" Example: \"projects\/my-project-id\/sinks\/my-sink-id\".",
+                  "description": "Required. The resource name of the sink: \"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\" \"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\" \"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\" For example:\"projects\/my-project\/sinks\/my-sink\"",
                   "pattern": "^projects\/[^\/]+\/sinks\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -2270,14 +2239,14 @@
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
-                  "description": "Required. The resource in which to create the sink: \"projects\/[PROJECT_ID]\" \"organizations\/[ORGANIZATION_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\" \"folders\/[FOLDER_ID]\" Examples: \"projects\/my-logging-project\", \"organizations\/123456789\".",
+                  "description": "Required. The resource in which to create the sink: \"projects\/[PROJECT_ID]\" \"organizations\/[ORGANIZATION_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\" \"folders\/[FOLDER_ID]\" For examples:\"projects\/my-project\" \"organizations\/123456789\"",
                   "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
                   "type": "string"
                 },
                 "uniqueWriterIdentity": {
-                  "description": "Optional. Determines the kind of IAM identity returned as writer_identity in the new sink. If this value is omitted or set to false, and if the sink's parent is a project, then the value returned as writer_identity is the same group or service account used by Logging before the addition of writer identities to this API. The sink's destination must be in the same project as the sink itself.If this field is set to true, or if the sink is owned by a non-project resource such as an organization, then the value of writer_identity will be a unique service account used only for exports from the new sink. For more information, see writer_identity in LogSink.",
+                  "description": "Optional. Determines the kind of IAM identity returned as writer_identity in the new sink. If this value is omitted or set to false, and if the sink's parent is a project, then the value returned as writer_identity is the same group or service account used by Cloud Logging before the addition of writer identities to this API. The sink's destination must be in the same project as the sink itself.If this field is set to true, or if the sink is owned by a non-project resource such as an organization, then the value of writer_identity will be a unique service account used only for exports from the new sink. For more information, see writer_identity in LogSink.",
                   "location": "query",
                   "type": "boolean"
                 }
@@ -2304,7 +2273,7 @@
               "httpMethod": "PUT",
               "parameters": {
                 "sinkName": {
-                  "description": "Required. The full resource name of the sink to update, including the parent resource and the sink identifier: \"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\" \"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\" \"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\" Example: \"projects\/my-project-id\/sinks\/my-sink-id\".",
+                  "description": "Required. The full resource name of the sink to update, including the parent resource and the sink identifier: \"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\" \"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\" \"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\" For example:\"projects\/my-project\/sinks\/my-sink\"",
                   "pattern": "^projects\/[^\/]+\/sinks\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -2316,7 +2285,7 @@
                   "type": "boolean"
                 },
                 "updateMask": {
-                  "description": "Optional. Field mask that specifies the fields in sink that need an update. A sink field will be overwritten if, and only if, it is in the update mask. name and output only fields cannot be updated.An empty updateMask is temporarily treated as using the following mask for backwards compatibility purposes: destination,filter,includeChildren At some point in the future, behavior will be removed and specifying an empty updateMask will be an error.For a detailed FieldMask definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#google.protobuf.FieldMaskExample: updateMask=filter.",
+                  "description": "Optional. Field mask that specifies the fields in sink that need an update. A sink field will be overwritten if, and only if, it is in the update mask. name and output only fields cannot be updated.An empty updateMask is temporarily treated as using the following mask for backwards compatibility purposes:destination,filter,includeChildrenAt some point in the future, behavior will be removed and specifying an empty updateMask will be an error.For a detailed FieldMask definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#google.protobuf.FieldMaskFor example: updateMask=filter",
                   "location": "query",
                   "type": "string",
                   "format": "google-fieldmask"
@@ -2344,7 +2313,7 @@
               "httpMethod": "PATCH",
               "parameters": {
                 "sinkName": {
-                  "description": "Required. The full resource name of the sink to update, including the parent resource and the sink identifier: \"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\" \"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\" \"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\" Example: \"projects\/my-project-id\/sinks\/my-sink-id\".",
+                  "description": "Required. The full resource name of the sink to update, including the parent resource and the sink identifier: \"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\" \"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\" \"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\" For example:\"projects\/my-project\/sinks\/my-sink\"",
                   "pattern": "^projects\/[^\/]+\/sinks\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -2356,7 +2325,7 @@
                   "type": "boolean"
                 },
                 "updateMask": {
-                  "description": "Optional. Field mask that specifies the fields in sink that need an update. A sink field will be overwritten if, and only if, it is in the update mask. name and output only fields cannot be updated.An empty updateMask is temporarily treated as using the following mask for backwards compatibility purposes: destination,filter,includeChildren At some point in the future, behavior will be removed and specifying an empty updateMask will be an error.For a detailed FieldMask definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#google.protobuf.FieldMaskExample: updateMask=filter.",
+                  "description": "Optional. Field mask that specifies the fields in sink that need an update. A sink field will be overwritten if, and only if, it is in the update mask. name and output only fields cannot be updated.An empty updateMask is temporarily treated as using the following mask for backwards compatibility purposes:destination,filter,includeChildrenAt some point in the future, behavior will be removed and specifying an empty updateMask will be an error.For a detailed FieldMask definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#google.protobuf.FieldMaskFor example: updateMask=filter",
                   "location": "query",
                   "type": "string",
                   "format": "google-fieldmask"
@@ -2384,7 +2353,7 @@
               "httpMethod": "DELETE",
               "parameters": {
                 "sinkName": {
-                  "description": "Required. The full resource name of the sink to delete, including the parent resource and the sink identifier: \"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\" \"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\" \"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\" Example: \"projects\/my-project-id\/sinks\/my-sink-id\".",
+                  "description": "Required. The full resource name of the sink to delete, including the parent resource and the sink identifier: \"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\" \"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\" \"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\" For example:\"projects\/my-project\/sinks\/my-sink\"",
                   "pattern": "^projects\/[^\/]+\/sinks\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -2453,7 +2422,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "name": {
-                  "description": "Required. The resource name of an existing exclusion: \"projects\/[PROJECT_ID]\/exclusions\/[EXCLUSION_ID]\" \"organizations\/[ORGANIZATION_ID]\/exclusions\/[EXCLUSION_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/exclusions\/[EXCLUSION_ID]\" \"folders\/[FOLDER_ID]\/exclusions\/[EXCLUSION_ID]\" Example: \"projects\/my-project-id\/exclusions\/my-exclusion-id\".",
+                  "description": "Required. The resource name of an existing exclusion: \"projects\/[PROJECT_ID]\/exclusions\/[EXCLUSION_ID]\" \"organizations\/[ORGANIZATION_ID]\/exclusions\/[EXCLUSION_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/exclusions\/[EXCLUSION_ID]\" \"folders\/[FOLDER_ID]\/exclusions\/[EXCLUSION_ID]\" For example:\"projects\/my-project\/exclusions\/my-exclusion\"",
                   "pattern": "^projects\/[^\/]+\/exclusions\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -2481,7 +2450,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
-                  "description": "Required. The parent resource in which to create the exclusion: \"projects\/[PROJECT_ID]\" \"organizations\/[ORGANIZATION_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\" \"folders\/[FOLDER_ID]\" Examples: \"projects\/my-logging-project\", \"organizations\/123456789\".",
+                  "description": "Required. The parent resource in which to create the exclusion: \"projects\/[PROJECT_ID]\" \"organizations\/[ORGANIZATION_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\" \"folders\/[FOLDER_ID]\" For examples:\"projects\/my-logging-project\" \"organizations\/123456789\"",
                   "pattern": "^projects\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -2510,7 +2479,7 @@
               "httpMethod": "PATCH",
               "parameters": {
                 "name": {
-                  "description": "Required. The resource name of the exclusion to update: \"projects\/[PROJECT_ID]\/exclusions\/[EXCLUSION_ID]\" \"organizations\/[ORGANIZATION_ID]\/exclusions\/[EXCLUSION_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/exclusions\/[EXCLUSION_ID]\" \"folders\/[FOLDER_ID]\/exclusions\/[EXCLUSION_ID]\" Example: \"projects\/my-project-id\/exclusions\/my-exclusion-id\".",
+                  "description": "Required. The resource name of the exclusion to update: \"projects\/[PROJECT_ID]\/exclusions\/[EXCLUSION_ID]\" \"organizations\/[ORGANIZATION_ID]\/exclusions\/[EXCLUSION_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/exclusions\/[EXCLUSION_ID]\" \"folders\/[FOLDER_ID]\/exclusions\/[EXCLUSION_ID]\" For example:\"projects\/my-project\/exclusions\/my-exclusion\"",
                   "pattern": "^projects\/[^\/]+\/exclusions\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -2545,7 +2514,7 @@
               "httpMethod": "DELETE",
               "parameters": {
                 "name": {
-                  "description": "Required. The resource name of an existing exclusion to delete: \"projects\/[PROJECT_ID]\/exclusions\/[EXCLUSION_ID]\" \"organizations\/[ORGANIZATION_ID]\/exclusions\/[EXCLUSION_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/exclusions\/[EXCLUSION_ID]\" \"folders\/[FOLDER_ID]\/exclusions\/[EXCLUSION_ID]\" Example: \"projects\/my-project-id\/exclusions\/my-exclusion-id\".",
+                  "description": "Required. The resource name of an existing exclusion to delete: \"projects\/[PROJECT_ID]\/exclusions\/[EXCLUSION_ID]\" \"organizations\/[ORGANIZATION_ID]\/exclusions\/[EXCLUSION_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/exclusions\/[EXCLUSION_ID]\" \"folders\/[FOLDER_ID]\/exclusions\/[EXCLUSION_ID]\" For example:\"projects\/my-project\/exclusions\/my-exclusion\"",
                   "pattern": "^projects\/[^\/]+\/exclusions\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -2787,7 +2756,7 @@
                     "https://www.googleapis.com/auth/logging.admin",
                     "https://www.googleapis.com/auth/logging.read"
                   ],
-                  "description": "Lists buckets."
+                  "description": "Lists log buckets."
                 },
                 "get": {
                   "id": "logging.projects.locations.buckets.get",
@@ -2796,7 +2765,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. The resource name of the bucket: \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" Example: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\".",
+                      "description": "Required. The resource name of the bucket: \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" For example:\"projects\/my-project\/locations\/global\/buckets\/my-bucket\"",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -2815,7 +2784,7 @@
                     "https://www.googleapis.com/auth/logging.admin",
                     "https://www.googleapis.com/auth/logging.read"
                   ],
-                  "description": "Gets a bucket."
+                  "description": "Gets a log bucket."
                 },
                 "create": {
                   "id": "logging.projects.locations.buckets.create",
@@ -2824,7 +2793,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The resource in which to create the bucket: \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\" Example: \"projects\/my-logging-project\/locations\/global\"",
+                      "description": "Required. The resource in which to create the log bucket: \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\" For example:\"projects\/my-project\/locations\/global\"",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -2849,7 +2818,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/logging.admin"
                   ],
-                  "description": "Creates a bucket that can be used to store log entries. Once a bucket has been created, the region cannot be changed."
+                  "description": "Creates a log bucket that can be used to store log entries. After a bucket has been created, the bucket's location cannot be changed."
                 },
                 "patch": {
                   "id": "logging.projects.locations.buckets.patch",
@@ -2858,14 +2827,14 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "Required. The full resource name of the bucket to update. \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" Example: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\". Also requires permission \"resourcemanager.projects.updateLiens\" to set the locked property",
+                      "description": "Required. The full resource name of the bucket to update. \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" For example:\"projects\/my-project\/locations\/global\/buckets\/my-bucket\"",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "Required. Field mask that specifies the fields in bucket that need an update. A bucket field will be overwritten if, and only if, it is in the update mask. name and output only fields cannot be updated.For a detailed FieldMask definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#google.protobuf.FieldMaskExample: updateMask=retention_days.",
+                      "description": "Required. Field mask that specifies the fields in bucket that need an update. A bucket field will be overwritten if, and only if, it is in the update mask. name and output only fields cannot be updated.For a detailed FieldMask definition, see: https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#google.protobuf.FieldMaskFor example: updateMask=retention_days",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"
@@ -2884,7 +2853,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/logging.admin"
                   ],
-                  "description": "Updates a bucket. This method replaces the following fields in the existing bucket with values from the new bucket: retention_periodIf the retention period is decreased and the bucket is locked, FAILED_PRECONDITION will be returned.If the bucket has a LifecycleState of DELETE_REQUESTED, FAILED_PRECONDITION will be returned.A buckets region may not be modified after it is created."
+                  "description": "Updates a log bucket. This method replaces the following fields in the existing bucket with values from the new bucket: retention_periodIf the retention period is decreased and the bucket is locked, FAILED_PRECONDITION will be returned.If the bucket has a lifecycle_state of DELETE_REQUESTED, then FAILED_PRECONDITION will be returned.After a bucket has been created, the bucket's location cannot be changed."
                 },
                 "delete": {
                   "id": "logging.projects.locations.buckets.delete",
@@ -2893,7 +2862,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "Required. The full resource name of the bucket to delete. \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" Example: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\".",
+                      "description": "Required. The full resource name of the bucket to delete. \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" For example:\"projects\/my-project\/locations\/global\/buckets\/my-bucket\"",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -2910,7 +2879,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/logging.admin"
                   ],
-                  "description": "Deletes a bucket. Moves the bucket to the DELETE_REQUESTED state. After 7 days, the bucket will be purged and all logs in the bucket will be permanently deleted."
+                  "description": "Deletes a log bucket.Changes the bucket's lifecycle_state to the DELETE_REQUESTED state. After 7 days, the bucket will be purged and all log entries in the bucket will be permanently deleted."
                 },
                 "undelete": {
                   "id": "logging.projects.locations.buckets.undelete",
@@ -2919,7 +2888,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
-                      "description": "Required. The full resource name of the bucket to undelete. \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" Example: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\".",
+                      "description": "Required. The full resource name of the bucket to undelete. \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" For example:\"projects\/my-project\/locations\/global\/buckets\/my-bucket\"",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -2939,7 +2908,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/logging.admin"
                   ],
-                  "description": "Undeletes a bucket. A bucket that has been deleted may be undeleted within the grace period of 7 days."
+                  "description": "Undeletes a log bucket. A bucket that has been deleted can be undeleted within the grace period of 7 days."
                 }
               }
               ,
@@ -3002,7 +2971,7 @@
                           "type": "string"
                         },
                         "pageSize": {
-                          "description": "Optional. The maximum number of results to return from this request. Non-positive values are ignored. The presence of nextPageToken in the response indicates that more results might be available.",
+                          "description": "Optional. The maximum number of results to return from this request.Non-positive values are ignored. The presence of nextPageToken in the response indicates that more results might be available.",
                           "location": "query",
                           "type": "integer",
                           "format": "int32"
@@ -3020,7 +2989,7 @@
                         "https://www.googleapis.com/auth/logging.admin",
                         "https://www.googleapis.com/auth/logging.read"
                       ],
-                      "description": "Lists views on a bucket."
+                      "description": "Lists views on a log bucket."
                     },
                     "get": {
                       "id": "logging.projects.locations.buckets.views.get",
@@ -3029,7 +2998,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "name": {
-                          "description": "Required. The resource name of the policy: \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID]\" Example: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\/views\/my-view-id\".",
+                          "description": "Required. The resource name of the policy: \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID]\" For example:\"projects\/my-project\/locations\/global\/buckets\/my-bucket\/views\/my-view\"",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+\/views\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -3048,7 +3017,7 @@
                         "https://www.googleapis.com/auth/logging.admin",
                         "https://www.googleapis.com/auth/logging.read"
                       ],
-                      "description": "Gets a view."
+                      "description": "Gets a view on a log bucket.."
                     },
                     "create": {
                       "id": "logging.projects.locations.buckets.views.create",
@@ -3057,7 +3026,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The bucket in which to create the view \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" Example: \"projects\/my-logging-project\/locations\/my-location\/buckets\/my-bucket\"",
+                          "description": "Required. The bucket in which to create the view `\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"` For example:\"projects\/my-project\/locations\/global\/buckets\/my-bucket\"",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -3082,7 +3051,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/logging.admin"
                       ],
-                      "description": "Creates a view over logs in a bucket. A bucket may contain a maximum of 50 views."
+                      "description": "Creates a view over log entries in a log bucket. A bucket may contain a maximum of 30 views."
                     },
                     "patch": {
                       "id": "logging.projects.locations.buckets.views.patch",
@@ -3091,14 +3060,14 @@
                       "httpMethod": "PATCH",
                       "parameters": {
                         "name": {
-                          "description": "Required. The full resource name of the view to update \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID]\" Example: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\/views\/my-view-id\".",
+                          "description": "Required. The full resource name of the view to update \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID]\" For example:\"projects\/my-project\/locations\/global\/buckets\/my-bucket\/views\/my-view\"",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+\/views\/[^\/]+$",
                           "location": "path",
                           "required": true,
                           "type": "string"
                         },
                         "updateMask": {
-                          "description": "Optional. Field mask that specifies the fields in view that need an update. A field will be overwritten if, and only if, it is in the update mask. name and output only fields cannot be updated.For a detailed FieldMask definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#google.protobuf.FieldMaskExample: updateMask=filter.",
+                          "description": "Optional. Field mask that specifies the fields in view that need an update. A field will be overwritten if, and only if, it is in the update mask. name and output only fields cannot be updated.For a detailed FieldMask definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#google.protobuf.FieldMaskFor example: updateMask=filter",
                           "location": "query",
                           "type": "string",
                           "format": "google-fieldmask"
@@ -3117,7 +3086,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/logging.admin"
                       ],
-                      "description": "Updates a view. This method replaces the following fields in the existing view with values from the new view: filter."
+                      "description": "Updates a view on a log bucket. This method replaces the following fields in the existing view with values from the new view: filter."
                     },
                     "delete": {
                       "id": "logging.projects.locations.buckets.views.delete",
@@ -3126,7 +3095,7 @@
                       "httpMethod": "DELETE",
                       "parameters": {
                         "name": {
-                          "description": "Required. The full resource name of the view to delete: \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID]\" Example: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\/views\/my-view-id\".",
+                          "description": "Required. The full resource name of the view to delete: \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID]\" For example:\"projects\/my-project\/locations\/global\/buckets\/my-bucket\/views\/my-view\"",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+\/views\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -3143,7 +3112,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/logging.admin"
                       ],
-                      "description": "Deletes a view from a bucket."
+                      "description": "Deletes a view on a log bucket."
                     }
                   }
                 }
@@ -3436,7 +3405,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "sinkName": {
-                  "description": "Required. The resource name of the sink: \"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\" \"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\" \"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\" Example: \"projects\/my-project-id\/sinks\/my-sink-id\".",
+                  "description": "Required. The resource name of the sink: \"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\" \"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\" \"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\" For example:\"projects\/my-project\/sinks\/my-sink\"",
                   "pattern": "^folders\/[^\/]+\/sinks\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -3464,14 +3433,14 @@
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
-                  "description": "Required. The resource in which to create the sink: \"projects\/[PROJECT_ID]\" \"organizations\/[ORGANIZATION_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\" \"folders\/[FOLDER_ID]\" Examples: \"projects\/my-logging-project\", \"organizations\/123456789\".",
+                  "description": "Required. The resource in which to create the sink: \"projects\/[PROJECT_ID]\" \"organizations\/[ORGANIZATION_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\" \"folders\/[FOLDER_ID]\" For examples:\"projects\/my-project\" \"organizations\/123456789\"",
                   "pattern": "^folders\/[^\/]+$",
                   "location": "path",
                   "required": true,
                   "type": "string"
                 },
                 "uniqueWriterIdentity": {
-                  "description": "Optional. Determines the kind of IAM identity returned as writer_identity in the new sink. If this value is omitted or set to false, and if the sink's parent is a project, then the value returned as writer_identity is the same group or service account used by Logging before the addition of writer identities to this API. The sink's destination must be in the same project as the sink itself.If this field is set to true, or if the sink is owned by a non-project resource such as an organization, then the value of writer_identity will be a unique service account used only for exports from the new sink. For more information, see writer_identity in LogSink.",
+                  "description": "Optional. Determines the kind of IAM identity returned as writer_identity in the new sink. If this value is omitted or set to false, and if the sink's parent is a project, then the value returned as writer_identity is the same group or service account used by Cloud Logging before the addition of writer identities to this API. The sink's destination must be in the same project as the sink itself.If this field is set to true, or if the sink is owned by a non-project resource such as an organization, then the value of writer_identity will be a unique service account used only for exports from the new sink. For more information, see writer_identity in LogSink.",
                   "location": "query",
                   "type": "boolean"
                 }
@@ -3498,7 +3467,7 @@
               "httpMethod": "PUT",
               "parameters": {
                 "sinkName": {
-                  "description": "Required. The full resource name of the sink to update, including the parent resource and the sink identifier: \"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\" \"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\" \"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\" Example: \"projects\/my-project-id\/sinks\/my-sink-id\".",
+                  "description": "Required. The full resource name of the sink to update, including the parent resource and the sink identifier: \"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\" \"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\" \"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\" For example:\"projects\/my-project\/sinks\/my-sink\"",
                   "pattern": "^folders\/[^\/]+\/sinks\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -3510,7 +3479,7 @@
                   "type": "boolean"
                 },
                 "updateMask": {
-                  "description": "Optional. Field mask that specifies the fields in sink that need an update. A sink field will be overwritten if, and only if, it is in the update mask. name and output only fields cannot be updated.An empty updateMask is temporarily treated as using the following mask for backwards compatibility purposes: destination,filter,includeChildren At some point in the future, behavior will be removed and specifying an empty updateMask will be an error.For a detailed FieldMask definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#google.protobuf.FieldMaskExample: updateMask=filter.",
+                  "description": "Optional. Field mask that specifies the fields in sink that need an update. A sink field will be overwritten if, and only if, it is in the update mask. name and output only fields cannot be updated.An empty updateMask is temporarily treated as using the following mask for backwards compatibility purposes:destination,filter,includeChildrenAt some point in the future, behavior will be removed and specifying an empty updateMask will be an error.For a detailed FieldMask definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#google.protobuf.FieldMaskFor example: updateMask=filter",
                   "location": "query",
                   "type": "string",
                   "format": "google-fieldmask"
@@ -3538,7 +3507,7 @@
               "httpMethod": "PATCH",
               "parameters": {
                 "sinkName": {
-                  "description": "Required. The full resource name of the sink to update, including the parent resource and the sink identifier: \"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\" \"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\" \"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\" Example: \"projects\/my-project-id\/sinks\/my-sink-id\".",
+                  "description": "Required. The full resource name of the sink to update, including the parent resource and the sink identifier: \"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\" \"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\" \"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\" For example:\"projects\/my-project\/sinks\/my-sink\"",
                   "pattern": "^folders\/[^\/]+\/sinks\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -3550,7 +3519,7 @@
                   "type": "boolean"
                 },
                 "updateMask": {
-                  "description": "Optional. Field mask that specifies the fields in sink that need an update. A sink field will be overwritten if, and only if, it is in the update mask. name and output only fields cannot be updated.An empty updateMask is temporarily treated as using the following mask for backwards compatibility purposes: destination,filter,includeChildren At some point in the future, behavior will be removed and specifying an empty updateMask will be an error.For a detailed FieldMask definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#google.protobuf.FieldMaskExample: updateMask=filter.",
+                  "description": "Optional. Field mask that specifies the fields in sink that need an update. A sink field will be overwritten if, and only if, it is in the update mask. name and output only fields cannot be updated.An empty updateMask is temporarily treated as using the following mask for backwards compatibility purposes:destination,filter,includeChildrenAt some point in the future, behavior will be removed and specifying an empty updateMask will be an error.For a detailed FieldMask definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#google.protobuf.FieldMaskFor example: updateMask=filter",
                   "location": "query",
                   "type": "string",
                   "format": "google-fieldmask"
@@ -3578,7 +3547,7 @@
               "httpMethod": "DELETE",
               "parameters": {
                 "sinkName": {
-                  "description": "Required. The full resource name of the sink to delete, including the parent resource and the sink identifier: \"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\" \"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\" \"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\" Example: \"projects\/my-project-id\/sinks\/my-sink-id\".",
+                  "description": "Required. The full resource name of the sink to delete, including the parent resource and the sink identifier: \"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\" \"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\" \"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\" For example:\"projects\/my-project\/sinks\/my-sink\"",
                   "pattern": "^folders\/[^\/]+\/sinks\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -3647,7 +3616,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "name": {
-                  "description": "Required. The resource name of an existing exclusion: \"projects\/[PROJECT_ID]\/exclusions\/[EXCLUSION_ID]\" \"organizations\/[ORGANIZATION_ID]\/exclusions\/[EXCLUSION_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/exclusions\/[EXCLUSION_ID]\" \"folders\/[FOLDER_ID]\/exclusions\/[EXCLUSION_ID]\" Example: \"projects\/my-project-id\/exclusions\/my-exclusion-id\".",
+                  "description": "Required. The resource name of an existing exclusion: \"projects\/[PROJECT_ID]\/exclusions\/[EXCLUSION_ID]\" \"organizations\/[ORGANIZATION_ID]\/exclusions\/[EXCLUSION_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/exclusions\/[EXCLUSION_ID]\" \"folders\/[FOLDER_ID]\/exclusions\/[EXCLUSION_ID]\" For example:\"projects\/my-project\/exclusions\/my-exclusion\"",
                   "pattern": "^folders\/[^\/]+\/exclusions\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -3675,7 +3644,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
-                  "description": "Required. The parent resource in which to create the exclusion: \"projects\/[PROJECT_ID]\" \"organizations\/[ORGANIZATION_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\" \"folders\/[FOLDER_ID]\" Examples: \"projects\/my-logging-project\", \"organizations\/123456789\".",
+                  "description": "Required. The parent resource in which to create the exclusion: \"projects\/[PROJECT_ID]\" \"organizations\/[ORGANIZATION_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\" \"folders\/[FOLDER_ID]\" For examples:\"projects\/my-logging-project\" \"organizations\/123456789\"",
                   "pattern": "^folders\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -3704,7 +3673,7 @@
               "httpMethod": "PATCH",
               "parameters": {
                 "name": {
-                  "description": "Required. The resource name of the exclusion to update: \"projects\/[PROJECT_ID]\/exclusions\/[EXCLUSION_ID]\" \"organizations\/[ORGANIZATION_ID]\/exclusions\/[EXCLUSION_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/exclusions\/[EXCLUSION_ID]\" \"folders\/[FOLDER_ID]\/exclusions\/[EXCLUSION_ID]\" Example: \"projects\/my-project-id\/exclusions\/my-exclusion-id\".",
+                  "description": "Required. The resource name of the exclusion to update: \"projects\/[PROJECT_ID]\/exclusions\/[EXCLUSION_ID]\" \"organizations\/[ORGANIZATION_ID]\/exclusions\/[EXCLUSION_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/exclusions\/[EXCLUSION_ID]\" \"folders\/[FOLDER_ID]\/exclusions\/[EXCLUSION_ID]\" For example:\"projects\/my-project\/exclusions\/my-exclusion\"",
                   "pattern": "^folders\/[^\/]+\/exclusions\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -3739,7 +3708,7 @@
               "httpMethod": "DELETE",
               "parameters": {
                 "name": {
-                  "description": "Required. The resource name of an existing exclusion to delete: \"projects\/[PROJECT_ID]\/exclusions\/[EXCLUSION_ID]\" \"organizations\/[ORGANIZATION_ID]\/exclusions\/[EXCLUSION_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/exclusions\/[EXCLUSION_ID]\" \"folders\/[FOLDER_ID]\/exclusions\/[EXCLUSION_ID]\" Example: \"projects\/my-project-id\/exclusions\/my-exclusion-id\".",
+                  "description": "Required. The resource name of an existing exclusion to delete: \"projects\/[PROJECT_ID]\/exclusions\/[EXCLUSION_ID]\" \"organizations\/[ORGANIZATION_ID]\/exclusions\/[EXCLUSION_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/exclusions\/[EXCLUSION_ID]\" \"folders\/[FOLDER_ID]\/exclusions\/[EXCLUSION_ID]\" For example:\"projects\/my-project\/exclusions\/my-exclusion\"",
                   "pattern": "^folders\/[^\/]+\/exclusions\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -3981,7 +3950,7 @@
                     "https://www.googleapis.com/auth/logging.admin",
                     "https://www.googleapis.com/auth/logging.read"
                   ],
-                  "description": "Lists buckets."
+                  "description": "Lists log buckets."
                 },
                 "get": {
                   "id": "logging.folders.locations.buckets.get",
@@ -3990,7 +3959,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. The resource name of the bucket: \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" Example: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\".",
+                      "description": "Required. The resource name of the bucket: \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" For example:\"projects\/my-project\/locations\/global\/buckets\/my-bucket\"",
                       "pattern": "^folders\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -4009,7 +3978,7 @@
                     "https://www.googleapis.com/auth/logging.admin",
                     "https://www.googleapis.com/auth/logging.read"
                   ],
-                  "description": "Gets a bucket."
+                  "description": "Gets a log bucket."
                 },
                 "create": {
                   "id": "logging.folders.locations.buckets.create",
@@ -4018,7 +3987,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The resource in which to create the bucket: \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\" Example: \"projects\/my-logging-project\/locations\/global\"",
+                      "description": "Required. The resource in which to create the log bucket: \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\" For example:\"projects\/my-project\/locations\/global\"",
                       "pattern": "^folders\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -4043,7 +4012,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/logging.admin"
                   ],
-                  "description": "Creates a bucket that can be used to store log entries. Once a bucket has been created, the region cannot be changed."
+                  "description": "Creates a log bucket that can be used to store log entries. After a bucket has been created, the bucket's location cannot be changed."
                 },
                 "patch": {
                   "id": "logging.folders.locations.buckets.patch",
@@ -4052,14 +4021,14 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "Required. The full resource name of the bucket to update. \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" Example: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\". Also requires permission \"resourcemanager.projects.updateLiens\" to set the locked property",
+                      "description": "Required. The full resource name of the bucket to update. \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" For example:\"projects\/my-project\/locations\/global\/buckets\/my-bucket\"",
                       "pattern": "^folders\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "Required. Field mask that specifies the fields in bucket that need an update. A bucket field will be overwritten if, and only if, it is in the update mask. name and output only fields cannot be updated.For a detailed FieldMask definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#google.protobuf.FieldMaskExample: updateMask=retention_days.",
+                      "description": "Required. Field mask that specifies the fields in bucket that need an update. A bucket field will be overwritten if, and only if, it is in the update mask. name and output only fields cannot be updated.For a detailed FieldMask definition, see: https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#google.protobuf.FieldMaskFor example: updateMask=retention_days",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"
@@ -4078,7 +4047,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/logging.admin"
                   ],
-                  "description": "Updates a bucket. This method replaces the following fields in the existing bucket with values from the new bucket: retention_periodIf the retention period is decreased and the bucket is locked, FAILED_PRECONDITION will be returned.If the bucket has a LifecycleState of DELETE_REQUESTED, FAILED_PRECONDITION will be returned.A buckets region may not be modified after it is created."
+                  "description": "Updates a log bucket. This method replaces the following fields in the existing bucket with values from the new bucket: retention_periodIf the retention period is decreased and the bucket is locked, FAILED_PRECONDITION will be returned.If the bucket has a lifecycle_state of DELETE_REQUESTED, then FAILED_PRECONDITION will be returned.After a bucket has been created, the bucket's location cannot be changed."
                 },
                 "delete": {
                   "id": "logging.folders.locations.buckets.delete",
@@ -4087,7 +4056,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "Required. The full resource name of the bucket to delete. \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" Example: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\".",
+                      "description": "Required. The full resource name of the bucket to delete. \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" For example:\"projects\/my-project\/locations\/global\/buckets\/my-bucket\"",
                       "pattern": "^folders\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -4104,7 +4073,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/logging.admin"
                   ],
-                  "description": "Deletes a bucket. Moves the bucket to the DELETE_REQUESTED state. After 7 days, the bucket will be purged and all logs in the bucket will be permanently deleted."
+                  "description": "Deletes a log bucket.Changes the bucket's lifecycle_state to the DELETE_REQUESTED state. After 7 days, the bucket will be purged and all log entries in the bucket will be permanently deleted."
                 },
                 "undelete": {
                   "id": "logging.folders.locations.buckets.undelete",
@@ -4113,7 +4082,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
-                      "description": "Required. The full resource name of the bucket to undelete. \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" Example: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\".",
+                      "description": "Required. The full resource name of the bucket to undelete. \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" For example:\"projects\/my-project\/locations\/global\/buckets\/my-bucket\"",
                       "pattern": "^folders\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -4133,7 +4102,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/logging.admin"
                   ],
-                  "description": "Undeletes a bucket. A bucket that has been deleted may be undeleted within the grace period of 7 days."
+                  "description": "Undeletes a log bucket. A bucket that has been deleted can be undeleted within the grace period of 7 days."
                 }
               }
               ,
@@ -4196,7 +4165,7 @@
                           "type": "string"
                         },
                         "pageSize": {
-                          "description": "Optional. The maximum number of results to return from this request. Non-positive values are ignored. The presence of nextPageToken in the response indicates that more results might be available.",
+                          "description": "Optional. The maximum number of results to return from this request.Non-positive values are ignored. The presence of nextPageToken in the response indicates that more results might be available.",
                           "location": "query",
                           "type": "integer",
                           "format": "int32"
@@ -4214,7 +4183,7 @@
                         "https://www.googleapis.com/auth/logging.admin",
                         "https://www.googleapis.com/auth/logging.read"
                       ],
-                      "description": "Lists views on a bucket."
+                      "description": "Lists views on a log bucket."
                     },
                     "get": {
                       "id": "logging.folders.locations.buckets.views.get",
@@ -4223,7 +4192,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "name": {
-                          "description": "Required. The resource name of the policy: \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID]\" Example: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\/views\/my-view-id\".",
+                          "description": "Required. The resource name of the policy: \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID]\" For example:\"projects\/my-project\/locations\/global\/buckets\/my-bucket\/views\/my-view\"",
                           "pattern": "^folders\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+\/views\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -4242,7 +4211,7 @@
                         "https://www.googleapis.com/auth/logging.admin",
                         "https://www.googleapis.com/auth/logging.read"
                       ],
-                      "description": "Gets a view."
+                      "description": "Gets a view on a log bucket.."
                     },
                     "create": {
                       "id": "logging.folders.locations.buckets.views.create",
@@ -4251,7 +4220,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The bucket in which to create the view \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" Example: \"projects\/my-logging-project\/locations\/my-location\/buckets\/my-bucket\"",
+                          "description": "Required. The bucket in which to create the view `\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"` For example:\"projects\/my-project\/locations\/global\/buckets\/my-bucket\"",
                           "pattern": "^folders\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -4276,7 +4245,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/logging.admin"
                       ],
-                      "description": "Creates a view over logs in a bucket. A bucket may contain a maximum of 50 views."
+                      "description": "Creates a view over log entries in a log bucket. A bucket may contain a maximum of 30 views."
                     },
                     "patch": {
                       "id": "logging.folders.locations.buckets.views.patch",
@@ -4285,14 +4254,14 @@
                       "httpMethod": "PATCH",
                       "parameters": {
                         "name": {
-                          "description": "Required. The full resource name of the view to update \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID]\" Example: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\/views\/my-view-id\".",
+                          "description": "Required. The full resource name of the view to update \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID]\" For example:\"projects\/my-project\/locations\/global\/buckets\/my-bucket\/views\/my-view\"",
                           "pattern": "^folders\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+\/views\/[^\/]+$",
                           "location": "path",
                           "required": true,
                           "type": "string"
                         },
                         "updateMask": {
-                          "description": "Optional. Field mask that specifies the fields in view that need an update. A field will be overwritten if, and only if, it is in the update mask. name and output only fields cannot be updated.For a detailed FieldMask definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#google.protobuf.FieldMaskExample: updateMask=filter.",
+                          "description": "Optional. Field mask that specifies the fields in view that need an update. A field will be overwritten if, and only if, it is in the update mask. name and output only fields cannot be updated.For a detailed FieldMask definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#google.protobuf.FieldMaskFor example: updateMask=filter",
                           "location": "query",
                           "type": "string",
                           "format": "google-fieldmask"
@@ -4311,7 +4280,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/logging.admin"
                       ],
-                      "description": "Updates a view. This method replaces the following fields in the existing view with values from the new view: filter."
+                      "description": "Updates a view on a log bucket. This method replaces the following fields in the existing view with values from the new view: filter."
                     },
                     "delete": {
                       "id": "logging.folders.locations.buckets.views.delete",
@@ -4320,7 +4289,7 @@
                       "httpMethod": "DELETE",
                       "parameters": {
                         "name": {
-                          "description": "Required. The full resource name of the view to delete: \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID]\" Example: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\/views\/my-view-id\".",
+                          "description": "Required. The full resource name of the view to delete: \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID]\" For example:\"projects\/my-project\/locations\/global\/buckets\/my-bucket\/views\/my-view\"",
                           "pattern": "^folders\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+\/views\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -4337,7 +4306,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/logging.admin"
                       ],
-                      "description": "Deletes a view from a bucket."
+                      "description": "Deletes a view on a log bucket."
                     }
                   }
                 }
@@ -4465,7 +4434,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "name": {
-                  "description": "Required. The resource name of the bucket: \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" Example: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\".",
+                  "description": "Required. The resource name of the bucket: \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" For example:\"projects\/my-project\/locations\/global\/buckets\/my-bucket\"",
                   "pattern": "^billingAccounts\/[^\/]+\/buckets\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -4484,7 +4453,7 @@
                 "https://www.googleapis.com/auth/logging.admin",
                 "https://www.googleapis.com/auth/logging.read"
               ],
-              "description": "Gets a bucket."
+              "description": "Gets a log bucket."
             }
           }
           ,
@@ -4498,7 +4467,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. The resource name of the policy: \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID]\" Example: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\/views\/my-view-id\".",
+                      "description": "Required. The resource name of the policy: \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID]\" For example:\"projects\/my-project\/locations\/global\/buckets\/my-bucket\/views\/my-view\"",
                       "pattern": "^billingAccounts\/[^\/]+\/buckets\/[^\/]+\/views\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -4517,7 +4486,7 @@
                     "https://www.googleapis.com/auth/logging.admin",
                     "https://www.googleapis.com/auth/logging.read"
                   ],
-                  "description": "Gets a view."
+                  "description": "Gets a view on a log bucket.."
                 }
               }
             }
@@ -4571,7 +4540,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "sinkName": {
-                  "description": "Required. The resource name of the sink: \"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\" \"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\" \"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\" Example: \"projects\/my-project-id\/sinks\/my-sink-id\".",
+                  "description": "Required. The resource name of the sink: \"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\" \"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\" \"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\" For example:\"projects\/my-project\/sinks\/my-sink\"",
                   "pattern": "^billingAccounts\/[^\/]+\/sinks\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -4599,14 +4568,14 @@
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
-                  "description": "Required. The resource in which to create the sink: \"projects\/[PROJECT_ID]\" \"organizations\/[ORGANIZATION_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\" \"folders\/[FOLDER_ID]\" Examples: \"projects\/my-logging-project\", \"organizations\/123456789\".",
+                  "description": "Required. The resource in which to create the sink: \"projects\/[PROJECT_ID]\" \"organizations\/[ORGANIZATION_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\" \"folders\/[FOLDER_ID]\" For examples:\"projects\/my-project\" \"organizations\/123456789\"",
                   "pattern": "^billingAccounts\/[^\/]+$",
                   "location": "path",
                   "required": true,
                   "type": "string"
                 },
                 "uniqueWriterIdentity": {
-                  "description": "Optional. Determines the kind of IAM identity returned as writer_identity in the new sink. If this value is omitted or set to false, and if the sink's parent is a project, then the value returned as writer_identity is the same group or service account used by Logging before the addition of writer identities to this API. The sink's destination must be in the same project as the sink itself.If this field is set to true, or if the sink is owned by a non-project resource such as an organization, then the value of writer_identity will be a unique service account used only for exports from the new sink. For more information, see writer_identity in LogSink.",
+                  "description": "Optional. Determines the kind of IAM identity returned as writer_identity in the new sink. If this value is omitted or set to false, and if the sink's parent is a project, then the value returned as writer_identity is the same group or service account used by Cloud Logging before the addition of writer identities to this API. The sink's destination must be in the same project as the sink itself.If this field is set to true, or if the sink is owned by a non-project resource such as an organization, then the value of writer_identity will be a unique service account used only for exports from the new sink. For more information, see writer_identity in LogSink.",
                   "location": "query",
                   "type": "boolean"
                 }
@@ -4633,7 +4602,7 @@
               "httpMethod": "PUT",
               "parameters": {
                 "sinkName": {
-                  "description": "Required. The full resource name of the sink to update, including the parent resource and the sink identifier: \"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\" \"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\" \"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\" Example: \"projects\/my-project-id\/sinks\/my-sink-id\".",
+                  "description": "Required. The full resource name of the sink to update, including the parent resource and the sink identifier: \"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\" \"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\" \"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\" For example:\"projects\/my-project\/sinks\/my-sink\"",
                   "pattern": "^billingAccounts\/[^\/]+\/sinks\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -4645,7 +4614,7 @@
                   "type": "boolean"
                 },
                 "updateMask": {
-                  "description": "Optional. Field mask that specifies the fields in sink that need an update. A sink field will be overwritten if, and only if, it is in the update mask. name and output only fields cannot be updated.An empty updateMask is temporarily treated as using the following mask for backwards compatibility purposes: destination,filter,includeChildren At some point in the future, behavior will be removed and specifying an empty updateMask will be an error.For a detailed FieldMask definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#google.protobuf.FieldMaskExample: updateMask=filter.",
+                  "description": "Optional. Field mask that specifies the fields in sink that need an update. A sink field will be overwritten if, and only if, it is in the update mask. name and output only fields cannot be updated.An empty updateMask is temporarily treated as using the following mask for backwards compatibility purposes:destination,filter,includeChildrenAt some point in the future, behavior will be removed and specifying an empty updateMask will be an error.For a detailed FieldMask definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#google.protobuf.FieldMaskFor example: updateMask=filter",
                   "location": "query",
                   "type": "string",
                   "format": "google-fieldmask"
@@ -4673,7 +4642,7 @@
               "httpMethod": "PATCH",
               "parameters": {
                 "sinkName": {
-                  "description": "Required. The full resource name of the sink to update, including the parent resource and the sink identifier: \"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\" \"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\" \"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\" Example: \"projects\/my-project-id\/sinks\/my-sink-id\".",
+                  "description": "Required. The full resource name of the sink to update, including the parent resource and the sink identifier: \"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\" \"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\" \"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\" For example:\"projects\/my-project\/sinks\/my-sink\"",
                   "pattern": "^billingAccounts\/[^\/]+\/sinks\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -4685,7 +4654,7 @@
                   "type": "boolean"
                 },
                 "updateMask": {
-                  "description": "Optional. Field mask that specifies the fields in sink that need an update. A sink field will be overwritten if, and only if, it is in the update mask. name and output only fields cannot be updated.An empty updateMask is temporarily treated as using the following mask for backwards compatibility purposes: destination,filter,includeChildren At some point in the future, behavior will be removed and specifying an empty updateMask will be an error.For a detailed FieldMask definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#google.protobuf.FieldMaskExample: updateMask=filter.",
+                  "description": "Optional. Field mask that specifies the fields in sink that need an update. A sink field will be overwritten if, and only if, it is in the update mask. name and output only fields cannot be updated.An empty updateMask is temporarily treated as using the following mask for backwards compatibility purposes:destination,filter,includeChildrenAt some point in the future, behavior will be removed and specifying an empty updateMask will be an error.For a detailed FieldMask definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#google.protobuf.FieldMaskFor example: updateMask=filter",
                   "location": "query",
                   "type": "string",
                   "format": "google-fieldmask"
@@ -4713,7 +4682,7 @@
               "httpMethod": "DELETE",
               "parameters": {
                 "sinkName": {
-                  "description": "Required. The full resource name of the sink to delete, including the parent resource and the sink identifier: \"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\" \"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\" \"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\" Example: \"projects\/my-project-id\/sinks\/my-sink-id\".",
+                  "description": "Required. The full resource name of the sink to delete, including the parent resource and the sink identifier: \"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\" \"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\" \"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\" For example:\"projects\/my-project\/sinks\/my-sink\"",
                   "pattern": "^billingAccounts\/[^\/]+\/sinks\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -4782,7 +4751,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "name": {
-                  "description": "Required. The resource name of an existing exclusion: \"projects\/[PROJECT_ID]\/exclusions\/[EXCLUSION_ID]\" \"organizations\/[ORGANIZATION_ID]\/exclusions\/[EXCLUSION_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/exclusions\/[EXCLUSION_ID]\" \"folders\/[FOLDER_ID]\/exclusions\/[EXCLUSION_ID]\" Example: \"projects\/my-project-id\/exclusions\/my-exclusion-id\".",
+                  "description": "Required. The resource name of an existing exclusion: \"projects\/[PROJECT_ID]\/exclusions\/[EXCLUSION_ID]\" \"organizations\/[ORGANIZATION_ID]\/exclusions\/[EXCLUSION_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/exclusions\/[EXCLUSION_ID]\" \"folders\/[FOLDER_ID]\/exclusions\/[EXCLUSION_ID]\" For example:\"projects\/my-project\/exclusions\/my-exclusion\"",
                   "pattern": "^billingAccounts\/[^\/]+\/exclusions\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -4810,7 +4779,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
-                  "description": "Required. The parent resource in which to create the exclusion: \"projects\/[PROJECT_ID]\" \"organizations\/[ORGANIZATION_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\" \"folders\/[FOLDER_ID]\" Examples: \"projects\/my-logging-project\", \"organizations\/123456789\".",
+                  "description": "Required. The parent resource in which to create the exclusion: \"projects\/[PROJECT_ID]\" \"organizations\/[ORGANIZATION_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\" \"folders\/[FOLDER_ID]\" For examples:\"projects\/my-logging-project\" \"organizations\/123456789\"",
                   "pattern": "^billingAccounts\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -4839,7 +4808,7 @@
               "httpMethod": "PATCH",
               "parameters": {
                 "name": {
-                  "description": "Required. The resource name of the exclusion to update: \"projects\/[PROJECT_ID]\/exclusions\/[EXCLUSION_ID]\" \"organizations\/[ORGANIZATION_ID]\/exclusions\/[EXCLUSION_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/exclusions\/[EXCLUSION_ID]\" \"folders\/[FOLDER_ID]\/exclusions\/[EXCLUSION_ID]\" Example: \"projects\/my-project-id\/exclusions\/my-exclusion-id\".",
+                  "description": "Required. The resource name of the exclusion to update: \"projects\/[PROJECT_ID]\/exclusions\/[EXCLUSION_ID]\" \"organizations\/[ORGANIZATION_ID]\/exclusions\/[EXCLUSION_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/exclusions\/[EXCLUSION_ID]\" \"folders\/[FOLDER_ID]\/exclusions\/[EXCLUSION_ID]\" For example:\"projects\/my-project\/exclusions\/my-exclusion\"",
                   "pattern": "^billingAccounts\/[^\/]+\/exclusions\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -4874,7 +4843,7 @@
               "httpMethod": "DELETE",
               "parameters": {
                 "name": {
-                  "description": "Required. The resource name of an existing exclusion to delete: \"projects\/[PROJECT_ID]\/exclusions\/[EXCLUSION_ID]\" \"organizations\/[ORGANIZATION_ID]\/exclusions\/[EXCLUSION_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/exclusions\/[EXCLUSION_ID]\" \"folders\/[FOLDER_ID]\/exclusions\/[EXCLUSION_ID]\" Example: \"projects\/my-project-id\/exclusions\/my-exclusion-id\".",
+                  "description": "Required. The resource name of an existing exclusion to delete: \"projects\/[PROJECT_ID]\/exclusions\/[EXCLUSION_ID]\" \"organizations\/[ORGANIZATION_ID]\/exclusions\/[EXCLUSION_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/exclusions\/[EXCLUSION_ID]\" \"folders\/[FOLDER_ID]\/exclusions\/[EXCLUSION_ID]\" For example:\"projects\/my-project\/exclusions\/my-exclusion\"",
                   "pattern": "^billingAccounts\/[^\/]+\/exclusions\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -5088,7 +5057,7 @@
                     "https://www.googleapis.com/auth/logging.admin",
                     "https://www.googleapis.com/auth/logging.read"
                   ],
-                  "description": "Lists buckets."
+                  "description": "Lists log buckets."
                 },
                 "create": {
                   "id": "logging.billingAccounts.locations.buckets.create",
@@ -5097,7 +5066,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The resource in which to create the bucket: \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\" Example: \"projects\/my-logging-project\/locations\/global\"",
+                      "description": "Required. The resource in which to create the log bucket: \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\" For example:\"projects\/my-project\/locations\/global\"",
                       "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -5122,7 +5091,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/logging.admin"
                   ],
-                  "description": "Creates a bucket that can be used to store log entries. Once a bucket has been created, the region cannot be changed."
+                  "description": "Creates a log bucket that can be used to store log entries. After a bucket has been created, the bucket's location cannot be changed."
                 },
                 "patch": {
                   "id": "logging.billingAccounts.locations.buckets.patch",
@@ -5131,14 +5100,14 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "Required. The full resource name of the bucket to update. \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" Example: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\". Also requires permission \"resourcemanager.projects.updateLiens\" to set the locked property",
+                      "description": "Required. The full resource name of the bucket to update. \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" For example:\"projects\/my-project\/locations\/global\/buckets\/my-bucket\"",
                       "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "Required. Field mask that specifies the fields in bucket that need an update. A bucket field will be overwritten if, and only if, it is in the update mask. name and output only fields cannot be updated.For a detailed FieldMask definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#google.protobuf.FieldMaskExample: updateMask=retention_days.",
+                      "description": "Required. Field mask that specifies the fields in bucket that need an update. A bucket field will be overwritten if, and only if, it is in the update mask. name and output only fields cannot be updated.For a detailed FieldMask definition, see: https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#google.protobuf.FieldMaskFor example: updateMask=retention_days",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"
@@ -5157,7 +5126,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/logging.admin"
                   ],
-                  "description": "Updates a bucket. This method replaces the following fields in the existing bucket with values from the new bucket: retention_periodIf the retention period is decreased and the bucket is locked, FAILED_PRECONDITION will be returned.If the bucket has a LifecycleState of DELETE_REQUESTED, FAILED_PRECONDITION will be returned.A buckets region may not be modified after it is created."
+                  "description": "Updates a log bucket. This method replaces the following fields in the existing bucket with values from the new bucket: retention_periodIf the retention period is decreased and the bucket is locked, FAILED_PRECONDITION will be returned.If the bucket has a lifecycle_state of DELETE_REQUESTED, then FAILED_PRECONDITION will be returned.After a bucket has been created, the bucket's location cannot be changed."
                 },
                 "delete": {
                   "id": "logging.billingAccounts.locations.buckets.delete",
@@ -5166,7 +5135,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "Required. The full resource name of the bucket to delete. \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" Example: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\".",
+                      "description": "Required. The full resource name of the bucket to delete. \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" For example:\"projects\/my-project\/locations\/global\/buckets\/my-bucket\"",
                       "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -5183,7 +5152,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/logging.admin"
                   ],
-                  "description": "Deletes a bucket. Moves the bucket to the DELETE_REQUESTED state. After 7 days, the bucket will be purged and all logs in the bucket will be permanently deleted."
+                  "description": "Deletes a log bucket.Changes the bucket's lifecycle_state to the DELETE_REQUESTED state. After 7 days, the bucket will be purged and all log entries in the bucket will be permanently deleted."
                 },
                 "undelete": {
                   "id": "logging.billingAccounts.locations.buckets.undelete",
@@ -5192,7 +5161,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
-                      "description": "Required. The full resource name of the bucket to undelete. \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" Example: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\".",
+                      "description": "Required. The full resource name of the bucket to undelete. \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" For example:\"projects\/my-project\/locations\/global\/buckets\/my-bucket\"",
                       "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -5212,7 +5181,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/logging.admin"
                   ],
-                  "description": "Undeletes a bucket. A bucket that has been deleted may be undeleted within the grace period of 7 days."
+                  "description": "Undeletes a log bucket. A bucket that has been deleted can be undeleted within the grace period of 7 days."
                 }
               }
               ,
@@ -5275,7 +5244,7 @@
                           "type": "string"
                         },
                         "pageSize": {
-                          "description": "Optional. The maximum number of results to return from this request. Non-positive values are ignored. The presence of nextPageToken in the response indicates that more results might be available.",
+                          "description": "Optional. The maximum number of results to return from this request.Non-positive values are ignored. The presence of nextPageToken in the response indicates that more results might be available.",
                           "location": "query",
                           "type": "integer",
                           "format": "int32"
@@ -5293,7 +5262,7 @@
                         "https://www.googleapis.com/auth/logging.admin",
                         "https://www.googleapis.com/auth/logging.read"
                       ],
-                      "description": "Lists views on a bucket."
+                      "description": "Lists views on a log bucket."
                     },
                     "create": {
                       "id": "logging.billingAccounts.locations.buckets.views.create",
@@ -5302,7 +5271,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The bucket in which to create the view \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" Example: \"projects\/my-logging-project\/locations\/my-location\/buckets\/my-bucket\"",
+                          "description": "Required. The bucket in which to create the view `\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"` For example:\"projects\/my-project\/locations\/global\/buckets\/my-bucket\"",
                           "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -5327,7 +5296,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/logging.admin"
                       ],
-                      "description": "Creates a view over logs in a bucket. A bucket may contain a maximum of 50 views."
+                      "description": "Creates a view over log entries in a log bucket. A bucket may contain a maximum of 30 views."
                     },
                     "patch": {
                       "id": "logging.billingAccounts.locations.buckets.views.patch",
@@ -5336,14 +5305,14 @@
                       "httpMethod": "PATCH",
                       "parameters": {
                         "name": {
-                          "description": "Required. The full resource name of the view to update \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID]\" Example: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\/views\/my-view-id\".",
+                          "description": "Required. The full resource name of the view to update \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID]\" For example:\"projects\/my-project\/locations\/global\/buckets\/my-bucket\/views\/my-view\"",
                           "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+\/views\/[^\/]+$",
                           "location": "path",
                           "required": true,
                           "type": "string"
                         },
                         "updateMask": {
-                          "description": "Optional. Field mask that specifies the fields in view that need an update. A field will be overwritten if, and only if, it is in the update mask. name and output only fields cannot be updated.For a detailed FieldMask definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#google.protobuf.FieldMaskExample: updateMask=filter.",
+                          "description": "Optional. Field mask that specifies the fields in view that need an update. A field will be overwritten if, and only if, it is in the update mask. name and output only fields cannot be updated.For a detailed FieldMask definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#google.protobuf.FieldMaskFor example: updateMask=filter",
                           "location": "query",
                           "type": "string",
                           "format": "google-fieldmask"
@@ -5362,7 +5331,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/logging.admin"
                       ],
-                      "description": "Updates a view. This method replaces the following fields in the existing view with values from the new view: filter."
+                      "description": "Updates a view on a log bucket. This method replaces the following fields in the existing view with values from the new view: filter."
                     },
                     "delete": {
                       "id": "logging.billingAccounts.locations.buckets.views.delete",
@@ -5371,7 +5340,7 @@
                       "httpMethod": "DELETE",
                       "parameters": {
                         "name": {
-                          "description": "Required. The full resource name of the view to delete: \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID]\" Example: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\/views\/my-view-id\".",
+                          "description": "Required. The full resource name of the view to delete: \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID]\" For example:\"projects\/my-project\/locations\/global\/buckets\/my-bucket\/views\/my-view\"",
                           "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+\/views\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -5388,7 +5357,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/logging.admin"
                       ],
-                      "description": "Deletes a view from a bucket."
+                      "description": "Deletes a view on a log bucket."
                     }
                   }
                 }
@@ -5511,7 +5480,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/logging.admin"
           ],
-          "description": "Copies a set of log entries from a logging bucket to a Cloud Storage bucket."
+          "description": "Copies a set of log entries from a log bucket to a Cloud Storage bucket."
         },
         "write": {
           "id": "logging.entries.write",
@@ -5631,7 +5600,7 @@
           "httpMethod": "GET",
           "parameters": {
             "sinkName": {
-              "description": "Required. The resource name of the sink: \"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\" \"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\" \"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\" Example: \"projects\/my-project-id\/sinks\/my-sink-id\".",
+              "description": "Required. The resource name of the sink: \"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\" \"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\" \"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\" For example:\"projects\/my-project\/sinks\/my-sink\"",
               "pattern": "^[^\/]+\/[^\/]+\/sinks\/[^\/]+$",
               "location": "path",
               "required": true,
@@ -5659,14 +5628,14 @@
           "httpMethod": "POST",
           "parameters": {
             "parent": {
-              "description": "Required. The resource in which to create the sink: \"projects\/[PROJECT_ID]\" \"organizations\/[ORGANIZATION_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\" \"folders\/[FOLDER_ID]\" Examples: \"projects\/my-logging-project\", \"organizations\/123456789\".",
+              "description": "Required. The resource in which to create the sink: \"projects\/[PROJECT_ID]\" \"organizations\/[ORGANIZATION_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\" \"folders\/[FOLDER_ID]\" For examples:\"projects\/my-project\" \"organizations\/123456789\"",
               "pattern": "^[^\/]+\/[^\/]+$",
               "location": "path",
               "required": true,
               "type": "string"
             },
             "uniqueWriterIdentity": {
-              "description": "Optional. Determines the kind of IAM identity returned as writer_identity in the new sink. If this value is omitted or set to false, and if the sink's parent is a project, then the value returned as writer_identity is the same group or service account used by Logging before the addition of writer identities to this API. The sink's destination must be in the same project as the sink itself.If this field is set to true, or if the sink is owned by a non-project resource such as an organization, then the value of writer_identity will be a unique service account used only for exports from the new sink. For more information, see writer_identity in LogSink.",
+              "description": "Optional. Determines the kind of IAM identity returned as writer_identity in the new sink. If this value is omitted or set to false, and if the sink's parent is a project, then the value returned as writer_identity is the same group or service account used by Cloud Logging before the addition of writer identities to this API. The sink's destination must be in the same project as the sink itself.If this field is set to true, or if the sink is owned by a non-project resource such as an organization, then the value of writer_identity will be a unique service account used only for exports from the new sink. For more information, see writer_identity in LogSink.",
               "location": "query",
               "type": "boolean"
             }
@@ -5693,7 +5662,7 @@
           "httpMethod": "PUT",
           "parameters": {
             "sinkName": {
-              "description": "Required. The full resource name of the sink to update, including the parent resource and the sink identifier: \"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\" \"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\" \"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\" Example: \"projects\/my-project-id\/sinks\/my-sink-id\".",
+              "description": "Required. The full resource name of the sink to update, including the parent resource and the sink identifier: \"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\" \"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\" \"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\" For example:\"projects\/my-project\/sinks\/my-sink\"",
               "pattern": "^[^\/]+\/[^\/]+\/sinks\/[^\/]+$",
               "location": "path",
               "required": true,
@@ -5705,7 +5674,7 @@
               "type": "boolean"
             },
             "updateMask": {
-              "description": "Optional. Field mask that specifies the fields in sink that need an update. A sink field will be overwritten if, and only if, it is in the update mask. name and output only fields cannot be updated.An empty updateMask is temporarily treated as using the following mask for backwards compatibility purposes: destination,filter,includeChildren At some point in the future, behavior will be removed and specifying an empty updateMask will be an error.For a detailed FieldMask definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#google.protobuf.FieldMaskExample: updateMask=filter.",
+              "description": "Optional. Field mask that specifies the fields in sink that need an update. A sink field will be overwritten if, and only if, it is in the update mask. name and output only fields cannot be updated.An empty updateMask is temporarily treated as using the following mask for backwards compatibility purposes:destination,filter,includeChildrenAt some point in the future, behavior will be removed and specifying an empty updateMask will be an error.For a detailed FieldMask definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#google.protobuf.FieldMaskFor example: updateMask=filter",
               "location": "query",
               "type": "string",
               "format": "google-fieldmask"
@@ -5733,7 +5702,7 @@
           "httpMethod": "DELETE",
           "parameters": {
             "sinkName": {
-              "description": "Required. The full resource name of the sink to delete, including the parent resource and the sink identifier: \"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\" \"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\" \"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\" Example: \"projects\/my-project-id\/sinks\/my-sink-id\".",
+              "description": "Required. The full resource name of the sink to delete, including the parent resource and the sink identifier: \"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\" \"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\" \"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\" For example:\"projects\/my-project\/sinks\/my-sink\"",
               "pattern": "^[^\/]+\/[^\/]+\/sinks\/[^\/]+$",
               "location": "path",
               "required": true,
@@ -5802,7 +5771,7 @@
           "httpMethod": "GET",
           "parameters": {
             "name": {
-              "description": "Required. The resource name of an existing exclusion: \"projects\/[PROJECT_ID]\/exclusions\/[EXCLUSION_ID]\" \"organizations\/[ORGANIZATION_ID]\/exclusions\/[EXCLUSION_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/exclusions\/[EXCLUSION_ID]\" \"folders\/[FOLDER_ID]\/exclusions\/[EXCLUSION_ID]\" Example: \"projects\/my-project-id\/exclusions\/my-exclusion-id\".",
+              "description": "Required. The resource name of an existing exclusion: \"projects\/[PROJECT_ID]\/exclusions\/[EXCLUSION_ID]\" \"organizations\/[ORGANIZATION_ID]\/exclusions\/[EXCLUSION_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/exclusions\/[EXCLUSION_ID]\" \"folders\/[FOLDER_ID]\/exclusions\/[EXCLUSION_ID]\" For example:\"projects\/my-project\/exclusions\/my-exclusion\"",
               "pattern": "^[^\/]+\/[^\/]+\/exclusions\/[^\/]+$",
               "location": "path",
               "required": true,
@@ -5830,7 +5799,7 @@
           "httpMethod": "POST",
           "parameters": {
             "parent": {
-              "description": "Required. The parent resource in which to create the exclusion: \"projects\/[PROJECT_ID]\" \"organizations\/[ORGANIZATION_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\" \"folders\/[FOLDER_ID]\" Examples: \"projects\/my-logging-project\", \"organizations\/123456789\".",
+              "description": "Required. The parent resource in which to create the exclusion: \"projects\/[PROJECT_ID]\" \"organizations\/[ORGANIZATION_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\" \"folders\/[FOLDER_ID]\" For examples:\"projects\/my-logging-project\" \"organizations\/123456789\"",
               "pattern": "^[^\/]+\/[^\/]+$",
               "location": "path",
               "required": true,
@@ -5859,7 +5828,7 @@
           "httpMethod": "PATCH",
           "parameters": {
             "name": {
-              "description": "Required. The resource name of the exclusion to update: \"projects\/[PROJECT_ID]\/exclusions\/[EXCLUSION_ID]\" \"organizations\/[ORGANIZATION_ID]\/exclusions\/[EXCLUSION_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/exclusions\/[EXCLUSION_ID]\" \"folders\/[FOLDER_ID]\/exclusions\/[EXCLUSION_ID]\" Example: \"projects\/my-project-id\/exclusions\/my-exclusion-id\".",
+              "description": "Required. The resource name of the exclusion to update: \"projects\/[PROJECT_ID]\/exclusions\/[EXCLUSION_ID]\" \"organizations\/[ORGANIZATION_ID]\/exclusions\/[EXCLUSION_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/exclusions\/[EXCLUSION_ID]\" \"folders\/[FOLDER_ID]\/exclusions\/[EXCLUSION_ID]\" For example:\"projects\/my-project\/exclusions\/my-exclusion\"",
               "pattern": "^[^\/]+\/[^\/]+\/exclusions\/[^\/]+$",
               "location": "path",
               "required": true,
@@ -5894,7 +5863,7 @@
           "httpMethod": "DELETE",
           "parameters": {
             "name": {
-              "description": "Required. The resource name of an existing exclusion to delete: \"projects\/[PROJECT_ID]\/exclusions\/[EXCLUSION_ID]\" \"organizations\/[ORGANIZATION_ID]\/exclusions\/[EXCLUSION_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/exclusions\/[EXCLUSION_ID]\" \"folders\/[FOLDER_ID]\/exclusions\/[EXCLUSION_ID]\" Example: \"projects\/my-project-id\/exclusions\/my-exclusion-id\".",
+              "description": "Required. The resource name of an existing exclusion to delete: \"projects\/[PROJECT_ID]\/exclusions\/[EXCLUSION_ID]\" \"organizations\/[ORGANIZATION_ID]\/exclusions\/[EXCLUSION_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/exclusions\/[EXCLUSION_ID]\" \"folders\/[FOLDER_ID]\/exclusions\/[EXCLUSION_ID]\" For example:\"projects\/my-project\/exclusions\/my-exclusion\"",
               "pattern": "^[^\/]+\/[^\/]+\/exclusions\/[^\/]+$",
               "location": "path",
               "required": true,
@@ -5924,7 +5893,7 @@
           "httpMethod": "GET",
           "parameters": {
             "name": {
-              "description": "Required. The resource for which to retrieve CMEK settings. \"projects\/[PROJECT_ID]\/cmekSettings\" \"organizations\/[ORGANIZATION_ID]\/cmekSettings\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/cmekSettings\" \"folders\/[FOLDER_ID]\/cmekSettings\" Example: \"organizations\/12345\/cmekSettings\".Note: CMEK for the Logs Router can currently only be configured for GCP organizations. Once configured, it applies to all projects and folders in the GCP organization.",
+              "description": "Required. The resource for which to retrieve CMEK settings. \"projects\/[PROJECT_ID]\/cmekSettings\" \"organizations\/[ORGANIZATION_ID]\/cmekSettings\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/cmekSettings\" \"folders\/[FOLDER_ID]\/cmekSettings\" For example:\"organizations\/12345\/cmekSettings\"Note: CMEK for the Logs Router can currently only be configured for GCP organizations. Once configured, it applies to all projects and folders in the GCP organization.",
               "pattern": "^[^\/]+\/[^\/]+$",
               "location": "path",
               "required": true,
@@ -5952,14 +5921,14 @@
           "httpMethod": "PATCH",
           "parameters": {
             "name": {
-              "description": "Required. The resource name for the CMEK settings to update. \"projects\/[PROJECT_ID]\/cmekSettings\" \"organizations\/[ORGANIZATION_ID]\/cmekSettings\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/cmekSettings\" \"folders\/[FOLDER_ID]\/cmekSettings\" Example: \"organizations\/12345\/cmekSettings\".Note: CMEK for the Logs Router can currently only be configured for GCP organizations. Once configured, it applies to all projects and folders in the GCP organization.",
+              "description": "Required. The resource name for the CMEK settings to update. \"projects\/[PROJECT_ID]\/cmekSettings\" \"organizations\/[ORGANIZATION_ID]\/cmekSettings\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/cmekSettings\" \"folders\/[FOLDER_ID]\/cmekSettings\" For example:\"organizations\/12345\/cmekSettings\"Note: CMEK for the Logs Router can currently only be configured for GCP organizations. Once configured, it applies to all projects and folders in the GCP organization.",
               "pattern": "^[^\/]+\/[^\/]+$",
               "location": "path",
               "required": true,
               "type": "string"
             },
             "updateMask": {
-              "description": "Optional. Field mask identifying which fields from cmek_settings should be updated. A field will be overwritten if and only if it is in the update mask. Output only fields cannot be updated.See FieldMask for more information.Example: \"updateMask=kmsKeyName\"",
+              "description": "Optional. Field mask identifying which fields from cmek_settings should be updated. A field will be overwritten if and only if it is in the update mask. Output only fields cannot be updated.See FieldMask for more information.For example: \"updateMask=kmsKeyName\"",
               "location": "query",
               "type": "string",
               "format": "google-fieldmask"
@@ -5991,7 +5960,7 @@
           "httpMethod": "GET",
           "parameters": {
             "name": {
-              "description": "Required. The resource for which to retrieve CMEK settings. \"projects\/[PROJECT_ID]\/cmekSettings\" \"organizations\/[ORGANIZATION_ID]\/cmekSettings\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/cmekSettings\" \"folders\/[FOLDER_ID]\/cmekSettings\" Example: \"organizations\/12345\/cmekSettings\".Note: CMEK for the Logs Router can currently only be configured for GCP organizations. Once configured, it applies to all projects and folders in the GCP organization.",
+              "description": "Required. The resource for which to retrieve CMEK settings. \"projects\/[PROJECT_ID]\/cmekSettings\" \"organizations\/[ORGANIZATION_ID]\/cmekSettings\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/cmekSettings\" \"folders\/[FOLDER_ID]\/cmekSettings\" For example:\"organizations\/12345\/cmekSettings\"Note: CMEK for the Logs Router can currently only be configured for GCP organizations. Once configured, it applies to all projects and folders in the GCP organization.",
               "pattern": "^organizations\/[^\/]+$",
               "location": "path",
               "required": true,
@@ -6019,14 +5988,14 @@
           "httpMethod": "PATCH",
           "parameters": {
             "name": {
-              "description": "Required. The resource name for the CMEK settings to update. \"projects\/[PROJECT_ID]\/cmekSettings\" \"organizations\/[ORGANIZATION_ID]\/cmekSettings\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/cmekSettings\" \"folders\/[FOLDER_ID]\/cmekSettings\" Example: \"organizations\/12345\/cmekSettings\".Note: CMEK for the Logs Router can currently only be configured for GCP organizations. Once configured, it applies to all projects and folders in the GCP organization.",
+              "description": "Required. The resource name for the CMEK settings to update. \"projects\/[PROJECT_ID]\/cmekSettings\" \"organizations\/[ORGANIZATION_ID]\/cmekSettings\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/cmekSettings\" \"folders\/[FOLDER_ID]\/cmekSettings\" For example:\"organizations\/12345\/cmekSettings\"Note: CMEK for the Logs Router can currently only be configured for GCP organizations. Once configured, it applies to all projects and folders in the GCP organization.",
               "pattern": "^organizations\/[^\/]+$",
               "location": "path",
               "required": true,
               "type": "string"
             },
             "updateMask": {
-              "description": "Optional. Field mask identifying which fields from cmek_settings should be updated. A field will be overwritten if and only if it is in the update mask. Output only fields cannot be updated.See FieldMask for more information.Example: \"updateMask=kmsKeyName\"",
+              "description": "Optional. Field mask identifying which fields from cmek_settings should be updated. A field will be overwritten if and only if it is in the update mask. Output only fields cannot be updated.See FieldMask for more information.For example: \"updateMask=kmsKeyName\"",
               "location": "query",
               "type": "string",
               "format": "google-fieldmask"
@@ -6098,7 +6067,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "sinkName": {
-                  "description": "Required. The resource name of the sink: \"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\" \"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\" \"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\" Example: \"projects\/my-project-id\/sinks\/my-sink-id\".",
+                  "description": "Required. The resource name of the sink: \"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\" \"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\" \"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\" For example:\"projects\/my-project\/sinks\/my-sink\"",
                   "pattern": "^organizations\/[^\/]+\/sinks\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -6126,14 +6095,14 @@
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
-                  "description": "Required. The resource in which to create the sink: \"projects\/[PROJECT_ID]\" \"organizations\/[ORGANIZATION_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\" \"folders\/[FOLDER_ID]\" Examples: \"projects\/my-logging-project\", \"organizations\/123456789\".",
+                  "description": "Required. The resource in which to create the sink: \"projects\/[PROJECT_ID]\" \"organizations\/[ORGANIZATION_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\" \"folders\/[FOLDER_ID]\" For examples:\"projects\/my-project\" \"organizations\/123456789\"",
                   "pattern": "^organizations\/[^\/]+$",
                   "location": "path",
                   "required": true,
                   "type": "string"
                 },
                 "uniqueWriterIdentity": {
-                  "description": "Optional. Determines the kind of IAM identity returned as writer_identity in the new sink. If this value is omitted or set to false, and if the sink's parent is a project, then the value returned as writer_identity is the same group or service account used by Logging before the addition of writer identities to this API. The sink's destination must be in the same project as the sink itself.If this field is set to true, or if the sink is owned by a non-project resource such as an organization, then the value of writer_identity will be a unique service account used only for exports from the new sink. For more information, see writer_identity in LogSink.",
+                  "description": "Optional. Determines the kind of IAM identity returned as writer_identity in the new sink. If this value is omitted or set to false, and if the sink's parent is a project, then the value returned as writer_identity is the same group or service account used by Cloud Logging before the addition of writer identities to this API. The sink's destination must be in the same project as the sink itself.If this field is set to true, or if the sink is owned by a non-project resource such as an organization, then the value of writer_identity will be a unique service account used only for exports from the new sink. For more information, see writer_identity in LogSink.",
                   "location": "query",
                   "type": "boolean"
                 }
@@ -6160,7 +6129,7 @@
               "httpMethod": "PUT",
               "parameters": {
                 "sinkName": {
-                  "description": "Required. The full resource name of the sink to update, including the parent resource and the sink identifier: \"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\" \"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\" \"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\" Example: \"projects\/my-project-id\/sinks\/my-sink-id\".",
+                  "description": "Required. The full resource name of the sink to update, including the parent resource and the sink identifier: \"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\" \"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\" \"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\" For example:\"projects\/my-project\/sinks\/my-sink\"",
                   "pattern": "^organizations\/[^\/]+\/sinks\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -6172,7 +6141,7 @@
                   "type": "boolean"
                 },
                 "updateMask": {
-                  "description": "Optional. Field mask that specifies the fields in sink that need an update. A sink field will be overwritten if, and only if, it is in the update mask. name and output only fields cannot be updated.An empty updateMask is temporarily treated as using the following mask for backwards compatibility purposes: destination,filter,includeChildren At some point in the future, behavior will be removed and specifying an empty updateMask will be an error.For a detailed FieldMask definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#google.protobuf.FieldMaskExample: updateMask=filter.",
+                  "description": "Optional. Field mask that specifies the fields in sink that need an update. A sink field will be overwritten if, and only if, it is in the update mask. name and output only fields cannot be updated.An empty updateMask is temporarily treated as using the following mask for backwards compatibility purposes:destination,filter,includeChildrenAt some point in the future, behavior will be removed and specifying an empty updateMask will be an error.For a detailed FieldMask definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#google.protobuf.FieldMaskFor example: updateMask=filter",
                   "location": "query",
                   "type": "string",
                   "format": "google-fieldmask"
@@ -6200,7 +6169,7 @@
               "httpMethod": "PATCH",
               "parameters": {
                 "sinkName": {
-                  "description": "Required. The full resource name of the sink to update, including the parent resource and the sink identifier: \"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\" \"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\" \"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\" Example: \"projects\/my-project-id\/sinks\/my-sink-id\".",
+                  "description": "Required. The full resource name of the sink to update, including the parent resource and the sink identifier: \"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\" \"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\" \"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\" For example:\"projects\/my-project\/sinks\/my-sink\"",
                   "pattern": "^organizations\/[^\/]+\/sinks\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -6212,7 +6181,7 @@
                   "type": "boolean"
                 },
                 "updateMask": {
-                  "description": "Optional. Field mask that specifies the fields in sink that need an update. A sink field will be overwritten if, and only if, it is in the update mask. name and output only fields cannot be updated.An empty updateMask is temporarily treated as using the following mask for backwards compatibility purposes: destination,filter,includeChildren At some point in the future, behavior will be removed and specifying an empty updateMask will be an error.For a detailed FieldMask definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#google.protobuf.FieldMaskExample: updateMask=filter.",
+                  "description": "Optional. Field mask that specifies the fields in sink that need an update. A sink field will be overwritten if, and only if, it is in the update mask. name and output only fields cannot be updated.An empty updateMask is temporarily treated as using the following mask for backwards compatibility purposes:destination,filter,includeChildrenAt some point in the future, behavior will be removed and specifying an empty updateMask will be an error.For a detailed FieldMask definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#google.protobuf.FieldMaskFor example: updateMask=filter",
                   "location": "query",
                   "type": "string",
                   "format": "google-fieldmask"
@@ -6240,7 +6209,7 @@
               "httpMethod": "DELETE",
               "parameters": {
                 "sinkName": {
-                  "description": "Required. The full resource name of the sink to delete, including the parent resource and the sink identifier: \"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\" \"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\" \"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\" Example: \"projects\/my-project-id\/sinks\/my-sink-id\".",
+                  "description": "Required. The full resource name of the sink to delete, including the parent resource and the sink identifier: \"projects\/[PROJECT_ID]\/sinks\/[SINK_ID]\" \"organizations\/[ORGANIZATION_ID]\/sinks\/[SINK_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/sinks\/[SINK_ID]\" \"folders\/[FOLDER_ID]\/sinks\/[SINK_ID]\" For example:\"projects\/my-project\/sinks\/my-sink\"",
                   "pattern": "^organizations\/[^\/]+\/sinks\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -6309,7 +6278,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "name": {
-                  "description": "Required. The resource name of an existing exclusion: \"projects\/[PROJECT_ID]\/exclusions\/[EXCLUSION_ID]\" \"organizations\/[ORGANIZATION_ID]\/exclusions\/[EXCLUSION_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/exclusions\/[EXCLUSION_ID]\" \"folders\/[FOLDER_ID]\/exclusions\/[EXCLUSION_ID]\" Example: \"projects\/my-project-id\/exclusions\/my-exclusion-id\".",
+                  "description": "Required. The resource name of an existing exclusion: \"projects\/[PROJECT_ID]\/exclusions\/[EXCLUSION_ID]\" \"organizations\/[ORGANIZATION_ID]\/exclusions\/[EXCLUSION_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/exclusions\/[EXCLUSION_ID]\" \"folders\/[FOLDER_ID]\/exclusions\/[EXCLUSION_ID]\" For example:\"projects\/my-project\/exclusions\/my-exclusion\"",
                   "pattern": "^organizations\/[^\/]+\/exclusions\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -6337,7 +6306,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
-                  "description": "Required. The parent resource in which to create the exclusion: \"projects\/[PROJECT_ID]\" \"organizations\/[ORGANIZATION_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\" \"folders\/[FOLDER_ID]\" Examples: \"projects\/my-logging-project\", \"organizations\/123456789\".",
+                  "description": "Required. The parent resource in which to create the exclusion: \"projects\/[PROJECT_ID]\" \"organizations\/[ORGANIZATION_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\" \"folders\/[FOLDER_ID]\" For examples:\"projects\/my-logging-project\" \"organizations\/123456789\"",
                   "pattern": "^organizations\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -6366,7 +6335,7 @@
               "httpMethod": "PATCH",
               "parameters": {
                 "name": {
-                  "description": "Required. The resource name of the exclusion to update: \"projects\/[PROJECT_ID]\/exclusions\/[EXCLUSION_ID]\" \"organizations\/[ORGANIZATION_ID]\/exclusions\/[EXCLUSION_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/exclusions\/[EXCLUSION_ID]\" \"folders\/[FOLDER_ID]\/exclusions\/[EXCLUSION_ID]\" Example: \"projects\/my-project-id\/exclusions\/my-exclusion-id\".",
+                  "description": "Required. The resource name of the exclusion to update: \"projects\/[PROJECT_ID]\/exclusions\/[EXCLUSION_ID]\" \"organizations\/[ORGANIZATION_ID]\/exclusions\/[EXCLUSION_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/exclusions\/[EXCLUSION_ID]\" \"folders\/[FOLDER_ID]\/exclusions\/[EXCLUSION_ID]\" For example:\"projects\/my-project\/exclusions\/my-exclusion\"",
                   "pattern": "^organizations\/[^\/]+\/exclusions\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -6401,7 +6370,7 @@
               "httpMethod": "DELETE",
               "parameters": {
                 "name": {
-                  "description": "Required. The resource name of an existing exclusion to delete: \"projects\/[PROJECT_ID]\/exclusions\/[EXCLUSION_ID]\" \"organizations\/[ORGANIZATION_ID]\/exclusions\/[EXCLUSION_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/exclusions\/[EXCLUSION_ID]\" \"folders\/[FOLDER_ID]\/exclusions\/[EXCLUSION_ID]\" Example: \"projects\/my-project-id\/exclusions\/my-exclusion-id\".",
+                  "description": "Required. The resource name of an existing exclusion to delete: \"projects\/[PROJECT_ID]\/exclusions\/[EXCLUSION_ID]\" \"organizations\/[ORGANIZATION_ID]\/exclusions\/[EXCLUSION_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/exclusions\/[EXCLUSION_ID]\" \"folders\/[FOLDER_ID]\/exclusions\/[EXCLUSION_ID]\" For example:\"projects\/my-project\/exclusions\/my-exclusion\"",
                   "pattern": "^organizations\/[^\/]+\/exclusions\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -6643,7 +6612,7 @@
                     "https://www.googleapis.com/auth/logging.admin",
                     "https://www.googleapis.com/auth/logging.read"
                   ],
-                  "description": "Lists buckets."
+                  "description": "Lists log buckets."
                 },
                 "get": {
                   "id": "logging.organizations.locations.buckets.get",
@@ -6652,7 +6621,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. The resource name of the bucket: \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" Example: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\".",
+                      "description": "Required. The resource name of the bucket: \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" For example:\"projects\/my-project\/locations\/global\/buckets\/my-bucket\"",
                       "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -6671,7 +6640,7 @@
                     "https://www.googleapis.com/auth/logging.admin",
                     "https://www.googleapis.com/auth/logging.read"
                   ],
-                  "description": "Gets a bucket."
+                  "description": "Gets a log bucket."
                 },
                 "create": {
                   "id": "logging.organizations.locations.buckets.create",
@@ -6680,7 +6649,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The resource in which to create the bucket: \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\" Example: \"projects\/my-logging-project\/locations\/global\"",
+                      "description": "Required. The resource in which to create the log bucket: \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\" For example:\"projects\/my-project\/locations\/global\"",
                       "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -6705,7 +6674,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/logging.admin"
                   ],
-                  "description": "Creates a bucket that can be used to store log entries. Once a bucket has been created, the region cannot be changed."
+                  "description": "Creates a log bucket that can be used to store log entries. After a bucket has been created, the bucket's location cannot be changed."
                 },
                 "patch": {
                   "id": "logging.organizations.locations.buckets.patch",
@@ -6714,14 +6683,14 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "Required. The full resource name of the bucket to update. \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" Example: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\". Also requires permission \"resourcemanager.projects.updateLiens\" to set the locked property",
+                      "description": "Required. The full resource name of the bucket to update. \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" For example:\"projects\/my-project\/locations\/global\/buckets\/my-bucket\"",
                       "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "Required. Field mask that specifies the fields in bucket that need an update. A bucket field will be overwritten if, and only if, it is in the update mask. name and output only fields cannot be updated.For a detailed FieldMask definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#google.protobuf.FieldMaskExample: updateMask=retention_days.",
+                      "description": "Required. Field mask that specifies the fields in bucket that need an update. A bucket field will be overwritten if, and only if, it is in the update mask. name and output only fields cannot be updated.For a detailed FieldMask definition, see: https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#google.protobuf.FieldMaskFor example: updateMask=retention_days",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"
@@ -6740,7 +6709,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/logging.admin"
                   ],
-                  "description": "Updates a bucket. This method replaces the following fields in the existing bucket with values from the new bucket: retention_periodIf the retention period is decreased and the bucket is locked, FAILED_PRECONDITION will be returned.If the bucket has a LifecycleState of DELETE_REQUESTED, FAILED_PRECONDITION will be returned.A buckets region may not be modified after it is created."
+                  "description": "Updates a log bucket. This method replaces the following fields in the existing bucket with values from the new bucket: retention_periodIf the retention period is decreased and the bucket is locked, FAILED_PRECONDITION will be returned.If the bucket has a lifecycle_state of DELETE_REQUESTED, then FAILED_PRECONDITION will be returned.After a bucket has been created, the bucket's location cannot be changed."
                 },
                 "delete": {
                   "id": "logging.organizations.locations.buckets.delete",
@@ -6749,7 +6718,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "Required. The full resource name of the bucket to delete. \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" Example: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\".",
+                      "description": "Required. The full resource name of the bucket to delete. \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" For example:\"projects\/my-project\/locations\/global\/buckets\/my-bucket\"",
                       "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -6766,7 +6735,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/logging.admin"
                   ],
-                  "description": "Deletes a bucket. Moves the bucket to the DELETE_REQUESTED state. After 7 days, the bucket will be purged and all logs in the bucket will be permanently deleted."
+                  "description": "Deletes a log bucket.Changes the bucket's lifecycle_state to the DELETE_REQUESTED state. After 7 days, the bucket will be purged and all log entries in the bucket will be permanently deleted."
                 },
                 "undelete": {
                   "id": "logging.organizations.locations.buckets.undelete",
@@ -6775,7 +6744,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
-                      "description": "Required. The full resource name of the bucket to undelete. \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" Example: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\".",
+                      "description": "Required. The full resource name of the bucket to undelete. \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" For example:\"projects\/my-project\/locations\/global\/buckets\/my-bucket\"",
                       "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -6795,7 +6764,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/logging.admin"
                   ],
-                  "description": "Undeletes a bucket. A bucket that has been deleted may be undeleted within the grace period of 7 days."
+                  "description": "Undeletes a log bucket. A bucket that has been deleted can be undeleted within the grace period of 7 days."
                 }
               }
               ,
@@ -6858,7 +6827,7 @@
                           "type": "string"
                         },
                         "pageSize": {
-                          "description": "Optional. The maximum number of results to return from this request. Non-positive values are ignored. The presence of nextPageToken in the response indicates that more results might be available.",
+                          "description": "Optional. The maximum number of results to return from this request.Non-positive values are ignored. The presence of nextPageToken in the response indicates that more results might be available.",
                           "location": "query",
                           "type": "integer",
                           "format": "int32"
@@ -6876,7 +6845,7 @@
                         "https://www.googleapis.com/auth/logging.admin",
                         "https://www.googleapis.com/auth/logging.read"
                       ],
-                      "description": "Lists views on a bucket."
+                      "description": "Lists views on a log bucket."
                     },
                     "get": {
                       "id": "logging.organizations.locations.buckets.views.get",
@@ -6885,7 +6854,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "name": {
-                          "description": "Required. The resource name of the policy: \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID]\" Example: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\/views\/my-view-id\".",
+                          "description": "Required. The resource name of the policy: \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID]\" For example:\"projects\/my-project\/locations\/global\/buckets\/my-bucket\/views\/my-view\"",
                           "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+\/views\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -6904,7 +6873,7 @@
                         "https://www.googleapis.com/auth/logging.admin",
                         "https://www.googleapis.com/auth/logging.read"
                       ],
-                      "description": "Gets a view."
+                      "description": "Gets a view on a log bucket.."
                     },
                     "create": {
                       "id": "logging.organizations.locations.buckets.views.create",
@@ -6913,7 +6882,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The bucket in which to create the view \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" Example: \"projects\/my-logging-project\/locations\/my-location\/buckets\/my-bucket\"",
+                          "description": "Required. The bucket in which to create the view `\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"` For example:\"projects\/my-project\/locations\/global\/buckets\/my-bucket\"",
                           "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -6938,7 +6907,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/logging.admin"
                       ],
-                      "description": "Creates a view over logs in a bucket. A bucket may contain a maximum of 50 views."
+                      "description": "Creates a view over log entries in a log bucket. A bucket may contain a maximum of 30 views."
                     },
                     "patch": {
                       "id": "logging.organizations.locations.buckets.views.patch",
@@ -6947,14 +6916,14 @@
                       "httpMethod": "PATCH",
                       "parameters": {
                         "name": {
-                          "description": "Required. The full resource name of the view to update \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID]\" Example: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\/views\/my-view-id\".",
+                          "description": "Required. The full resource name of the view to update \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID]\" For example:\"projects\/my-project\/locations\/global\/buckets\/my-bucket\/views\/my-view\"",
                           "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+\/views\/[^\/]+$",
                           "location": "path",
                           "required": true,
                           "type": "string"
                         },
                         "updateMask": {
-                          "description": "Optional. Field mask that specifies the fields in view that need an update. A field will be overwritten if, and only if, it is in the update mask. name and output only fields cannot be updated.For a detailed FieldMask definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#google.protobuf.FieldMaskExample: updateMask=filter.",
+                          "description": "Optional. Field mask that specifies the fields in view that need an update. A field will be overwritten if, and only if, it is in the update mask. name and output only fields cannot be updated.For a detailed FieldMask definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#google.protobuf.FieldMaskFor example: updateMask=filter",
                           "location": "query",
                           "type": "string",
                           "format": "google-fieldmask"
@@ -6973,7 +6942,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/logging.admin"
                       ],
-                      "description": "Updates a view. This method replaces the following fields in the existing view with values from the new view: filter."
+                      "description": "Updates a view on a log bucket. This method replaces the following fields in the existing view with values from the new view: filter."
                     },
                     "delete": {
                       "id": "logging.organizations.locations.buckets.views.delete",
@@ -6982,7 +6951,7 @@
                       "httpMethod": "DELETE",
                       "parameters": {
                         "name": {
-                          "description": "Required. The full resource name of the view to delete: \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID]\" Example: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\/views\/my-view-id\".",
+                          "description": "Required. The full resource name of the view to delete: \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID]\" For example:\"projects\/my-project\/locations\/global\/buckets\/my-bucket\/views\/my-view\"",
                           "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+\/views\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -6999,7 +6968,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/logging.admin"
                       ],
-                      "description": "Deletes a view from a bucket."
+                      "description": "Deletes a view on a log bucket."
                     }
                   }
                 }
@@ -7305,7 +7274,7 @@
                 "https://www.googleapis.com/auth/logging.admin",
                 "https://www.googleapis.com/auth/logging.read"
               ],
-              "description": "Lists buckets."
+              "description": "Lists log buckets."
             },
             "get": {
               "id": "logging.locations.buckets.get",
@@ -7314,7 +7283,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "name": {
-                  "description": "Required. The resource name of the bucket: \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" Example: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\".",
+                  "description": "Required. The resource name of the bucket: \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" For example:\"projects\/my-project\/locations\/global\/buckets\/my-bucket\"",
                   "pattern": "^[^\/]+\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -7333,7 +7302,7 @@
                 "https://www.googleapis.com/auth/logging.admin",
                 "https://www.googleapis.com/auth/logging.read"
               ],
-              "description": "Gets a bucket."
+              "description": "Gets a log bucket."
             },
             "create": {
               "id": "logging.locations.buckets.create",
@@ -7342,7 +7311,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
-                  "description": "Required. The resource in which to create the bucket: \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\" Example: \"projects\/my-logging-project\/locations\/global\"",
+                  "description": "Required. The resource in which to create the log bucket: \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\" For example:\"projects\/my-project\/locations\/global\"",
                   "pattern": "^[^\/]+\/[^\/]+\/locations\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -7367,7 +7336,7 @@
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/logging.admin"
               ],
-              "description": "Creates a bucket that can be used to store log entries. Once a bucket has been created, the region cannot be changed."
+              "description": "Creates a log bucket that can be used to store log entries. After a bucket has been created, the bucket's location cannot be changed."
             },
             "patch": {
               "id": "logging.locations.buckets.patch",
@@ -7376,14 +7345,14 @@
               "httpMethod": "PATCH",
               "parameters": {
                 "name": {
-                  "description": "Required. The full resource name of the bucket to update. \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" Example: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\". Also requires permission \"resourcemanager.projects.updateLiens\" to set the locked property",
+                  "description": "Required. The full resource name of the bucket to update. \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" For example:\"projects\/my-project\/locations\/global\/buckets\/my-bucket\"",
                   "pattern": "^[^\/]+\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
                   "location": "path",
                   "required": true,
                   "type": "string"
                 },
                 "updateMask": {
-                  "description": "Required. Field mask that specifies the fields in bucket that need an update. A bucket field will be overwritten if, and only if, it is in the update mask. name and output only fields cannot be updated.For a detailed FieldMask definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#google.protobuf.FieldMaskExample: updateMask=retention_days.",
+                  "description": "Required. Field mask that specifies the fields in bucket that need an update. A bucket field will be overwritten if, and only if, it is in the update mask. name and output only fields cannot be updated.For a detailed FieldMask definition, see: https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#google.protobuf.FieldMaskFor example: updateMask=retention_days",
                   "location": "query",
                   "type": "string",
                   "format": "google-fieldmask"
@@ -7402,7 +7371,7 @@
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/logging.admin"
               ],
-              "description": "Updates a bucket. This method replaces the following fields in the existing bucket with values from the new bucket: retention_periodIf the retention period is decreased and the bucket is locked, FAILED_PRECONDITION will be returned.If the bucket has a LifecycleState of DELETE_REQUESTED, FAILED_PRECONDITION will be returned.A buckets region may not be modified after it is created."
+              "description": "Updates a log bucket. This method replaces the following fields in the existing bucket with values from the new bucket: retention_periodIf the retention period is decreased and the bucket is locked, FAILED_PRECONDITION will be returned.If the bucket has a lifecycle_state of DELETE_REQUESTED, then FAILED_PRECONDITION will be returned.After a bucket has been created, the bucket's location cannot be changed."
             },
             "delete": {
               "id": "logging.locations.buckets.delete",
@@ -7411,7 +7380,7 @@
               "httpMethod": "DELETE",
               "parameters": {
                 "name": {
-                  "description": "Required. The full resource name of the bucket to delete. \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" Example: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\".",
+                  "description": "Required. The full resource name of the bucket to delete. \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" For example:\"projects\/my-project\/locations\/global\/buckets\/my-bucket\"",
                   "pattern": "^[^\/]+\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -7428,7 +7397,7 @@
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/logging.admin"
               ],
-              "description": "Deletes a bucket. Moves the bucket to the DELETE_REQUESTED state. After 7 days, the bucket will be purged and all logs in the bucket will be permanently deleted."
+              "description": "Deletes a log bucket.Changes the bucket's lifecycle_state to the DELETE_REQUESTED state. After 7 days, the bucket will be purged and all log entries in the bucket will be permanently deleted."
             },
             "undelete": {
               "id": "logging.locations.buckets.undelete",
@@ -7437,7 +7406,7 @@
               "httpMethod": "POST",
               "parameters": {
                 "name": {
-                  "description": "Required. The full resource name of the bucket to undelete. \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" Example: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\".",
+                  "description": "Required. The full resource name of the bucket to undelete. \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"organizations\/[ORGANIZATION_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" \"folders\/[FOLDER_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" For example:\"projects\/my-project\/locations\/global\/buckets\/my-bucket\"",
                   "pattern": "^[^\/]+\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -7457,7 +7426,7 @@
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/logging.admin"
               ],
-              "description": "Undeletes a bucket. A bucket that has been deleted may be undeleted within the grace period of 7 days."
+              "description": "Undeletes a log bucket. A bucket that has been deleted can be undeleted within the grace period of 7 days."
             }
           }
           ,
@@ -7542,7 +7511,7 @@
                       "type": "string"
                     },
                     "pageSize": {
-                      "description": "Optional. The maximum number of results to return from this request. Non-positive values are ignored. The presence of nextPageToken in the response indicates that more results might be available.",
+                      "description": "Optional. The maximum number of results to return from this request.Non-positive values are ignored. The presence of nextPageToken in the response indicates that more results might be available.",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"
@@ -7560,7 +7529,7 @@
                     "https://www.googleapis.com/auth/logging.admin",
                     "https://www.googleapis.com/auth/logging.read"
                   ],
-                  "description": "Lists views on a bucket."
+                  "description": "Lists views on a log bucket."
                 },
                 "get": {
                   "id": "logging.locations.buckets.views.get",
@@ -7569,7 +7538,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. The resource name of the policy: \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID]\" Example: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\/views\/my-view-id\".",
+                      "description": "Required. The resource name of the policy: \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID]\" For example:\"projects\/my-project\/locations\/global\/buckets\/my-bucket\/views\/my-view\"",
                       "pattern": "^[^\/]+\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+\/views\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -7588,7 +7557,7 @@
                     "https://www.googleapis.com/auth/logging.admin",
                     "https://www.googleapis.com/auth/logging.read"
                   ],
-                  "description": "Gets a view."
+                  "description": "Gets a view on a log bucket.."
                 },
                 "create": {
                   "id": "logging.locations.buckets.views.create",
@@ -7597,7 +7566,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The bucket in which to create the view \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\" Example: \"projects\/my-logging-project\/locations\/my-location\/buckets\/my-bucket\"",
+                      "description": "Required. The bucket in which to create the view `\"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\"` For example:\"projects\/my-project\/locations\/global\/buckets\/my-bucket\"",
                       "pattern": "^[^\/]+\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -7622,7 +7591,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/logging.admin"
                   ],
-                  "description": "Creates a view over logs in a bucket. A bucket may contain a maximum of 50 views."
+                  "description": "Creates a view over log entries in a log bucket. A bucket may contain a maximum of 30 views."
                 },
                 "patch": {
                   "id": "logging.locations.buckets.views.patch",
@@ -7631,14 +7600,14 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "Required. The full resource name of the view to update \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID]\" Example: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\/views\/my-view-id\".",
+                      "description": "Required. The full resource name of the view to update \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID]\" For example:\"projects\/my-project\/locations\/global\/buckets\/my-bucket\/views\/my-view\"",
                       "pattern": "^[^\/]+\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+\/views\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "Optional. Field mask that specifies the fields in view that need an update. A field will be overwritten if, and only if, it is in the update mask. name and output only fields cannot be updated.For a detailed FieldMask definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#google.protobuf.FieldMaskExample: updateMask=filter.",
+                      "description": "Optional. Field mask that specifies the fields in view that need an update. A field will be overwritten if, and only if, it is in the update mask. name and output only fields cannot be updated.For a detailed FieldMask definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#google.protobuf.FieldMaskFor example: updateMask=filter",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"
@@ -7657,7 +7626,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/logging.admin"
                   ],
-                  "description": "Updates a view. This method replaces the following fields in the existing view with values from the new view: filter."
+                  "description": "Updates a view on a log bucket. This method replaces the following fields in the existing view with values from the new view: filter."
                 },
                 "delete": {
                   "id": "logging.locations.buckets.views.delete",
@@ -7666,7 +7635,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "Required. The full resource name of the view to delete: \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID]\" Example: \"projects\/my-project-id\/locations\/my-location\/buckets\/my-bucket-id\/views\/my-view-id\".",
+                      "description": "Required. The full resource name of the view to delete: \"projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/views\/[VIEW_ID]\" For example:\"projects\/my-project\/locations\/global\/buckets\/my-bucket\/views\/my-view\"",
                       "pattern": "^[^\/]+\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+\/views\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -7683,7 +7652,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/logging.admin"
                   ],
-                  "description": "Deletes a view from a bucket."
+                  "description": "Deletes a view on a log bucket."
                 }
               }
             }

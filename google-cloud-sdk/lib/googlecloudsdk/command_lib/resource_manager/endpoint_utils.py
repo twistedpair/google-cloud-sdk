@@ -26,6 +26,10 @@ from six.moves.urllib import parse
 
 CRM_API_NAME = 'cloudresourcemanager'
 CRM_API_VERSION = 'v3'
+CRM_STAGING_GLOBAL_API = (
+    'https://staging-cloudresourcemanager.sandbox.googleapis.com/')
+CRM_STAGING_REGIONAL_SUFFIX = (
+    'stagqual-cloudresourcemanager.sandbox.googleapis.com/')
 
 
 @contextlib.contextmanager
@@ -45,9 +49,22 @@ def CrmEndpointOverrides(location):
   endpoint_property = getattr(properties.VALUES.api_endpoint_overrides,
                               CRM_API_NAME)
   old_endpoint = endpoint_property.Get()
+  is_staging_env = old_endpoint and (CRM_STAGING_REGIONAL_SUFFIX in old_endpoint
+                                     or CRM_STAGING_GLOBAL_API == old_endpoint)
   try:
     if location and location != 'global':
-      endpoint_property.Set(_GetEffectiveCrmEndpoint(location))
+      if is_staging_env:
+        # Staging endpoints are formatted differently from other envs due to
+        # length; manually set the correct staging regional endpoint value.
+        endpoint_property.Set(
+            _DeriveCrmRegionalEndpoint('https://' + CRM_STAGING_REGIONAL_SUFFIX,
+                                       location.replace('-', '')))
+      else:
+        endpoint_property.Set(_GetEffectiveCrmEndpoint(location))
+    elif is_staging_env:
+      # Manually override global endpoint for staging. (Use gcloud config value
+      # for other environments that need the global location.)
+      endpoint_property.Set(CRM_STAGING_GLOBAL_API)
     yield
   finally:
     endpoint_property.Set(old_endpoint)

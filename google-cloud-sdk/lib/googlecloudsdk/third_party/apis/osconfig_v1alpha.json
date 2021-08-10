@@ -315,6 +315,13 @@
           "description": "Used to specify the OS filter for a resource group",
           "$ref": "OSPolicyOSFilter"
         },
+        "inventoryFilters": {
+          "description": "List of inventory filters for the resource group. The resources in this resource group are applied to the target VM if it satisfies at least one of the following inventory filters. For example, to apply this resource group to VMs running either `RHEL` or `CentOS` operating systems, specify 2 items for the list with following values: inventory_filters[0].os_short_name='rhel' and inventory_filters[1].os_short_name='centos' If the list is empty, this resource group will be applied to the target VM unconditionally.",
+          "type": "array",
+          "items": {
+            "$ref": "OSPolicyInventoryFilter"
+          }
+        },
         "resources": {
           "description": "Required. List of resources configured for this resource group. The resources are executed in the exact order specified here.",
           "type": "array",
@@ -326,7 +333,7 @@
     },
     "OSPolicyOSFilter": {
       "id": "OSPolicyOSFilter",
-      "description": "The `OSFilter` is used to specify the OS filtering criteria for the resource group.",
+      "description": "Filtering criteria to select VMs based on OS details.",
       "type": "object",
       "properties": {
         "osShortName": {
@@ -335,6 +342,21 @@
         },
         "osVersion": {
           "description": "This value should match the version emitted by the OS inventory agent. Prefix matches are supported if asterisk(*) is provided as the last character. For example, to match all versions with a major version of `7`, specify the following value for this field `7.*`",
+          "type": "string"
+        }
+      }
+    },
+    "OSPolicyInventoryFilter": {
+      "id": "OSPolicyInventoryFilter",
+      "description": "Filtering criteria to select VMs based on inventory details.",
+      "type": "object",
+      "properties": {
+        "osShortName": {
+          "description": "Required. The OS short name",
+          "type": "string"
+        },
+        "osVersion": {
+          "description": "The OS version Prefix matches are supported if asterisk(*) is provided as the last character. For example, to match all versions with a major version of `7`, specify the following value for this field `7.*` An empty string matches all OS versions.",
           "type": "string"
         }
       }
@@ -793,7 +815,7 @@
     },
     "OSPolicyAssignmentInstanceFilter": {
       "id": "OSPolicyAssignmentInstanceFilter",
-      "description": "Message to represent the filters to select VMs for an assignment",
+      "description": "Filters to select target VMs for an assignment. If more than one filter criteria is specified below, a VM will be selected if and only if it satisfies all of them.",
       "type": "object",
       "properties": {
         "all": {
@@ -801,7 +823,7 @@
           "type": "boolean"
         },
         "osShortNames": {
-          "description": "A VM is included if it's OS short name matches with any of the values provided in this list.",
+          "description": "A VM is selected if it's OS short name matches with any of the values provided in this list.",
           "type": "array",
           "items": {
             "type": "string"
@@ -815,10 +837,17 @@
           }
         },
         "exclusionLabels": {
-          "description": "List of label sets used for VM exclusion. If the list has more than one label set, the VM is excluded if any of the label sets are applicable for the VM. This filter is applied last in the filtering chain and therefore a VM is guaranteed to be excluded if it satisfies one of the below label sets.",
+          "description": "List of label sets used for VM exclusion. If the list has more than one label set, the VM is excluded if any of the label sets are applicable for the VM.",
           "type": "array",
           "items": {
             "$ref": "OSPolicyAssignmentLabelSet"
+          }
+        },
+        "inventories": {
+          "description": "List of inventories to select VMs. A VM is selected if its inventory data matches at least one of the following inventories.",
+          "type": "array",
+          "items": {
+            "$ref": "OSPolicyAssignmentInstanceFilterInventory"
           }
         }
       }
@@ -834,6 +863,21 @@
           "additionalProperties": {
             "type": "string"
           }
+        }
+      }
+    },
+    "OSPolicyAssignmentInstanceFilterInventory": {
+      "id": "OSPolicyAssignmentInstanceFilterInventory",
+      "description": "VM inventory details.",
+      "type": "object",
+      "properties": {
+        "osShortName": {
+          "description": "Required. The OS short name",
+          "type": "string"
+        },
+        "osVersion": {
+          "description": "The OS version Prefix matches are supported if asterisk(*) is provided as the last character. For example, to match all versions with a major version of `7`, specify the following value for this field `7.*` An empty string matches all OS versions.",
+          "type": "string"
         }
       }
     },
@@ -1744,6 +1788,10 @@
         "url": {
           "description": "The url of the reference.",
           "type": "string"
+        },
+        "source": {
+          "description": "The source of the reference e.g. NVD.",
+          "type": "string"
         }
       }
     },
@@ -2200,7 +2248,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The parent resource name. Format: `projects\/{project}\/locations\/{location}\/instances\/{instance}` For `{project}`, either `project-number` or `project-id` can be provided. For `{instance}`, only hyphen or dash character is supported to list inventories across VMs.",
+                          "description": "Required. The parent resource name. Format: `projects\/{project}\/locations\/{location}\/instances\/-` For `{project}`, either `project-number` or `project-id` can be provided.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -2285,7 +2333,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The parent resource name. Format: `projects\/{project}\/locations\/{location}\/instances\/{instance}` For `{project}`, either `project-number` or `project-id` can be provided. For `{instance}`, only `-` character is supported to list vulnerability reports across VMs.",
+                          "description": "Required. The parent resource name. Format: `projects\/{project}\/locations\/{location}\/instances\/-` For `{project}`, either `project-number` or `project-id` can be provided.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
                           "location": "path",
                           "required": true,

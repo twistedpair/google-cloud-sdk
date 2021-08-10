@@ -392,14 +392,13 @@ def UpdateMembership(name,
 
   if issuer_url:
     request.membership.authority = messages.Authority(issuer=issuer_url)
-    if release_track is not base.ReleaseTrack.GA:
-      if oidc_jwks:
-        request.membership.authority.oidcJwks = oidc_jwks.encode('utf-8')
-      else:
-        # If oidc_jwks is None, unset membership.oidc_jwks, and let the API
-        # determine when that's an error, not the client, to avoid problems
-        # like cl/339713504 fixed (see unsetting membership.authority, below).
-        request.membership.authority.oidcJwks = None
+    if oidc_jwks:
+      request.membership.authority.oidcJwks = oidc_jwks.encode('utf-8')
+    else:
+      # If oidc_jwks is None, unset membership.oidc_jwks, and let the API
+      # determine when that's an error, not the client, to avoid problems
+      # like cl/339713504 fixed (see unsetting membership.authority, below).
+      request.membership.authority.oidcJwks = None
   else:  # if issuer_url is None, unset membership.authority to disable WI.
     request.membership.authority = None
 
@@ -463,9 +462,8 @@ def CreateMembership(project,
     request.membership.externalId = external_id
   if issuer_url:
     request.membership.authority = messages.Authority(issuer=issuer_url)
-    if release_track is not base.ReleaseTrack.GA:
-      if oidc_jwks:
-        request.membership.authority.oidcJwks = oidc_jwks.encode('utf-8')
+    if oidc_jwks:
+      request.membership.authority.oidcJwks = oidc_jwks.encode('utf-8')
   op = client.projects_locations_memberships.Create(request)
   op_resource = resources.REGISTRY.ParseRelativeName(
       op.name, collection='gkehub.projects.locations.operations')

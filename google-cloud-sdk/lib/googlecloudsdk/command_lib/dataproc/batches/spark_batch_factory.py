@@ -49,8 +49,12 @@ class SparkBatchFactory(object):
 
     Raises:
       AttributeError: Main class and jar are missing, or both were provided.
+      Bucket is required to upload local files, but not specified.
     """
     kwargs = {}
+
+    if args.args:
+      kwargs['args'] = args.args
 
     if not args.main_class and not args.main_jar:
       raise AttributeError('Missing JVM main.')
@@ -75,10 +79,10 @@ class SparkBatchFactory(object):
     if args.archives:
       dependencies['archiveUris'] = args.archives
 
-    if args.args:
-      kwargs['args'] = args.args
-
-    dependencies = local_file_uploader.Upload(args.bucket, dependencies)
+    if local_file_uploader.HasLocalFiles(dependencies):
+      if not args.bucket:
+        raise AttributeError('--bucket was not specified.')
+      dependencies = local_file_uploader.Upload(args.bucket, dependencies)
 
     # Move mainJarFileUri out of the list.
     if 'mainJarFileUri' in dependencies:
@@ -96,6 +100,4 @@ def AddArguments(parser):
   flags.AddJarFiles(parser)
   flags.AddOtherFiles(parser)
   flags.AddArchives(parser)
-  # Cloud Storage bucket to upload workload dependencies.
-  # It is required until we figure out a place to upload user files.
   flags.AddBucket(parser)

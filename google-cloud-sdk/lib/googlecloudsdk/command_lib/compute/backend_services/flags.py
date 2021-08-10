@@ -20,8 +20,8 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import arg_parsers
-from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.compute import completers as compute_completers
+from googlecloudsdk.command_lib.compute import exceptions as compute_exceptions
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 from googlecloudsdk.command_lib.compute import scope as compute_scope
 from googlecloudsdk.command_lib.util import completers
@@ -516,7 +516,7 @@ def GetHealthCheckUris(args, resource_resolver, resource_parser):
 
   if getattr(args, 'health_checks', None):
     if health_check_refs:
-      raise exceptions.ToolException(
+      raise compute_exceptions.ArgumentError(
           'Mixing --health-checks with --http-health-checks or with '
           '--https-health-checks is not supported.')
     else:
@@ -527,7 +527,7 @@ def GetHealthCheckUris(args, resource_resolver, resource_parser):
               default_scope=compute_scope.ScopeEnum.GLOBAL))
 
   if health_check_refs and getattr(args, 'no_health_checks', None):
-    raise exceptions.ToolException(
+    raise compute_exceptions.ArgumentError(
         'Combining --health-checks, --http-health-checks, or '
         '--https-health-checks with --no-health-checks is not supported.'
     )

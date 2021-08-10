@@ -378,6 +378,19 @@ class ListTransferJobsResponse(_messages.Message):
   transferJobs = _messages.MessageField('TransferJob', 2, repeated=True)
 
 
+class LoggingConfig(_messages.Message):
+  r"""Logging configure.
+
+  Fields:
+    enableOnpremGcsTransferLogs: Enables the Cloud Storage transfer logs for
+      this transfer. This is only supported for transfer jobs with
+      PosixFilesystem sources. The default is that logs are not generated for
+      this transfer.
+  """
+
+  enableOnpremGcsTransferLogs = _messages.BooleanField(1)
+
+
 class NotificationConfig(_messages.Message):
   r"""Specification to configure notifications published to Pub/Sub.
   Notifications are published to the customer-provided topic using the
@@ -622,6 +635,16 @@ class Operation(_messages.Message):
 
 class PauseTransferOperationRequest(_messages.Message):
   r"""Request passed to PauseTransferOperation."""
+
+
+class PosixFilesystem(_messages.Message):
+  r"""A POSIX filesystem data source or sink.
+
+  Fields:
+    rootDirectory: Root directory path to the filesystem.
+  """
+
+  rootDirectory = _messages.StringField(1)
 
 
 class ResumeTransferOperationRequest(_messages.Message):
@@ -989,6 +1012,19 @@ class TransferCounters(_messages.Message):
       transferred or that failed to be deleted after being transferred.
     bytesFromSourceSkippedBySync: Bytes in the data source that are not
       transferred because they already exist in the data sink.
+    directoriesFailedToListFromSource: For transfers involving PosixFilesystem
+      only. Number of listing failures for each directory found at the source.
+      Potential failures when listing a directory include permission failure
+      or block failure. If listing a directory fails, no files in the
+      directory are transferred.
+    directoriesFoundFromSource: For transfers involving PosixFilesystem only.
+      Number of directories found while listing. For example, if the root
+      directory of the transfer is `base/` and there are two other
+      directories, `a/` and `b/` under this directory, the count after listing
+      `base/`, `base/a/` and `base/b/` is 3.
+    directoriesSuccessfullyListedFromSource: For transfers involving
+      PosixFilesystem only. Number of successful listings for each directory
+      found at the source.
     objectsCopiedToSink: Objects that are copied to the data sink.
     objectsDeletedFromSink: Objects that are deleted from the data sink.
     objectsDeletedFromSource: Objects that are deleted from the data source.
@@ -1013,14 +1049,17 @@ class TransferCounters(_messages.Message):
   bytesFoundOnlyFromSink = _messages.IntegerField(6)
   bytesFromSourceFailed = _messages.IntegerField(7)
   bytesFromSourceSkippedBySync = _messages.IntegerField(8)
-  objectsCopiedToSink = _messages.IntegerField(9)
-  objectsDeletedFromSink = _messages.IntegerField(10)
-  objectsDeletedFromSource = _messages.IntegerField(11)
-  objectsFailedToDeleteFromSink = _messages.IntegerField(12)
-  objectsFoundFromSource = _messages.IntegerField(13)
-  objectsFoundOnlyFromSink = _messages.IntegerField(14)
-  objectsFromSourceFailed = _messages.IntegerField(15)
-  objectsFromSourceSkippedBySync = _messages.IntegerField(16)
+  directoriesFailedToListFromSource = _messages.IntegerField(9)
+  directoriesFoundFromSource = _messages.IntegerField(10)
+  directoriesSuccessfullyListedFromSource = _messages.IntegerField(11)
+  objectsCopiedToSink = _messages.IntegerField(12)
+  objectsDeletedFromSink = _messages.IntegerField(13)
+  objectsDeletedFromSource = _messages.IntegerField(14)
+  objectsFailedToDeleteFromSink = _messages.IntegerField(15)
+  objectsFoundFromSource = _messages.IntegerField(16)
+  objectsFoundOnlyFromSink = _messages.IntegerField(17)
+  objectsFromSourceFailed = _messages.IntegerField(18)
+  objectsFromSourceSkippedBySync = _messages.IntegerField(19)
 
 
 class TransferJob(_messages.Message):
@@ -1045,6 +1084,7 @@ class TransferJob(_messages.Message):
     latestOperationName: The name of the most recently started
       TransferOperation of this JobConfig. Present if a TransferOperation has
       been created for this JobConfig.
+    loggingConfig: Logging configuration.
     name: A unique name (within the transfer project) assigned when the job is
       created. If this field is empty in a CreateTransferJobRequest, Storage
       Transfer Service assigns a unique name. Otherwise, the specified name is
@@ -1103,12 +1143,13 @@ class TransferJob(_messages.Message):
   description = _messages.StringField(3)
   lastModificationTime = _messages.StringField(4)
   latestOperationName = _messages.StringField(5)
-  name = _messages.StringField(6)
-  notificationConfig = _messages.MessageField('NotificationConfig', 7)
-  projectId = _messages.StringField(8)
-  schedule = _messages.MessageField('Schedule', 9)
-  status = _messages.EnumField('StatusValueValuesEnum', 10)
-  transferSpec = _messages.MessageField('TransferSpec', 11)
+  loggingConfig = _messages.MessageField('LoggingConfig', 6)
+  name = _messages.StringField(7)
+  notificationConfig = _messages.MessageField('NotificationConfig', 8)
+  projectId = _messages.StringField(9)
+  schedule = _messages.MessageField('Schedule', 10)
+  status = _messages.EnumField('StatusValueValuesEnum', 11)
+  transferSpec = _messages.MessageField('TransferSpec', 12)
 
 
 class TransferOperation(_messages.Message):
@@ -1201,6 +1242,7 @@ class TransferSpec(_messages.Message):
       included in the set of data source and data sink objects. Object
       conditions based on objects' "last modification time" do not exclude
       objects in a data sink.
+    posixDataSource: A POSIX Filesystem data source.
     transferOptions: If the option delete_objects_unique_in_sink is `true` and
       time-based object conditions such as 'last modification time' are
       specified, the request fails with an INVALID_ARGUMENT error.
@@ -1212,7 +1254,8 @@ class TransferSpec(_messages.Message):
   gcsDataSource = _messages.MessageField('GcsData', 4)
   httpDataSource = _messages.MessageField('HttpData', 5)
   objectConditions = _messages.MessageField('ObjectConditions', 6)
-  transferOptions = _messages.MessageField('TransferOptions', 7)
+  posixDataSource = _messages.MessageField('PosixFilesystem', 7)
+  transferOptions = _messages.MessageField('TransferOptions', 8)
 
 
 class UpdateTransferJobRequest(_messages.Message):

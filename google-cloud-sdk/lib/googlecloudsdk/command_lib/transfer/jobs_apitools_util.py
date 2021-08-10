@@ -28,6 +28,7 @@ from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.transfer import creds_util
 from googlecloudsdk.command_lib.transfer import jobs_flag_util
 from googlecloudsdk.command_lib.transfer import name_util
+from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import times
 
@@ -82,6 +83,39 @@ def _create_or_modify_object_conditions(transfer_spec, args, messages):
         args.include_modified_after_relative)
 
 
+def _create_or_modify_creds(transfer_spec, args, messages):
+  """Creates or modifies TransferSpec source creds based on args."""
+  if transfer_spec.awsS3DataSource:
+    if args.source_creds_file:
+      creds_dict = creds_util.get_values_for_keys_from_file(
+          args.source_creds_file,
+          ['aws_access_key_id', 'aws_secret_access_key'])
+    else:
+      log.warning('No --source-creds-file flag. Checking system config files'
+                  ' for AWS credentials.')
+      creds_dict = creds_util.get_aws_creds()
+
+    aws_access_key = creds_dict.get('aws_access_key_id', None)
+    secret_access_key = creds_dict.get('aws_secret_access_key', None)
+    if not (aws_access_key and secret_access_key):
+      log.warning('Missing AWS source creds.')
+
+    creds_dict.get('aws_access_key_id', None)
+    transfer_spec.awsS3DataSource.awsAccessKey = messages.AwsAccessKey(
+        accessKeyId=aws_access_key, secretAccessKey=secret_access_key)
+
+  elif transfer_spec.azureBlobStorageDataSource:
+    if args.source_creds_file:
+      sas_token = creds_util.get_values_for_keys_from_file(
+          args.source_creds_file, ['sasToken'])['sasToken']
+    else:
+      log.warning('No Azure source creds set. Consider adding'
+                  ' --source-creds-file flag.')
+      sas_token = None
+    transfer_spec.azureBlobStorageDataSource.azureCredentials = (
+        messages.AzureCredentials(sasToken=sas_token))
+
+
 def _create_or_modify_transfer_spec(job, args, messages):
   """Creates or modifies TransferSpec based on args."""
   if not job.transferSpec:
@@ -96,7 +130,6 @@ def _create_or_modify_transfer_spec(job, args, messages):
   if args.source:
     # Clear any existing data source to make space for new one.
     job.transferSpec.httpDataSource = None
-    job.transferSpec.gcsDataSource = None
     job.transferSpec.gcsDataSource = None
     job.transferSpec.awsS3DataSource = None
     job.transferSpec.azureBlobStorageDataSource = None
@@ -117,33 +150,19 @@ def _create_or_modify_transfer_spec(job, args, messages):
             path=source_url.object_name,
         )
       elif source_url.scheme is storage_url.ProviderPrefix.S3:
-        if args.source_creds_file:
-          creds_dict = creds_util.get_values_for_keys_from_file(
-              args.source_creds_file,
-              ['aws_access_key_id', 'aws_secret_access_key'])
-        else:
-          creds_dict = creds_util.get_aws_creds()
-
         job.transferSpec.awsS3DataSource = messages.AwsS3Data(
-            awsAccessKey=messages.AwsAccessKey(
-                accessKeyId=creds_dict.get('aws_access_key_id', None),
-                secretAccessKey=creds_dict.get('aws_secret_access_key', None)),
             bucketName=source_url.bucket_name,
             path=source_url.object_name,
         )
       elif isinstance(source_url, storage_url.AzureUrl):
-        if args.source_creds_file:
-          sas_token = creds_util.get_values_for_keys_from_file(
-              args.source_creds_file, ['sasToken'])['sasToken']
-        else:
-          sas_token = None
         job.transferSpec.azureBlobStorageDataSource = (
             messages.AzureBlobStorageData(
-                azureCredentials=messages.AzureCredentials(sasToken=sas_token),
                 container=source_url.bucket_name,
                 path=source_url.object_name,
                 storageAccount=source_url.account,
             ))
+
+  _create_or_modify_creds(job.transferSpec, args, messages)
   _create_or_modify_object_conditions(job.transferSpec, args, messages)
   _create_or_modify_transfer_options(job.transferSpec, args, messages)
 

@@ -31,6 +31,42 @@ class Collections(enum.Enum):
       ['projectsId'],
       True
   )
+  PROJECTS_LOCATIONS = (
+      'projects.locations',
+      'projects/{projectsId}/locations/{locationsId}',
+      {},
+      ['projectsId', 'locationsId'],
+      True
+  )
+  PROJECTS_LOCATIONS_INSTANCES = (
+      'projects.locations.instances',
+      'projects/{projectsId}/locations/{locationsId}/instances/{instancesId}',
+      {},
+      ['projectsId', 'locationsId', 'instancesId'],
+      True
+  )
+  PROJECTS_LOCATIONS_INSTANCES_INVENTORIES = (
+      'projects.locations.instances.inventories',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/instances/'
+              '{instancesId}/inventory',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_INSTANCES_VULNERABILITYREPORTS = (
+      'projects.locations.instances.vulnerabilityReports',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/instances/'
+              '{instancesId}/vulnerabilityReport',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_PATCHDEPLOYMENTS = (
       'projects.patchDeployments',
       '{+name}',

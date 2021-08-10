@@ -212,7 +212,7 @@ def _VersionStrToSemanticVersion(version_str):
 def _IsAirflowVersionUpgradeCompatible(cur_version, candidate_version):
   """Validates Airflow version candidate is greater than or equal to current.
 
-  Airflow upgrades support MAJOR, MINOR, and PATCH-level upgrades.
+  Composer supports Airflow MINOR and PATCH-level upgrades.
 
   Args:
     cur_version: current 'a.b.c' Airflow version
@@ -221,7 +221,11 @@ def _IsAirflowVersionUpgradeCompatible(cur_version, candidate_version):
   Returns:
     boolean value whether Airflow candidate is valid
   """
-  return CompareVersions(cur_version, candidate_version) <= 0
+  curr_semantic_version = _VersionStrToSemanticVersion(cur_version)
+  cand_semantic_version = _VersionStrToSemanticVersion(candidate_version)
+
+  return (curr_semantic_version.major == cand_semantic_version.major and
+          curr_semantic_version <= cand_semantic_version)
 
 
 def _IsComposerVersionUpgradeCompatible(cur_version, candidate_version):

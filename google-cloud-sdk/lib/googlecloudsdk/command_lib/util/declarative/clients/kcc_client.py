@@ -378,6 +378,9 @@ class KccClient(client_base.DeclarativeClient):
           project = args.project or properties.VALUES.core.project.GetOrFail()
           cmd.extend(['--project', project])
 
+    if getattr(args, 'storage_path', None):
+      cmd.extend(['--storage-key', args.storage_path])
+
     if getattr(args, 'resource_format', None):
       cmd.extend(['--resource-format',
                   _NormalizeResourceFormat(args.resource_format)])

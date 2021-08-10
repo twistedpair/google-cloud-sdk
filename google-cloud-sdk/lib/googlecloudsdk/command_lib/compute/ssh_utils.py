@@ -81,6 +81,10 @@ class MissingExternalIPAddressError(core_exceptions.Error):
   """
 
 
+class MissingNetworkInterfaceError(core_exceptions.Error):
+  """Network interface was not found."""
+
+
 class CommandError(core_exceptions.Error):
   """Wraps ssh.CommandError, primarly for adding troubleshooting info."""
 
@@ -132,18 +136,27 @@ def GetExternalInterface(instance_resource, no_raise=False):
     A network interface resource object or None if no_raise and a network
     interface with an external IP address does not exist.
   """
+  no_ip = False
   if instance_resource.networkInterfaces:
     for network_interface in instance_resource.networkInterfaces:
       access_configs = network_interface.accessConfigs
+      ipv6_access_configs = network_interface.ipv6AccessConfigs
       if access_configs:
         if access_configs[0].natIP:
           return network_interface
         elif not no_raise:
-          raise UnallocatedIPAddressError(
-              'Instance [{0}] in zone [{1}] has not been allocated an external '
-              'IP address yet. Try rerunning this command later.'.format(
-                  instance_resource.name,
-                  path_simplifier.Name(instance_resource.zone)))
+          no_ip = True
+      if ipv6_access_configs:
+        if ipv6_access_configs[0].externalIpv6:
+          return network_interface
+        elif not no_raise:
+          no_ip = True
+      if no_ip:
+        raise UnallocatedIPAddressError(
+            'Instance [{0}] in zone [{1}] has not been allocated an external '
+            'IP address yet. Try rerunning this command later.'.format(
+                instance_resource.name,
+                path_simplifier.Name(instance_resource.zone)))
 
   if no_raise:
     return None
@@ -170,10 +183,17 @@ def GetExternalIPAddress(instance_resource, no_raise=False):
       instance_resource and no_raise is False.
 
   Returns:
-    A string IP address or None if no_raise is True and no external IP exists.
+    A string IPv4 address or IPv6 address if the IPv4 address does not exit
+    or None if no_raise is True and no external IP exists.
   """
   network_interface = GetExternalInterface(instance_resource, no_raise=no_raise)
-  return network_interface.accessConfigs[0].natIP if network_interface else None
+  if network_interface:
+    if (hasattr(network_interface, 'accessConfigs')
+        and network_interface.accessConfigs):
+      return network_interface.accessConfigs[0].natIP
+    elif (hasattr(network_interface, 'ipv6AccessConfigs')
+          and network_interface.ipv6AccessConfigs):
+      return network_interface.ipv6AccessConfigs[0].externalIpv6
 
 
 def GetInternalInterface(instance_resource):
@@ -183,14 +203,14 @@ def GetInternalInterface(instance_resource):
     instance_resource: An instance resource object.
 
   Raises:
-    ToolException: If instance has no network interfaces.
+    MissingNetworkInterfaceError: If instance has no network interfaces.
 
   Returns:
     A network interface resource object.
   """
   if instance_resource.networkInterfaces:
     return instance_resource.networkInterfaces[0]
-  raise exceptions.ToolException(
+  raise MissingNetworkInterfaceError(
       'Instance [{0}] in zone [{1}] has no network interfaces.'.format(
           instance_resource.name,
           path_simplifier.Name(instance_resource.zone)))
@@ -206,9 +226,10 @@ def GetInternalIPAddress(instance_resource):
     ToolException: If instance has no network interfaces.
 
   Returns:
-    A string IP address.
+    A string IPv4 address or IPv6 address if there is no IPv4 address.
   """
-  return GetInternalInterface(instance_resource).networkIP
+  interface = GetInternalInterface(instance_resource)
+  return interface.networkIP or interface.ipv6Address
 
 
 def GetSSHKeyExpirationFromArgs(args):
@@ -991,7 +1012,7 @@ def GetUserAndInstance(user_host):
     return user, instance
   if len(parts) == 2:
     return parts
-  raise exceptions.ToolException(
+  raise ArgumentError(
       'Expected argument of the form [USER@]INSTANCE; received [{0}].'
       .format(user_host))
 

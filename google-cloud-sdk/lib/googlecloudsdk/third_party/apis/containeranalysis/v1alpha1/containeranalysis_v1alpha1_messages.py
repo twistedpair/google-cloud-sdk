@@ -165,6 +165,7 @@ class BuildDetails(_messages.Message):
   r"""Message encapsulating build provenance details.
 
   Fields:
+    intotoProvenance: In-toto Provenance representation as defined in spec.
     provenance: The actual provenance
     provenanceBytes: Serialized JSON representation of the provenance, used in
       generating the `BuildSignature` in the corresponding Result. After
@@ -177,8 +178,9 @@ class BuildDetails(_messages.Message):
       to prevent incompatibilities with future changes.
   """
 
-  provenance = _messages.MessageField('BuildProvenance', 1)
-  provenanceBytes = _messages.StringField(2)
+  intotoProvenance = _messages.MessageField('InTotoProvenance', 1)
+  provenance = _messages.MessageField('BuildProvenance', 2)
+  provenanceBytes = _messages.StringField(3)
 
 
 class BuildProvenance(_messages.Message):
@@ -313,6 +315,16 @@ class BuildType(_messages.Message):
   signature = _messages.MessageField('BuildSignature', 2)
 
 
+class BuilderConfig(_messages.Message):
+  r"""A BuilderConfig object.
+
+  Fields:
+    id: A string attribute.
+  """
+
+  id = _messages.StringField(1)
+
+
 class CisBenchmark(_messages.Message):
   r"""A compliance check that is a CIS benchmark.
 
@@ -368,6 +380,25 @@ class Command(_messages.Message):
   id = _messages.StringField(4)
   name = _messages.StringField(5)
   waitFor = _messages.StringField(6, repeated=True)
+
+
+class Completeness(_messages.Message):
+  r"""Indicates that the builder claims certain fields in this message to be
+  complete.
+
+  Fields:
+    arguments: If true, the builder claims that recipe.arguments is complete,
+      meaning that all external inputs are properly captured in the recipe.
+    environment: If true, the builder claims that recipe.environment is
+      claimed to be complete.
+    materials: If true, the builder claims that materials are complete,
+      usually through some controls to prevent network access. Sometimes
+      called "hermetic".
+  """
+
+  arguments = _messages.BooleanField(1)
+  environment = _messages.BooleanField(2)
+  materials = _messages.BooleanField(3)
 
 
 class ComplianceNote(_messages.Message):
@@ -677,6 +708,7 @@ class ContaineranalysisProjectsOccurrencesListRequest(_messages.Message):
       SPDX_PACKAGE: This represents an SPDX Package.
       SPDX_FILE: This represents an SPDX File.
       SPDX_RELATIONSHIP: This represents an SPDX Relationship.
+      DSSE_ATTESTATION: This represents a DSSE attestation Note
     """
     KIND_UNSPECIFIED = 0
     PACKAGE_VULNERABILITY = 1
@@ -692,6 +724,7 @@ class ContaineranalysisProjectsOccurrencesListRequest(_messages.Message):
     SPDX_PACKAGE = 11
     SPDX_FILE = 12
     SPDX_RELATIONSHIP = 13
+    DSSE_ATTESTATION = 14
 
   filter = _messages.StringField(1)
   kind = _messages.EnumField('KindValueValuesEnum', 2)
@@ -964,6 +997,45 @@ class CreateOperationRequest(_messages.Message):
   operationId = _messages.StringField(2)
 
 
+class DSSEAttestationNote(_messages.Message):
+  r"""A note describing an attestation
+
+  Fields:
+    hint: DSSEHint hints at the purpose of the attestation authority.
+  """
+
+  hint = _messages.MessageField('DSSEHint', 1)
+
+
+class DSSEAttestationOccurrence(_messages.Message):
+  r"""An occurrence describing an attestation on a resource
+
+  Fields:
+    envelope: If doing something security critical, make sure to verify the
+      signatures in this metadata.
+    statement: A InTotoStatement attribute.
+  """
+
+  envelope = _messages.MessageField('Envelope', 1)
+  statement = _messages.MessageField('InTotoStatement', 2)
+
+
+class DSSEHint(_messages.Message):
+  r"""This submessage provides human-readable hints about the purpose of the
+  authority. Because the name of a note acts as its resource reference, it is
+  important to disambiguate the canonical name of the Note (which might be a
+  UUID for security purposes) from "readable" names more suitable for debug
+  output. Note that these hints should not be used to look up authorities in
+  security sensitive contexts, such as when looking up attestations to verify.
+
+  Fields:
+    humanReadableName: Required. The human readable name of this attestation
+      authority, for example "cloudbuild-prod".
+  """
+
+  humanReadableName = _messages.StringField(1)
+
+
 class Deployable(_messages.Message):
   r"""An artifact that can be deployed in some runtime.
 
@@ -1172,6 +1244,7 @@ class Discovery(_messages.Message):
       SPDX_PACKAGE: This represents an SPDX Package.
       SPDX_FILE: This represents an SPDX File.
       SPDX_RELATIONSHIP: This represents an SPDX Relationship.
+      DSSE_ATTESTATION: This represents a DSSE attestation Note
     """
     KIND_UNSPECIFIED = 0
     PACKAGE_VULNERABILITY = 1
@@ -1187,6 +1260,7 @@ class Discovery(_messages.Message):
     SPDX_PACKAGE = 11
     SPDX_FILE = 12
     SPDX_RELATIONSHIP = 13
+    DSSE_ATTESTATION = 14
 
   analysisKind = _messages.EnumField('AnalysisKindValueValuesEnum', 1)
 
@@ -1297,6 +1371,34 @@ class Empty(_messages.Message):
   representation for `Empty` is empty JSON object `{}`.
   """
 
+
+
+class Envelope(_messages.Message):
+  r"""MUST match https://github.com/secure-systems-
+  lab/dsse/blob/master/envelope.proto. An authenticated message of arbitrary
+  type.
+
+  Fields:
+    payload: The bytes being signed
+    payloadType: The type of payload being signed
+    signatures: The signatures over the payload
+  """
+
+  payload = _messages.BytesField(1)
+  payloadType = _messages.StringField(2)
+  signatures = _messages.MessageField('EnvelopeSignature', 3, repeated=True)
+
+
+class EnvelopeSignature(_messages.Message):
+  r"""A DSSE signature
+
+  Fields:
+    keyid: A reference id to the key being used for signing
+    sig: The signature itself
+  """
+
+  keyid = _messages.StringField(1)
+  sig = _messages.BytesField(2)
 
 
 class Expr(_messages.Message):
@@ -1734,6 +1836,47 @@ class Hash(_messages.Message):
   value = _messages.BytesField(2)
 
 
+class InTotoProvenance(_messages.Message):
+  r"""A InTotoProvenance object.
+
+  Fields:
+    builderConfig: required
+    materials: The collection of artifacts that influenced the build including
+      sources, dependencies, build tools, base images, and so on. This is
+      considered to be incomplete unless metadata.completeness.materials is
+      true. Unset or null is equivalent to empty.
+    metadata: A Metadata attribute.
+    recipe: Identifies the configuration used for the build. When combined
+      with materials, this SHOULD fully describe the build, such that re-
+      running this recipe results in bit-for-bit identical output (if the
+      build is reproducible). required
+  """
+
+  builderConfig = _messages.MessageField('BuilderConfig', 1)
+  materials = _messages.StringField(2, repeated=True)
+  metadata = _messages.MessageField('Metadata', 3)
+  recipe = _messages.MessageField('Recipe', 4)
+
+
+class InTotoStatement(_messages.Message):
+  r"""Spec defined at https://github.com/in-
+  toto/attestation/tree/main/spec#statement The serialized InTotoStatement
+  will be stored as Envelope.payload. Envelope.payloadType is always
+  "application/vnd.in-toto+json".
+
+  Fields:
+    predicateType: "https://in-toto.io/Provenance/v0.1" for InTotoProvenance.
+    provenance: A InTotoProvenance attribute.
+    subject: A Subject attribute.
+    type: Always "https://in-toto.io/Statement/v0.1".
+  """
+
+  predicateType = _messages.StringField(1)
+  provenance = _messages.MessageField('InTotoProvenance', 2)
+  subject = _messages.MessageField('Subject', 3, repeated=True)
+  type = _messages.StringField(4)
+
+
 class Installation(_messages.Message):
   r"""This represents how a particular software package may be installed on a
   system.
@@ -1876,6 +2019,28 @@ class Location(_messages.Message):
   version = _messages.MessageField('Version', 3)
 
 
+class Metadata(_messages.Message):
+  r"""Other properties of the build.
+
+  Fields:
+    buildFinishedOn: The timestamp of when the build completed.
+    buildInvocationId: Identifies the particular build invocation, which can
+      be useful for finding associated logs or other ad-hoc analysis. The
+      value SHOULD be globally unique, per in-toto Provenance spec.
+    buildStartedOn: The timestamp of when the build started.
+    completeness: Indicates that the builder claims certain fields in this
+      message to be complete.
+    reproducible: If true, the builder claims that running the recipe on
+      materials will produce bit-for-bit identical output.
+  """
+
+  buildFinishedOn = _messages.StringField(1)
+  buildInvocationId = _messages.StringField(2)
+  buildStartedOn = _messages.StringField(3)
+  completeness = _messages.MessageField('Completeness', 4)
+  reproducible = _messages.BooleanField(5)
+
+
 class NonCompliantFile(_messages.Message):
   r"""Details about files that caused a compliance check to fail.
 
@@ -1909,6 +2074,7 @@ class Note(_messages.Message):
       used as a filter in list requests.
     deployable: A note describing something that can be deployed.
     discovery: A note describing a provider/analysis type.
+    dsseAttestation: A note describing a dsse attestation note.
     expirationTime: Time of expiration for this note, null if note does not
       expire.
     kind: Output only. This explicitly denotes which kind of note is
@@ -1953,6 +2119,7 @@ class Note(_messages.Message):
       SPDX_PACKAGE: This represents an SPDX Package.
       SPDX_FILE: This represents an SPDX File.
       SPDX_RELATIONSHIP: This represents an SPDX Relationship.
+      DSSE_ATTESTATION: This represents a DSSE attestation Note
     """
     KIND_UNSPECIFIED = 0
     PACKAGE_VULNERABILITY = 1
@@ -1968,6 +2135,7 @@ class Note(_messages.Message):
     SPDX_PACKAGE = 11
     SPDX_FILE = 12
     SPDX_RELATIONSHIP = 13
+    DSSE_ATTESTATION = 14
 
   attestationAuthority = _messages.MessageField('AttestationAuthority', 1)
   baseImage = _messages.MessageField('Basis', 2)
@@ -1976,20 +2144,21 @@ class Note(_messages.Message):
   createTime = _messages.StringField(5)
   deployable = _messages.MessageField('Deployable', 6)
   discovery = _messages.MessageField('Discovery', 7)
-  expirationTime = _messages.StringField(8)
-  kind = _messages.EnumField('KindValueValuesEnum', 9)
-  longDescription = _messages.StringField(10)
-  name = _messages.StringField(11)
-  package = _messages.MessageField('Package', 12)
-  relatedUrl = _messages.MessageField('RelatedUrl', 13, repeated=True)
-  sbom = _messages.MessageField('DocumentNote', 14)
-  shortDescription = _messages.StringField(15)
-  spdxFile = _messages.MessageField('FileNote', 16)
-  spdxPackage = _messages.MessageField('PackageNote', 17)
-  spdxRelationship = _messages.MessageField('RelationshipNote', 18)
-  updateTime = _messages.StringField(19)
-  upgrade = _messages.MessageField('UpgradeNote', 20)
-  vulnerabilityType = _messages.MessageField('VulnerabilityType', 21)
+  dsseAttestation = _messages.MessageField('DSSEAttestationNote', 8)
+  expirationTime = _messages.StringField(9)
+  kind = _messages.EnumField('KindValueValuesEnum', 10)
+  longDescription = _messages.StringField(11)
+  name = _messages.StringField(12)
+  package = _messages.MessageField('Package', 13)
+  relatedUrl = _messages.MessageField('RelatedUrl', 14, repeated=True)
+  sbom = _messages.MessageField('DocumentNote', 15)
+  shortDescription = _messages.StringField(16)
+  spdxFile = _messages.MessageField('FileNote', 17)
+  spdxPackage = _messages.MessageField('PackageNote', 18)
+  spdxRelationship = _messages.MessageField('RelationshipNote', 19)
+  updateTime = _messages.StringField(20)
+  upgrade = _messages.MessageField('UpgradeNote', 21)
+  vulnerabilityType = _messages.MessageField('VulnerabilityType', 22)
 
 
 class Occurrence(_messages.Message):
@@ -2010,6 +2179,8 @@ class Occurrence(_messages.Message):
     derivedImage: Describes how this resource derives from the basis in the
       associated note.
     discovered: Describes the initial scan status for this resource.
+    dsseAttestation: This represents a DSSE attestation occurrence
+    envelope: https://github.com/secure-systems-lab/dsse
     installation: Describes the installation of a package on the linked
       resource.
     kind: Output only. This explicitly denotes which of the `Occurrence`
@@ -2060,6 +2231,7 @@ class Occurrence(_messages.Message):
       SPDX_PACKAGE: This represents an SPDX Package.
       SPDX_FILE: This represents an SPDX File.
       SPDX_RELATIONSHIP: This represents an SPDX Relationship.
+      DSSE_ATTESTATION: This represents a DSSE attestation Note
     """
     KIND_UNSPECIFIED = 0
     PACKAGE_VULNERABILITY = 1
@@ -2075,6 +2247,7 @@ class Occurrence(_messages.Message):
     SPDX_PACKAGE = 11
     SPDX_FILE = 12
     SPDX_RELATIONSHIP = 13
+    DSSE_ATTESTATION = 14
 
   attestation = _messages.MessageField('Attestation', 1)
   buildDetails = _messages.MessageField('BuildDetails', 2)
@@ -2083,20 +2256,22 @@ class Occurrence(_messages.Message):
   deployment = _messages.MessageField('Deployment', 5)
   derivedImage = _messages.MessageField('Derived', 6)
   discovered = _messages.MessageField('Discovered', 7)
-  installation = _messages.MessageField('Installation', 8)
-  kind = _messages.EnumField('KindValueValuesEnum', 9)
-  name = _messages.StringField(10)
-  noteName = _messages.StringField(11)
-  remediation = _messages.StringField(12)
-  resource = _messages.MessageField('Resource', 13)
-  resourceUrl = _messages.StringField(14)
-  sbom = _messages.MessageField('DocumentOccurrence', 15)
-  spdxFile = _messages.MessageField('FileOccurrence', 16)
-  spdxPackage = _messages.MessageField('PackageOccurrence', 17)
-  spdxRelationship = _messages.MessageField('RelationshipOccurrence', 18)
-  updateTime = _messages.StringField(19)
-  upgrade = _messages.MessageField('UpgradeOccurrence', 20)
-  vulnerabilityDetails = _messages.MessageField('VulnerabilityDetails', 21)
+  dsseAttestation = _messages.MessageField('DSSEAttestationOccurrence', 8)
+  envelope = _messages.MessageField('Envelope', 9)
+  installation = _messages.MessageField('Installation', 10)
+  kind = _messages.EnumField('KindValueValuesEnum', 11)
+  name = _messages.StringField(12)
+  noteName = _messages.StringField(13)
+  remediation = _messages.StringField(14)
+  resource = _messages.MessageField('Resource', 15)
+  resourceUrl = _messages.StringField(16)
+  sbom = _messages.MessageField('DocumentOccurrence', 17)
+  spdxFile = _messages.MessageField('FileOccurrence', 18)
+  spdxPackage = _messages.MessageField('PackageOccurrence', 19)
+  spdxRelationship = _messages.MessageField('RelationshipOccurrence', 20)
+  updateTime = _messages.StringField(21)
+  upgrade = _messages.MessageField('UpgradeOccurrence', 22)
+  vulnerabilityDetails = _messages.MessageField('VulnerabilityDetails', 23)
 
 
 class Operation(_messages.Message):
@@ -2457,6 +2632,72 @@ class Policy(_messages.Message):
   bindings = _messages.MessageField('Binding', 1, repeated=True)
   etag = _messages.BytesField(2)
   version = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
+class Recipe(_messages.Message):
+  r"""Steps taken to build the artifact. For a TaskRun, typically each
+  container corresponds to one step in the recipe.
+
+  Messages:
+    EnvironmentValue: Any other builder-controlled inputs necessary for
+      correctly evaluating the recipe. Usually only needed for reproducing the
+      build but not evaluated as part of policy.
+
+  Fields:
+    arguments: Collection of all external inputs that influenced the build on
+      top of recipe.definedInMaterial and recipe.entryPoint. For example, if
+      the recipe type were "make", then this might be the flags passed to make
+      aside from the target, which is captured in recipe.entryPoint.
+    definedInMaterial: Index in materials containing the recipe steps that are
+      not implied by recipe.type. For example, if the recipe type were "make",
+      then this would point to the source containing the Makefile, not the
+      make program itself. Set to -1 if the recipe doesn't come from a
+      material, as zero is default unset value for int64.
+    entryPoint: String identifying the entry point into the build. This is
+      often a path to a configuration file and/or a target label within that
+      file. The syntax and meaning are defined by recipe.type. For example, if
+      the recipe type were "make", then this would reference the directory in
+      which to run make as well as which target to use.
+    environment: Any other builder-controlled inputs necessary for correctly
+      evaluating the recipe. Usually only needed for reproducing the build but
+      not evaluated as part of policy.
+    type: URI indicating what type of recipe was performed. It determines the
+      meaning of recipe.entryPoint, recipe.arguments, recipe.environment, and
+      materials.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class EnvironmentValue(_messages.Message):
+    r"""Any other builder-controlled inputs necessary for correctly evaluating
+    the recipe. Usually only needed for reproducing the build but not
+    evaluated as part of policy.
+
+    Messages:
+      AdditionalProperty: An additional property for a EnvironmentValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type EnvironmentValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a EnvironmentValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  arguments = _messages.StringField(1, repeated=True)
+  definedInMaterial = _messages.IntegerField(2)
+  entryPoint = _messages.StringField(3)
+  environment = _messages.MessageField('EnvironmentValue', 4)
+  type = _messages.StringField(5)
 
 
 class RelatedUrl(_messages.Message):
@@ -2929,6 +3170,45 @@ class StorageSource(_messages.Message):
   bucket = _messages.StringField(1)
   generation = _messages.IntegerField(2)
   object = _messages.StringField(3)
+
+
+class Subject(_messages.Message):
+  r"""A Subject object.
+
+  Messages:
+    DigestValue: "": ""
+
+  Fields:
+    digest: "": ""
+    name: A string attribute.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DigestValue(_messages.Message):
+    r""""": ""
+
+    Messages:
+      AdditionalProperty: An additional property for a DigestValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type DigestValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DigestValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  digest = _messages.MessageField('DigestValue', 1)
+  name = _messages.StringField(2)
 
 
 class TestIamPermissionsRequest(_messages.Message):

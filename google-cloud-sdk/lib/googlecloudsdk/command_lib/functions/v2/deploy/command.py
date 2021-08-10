@@ -49,7 +49,6 @@ from googlecloudsdk.core.util import files as file_utils
 
 import six
 
-_MISSING_SOURCE_ERROR_MESSAGE = 'Please provide the `--source` flag.'
 _SIGNED_URL_UPLOAD_ERROR_MESSSAGE = (
     'There was a problem uploading the source code to a signed Cloud Storage '
     'URL. Please try again.')
@@ -288,16 +287,15 @@ def _GetSource(client, messages, region, function_name, source_arg,
     existing_function: cloudfunctions_v2alpha_messages.Function | None
 
   Returns:
-    function_source: cloud.functions.v2main.Source
+    function_source: cloud.functions.v2main.Source | None
     update_field_set: frozenset, set of update mask fields
   """
-  if existing_function is not None and source_arg is None:
-    if existing_function.buildConfig.source.repoSource is not None:
-      return None, frozenset()
-
-    # We don't know if the function was originally deployed from local source
-    # files or from Cloud Storage. Ask the user to clarify.
-    raise exceptions.FunctionsError(_MISSING_SOURCE_ERROR_MESSAGE)
+  if (source_arg is None and existing_function is not None and
+      existing_function.buildConfig.source.repoSource):
+    # The function was previously deployed from a Cloud Source Repository, and
+    # the `--source` flag was not specified this time. Don't set any source,
+    # so the control plane will reuse the original one.
+    return None, frozenset()
 
   source = source_arg or '.'
 

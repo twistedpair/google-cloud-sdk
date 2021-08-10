@@ -159,10 +159,10 @@ class Build(_messages.Message):
   Messages:
     SubstitutionsValue: Substitutions data for `Build` resource.
     TimingValue: Output only. Stores timing information for phases of the
-      build. Valid keys are: * BUILD: time to execute all build steps * PUSH:
+      build. Valid keys are: * BUILD: time to execute all build steps. * PUSH:
       time to push all specified images. * FETCHSOURCE: time to fetch source.
-      If the build does not specify source or images, these keys will not be
-      included.
+      * SETUPBUILD: time to set up build. If the build does not specify source
+      or images, these keys will not be included.
 
   Fields:
     approval: Output only. Describes this build's approval configuration,
@@ -174,6 +174,8 @@ class Build(_messages.Message):
       this build, if it was triggered automatically.
     createTime: Output only. Time at which the request to create the build was
       received.
+    failureInfo: Output only. Contains information about the build when
+      status=FAILURE.
     finishTime: Output only. Time at which execution of the build was
       finished. The difference between finish_time and start_time is the
       duration of the build's execution.
@@ -220,10 +222,10 @@ class Build(_messages.Message):
       will cease and the build status will be `TIMEOUT`. `timeout` starts
       ticking from `startTime`. Default time is ten minutes.
     timing: Output only. Stores timing information for phases of the build.
-      Valid keys are: * BUILD: time to execute all build steps * PUSH: time to
-      push all specified images. * FETCHSOURCE: time to fetch source. If the
-      build does not specify source or images, these keys will not be
-      included.
+      Valid keys are: * BUILD: time to execute all build steps. * PUSH: time
+      to push all specified images. * FETCHSOURCE: time to fetch source. *
+      SETUPBUILD: time to set up build. If the build does not specify source
+      or images, these keys will not be included.
     warnings: Output only. Non-fatal problems encountered during the execution
       of the build.
   """
@@ -283,9 +285,10 @@ class Build(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class TimingValue(_messages.Message):
     r"""Output only. Stores timing information for phases of the build. Valid
-    keys are: * BUILD: time to execute all build steps * PUSH: time to push
-    all specified images. * FETCHSOURCE: time to fetch source. If the build
-    does not specify source or images, these keys will not be included.
+    keys are: * BUILD: time to execute all build steps. * PUSH: time to push
+    all specified images. * FETCHSOURCE: time to fetch source. * SETUPBUILD:
+    time to set up build. If the build does not specify source or images,
+    these keys will not be included.
 
     Messages:
       AdditionalProperty: An additional property for a TimingValue object.
@@ -312,29 +315,30 @@ class Build(_messages.Message):
   availableSecrets = _messages.MessageField('Secrets', 3)
   buildTriggerId = _messages.StringField(4)
   createTime = _messages.StringField(5)
-  finishTime = _messages.StringField(6)
-  id = _messages.StringField(7)
-  images = _messages.StringField(8, repeated=True)
-  logUrl = _messages.StringField(9)
-  logsBucket = _messages.StringField(10)
-  name = _messages.StringField(11)
-  options = _messages.MessageField('BuildOptions', 12)
-  projectId = _messages.StringField(13)
-  queueTtl = _messages.StringField(14)
-  results = _messages.MessageField('Results', 15)
-  secrets = _messages.MessageField('Secret', 16, repeated=True)
-  serviceAccount = _messages.StringField(17)
-  source = _messages.MessageField('Source', 18)
-  sourceProvenance = _messages.MessageField('SourceProvenance', 19)
-  startTime = _messages.StringField(20)
-  status = _messages.EnumField('StatusValueValuesEnum', 21)
-  statusDetail = _messages.StringField(22)
-  steps = _messages.MessageField('BuildStep', 23, repeated=True)
-  substitutions = _messages.MessageField('SubstitutionsValue', 24)
-  tags = _messages.StringField(25, repeated=True)
-  timeout = _messages.StringField(26)
-  timing = _messages.MessageField('TimingValue', 27)
-  warnings = _messages.MessageField('Warning', 28, repeated=True)
+  failureInfo = _messages.MessageField('FailureInfo', 6)
+  finishTime = _messages.StringField(7)
+  id = _messages.StringField(8)
+  images = _messages.StringField(9, repeated=True)
+  logUrl = _messages.StringField(10)
+  logsBucket = _messages.StringField(11)
+  name = _messages.StringField(12)
+  options = _messages.MessageField('BuildOptions', 13)
+  projectId = _messages.StringField(14)
+  queueTtl = _messages.StringField(15)
+  results = _messages.MessageField('Results', 16)
+  secrets = _messages.MessageField('Secret', 17, repeated=True)
+  serviceAccount = _messages.StringField(18)
+  source = _messages.MessageField('Source', 19)
+  sourceProvenance = _messages.MessageField('SourceProvenance', 20)
+  startTime = _messages.StringField(21)
+  status = _messages.EnumField('StatusValueValuesEnum', 22)
+  statusDetail = _messages.StringField(23)
+  steps = _messages.MessageField('BuildStep', 24, repeated=True)
+  substitutions = _messages.MessageField('SubstitutionsValue', 25)
+  tags = _messages.StringField(26, repeated=True)
+  timeout = _messages.StringField(27)
+  timing = _messages.MessageField('TimingValue', 28)
+  warnings = _messages.MessageField('Warning', 29, repeated=True)
 
 
 class BuildApproval(_messages.Message):
@@ -596,6 +600,8 @@ class BuildStep(_messages.Message):
       to use as the name for a later build step.
     pullTiming: Output only. Stores timing information for pulling this build
       step's builder image only.
+    script: A shell script to be executed in the step. When script is
+      provided, the user cannot specify the entrypoint or args.
     secretEnv: A list of environment variables which are encrypted using a
       Cloud Key Management Service crypto key. These values must be specified
       in the build's `Secret`.
@@ -655,12 +661,13 @@ class BuildStep(_messages.Message):
   id = _messages.StringField(5)
   name = _messages.StringField(6)
   pullTiming = _messages.MessageField('TimeSpan', 7)
-  secretEnv = _messages.StringField(8, repeated=True)
-  status = _messages.EnumField('StatusValueValuesEnum', 9)
-  timeout = _messages.StringField(10)
-  timing = _messages.MessageField('TimeSpan', 11)
-  volumes = _messages.MessageField('Volume', 12, repeated=True)
-  waitFor = _messages.StringField(13, repeated=True)
+  script = _messages.StringField(8)
+  secretEnv = _messages.StringField(9, repeated=True)
+  status = _messages.EnumField('StatusValueValuesEnum', 10)
+  timeout = _messages.StringField(11)
+  timing = _messages.MessageField('TimeSpan', 12)
+  volumes = _messages.MessageField('Volume', 13, repeated=True)
+  waitFor = _messages.StringField(14, repeated=True)
 
 
 class BuiltImage(_messages.Message):
@@ -786,6 +793,22 @@ class ClusterOptions(_messages.Message):
   name = _messages.StringField(1)
 
 
+class CreateGitHubEnterpriseConfigOperationMetadata(_messages.Message):
+  r"""Metadata for `CreateGithubEnterpriseConfig` operation.
+
+  Fields:
+    completeTime: Time the operation was completed.
+    createTime: Time the operation was created.
+    githubEnterpriseConfig: The resource name of the GitHubEnterprise to be
+      created. Format:
+      `projects/{project}/locations/{location}/githubEnterpriseConfigs/{id}`.
+  """
+
+  completeTime = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  githubEnterpriseConfig = _messages.StringField(3)
+
+
 class CreateWorkerPoolOperationMetadata(_messages.Message):
   r"""Metadata for the `CreateWorkerPool` operation.
 
@@ -799,6 +822,22 @@ class CreateWorkerPoolOperationMetadata(_messages.Message):
   completeTime = _messages.StringField(1)
   createTime = _messages.StringField(2)
   workerPool = _messages.StringField(3)
+
+
+class DeleteGitHubEnterpriseConfigOperationMetadata(_messages.Message):
+  r"""Metadata for `DeleteGitHubEnterpriseConfig` operation.
+
+  Fields:
+    completeTime: Time the operation was completed.
+    createTime: Time the operation was created.
+    githubEnterpriseConfig: The resource name of the GitHubEnterprise to be
+      deleted. Format:
+      `projects/{project}/locations/{location}/githubEnterpriseConfigs/{id}`.
+  """
+
+  completeTime = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  githubEnterpriseConfig = _messages.StringField(3)
 
 
 class DeleteWorkerPoolOperationMetadata(_messages.Message):
@@ -824,6 +863,41 @@ class Empty(_messages.Message):
   representation for `Empty` is empty JSON object `{}`.
   """
 
+
+
+class FailureInfo(_messages.Message):
+  r"""A fatal problem encountered during the execution of the build.
+
+  Enums:
+    TypeValueValuesEnum: The name of the failure.
+
+  Fields:
+    detail: Explains the failure issue in more detail using hard-coded text.
+    type: The name of the failure.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""The name of the failure.
+
+    Values:
+      FAILURE_TYPE_UNSPECIFIED: Type unspecified
+      PUSH_FAILED: Unable to push the image to the repository.
+      PUSH_IMAGE_NOT_FOUND: Final image not found.
+      PUSH_NOT_AUTHORIZED: Unauthorized push of the final image.
+      LOGGING_FAILURE: Backend logging failures. Should retry.
+      USER_BUILD_STEP: A build step has failed.
+      FETCH_SOURCE_FAILED: The source fetching has failed.
+    """
+    FAILURE_TYPE_UNSPECIFIED = 0
+    PUSH_FAILED = 1
+    PUSH_IMAGE_NOT_FOUND = 2
+    PUSH_NOT_AUTHORIZED = 3
+    LOGGING_FAILURE = 4
+    USER_BUILD_STEP = 5
+    FETCH_SOURCE_FAILED = 6
+
+  detail = _messages.StringField(1)
+  type = _messages.EnumField('TypeValueValuesEnum', 2)
 
 
 class FileHashes(_messages.Message):
@@ -857,6 +931,33 @@ class GitSource(_messages.Message):
   dir = _messages.StringField(1)
   revision = _messages.StringField(2)
   url = _messages.StringField(3)
+
+
+class GoogleDevtoolsCloudbuildV2OperationMetadata(_messages.Message):
+  r"""Represents the metadata of the long-running operation.
+
+  Fields:
+    apiVersion: Output only. API version used to start the operation.
+    createTime: Output only. The time the operation was created.
+    endTime: Output only. The time the operation finished running.
+    requestedCancellation: Output only. Identifies whether the user has
+      requested cancellation of the operation. Operations that have
+      successfully been cancelled have Operation.error value with a
+      google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
+    statusMessage: Output only. Human-readable status of the operation, if
+      any.
+    target: Output only. Server-defined resource path for the target of the
+      operation.
+    verb: Output only. Name of the verb executed by the operation.
+  """
+
+  apiVersion = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  endTime = _messages.StringField(3)
+  requestedCancellation = _messages.BooleanField(4)
+  statusMessage = _messages.StringField(5)
+  target = _messages.StringField(6)
+  verb = _messages.StringField(7)
 
 
 class HTTPDelivery(_messages.Message):
@@ -1206,6 +1307,32 @@ class Operation(_messages.Message):
   response = _messages.MessageField('ResponseValue', 5)
 
 
+class OperationMetadata(_messages.Message):
+  r"""Represents the metadata of the long-running operation.
+
+  Fields:
+    apiVersion: Output only. API version used to start the operation.
+    cancelRequested: Output only. Identifies whether the user has requested
+      cancellation of the operation. Operations that have been cancelled
+      successfully have Operation.error value with a google.rpc.Status.code of
+      1, corresponding to `Code.CANCELLED`.
+    createTime: Output only. The time the operation was created.
+    endTime: Output only. The time the operation finished running.
+    statusDetail: Output only. Human-readable status of the operation, if any.
+    target: Output only. Server-defined resource path for the target of the
+      operation.
+    verb: Output only. Name of the verb executed by the operation.
+  """
+
+  apiVersion = _messages.StringField(1)
+  cancelRequested = _messages.BooleanField(2)
+  createTime = _messages.StringField(3)
+  endTime = _messages.StringField(4)
+  statusDetail = _messages.StringField(5)
+  target = _messages.StringField(6)
+  verb = _messages.StringField(7)
+
+
 class PoolOption(_messages.Message):
   r"""Details about how a build should be executed on a `WorkerPool`. See
   [running builds in a private
@@ -1220,6 +1347,22 @@ class PoolOption(_messages.Message):
   """
 
   name = _messages.StringField(1)
+
+
+class ProcessAppManifestCallbackOperationMetadata(_messages.Message):
+  r"""Metadata for `ProcessAppManifestCallback` operation.
+
+  Fields:
+    completeTime: Time the operation was completed.
+    createTime: Time the operation was created.
+    githubEnterpriseConfig: The resource name of the GitHubEnterprise to be
+      created. Format:
+      `projects/{project}/locations/{location}/githubEnterpriseConfigs/{id}`.
+  """
+
+  completeTime = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  githubEnterpriseConfig = _messages.StringField(3)
 
 
 class RepoSource(_messages.Message):
@@ -1687,6 +1830,22 @@ class TimeSpan(_messages.Message):
 
   endTime = _messages.StringField(1)
   startTime = _messages.StringField(2)
+
+
+class UpdateGitHubEnterpriseConfigOperationMetadata(_messages.Message):
+  r"""Metadata for `UpdateGitHubEnterpriseConfig` operation.
+
+  Fields:
+    completeTime: Time the operation was completed.
+    createTime: Time the operation was created.
+    githubEnterpriseConfig: The resource name of the GitHubEnterprise to be
+      updated. Format:
+      `projects/{project}/locations/{location}/githubEnterpriseConfigs/{id}`.
+  """
+
+  completeTime = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  githubEnterpriseConfig = _messages.StringField(3)
 
 
 class UpdateWorkerPoolOperationMetadata(_messages.Message):

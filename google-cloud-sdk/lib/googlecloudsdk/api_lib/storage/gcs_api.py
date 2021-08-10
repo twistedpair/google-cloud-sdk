@@ -592,8 +592,8 @@ class GcsApi(cloud_api.CloudApi):
                        download_stream,
                        apitools_download,
                        apitools_request,
-                       compressed_encoding=False,
                        decryption_wrapper=None,
+                       do_not_decompress=False,
                        generation=None,
                        serialization_data=None,
                        start_byte=0,
@@ -602,25 +602,25 @@ class GcsApi(cloud_api.CloudApi):
 
     Args:
       cloud_resource (resource_reference.ObjectResource): Contains
-          metadata and information about object being downloaded.
+        metadata and information about object being downloaded.
       download_stream (stream): Stream to send the object data to.
       apitools_download (apitools.transfer.Download): Apitools object for
-          managing downloads.
+        managing downloads.
       apitools_request (apitools.messages.StorageObjectsGetReqest):
-          Holds call to GCS API.
-      compressed_encoding (bool): If true, object is stored with a compressed
-          encoding.
+        Holds call to GCS API.
       decryption_wrapper (CryptoKeyWrapper):
-          utils.encryption_helper.CryptoKeyWrapper that can optionally be added
-          to decrypt an encrypted object.
+        utils.encryption_helper.CryptoKeyWrapper that can optionally be added
+        to decrypt an encrypted object.
+      do_not_decompress (bool): If true, gzipped objects will not be
+        decompressed on-the-fly if supported by the API.
       generation (int): Generation of the object to retrieve.
       serialization_data (str): Implementation-specific JSON string of a dict
-          containing serialization information for the download.
+        containing serialization information for the download.
       start_byte (int): Starting point for download (for resumable downloads and
-          range requests). Can be set to negative to request a range of bytes
-          (python equivalent of [:-3]).
+        range requests). Can be set to negative to request a range of bytes
+        (python equivalent of [:-3]).
       end_byte (int): Ending byte number, inclusive, for download (for range
-          requests). If None, download the rest of the object.
+        requests). If None, download the rest of the object.
 
     Returns:
       Encoding string for object if requested. Otherwise, None.
@@ -631,7 +631,7 @@ class GcsApi(cloud_api.CloudApi):
 
     # TODO(b/161453101): Optimize handling of gzip-encoded downloads.
     additional_headers = {}
-    if compressed_encoding:
+    if do_not_decompress:
       additional_headers['accept-encoding'] = 'gzip'
 
     # TODO(b/161437904): Add decryption handling.
@@ -655,8 +655,8 @@ class GcsApi(cloud_api.CloudApi):
                                  download_stream,
                                  apitools_download,
                                  apitools_request,
-                                 compressed_encoding=False,
                                  decryption_wrapper=None,
+                                 do_not_decompress=False,
                                  generation=None,
                                  serialization_data=None,
                                  start_byte=0,
@@ -693,8 +693,8 @@ class GcsApi(cloud_api.CloudApi):
           download_stream,
           apitools_download,
           apitools_request,
-          compressed_encoding=compressed_encoding,
           decryption_wrapper=decryption_wrapper,
+          do_not_decompress=do_not_decompress,
           generation=generation,
           serialization_data=serialization_data,
           start_byte=start_byte,
@@ -715,9 +715,9 @@ class GcsApi(cloud_api.CloudApi):
   def download_object(self,
                       cloud_resource,
                       download_stream,
-                      compressed_encoding=False,
                       decryption_wrapper=None,
                       digesters=None,
+                      do_not_decompress=False,
                       download_strategy=cloud_api.DownloadStrategy.RESUMABLE,
                       progress_callback=None,
                       start_byte=0,
@@ -769,8 +769,8 @@ class GcsApi(cloud_api.CloudApi):
           download_stream,
           apitools_download,
           request,
-          compressed_encoding=compressed_encoding,
           decryption_wrapper=decryption_wrapper,
+          do_not_decompress=do_not_decompress,
           generation=generation,
           serialization_data=serialization_data,
           start_byte=start_byte,
@@ -781,8 +781,8 @@ class GcsApi(cloud_api.CloudApi):
           download_stream,
           apitools_download,
           request,
-          compressed_encoding=compressed_encoding,
           decryption_wrapper=decryption_wrapper,
+          do_not_decompress=do_not_decompress,
           generation=generation,
           serialization_data=serialization_data,
           start_byte=start_byte,

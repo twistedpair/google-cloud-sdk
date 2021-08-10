@@ -888,27 +888,45 @@ class OSPolicyAssignment(_messages.Message):
 
 
 class OSPolicyAssignmentInstanceFilter(_messages.Message):
-  r"""Message to represent the filters to select VMs for an assignment
+  r"""Filters to select target VMs for an assignment. If more than one filter
+  criteria is specified below, a VM will be selected if and only if it
+  satisfies all of them.
 
   Fields:
     all: Target all VMs in the project. If true, no other criteria is
       permitted.
     exclusionLabels: List of label sets used for VM exclusion. If the list has
       more than one label set, the VM is excluded if any of the label sets are
-      applicable for the VM. This filter is applied last in the filtering
-      chain and therefore a VM is guaranteed to be excluded if it satisfies
-      one of the below label sets.
+      applicable for the VM.
     inclusionLabels: List of label sets used for VM inclusion. If the list has
       more than one `LabelSet`, the VM is included if any of the label sets
       are applicable for the VM.
-    osShortNames: A VM is included if it's OS short name matches with any of
+    inventories: List of inventories to select VMs. A VM is selected if its
+      inventory data matches at least one of the following inventories.
+    osShortNames: A VM is selected if it's OS short name matches with any of
       the values provided in this list.
   """
 
   all = _messages.BooleanField(1)
   exclusionLabels = _messages.MessageField('OSPolicyAssignmentLabelSet', 2, repeated=True)
   inclusionLabels = _messages.MessageField('OSPolicyAssignmentLabelSet', 3, repeated=True)
-  osShortNames = _messages.StringField(4, repeated=True)
+  inventories = _messages.MessageField('OSPolicyAssignmentInstanceFilterInventory', 4, repeated=True)
+  osShortNames = _messages.StringField(5, repeated=True)
+
+
+class OSPolicyAssignmentInstanceFilterInventory(_messages.Message):
+  r"""VM inventory details.
+
+  Fields:
+    osShortName: Required. The OS short name
+    osVersion: The OS version Prefix matches are supported if asterisk(*) is
+      provided as the last character. For example, to match all versions with
+      a major version of `7`, specify the following value for this field `7.*`
+      An empty string matches all OS versions.
+  """
+
+  osShortName = _messages.StringField(1)
+  osVersion = _messages.StringField(2)
 
 
 class OSPolicyAssignmentLabelSet(_messages.Message):
@@ -1030,9 +1048,23 @@ class OSPolicyAssignmentRollout(_messages.Message):
   minWaitDuration = _messages.StringField(2)
 
 
+class OSPolicyInventoryFilter(_messages.Message):
+  r"""Filtering criteria to select VMs based on inventory details.
+
+  Fields:
+    osShortName: Required. The OS short name
+    osVersion: The OS version Prefix matches are supported if asterisk(*) is
+      provided as the last character. For example, to match all versions with
+      a major version of `7`, specify the following value for this field `7.*`
+      An empty string matches all OS versions.
+  """
+
+  osShortName = _messages.StringField(1)
+  osVersion = _messages.StringField(2)
+
+
 class OSPolicyOSFilter(_messages.Message):
-  r"""The `OSFilter` is used to specify the OS filtering criteria for the
-  resource group.
+  r"""Filtering criteria to select VMs based on OS details.
 
   Fields:
     osShortName: This should match OS short name emitted by the OS inventory
@@ -1351,13 +1383,22 @@ class OSPolicyResourceGroup(_messages.Message):
   is selected based on the `OSFilter` specified within the resource group.
 
   Fields:
+    inventoryFilters: List of inventory filters for the resource group. The
+      resources in this resource group are applied to the target VM if it
+      satisfies at least one of the following inventory filters. For example,
+      to apply this resource group to VMs running either `RHEL` or `CentOS`
+      operating systems, specify 2 items for the list with following values:
+      inventory_filters[0].os_short_name='rhel' and
+      inventory_filters[1].os_short_name='centos' If the list is empty, this
+      resource group will be applied to the target VM unconditionally.
     osFilter: Used to specify the OS filter for a resource group
     resources: Required. List of resources configured for this resource group.
       The resources are executed in the exact order specified here.
   """
 
-  osFilter = _messages.MessageField('OSPolicyOSFilter', 1)
-  resources = _messages.MessageField('OSPolicyResource', 2, repeated=True)
+  inventoryFilters = _messages.MessageField('OSPolicyInventoryFilter', 1, repeated=True)
+  osFilter = _messages.MessageField('OSPolicyOSFilter', 2)
+  resources = _messages.MessageField('OSPolicyResource', 3, repeated=True)
 
 
 class OSPolicyResourcePackageResource(_messages.Message):
@@ -1794,10 +1835,8 @@ class OsconfigProjectsLocationsInstancesInventoriesListRequest(_messages.Message
       `ListInventories` that indicates where this listing should continue
       from.
     parent: Required. The parent resource name. Format:
-      `projects/{project}/locations/{location}/instances/{instance}` For
-      `{project}`, either `project-number` or `project-id` can be provided.
-      For `{instance}`, only hyphen or dash character is supported to list
-      inventories across VMs.
+      `projects/{project}/locations/{location}/instances/-` For `{project}`,
+      either `project-number` or `project-id` can be provided.
     view: Inventory view indicating what information should be included in the
       inventory resource. If unspecified, the default view is BASIC.
   """
@@ -1850,10 +1889,8 @@ class OsconfigProjectsLocationsInstancesVulnerabilityReportsListRequest(_message
       `ListVulnerabilityReports` that indicates where this listing should
       continue from.
     parent: Required. The parent resource name. Format:
-      `projects/{project}/locations/{location}/instances/{instance}` For
-      `{project}`, either `project-number` or `project-id` can be provided.
-      For `{instance}`, only `-` character is supported to list vulnerability
-      reports across VMs.
+      `projects/{project}/locations/{location}/instances/-` For `{project}`,
+      either `project-number` or `project-id` can be provided.
   """
 
   filter = _messages.StringField(1)
@@ -2175,10 +2212,12 @@ class VulnerabilityReportVulnerabilityDetailsReference(_messages.Message):
   r"""A reference for this vulnerability.
 
   Fields:
+    source: The source of the reference e.g. NVD.
     url: The url of the reference.
   """
 
-  url = _messages.StringField(1)
+  source = _messages.StringField(1)
+  url = _messages.StringField(2)
 
 
 encoding.AddCustomJsonFieldMapping(

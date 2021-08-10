@@ -450,6 +450,16 @@ class GoogleIamV1betaWorkloadIdentityPoolProviderSaml(_messages.Message):
   idpMetadataXml = _messages.StringField(1)
 
 
+class GoogleIamV2mainPolicyOperationMetadata(_messages.Message):
+  r"""Metadata for long-running Policy operations.
+
+  Fields:
+    createTime: Timestamp when the google.longrunning.Operation was created.
+  """
+
+  createTime = _messages.StringField(1)
+
+
 class GoogleLongrunningOperation(_messages.Message):
   r"""This resource represents a long-running operation that is the result of
   a network API call.

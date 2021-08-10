@@ -749,6 +749,8 @@ class BuildStep(_messages.Message):
       to use as the name for a later build step.
     pullTiming: Output only. Stores timing information for pulling this build
       step's builder image only.
+    script: A shell script to be executed in the step. When script is
+      provided, the user cannot specify the entrypoint or args.
     secretEnv: A list of environment variables which are encrypted using a
       Cloud Key Management Service crypto key. These values must be specified
       in the build's `Secret`.
@@ -808,12 +810,13 @@ class BuildStep(_messages.Message):
   id = _messages.StringField(5)
   name = _messages.StringField(6)
   pullTiming = _messages.MessageField('TimeSpan', 7)
-  secretEnv = _messages.StringField(8, repeated=True)
-  status = _messages.EnumField('StatusValueValuesEnum', 9)
-  timeout = _messages.StringField(10)
-  timing = _messages.MessageField('TimeSpan', 11)
-  volumes = _messages.MessageField('Volume', 12, repeated=True)
-  waitFor = _messages.StringField(13, repeated=True)
+  script = _messages.StringField(8)
+  secretEnv = _messages.StringField(9, repeated=True)
+  status = _messages.EnumField('StatusValueValuesEnum', 10)
+  timeout = _messages.StringField(11)
+  timing = _messages.MessageField('TimeSpan', 12)
+  volumes = _messages.MessageField('Volume', 13, repeated=True)
+  waitFor = _messages.StringField(14, repeated=True)
 
 
 class BuildTrigger(_messages.Message):
@@ -3177,9 +3180,9 @@ class OperationMetadata(_messages.Message):
   Fields:
     apiVersion: Output only. API version used to start the operation.
     cancelRequested: Output only. Identifies whether the user has requested
-      cancellation of the operation. Operations that have successfully been
-      cancelled have Operation.error value with a google.rpc.Status.code of 1,
-      corresponding to `Code.CANCELLED`.
+      cancellation of the operation. Operations that have been cancelled
+      successfully have Operation.error value with a google.rpc.Status.code of
+      1, corresponding to `Code.CANCELLED`.
     createTime: Output only. The time the operation was created.
     endTime: Output only. The time the operation finished running.
     statusDetail: Output only. Human-readable status of the operation, if any.

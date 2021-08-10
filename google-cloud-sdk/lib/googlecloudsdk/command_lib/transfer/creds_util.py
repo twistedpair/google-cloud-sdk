@@ -45,7 +45,7 @@ def get_values_for_keys_from_file(file_path, keys):
     KeyError: Key was missing or duplicate key was found.
   """
   result = {}
-  real_path = os.path.realpath(file_path)
+  real_path = os.path.realpath(os.path.expanduser(file_path))
   with files.FileReader(real_path) as file_reader:
     try:
       file_dict = json.loads(file_reader.read())

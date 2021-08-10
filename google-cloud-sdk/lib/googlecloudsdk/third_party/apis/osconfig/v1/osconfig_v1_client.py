@@ -40,6 +40,10 @@ class OsconfigV1(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.operations = self.OperationsService(self)
+    self.projects_locations_instances_inventories = self.ProjectsLocationsInstancesInventoriesService(self)
+    self.projects_locations_instances_vulnerabilityReports = self.ProjectsLocationsInstancesVulnerabilityReportsService(self)
+    self.projects_locations_instances = self.ProjectsLocationsInstancesService(self)
+    self.projects_locations = self.ProjectsLocationsService(self)
     self.projects_patchDeployments = self.ProjectsPatchDeploymentsService(self)
     self.projects_patchJobs_instanceDetails = self.ProjectsPatchJobsInstanceDetailsService(self)
     self.projects_patchJobs = self.ProjectsPatchJobsService(self)
@@ -108,6 +112,154 @@ class OsconfigV1(base_api.BaseApiClient):
         response_type_name='ListOperationsResponse',
         supports_download=False,
     )
+
+  class ProjectsLocationsInstancesInventoriesService(base_api.BaseApiService):
+    """Service class for the projects_locations_instances_inventories resource."""
+
+    _NAME = 'projects_locations_instances_inventories'
+
+    def __init__(self, client):
+      super(OsconfigV1.ProjectsLocationsInstancesInventoriesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Get inventory data for the specified VM instance. If the VM has no associated inventory, the message `NOT_FOUND` is returned.
+
+      Args:
+        request: (OsconfigProjectsLocationsInstancesInventoriesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Inventory) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}/inventory',
+        http_method='GET',
+        method_id='osconfig.projects.locations.instances.inventories.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['view'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='OsconfigProjectsLocationsInstancesInventoriesGetRequest',
+        response_type_name='Inventory',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""List inventory data for all VM instances in the specified zone.
+
+      Args:
+        request: (OsconfigProjectsLocationsInstancesInventoriesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListInventoriesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}/inventories',
+        http_method='GET',
+        method_id='osconfig.projects.locations.instances.inventories.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken', 'view'],
+        relative_path='v1/{+parent}/inventories',
+        request_field='',
+        request_type_name='OsconfigProjectsLocationsInstancesInventoriesListRequest',
+        response_type_name='ListInventoriesResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsInstancesVulnerabilityReportsService(base_api.BaseApiService):
+    """Service class for the projects_locations_instances_vulnerabilityReports resource."""
+
+    _NAME = 'projects_locations_instances_vulnerabilityReports'
+
+    def __init__(self, client):
+      super(OsconfigV1.ProjectsLocationsInstancesVulnerabilityReportsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets the vulnerability report for the specified VM instance. Only VMs with inventory data have vulnerability reports associated with them.
+
+      Args:
+        request: (OsconfigProjectsLocationsInstancesVulnerabilityReportsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (VulnerabilityReport) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}/vulnerabilityReport',
+        http_method='GET',
+        method_id='osconfig.projects.locations.instances.vulnerabilityReports.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='OsconfigProjectsLocationsInstancesVulnerabilityReportsGetRequest',
+        response_type_name='VulnerabilityReport',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""List vulnerability reports for all VM instances in the specified zone.
+
+      Args:
+        request: (OsconfigProjectsLocationsInstancesVulnerabilityReportsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListVulnerabilityReportsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}/vulnerabilityReports',
+        http_method='GET',
+        method_id='osconfig.projects.locations.instances.vulnerabilityReports.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/vulnerabilityReports',
+        request_field='',
+        request_type_name='OsconfigProjectsLocationsInstancesVulnerabilityReportsListRequest',
+        response_type_name='ListVulnerabilityReportsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsInstancesService(base_api.BaseApiService):
+    """Service class for the projects_locations_instances resource."""
+
+    _NAME = 'projects_locations_instances'
+
+    def __init__(self, client):
+      super(OsconfigV1.ProjectsLocationsInstancesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+  class ProjectsLocationsService(base_api.BaseApiService):
+    """Service class for the projects_locations resource."""
+
+    _NAME = 'projects_locations'
+
+    def __init__(self, client):
+      super(OsconfigV1.ProjectsLocationsService, self).__init__(client)
+      self._upload_configs = {
+          }
 
   class ProjectsPatchDeploymentsService(base_api.BaseApiService):
     """Service class for the projects_patchDeployments resource."""

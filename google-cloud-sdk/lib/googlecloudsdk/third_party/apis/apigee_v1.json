@@ -2625,10 +2625,6 @@
           "description": "Configuration for the Advanced API Ops add-on.",
           "$ref": "GoogleCloudApigeeV1AdvancedApiOpsConfig"
         },
-        "integrationConfig": {
-          "description": "Configuration for the Integration add-on.",
-          "$ref": "GoogleCloudApigeeV1IntegrationConfig"
-        },
         "monetizationConfig": {
           "description": "Configuration for the Monetization add-on.",
           "$ref": "GoogleCloudApigeeV1MonetizationConfig"
@@ -2646,23 +2642,6 @@
         },
         "expiresAt": {
           "description": "Output only. Time at which the Advanced API Ops add-on expires in in milliseconds since epoch. If unspecified, the add-on will never expire.",
-          "readOnly": true,
-          "type": "string",
-          "format": "int64"
-        }
-      }
-    },
-    "GoogleCloudApigeeV1IntegrationConfig": {
-      "id": "GoogleCloudApigeeV1IntegrationConfig",
-      "description": "Configuration for the Integration add-on.",
-      "type": "object",
-      "properties": {
-        "enabled": {
-          "description": "Flag that specifies whether the Integration add-on is enabled.",
-          "type": "boolean"
-        },
-        "expiresAt": {
-          "description": "Output only. Time at which the Integration add-on expires in in milliseconds since epoch. If unspecified, the add-on will never expire.",
           "readOnly": true,
           "type": "string",
           "format": "int64"
@@ -13205,12 +13184,12 @@
             }
           }
         },
-        "securityHostReports": {
+        "hostSecurityReports": {
           "methods": {
             "create": {
-              "id": "apigee.organizations.securityHostReports.create",
-              "path": "v1/{+parent}/securityHostReports",
-              "flatPath": "v1/organizations/{organizationsId}/securityHostReports",
+              "id": "apigee.organizations.hostSecurityReports.create",
+              "path": "v1/{+parent}/hostSecurityReports",
+              "flatPath": "v1/organizations/{organizationsId}/hostSecurityReports",
               "httpMethod": "POST",
               "parameters": {
                 "parent": {
@@ -13236,14 +13215,14 @@
               "description": "Submit a query at host level to be processed in the background. If the submission of the query succeeds, the API returns a 201 status and an ID that refer to the query. In addition to the HTTP status 201, the `state` of \"enqueued\" means that the request succeeded."
             },
             "get": {
-              "id": "apigee.organizations.securityHostReports.get",
+              "id": "apigee.organizations.hostSecurityReports.get",
               "path": "v1/{+name}",
-              "flatPath": "v1/organizations/{organizationsId}/securityHostReports/{securityHostReportsId}",
+              "flatPath": "v1/organizations/{organizationsId}/hostSecurityReports/{hostSecurityReportsId}",
               "httpMethod": "GET",
               "parameters": {
                 "name": {
                   "description": "Required. Name of the asynchronous query to get. Must be of the form `organizations\/{org}\/securityReports\/{reportId}`.",
-                  "pattern": "^organizations\/[^\/]+\/securityHostReports\/[^\/]+$",
+                  "pattern": "^organizations\/[^\/]+\/hostSecurityReports\/[^\/]+$",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -13261,14 +13240,14 @@
               "description": "Get status of a query submitted at host level. If the query is still in progress, the `state` is set to \"running\" After the query has completed successfully, `state` is set to \"completed\""
             },
             "getResult": {
-              "id": "apigee.organizations.securityHostReports.getResult",
+              "id": "apigee.organizations.hostSecurityReports.getResult",
               "path": "v1/{+name}",
-              "flatPath": "v1/organizations/{organizationsId}/securityHostReports/{securityHostReportsId}/result",
+              "flatPath": "v1/organizations/{organizationsId}/hostSecurityReports/{hostSecurityReportsId}/result",
               "httpMethod": "GET",
               "parameters": {
                 "name": {
                   "description": "Required. Name of the asynchronous query result to get. Must be of the form `organizations\/{org}\/securityReports\/{reportId}\/result`.",
-                  "pattern": "^organizations\/[^\/]+\/securityHostReports\/[^\/]+\/result$",
+                  "pattern": "^organizations\/[^\/]+\/hostSecurityReports\/[^\/]+\/result$",
                   "location": "path",
                   "required": true,
                   "type": "string"
@@ -13286,9 +13265,9 @@
               "description": "After the query is completed, use this API to retrieve the results. If the request succeeds, and there is a non-zero result set, the result is downloaded to the client as a zipped JSON file. The name of the downloaded file will be: OfflineQueryResult-.zip Example: `OfflineQueryResult-9cfc0d85-0f30-46d6-ae6f-318d0cb961bd.zip`"
             },
             "list": {
-              "id": "apigee.organizations.securityHostReports.list",
-              "path": "v1/{+parent}/securityHostReports",
-              "flatPath": "v1/organizations/{organizationsId}/securityHostReports",
+              "id": "apigee.organizations.hostSecurityReports.list",
+              "path": "v1/{+parent}/hostSecurityReports",
+              "flatPath": "v1/organizations/{organizationsId}/hostSecurityReports",
               "httpMethod": "GET",
               "parameters": {
                 "parent": {

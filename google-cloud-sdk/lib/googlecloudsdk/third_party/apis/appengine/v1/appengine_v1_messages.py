@@ -760,6 +760,9 @@ class Application(_messages.Message):
       (https://cloud.google.com/appengine/docs/locations).
     name: Full path to the Application resource in the API. Example:
       apps/myapp.@OutputOnly
+    serviceAccount: The service account associated with the application. This
+      is the app-level default identity. If no identity provided during create
+      version, Admin API will fallback to this one.
     servingStatus: Serving status of this application.
   """
 
@@ -805,7 +808,8 @@ class Application(_messages.Message):
   id = _messages.StringField(11)
   locationId = _messages.StringField(12)
   name = _messages.StringField(13)
-  servingStatus = _messages.EnumField('ServingStatusValueValuesEnum', 14)
+  serviceAccount = _messages.StringField(14)
+  servingStatus = _messages.EnumField('ServingStatusValueValuesEnum', 15)
 
 
 class AuthorizedCertificate(_messages.Message):

@@ -294,9 +294,9 @@ class CloudApi(object):
   def download_object(self,
                       cloud_resource,
                       download_stream,
-                      compressed_encoding=False,
                       decryption_wrapper=None,
                       digesters=None,
+                      do_not_decompress=False,
                       download_strategy=DownloadStrategy.ONE_SHOT,
                       progress_callback=None,
                       start_byte=0,
@@ -307,8 +307,6 @@ class CloudApi(object):
       cloud_resource (resource_reference.ObjectResource): Contains
         metadata and information about object being downloaded.
       download_stream (stream): Stream to send the object data to.
-      compressed_encoding (bool): If true, object is stored with a compressed
-        encoding.
       decryption_wrapper (CryptoKeyWrapper):
         utils.encryption_helper.CryptoKeyWrapper that can optionally be added
         to decrypt an encrypted object.
@@ -317,6 +315,8 @@ class CloudApi(object):
         update(bytes) and digest() using that algorithm. Implementation can
         set the digester value to None to indicate supports bytes were not
         successfully digested on-the-fly.
+      do_not_decompress (bool): If true, gzipped objects will not be
+        decompressed on-the-fly if supported by the API.
       download_strategy (DownloadStrategy): Cloud API download strategy to use
         for download.
       progress_callback (function): Optional callback function for progress

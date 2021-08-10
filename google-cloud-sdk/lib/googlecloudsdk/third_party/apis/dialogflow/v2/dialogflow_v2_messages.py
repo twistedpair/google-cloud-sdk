@@ -11544,7 +11544,7 @@ class GoogleCloudDialogflowV2ValidationError(_messages.Message):
       "projects//agent/intents//parameters/", if the error is associated with
       certain intent parameters. - "projects//agent/entities/", if the error
       is associated with certain entities.
-    errorMessage: The detailed error messsage.
+    errorMessage: The detailed error message.
     severity: The severity of the error.
   """
 

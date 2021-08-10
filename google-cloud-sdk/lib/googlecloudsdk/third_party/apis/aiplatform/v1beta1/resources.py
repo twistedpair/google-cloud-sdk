@@ -201,6 +201,25 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_EDGEDEVICES = (
+      'projects.locations.edgeDevices',
+      'projects/{projectsId}/locations/{locationsId}/edgeDevices/'
+      '{edgeDevicesId}',
+      {},
+      ['projectsId', 'locationsId', 'edgeDevicesId'],
+      True
+  )
+  PROJECTS_LOCATIONS_EDGEDEVICES_OPERATIONS = (
+      'projects.locations.edgeDevices.operations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/edgeDevices/'
+              '{edgeDevicesId}/operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_ENDPOINTS = (
       'projects.locations.endpoints',
       '{+name}',

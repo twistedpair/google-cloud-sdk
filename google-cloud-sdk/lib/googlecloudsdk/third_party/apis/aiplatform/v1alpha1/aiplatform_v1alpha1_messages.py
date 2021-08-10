@@ -4873,7 +4873,7 @@ class GoogleCloudAiplatformInternalDeployedModel(_messages.Message):
 
   Fields:
     automaticResources: A description of resources that to large degree are
-      decided by AI Platform, and require only a modest additional
+      decided by Vertex AI, and require only a modest additional
       configuration.
     createTime: Output only. Timestamp when the DeployedModel was created.
     dedicatedResources: A description of resources that are dedicated to the
@@ -5219,7 +5219,7 @@ class GoogleCloudAiplatformInternalExplanationMetadataInputMetadata(_messages.Me
       same group name will be treated as one feature when computing
       attributions. Features grouped together can have different shapes in
       value. If provided, there will be one single attribution generated in
-      featureAttributions, keyed by the group name.
+      Attribution.feature_attributions, keyed by the group name.
     indexFeatureMapping: A list of feature names for each index in the input
       tensor. Required when the input InputMetadata.encoding is
       BAG_OF_FEATURES, BAG_OF_FEATURES_SPARSE, INDICATOR.
@@ -5230,7 +5230,7 @@ class GoogleCloudAiplatformInternalExplanationMetadataInputMetadata(_messages.Me
     inputBaselines: Baseline inputs for this feature. If no baseline is
       specified, Vertex AI chooses the baseline for this feature. If multiple
       baselines are specified, Vertex AI returns the average attributions
-      across them in Attributions.baseline_attribution. For Vertex AI-provided
+      across them in Attribution.feature_attributions. For Vertex AI-provided
       Tensorflow images (both 1.x and 2.x), the shape of each baseline must
       match the shape of the input tensor. If a scalar is provided, we
       broadcast to the same shape as the input tensor. For custom images, the
@@ -5475,7 +5475,7 @@ class GoogleCloudAiplatformInternalExplanationMetadataOutputMetadata(_messages.M
       be explained. The Attribution.output_display_name is populated by
       locating in the mapping with Attribution.output_index.
     outputTensorName: Name of the output tensor. Required and is only
-      applicable to AI Platform provided images for Tensorflow.
+      applicable to Vertex AI provided images for Tensorflow.
   """
 
   displayNameMappingKey = _messages.StringField(1)
@@ -7126,7 +7126,7 @@ class GoogleCloudAiplatformUiDeployedModel(_messages.Message):
 
   Fields:
     automaticResources: A description of resources that to large degree are
-      decided by AI Platform, and require only a modest additional
+      decided by Vertex AI, and require only a modest additional
       configuration.
     createTime: Output only. Timestamp when the DeployedModel was created.
     dedicatedResources: A description of resources that are dedicated to the
@@ -7409,7 +7409,7 @@ class GoogleCloudAiplatformUiExplanationMetadataInputMetadata(_messages.Message)
       same group name will be treated as one feature when computing
       attributions. Features grouped together can have different shapes in
       value. If provided, there will be one single attribution generated in
-      featureAttributions, keyed by the group name.
+      Attribution.feature_attributions, keyed by the group name.
     indexFeatureMapping: A list of feature names for each index in the input
       tensor. Required when the input InputMetadata.encoding is
       BAG_OF_FEATURES, BAG_OF_FEATURES_SPARSE, INDICATOR.
@@ -7420,7 +7420,7 @@ class GoogleCloudAiplatformUiExplanationMetadataInputMetadata(_messages.Message)
     inputBaselines: Baseline inputs for this feature. If no baseline is
       specified, Vertex AI chooses the baseline for this feature. If multiple
       baselines are specified, Vertex AI returns the average attributions
-      across them in Attributions.baseline_attribution. For Vertex AI-provided
+      across them in Attribution.feature_attributions. For Vertex AI-provided
       Tensorflow images (both 1.x and 2.x), the shape of each baseline must
       match the shape of the input tensor. If a scalar is provided, we
       broadcast to the same shape as the input tensor. For custom images, the
@@ -7665,7 +7665,7 @@ class GoogleCloudAiplatformUiExplanationMetadataOutputMetadata(_messages.Message
       be explained. The Attribution.output_display_name is populated by
       locating in the mapping with Attribution.output_index.
     outputTensorName: Name of the output tensor. Required and is only
-      applicable to AI Platform provided images for Tensorflow.
+      applicable to Vertex AI provided images for Tensorflow.
   """
 
   displayNameMappingKey = _messages.StringField(1)
@@ -8516,8 +8516,8 @@ class GoogleCloudAiplatformUiMigrateResourceRequestMigrateAutomlModelConfig(_mes
 
 
 class GoogleCloudAiplatformUiMigrateResourceRequestMigrateDataLabelingDatasetConfig(_messages.Message):
-  r"""Config for migrating Dataset in datalabeling.googleapis.com to AI
-  Platform's Dataset.
+  r"""Config for migrating Dataset in datalabeling.googleapis.com to Vertex
+  AI's Dataset.
 
   Fields:
     dataset: Required. Full resource name of data labeling Dataset. Format:
@@ -8640,8 +8640,7 @@ class GoogleCloudAiplatformUiModelMonitoringObjectiveConfigExplanationConfigExpl
 
     Values:
       PREDICTION_FORMAT_UNSPECIFIED: Should not be set.
-      JSONL: Predictions are in JSONL files, consistent from the definition
-        here (http://shortn/_4bS0hL7ofb).
+      JSONL: Predictions are in JSONL files.
       BIGQUERY: Predictions are in BigQuery.
     """
     PREDICTION_FORMAT_UNSPECIFIED = 0
@@ -10240,6 +10239,30 @@ class GoogleCloudAiplatformV1CreateEndpointOperationMetadata(_messages.Message):
   genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1GenericOperationMetadata', 1)
 
 
+class GoogleCloudAiplatformV1CreateIndexEndpointOperationMetadata(_messages.Message):
+  r"""Runtime operation information for
+  IndexEndpointService.CreateIndexEndpoint.
+
+  Fields:
+    genericMetadata: The operation generic information.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1GenericOperationMetadata', 1)
+
+
+class GoogleCloudAiplatformV1CreateIndexOperationMetadata(_messages.Message):
+  r"""Runtime operation information for IndexService.CreateIndex.
+
+  Fields:
+    genericMetadata: The operation generic information.
+    nearestNeighborSearchOperationMetadata: The operation metadata with regard
+      to Matching Engine Index operation.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1GenericOperationMetadata', 1)
+  nearestNeighborSearchOperationMetadata = _messages.MessageField('GoogleCloudAiplatformV1NearestNeighborSearchOperationMetadata', 2)
+
+
 class GoogleCloudAiplatformV1CreateSpecialistPoolOperationMetadata(_messages.Message):
   r"""Runtime operation information for
   SpecialistPoolService.CreateSpecialistPool.
@@ -10278,7 +10301,7 @@ class GoogleCloudAiplatformV1CustomJobSpec(_messages.Message):
     scheduling: Scheduling options for a CustomJob.
     serviceAccount: Specifies the service account for workload run-as account.
       Users submitting jobs must have act-as permission on this run-as
-      account. If unspecified, the [AI Platform Custom Code Service
+      account. If unspecified, the [Vertex AI Custom Code Service
       Agent](https://cloud.google.com/vertex-ai/docs/general/access-
       control#service-agents) for the CustomJob's project is used.
     workerPoolSpecs: Required. The spec of the worker pools including machine
@@ -10346,6 +10369,29 @@ class GoogleCloudAiplatformV1DeleteOperationMetadata(_messages.Message):
   genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1GenericOperationMetadata', 1)
 
 
+class GoogleCloudAiplatformV1DeployIndexOperationMetadata(_messages.Message):
+  r"""Runtime operation information for IndexEndpointService.DeployIndex.
+
+  Fields:
+    deployedIndexId: The unique index id specified by user
+    genericMetadata: The operation generic information.
+  """
+
+  deployedIndexId = _messages.StringField(1)
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1GenericOperationMetadata', 2)
+
+
+class GoogleCloudAiplatformV1DeployIndexResponse(_messages.Message):
+  r"""Response message for IndexEndpointService.DeployIndex.
+
+  Fields:
+    deployedIndex: The DeployedIndex that had been deployed in the
+      IndexEndpoint.
+  """
+
+  deployedIndex = _messages.MessageField('GoogleCloudAiplatformV1DeployedIndex', 1)
+
+
 class GoogleCloudAiplatformV1DeployModelOperationMetadata(_messages.Message):
   r"""Runtime operation information for EndpointService.DeployModel.
 
@@ -10366,12 +10412,118 @@ class GoogleCloudAiplatformV1DeployModelResponse(_messages.Message):
   deployedModel = _messages.MessageField('GoogleCloudAiplatformV1DeployedModel', 1)
 
 
+class GoogleCloudAiplatformV1DeployedIndex(_messages.Message):
+  r"""A deployment of an Index. IndexEndpoints contain one or more
+  DeployedIndexes.
+
+  Fields:
+    automaticResources: Optional. A description of resources that the
+      DeployedIndex uses, which to large degree are decided by Vertex AI, and
+      optionally allows only a modest additional configuration. If
+      min_replica_count is not set, the default value is 1. If
+      max_replica_count is not set, the default value is min_replica_count.
+      The max allowed replica count is 1000. The user is billed for the
+      resources (at least their minimal amount) even if the DeployedIndex
+      receives no traffic.
+    createTime: Output only. Timestamp when the DeployedIndex was created.
+    deployedIndexAuthConfig: Optional. If set, the authentication is enabled
+      for the private endpoint.
+    deploymentGroup: Optional. The deployment group can be no longer than 64
+      characters (eg: 'test', 'prod'). If not set, we will use the 'default'
+      deployment group. Creating `deployment_groups` with `reserved_ip_ranges`
+      is a recommended practice when the peered network has multiple peering
+      ranges. This creates your deployments from predictable IP spaces for
+      easier traffic administration. Also, one deployment_group (except
+      'default') can only be used with the same reserved_ip_ranges which means
+      if the deployment_group has been used with reserved_ip_ranges: [a, b,
+      c], using it with [a, b] or [d, e] is disallowed. Note: we only support
+      up to 5 deployment groups(not including 'default').
+    displayName: The display name of the DeployedIndex. If not provided upon
+      creation, the Index's display_name is used.
+    enableAccessLogging: Optional. If true, private endpoint's access logs are
+      sent to StackDriver Logging. These logs are like standard server access
+      logs, containing information like timestamp and latency for each
+      MatchRequest. Note that Stackdriver logs may incur a cost, especially if
+      the deployed index receives a high queries per second rate (QPS).
+      Estimate your costs before enabling this option.
+    id: Required. The user specified ID of the DeployedIndex. The ID can be up
+      to 128 characters long and must start with a letter and only contain
+      letters, numbers, and underscores. The ID must be unique within the
+      project it is created in.
+    index: Required. The name of the Index this is the deployment of. We may
+      refer to this Index as the DeployedIndex's "original" Index.
+    indexSyncTime: Output only. The DeployedIndex may depend on various data
+      on its original Index. Additionally when certain changes to the original
+      Index are being done (e.g. when what the Index contains is being
+      changed) the DeployedIndex may be asynchronously updated in the
+      background to reflect this changes. If this timestamp's value is at
+      least the Index.update_time of the original Index, it means that this
+      DeployedIndex and the original Index are in sync. If this timestamp is
+      older, then to see which updates this DeployedIndex already contains
+      (and which not), one must list Operations working on the original Index.
+      Only the successfully completed Operations with
+      Operations.metadata.generic_metadata.update_time equal or before this
+      sync time are contained in this DeployedIndex.
+    privateEndpoints: Output only. Provides paths for users to send requests
+      directly to the deployed index services running on Cloud via private
+      services access. This field is populated if network is configured.
+    reservedIpRanges: Optional. A list of reserved ip ranges under the VPC
+      network that can be used for this DeployedIndex. If set, we will deploy
+      the index within the provided ip ranges. Otherwise, the index might be
+      deployed to any ip ranges under the provided VPC network. The value
+      sohuld be the name of the address
+      (https://cloud.google.com/compute/docs/reference/rest/v1/addresses)
+      Example: 'vertex-ai-ip-range'.
+  """
+
+  automaticResources = _messages.MessageField('GoogleCloudAiplatformV1AutomaticResources', 1)
+  createTime = _messages.StringField(2)
+  deployedIndexAuthConfig = _messages.MessageField('GoogleCloudAiplatformV1DeployedIndexAuthConfig', 3)
+  deploymentGroup = _messages.StringField(4)
+  displayName = _messages.StringField(5)
+  enableAccessLogging = _messages.BooleanField(6)
+  id = _messages.StringField(7)
+  index = _messages.StringField(8)
+  indexSyncTime = _messages.StringField(9)
+  privateEndpoints = _messages.MessageField('GoogleCloudAiplatformV1IndexPrivateEndpoints', 10)
+  reservedIpRanges = _messages.StringField(11, repeated=True)
+
+
+class GoogleCloudAiplatformV1DeployedIndexAuthConfig(_messages.Message):
+  r"""Used to set up the auth on the DeployedIndex's private endpoint.
+
+  Fields:
+    authProvider: Defines the authentication provider that the DeployedIndex
+      uses.
+  """
+
+  authProvider = _messages.MessageField('GoogleCloudAiplatformV1DeployedIndexAuthConfigAuthProvider', 1)
+
+
+class GoogleCloudAiplatformV1DeployedIndexAuthConfigAuthProvider(_messages.Message):
+  r"""Configuration for an authentication provider, including support for
+  [JSON Web Token (JWT)](https://tools.ietf.org/html/draft-ietf-oauth-json-
+  web-token-32).
+
+  Fields:
+    allowedIssuers: A list of allowed JWT issuers. Each entry must be a valid
+      Google service account, in the following format: `service-account-
+      name@project-id.iam.gserviceaccount.com`
+    audiences: The list of JWT [audiences](https://tools.ietf.org/html/draft-
+      ietf-oauth-json-web-token-32#section-4.1.3). that are allowed to access.
+      A JWT containing any of these audiences will be accepted.
+  """
+
+  allowedIssuers = _messages.StringField(1, repeated=True)
+  audiences = _messages.StringField(2, repeated=True)
+
+
 class GoogleCloudAiplatformV1DeployedModel(_messages.Message):
   r"""A deployment of a Model. Endpoints contain one or more DeployedModels.
 
   Fields:
     automaticResources: A description of resources that to large degree are
-      decided by AI Platform, and require only a modest additional
+      decided by Vertex AI, and require only a modest additional
       configuration.
     createTime: Output only. Timestamp when the DeployedModel was created.
     dedicatedResources: A description of resources that are dedicated to the
@@ -10597,7 +10749,7 @@ class GoogleCloudAiplatformV1ExplanationMetadataInputMetadata(_messages.Message)
       same group name will be treated as one feature when computing
       attributions. Features grouped together can have different shapes in
       value. If provided, there will be one single attribution generated in
-      featureAttributions, keyed by the group name.
+      Attribution.feature_attributions, keyed by the group name.
     indexFeatureMapping: A list of feature names for each index in the input
       tensor. Required when the input InputMetadata.encoding is
       BAG_OF_FEATURES, BAG_OF_FEATURES_SPARSE, INDICATOR.
@@ -10608,7 +10760,7 @@ class GoogleCloudAiplatformV1ExplanationMetadataInputMetadata(_messages.Message)
     inputBaselines: Baseline inputs for this feature. If no baseline is
       specified, Vertex AI chooses the baseline for this feature. If multiple
       baselines are specified, Vertex AI returns the average attributions
-      across them in Attributions.baseline_attribution. For Vertex AI-provided
+      across them in Attribution.feature_attributions. For Vertex AI-provided
       Tensorflow images (both 1.x and 2.x), the shape of each baseline must
       match the shape of the input tensor. If a scalar is provided, we
       broadcast to the same shape as the input tensor. For custom images, the
@@ -10853,7 +11005,7 @@ class GoogleCloudAiplatformV1ExplanationMetadataOutputMetadata(_messages.Message
       be explained. The Attribution.output_display_name is populated by
       locating in the mapping with Attribution.output_index.
     outputTensorName: Name of the output tensor. Required and is only
-      applicable to AI Platform provided images for Tensorflow.
+      applicable to Vertex AI provided images for Tensorflow.
   """
 
   displayNameMappingKey = _messages.StringField(1)
@@ -11045,6 +11197,18 @@ class GoogleCloudAiplatformV1ImportDataOperationMetadata(_messages.Message):
 
 class GoogleCloudAiplatformV1ImportDataResponse(_messages.Message):
   r"""Response message for DatasetService.ImportData."""
+
+
+class GoogleCloudAiplatformV1IndexPrivateEndpoints(_messages.Message):
+  r"""IndexPrivateEndpoints proto is used to provide paths for users to send
+  requests via private services access.
+
+  Fields:
+    matchGrpcAddress: Output only. The ip address used to send match gRPC
+      requests.
+  """
+
+  matchGrpcAddress = _messages.StringField(1)
 
 
 class GoogleCloudAiplatformV1IntegratedGradientsAttribution(_messages.Message):
@@ -11273,8 +11437,8 @@ class GoogleCloudAiplatformV1MigrateResourceRequestMigrateAutomlModelConfig(_mes
 
 
 class GoogleCloudAiplatformV1MigrateResourceRequestMigrateDataLabelingDatasetConfig(_messages.Message):
-  r"""Config for migrating Dataset in datalabeling.googleapis.com to AI
-  Platform's Dataset.
+  r"""Config for migrating Dataset in datalabeling.googleapis.com to Vertex
+  AI's Dataset.
 
   Fields:
     dataset: Required. Full resource name of data labeling Dataset. Format:
@@ -11337,6 +11501,93 @@ class GoogleCloudAiplatformV1MigrateResourceResponse(_messages.Message):
   dataset = _messages.StringField(1)
   migratableResource = _messages.MessageField('GoogleCloudAiplatformV1MigratableResource', 2)
   model = _messages.StringField(3)
+
+
+class GoogleCloudAiplatformV1NearestNeighborSearchOperationMetadata(_messages.Message):
+  r"""Runtime operation metadata with regard to Matching Engine Index.
+
+  Fields:
+    contentValidationStats: The validation stats of the content (per file) to
+      be inserted or updated on the Matching Engine Index resource. Populated
+      if contentsDeltaUri is provided as part of Index.metadata. Please note
+      that, currently for those files that are broken or has unsupported file
+      format, we will not have the stats for those files.
+    dataBytesCount: The ingested data size in bytes.
+  """
+
+  contentValidationStats = _messages.MessageField('GoogleCloudAiplatformV1NearestNeighborSearchOperationMetadataContentValidationStats', 1, repeated=True)
+  dataBytesCount = _messages.IntegerField(2)
+
+
+class GoogleCloudAiplatformV1NearestNeighborSearchOperationMetadataContentValidationStats(_messages.Message):
+  r"""A GoogleCloudAiplatformV1NearestNeighborSearchOperationMetadataContentVa
+  lidationStats object.
+
+  Fields:
+    invalidRecordCount: Number of records in this file we skipped due to
+      validate errors.
+    partialErrors: The detail information of the partial failures encountered
+      for those invalid records that couldn't be parsed. Up to 50 partial
+      errors will be reported.
+    sourceGcsUri: Cloud Storage URI pointing to the original file in user's
+      bucket.
+    validRecordCount: Number of records in this file that were successfully
+      processed.
+  """
+
+  invalidRecordCount = _messages.IntegerField(1)
+  partialErrors = _messages.MessageField('GoogleCloudAiplatformV1NearestNeighborSearchOperationMetadataRecordError', 2, repeated=True)
+  sourceGcsUri = _messages.StringField(3)
+  validRecordCount = _messages.IntegerField(4)
+
+
+class GoogleCloudAiplatformV1NearestNeighborSearchOperationMetadataRecordError(_messages.Message):
+  r"""A
+  GoogleCloudAiplatformV1NearestNeighborSearchOperationMetadataRecordError
+  object.
+
+  Enums:
+    ErrorTypeValueValuesEnum: The error type of this record.
+
+  Fields:
+    embeddingId: Empty if the embedding id is failed to parse.
+    errorMessage: A human-readable message that is shown to the user to help
+      them fix the error. Note that this message may change from time to time,
+      your code should check against error_type as the source of truth.
+    errorType: The error type of this record.
+    rawRecord: The original content of this record.
+    sourceGcsUri: Cloud Storage URI pointing to the original file in user's
+      bucket.
+  """
+
+  class ErrorTypeValueValuesEnum(_messages.Enum):
+    r"""The error type of this record.
+
+    Values:
+      ERROR_TYPE_UNSPECIFIED: Default, shall not be used.
+      EMPTY_LINE: The record is empty.
+      INVALID_JSON_SYNTAX: Invalid json format.
+      INVALID_CSV_SYNTAX: Invalid csv format.
+      INVALID_AVRO_SYNTAX: Invalid avro format.
+      INVALID_EMBEDDING_ID: The embedding id is not valid.
+      EMBEDDING_SIZE_MISMATCH: The size of the embedding vectors does not
+        match with the specified dimension.
+      NAMESPACE_MISSING: The `namespace` field is missing.
+    """
+    ERROR_TYPE_UNSPECIFIED = 0
+    EMPTY_LINE = 1
+    INVALID_JSON_SYNTAX = 2
+    INVALID_CSV_SYNTAX = 3
+    INVALID_AVRO_SYNTAX = 4
+    INVALID_EMBEDDING_ID = 5
+    EMBEDDING_SIZE_MISMATCH = 6
+    NAMESPACE_MISSING = 7
+
+  embeddingId = _messages.StringField(1)
+  errorMessage = _messages.StringField(2)
+  errorType = _messages.EnumField('ErrorTypeValueValuesEnum', 3)
+  rawRecord = _messages.StringField(4)
+  sourceGcsUri = _messages.StringField(5)
 
 
 class GoogleCloudAiplatformV1PythonPackageSpec(_messages.Message):
@@ -14118,6 +14369,20 @@ class GoogleCloudAiplatformV1StudySpecParameterSpecIntegerValueSpec(_messages.Me
   minValue = _messages.IntegerField(3)
 
 
+class GoogleCloudAiplatformV1UndeployIndexOperationMetadata(_messages.Message):
+  r"""Runtime operation information for IndexEndpointService.UndeployIndex.
+
+  Fields:
+    genericMetadata: The operation generic information.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1GenericOperationMetadata', 1)
+
+
+class GoogleCloudAiplatformV1UndeployIndexResponse(_messages.Message):
+  r"""Response message for IndexEndpointService.UndeployIndex."""
+
+
 class GoogleCloudAiplatformV1UndeployModelOperationMetadata(_messages.Message):
   r"""Runtime operation information for EndpointService.UndeployModel.
 
@@ -14130,6 +14395,19 @@ class GoogleCloudAiplatformV1UndeployModelOperationMetadata(_messages.Message):
 
 class GoogleCloudAiplatformV1UndeployModelResponse(_messages.Message):
   r"""Response message for EndpointService.UndeployModel."""
+
+
+class GoogleCloudAiplatformV1UpdateIndexOperationMetadata(_messages.Message):
+  r"""Runtime operation information for IndexService.UpdateIndex.
+
+  Fields:
+    genericMetadata: The operation generic information.
+    nearestNeighborSearchOperationMetadata: The operation metadata with regard
+      to Matching Engine Index operation.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1GenericOperationMetadata', 1)
+  nearestNeighborSearchOperationMetadata = _messages.MessageField('GoogleCloudAiplatformV1NearestNeighborSearchOperationMetadata', 2)
 
 
 class GoogleCloudAiplatformV1UpdateSpecialistPoolOperationMetadata(_messages.Message):
@@ -15612,7 +15890,7 @@ class GoogleCloudAiplatformV1alpha1CustomJobSpec(_messages.Message):
     scheduling: Scheduling options for a CustomJob.
     serviceAccount: Specifies the service account for workload run-as account.
       Users submitting jobs must have act-as permission on this run-as
-      account. If unspecified, the [AI Platform Custom Code Service
+      account. If unspecified, the [Vertex AI Custom Code Service
       Agent](https://cloud.google.com/vertex-ai/docs/general/access-
       control#service-agents) for the CustomJob's project is used.
     tensorboard: Optional. The name of a Vertex AI Tensorboard resource to
@@ -16210,7 +16488,7 @@ class GoogleCloudAiplatformV1alpha1DeployedModel(_messages.Message):
 
   Fields:
     automaticResources: A description of resources that to large degree are
-      decided by AI Platform, and require only a modest additional
+      decided by Vertex AI, and require only a modest additional
       configuration.
     createTime: Output only. Timestamp when the DeployedModel was created.
     dedicatedResources: A description of resources that are dedicated to the
@@ -16313,6 +16591,11 @@ class GoogleCloudAiplatformV1alpha1Endpoint(_messages.Message):
       codepoints), can only contain lowercase letters, numeric characters,
       underscores and dashes. International characters are allowed. See
       https://goo.gl/xmQnxf for more information and examples of labels.
+    modelDeploymentMonitoringJob: Output only. Resource name of the Model
+      Monitoring job associated with this Endpoint if monitoring is enabled by
+      CreateModelDeploymentMonitoringJob. Format: `projects/{project}/location
+      s/{location}/modelDeploymentMonitoringJobs/{model_deployment_monitoring_
+      job}`
     name: Output only. The resource name of the Endpoint.
     trafficSplit: A map from a DeployedModel's ID to the percentage of this
       Endpoint's traffic that should be forwarded to that DeployedModel. If a
@@ -16386,9 +16669,10 @@ class GoogleCloudAiplatformV1alpha1Endpoint(_messages.Message):
   encryptionSpec = _messages.MessageField('GoogleCloudAiplatformV1alpha1EncryptionSpec', 5)
   etag = _messages.StringField(6)
   labels = _messages.MessageField('LabelsValue', 7)
-  name = _messages.StringField(8)
-  trafficSplit = _messages.MessageField('TrafficSplitValue', 9)
-  updateTime = _messages.StringField(10)
+  modelDeploymentMonitoringJob = _messages.StringField(8)
+  name = _messages.StringField(9)
+  trafficSplit = _messages.MessageField('TrafficSplitValue', 10)
+  updateTime = _messages.StringField(11)
 
 
 class GoogleCloudAiplatformV1alpha1EnvVar(_messages.Message):
@@ -16938,7 +17222,7 @@ class GoogleCloudAiplatformV1alpha1ExplanationMetadataInputMetadata(_messages.Me
     inputBaselines: Baseline inputs for this feature. If no baseline is
       specified, Vertex AI chooses the baseline for this feature. If multiple
       baselines are specified, Vertex AI returns the average attributions
-      across them in Attributions.baseline_attribution. For Vertex AI-provided
+      across them in Attribution.feature_attributions. For Vertex AI-provided
       Tensorflow images (both 1.x and 2.x), the shape of each baseline must
       match the shape of the input tensor. If a scalar is provided, we
       broadcast to the same shape as the input tensor. For custom images, the
@@ -18578,8 +18862,8 @@ class GoogleCloudAiplatformV1alpha1MigrateResourceRequestMigrateAutomlModelConfi
 
 
 class GoogleCloudAiplatformV1alpha1MigrateResourceRequestMigrateDataLabelingDatasetConfig(_messages.Message):
-  r"""Config for migrating Dataset in datalabeling.googleapis.com to AI
-  Platform's Dataset.
+  r"""Config for migrating Dataset in datalabeling.googleapis.com to Vertex
+  AI's Dataset.
 
   Fields:
     dataset: Required. Full resource name of data labeling Dataset. Format:
@@ -18933,18 +19217,18 @@ class GoogleCloudAiplatformV1alpha1ModelContainerSpec(_messages.Message):
       image in Artifact Registry or Container Registry. Learn more about the
       [container publishing requirements](https://cloud.google.com/vertex-
       ai/docs/predictions/custom-container-requirements#publishing), including
-      permissions requirements for the AI Platform Service Agent. The
-      container image is ingested upon ModelService.UploadModel, stored
-      internally, and this original path is afterwards not used. To learn
-      about the requirements for the Docker image itself, see [Custom
-      container requirements](https://cloud.google.com/vertex-
+      permissions requirements for the Vertex AI Service Agent. The container
+      image is ingested upon ModelService.UploadModel, stored internally, and
+      this original path is afterwards not used. To learn about the
+      requirements for the Docker image itself, see [Custom container
+      requirements](https://cloud.google.com/vertex-
       ai/docs/predictions/custom-container-requirements#). You can use the URI
       to one of Vertex AI's [pre-built container images for
       prediction](https://cloud.google.com/vertex-ai/docs/predictions/pre-
       built-containers) in this field.
     ports: Immutable. List of ports to expose from the container. Vertex AI
       sends any prediction requests that it receives to the first port on this
-      list. AI Platform also sends [liveness and health
+      list. Vertex AI also sends [liveness and health
       checks](https://cloud.google.com/vertex-ai/docs/predictions/custom-
       container-requirements#liveness) to this port. If you do not specify
       this field, it defaults to following value: ```json [ { "containerPort":
@@ -19440,8 +19724,7 @@ class GoogleCloudAiplatformV1alpha1ModelMonitoringObjectiveConfigExplanationConf
 
     Values:
       PREDICTION_FORMAT_UNSPECIFIED: Should not be set.
-      JSONL: Predictions are in JSONL files, consistent from the definition
-        here (http://shortn/_4bS0hL7ofb).
+      JSONL: Predictions are in JSONL files.
       BIGQUERY: Predictions are in BigQuery.
     """
     PREDICTION_FORMAT_UNSPECIFIED = 0
@@ -22931,7 +23214,7 @@ class GoogleCloudAiplatformV1beta1CustomJobSpec(_messages.Message):
     scheduling: Scheduling options for a CustomJob.
     serviceAccount: Specifies the service account for workload run-as account.
       Users submitting jobs must have act-as permission on this run-as
-      account. If unspecified, the [AI Platform Custom Code Service
+      account. If unspecified, the [Vertex AI Custom Code Service
       Agent](https://cloud.google.com/vertex-ai/docs/general/access-
       control#service-agents) for the CustomJob's project is used.
     tensorboard: Optional. The name of a Vertex AI Tensorboard resource to
@@ -23073,6 +23356,16 @@ class GoogleCloudAiplatformV1beta1DeployedIndex(_messages.Message):
     createTime: Output only. Timestamp when the DeployedIndex was created.
     deployedIndexAuthConfig: Optional. If set, the authentication is enabled
       for the private endpoint.
+    deploymentGroup: Optional. The deployment group can be no longer than 64
+      characters (eg: 'test', 'prod'). If not set, we will use the 'default'
+      deployment group. Creating `deployment_groups` with `reserved_ip_ranges`
+      is a recommended practice when the peered network has multiple peering
+      ranges. This creates your deployments from predictable IP spaces for
+      easier traffic administration. Also, one deployment_group (except
+      'default') can only be used with the same reserved_ip_ranges which means
+      if the deployment_group has been used with reserved_ip_ranges: [a, b,
+      c], using it with [a, b] or [d, e] is disallowed. Note: we only support
+      up to 5 deployment groups(not including 'default').
     displayName: The display name of the DeployedIndex. If not provided upon
       creation, the Index's display_name is used.
     enableAccessLogging: Optional. If true, private endpoint's access logs are
@@ -23114,13 +23407,14 @@ class GoogleCloudAiplatformV1beta1DeployedIndex(_messages.Message):
   automaticResources = _messages.MessageField('GoogleCloudAiplatformV1beta1AutomaticResources', 1)
   createTime = _messages.StringField(2)
   deployedIndexAuthConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1DeployedIndexAuthConfig', 3)
-  displayName = _messages.StringField(4)
-  enableAccessLogging = _messages.BooleanField(5)
-  id = _messages.StringField(6)
-  index = _messages.StringField(7)
-  indexSyncTime = _messages.StringField(8)
-  privateEndpoints = _messages.MessageField('GoogleCloudAiplatformV1beta1IndexPrivateEndpoints', 9)
-  reservedIpRanges = _messages.StringField(10, repeated=True)
+  deploymentGroup = _messages.StringField(4)
+  displayName = _messages.StringField(5)
+  enableAccessLogging = _messages.BooleanField(6)
+  id = _messages.StringField(7)
+  index = _messages.StringField(8)
+  indexSyncTime = _messages.StringField(9)
+  privateEndpoints = _messages.MessageField('GoogleCloudAiplatformV1beta1IndexPrivateEndpoints', 10)
+  reservedIpRanges = _messages.StringField(11, repeated=True)
 
 
 class GoogleCloudAiplatformV1beta1DeployedIndexAuthConfig(_messages.Message):
@@ -23157,7 +23451,7 @@ class GoogleCloudAiplatformV1beta1DeployedModel(_messages.Message):
 
   Fields:
     automaticResources: A description of resources that to large degree are
-      decided by AI Platform, and require only a modest additional
+      decided by Vertex AI, and require only a modest additional
       configuration.
     createTime: Output only. Timestamp when the DeployedModel was created.
     dedicatedResources: A description of resources that are dedicated to the
@@ -23366,7 +23660,7 @@ class GoogleCloudAiplatformV1beta1ExplanationMetadataInputMetadata(_messages.Mes
       same group name will be treated as one feature when computing
       attributions. Features grouped together can have different shapes in
       value. If provided, there will be one single attribution generated in
-      featureAttributions, keyed by the group name.
+      Attribution.feature_attributions, keyed by the group name.
     indexFeatureMapping: A list of feature names for each index in the input
       tensor. Required when the input InputMetadata.encoding is
       BAG_OF_FEATURES, BAG_OF_FEATURES_SPARSE, INDICATOR.
@@ -23377,7 +23671,7 @@ class GoogleCloudAiplatformV1beta1ExplanationMetadataInputMetadata(_messages.Mes
     inputBaselines: Baseline inputs for this feature. If no baseline is
       specified, Vertex AI chooses the baseline for this feature. If multiple
       baselines are specified, Vertex AI returns the average attributions
-      across them in Attributions.baseline_attribution. For Vertex AI-provided
+      across them in Attribution.feature_attributions. For Vertex AI-provided
       Tensorflow images (both 1.x and 2.x), the shape of each baseline must
       match the shape of the input tensor. If a scalar is provided, we
       broadcast to the same shape as the input tensor. For custom images, the
@@ -23622,7 +23916,7 @@ class GoogleCloudAiplatformV1beta1ExplanationMetadataOutputMetadata(_messages.Me
       be explained. The Attribution.output_display_name is populated by
       locating in the mapping with Attribution.output_index.
     outputTensorName: Name of the output tensor. Required and is only
-      applicable to AI Platform provided images for Tensorflow.
+      applicable to Vertex AI provided images for Tensorflow.
   """
 
   displayNameMappingKey = _messages.StringField(1)
@@ -24363,8 +24657,8 @@ class GoogleCloudAiplatformV1beta1MigrateResourceRequestMigrateAutomlModelConfig
 
 
 class GoogleCloudAiplatformV1beta1MigrateResourceRequestMigrateDataLabelingDatasetConfig(_messages.Message):
-  r"""Config for migrating Dataset in datalabeling.googleapis.com to AI
-  Platform's Dataset.
+  r"""Config for migrating Dataset in datalabeling.googleapis.com to Vertex
+  AI's Dataset.
 
   Fields:
     dataset: Required. Full resource name of data labeling Dataset. Format:

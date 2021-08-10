@@ -493,7 +493,7 @@ def _ModifyInstanceTemplate(args, is_mcp, metadata_args):
   asm_labels[
       _ISTIO_CANONICAL_SERVICE_REVISION_LABEL] = metadata_args.canonical_revision
 
-  asm_labels_string = json.dumps(asm_labels)
+  asm_labels_string = json.dumps(asm_labels, sort_keys=True)
 
   service_proxy_config = collections.OrderedDict()
   service_proxy_config['mode'] = 'ON'

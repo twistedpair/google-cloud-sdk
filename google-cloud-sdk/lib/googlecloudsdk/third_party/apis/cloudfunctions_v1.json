@@ -967,7 +967,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Name of the Stage",
+          "description": "Name of the Stage. This will be unique for each Stage.",
           "type": "string",
           "enumDescriptions": [
             "Not specified. Invalid name.",

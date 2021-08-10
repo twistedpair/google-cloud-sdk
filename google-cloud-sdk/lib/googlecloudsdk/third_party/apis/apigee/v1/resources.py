@@ -408,6 +408,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  ORGANIZATIONS_HOSTSECURITYREPORTS = (
+      'organizations.hostSecurityReports',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/hostSecurityReports/'
+              '{hostSecurityReportsId}',
+      },
+      ['name'],
+      True
+  )
   ORGANIZATIONS_HOSTSTATS = (
       'organizations.hostStats',
       '{+name}',
@@ -488,17 +499,6 @@ class Collections(enum.Enum):
       {
           '':
               'organizations/{organizationsId}/reports/{reportsId}',
-      },
-      ['name'],
-      True
-  )
-  ORGANIZATIONS_SECURITYHOSTREPORTS = (
-      'organizations.securityHostReports',
-      '{+name}',
-      {
-          '':
-              'organizations/{organizationsId}/securityHostReports/'
-              '{securityHostReportsId}',
       },
       ['name'],
       True

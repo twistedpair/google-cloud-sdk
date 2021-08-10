@@ -160,6 +160,7 @@ class CopyTaskIterator:
                source_name_iterator,
                destination_string,
                custom_md5_digest=None,
+               do_not_decompress=False,
                task_status_queue=None,
                user_request_args=None):
     """Initializes a CopyTaskIterator instance.
@@ -170,6 +171,8 @@ class CopyTaskIterator:
       destination_string (str): The copy destination path or url.
       custom_md5_digest (str|None): User-added MD5 hash output to send to server
         for validating a single resource upload.
+      do_not_decompress (bool): Prevents automatically decompressing
+        downloaded gzips.
       task_status_queue (multiprocessing.Queue|None): Used for estimating total
         workload from this iterator.
       user_request_args (UserRequestArgs|None): Values for RequestConfig.
@@ -178,6 +181,7 @@ class CopyTaskIterator:
         plurality_checkable_iterator.PluralityCheckableIterator(
             source_name_iterator))
     self._multiple_sources = self._source_name_iterator.is_plural()
+    self._do_not_decompress = do_not_decompress
     self._custom_md5_digest = custom_md5_digest
     self._task_status_queue = task_status_queue
     self._user_request_args = user_request_args
@@ -268,6 +272,7 @@ class CopyTaskIterator:
       yield copy_task_factory.get_copy_task(
           source.resource,
           destination_resource,
+          do_not_decompress=self._do_not_decompress,
           user_request_args=self._user_request_args)
 
     if (self._task_status_queue and

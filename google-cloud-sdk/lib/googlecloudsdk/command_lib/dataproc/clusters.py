@@ -154,7 +154,7 @@ def ArgsForClusterRef(parser,
   parser.add_argument(
       '--temp-bucket',
       help="""\
-      The Google Cloud Storage bucket to use by default to to store
+      The Google Cloud Storage bucket to use by default to store
       ephemeral cluster and jobs data, such as Spark and MapReduce history files.
       """)
 

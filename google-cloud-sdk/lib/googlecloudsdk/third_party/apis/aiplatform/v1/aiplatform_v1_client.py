@@ -53,6 +53,7 @@ class AiplatformV1(base_api.BaseApiClient):
     self.projects_locations_models_evaluations = self.ProjectsLocationsModelsEvaluationsService(self)
     self.projects_locations_models = self.ProjectsLocationsModelsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
+    self.projects_locations_pipelineJobs = self.ProjectsLocationsPipelineJobsService(self)
     self.projects_locations_specialistPools = self.ProjectsLocationsSpecialistPoolsService(self)
     self.projects_locations_trainingPipelines = self.ProjectsLocationsTrainingPipelinesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
@@ -894,6 +895,33 @@ class AiplatformV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Explain(self, request, global_params=None):
+      r"""Perform an online explanation. If deployed_model_id is specified, the corresponding DeployModel must have explanation_spec populated. If deployed_model_id is not specified, all DeployedModels must have explanation_spec populated. Only deployed AutoML tabular Models have explanation_spec.
+
+      Args:
+        request: (AiplatformProjectsLocationsEndpointsExplainRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1ExplainResponse) The response message.
+      """
+      config = self.GetMethodConfig('Explain')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Explain.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/endpoints/{endpointsId}:explain',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.endpoints.explain',
+        ordered_params=['endpoint'],
+        path_params=['endpoint'],
+        query_params=[],
+        relative_path='v1/{+endpoint}:explain',
+        request_field='googleCloudAiplatformV1ExplainRequest',
+        request_type_name='AiplatformProjectsLocationsEndpointsExplainRequest',
+        response_type_name='GoogleCloudAiplatformV1ExplainResponse',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets an Endpoint.
 
@@ -1185,7 +1213,7 @@ class AiplatformV1(base_api.BaseApiClient):
           }
 
     def BatchMigrate(self, request, global_params=None):
-      r"""Batch migrates resources from ml.googleapis.com, automl.googleapis.com, and datalabeling.googleapis.com to AI Platform (Unified).
+      r"""Batch migrates resources from ml.googleapis.com, automl.googleapis.com, and datalabeling.googleapis.com to Vertex AI.
 
       Args:
         request: (AiplatformProjectsLocationsMigratableResourcesBatchMigrateRequest) input message
@@ -1212,7 +1240,7 @@ class AiplatformV1(base_api.BaseApiClient):
     )
 
     def Search(self, request, global_params=None):
-      r"""Searches all of the resources in automl.googleapis.com, datalabeling.googleapis.com and ml.googleapis.com that can be migrated to AI Platform's given location.
+      r"""Searches all of the resources in automl.googleapis.com, datalabeling.googleapis.com and ml.googleapis.com that can be migrated to Vertex AI's given location.
 
       Args:
         request: (AiplatformProjectsLocationsMigratableResourcesSearchRequest) input message
@@ -1512,7 +1540,7 @@ class AiplatformV1(base_api.BaseApiClient):
     )
 
     def Upload(self, request, global_params=None):
-      r"""Uploads a Model artifact into AI Platform.
+      r"""Uploads a Model artifact into Vertex AI.
 
       Args:
         request: (AiplatformProjectsLocationsModelsUploadRequest) input message
@@ -1680,6 +1708,151 @@ class AiplatformV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='AiplatformProjectsLocationsOperationsWaitRequest',
         response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsPipelineJobsService(base_api.BaseApiService):
+    """Service class for the projects_locations_pipelineJobs resource."""
+
+    _NAME = 'projects_locations_pipelineJobs'
+
+    def __init__(self, client):
+      super(AiplatformV1.ProjectsLocationsPipelineJobsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Cancel(self, request, global_params=None):
+      r"""Cancels a PipelineJob. Starts asynchronous cancellation on the PipelineJob. The server makes a best effort to cancel the pipeline, but success is not guaranteed. Clients can use PipelineService.GetPipelineJob or other methods to check whether the cancellation succeeded or whether the pipeline completed despite cancellation. On successful cancellation, the PipelineJob is not deleted; instead it becomes a pipeline with a PipelineJob.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`, and PipelineJob.state is set to `CANCELLED`.
+
+      Args:
+        request: (AiplatformProjectsLocationsPipelineJobsCancelRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleProtobufEmpty) The response message.
+      """
+      config = self.GetMethodConfig('Cancel')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Cancel.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/pipelineJobs/{pipelineJobsId}:cancel',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.pipelineJobs.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:cancel',
+        request_field='googleCloudAiplatformV1CancelPipelineJobRequest',
+        request_type_name='AiplatformProjectsLocationsPipelineJobsCancelRequest',
+        response_type_name='GoogleProtobufEmpty',
+        supports_download=False,
+    )
+
+    def Create(self, request, global_params=None):
+      r"""Creates a PipelineJob. A PipelineJob will run immediately when created.
+
+      Args:
+        request: (AiplatformProjectsLocationsPipelineJobsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1PipelineJob) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/pipelineJobs',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.pipelineJobs.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pipelineJobId'],
+        relative_path='v1/{+parent}/pipelineJobs',
+        request_field='googleCloudAiplatformV1PipelineJob',
+        request_type_name='AiplatformProjectsLocationsPipelineJobsCreateRequest',
+        response_type_name='GoogleCloudAiplatformV1PipelineJob',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a PipelineJob.
+
+      Args:
+        request: (AiplatformProjectsLocationsPipelineJobsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/pipelineJobs/{pipelineJobsId}',
+        http_method='DELETE',
+        method_id='aiplatform.projects.locations.pipelineJobs.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsPipelineJobsDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a PipelineJob.
+
+      Args:
+        request: (AiplatformProjectsLocationsPipelineJobsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1PipelineJob) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/pipelineJobs/{pipelineJobsId}',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.pipelineJobs.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsPipelineJobsGetRequest',
+        response_type_name='GoogleCloudAiplatformV1PipelineJob',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists PipelineJobs in a Location.
+
+      Args:
+        request: (AiplatformProjectsLocationsPipelineJobsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1ListPipelineJobsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/pipelineJobs',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.pipelineJobs.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/pipelineJobs',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsPipelineJobsListRequest',
+        response_type_name='GoogleCloudAiplatformV1ListPipelineJobsResponse',
         supports_download=False,
     )
 

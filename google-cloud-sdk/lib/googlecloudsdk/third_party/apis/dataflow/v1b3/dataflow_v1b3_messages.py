@@ -2436,6 +2436,7 @@ class FlexTemplateRuntimeEnvironment(_messages.Message):
   r"""The environment values to be set at runtime for flex template.
 
   Enums:
+    AutoscalingAlgorithmValueValuesEnum: The algorithm to use for autoscaling
     FlexrsGoalValueValuesEnum: Set FlexRS goal for the job.
       https://cloud.google.com/dataflow/docs/guides/flexrs
     IpConfigurationValueValuesEnum: Configuration for VM IPs.
@@ -2454,7 +2455,12 @@ class FlexTemplateRuntimeEnvironment(_messages.Message):
       restrictions](https://cloud.google.com/compute/docs/labeling-
       resources#restrictions) page. An object containing a list of "key":
       value pairs. Example: { "name": "wrench", "mass": "1kg", "count": "3" }.
+    autoscalingAlgorithm: The algorithm to use for autoscaling
     diskSizeGb: Worker disk size, in gigabytes.
+    dumpHeapOnOom: If true, save a heap dump before killing a thread or
+      process which is GC thrashing or out of memory. The location of the heap
+      file will either be echoed back to the user, or the user will be given
+      the opportunity to download the heap file.
     enableStreamingEngine: Whether to enable Streaming Engine for the job.
     flexrsGoal: Set FlexRS goal for the job.
       https://cloud.google.com/dataflow/docs/guides/flexrs
@@ -2463,13 +2469,15 @@ class FlexTemplateRuntimeEnvironment(_messages.Message):
       projects//locations//keyRings//cryptoKeys/
     machineType: The machine type to use for the job. Defaults to the value
       from the template if not specified.
-    maxNumWorkers: The maximum number of workers to cap scaling at.
     maxWorkers: The maximum number of Google Compute Engine instances to be
       made available to your pipeline during execution, from 1 to 1000.
     network: Network to which VMs will be assigned. If empty or unspecified,
       the service will use the network "default".
     numWorkers: The initial number of Google Compute Engine instances for the
       job.
+    saveHeapDumpsToGcsPath: Cloud Storage bucket (directory) to upload heap
+      dumps to the given location. Enabling this implies that heap dumps
+      should be generated on OOM (dump_heap_on_oom is set to true).
     sdkContainerImage: Docker registry location of container image to use for
       the 'worker harness. Default is the container for the version of the
       SDK. Note this field is only valid for portable pipelines.
@@ -2502,6 +2510,19 @@ class FlexTemplateRuntimeEnvironment(_messages.Message):
       for launching worker instances to run your pipeline. In the future,
       worker_zone will take precedence.
   """
+
+  class AutoscalingAlgorithmValueValuesEnum(_messages.Enum):
+    r"""The algorithm to use for autoscaling
+
+    Values:
+      AUTOSCALING_ALGORITHM_UNKNOWN: The algorithm is unknown, or unspecified.
+      AUTOSCALING_ALGORITHM_NONE: Disable autoscaling.
+      AUTOSCALING_ALGORITHM_BASIC: Increase worker count over time to reduce
+        job execution time.
+    """
+    AUTOSCALING_ALGORITHM_UNKNOWN = 0
+    AUTOSCALING_ALGORITHM_NONE = 1
+    AUTOSCALING_ALGORITHM_BASIC = 2
 
   class FlexrsGoalValueValuesEnum(_messages.Enum):
     r"""Set FlexRS goal for the job.
@@ -2560,24 +2581,26 @@ class FlexTemplateRuntimeEnvironment(_messages.Message):
 
   additionalExperiments = _messages.StringField(1, repeated=True)
   additionalUserLabels = _messages.MessageField('AdditionalUserLabelsValue', 2)
-  diskSizeGb = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  enableStreamingEngine = _messages.BooleanField(4)
-  flexrsGoal = _messages.EnumField('FlexrsGoalValueValuesEnum', 5)
-  ipConfiguration = _messages.EnumField('IpConfigurationValueValuesEnum', 6)
-  kmsKeyName = _messages.StringField(7)
-  machineType = _messages.StringField(8)
-  maxNumWorkers = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  maxWorkers = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  network = _messages.StringField(11)
-  numWorkers = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  sdkContainerImage = _messages.StringField(13)
-  serviceAccountEmail = _messages.StringField(14)
-  stagingLocation = _messages.StringField(15)
-  subnetwork = _messages.StringField(16)
-  tempLocation = _messages.StringField(17)
-  workerRegion = _messages.StringField(18)
-  workerZone = _messages.StringField(19)
-  zone = _messages.StringField(20)
+  autoscalingAlgorithm = _messages.EnumField('AutoscalingAlgorithmValueValuesEnum', 3)
+  diskSizeGb = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  dumpHeapOnOom = _messages.BooleanField(5)
+  enableStreamingEngine = _messages.BooleanField(6)
+  flexrsGoal = _messages.EnumField('FlexrsGoalValueValuesEnum', 7)
+  ipConfiguration = _messages.EnumField('IpConfigurationValueValuesEnum', 8)
+  kmsKeyName = _messages.StringField(9)
+  machineType = _messages.StringField(10)
+  maxWorkers = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  network = _messages.StringField(12)
+  numWorkers = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  saveHeapDumpsToGcsPath = _messages.StringField(14)
+  sdkContainerImage = _messages.StringField(15)
+  serviceAccountEmail = _messages.StringField(16)
+  stagingLocation = _messages.StringField(17)
+  subnetwork = _messages.StringField(18)
+  tempLocation = _messages.StringField(19)
+  workerRegion = _messages.StringField(20)
+  workerZone = _messages.StringField(21)
+  zone = _messages.StringField(22)
 
 
 class FloatingPointList(_messages.Message):

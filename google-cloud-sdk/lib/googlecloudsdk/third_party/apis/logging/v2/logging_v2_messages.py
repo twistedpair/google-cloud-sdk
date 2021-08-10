@@ -23,15 +23,15 @@ class BigQueryOptions(_messages.Message):
   Fields:
     usePartitionedTables: Optional. Whether to use BigQuery's partition tables
       (https://cloud.google.com/bigquery/docs/partitioned-tables). By default,
-      Logging creates dated tables based on the log entries' timestamps, e.g.
-      syslog_20170523. With partitioned tables the date suffix is no longer
-      present and special query syntax
+      Cloud Logging creates dated tables based on the log entries' timestamps,
+      e.g. syslog_20170523. With partitioned tables the date suffix is no
+      longer present and special query syntax
       (https://cloud.google.com/bigquery/docs/querying-partitioned-tables) has
       to be used instead. In both cases, tables are sharded based on UTC
       timezone.
     usesTimestampColumnPartitioning: Output only. True if new timestamp column
       based partitioning is in use, false if legacy ingestion-time
-      partitioning is in use. All new sinks will have this field set true and
+      partitioning is in use.All new sinks will have this field set true and
       will use timestamp column based partitioning. If use_partitioned_tables
       is false, this value has no meaning and will be false. Legacy sinks
       using partitioned tables will have this field set to false.
@@ -125,11 +125,11 @@ class CmekSettings(_messages.Message):
 
   Fields:
     kmsKeyName: The resource name for the configured Cloud KMS key.KMS key
-      name format: "projects/PROJECT_ID/locations/LOCATION/keyRings/KEYRING/cr
-      yptoKeys/KEY"For example: "projects/my-project-id/locations/my-
-      region/keyRings/key-ring-name/cryptoKeys/key-name"To enable CMEK for the
-      Logs Router, set this field to a valid kms_key_name for which the
-      associated service account has the required
+      name format: "projects/[PROJECT_ID]/locations/[LOCATION]/keyRings/[KEYRI
+      NG]/cryptoKeys/[KEY]" For example:"projects/my-project/locations/us-
+      central1/keyRings/my-ring/cryptoKeys/my-key"To enable CMEK for the Logs
+      Router, set this field to a valid kms_key_name for which the associated
+      service account has the required
       roles/cloudkms.cryptoKeyEncrypterDecrypter role assigned for the key.The
       Cloud KMS key used by the Log Router can be updated by changing the
       kms_key_name to a new valid key name. Encryption operations that are in
@@ -171,9 +171,9 @@ class CopyLogEntriesMetadata(_messages.Message):
     startTime: The create time of an operation.
     state: State of an operation.
     writerIdentity: The IAM identity of a service account that must be granted
-      access to the destination. If the service account is not granted
+      access to the destination.If the service account is not granted
       permission to the destination within an hour, the operation will be
-      cancelled. Example: "serviceAccount:foo@bar.com"
+      cancelled.For example: "serviceAccount:foo@bar.com"
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -210,12 +210,12 @@ class CopyLogEntriesRequest(_messages.Message):
   r"""The parameters to CopyLogEntries.
 
   Fields:
-    destination: Required. Destination to which to copy logs.
+    destination: Required. Destination to which to copy log entries.
     filter: Optional. A filter specifying which log entries to copy. The
       filter must be no more than 20k characters. An empty filter matches all
       log entries.
-    name: Required. Bucket from which to copy logs. e.g. "projects/my-
-      project/locations/my-location/buckets/my-source-bucket
+    name: Required. Log bucket from which to copy log entries.For
+      example:"projects/my-project/locations/global/buckets/my-source-bucket"
   """
 
   destination = _messages.StringField(1)
@@ -243,45 +243,14 @@ class CreateBucketRequest(_messages.Message):
     bucketId: Required. A client-assigned identifier such as "my-bucket".
       Identifiers are limited to 100 characters and can include only letters,
       digits, underscores, hyphens, and periods.
-    parent: Required. The resource in which to create the bucket:
-      "projects/[PROJECT_ID]/locations/[LOCATION_ID]" Example: "projects/my-
-      logging-project/locations/global"
+    parent: Required. The resource in which to create the log bucket:
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]" For
+      example:"projects/my-project/locations/global"
   """
 
   bucket = _messages.MessageField('LogBucket', 1)
   bucketId = _messages.StringField(2)
   parent = _messages.StringField(3)
-
-
-class DlpOptions(_messages.Message):
-  r"""Options specific to sinks that require de-identification by the Data
-  Loss Prevention (DLP) API.
-
-  Fields:
-    deidentifyTemplateName: Required. DLP template used to specify how to
-      perform the de-identification of log data. See Creating Cloud DLP de-
-      identification templates (https://cloud.google.com/dlp/docs/creating-
-      templates-deid). For example:
-      "projects/[PROJECT_ID]/deidentifyTemplates/[TEMPLATE_ID]"
-    includedFields: Optional. Fields within the log entries to include in DLP
-      de-identification. Each field is identified using the advanced logs
-      filter (https://cloud.google.com/logging/docs/view/advanced-queries)
-      syntax. If any fields are specified, the de-identification will only be
-      applied to these fields and other fields will remain unmodified. If no
-      fields are specified, payload and http_request fields will be included
-      in the de-identification. Specifying included fields is useful for
-      limiting the amount of billable data sent to the DLP API. For
-      example:"httpRequest.remoteIp" "jsonPayload.user.phoneNumber"
-      "jsonPayload.person.socialSecurityNumber"
-    inspectTemplateName: Required. DLP template used to specify what types of
-      data within a log to inspect. See Creating Cloud DLP inspection
-      templates (https://cloud.google.com/dlp/docs/creating-templates). For
-      example: "projects/[PROJECT_ID]/inspectTemplates/[TEMPLATE_ID]"
-  """
-
-  deidentifyTemplateName = _messages.StringField(1)
-  includedFields = _messages.StringField(2, repeated=True)
-  inspectTemplateName = _messages.StringField(3)
 
 
 class Empty(_messages.Message):
@@ -395,13 +364,12 @@ class IndexConfig(_messages.Message):
   Fields:
     createTime: Output only. The timestamp when the index was last
       modified.This is used to return the timestamp, and will be ignored if
-      supplied during update. It is likely that before this goes into alpha,
-      the indexconfig message will be updated with another distinct timestamp
-      in order to provide information on when the index took effect.
+      supplied during update.
     fieldPath: Required. The LogEntry field path to index.Note that some paths
-      are automatically indexed, and other paths are not candidate for
-      indexing. See indexing documentation for details.For example:
-      jsonPayload.request.status
+      are automatically indexed, and other paths are not eligible for
+      indexing. See indexing documentation(
+      https://cloud.google.com/logging/docs/view/advanced-queries#indexed-
+      fields) for details.For example: jsonPayload.request.status
     type: Required. The type of data in this index.
   """
 
@@ -772,14 +740,14 @@ class Location(_messages.Message):
 
 
 class LogBucket(_messages.Message):
-  r"""Describes a repository of logs.
+  r"""Describes a repository in which log entries are stored.
 
   Enums:
     LifecycleStateValueValuesEnum: Output only. The bucket lifecycle state.
 
   Fields:
-    analyticsEnabled: Whether the bucket is opted in to advanced log
-      analytics. This field may only be set at bucket creation and cannot be
+    analyticsEnabled: Whether advanced log analytics is enabled for this
+      bucket.This field may only be set at bucket creation and cannot be
       changed later.
     createTime: Output only. The creation timestamp of the bucket. This is not
       set for any of the default buckets.
@@ -787,26 +755,26 @@ class LogBucket(_messages.Message):
     indexConfigs: A list of indexed fields and related configuration data.
     lifecycleState: Output only. The bucket lifecycle state.
     linkedBigqueryDataset: Output only. The name of the BigQuery dataset this
-      log bucket is linked to. Example:
-      "bigquery.googleapis.com/projects/PROJECT_ID/datasets/DATASET"
-    locked: Whether the bucket has been locked. The retention period on a
-      locked bucket may not be changed. Locked buckets may only be deleted if
-      they are empty.
+      log bucket is linked to.For
+      example:bigquery.googleapis.com/projects/[PROJECT_ID]/datasets/[DATASET]
+    locked: Whether the bucket is locked.The retention period on a locked
+      bucket cannot be changed. Locked buckets may only be deleted if they are
+      empty.
     logLink: Configures a linked dataset in BigQuery corresponding to this log
-      bucket. Requires analytics_enabled to be True. A log link can only be
+      bucket.Requires analytics_enabled to be true. A log link can only be
       enabled by updating an existing bucket with analytics enabled.
-    name: Output only. The resource name of the bucket. For example:
-      "projects/my-project-id/locations/my-location/buckets/my-bucket-id" The
-      supported locations are: global, us-central1, us-east1, us-west1, asia-
-      east1, europe-west1.For the location of global it is unspecified where
-      logs are actually stored. Once a bucket has been created, the location
-      can not be changed.
+    name: Output only. The resource name of the bucket.For
+      example:projects/my-project/locations/global/buckets/my-bucketFor a list
+      of supported locations, see Supported Regions
+      (https://cloud.google.com/logging/docs/region-support)For the location
+      of global it is unspecified where log entries are actually stored.After
+      a bucket has been created, the location cannot be changed.
     restrictedFields: Log entry field paths that are denied access in this
-      bucket. The following fields and their children are eligible:
+      bucket.The following fields and their children are eligible:
       textPayload, jsonPayload, protoPayload, httpRequest, labels,
-      sourceLocation. Restricting a repeated field will restrict all values.
-      Adding a parent will block all child fields e.g. foo.bar will block
-      foo.bar.baz.
+      sourceLocation.Restricting a repeated field will restrict all values.
+      Adding a parent will block all child fields. (e.g. foo.bar will block
+      foo.bar.baz)
     retentionDays: Logs will be retained by default for this amount of time,
       after which they will automatically be deleted. The minimum retention
       period is 1 day. If this value is set to zero at bucket creation time,
@@ -1135,12 +1103,12 @@ class LogEntrySourceLocation(_messages.Message):
 
 
 class LogExclusion(_messages.Message):
-  r"""Specifies a set of log entries that are not to be stored in Logging. If
-  your GCP resource receives a large volume of logs, you can use exclusions to
-  reduce your chargeable logs. Exclusions are processed after log sinks, so
-  you can export log entries before they are excluded. Note that organization-
-  level and folder-level exclusions don't apply to child resources, and that
-  you can't exclude audit log entries.
+  r"""Specifies a set of log entries that are not to be stored in Cloud
+  Logging. If your GCP resource receives a large volume of log entries, you
+  can use exclusions to reduce your chargeable logs. Exclusions are processed
+  after log sinks, so you can export log entries before they are excluded.
+  Note that organization-level and folder-level exclusions don't apply to
+  child resources, and that you can't exclude audit log entries.
 
   Fields:
     createTime: Output only. The creation timestamp of the exclusion.This
@@ -1153,10 +1121,10 @@ class LogExclusion(_messages.Message):
       (https://cloud.google.com/logging/docs/view/advanced-queries) that
       matches the log entries to be excluded. By using the sample function
       (https://cloud.google.com/logging/docs/view/advanced-queries#sample),
-      you can exclude less than 100% of the matching log entries. For example,
+      you can exclude less than 100% of the matching log entries.For example,
       the following query matches 99% of low-severity log entries from Google
-      Cloud Storage buckets:"resource.type=gcs_bucket severity<ERROR
-      sample(insertId, 0.99)"
+      Cloud Storage buckets:resource.type=gcs_bucket severity<ERROR
+      sample(insertId, 0.99)
     name: Required. A client-assigned identifier, such as "load-balancer-
       exclusion". Identifiers are limited to 100 characters and can include
       only letters, digits, underscores, hyphens, and periods. First character
@@ -1221,7 +1189,7 @@ class LogLink(_messages.Message):
   r"""This is used to link logs managed by Cloud Logging with a customer's
   dataset in BigQuery. Once linked, authorized views are created in the
   destination dataset that give read-access to the log data.WARNING: LogLinks
-  are still experimental, and may change its behavior in the future.
+  are still experimental, and may change their behavior in the future.
 
   Fields:
     enabled: Enables a log link, and creates a BigQuery dataset in the same
@@ -1229,19 +1197,12 @@ class LogLink(_messages.Message):
       the log bucket name, and will contain views to access the logs in the
       bucket.If an active log link is disabled, the dataset and views are
       deleted.
-    linkedBigqueryDataset: Output only. The name of the BigQuery dataset this
-      log bucket is linked to.
-      Example:"bigquery.googleapis.com/projects/PROJECT_ID/datasets/DATASET"
-      This field is deprecated, and is being replaced by the
-      linked_bigquery_dataset field in the top level of LogBucket. Any new
-      uses of this field should use that one. This one will be removed.
     loggingServiceAccount: Output only. An IAM service account used by Cloud
       Logging to create views on the destination dataset.
   """
 
   enabled = _messages.BooleanField(1)
-  linkedBigqueryDataset = _messages.StringField(2)
-  loggingServiceAccount = _messages.StringField(3)
+  loggingServiceAccount = _messages.StringField(2)
 
 
 class LogMetric(_messages.Message):
@@ -1405,7 +1366,7 @@ class LogMetric(_messages.Message):
 class LogSink(_messages.Message):
   r"""Describes a sink used to export log entries to one of the following
   destinations in any project: a Cloud Storage bucket, a BigQuery dataset, a
-  Cloud Pub/Sub topic or a Cloud Logging Bucket. A logs filter controls which
+  Pub/Sub topic or a Cloud Logging log bucket. A logs filter controls which
   log entries are exported. The sink must be created within a project,
   organization, billing account, or folder.
 
@@ -1417,7 +1378,7 @@ class LogSink(_messages.Message):
       BigQuery.
     createTime: Output only. The creation timestamp of the sink.This field may
       not be present for older sinks.
-    description: Optional. A description of this sink. The maximum length of
+    description: Optional. A description of this sink.The maximum length of
       the description is 8000 characters.
     destination: Required. The export destination:
       "storage.googleapis.com/[GCS_BUCKET]"
@@ -1427,32 +1388,31 @@ class LogSink(_messages.Message):
       permission to write to the destination or else the log entries are not
       exported. For more information, see Exporting Logs with Sinks
       (https://cloud.google.com/logging/docs/api/tasks/exporting-logs).
-    disabled: Optional. If set to True, then this sink is disabled and it does
+    disabled: Optional. If set to true, then this sink is disabled and it does
       not export any log entries.
-    dlpOptions: Optional. Settings for Data Loss Prevention (DLP)
-      (https://cloud.google.com/dlp/docs/) enabled sinks.
-    exclusions: Optional. Log entries that match any of the exclusion filters
-      will not be exported. If a log entry is matched by both filter and one
-      of exclusion_filters it will not be exported.
+    exclusions: Optional. Log entries that match any of these exclusion
+      filters will not be exported.If a log entry is matched by both filter
+      and one of exclusion_filters it will not be exported.
     filter: Optional. An advanced logs filter
       (https://cloud.google.com/logging/docs/view/advanced-queries). The only
       exported log entries are those that are in the resource owning the sink
-      and that match the filter. For example:
-      logName="projects/[PROJECT_ID]/logs/[LOG_ID]" AND severity>=ERROR
+      and that match the filter.For
+      example:logName="projects/[PROJECT_ID]/logs/[LOG_ID]" AND
+      severity>=ERROR
     includeChildren: Optional. This field applies only to sinks owned by
       organizations and folders. If the field is false, the default, only the
       logs owned by the sink's parent resource are available for export. If
-      the field is true, then logs from all the projects, folders, and billing
-      accounts contained in the sink's parent resource are also available for
-      export. Whether a particular log entry from the children is exported
-      depends on the sink's filter expression. For example, if this field is
-      true, then the filter resource.type=gce_instance would export all
-      Compute Engine VM instance log entries from all projects in the sink's
-      parent. To only export entries from certain child projects, filter on
-      the project part of the log name: logName:("projects/test-project1/" OR
-      "projects/test-project2/") AND resource.type=gce_instance
+      the field is true, then log entries from all the projects, folders, and
+      billing accounts contained in the sink's parent resource are also
+      available for export. Whether a particular log entry from the children
+      is exported depends on the sink's filter expression.For example, if this
+      field is true, then the filter resource.type=gce_instance would export
+      all Compute Engine VM instance log entries from all projects in the
+      sink's parent.To only export entries from certain child projects, filter
+      on the project part of the log name:logName:("projects/test-project1/"
+      OR "projects/test-project2/") AND resource.type=gce_instance
     name: Required. The client-assigned sink identifier, unique within the
-      project. Example: "my-syslog-errors-to-pubsub". Sink identifiers are
+      project.For example: "my-syslog-errors-to-pubsub". Sink identifiers are
       limited to 100 characters and can include only the following characters:
       upper and lower-case alphanumeric characters, underscores, hyphens, and
       periods. First character has to be alphanumeric.
@@ -1460,7 +1420,7 @@ class LogSink(_messages.Message):
     updateTime: Output only. The last update timestamp of the sink.This field
       may not be present for older sinks.
     writerIdentity: Output only. An IAM identity-a service account or group-
-      under which Logging writes the exported log entries to the sink's
+      under which Cloud Logging writes the exported log entries to the sink's
       destination. This field is set by sinks.create and sinks.update based on
       the value of unique_writer_identity in those methods.Until you grant
       this identity write-access to the destination, log entry exports from
@@ -1489,32 +1449,31 @@ class LogSink(_messages.Message):
   description = _messages.StringField(3)
   destination = _messages.StringField(4)
   disabled = _messages.BooleanField(5)
-  dlpOptions = _messages.MessageField('DlpOptions', 6)
-  exclusions = _messages.MessageField('LogExclusion', 7, repeated=True)
-  filter = _messages.StringField(8)
-  includeChildren = _messages.BooleanField(9)
-  name = _messages.StringField(10)
-  outputVersionFormat = _messages.EnumField('OutputVersionFormatValueValuesEnum', 11)
-  updateTime = _messages.StringField(12)
-  writerIdentity = _messages.StringField(13)
+  exclusions = _messages.MessageField('LogExclusion', 6, repeated=True)
+  filter = _messages.StringField(7)
+  includeChildren = _messages.BooleanField(8)
+  name = _messages.StringField(9)
+  outputVersionFormat = _messages.EnumField('OutputVersionFormatValueValuesEnum', 10)
+  updateTime = _messages.StringField(11)
+  writerIdentity = _messages.StringField(12)
 
 
 class LogView(_messages.Message):
-  r"""Describes a view over logs in a bucket.
+  r"""Describes a view over log entries in a bucket.
 
   Fields:
     createTime: Output only. The creation timestamp of the view.
     description: Describes this view.
     filter: Filter that restricts which log entries in a bucket are visible in
-      this view. Filters are restricted to be a logical AND of ==/!= of any of
+      this view.Filters are restricted to be a logical AND of ==/!= of any of
       the following: originating project/folder/organization/billing account.
-      resource type log id Example: SOURCE("projects/myproject") AND
+      resource type log idFor example:SOURCE("projects/myproject") AND
       resource.type = "gce_instance" AND LOG_ID("stdout")
-    name: The resource name of the view. For example "projects/my-project-
-      id/locations/my-location/buckets/my-bucket-id/views/my-view
+    name: The resource name of the view.For example:projects/my-
+      project/locations/global/buckets/my-bucket/views/my-view
     schema: Output only. Describes the schema of the logs stored in the bucket
-      that are accessible via this view. This field is only populated for
-      views in analytics-enabled buckets.
+      that are accessible via this view.This field is only populated for views
+      in analytics-enabled buckets.
     updateTime: Output only. The last update timestamp of the view.
   """
 
@@ -1535,9 +1494,8 @@ class LoggingBillingAccountsBucketsGetRequest(_messages.Message):
       anizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]
       " "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/
       [BUCKET_ID]"
-      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
-      Example: "projects/my-project-id/locations/my-location/buckets/my-
-      bucket-id".
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" For
+      example:"projects/my-project/locations/global/buckets/my-bucket"
   """
 
   name = _messages.StringField(1, required=True)
@@ -1548,9 +1506,9 @@ class LoggingBillingAccountsBucketsViewsGetRequest(_messages.Message):
 
   Fields:
     name: Required. The resource name of the policy: "projects/[PROJECT_ID]/lo
-      cations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]" Example:
-      "projects/my-project-id/locations/my-location/buckets/my-bucket-
-      id/views/my-view-id".
+      cations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]" For
+      example:"projects/my-project/locations/global/buckets/my-
+      bucket/views/my-view"
   """
 
   name = _messages.StringField(1, required=True)
@@ -1563,8 +1521,8 @@ class LoggingBillingAccountsExclusionsCreateRequest(_messages.Message):
     logExclusion: A LogExclusion resource to be passed as the request body.
     parent: Required. The parent resource in which to create the exclusion:
       "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
-      "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]" Examples:
-      "projects/my-logging-project", "organizations/123456789".
+      "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]" For
+      examples:"projects/my-logging-project" "organizations/123456789"
   """
 
   logExclusion = _messages.MessageField('LogExclusion', 1)
@@ -1579,8 +1537,8 @@ class LoggingBillingAccountsExclusionsDeleteRequest(_messages.Message):
       "projects/[PROJECT_ID]/exclusions/[EXCLUSION_ID]"
       "organizations/[ORGANIZATION_ID]/exclusions/[EXCLUSION_ID]"
       "billingAccounts/[BILLING_ACCOUNT_ID]/exclusions/[EXCLUSION_ID]"
-      "folders/[FOLDER_ID]/exclusions/[EXCLUSION_ID]" Example: "projects/my-
-      project-id/exclusions/my-exclusion-id".
+      "folders/[FOLDER_ID]/exclusions/[EXCLUSION_ID]" For
+      example:"projects/my-project/exclusions/my-exclusion"
   """
 
   name = _messages.StringField(1, required=True)
@@ -1594,8 +1552,8 @@ class LoggingBillingAccountsExclusionsGetRequest(_messages.Message):
       "projects/[PROJECT_ID]/exclusions/[EXCLUSION_ID]"
       "organizations/[ORGANIZATION_ID]/exclusions/[EXCLUSION_ID]"
       "billingAccounts/[BILLING_ACCOUNT_ID]/exclusions/[EXCLUSION_ID]"
-      "folders/[FOLDER_ID]/exclusions/[EXCLUSION_ID]" Example: "projects/my-
-      project-id/exclusions/my-exclusion-id".
+      "folders/[FOLDER_ID]/exclusions/[EXCLUSION_ID]" For
+      example:"projects/my-project/exclusions/my-exclusion"
   """
 
   name = _messages.StringField(1, required=True)
@@ -1631,8 +1589,8 @@ class LoggingBillingAccountsExclusionsPatchRequest(_messages.Message):
       "projects/[PROJECT_ID]/exclusions/[EXCLUSION_ID]"
       "organizations/[ORGANIZATION_ID]/exclusions/[EXCLUSION_ID]"
       "billingAccounts/[BILLING_ACCOUNT_ID]/exclusions/[EXCLUSION_ID]"
-      "folders/[FOLDER_ID]/exclusions/[EXCLUSION_ID]" Example: "projects/my-
-      project-id/exclusions/my-exclusion-id".
+      "folders/[FOLDER_ID]/exclusions/[EXCLUSION_ID]" For
+      example:"projects/my-project/exclusions/my-exclusion"
     updateMask: Required. A non-empty list of fields to change in the existing
       exclusion. New values for the fields are taken from the corresponding
       fields in the LogExclusion included in this request. Fields not
@@ -1654,9 +1612,9 @@ class LoggingBillingAccountsLocationsBucketsCreateRequest(_messages.Message):
       Identifiers are limited to 100 characters and can include only letters,
       digits, underscores, hyphens, and periods.
     logBucket: A LogBucket resource to be passed as the request body.
-    parent: Required. The resource in which to create the bucket:
-      "projects/[PROJECT_ID]/locations/[LOCATION_ID]" Example: "projects/my-
-      logging-project/locations/global"
+    parent: Required. The resource in which to create the log bucket:
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]" For
+      example:"projects/my-project/locations/global"
   """
 
   bucketId = _messages.StringField(1)
@@ -1673,9 +1631,8 @@ class LoggingBillingAccountsLocationsBucketsDeleteRequest(_messages.Message):
       anizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]
       " "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/
       [BUCKET_ID]"
-      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
-      Example: "projects/my-project-id/locations/my-location/buckets/my-
-      bucket-id".
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" For
+      example:"projects/my-project/locations/global/buckets/my-bucket"
   """
 
   name = _messages.StringField(1, required=True)
@@ -1716,17 +1673,15 @@ class LoggingBillingAccountsLocationsBucketsPatchRequest(_messages.Message):
       anizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]
       " "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/
       [BUCKET_ID]"
-      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
-      Example: "projects/my-project-id/locations/my-location/buckets/my-
-      bucket-id". Also requires permission
-      "resourcemanager.projects.updateLiens" to set the locked property
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" For
+      example:"projects/my-project/locations/global/buckets/my-bucket"
     updateMask: Required. Field mask that specifies the fields in bucket that
       need an update. A bucket field will be overwritten if, and only if, it
       is in the update mask. name and output only fields cannot be updated.For
-      a detailed FieldMask definition, see
+      a detailed FieldMask definition, see:
       https://developers.google.com/protocol-
-      buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskExample:
-      updateMask=retention_days.
+      buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskFor
+      example: updateMask=retention_days
   """
 
   logBucket = _messages.MessageField('LogBucket', 1)
@@ -1763,9 +1718,8 @@ class LoggingBillingAccountsLocationsBucketsUndeleteRequest(_messages.Message):
       anizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]
       " "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/
       [BUCKET_ID]"
-      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
-      Example: "projects/my-project-id/locations/my-location/buckets/my-
-      bucket-id".
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" For
+      example:"projects/my-project/locations/global/buckets/my-bucket"
     undeleteBucketRequest: A UndeleteBucketRequest resource to be passed as
       the request body.
   """
@@ -1780,9 +1734,8 @@ class LoggingBillingAccountsLocationsBucketsViewsCreateRequest(_messages.Message
   Fields:
     logView: A LogView resource to be passed as the request body.
     parent: Required. The bucket in which to create the view
-      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
-      Example: "projects/my-logging-project/locations/my-location/buckets/my-
-      bucket"
+      `"projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"`
+      For example:"projects/my-project/locations/global/buckets/my-bucket"
     viewId: Required. The id to use for this view.
   """
 
@@ -1797,8 +1750,8 @@ class LoggingBillingAccountsLocationsBucketsViewsDeleteRequest(_messages.Message
   Fields:
     name: Required. The full resource name of the view to delete: "projects/[P
       ROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]"
-      Example: "projects/my-project-id/locations/my-location/buckets/my-
-      bucket-id/views/my-view-id".
+      For example:"projects/my-project/locations/global/buckets/my-
+      bucket/views/my-view"
   """
 
   name = _messages.StringField(1, required=True)
@@ -1809,7 +1762,7 @@ class LoggingBillingAccountsLocationsBucketsViewsListRequest(_messages.Message):
 
   Fields:
     pageSize: Optional. The maximum number of results to return from this
-      request. Non-positive values are ignored. The presence of nextPageToken
+      request.Non-positive values are ignored. The presence of nextPageToken
       in the response indicates that more results might be available.
     pageToken: Optional. If present, then retrieve the next batch of results
       from the preceding call to this method. pageToken must be the value of
@@ -1831,15 +1784,15 @@ class LoggingBillingAccountsLocationsBucketsViewsPatchRequest(_messages.Message)
     logView: A LogView resource to be passed as the request body.
     name: Required. The full resource name of the view to update "projects/[PR
       OJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]"
-      Example: "projects/my-project-id/locations/my-location/buckets/my-
-      bucket-id/views/my-view-id".
+      For example:"projects/my-project/locations/global/buckets/my-
+      bucket/views/my-view"
     updateMask: Optional. Field mask that specifies the fields in view that
       need an update. A field will be overwritten if, and only if, it is in
       the update mask. name and output only fields cannot be updated.For a
       detailed FieldMask definition, see
       https://developers.google.com/protocol-
-      buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskExample:
-      updateMask=filter.
+      buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskFor
+      example: updateMask=filter
   """
 
   logView = _messages.MessageField('LogView', 1)
@@ -1971,18 +1924,18 @@ class LoggingBillingAccountsSinksCreateRequest(_messages.Message):
     logSink: A LogSink resource to be passed as the request body.
     parent: Required. The resource in which to create the sink:
       "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
-      "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]" Examples:
-      "projects/my-logging-project", "organizations/123456789".
+      "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]" For
+      examples:"projects/my-project" "organizations/123456789"
     uniqueWriterIdentity: Optional. Determines the kind of IAM identity
       returned as writer_identity in the new sink. If this value is omitted or
       set to false, and if the sink's parent is a project, then the value
       returned as writer_identity is the same group or service account used by
-      Logging before the addition of writer identities to this API. The sink's
-      destination must be in the same project as the sink itself.If this field
-      is set to true, or if the sink is owned by a non-project resource such
-      as an organization, then the value of writer_identity will be a unique
-      service account used only for exports from the new sink. For more
-      information, see writer_identity in LogSink.
+      Cloud Logging before the addition of writer identities to this API. The
+      sink's destination must be in the same project as the sink itself.If
+      this field is set to true, or if the sink is owned by a non-project
+      resource such as an organization, then the value of writer_identity will
+      be a unique service account used only for exports from the new sink. For
+      more information, see writer_identity in LogSink.
   """
 
   logSink = _messages.MessageField('LogSink', 1)
@@ -1999,8 +1952,8 @@ class LoggingBillingAccountsSinksDeleteRequest(_messages.Message):
       "projects/[PROJECT_ID]/sinks/[SINK_ID]"
       "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"
       "billingAccounts/[BILLING_ACCOUNT_ID]/sinks/[SINK_ID]"
-      "folders/[FOLDER_ID]/sinks/[SINK_ID]" Example: "projects/my-project-
-      id/sinks/my-sink-id".
+      "folders/[FOLDER_ID]/sinks/[SINK_ID]" For example:"projects/my-
+      project/sinks/my-sink"
   """
 
   sinkName = _messages.StringField(1, required=True)
@@ -2014,8 +1967,8 @@ class LoggingBillingAccountsSinksGetRequest(_messages.Message):
       "projects/[PROJECT_ID]/sinks/[SINK_ID]"
       "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"
       "billingAccounts/[BILLING_ACCOUNT_ID]/sinks/[SINK_ID]"
-      "folders/[FOLDER_ID]/sinks/[SINK_ID]" Example: "projects/my-project-
-      id/sinks/my-sink-id".
+      "folders/[FOLDER_ID]/sinks/[SINK_ID]" For example:"projects/my-
+      project/sinks/my-sink"
   """
 
   sinkName = _messages.StringField(1, required=True)
@@ -2052,8 +2005,8 @@ class LoggingBillingAccountsSinksPatchRequest(_messages.Message):
       "projects/[PROJECT_ID]/sinks/[SINK_ID]"
       "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"
       "billingAccounts/[BILLING_ACCOUNT_ID]/sinks/[SINK_ID]"
-      "folders/[FOLDER_ID]/sinks/[SINK_ID]" Example: "projects/my-project-
-      id/sinks/my-sink-id".
+      "folders/[FOLDER_ID]/sinks/[SINK_ID]" For example:"projects/my-
+      project/sinks/my-sink"
     uniqueWriterIdentity: Optional. See sinks.create for a description of this
       field. When updating a sink, the effect of this field on the value of
       writer_identity in the updated sink depends on both the old and new
@@ -2067,12 +2020,12 @@ class LoggingBillingAccountsSinksPatchRequest(_messages.Message):
       need an update. A sink field will be overwritten if, and only if, it is
       in the update mask. name and output only fields cannot be updated.An
       empty updateMask is temporarily treated as using the following mask for
-      backwards compatibility purposes: destination,filter,includeChildren At
+      backwards compatibility purposes:destination,filter,includeChildrenAt
       some point in the future, behavior will be removed and specifying an
       empty updateMask will be an error.For a detailed FieldMask definition,
       see https://developers.google.com/protocol-
-      buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskExample:
-      updateMask=filter.
+      buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskFor
+      example: updateMask=filter
   """
 
   logSink = _messages.MessageField('LogSink', 1)
@@ -2091,8 +2044,8 @@ class LoggingBillingAccountsSinksUpdateRequest(_messages.Message):
       "projects/[PROJECT_ID]/sinks/[SINK_ID]"
       "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"
       "billingAccounts/[BILLING_ACCOUNT_ID]/sinks/[SINK_ID]"
-      "folders/[FOLDER_ID]/sinks/[SINK_ID]" Example: "projects/my-project-
-      id/sinks/my-sink-id".
+      "folders/[FOLDER_ID]/sinks/[SINK_ID]" For example:"projects/my-
+      project/sinks/my-sink"
     uniqueWriterIdentity: Optional. See sinks.create for a description of this
       field. When updating a sink, the effect of this field on the value of
       writer_identity in the updated sink depends on both the old and new
@@ -2106,12 +2059,12 @@ class LoggingBillingAccountsSinksUpdateRequest(_messages.Message):
       need an update. A sink field will be overwritten if, and only if, it is
       in the update mask. name and output only fields cannot be updated.An
       empty updateMask is temporarily treated as using the following mask for
-      backwards compatibility purposes: destination,filter,includeChildren At
+      backwards compatibility purposes:destination,filter,includeChildrenAt
       some point in the future, behavior will be removed and specifying an
       empty updateMask will be an error.For a detailed FieldMask definition,
       see https://developers.google.com/protocol-
-      buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskExample:
-      updateMask=filter.
+      buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskFor
+      example: updateMask=filter
   """
 
   logSink = _messages.MessageField('LogSink', 1)
@@ -2127,8 +2080,8 @@ class LoggingExclusionsCreateRequest(_messages.Message):
     logExclusion: A LogExclusion resource to be passed as the request body.
     parent: Required. The parent resource in which to create the exclusion:
       "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
-      "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]" Examples:
-      "projects/my-logging-project", "organizations/123456789".
+      "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]" For
+      examples:"projects/my-logging-project" "organizations/123456789"
   """
 
   logExclusion = _messages.MessageField('LogExclusion', 1)
@@ -2143,8 +2096,8 @@ class LoggingExclusionsDeleteRequest(_messages.Message):
       "projects/[PROJECT_ID]/exclusions/[EXCLUSION_ID]"
       "organizations/[ORGANIZATION_ID]/exclusions/[EXCLUSION_ID]"
       "billingAccounts/[BILLING_ACCOUNT_ID]/exclusions/[EXCLUSION_ID]"
-      "folders/[FOLDER_ID]/exclusions/[EXCLUSION_ID]" Example: "projects/my-
-      project-id/exclusions/my-exclusion-id".
+      "folders/[FOLDER_ID]/exclusions/[EXCLUSION_ID]" For
+      example:"projects/my-project/exclusions/my-exclusion"
   """
 
   name = _messages.StringField(1, required=True)
@@ -2158,8 +2111,8 @@ class LoggingExclusionsGetRequest(_messages.Message):
       "projects/[PROJECT_ID]/exclusions/[EXCLUSION_ID]"
       "organizations/[ORGANIZATION_ID]/exclusions/[EXCLUSION_ID]"
       "billingAccounts/[BILLING_ACCOUNT_ID]/exclusions/[EXCLUSION_ID]"
-      "folders/[FOLDER_ID]/exclusions/[EXCLUSION_ID]" Example: "projects/my-
-      project-id/exclusions/my-exclusion-id".
+      "folders/[FOLDER_ID]/exclusions/[EXCLUSION_ID]" For
+      example:"projects/my-project/exclusions/my-exclusion"
   """
 
   name = _messages.StringField(1, required=True)
@@ -2195,8 +2148,8 @@ class LoggingExclusionsPatchRequest(_messages.Message):
       "projects/[PROJECT_ID]/exclusions/[EXCLUSION_ID]"
       "organizations/[ORGANIZATION_ID]/exclusions/[EXCLUSION_ID]"
       "billingAccounts/[BILLING_ACCOUNT_ID]/exclusions/[EXCLUSION_ID]"
-      "folders/[FOLDER_ID]/exclusions/[EXCLUSION_ID]" Example: "projects/my-
-      project-id/exclusions/my-exclusion-id".
+      "folders/[FOLDER_ID]/exclusions/[EXCLUSION_ID]" For
+      example:"projects/my-project/exclusions/my-exclusion"
     updateMask: Required. A non-empty list of fields to change in the existing
       exclusion. New values for the fields are taken from the corresponding
       fields in the LogExclusion included in this request. Fields not
@@ -2217,8 +2170,8 @@ class LoggingFoldersExclusionsCreateRequest(_messages.Message):
     logExclusion: A LogExclusion resource to be passed as the request body.
     parent: Required. The parent resource in which to create the exclusion:
       "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
-      "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]" Examples:
-      "projects/my-logging-project", "organizations/123456789".
+      "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]" For
+      examples:"projects/my-logging-project" "organizations/123456789"
   """
 
   logExclusion = _messages.MessageField('LogExclusion', 1)
@@ -2233,8 +2186,8 @@ class LoggingFoldersExclusionsDeleteRequest(_messages.Message):
       "projects/[PROJECT_ID]/exclusions/[EXCLUSION_ID]"
       "organizations/[ORGANIZATION_ID]/exclusions/[EXCLUSION_ID]"
       "billingAccounts/[BILLING_ACCOUNT_ID]/exclusions/[EXCLUSION_ID]"
-      "folders/[FOLDER_ID]/exclusions/[EXCLUSION_ID]" Example: "projects/my-
-      project-id/exclusions/my-exclusion-id".
+      "folders/[FOLDER_ID]/exclusions/[EXCLUSION_ID]" For
+      example:"projects/my-project/exclusions/my-exclusion"
   """
 
   name = _messages.StringField(1, required=True)
@@ -2248,8 +2201,8 @@ class LoggingFoldersExclusionsGetRequest(_messages.Message):
       "projects/[PROJECT_ID]/exclusions/[EXCLUSION_ID]"
       "organizations/[ORGANIZATION_ID]/exclusions/[EXCLUSION_ID]"
       "billingAccounts/[BILLING_ACCOUNT_ID]/exclusions/[EXCLUSION_ID]"
-      "folders/[FOLDER_ID]/exclusions/[EXCLUSION_ID]" Example: "projects/my-
-      project-id/exclusions/my-exclusion-id".
+      "folders/[FOLDER_ID]/exclusions/[EXCLUSION_ID]" For
+      example:"projects/my-project/exclusions/my-exclusion"
   """
 
   name = _messages.StringField(1, required=True)
@@ -2285,8 +2238,8 @@ class LoggingFoldersExclusionsPatchRequest(_messages.Message):
       "projects/[PROJECT_ID]/exclusions/[EXCLUSION_ID]"
       "organizations/[ORGANIZATION_ID]/exclusions/[EXCLUSION_ID]"
       "billingAccounts/[BILLING_ACCOUNT_ID]/exclusions/[EXCLUSION_ID]"
-      "folders/[FOLDER_ID]/exclusions/[EXCLUSION_ID]" Example: "projects/my-
-      project-id/exclusions/my-exclusion-id".
+      "folders/[FOLDER_ID]/exclusions/[EXCLUSION_ID]" For
+      example:"projects/my-project/exclusions/my-exclusion"
     updateMask: Required. A non-empty list of fields to change in the existing
       exclusion. New values for the fields are taken from the corresponding
       fields in the LogExclusion included in this request. Fields not
@@ -2308,9 +2261,9 @@ class LoggingFoldersLocationsBucketsCreateRequest(_messages.Message):
       Identifiers are limited to 100 characters and can include only letters,
       digits, underscores, hyphens, and periods.
     logBucket: A LogBucket resource to be passed as the request body.
-    parent: Required. The resource in which to create the bucket:
-      "projects/[PROJECT_ID]/locations/[LOCATION_ID]" Example: "projects/my-
-      logging-project/locations/global"
+    parent: Required. The resource in which to create the log bucket:
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]" For
+      example:"projects/my-project/locations/global"
   """
 
   bucketId = _messages.StringField(1)
@@ -2327,9 +2280,8 @@ class LoggingFoldersLocationsBucketsDeleteRequest(_messages.Message):
       anizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]
       " "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/
       [BUCKET_ID]"
-      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
-      Example: "projects/my-project-id/locations/my-location/buckets/my-
-      bucket-id".
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" For
+      example:"projects/my-project/locations/global/buckets/my-bucket"
   """
 
   name = _messages.StringField(1, required=True)
@@ -2344,9 +2296,8 @@ class LoggingFoldersLocationsBucketsGetRequest(_messages.Message):
       anizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]
       " "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/
       [BUCKET_ID]"
-      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
-      Example: "projects/my-project-id/locations/my-location/buckets/my-
-      bucket-id".
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" For
+      example:"projects/my-project/locations/global/buckets/my-bucket"
   """
 
   name = _messages.StringField(1, required=True)
@@ -2387,17 +2338,15 @@ class LoggingFoldersLocationsBucketsPatchRequest(_messages.Message):
       anizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]
       " "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/
       [BUCKET_ID]"
-      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
-      Example: "projects/my-project-id/locations/my-location/buckets/my-
-      bucket-id". Also requires permission
-      "resourcemanager.projects.updateLiens" to set the locked property
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" For
+      example:"projects/my-project/locations/global/buckets/my-bucket"
     updateMask: Required. Field mask that specifies the fields in bucket that
       need an update. A bucket field will be overwritten if, and only if, it
       is in the update mask. name and output only fields cannot be updated.For
-      a detailed FieldMask definition, see
+      a detailed FieldMask definition, see:
       https://developers.google.com/protocol-
-      buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskExample:
-      updateMask=retention_days.
+      buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskFor
+      example: updateMask=retention_days
   """
 
   logBucket = _messages.MessageField('LogBucket', 1)
@@ -2434,9 +2383,8 @@ class LoggingFoldersLocationsBucketsUndeleteRequest(_messages.Message):
       anizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]
       " "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/
       [BUCKET_ID]"
-      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
-      Example: "projects/my-project-id/locations/my-location/buckets/my-
-      bucket-id".
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" For
+      example:"projects/my-project/locations/global/buckets/my-bucket"
     undeleteBucketRequest: A UndeleteBucketRequest resource to be passed as
       the request body.
   """
@@ -2451,9 +2399,8 @@ class LoggingFoldersLocationsBucketsViewsCreateRequest(_messages.Message):
   Fields:
     logView: A LogView resource to be passed as the request body.
     parent: Required. The bucket in which to create the view
-      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
-      Example: "projects/my-logging-project/locations/my-location/buckets/my-
-      bucket"
+      `"projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"`
+      For example:"projects/my-project/locations/global/buckets/my-bucket"
     viewId: Required. The id to use for this view.
   """
 
@@ -2468,8 +2415,8 @@ class LoggingFoldersLocationsBucketsViewsDeleteRequest(_messages.Message):
   Fields:
     name: Required. The full resource name of the view to delete: "projects/[P
       ROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]"
-      Example: "projects/my-project-id/locations/my-location/buckets/my-
-      bucket-id/views/my-view-id".
+      For example:"projects/my-project/locations/global/buckets/my-
+      bucket/views/my-view"
   """
 
   name = _messages.StringField(1, required=True)
@@ -2480,9 +2427,9 @@ class LoggingFoldersLocationsBucketsViewsGetRequest(_messages.Message):
 
   Fields:
     name: Required. The resource name of the policy: "projects/[PROJECT_ID]/lo
-      cations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]" Example:
-      "projects/my-project-id/locations/my-location/buckets/my-bucket-
-      id/views/my-view-id".
+      cations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]" For
+      example:"projects/my-project/locations/global/buckets/my-
+      bucket/views/my-view"
   """
 
   name = _messages.StringField(1, required=True)
@@ -2493,7 +2440,7 @@ class LoggingFoldersLocationsBucketsViewsListRequest(_messages.Message):
 
   Fields:
     pageSize: Optional. The maximum number of results to return from this
-      request. Non-positive values are ignored. The presence of nextPageToken
+      request.Non-positive values are ignored. The presence of nextPageToken
       in the response indicates that more results might be available.
     pageToken: Optional. If present, then retrieve the next batch of results
       from the preceding call to this method. pageToken must be the value of
@@ -2515,15 +2462,15 @@ class LoggingFoldersLocationsBucketsViewsPatchRequest(_messages.Message):
     logView: A LogView resource to be passed as the request body.
     name: Required. The full resource name of the view to update "projects/[PR
       OJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]"
-      Example: "projects/my-project-id/locations/my-location/buckets/my-
-      bucket-id/views/my-view-id".
+      For example:"projects/my-project/locations/global/buckets/my-
+      bucket/views/my-view"
     updateMask: Optional. Field mask that specifies the fields in view that
       need an update. A field will be overwritten if, and only if, it is in
       the update mask. name and output only fields cannot be updated.For a
       detailed FieldMask definition, see
       https://developers.google.com/protocol-
-      buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskExample:
-      updateMask=filter.
+      buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskFor
+      example: updateMask=filter
   """
 
   logView = _messages.MessageField('LogView', 1)
@@ -2655,18 +2602,18 @@ class LoggingFoldersSinksCreateRequest(_messages.Message):
     logSink: A LogSink resource to be passed as the request body.
     parent: Required. The resource in which to create the sink:
       "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
-      "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]" Examples:
-      "projects/my-logging-project", "organizations/123456789".
+      "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]" For
+      examples:"projects/my-project" "organizations/123456789"
     uniqueWriterIdentity: Optional. Determines the kind of IAM identity
       returned as writer_identity in the new sink. If this value is omitted or
       set to false, and if the sink's parent is a project, then the value
       returned as writer_identity is the same group or service account used by
-      Logging before the addition of writer identities to this API. The sink's
-      destination must be in the same project as the sink itself.If this field
-      is set to true, or if the sink is owned by a non-project resource such
-      as an organization, then the value of writer_identity will be a unique
-      service account used only for exports from the new sink. For more
-      information, see writer_identity in LogSink.
+      Cloud Logging before the addition of writer identities to this API. The
+      sink's destination must be in the same project as the sink itself.If
+      this field is set to true, or if the sink is owned by a non-project
+      resource such as an organization, then the value of writer_identity will
+      be a unique service account used only for exports from the new sink. For
+      more information, see writer_identity in LogSink.
   """
 
   logSink = _messages.MessageField('LogSink', 1)
@@ -2683,8 +2630,8 @@ class LoggingFoldersSinksDeleteRequest(_messages.Message):
       "projects/[PROJECT_ID]/sinks/[SINK_ID]"
       "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"
       "billingAccounts/[BILLING_ACCOUNT_ID]/sinks/[SINK_ID]"
-      "folders/[FOLDER_ID]/sinks/[SINK_ID]" Example: "projects/my-project-
-      id/sinks/my-sink-id".
+      "folders/[FOLDER_ID]/sinks/[SINK_ID]" For example:"projects/my-
+      project/sinks/my-sink"
   """
 
   sinkName = _messages.StringField(1, required=True)
@@ -2698,8 +2645,8 @@ class LoggingFoldersSinksGetRequest(_messages.Message):
       "projects/[PROJECT_ID]/sinks/[SINK_ID]"
       "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"
       "billingAccounts/[BILLING_ACCOUNT_ID]/sinks/[SINK_ID]"
-      "folders/[FOLDER_ID]/sinks/[SINK_ID]" Example: "projects/my-project-
-      id/sinks/my-sink-id".
+      "folders/[FOLDER_ID]/sinks/[SINK_ID]" For example:"projects/my-
+      project/sinks/my-sink"
   """
 
   sinkName = _messages.StringField(1, required=True)
@@ -2736,8 +2683,8 @@ class LoggingFoldersSinksPatchRequest(_messages.Message):
       "projects/[PROJECT_ID]/sinks/[SINK_ID]"
       "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"
       "billingAccounts/[BILLING_ACCOUNT_ID]/sinks/[SINK_ID]"
-      "folders/[FOLDER_ID]/sinks/[SINK_ID]" Example: "projects/my-project-
-      id/sinks/my-sink-id".
+      "folders/[FOLDER_ID]/sinks/[SINK_ID]" For example:"projects/my-
+      project/sinks/my-sink"
     uniqueWriterIdentity: Optional. See sinks.create for a description of this
       field. When updating a sink, the effect of this field on the value of
       writer_identity in the updated sink depends on both the old and new
@@ -2751,12 +2698,12 @@ class LoggingFoldersSinksPatchRequest(_messages.Message):
       need an update. A sink field will be overwritten if, and only if, it is
       in the update mask. name and output only fields cannot be updated.An
       empty updateMask is temporarily treated as using the following mask for
-      backwards compatibility purposes: destination,filter,includeChildren At
+      backwards compatibility purposes:destination,filter,includeChildrenAt
       some point in the future, behavior will be removed and specifying an
       empty updateMask will be an error.For a detailed FieldMask definition,
       see https://developers.google.com/protocol-
-      buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskExample:
-      updateMask=filter.
+      buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskFor
+      example: updateMask=filter
   """
 
   logSink = _messages.MessageField('LogSink', 1)
@@ -2775,8 +2722,8 @@ class LoggingFoldersSinksUpdateRequest(_messages.Message):
       "projects/[PROJECT_ID]/sinks/[SINK_ID]"
       "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"
       "billingAccounts/[BILLING_ACCOUNT_ID]/sinks/[SINK_ID]"
-      "folders/[FOLDER_ID]/sinks/[SINK_ID]" Example: "projects/my-project-
-      id/sinks/my-sink-id".
+      "folders/[FOLDER_ID]/sinks/[SINK_ID]" For example:"projects/my-
+      project/sinks/my-sink"
     uniqueWriterIdentity: Optional. See sinks.create for a description of this
       field. When updating a sink, the effect of this field on the value of
       writer_identity in the updated sink depends on both the old and new
@@ -2790,12 +2737,12 @@ class LoggingFoldersSinksUpdateRequest(_messages.Message):
       need an update. A sink field will be overwritten if, and only if, it is
       in the update mask. name and output only fields cannot be updated.An
       empty updateMask is temporarily treated as using the following mask for
-      backwards compatibility purposes: destination,filter,includeChildren At
+      backwards compatibility purposes:destination,filter,includeChildrenAt
       some point in the future, behavior will be removed and specifying an
       empty updateMask will be an error.For a detailed FieldMask definition,
       see https://developers.google.com/protocol-
-      buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskExample:
-      updateMask=filter.
+      buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskFor
+      example: updateMask=filter
   """
 
   logSink = _messages.MessageField('LogSink', 1)
@@ -2812,10 +2759,10 @@ class LoggingGetCmekSettingsRequest(_messages.Message):
       "projects/[PROJECT_ID]/cmekSettings"
       "organizations/[ORGANIZATION_ID]/cmekSettings"
       "billingAccounts/[BILLING_ACCOUNT_ID]/cmekSettings"
-      "folders/[FOLDER_ID]/cmekSettings" Example:
-      "organizations/12345/cmekSettings".Note: CMEK for the Logs Router can
-      currently only be configured for GCP organizations. Once configured, it
-      applies to all projects and folders in the GCP organization.
+      "folders/[FOLDER_ID]/cmekSettings" For
+      example:"organizations/12345/cmekSettings"Note: CMEK for the Logs Router
+      can currently only be configured for GCP organizations. Once configured,
+      it applies to all projects and folders in the GCP organization.
   """
 
   name = _messages.StringField(1, required=True)
@@ -2829,9 +2776,9 @@ class LoggingLocationsBucketsCreateRequest(_messages.Message):
       Identifiers are limited to 100 characters and can include only letters,
       digits, underscores, hyphens, and periods.
     logBucket: A LogBucket resource to be passed as the request body.
-    parent: Required. The resource in which to create the bucket:
-      "projects/[PROJECT_ID]/locations/[LOCATION_ID]" Example: "projects/my-
-      logging-project/locations/global"
+    parent: Required. The resource in which to create the log bucket:
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]" For
+      example:"projects/my-project/locations/global"
   """
 
   bucketId = _messages.StringField(1)
@@ -2848,9 +2795,8 @@ class LoggingLocationsBucketsDeleteRequest(_messages.Message):
       anizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]
       " "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/
       [BUCKET_ID]"
-      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
-      Example: "projects/my-project-id/locations/my-location/buckets/my-
-      bucket-id".
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" For
+      example:"projects/my-project/locations/global/buckets/my-bucket"
   """
 
   name = _messages.StringField(1, required=True)
@@ -2865,9 +2811,8 @@ class LoggingLocationsBucketsGetRequest(_messages.Message):
       anizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]
       " "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/
       [BUCKET_ID]"
-      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
-      Example: "projects/my-project-id/locations/my-location/buckets/my-
-      bucket-id".
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" For
+      example:"projects/my-project/locations/global/buckets/my-bucket"
   """
 
   name = _messages.StringField(1, required=True)
@@ -2908,17 +2853,15 @@ class LoggingLocationsBucketsPatchRequest(_messages.Message):
       anizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]
       " "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/
       [BUCKET_ID]"
-      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
-      Example: "projects/my-project-id/locations/my-location/buckets/my-
-      bucket-id". Also requires permission
-      "resourcemanager.projects.updateLiens" to set the locked property
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" For
+      example:"projects/my-project/locations/global/buckets/my-bucket"
     updateMask: Required. Field mask that specifies the fields in bucket that
       need an update. A bucket field will be overwritten if, and only if, it
       is in the update mask. name and output only fields cannot be updated.For
-      a detailed FieldMask definition, see
+      a detailed FieldMask definition, see:
       https://developers.google.com/protocol-
-      buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskExample:
-      updateMask=retention_days.
+      buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskFor
+      example: updateMask=retention_days
   """
 
   logBucket = _messages.MessageField('LogBucket', 1)
@@ -2966,9 +2909,8 @@ class LoggingLocationsBucketsUndeleteRequest(_messages.Message):
       anizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]
       " "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/
       [BUCKET_ID]"
-      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
-      Example: "projects/my-project-id/locations/my-location/buckets/my-
-      bucket-id".
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" For
+      example:"projects/my-project/locations/global/buckets/my-bucket"
     undeleteBucketRequest: A UndeleteBucketRequest resource to be passed as
       the request body.
   """
@@ -2983,9 +2925,8 @@ class LoggingLocationsBucketsViewsCreateRequest(_messages.Message):
   Fields:
     logView: A LogView resource to be passed as the request body.
     parent: Required. The bucket in which to create the view
-      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
-      Example: "projects/my-logging-project/locations/my-location/buckets/my-
-      bucket"
+      `"projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"`
+      For example:"projects/my-project/locations/global/buckets/my-bucket"
     viewId: Required. The id to use for this view.
   """
 
@@ -3000,8 +2941,8 @@ class LoggingLocationsBucketsViewsDeleteRequest(_messages.Message):
   Fields:
     name: Required. The full resource name of the view to delete: "projects/[P
       ROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]"
-      Example: "projects/my-project-id/locations/my-location/buckets/my-
-      bucket-id/views/my-view-id".
+      For example:"projects/my-project/locations/global/buckets/my-
+      bucket/views/my-view"
   """
 
   name = _messages.StringField(1, required=True)
@@ -3012,9 +2953,9 @@ class LoggingLocationsBucketsViewsGetRequest(_messages.Message):
 
   Fields:
     name: Required. The resource name of the policy: "projects/[PROJECT_ID]/lo
-      cations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]" Example:
-      "projects/my-project-id/locations/my-location/buckets/my-bucket-
-      id/views/my-view-id".
+      cations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]" For
+      example:"projects/my-project/locations/global/buckets/my-
+      bucket/views/my-view"
   """
 
   name = _messages.StringField(1, required=True)
@@ -3025,7 +2966,7 @@ class LoggingLocationsBucketsViewsListRequest(_messages.Message):
 
   Fields:
     pageSize: Optional. The maximum number of results to return from this
-      request. Non-positive values are ignored. The presence of nextPageToken
+      request.Non-positive values are ignored. The presence of nextPageToken
       in the response indicates that more results might be available.
     pageToken: Optional. If present, then retrieve the next batch of results
       from the preceding call to this method. pageToken must be the value of
@@ -3047,15 +2988,15 @@ class LoggingLocationsBucketsViewsPatchRequest(_messages.Message):
     logView: A LogView resource to be passed as the request body.
     name: Required. The full resource name of the view to update "projects/[PR
       OJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]"
-      Example: "projects/my-project-id/locations/my-location/buckets/my-
-      bucket-id/views/my-view-id".
+      For example:"projects/my-project/locations/global/buckets/my-
+      bucket/views/my-view"
     updateMask: Optional. Field mask that specifies the fields in view that
       need an update. A field will be overwritten if, and only if, it is in
       the update mask. name and output only fields cannot be updated.For a
       detailed FieldMask definition, see
       https://developers.google.com/protocol-
-      buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskExample:
-      updateMask=filter.
+      buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskFor
+      example: updateMask=filter
   """
 
   logView = _messages.MessageField('LogView', 1)
@@ -3204,8 +3145,8 @@ class LoggingOrganizationsExclusionsCreateRequest(_messages.Message):
     logExclusion: A LogExclusion resource to be passed as the request body.
     parent: Required. The parent resource in which to create the exclusion:
       "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
-      "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]" Examples:
-      "projects/my-logging-project", "organizations/123456789".
+      "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]" For
+      examples:"projects/my-logging-project" "organizations/123456789"
   """
 
   logExclusion = _messages.MessageField('LogExclusion', 1)
@@ -3220,8 +3161,8 @@ class LoggingOrganizationsExclusionsDeleteRequest(_messages.Message):
       "projects/[PROJECT_ID]/exclusions/[EXCLUSION_ID]"
       "organizations/[ORGANIZATION_ID]/exclusions/[EXCLUSION_ID]"
       "billingAccounts/[BILLING_ACCOUNT_ID]/exclusions/[EXCLUSION_ID]"
-      "folders/[FOLDER_ID]/exclusions/[EXCLUSION_ID]" Example: "projects/my-
-      project-id/exclusions/my-exclusion-id".
+      "folders/[FOLDER_ID]/exclusions/[EXCLUSION_ID]" For
+      example:"projects/my-project/exclusions/my-exclusion"
   """
 
   name = _messages.StringField(1, required=True)
@@ -3235,8 +3176,8 @@ class LoggingOrganizationsExclusionsGetRequest(_messages.Message):
       "projects/[PROJECT_ID]/exclusions/[EXCLUSION_ID]"
       "organizations/[ORGANIZATION_ID]/exclusions/[EXCLUSION_ID]"
       "billingAccounts/[BILLING_ACCOUNT_ID]/exclusions/[EXCLUSION_ID]"
-      "folders/[FOLDER_ID]/exclusions/[EXCLUSION_ID]" Example: "projects/my-
-      project-id/exclusions/my-exclusion-id".
+      "folders/[FOLDER_ID]/exclusions/[EXCLUSION_ID]" For
+      example:"projects/my-project/exclusions/my-exclusion"
   """
 
   name = _messages.StringField(1, required=True)
@@ -3272,8 +3213,8 @@ class LoggingOrganizationsExclusionsPatchRequest(_messages.Message):
       "projects/[PROJECT_ID]/exclusions/[EXCLUSION_ID]"
       "organizations/[ORGANIZATION_ID]/exclusions/[EXCLUSION_ID]"
       "billingAccounts/[BILLING_ACCOUNT_ID]/exclusions/[EXCLUSION_ID]"
-      "folders/[FOLDER_ID]/exclusions/[EXCLUSION_ID]" Example: "projects/my-
-      project-id/exclusions/my-exclusion-id".
+      "folders/[FOLDER_ID]/exclusions/[EXCLUSION_ID]" For
+      example:"projects/my-project/exclusions/my-exclusion"
     updateMask: Required. A non-empty list of fields to change in the existing
       exclusion. New values for the fields are taken from the corresponding
       fields in the LogExclusion included in this request. Fields not
@@ -3295,10 +3236,10 @@ class LoggingOrganizationsGetCmekSettingsRequest(_messages.Message):
       "projects/[PROJECT_ID]/cmekSettings"
       "organizations/[ORGANIZATION_ID]/cmekSettings"
       "billingAccounts/[BILLING_ACCOUNT_ID]/cmekSettings"
-      "folders/[FOLDER_ID]/cmekSettings" Example:
-      "organizations/12345/cmekSettings".Note: CMEK for the Logs Router can
-      currently only be configured for GCP organizations. Once configured, it
-      applies to all projects and folders in the GCP organization.
+      "folders/[FOLDER_ID]/cmekSettings" For
+      example:"organizations/12345/cmekSettings"Note: CMEK for the Logs Router
+      can currently only be configured for GCP organizations. Once configured,
+      it applies to all projects and folders in the GCP organization.
   """
 
   name = _messages.StringField(1, required=True)
@@ -3312,9 +3253,9 @@ class LoggingOrganizationsLocationsBucketsCreateRequest(_messages.Message):
       Identifiers are limited to 100 characters and can include only letters,
       digits, underscores, hyphens, and periods.
     logBucket: A LogBucket resource to be passed as the request body.
-    parent: Required. The resource in which to create the bucket:
-      "projects/[PROJECT_ID]/locations/[LOCATION_ID]" Example: "projects/my-
-      logging-project/locations/global"
+    parent: Required. The resource in which to create the log bucket:
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]" For
+      example:"projects/my-project/locations/global"
   """
 
   bucketId = _messages.StringField(1)
@@ -3331,9 +3272,8 @@ class LoggingOrganizationsLocationsBucketsDeleteRequest(_messages.Message):
       anizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]
       " "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/
       [BUCKET_ID]"
-      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
-      Example: "projects/my-project-id/locations/my-location/buckets/my-
-      bucket-id".
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" For
+      example:"projects/my-project/locations/global/buckets/my-bucket"
   """
 
   name = _messages.StringField(1, required=True)
@@ -3348,9 +3288,8 @@ class LoggingOrganizationsLocationsBucketsGetRequest(_messages.Message):
       anizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]
       " "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/
       [BUCKET_ID]"
-      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
-      Example: "projects/my-project-id/locations/my-location/buckets/my-
-      bucket-id".
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" For
+      example:"projects/my-project/locations/global/buckets/my-bucket"
   """
 
   name = _messages.StringField(1, required=True)
@@ -3391,17 +3330,15 @@ class LoggingOrganizationsLocationsBucketsPatchRequest(_messages.Message):
       anizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]
       " "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/
       [BUCKET_ID]"
-      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
-      Example: "projects/my-project-id/locations/my-location/buckets/my-
-      bucket-id". Also requires permission
-      "resourcemanager.projects.updateLiens" to set the locked property
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" For
+      example:"projects/my-project/locations/global/buckets/my-bucket"
     updateMask: Required. Field mask that specifies the fields in bucket that
       need an update. A bucket field will be overwritten if, and only if, it
       is in the update mask. name and output only fields cannot be updated.For
-      a detailed FieldMask definition, see
+      a detailed FieldMask definition, see:
       https://developers.google.com/protocol-
-      buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskExample:
-      updateMask=retention_days.
+      buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskFor
+      example: updateMask=retention_days
   """
 
   logBucket = _messages.MessageField('LogBucket', 1)
@@ -3438,9 +3375,8 @@ class LoggingOrganizationsLocationsBucketsUndeleteRequest(_messages.Message):
       anizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]
       " "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/
       [BUCKET_ID]"
-      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
-      Example: "projects/my-project-id/locations/my-location/buckets/my-
-      bucket-id".
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" For
+      example:"projects/my-project/locations/global/buckets/my-bucket"
     undeleteBucketRequest: A UndeleteBucketRequest resource to be passed as
       the request body.
   """
@@ -3455,9 +3391,8 @@ class LoggingOrganizationsLocationsBucketsViewsCreateRequest(_messages.Message):
   Fields:
     logView: A LogView resource to be passed as the request body.
     parent: Required. The bucket in which to create the view
-      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
-      Example: "projects/my-logging-project/locations/my-location/buckets/my-
-      bucket"
+      `"projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"`
+      For example:"projects/my-project/locations/global/buckets/my-bucket"
     viewId: Required. The id to use for this view.
   """
 
@@ -3472,8 +3407,8 @@ class LoggingOrganizationsLocationsBucketsViewsDeleteRequest(_messages.Message):
   Fields:
     name: Required. The full resource name of the view to delete: "projects/[P
       ROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]"
-      Example: "projects/my-project-id/locations/my-location/buckets/my-
-      bucket-id/views/my-view-id".
+      For example:"projects/my-project/locations/global/buckets/my-
+      bucket/views/my-view"
   """
 
   name = _messages.StringField(1, required=True)
@@ -3484,9 +3419,9 @@ class LoggingOrganizationsLocationsBucketsViewsGetRequest(_messages.Message):
 
   Fields:
     name: Required. The resource name of the policy: "projects/[PROJECT_ID]/lo
-      cations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]" Example:
-      "projects/my-project-id/locations/my-location/buckets/my-bucket-
-      id/views/my-view-id".
+      cations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]" For
+      example:"projects/my-project/locations/global/buckets/my-
+      bucket/views/my-view"
   """
 
   name = _messages.StringField(1, required=True)
@@ -3497,7 +3432,7 @@ class LoggingOrganizationsLocationsBucketsViewsListRequest(_messages.Message):
 
   Fields:
     pageSize: Optional. The maximum number of results to return from this
-      request. Non-positive values are ignored. The presence of nextPageToken
+      request.Non-positive values are ignored. The presence of nextPageToken
       in the response indicates that more results might be available.
     pageToken: Optional. If present, then retrieve the next batch of results
       from the preceding call to this method. pageToken must be the value of
@@ -3519,15 +3454,15 @@ class LoggingOrganizationsLocationsBucketsViewsPatchRequest(_messages.Message):
     logView: A LogView resource to be passed as the request body.
     name: Required. The full resource name of the view to update "projects/[PR
       OJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]"
-      Example: "projects/my-project-id/locations/my-location/buckets/my-
-      bucket-id/views/my-view-id".
+      For example:"projects/my-project/locations/global/buckets/my-
+      bucket/views/my-view"
     updateMask: Optional. Field mask that specifies the fields in view that
       need an update. A field will be overwritten if, and only if, it is in
       the update mask. name and output only fields cannot be updated.For a
       detailed FieldMask definition, see
       https://developers.google.com/protocol-
-      buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskExample:
-      updateMask=filter.
+      buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskFor
+      example: updateMask=filter
   """
 
   logView = _messages.MessageField('LogView', 1)
@@ -3659,18 +3594,18 @@ class LoggingOrganizationsSinksCreateRequest(_messages.Message):
     logSink: A LogSink resource to be passed as the request body.
     parent: Required. The resource in which to create the sink:
       "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
-      "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]" Examples:
-      "projects/my-logging-project", "organizations/123456789".
+      "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]" For
+      examples:"projects/my-project" "organizations/123456789"
     uniqueWriterIdentity: Optional. Determines the kind of IAM identity
       returned as writer_identity in the new sink. If this value is omitted or
       set to false, and if the sink's parent is a project, then the value
       returned as writer_identity is the same group or service account used by
-      Logging before the addition of writer identities to this API. The sink's
-      destination must be in the same project as the sink itself.If this field
-      is set to true, or if the sink is owned by a non-project resource such
-      as an organization, then the value of writer_identity will be a unique
-      service account used only for exports from the new sink. For more
-      information, see writer_identity in LogSink.
+      Cloud Logging before the addition of writer identities to this API. The
+      sink's destination must be in the same project as the sink itself.If
+      this field is set to true, or if the sink is owned by a non-project
+      resource such as an organization, then the value of writer_identity will
+      be a unique service account used only for exports from the new sink. For
+      more information, see writer_identity in LogSink.
   """
 
   logSink = _messages.MessageField('LogSink', 1)
@@ -3687,8 +3622,8 @@ class LoggingOrganizationsSinksDeleteRequest(_messages.Message):
       "projects/[PROJECT_ID]/sinks/[SINK_ID]"
       "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"
       "billingAccounts/[BILLING_ACCOUNT_ID]/sinks/[SINK_ID]"
-      "folders/[FOLDER_ID]/sinks/[SINK_ID]" Example: "projects/my-project-
-      id/sinks/my-sink-id".
+      "folders/[FOLDER_ID]/sinks/[SINK_ID]" For example:"projects/my-
+      project/sinks/my-sink"
   """
 
   sinkName = _messages.StringField(1, required=True)
@@ -3702,8 +3637,8 @@ class LoggingOrganizationsSinksGetRequest(_messages.Message):
       "projects/[PROJECT_ID]/sinks/[SINK_ID]"
       "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"
       "billingAccounts/[BILLING_ACCOUNT_ID]/sinks/[SINK_ID]"
-      "folders/[FOLDER_ID]/sinks/[SINK_ID]" Example: "projects/my-project-
-      id/sinks/my-sink-id".
+      "folders/[FOLDER_ID]/sinks/[SINK_ID]" For example:"projects/my-
+      project/sinks/my-sink"
   """
 
   sinkName = _messages.StringField(1, required=True)
@@ -3740,8 +3675,8 @@ class LoggingOrganizationsSinksPatchRequest(_messages.Message):
       "projects/[PROJECT_ID]/sinks/[SINK_ID]"
       "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"
       "billingAccounts/[BILLING_ACCOUNT_ID]/sinks/[SINK_ID]"
-      "folders/[FOLDER_ID]/sinks/[SINK_ID]" Example: "projects/my-project-
-      id/sinks/my-sink-id".
+      "folders/[FOLDER_ID]/sinks/[SINK_ID]" For example:"projects/my-
+      project/sinks/my-sink"
     uniqueWriterIdentity: Optional. See sinks.create for a description of this
       field. When updating a sink, the effect of this field on the value of
       writer_identity in the updated sink depends on both the old and new
@@ -3755,12 +3690,12 @@ class LoggingOrganizationsSinksPatchRequest(_messages.Message):
       need an update. A sink field will be overwritten if, and only if, it is
       in the update mask. name and output only fields cannot be updated.An
       empty updateMask is temporarily treated as using the following mask for
-      backwards compatibility purposes: destination,filter,includeChildren At
+      backwards compatibility purposes:destination,filter,includeChildrenAt
       some point in the future, behavior will be removed and specifying an
       empty updateMask will be an error.For a detailed FieldMask definition,
       see https://developers.google.com/protocol-
-      buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskExample:
-      updateMask=filter.
+      buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskFor
+      example: updateMask=filter
   """
 
   logSink = _messages.MessageField('LogSink', 1)
@@ -3779,8 +3714,8 @@ class LoggingOrganizationsSinksUpdateRequest(_messages.Message):
       "projects/[PROJECT_ID]/sinks/[SINK_ID]"
       "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"
       "billingAccounts/[BILLING_ACCOUNT_ID]/sinks/[SINK_ID]"
-      "folders/[FOLDER_ID]/sinks/[SINK_ID]" Example: "projects/my-project-
-      id/sinks/my-sink-id".
+      "folders/[FOLDER_ID]/sinks/[SINK_ID]" For example:"projects/my-
+      project/sinks/my-sink"
     uniqueWriterIdentity: Optional. See sinks.create for a description of this
       field. When updating a sink, the effect of this field on the value of
       writer_identity in the updated sink depends on both the old and new
@@ -3794,12 +3729,12 @@ class LoggingOrganizationsSinksUpdateRequest(_messages.Message):
       need an update. A sink field will be overwritten if, and only if, it is
       in the update mask. name and output only fields cannot be updated.An
       empty updateMask is temporarily treated as using the following mask for
-      backwards compatibility purposes: destination,filter,includeChildren At
+      backwards compatibility purposes:destination,filter,includeChildrenAt
       some point in the future, behavior will be removed and specifying an
       empty updateMask will be an error.For a detailed FieldMask definition,
       see https://developers.google.com/protocol-
-      buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskExample:
-      updateMask=filter.
+      buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskFor
+      example: updateMask=filter
   """
 
   logSink = _messages.MessageField('LogSink', 1)
@@ -3817,14 +3752,14 @@ class LoggingOrganizationsUpdateCmekSettingsRequest(_messages.Message):
       "projects/[PROJECT_ID]/cmekSettings"
       "organizations/[ORGANIZATION_ID]/cmekSettings"
       "billingAccounts/[BILLING_ACCOUNT_ID]/cmekSettings"
-      "folders/[FOLDER_ID]/cmekSettings" Example:
-      "organizations/12345/cmekSettings".Note: CMEK for the Logs Router can
-      currently only be configured for GCP organizations. Once configured, it
-      applies to all projects and folders in the GCP organization.
+      "folders/[FOLDER_ID]/cmekSettings" For
+      example:"organizations/12345/cmekSettings"Note: CMEK for the Logs Router
+      can currently only be configured for GCP organizations. Once configured,
+      it applies to all projects and folders in the GCP organization.
     updateMask: Optional. Field mask identifying which fields from
       cmek_settings should be updated. A field will be overwritten if and only
       if it is in the update mask. Output only fields cannot be updated.See
-      FieldMask for more information.Example: "updateMask=kmsKeyName"
+      FieldMask for more information.For example: "updateMask=kmsKeyName"
   """
 
   cmekSettings = _messages.MessageField('CmekSettings', 1)
@@ -3839,8 +3774,8 @@ class LoggingProjectsExclusionsCreateRequest(_messages.Message):
     logExclusion: A LogExclusion resource to be passed as the request body.
     parent: Required. The parent resource in which to create the exclusion:
       "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
-      "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]" Examples:
-      "projects/my-logging-project", "organizations/123456789".
+      "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]" For
+      examples:"projects/my-logging-project" "organizations/123456789"
   """
 
   logExclusion = _messages.MessageField('LogExclusion', 1)
@@ -3855,8 +3790,8 @@ class LoggingProjectsExclusionsDeleteRequest(_messages.Message):
       "projects/[PROJECT_ID]/exclusions/[EXCLUSION_ID]"
       "organizations/[ORGANIZATION_ID]/exclusions/[EXCLUSION_ID]"
       "billingAccounts/[BILLING_ACCOUNT_ID]/exclusions/[EXCLUSION_ID]"
-      "folders/[FOLDER_ID]/exclusions/[EXCLUSION_ID]" Example: "projects/my-
-      project-id/exclusions/my-exclusion-id".
+      "folders/[FOLDER_ID]/exclusions/[EXCLUSION_ID]" For
+      example:"projects/my-project/exclusions/my-exclusion"
   """
 
   name = _messages.StringField(1, required=True)
@@ -3870,8 +3805,8 @@ class LoggingProjectsExclusionsGetRequest(_messages.Message):
       "projects/[PROJECT_ID]/exclusions/[EXCLUSION_ID]"
       "organizations/[ORGANIZATION_ID]/exclusions/[EXCLUSION_ID]"
       "billingAccounts/[BILLING_ACCOUNT_ID]/exclusions/[EXCLUSION_ID]"
-      "folders/[FOLDER_ID]/exclusions/[EXCLUSION_ID]" Example: "projects/my-
-      project-id/exclusions/my-exclusion-id".
+      "folders/[FOLDER_ID]/exclusions/[EXCLUSION_ID]" For
+      example:"projects/my-project/exclusions/my-exclusion"
   """
 
   name = _messages.StringField(1, required=True)
@@ -3907,8 +3842,8 @@ class LoggingProjectsExclusionsPatchRequest(_messages.Message):
       "projects/[PROJECT_ID]/exclusions/[EXCLUSION_ID]"
       "organizations/[ORGANIZATION_ID]/exclusions/[EXCLUSION_ID]"
       "billingAccounts/[BILLING_ACCOUNT_ID]/exclusions/[EXCLUSION_ID]"
-      "folders/[FOLDER_ID]/exclusions/[EXCLUSION_ID]" Example: "projects/my-
-      project-id/exclusions/my-exclusion-id".
+      "folders/[FOLDER_ID]/exclusions/[EXCLUSION_ID]" For
+      example:"projects/my-project/exclusions/my-exclusion"
     updateMask: Required. A non-empty list of fields to change in the existing
       exclusion. New values for the fields are taken from the corresponding
       fields in the LogExclusion included in this request. Fields not
@@ -3930,9 +3865,9 @@ class LoggingProjectsLocationsBucketsCreateRequest(_messages.Message):
       Identifiers are limited to 100 characters and can include only letters,
       digits, underscores, hyphens, and periods.
     logBucket: A LogBucket resource to be passed as the request body.
-    parent: Required. The resource in which to create the bucket:
-      "projects/[PROJECT_ID]/locations/[LOCATION_ID]" Example: "projects/my-
-      logging-project/locations/global"
+    parent: Required. The resource in which to create the log bucket:
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]" For
+      example:"projects/my-project/locations/global"
   """
 
   bucketId = _messages.StringField(1)
@@ -3949,9 +3884,8 @@ class LoggingProjectsLocationsBucketsDeleteRequest(_messages.Message):
       anizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]
       " "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/
       [BUCKET_ID]"
-      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
-      Example: "projects/my-project-id/locations/my-location/buckets/my-
-      bucket-id".
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" For
+      example:"projects/my-project/locations/global/buckets/my-bucket"
   """
 
   name = _messages.StringField(1, required=True)
@@ -3966,9 +3900,8 @@ class LoggingProjectsLocationsBucketsGetRequest(_messages.Message):
       anizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]
       " "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/
       [BUCKET_ID]"
-      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
-      Example: "projects/my-project-id/locations/my-location/buckets/my-
-      bucket-id".
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" For
+      example:"projects/my-project/locations/global/buckets/my-bucket"
   """
 
   name = _messages.StringField(1, required=True)
@@ -4009,17 +3942,15 @@ class LoggingProjectsLocationsBucketsPatchRequest(_messages.Message):
       anizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]
       " "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/
       [BUCKET_ID]"
-      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
-      Example: "projects/my-project-id/locations/my-location/buckets/my-
-      bucket-id". Also requires permission
-      "resourcemanager.projects.updateLiens" to set the locked property
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" For
+      example:"projects/my-project/locations/global/buckets/my-bucket"
     updateMask: Required. Field mask that specifies the fields in bucket that
       need an update. A bucket field will be overwritten if, and only if, it
       is in the update mask. name and output only fields cannot be updated.For
-      a detailed FieldMask definition, see
+      a detailed FieldMask definition, see:
       https://developers.google.com/protocol-
-      buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskExample:
-      updateMask=retention_days.
+      buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskFor
+      example: updateMask=retention_days
   """
 
   logBucket = _messages.MessageField('LogBucket', 1)
@@ -4056,9 +3987,8 @@ class LoggingProjectsLocationsBucketsUndeleteRequest(_messages.Message):
       anizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]
       " "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/
       [BUCKET_ID]"
-      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
-      Example: "projects/my-project-id/locations/my-location/buckets/my-
-      bucket-id".
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" For
+      example:"projects/my-project/locations/global/buckets/my-bucket"
     undeleteBucketRequest: A UndeleteBucketRequest resource to be passed as
       the request body.
   """
@@ -4073,9 +4003,8 @@ class LoggingProjectsLocationsBucketsViewsCreateRequest(_messages.Message):
   Fields:
     logView: A LogView resource to be passed as the request body.
     parent: Required. The bucket in which to create the view
-      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
-      Example: "projects/my-logging-project/locations/my-location/buckets/my-
-      bucket"
+      `"projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"`
+      For example:"projects/my-project/locations/global/buckets/my-bucket"
     viewId: Required. The id to use for this view.
   """
 
@@ -4090,8 +4019,8 @@ class LoggingProjectsLocationsBucketsViewsDeleteRequest(_messages.Message):
   Fields:
     name: Required. The full resource name of the view to delete: "projects/[P
       ROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]"
-      Example: "projects/my-project-id/locations/my-location/buckets/my-
-      bucket-id/views/my-view-id".
+      For example:"projects/my-project/locations/global/buckets/my-
+      bucket/views/my-view"
   """
 
   name = _messages.StringField(1, required=True)
@@ -4102,9 +4031,9 @@ class LoggingProjectsLocationsBucketsViewsGetRequest(_messages.Message):
 
   Fields:
     name: Required. The resource name of the policy: "projects/[PROJECT_ID]/lo
-      cations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]" Example:
-      "projects/my-project-id/locations/my-location/buckets/my-bucket-
-      id/views/my-view-id".
+      cations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]" For
+      example:"projects/my-project/locations/global/buckets/my-
+      bucket/views/my-view"
   """
 
   name = _messages.StringField(1, required=True)
@@ -4115,7 +4044,7 @@ class LoggingProjectsLocationsBucketsViewsListRequest(_messages.Message):
 
   Fields:
     pageSize: Optional. The maximum number of results to return from this
-      request. Non-positive values are ignored. The presence of nextPageToken
+      request.Non-positive values are ignored. The presence of nextPageToken
       in the response indicates that more results might be available.
     pageToken: Optional. If present, then retrieve the next batch of results
       from the preceding call to this method. pageToken must be the value of
@@ -4137,15 +4066,15 @@ class LoggingProjectsLocationsBucketsViewsPatchRequest(_messages.Message):
     logView: A LogView resource to be passed as the request body.
     name: Required. The full resource name of the view to update "projects/[PR
       OJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]"
-      Example: "projects/my-project-id/locations/my-location/buckets/my-
-      bucket-id/views/my-view-id".
+      For example:"projects/my-project/locations/global/buckets/my-
+      bucket/views/my-view"
     updateMask: Optional. Field mask that specifies the fields in view that
       need an update. A field will be overwritten if, and only if, it is in
       the update mask. name and output only fields cannot be updated.For a
       detailed FieldMask definition, see
       https://developers.google.com/protocol-
-      buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskExample:
-      updateMask=filter.
+      buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskFor
+      example: updateMask=filter
   """
 
   logView = _messages.MessageField('LogView', 1)
@@ -4349,18 +4278,18 @@ class LoggingProjectsSinksCreateRequest(_messages.Message):
     logSink: A LogSink resource to be passed as the request body.
     parent: Required. The resource in which to create the sink:
       "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
-      "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]" Examples:
-      "projects/my-logging-project", "organizations/123456789".
+      "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]" For
+      examples:"projects/my-project" "organizations/123456789"
     uniqueWriterIdentity: Optional. Determines the kind of IAM identity
       returned as writer_identity in the new sink. If this value is omitted or
       set to false, and if the sink's parent is a project, then the value
       returned as writer_identity is the same group or service account used by
-      Logging before the addition of writer identities to this API. The sink's
-      destination must be in the same project as the sink itself.If this field
-      is set to true, or if the sink is owned by a non-project resource such
-      as an organization, then the value of writer_identity will be a unique
-      service account used only for exports from the new sink. For more
-      information, see writer_identity in LogSink.
+      Cloud Logging before the addition of writer identities to this API. The
+      sink's destination must be in the same project as the sink itself.If
+      this field is set to true, or if the sink is owned by a non-project
+      resource such as an organization, then the value of writer_identity will
+      be a unique service account used only for exports from the new sink. For
+      more information, see writer_identity in LogSink.
   """
 
   logSink = _messages.MessageField('LogSink', 1)
@@ -4377,8 +4306,8 @@ class LoggingProjectsSinksDeleteRequest(_messages.Message):
       "projects/[PROJECT_ID]/sinks/[SINK_ID]"
       "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"
       "billingAccounts/[BILLING_ACCOUNT_ID]/sinks/[SINK_ID]"
-      "folders/[FOLDER_ID]/sinks/[SINK_ID]" Example: "projects/my-project-
-      id/sinks/my-sink-id".
+      "folders/[FOLDER_ID]/sinks/[SINK_ID]" For example:"projects/my-
+      project/sinks/my-sink"
   """
 
   sinkName = _messages.StringField(1, required=True)
@@ -4392,8 +4321,8 @@ class LoggingProjectsSinksGetRequest(_messages.Message):
       "projects/[PROJECT_ID]/sinks/[SINK_ID]"
       "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"
       "billingAccounts/[BILLING_ACCOUNT_ID]/sinks/[SINK_ID]"
-      "folders/[FOLDER_ID]/sinks/[SINK_ID]" Example: "projects/my-project-
-      id/sinks/my-sink-id".
+      "folders/[FOLDER_ID]/sinks/[SINK_ID]" For example:"projects/my-
+      project/sinks/my-sink"
   """
 
   sinkName = _messages.StringField(1, required=True)
@@ -4430,8 +4359,8 @@ class LoggingProjectsSinksPatchRequest(_messages.Message):
       "projects/[PROJECT_ID]/sinks/[SINK_ID]"
       "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"
       "billingAccounts/[BILLING_ACCOUNT_ID]/sinks/[SINK_ID]"
-      "folders/[FOLDER_ID]/sinks/[SINK_ID]" Example: "projects/my-project-
-      id/sinks/my-sink-id".
+      "folders/[FOLDER_ID]/sinks/[SINK_ID]" For example:"projects/my-
+      project/sinks/my-sink"
     uniqueWriterIdentity: Optional. See sinks.create for a description of this
       field. When updating a sink, the effect of this field on the value of
       writer_identity in the updated sink depends on both the old and new
@@ -4445,12 +4374,12 @@ class LoggingProjectsSinksPatchRequest(_messages.Message):
       need an update. A sink field will be overwritten if, and only if, it is
       in the update mask. name and output only fields cannot be updated.An
       empty updateMask is temporarily treated as using the following mask for
-      backwards compatibility purposes: destination,filter,includeChildren At
+      backwards compatibility purposes:destination,filter,includeChildrenAt
       some point in the future, behavior will be removed and specifying an
       empty updateMask will be an error.For a detailed FieldMask definition,
       see https://developers.google.com/protocol-
-      buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskExample:
-      updateMask=filter.
+      buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskFor
+      example: updateMask=filter
   """
 
   logSink = _messages.MessageField('LogSink', 1)
@@ -4469,8 +4398,8 @@ class LoggingProjectsSinksUpdateRequest(_messages.Message):
       "projects/[PROJECT_ID]/sinks/[SINK_ID]"
       "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"
       "billingAccounts/[BILLING_ACCOUNT_ID]/sinks/[SINK_ID]"
-      "folders/[FOLDER_ID]/sinks/[SINK_ID]" Example: "projects/my-project-
-      id/sinks/my-sink-id".
+      "folders/[FOLDER_ID]/sinks/[SINK_ID]" For example:"projects/my-
+      project/sinks/my-sink"
     uniqueWriterIdentity: Optional. See sinks.create for a description of this
       field. When updating a sink, the effect of this field on the value of
       writer_identity in the updated sink depends on both the old and new
@@ -4484,12 +4413,12 @@ class LoggingProjectsSinksUpdateRequest(_messages.Message):
       need an update. A sink field will be overwritten if, and only if, it is
       in the update mask. name and output only fields cannot be updated.An
       empty updateMask is temporarily treated as using the following mask for
-      backwards compatibility purposes: destination,filter,includeChildren At
+      backwards compatibility purposes:destination,filter,includeChildrenAt
       some point in the future, behavior will be removed and specifying an
       empty updateMask will be an error.For a detailed FieldMask definition,
       see https://developers.google.com/protocol-
-      buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskExample:
-      updateMask=filter.
+      buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskFor
+      example: updateMask=filter
   """
 
   logSink = _messages.MessageField('LogSink', 1)
@@ -4505,18 +4434,18 @@ class LoggingSinksCreateRequest(_messages.Message):
     logSink: A LogSink resource to be passed as the request body.
     parent: Required. The resource in which to create the sink:
       "projects/[PROJECT_ID]" "organizations/[ORGANIZATION_ID]"
-      "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]" Examples:
-      "projects/my-logging-project", "organizations/123456789".
+      "billingAccounts/[BILLING_ACCOUNT_ID]" "folders/[FOLDER_ID]" For
+      examples:"projects/my-project" "organizations/123456789"
     uniqueWriterIdentity: Optional. Determines the kind of IAM identity
       returned as writer_identity in the new sink. If this value is omitted or
       set to false, and if the sink's parent is a project, then the value
       returned as writer_identity is the same group or service account used by
-      Logging before the addition of writer identities to this API. The sink's
-      destination must be in the same project as the sink itself.If this field
-      is set to true, or if the sink is owned by a non-project resource such
-      as an organization, then the value of writer_identity will be a unique
-      service account used only for exports from the new sink. For more
-      information, see writer_identity in LogSink.
+      Cloud Logging before the addition of writer identities to this API. The
+      sink's destination must be in the same project as the sink itself.If
+      this field is set to true, or if the sink is owned by a non-project
+      resource such as an organization, then the value of writer_identity will
+      be a unique service account used only for exports from the new sink. For
+      more information, see writer_identity in LogSink.
   """
 
   logSink = _messages.MessageField('LogSink', 1)
@@ -4533,8 +4462,8 @@ class LoggingSinksDeleteRequest(_messages.Message):
       "projects/[PROJECT_ID]/sinks/[SINK_ID]"
       "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"
       "billingAccounts/[BILLING_ACCOUNT_ID]/sinks/[SINK_ID]"
-      "folders/[FOLDER_ID]/sinks/[SINK_ID]" Example: "projects/my-project-
-      id/sinks/my-sink-id".
+      "folders/[FOLDER_ID]/sinks/[SINK_ID]" For example:"projects/my-
+      project/sinks/my-sink"
   """
 
   sinkName = _messages.StringField(1, required=True)
@@ -4548,8 +4477,8 @@ class LoggingSinksGetRequest(_messages.Message):
       "projects/[PROJECT_ID]/sinks/[SINK_ID]"
       "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"
       "billingAccounts/[BILLING_ACCOUNT_ID]/sinks/[SINK_ID]"
-      "folders/[FOLDER_ID]/sinks/[SINK_ID]" Example: "projects/my-project-
-      id/sinks/my-sink-id".
+      "folders/[FOLDER_ID]/sinks/[SINK_ID]" For example:"projects/my-
+      project/sinks/my-sink"
   """
 
   sinkName = _messages.StringField(1, required=True)
@@ -4586,8 +4515,8 @@ class LoggingSinksUpdateRequest(_messages.Message):
       "projects/[PROJECT_ID]/sinks/[SINK_ID]"
       "organizations/[ORGANIZATION_ID]/sinks/[SINK_ID]"
       "billingAccounts/[BILLING_ACCOUNT_ID]/sinks/[SINK_ID]"
-      "folders/[FOLDER_ID]/sinks/[SINK_ID]" Example: "projects/my-project-
-      id/sinks/my-sink-id".
+      "folders/[FOLDER_ID]/sinks/[SINK_ID]" For example:"projects/my-
+      project/sinks/my-sink"
     uniqueWriterIdentity: Optional. See sinks.create for a description of this
       field. When updating a sink, the effect of this field on the value of
       writer_identity in the updated sink depends on both the old and new
@@ -4601,12 +4530,12 @@ class LoggingSinksUpdateRequest(_messages.Message):
       need an update. A sink field will be overwritten if, and only if, it is
       in the update mask. name and output only fields cannot be updated.An
       empty updateMask is temporarily treated as using the following mask for
-      backwards compatibility purposes: destination,filter,includeChildren At
+      backwards compatibility purposes:destination,filter,includeChildrenAt
       some point in the future, behavior will be removed and specifying an
       empty updateMask will be an error.For a detailed FieldMask definition,
       see https://developers.google.com/protocol-
-      buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskExample:
-      updateMask=filter.
+      buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskFor
+      example: updateMask=filter
   """
 
   logSink = _messages.MessageField('LogSink', 1)
@@ -4624,14 +4553,14 @@ class LoggingUpdateCmekSettingsRequest(_messages.Message):
       "projects/[PROJECT_ID]/cmekSettings"
       "organizations/[ORGANIZATION_ID]/cmekSettings"
       "billingAccounts/[BILLING_ACCOUNT_ID]/cmekSettings"
-      "folders/[FOLDER_ID]/cmekSettings" Example:
-      "organizations/12345/cmekSettings".Note: CMEK for the Logs Router can
-      currently only be configured for GCP organizations. Once configured, it
-      applies to all projects and folders in the GCP organization.
+      "folders/[FOLDER_ID]/cmekSettings" For
+      example:"organizations/12345/cmekSettings"Note: CMEK for the Logs Router
+      can currently only be configured for GCP organizations. Once configured,
+      it applies to all projects and folders in the GCP organization.
     updateMask: Optional. Field mask identifying which fields from
       cmek_settings should be updated. A field will be overwritten if and only
       if it is in the update mask. Output only fields cannot be updated.See
-      FieldMask for more information.Example: "updateMask=kmsKeyName"
+      FieldMask for more information.For example: "updateMask=kmsKeyName"
   """
 
   cmekSettings = _messages.MessageField('CmekSettings', 1)
@@ -4993,7 +4922,10 @@ class MonitoredResourceDescriptor(_messages.Message):
       APIs that do not use project information can use the resource name
       format "monitoredResourceDescriptors/{type}".
     type: Required. The monitored resource type. For example, the type
-      "cloudsql_database" represents databases in Google Cloud SQL.
+      "cloudsql_database" represents databases in Google Cloud SQL. For a list
+      of types, see Monitoring resource types
+      (https://cloud.google.com/monitoring/api/resources) and Logging resource
+      types (https://cloud.google.com/logging/docs/api/v2/resource-list).
   """
 
   class LaunchStageValueValuesEnum(_messages.Enum):
@@ -5801,17 +5733,15 @@ class UpdateBucketRequest(_messages.Message):
       anizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]
       " "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/
       [BUCKET_ID]"
-      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
-      Example: "projects/my-project-id/locations/my-location/buckets/my-
-      bucket-id". Also requires permission
-      "resourcemanager.projects.updateLiens" to set the locked property
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]" For
+      example:"projects/my-project/locations/global/buckets/my-bucket"
     updateMask: Required. Field mask that specifies the fields in bucket that
       need an update. A bucket field will be overwritten if, and only if, it
       is in the update mask. name and output only fields cannot be updated.For
-      a detailed FieldMask definition, see
+      a detailed FieldMask definition, see:
       https://developers.google.com/protocol-
-      buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskExample:
-      updateMask=retention_days.
+      buffers/docs/reference/google.protobuf#google.protobuf.FieldMaskFor
+      example: updateMask=retention_days
   """
 
   bucket = _messages.MessageField('LogBucket', 1)

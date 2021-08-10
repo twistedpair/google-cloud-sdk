@@ -405,7 +405,8 @@ class DaisyChainCopyTask(task.Task):
     download_thread.start()
 
     content_type = (
-        self._source_resource.content_type or upload_util.DEFAULT_CONTENT_TYPE)
+        self._source_resource.content_type or
+        request_config_factory.DEFAULT_CONTENT_TYPE)
 
     destination_client = api_factory.get_api(
         self._destination_resource.storage_url.scheme)

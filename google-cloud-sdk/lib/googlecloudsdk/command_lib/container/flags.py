@@ -960,6 +960,46 @@ Enable sending metrics from master components to Cloud Operations.
   )
 
 
+def AddLoggingFlag(parser):
+  """Adds a --logging flag to parser."""
+  help_text = """\
+Set the components that have logging enabled.
+
+Example:
+
+  $ {command} --logging NONE
+  $ {command} --logging SYSTEM,WORKLOAD
+"""
+  parser.add_argument(
+      '--logging',
+      type=arg_parsers.ArgList(),
+      default=None,
+      help=help_text,
+      hidden=True,
+      metavar='COMPONENT',
+  )
+
+
+def AddMonitoringFlag(parser):
+  """Adds a --monitoring flag to parser."""
+  help_text = """\
+Set the components that have monitoring enabled.
+
+Example:
+
+  $ {command} --monitoring NONE
+  $ {command} --monitoring SYSTEM
+"""
+  parser.add_argument(
+      '--monitoring',
+      type=arg_parsers.ArgList(),
+      default=None,
+      help=help_text,
+      hidden=True,
+      metavar='COMPONENT',
+  )
+
+
 def AddNodeLabelsFlag(parser,
                       for_node_pool=False,
                       for_update=False,

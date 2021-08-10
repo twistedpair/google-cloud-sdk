@@ -19,17 +19,30 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.calliope.concepts import concepts
+from googlecloudsdk.calliope.concepts import deps
+from googlecloudsdk.core import properties
+
+
+def GetTriggerResourceSpec():
+  return concepts.ResourceSpec(
+      'cloudbuild.projects.locations.triggers',
+      resource_name='trigger',
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=RegionAttributeConfig(),
+      triggersId=TriggerAttributeConfig())
+
+
+def RegionAttributeConfig():
+  fallthroughs = [
+      deps.PropertyFallthrough(properties.VALUES.builds.region)
+  ]
+  return concepts.ResourceParameterAttributeConfig(
+      name='region',
+      fallthroughs=fallthroughs,
+      help_text='The Cloud location for the {resource}.')
 
 
 def TriggerAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='trigger',
       help_text='Build Trigger ID')
-
-
-def GetTriggerResourceSpec():
-  return concepts.ResourceSpec(
-      'cloudbuild.projects.triggers',
-      resource_name='trigger',
-      triggerId=TriggerAttributeConfig(),
-      projectId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)

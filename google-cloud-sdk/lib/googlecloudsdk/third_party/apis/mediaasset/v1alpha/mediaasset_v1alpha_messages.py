@@ -31,6 +31,7 @@ class Action(_messages.Message):
     name: The resource name of the action, in the following form: `projects/{p
       roject}/locations/{location}/assetTypes/{type}/assets/{asset}/actions/{a
       ction}`.
+    notification: Status of notification action.
     rule: Required. The resource name of the rule, in the following form:
       `projects/{project}/locations/{location}/assetTypes/{type}/rule/{rule}`.
     updateTime: Output only. The last-modified time.
@@ -66,14 +67,18 @@ class Action(_messages.Message):
   derivedAsset = _messages.MessageField('DerivedAssetStatus', 3)
   labels = _messages.MessageField('LabelsValue', 4)
   name = _messages.StringField(5)
-  rule = _messages.StringField(6)
-  updateTime = _messages.StringField(7)
+  notification = _messages.MessageField('NotificationStatus', 6)
+  rule = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
 
 
 class Annotation(_messages.Message):
   r"""An annotation resource is associated with an AnnotationSet and
   represents timed-metadata that can be modified and searched at a high
   throughput.
+
+  Enums:
+    StateValueValuesEnum: Output only. State of the annotation.
 
   Messages:
     DataValue: Required. Data held by the annotation. Data must have "start"
@@ -96,8 +101,24 @@ class Annotation(_messages.Message):
       annotation `projects/{project}/locations/{location}/assetTypes/{asset_ty
       pe}/assets/{asset}/annotationSets/{annotation_set}/annotations/{annotati
       on}`.
+    state: Output only. State of the annotation.
     updateTime: Output only. The latest update time of the annotation.
   """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. State of the annotation.
+
+    Values:
+      STATE_UNSPECIFIED: STATE_UNSPECIFIED means state of the annotation is
+        unclear.
+      ACTIVE: ACTIVE means the annotation is created and ready to be used.
+      DELETING: DELETING means the annotation is being deleted. This state
+        only shows up in the annotation in pub sub notification when
+        DeleteAnnotation method is called.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    DELETING = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DataValue(_messages.Message):
@@ -156,7 +177,8 @@ class Annotation(_messages.Message):
   etag = _messages.StringField(3)
   labels = _messages.MessageField('LabelsValue', 4)
   name = _messages.StringField(5)
-  updateTime = _messages.StringField(6)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+  updateTime = _messages.StringField(7)
 
 
 class AnnotationChange(_messages.Message):
@@ -2288,14 +2310,14 @@ class MediaassetProjectsLocationsAssetTypesAssetsGetRequest(_messages.Message):
     name: Required. The name of the asset to retrieve, in the following form:
       `projects/{project}/locations/{location}/assetTypes/{type}/assets/{asset
       }`.
-    newReadMask: Extra fields to be poplulated as part of the asset resource
-      in the response. Currently, this only supports populating asset metadata
+    oldReadMask: This is temporary.
+    readMask: Extra fields to be poplulated as part of the asset resource in
+      the response. Currently, this only supports populating asset metadata
       (no wildcards and no contents of the entire asset).
-    readMask: This is temporary.
   """
 
   name = _messages.StringField(1, required=True)
-  newReadMask = _messages.StringField(2)
+  oldReadMask = _messages.StringField(2)
   readMask = _messages.StringField(3)
 
 
@@ -2306,9 +2328,7 @@ class MediaassetProjectsLocationsAssetTypesAssetsListRequest(_messages.Message):
     filter: The filter to apply to list results. Valid field expressions are
       defined in assetType.indexedFieldConfig. Format:
       https://cloud.google.com/logging/docs/view/advanced-queries
-    newReadMask: Extra fields to be poplulated as part of the asset resource
-      in the response. Currently, this only supports populating asset metadata
-      (no wildcards and no contents of the entire asset).
+    oldReadMask: This is temporary.
     pageSize: The maximum number of items to return. If unspecified, server
       will pick an appropriate default. Server may return fewer items than
       requested. A caller should only rely on response's next_page_token to
@@ -2317,11 +2337,13 @@ class MediaassetProjectsLocationsAssetTypesAssetsListRequest(_messages.Message):
       request, if any.
     parent: Required. The parent resource name, in the following form:
       `projects/{project}/locations/{location}/assetTypes/{type}`.
-    readMask: This is temporary.
+    readMask: Extra fields to be poplulated as part of the asset resource in
+      the response. Currently, this only supports populating asset metadata
+      (no wildcards and no contents of the entire asset).
   """
 
   filter = _messages.StringField(1)
-  newReadMask = _messages.StringField(2)
+  oldReadMask = _messages.StringField(2)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
@@ -3162,6 +3184,19 @@ class NotificationDestination(_messages.Message):
   """
 
   pubsub = _messages.MessageField('PubSubDestination', 1)
+
+
+class NotificationStatus(_messages.Message):
+  r"""Status of notification action
+
+  Fields:
+    lastUpdateTime: Output only. Time at which the last pub/sub action
+      occurred.
+    status: Output only. Status of the last pub/sub action.
+  """
+
+  lastUpdateTime = _messages.StringField(1)
+  status = _messages.MessageField('Status', 2)
 
 
 class Operation(_messages.Message):

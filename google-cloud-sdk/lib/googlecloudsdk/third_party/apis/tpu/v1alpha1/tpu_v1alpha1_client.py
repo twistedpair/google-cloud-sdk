@@ -283,7 +283,7 @@ class TpuV1alpha1(base_api.BaseApiClient):
     )
 
     def Stop(self, request, global_params=None):
-      r"""Stops a node.
+      r"""Stops a node. This operation is only available with single TPU nodes.
 
       Args:
         request: (TpuProjectsLocationsNodesStopRequest) input message

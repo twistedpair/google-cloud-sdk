@@ -489,6 +489,11 @@
       "description": "Metrics for a single Key.",
       "type": "object",
       "properties": {
+        "name": {
+          "description": "Output only. The name of the metrics, in the format \"projects\/{project}\/keys\/{key}\/metrics\".",
+          "readOnly": true,
+          "type": "string"
+        },
         "startTime": {
           "description": "Inclusive start time aligned to a day (UTC).",
           "type": "string",

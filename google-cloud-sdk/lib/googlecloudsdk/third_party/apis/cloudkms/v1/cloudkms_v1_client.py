@@ -1014,6 +1014,33 @@ class CloudkmsV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def GenerateRandomBytes(self, request, global_params=None):
+      r"""Generate random bytes using the Cloud KMS randomness source in the provided location.
+
+      Args:
+        request: (CloudkmsProjectsLocationsGenerateRandomBytesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GenerateRandomBytesResponse) The response message.
+      """
+      config = self.GetMethodConfig('GenerateRandomBytes')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GenerateRandomBytes.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}:generateRandomBytes',
+        http_method='POST',
+        method_id='cloudkms.projects.locations.generateRandomBytes',
+        ordered_params=['location'],
+        path_params=['location'],
+        query_params=[],
+        relative_path='v1/{+location}:generateRandomBytes',
+        request_field='generateRandomBytesRequest',
+        request_type_name='CloudkmsProjectsLocationsGenerateRandomBytesRequest',
+        response_type_name='GenerateRandomBytesResponse',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets information about a location.
 

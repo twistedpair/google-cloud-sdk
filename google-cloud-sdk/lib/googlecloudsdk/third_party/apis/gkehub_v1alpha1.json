@@ -104,7 +104,7 @@
     "oauth2": {
       "scopes": {
         "https://www.googleapis.com/auth/cloud-platform": {
-          "description": "See, edit, configure, and delete your Google Cloud Platform data"
+          "description": "See, edit, configure, and delete your Google Cloud data and see the email address for your Google Account."
         }
       }
     }
@@ -971,6 +971,10 @@
           "description": "State for the Anthos Observability Feature",
           "$ref": "AnthosObservabilityFeatureState"
         },
+        "workloadidentityplatformFeatureState": {
+          "description": "State for the Workload Identity Platform Feature",
+          "$ref": "WorkloadIdentityPlatformFeatureState"
+        },
         "updateTime": {
           "description": "The last update time of this status by the controllers",
           "type": "string",
@@ -1729,6 +1733,13 @@
     "AnthosObservabilityFeatureState": {
       "id": "AnthosObservabilityFeatureState",
       "description": "An empty state for Anthos Observability. This is required since FeatureStateDetails requires a state.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "WorkloadIdentityPlatformFeatureState": {
+      "id": "WorkloadIdentityPlatformFeatureState",
+      "description": "WorkloadIdentityPlatformFeatureState describes the state of the workload identity platform. This is required since FeatureStateDetails requires a state.",
       "type": "object",
       "properties": {
       }

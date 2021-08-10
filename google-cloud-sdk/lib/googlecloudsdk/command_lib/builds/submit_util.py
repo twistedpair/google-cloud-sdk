@@ -165,8 +165,7 @@ def _SetBuildSteps(tag, no_cache, messages, substitutions, arg_config,
         not any(reg in image for reg in _SUPPORTED_REGISTRIES)):
       raise c_exceptions.InvalidArgumentException(
           '--pack',
-          'Image value must be in the *gcr.io* or *pkg.dev* namespace'
-      )
+          'Image value must be in the *gcr.io* or *pkg.dev* namespace')
     env = buildpack[0].get('env')
     pack_args = ['build', image, '--builder', builder]
     if env is not None:
@@ -220,8 +219,14 @@ def _SetClusterAlpha(build_config, messages, arg_cluster_name,
   return build_config
 
 
-def _SetSource(build_config, messages, is_specified_source, no_source, source,
-               gcs_source_staging_dir, ignore_file, hide_logs=False):
+def _SetSource(build_config,
+               messages,
+               is_specified_source,
+               no_source,
+               source,
+               gcs_source_staging_dir,
+               ignore_file,
+               hide_logs=False):
   """Set the source for the build config."""
   default_gcs_source = False
   default_bucket_name = None
@@ -252,12 +257,12 @@ def _SetSource(build_config, messages, is_specified_source, no_source, source,
 
     try:
       gcs_client.CreateBucketIfNotExists(
-          gcs_source_staging_dir.bucket,
-          check_ownership=default_gcs_source)
+          gcs_source_staging_dir.bucket, check_ownership=default_gcs_source)
     except api_exceptions.HttpForbiddenError:
       raise BucketForbiddenError(
           'The user is forbidden from accessing the bucket [{}]. Please check '
-          'your organization\'s policy.'.format(gcs_source_staging_dir.bucket))
+          'your organization\'s policy or if the user has the "serviceusage.services.use" permisison'
+          .format(gcs_source_staging_dir.bucket))
     except storage_api.BucketInWrongProjectError:
       # If we're using the default bucket but it already exists in a different
       # project, then it could belong to a malicious attacker (b/33046325).
@@ -374,8 +379,7 @@ def _SetWorkerPool(build_config, messages, arg_worker_pool):
   if arg_worker_pool is not None:
     # Only regional pools are supported here
     worker_pool = resources.REGISTRY.Parse(
-        arg_worker_pool,
-        collection='cloudbuild.projects.locations.workerPools')
+        arg_worker_pool, collection='cloudbuild.projects.locations.workerPools')
     if not build_config.options:
       build_config.options = messages.BuildOptions()
     build_config.options.pool = messages.PoolOption()
@@ -405,20 +409,38 @@ def CreateBuildConfig(tag, no_cache, messages, substitutions, arg_config,
   return build_config
 
 
-def CreateBuildConfigAlpha(tag, no_cache, messages, substitutions, arg_config,
-                           is_specified_source, no_source, source,
-                           gcs_source_staging_dir, ignore_file, arg_gcs_log_dir,
-                           arg_machine_type, arg_disk_size, arg_worker_pool,
-                           buildpack, arg_cluster_name=None,
-                           arg_cluster_location=None, hide_logs=False):
+def CreateBuildConfigAlpha(tag,
+                           no_cache,
+                           messages,
+                           substitutions,
+                           arg_config,
+                           is_specified_source,
+                           no_source,
+                           source,
+                           gcs_source_staging_dir,
+                           ignore_file,
+                           arg_gcs_log_dir,
+                           arg_machine_type,
+                           arg_disk_size,
+                           arg_worker_pool,
+                           buildpack,
+                           arg_cluster_name=None,
+                           arg_cluster_location=None,
+                           hide_logs=False):
   """Returns a build config."""
   timeout_str = _GetBuildTimeout()
 
   build_config = _SetBuildSteps(tag, no_cache, messages, substitutions,
                                 arg_config, timeout_str, buildpack)
-  build_config = _SetSource(build_config, messages, is_specified_source,
-                            no_source, source, gcs_source_staging_dir,
-                            ignore_file, hide_logs=hide_logs)
+  build_config = _SetSource(
+      build_config,
+      messages,
+      is_specified_source,
+      no_source,
+      source,
+      gcs_source_staging_dir,
+      ignore_file,
+      hide_logs=hide_logs)
   build_config = _SetLogsBucket(build_config, arg_gcs_log_dir)
   build_config = _SetMachineType(build_config, messages, arg_machine_type)
   build_config = _SetDiskSize(build_config, messages, arg_disk_size)
@@ -479,8 +501,12 @@ def DetermineBuildRegion(build_config, desired_region=None):
   return wp_region
 
 
-def Build(messages, async_, build_config, hide_logs=False,
-          build_region=cloudbuild_util.DEFAULT_REGION, support_gcl=False):
+def Build(messages,
+          async_,
+          build_config,
+          hide_logs=False,
+          build_region=cloudbuild_util.DEFAULT_REGION,
+          support_gcl=False):
   """Starts the build."""
   log.debug('submitting build: ' + repr(build_config))
   client = cloudbuild_util.GetClientInstance()
@@ -551,8 +577,8 @@ def Build(messages, async_, build_config, hide_logs=False,
         '\n{count} message(s) issued.'.format(count=len(build.warnings)))
 
   if build.failureInfo:
-    log.status.Print('\nBUILD FAILURE: {detail}'.format(
-        detail=build.failureInfo.detail))
+    log.status.Print(
+        '\nBUILD FAILURE: {detail}'.format(detail=build.failureInfo.detail))
 
   if build.status != messages.Build.StatusValueValuesEnum.SUCCESS:
     raise FailedBuildException(build)

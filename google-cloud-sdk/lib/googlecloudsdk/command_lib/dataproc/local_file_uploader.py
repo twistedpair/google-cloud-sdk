@@ -80,6 +80,27 @@ def Upload(bucket, files):
   return result_files
 
 
+def HasLocalFiles(files):
+  """Determines whether files argument has local files.
+
+  Args:
+    files: A dictionary of lists of files to check.
+
+  Returns:
+    True if at least one of the files is local.
+
+  Example:
+    GetLocalFiles({'jar':['my-jar.jar', gs://my-bucket/my-gcs-jar.jar]}) -> True
+  """
+
+  for _, uris in files.items():
+    for uri in uris:
+      if _IsLocal(uri):
+        return True
+
+  return False
+
+
 def _CreateBucketIfNotExists(bucket):
   """Creates a Cloud Storage bucket if it doesn't exist."""
   if storage_helpers.GetBucket(bucket):

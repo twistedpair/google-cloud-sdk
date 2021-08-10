@@ -488,7 +488,7 @@
           }
         },
         "timing": {
-          "description": "Output only. Stores timing information for phases of the build. Valid keys are: * BUILD: time to execute all build steps * PUSH: time to push all specified images. * FETCHSOURCE: time to fetch source. If the build does not specify source or images, these keys will not be included.",
+          "description": "Output only. Stores timing information for phases of the build. Valid keys are: * BUILD: time to execute all build steps. * PUSH: time to push all specified images. * FETCHSOURCE: time to fetch source. * SETUPBUILD: time to set up build. If the build does not specify source or images, these keys will not be included.",
           "readOnly": true,
           "type": "object",
           "additionalProperties": {
@@ -510,6 +510,11 @@
           "items": {
             "$ref": "Warning"
           }
+        },
+        "failureInfo": {
+          "description": "Output only. Contains information about the build when status=FAILURE.",
+          "readOnly": true,
+          "$ref": "FailureInfo"
         }
       }
     },
@@ -711,6 +716,10 @@
             "CANCELLED",
             "EXPIRED"
           ]
+        },
+        "script": {
+          "description": "A shell script to be executed in the step. When script is provided, the user cannot specify the entrypoint or args.",
+          "type": "string"
         }
       }
     },
@@ -1166,6 +1175,39 @@
         }
       }
     },
+    "FailureInfo": {
+      "id": "FailureInfo",
+      "description": "A fatal problem encountered during the execution of the build.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "The name of the failure.",
+          "type": "string",
+          "enumDescriptions": [
+            "Type unspecified",
+            "Unable to push the image to the repository.",
+            "Final image not found.",
+            "Unauthorized push of the final image.",
+            "Backend logging failures. Should retry.",
+            "A build step has failed.",
+            "The source fetching has failed."
+          ],
+          "enum": [
+            "FAILURE_TYPE_UNSPECIFIED",
+            "PUSH_FAILED",
+            "PUSH_IMAGE_NOT_FOUND",
+            "PUSH_NOT_AUTHORIZED",
+            "LOGGING_FAILURE",
+            "USER_BUILD_STEP",
+            "FETCH_SOURCE_FAILED"
+          ]
+        },
+        "detail": {
+          "description": "Explains the failure issue in more detail using hard-coded text.",
+          "type": "string"
+        }
+      }
+    },
     "CreateWorkerPoolOperationMetadata": {
       "id": "CreateWorkerPoolOperationMetadata",
       "description": "Metadata for the `CreateWorkerPool` operation.",
@@ -1244,6 +1286,90 @@
           "items": {
             "$ref": "FileHashes"
           }
+        }
+      }
+    },
+    "CreateGitHubEnterpriseConfigOperationMetadata": {
+      "id": "CreateGitHubEnterpriseConfigOperationMetadata",
+      "description": "Metadata for `CreateGithubEnterpriseConfig` operation.",
+      "type": "object",
+      "properties": {
+        "githubEnterpriseConfig": {
+          "description": "The resource name of the GitHubEnterprise to be created. Format: `projects\/{project}\/locations\/{location}\/githubEnterpriseConfigs\/{id}`.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Time the operation was created.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "completeTime": {
+          "description": "Time the operation was completed.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "UpdateGitHubEnterpriseConfigOperationMetadata": {
+      "id": "UpdateGitHubEnterpriseConfigOperationMetadata",
+      "description": "Metadata for `UpdateGitHubEnterpriseConfig` operation.",
+      "type": "object",
+      "properties": {
+        "githubEnterpriseConfig": {
+          "description": "The resource name of the GitHubEnterprise to be updated. Format: `projects\/{project}\/locations\/{location}\/githubEnterpriseConfigs\/{id}`.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Time the operation was created.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "completeTime": {
+          "description": "Time the operation was completed.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "DeleteGitHubEnterpriseConfigOperationMetadata": {
+      "id": "DeleteGitHubEnterpriseConfigOperationMetadata",
+      "description": "Metadata for `DeleteGitHubEnterpriseConfig` operation.",
+      "type": "object",
+      "properties": {
+        "githubEnterpriseConfig": {
+          "description": "The resource name of the GitHubEnterprise to be deleted. Format: `projects\/{project}\/locations\/{location}\/githubEnterpriseConfigs\/{id}`.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Time the operation was created.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "completeTime": {
+          "description": "Time the operation was completed.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "ProcessAppManifestCallbackOperationMetadata": {
+      "id": "ProcessAppManifestCallbackOperationMetadata",
+      "description": "Metadata for `ProcessAppManifestCallback` operation.",
+      "type": "object",
+      "properties": {
+        "githubEnterpriseConfig": {
+          "description": "The resource name of the GitHubEnterprise to be created. Format: `projects\/{project}\/locations\/{location}\/githubEnterpriseConfigs\/{id}`.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Time the operation was created.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "completeTime": {
+          "description": "Time the operation was completed.",
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },
@@ -1412,6 +1538,94 @@
         },
         "value": {
           "description": "Value is interpreted to be a resource path for fetching the actual (versioned) secret data for this secret. For example, this would be a Google Cloud Secret Manager secret version resource path like: \"projects\/my-project\/secrets\/my-secret\/versions\/latest\".",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleDevtoolsCloudbuildV2OperationMetadata": {
+      "id": "GoogleDevtoolsCloudbuildV2OperationMetadata",
+      "description": "Represents the metadata of the long-running operation.",
+      "type": "object",
+      "properties": {
+        "createTime": {
+          "description": "Output only. The time the operation was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "Output only. The time the operation finished running.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "target": {
+          "description": "Output only. Server-defined resource path for the target of the operation.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "verb": {
+          "description": "Output only. Name of the verb executed by the operation.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "statusMessage": {
+          "description": "Output only. Human-readable status of the operation, if any.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "requestedCancellation": {
+          "description": "Output only. Identifies whether the user has requested cancellation of the operation. Operations that have successfully been cancelled have Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.",
+          "readOnly": true,
+          "type": "boolean"
+        },
+        "apiVersion": {
+          "description": "Output only. API version used to start the operation.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "OperationMetadata": {
+      "id": "OperationMetadata",
+      "description": "Represents the metadata of the long-running operation.",
+      "type": "object",
+      "properties": {
+        "createTime": {
+          "description": "Output only. The time the operation was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "Output only. The time the operation finished running.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "target": {
+          "description": "Output only. Server-defined resource path for the target of the operation.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "verb": {
+          "description": "Output only. Name of the verb executed by the operation.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "statusDetail": {
+          "description": "Output only. Human-readable status of the operation, if any.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "cancelRequested": {
+          "description": "Output only. Identifies whether the user has requested cancellation of the operation. Operations that have been cancelled successfully have Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.",
+          "readOnly": true,
+          "type": "boolean"
+        },
+        "apiVersion": {
+          "description": "Output only. API version used to start the operation.",
+          "readOnly": true,
           "type": "string"
         }
       }

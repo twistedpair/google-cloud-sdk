@@ -33,6 +33,7 @@ from googlecloudsdk.command_lib.functions import secrets_config
 from googlecloudsdk.command_lib.functions.v1.deploy import labels_util
 from googlecloudsdk.command_lib.functions.v1.deploy import source_util
 from googlecloudsdk.command_lib.functions.v1.deploy import trigger_util
+from googlecloudsdk.command_lib.projects import util as project_util
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.args import map_util
 from googlecloudsdk.core import exceptions
@@ -147,10 +148,13 @@ def _ApplySecretsArgsToFunction(function, args):
   updated_fields = []
   new_secrets_dict_by_type = {}
   needs_update = {}
+  if not secrets_config.IsArgsSpecified(args):
+    return updated_fields
   old_secrets_dict = secrets_util.GetSecretsAsDict(function)
   try:
     new_secrets_dict_by_type, needs_update = secrets_config.ApplyFlags(
-        old_secrets_dict, args, _GetProject())
+        old_secrets_dict, args, _GetProject(),
+        project_util.GetProjectNumber(_GetProject()))
   except ArgumentTypeError as error:
     exceptions.reraise(function_exceptions.FunctionsError(error))
 

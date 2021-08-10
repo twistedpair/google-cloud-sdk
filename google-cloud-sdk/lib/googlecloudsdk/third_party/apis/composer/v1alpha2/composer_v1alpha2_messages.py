@@ -288,22 +288,23 @@ class ComposerProjectsLocationsEnvironmentsPatchRequest(_messages.Message):
       `config.softwareConfig.schedulerCount` * Horizontally scale the number
       of schedulers in Airflow. A positive integer not greater than the number
       of nodes must be provided in the `config.softwareConfig.schedulerCount`
-      field. * `config.databaseConfig.machineType` * Cloud SQL machine type
-      used by Airflow database. It has to be one of: db-n1-standard-2,
-      db-n1-standard-4, db-n1-standard-8 or db-n1-standard-16. Supported for
-      Cloud Composer environments in versions composer-1.*.*-airflow-*.*.*. *
-      `config.webServerConfig.machineType` * Machine type on which Airflow web
-      server is running. It has to be one of: composer-n1-webserver-2,
-      composer-n1-webserver-4 or composer-n1-webserver-8. Supported for Cloud
-      Composer environments in versions composer-1.*.*-airflow-*.*.*. *
-      `config.maintenanceWindow` * Maintenance window during which Cloud
-      Composer components may be under maintenance. * `config.workloadsConfig`
-      * The workloads configuration settings for the GKE cluster associated
-      with the Cloud Composer environment. Supported for Cloud Composer
-      environments in versions composer-2.*.*-airflow-*.*.* and newer. *
-      `config.environmentSize` * The size of the Cloud Composer environment.
-      Supported for Cloud Composer environments in versions
-      composer-2.*.*-airflow-*.*.* and newer.
+      field. Supported for Cloud Composer environments in versions
+      composer-1.*.*-airflow-2.*.*. * `config.databaseConfig.machineType` *
+      Cloud SQL machine type used by Airflow database. It has to be one of:
+      db-n1-standard-2, db-n1-standard-4, db-n1-standard-8 or
+      db-n1-standard-16. Supported for Cloud Composer environments in versions
+      composer-1.*.*-airflow-*.*.*. * `config.webServerConfig.machineType` *
+      Machine type on which Airflow web server is running. It has to be one
+      of: composer-n1-webserver-2, composer-n1-webserver-4 or
+      composer-n1-webserver-8. Supported for Cloud Composer environments in
+      versions composer-1.*.*-airflow-*.*.*. * `config.maintenanceWindow` *
+      Maintenance window during which Cloud Composer components may be under
+      maintenance. * `config.workloadsConfig` * The workloads configuration
+      settings for the GKE cluster associated with the Cloud Composer
+      environment. Supported for Cloud Composer environments in versions
+      composer-2.*.*-airflow-*.*.* and newer. * `config.environmentSize` * The
+      size of the Cloud Composer environment. Supported for Cloud Composer
+      environments in versions composer-2.*.*-airflow-*.*.* and newer.
   """
 
   environment = _messages.MessageField('Environment', 1)
@@ -792,10 +793,8 @@ class NodeConfig(_messages.Message):
     enableIpMasqAgent: Optional. Deploys 'ip-masq-agent' daemon set in the GKE
       cluster and defines nonMasqueradeCIDRs equals to pod IP range so IP
       masquerading is used for all destination addresses, except between pods
-      traffic. Users may configure the nonMasqueradeCIDRs IP ranges by
-      changing the ConfigMap manually. See:
-      https://cloud.google.com/kubernetes-engine/docs/how-to/ip-masquerade-
-      agent
+      traffic. See: https://cloud.google.com/kubernetes-engine/docs/how-to/ip-
+      masquerade-agent
     ipAllocationPolicy: Optional. The IPAllocationPolicy fields for the GKE
       cluster.
     location: Optional. The Compute Engine [zone](/compute/docs/regions-zones)
@@ -1244,7 +1243,9 @@ class SoftwareConfig(_messages.Message):
       This field is only supported for Cloud Composer environments in versions
       composer-1.*.*-airflow-*.*.*. Environments in newer versions always use
       Python major version 3.
-    schedulerCount: Optional. The number of schedulers for Airflow.
+    schedulerCount: Optional. The number of schedulers for Airflow. This field
+      is supported for Cloud Composer environments in versions
+      composer-1.*.*-airflow-2.*.*.
   """
 
   class AirflowExecutorTypeValueValuesEnum(_messages.Enum):

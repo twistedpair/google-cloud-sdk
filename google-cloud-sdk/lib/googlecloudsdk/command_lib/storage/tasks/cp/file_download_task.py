@@ -35,6 +35,7 @@ from googlecloudsdk.command_lib.storage import tracker_file_util
 from googlecloudsdk.command_lib.storage.tasks import task
 from googlecloudsdk.command_lib.storage.tasks import task_executor
 from googlecloudsdk.command_lib.storage.tasks.cp import copy_component_util
+from googlecloudsdk.command_lib.storage.tasks.cp import download_util
 from googlecloudsdk.command_lib.storage.tasks.cp import file_part_download_task
 from googlecloudsdk.command_lib.storage.tasks.cp import finalize_sliced_download_task
 from googlecloudsdk.command_lib.util import crc32c
@@ -114,7 +115,10 @@ def _should_perform_sliced_download(resource):
 class FileDownloadTask(task.Task):
   """Represents a command operation triggering a file download."""
 
-  def __init__(self, source_resource, destination_resource):
+  def __init__(self,
+               source_resource,
+               destination_resource,
+               do_not_decompress=False):
     """Initializes task.
 
     Args:
@@ -124,10 +128,14 @@ class FileDownloadTask(task.Task):
       destination_resource (FileObjectResource|UnknownResource): Must contain
         local filesystem path to upload object. Does not need to contain
         metadata.
+      do_not_decompress (bool): Prevents automatically decompressing
+        downloaded gzips.
     """
     super(FileDownloadTask, self).__init__()
     self._source_resource = source_resource
     self._destination_resource = destination_resource
+    self._do_not_decompress = do_not_decompress
+
     self._temporary_destination_resource = (
         self._get_temporary_destination_resource())
 
@@ -170,8 +178,10 @@ class FileDownloadTask(task.Task):
 
     finalize_sliced_download_task_list = [
         finalize_sliced_download_task.FinalizeSlicedDownloadTask(
-            self._source_resource, self._temporary_destination_resource,
-            self._destination_resource)
+            self._source_resource,
+            self._temporary_destination_resource,
+            self._destination_resource,
+            do_not_decompress=self._do_not_decompress)
     ]
 
     return (download_component_task_list, finalize_sliced_download_task_list)
@@ -236,14 +246,17 @@ class FileDownloadTask(task.Task):
         self._temporary_destination_resource,
         offset=0,
         length=self._source_resource.size,
+        do_not_decompress=self._do_not_decompress,
         strategy=self._strategy).execute(task_status_queue=task_status_queue)
 
-    temporary_url = self._temporary_destination_resource.storage_url
-    if os.path.exists(temporary_url.object_name):
-      os.rename(temporary_url.object_name,
-                self._destination_resource.storage_url.object_name)
+    temporary_file_url = self._temporary_destination_resource.storage_url
+    download_util.decompress_or_rename_file(
+        self._source_resource,
+        temporary_file_url.object_name,
+        self._destination_resource.storage_url.object_name,
+        do_not_decompress_flag=self._do_not_decompress)
 
     # For sliced download, cleanup is done in the finalized sliced download task
     # We perform cleanup here for all other types in case some corrupt files
     # were left behind.
-    tracker_file_util.delete_download_tracker_files(temporary_url)
+    tracker_file_util.delete_download_tracker_files(temporary_file_url)

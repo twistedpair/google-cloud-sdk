@@ -219,6 +219,8 @@ class Instance(_messages.Message):
       (`PD_STANDARD`).
     DiskEncryptionValueValuesEnum: Input only. Disk encryption method used on
       the boot and data disks, defaults to GMEK.
+    NicTypeValueValuesEnum: Optional. The type of vNIC to be used on this
+      interface. This may be gVNIC or VirtioNet.
     StateValueValuesEnum: Output only. The state of this instance.
 
   Messages:
@@ -269,6 +271,8 @@ class Instance(_messages.Message):
       `projects/{project_id}/locations/{location}/instances/{instance_id}`
     network: The name of the VPC that this instance is in. Format:
       `projects/{project_id}/global/networks/{network_id}`
+    nicType: Optional. The type of vNIC to be used on this interface. This may
+      be gVNIC or VirtioNet.
     noProxyAccess: If true, the notebook instance will not register with the
       proxy.
     noPublicIp: If true, no public IP will be assigned to this instance.
@@ -279,6 +283,10 @@ class Instance(_messages.Message):
       Storage path (gs://path-to-file/file-name).
     proxyUri: Output only. The proxy endpoint that is used to access the
       Jupyter notebook.
+    reservationAffinity: Optional. The optional reservation affinity. Setting
+      this field will apply the specified [Zonal Compute
+      Reservation](https://cloud.google.com/compute/docs/instances/reserving-
+      zonal-resources) to this notebook instance.
     serviceAccount: The service account on this instance, giving access to
       other Google Cloud services. You can use any service account within the
       same project, but you must have the service account user permission to
@@ -334,6 +342,21 @@ class Instance(_messages.Message):
     DISK_ENCRYPTION_UNSPECIFIED = 0
     GMEK = 1
     CMEK = 2
+
+  class NicTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. The type of vNIC to be used on this interface. This may be
+    gVNIC or VirtioNet.
+
+    Values:
+      UNSPECIFIED_NIC_TYPE: No type specified. Default should be
+        UNSPECIFIED_NIC_TYPE.
+      VIRTIO_NET: VIRTIO. Default in Notebooks DLVM.
+      GVNIC: GVNIC. Alternative to VIRTIO.
+        https://github.com/GoogleCloudPlatform/compute-virtual-ethernet-linux
+    """
+    UNSPECIFIED_NIC_TYPE = 0
+    VIRTIO_NET = 1
+    GVNIC = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The state of this instance.
@@ -428,16 +451,18 @@ class Instance(_messages.Message):
   metadata = _messages.MessageField('MetadataValue', 15)
   name = _messages.StringField(16)
   network = _messages.StringField(17)
-  noProxyAccess = _messages.BooleanField(18)
-  noPublicIp = _messages.BooleanField(19)
-  noRemoveDataDisk = _messages.BooleanField(20)
-  postStartupScript = _messages.StringField(21)
-  proxyUri = _messages.StringField(22)
-  serviceAccount = _messages.StringField(23)
-  state = _messages.EnumField('StateValueValuesEnum', 24)
-  subnet = _messages.StringField(25)
-  updateTime = _messages.StringField(26)
-  vmImage = _messages.MessageField('VmImage', 27)
+  nicType = _messages.EnumField('NicTypeValueValuesEnum', 18)
+  noProxyAccess = _messages.BooleanField(19)
+  noPublicIp = _messages.BooleanField(20)
+  noRemoveDataDisk = _messages.BooleanField(21)
+  postStartupScript = _messages.StringField(22)
+  proxyUri = _messages.StringField(23)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 24)
+  serviceAccount = _messages.StringField(25)
+  state = _messages.EnumField('StateValueValuesEnum', 26)
+  subnet = _messages.StringField(27)
+  updateTime = _messages.StringField(28)
+  vmImage = _messages.MessageField('VmImage', 29)
 
 
 class IsInstanceUpgradeableResponse(_messages.Message):
@@ -1248,6 +1273,39 @@ class ReportInstanceInfoRequest(_messages.Message):
 
   metadata = _messages.MessageField('MetadataValue', 1)
   vmId = _messages.StringField(2)
+
+
+class ReservationAffinity(_messages.Message):
+  r"""Reservation Affinity for consuming Zonal reservation.
+
+  Enums:
+    ConsumeReservationTypeValueValuesEnum: Optional. Type of reservation to
+      consume
+
+  Fields:
+    consumeReservationType: Optional. Type of reservation to consume
+    key: Optional. Corresponds to the label key of reservation resource.
+    values: Optional. Corresponds to the label values of reservation resource.
+  """
+
+  class ConsumeReservationTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Type of reservation to consume
+
+    Values:
+      TYPE_UNSPECIFIED: Default type.
+      NO_RESERVATION: Do not consume from any allocated capacity.
+      ANY_RESERVATION: Consume any reservation available.
+      SPECIFIC_RESERVATION: Must consume from a specific reservation. Must
+        specify key value fields for specifying the reservations.
+    """
+    TYPE_UNSPECIFIED = 0
+    NO_RESERVATION = 1
+    ANY_RESERVATION = 2
+    SPECIFIC_RESERVATION = 3
+
+  consumeReservationType = _messages.EnumField('ConsumeReservationTypeValueValuesEnum', 1)
+  key = _messages.StringField(2)
+  values = _messages.StringField(3, repeated=True)
 
 
 class ResetInstanceRequest(_messages.Message):

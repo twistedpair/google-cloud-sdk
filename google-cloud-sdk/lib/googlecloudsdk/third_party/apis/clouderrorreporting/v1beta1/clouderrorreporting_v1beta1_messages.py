@@ -238,8 +238,7 @@ class ClouderrorreportingProjectsGroupsGetRequest(_messages.Message):
       [`groupStats.list`](https://cloud.google.com/error-
       reporting/reference/rest/v1beta1/projects.groupStats/list) to return a
       list of groups belonging to this project. Example: `projects/my-
-      project-123/groups/my-group` Group names contain group ids, which are
-      core content, see go/cer-group-id-classification-review
+      project-123/groups/my-group`
   """
 
   groupName = _messages.StringField(1, required=True)

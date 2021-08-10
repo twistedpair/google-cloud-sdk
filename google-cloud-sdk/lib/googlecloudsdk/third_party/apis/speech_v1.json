@@ -464,6 +464,11 @@
           "items": {
             "$ref": "SpeechRecognitionResult"
           }
+        },
+        "totalBilledTime": {
+          "description": "When available, billed audio seconds for the corresponding request.",
+          "type": "string",
+          "format": "google-duration"
         }
       }
     },
@@ -589,6 +594,11 @@
           "items": {
             "$ref": "SpeechRecognitionResult"
           }
+        },
+        "totalBilledTime": {
+          "description": "When available, billed audio seconds for the corresponding request.",
+          "type": "string",
+          "format": "google-duration"
         }
       }
     }

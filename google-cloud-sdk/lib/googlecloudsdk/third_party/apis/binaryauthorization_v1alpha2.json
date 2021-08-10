@@ -258,8 +258,8 @@
           "type": "string",
           "enumDescriptions": [
             "Not specified: DISABLE is assumed.",
-            "Enables global policy evaluation.",
-            "Disables global policy evaluation."
+            "Enables system policy evaluation.",
+            "Disables system policy evaluation."
           ],
           "enum": [
             "GLOBAL_POLICY_EVALUATION_MODE_UNSPECIFIED",

@@ -104,7 +104,7 @@
     "oauth2": {
       "scopes": {
         "https://www.googleapis.com/auth/cloud-platform": {
-          "description": "See, edit, configure, and delete your Google Cloud Platform data"
+          "description": "See, edit, configure, and delete your Google Cloud data and see the email address for your Google Account."
         }
       }
     }
@@ -296,7 +296,7 @@
           "$ref": "NetworkConfig"
         },
         "managementCluster": {
-          "description": "Input only. The management cluster for this private cloud. This field is required during creation of the private cloud to provide details for the default cluster. The following fields can't be changed after private cloud creation: `ManagementCluster.clusterId`, `ManagementCluster.nodeTypeId`.",
+          "description": "Input only. The management cluster for this private cloud. This field is required during creation of the private cloud to provide details for the default cluster. The following fields can't be changed after private cloud creation: `ManagementCluster.clusterId`, `ManagementCluster.nodeTypeId`, `ManagementCluster.nodeCustomVirtualCpuCount`.",
           "$ref": "ManagementCluster"
         },
         "description": {
@@ -1531,7 +1531,7 @@
                           "format": "int32"
                         },
                         "pageToken": {
-                          "description": "A page token, received from a previous `ListClustersRequest` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListClustersRequest` must match the call that provided the page token.",
+                          "description": "A page token, received from a previous `ListClusters` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListClusters` must match the call that provided the page token.",
                           "location": "query",
                           "type": "string"
                         },
@@ -1812,7 +1812,7 @@
                       "format": "int32"
                     },
                     "pageToken": {
-                      "description": "A page token, received from a previous `ListNodeTypesRequest` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListNodeTypesRequest` must match the call that provided the page token.",
+                      "description": "A page token, received from a previous `ListNodeTypes` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListNodeTypes` must match the call that provided the page token.",
                       "location": "query",
                       "type": "string"
                     },

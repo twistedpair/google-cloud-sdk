@@ -62,6 +62,33 @@ def decompress_gzip_if_necessary(source_resource,
   return False
 
 
+def decompress_or_rename_file(source_resource,
+                              temporary_file_path,
+                              final_file_path,
+                              do_not_decompress_flag=False):
+  """Converts temporary file to final form by decompressing or renaming.
+
+  Args:
+    source_resource (ObjectResource): May contain encoding metadata.
+    temporary_file_path (str): File path to unzip or rename.
+    final_file_path (str): File path to write final file to.
+    do_not_decompress_flag (bool): User flag that blocks decompression.
+
+  Returns:
+    (bool) True if file was decompressed or renamed, and
+      False if file did not exist.
+  """
+  if not os.path.exists(temporary_file_path):
+    return False
+
+  if decompress_gzip_if_necessary(source_resource, temporary_file_path,
+                                  final_file_path, do_not_decompress_flag):
+    os.remove(temporary_file_path)
+  else:
+    os.rename(temporary_file_path, final_file_path)
+  return True
+
+
 def validate_download_hash_and_delete_corrupt_files(download_path, source_hash,
                                                     destination_hash):
   """Confirms hashes match for copied objects.

@@ -355,7 +355,8 @@ class CDNPolicyCacheKeyPolicy(_messages.Message):
       exclude from cache keys. All other parameters will be included. Either
       specify includedQueryParameters or excludedQueryParameters, not both.
       '&' and '=' will be percent encoded and not treated as delimiters. You
-      may exclude up to 10 query parameters.
+      may exclude up to 10 query parameters. Each query parameter name must be
+      between 1 and 32 characters long (inclusive).
     includeProtocol: Optional. If true, http and https requests will be cached
       separately.
     includedHeaderNames: Optional. Names of HTTP request headers to include in
@@ -372,7 +373,8 @@ class CDNPolicyCacheKeyPolicy(_messages.Message):
       include in cache keys. All other parameters will be excluded. Either
       specify includedQueryParameters or excludedQueryParameters, not both.
       '&' and '=' will be percent encoded and not treated as delimiters. You
-      may include up to 10 query parameters.
+      may include up to 10 query parameters. Each query parameter name must be
+      between 1 and 32 characters long (inclusive).
   """
 
   excludeHost = _messages.BooleanField(1)

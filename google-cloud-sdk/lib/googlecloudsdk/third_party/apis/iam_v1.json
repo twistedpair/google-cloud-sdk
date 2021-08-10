@@ -404,6 +404,10 @@
             "USER_MANAGED",
             "SYSTEM_MANAGED"
           ]
+        },
+        "disabled": {
+          "description": "The key status.",
+          "type": "boolean"
         }
       }
     },
@@ -452,6 +456,20 @@
           "type": "string",
           "format": "byte"
         }
+      }
+    },
+    "DisableServiceAccountKeyRequest": {
+      "id": "DisableServiceAccountKeyRequest",
+      "description": "The service account key disable request.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "EnableServiceAccountKeyRequest": {
+      "id": "EnableServiceAccountKeyRequest",
+      "description": "The service account key enable request.",
+      "type": "object",
+      "properties": {
       }
     },
     "ServiceAccountIdentityBinding": {
@@ -1662,6 +1680,18 @@
           "$ref": "Expr"
         }
       }
+    },
+    "PolicyOperationMetadata": {
+      "id": "PolicyOperationMetadata",
+      "description": "Metadata for long-running Policy operations.",
+      "type": "object",
+      "properties": {
+        "createTime": {
+          "description": "Timestamp when the google.longrunning.Operation was created.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
     }
   },
   "resources": {
@@ -2680,6 +2710,62 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Deletes a ServiceAccountKey. Deleting a service account key does not revoke short-lived credentials that have been issued based on the service account key."
+                },
+                "disable": {
+                  "id": "iam.projects.serviceAccounts.keys.disable",
+                  "path": "v1/{+name}:disable",
+                  "flatPath": "v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}/keys/{keysId}:disable",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The resource name of the service account key in the following format: `projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT}\/keys\/{key}`. Using `-` as a wildcard for the `PROJECT_ID` will infer the project from the account. The `ACCOUNT` value can be the `email` address or the `unique_id` of the service account.",
+                      "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+\/keys\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "DisableServiceAccountKeyRequest"
+                  },
+                  "response": {
+                    "$ref": "Empty"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Disable a ServiceAccountKey. A disabled service account key can be enabled through EnableServiceAccountKey."
+                },
+                "enable": {
+                  "id": "iam.projects.serviceAccounts.keys.enable",
+                  "path": "v1/{+name}:enable",
+                  "flatPath": "v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}/keys/{keysId}:enable",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The resource name of the service account key in the following format: `projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT}\/keys\/{key}`. Using `-` as a wildcard for the `PROJECT_ID` will infer the project from the account. The `ACCOUNT` value can be the `email` address or the `unique_id` of the service account.",
+                      "pattern": "^projects\/[^\/]+\/serviceAccounts\/[^\/]+\/keys\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "EnableServiceAccountKeyRequest"
+                  },
+                  "response": {
+                    "$ref": "Empty"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Enable a ServiceAccountKey."
                 }
               }
             },

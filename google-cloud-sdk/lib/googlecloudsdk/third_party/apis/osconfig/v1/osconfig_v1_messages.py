@@ -52,6 +52,222 @@ class AptSettings(_messages.Message):
   type = _messages.EnumField('TypeValueValuesEnum', 3)
 
 
+class CVSSv3(_messages.Message):
+  r"""Common Vulnerability Scoring System version 3. For details, see
+  https://www.first.org/cvss/specification-document
+
+  Enums:
+    AttackComplexityValueValuesEnum: This metric describes the conditions
+      beyond the attacker's control that must exist in order to exploit the
+      vulnerability.
+    AttackVectorValueValuesEnum: This metric reflects the context by which
+      vulnerability exploitation is possible.
+    AvailabilityImpactValueValuesEnum: This metric measures the impact to the
+      availability of the impacted component resulting from a successfully
+      exploited vulnerability.
+    ConfidentialityImpactValueValuesEnum: This metric measures the impact to
+      the confidentiality of the information resources managed by a software
+      component due to a successfully exploited vulnerability.
+    IntegrityImpactValueValuesEnum: This metric measures the impact to
+      integrity of a successfully exploited vulnerability.
+    PrivilegesRequiredValueValuesEnum: This metric describes the level of
+      privileges an attacker must possess before successfully exploiting the
+      vulnerability.
+    ScopeValueValuesEnum: The Scope metric captures whether a vulnerability in
+      one vulnerable component impacts resources in components beyond its
+      security scope.
+    UserInteractionValueValuesEnum: This metric captures the requirement for a
+      human user, other than the attacker, to participate in the successful
+      compromise of the vulnerable component.
+
+  Fields:
+    attackComplexity: This metric describes the conditions beyond the
+      attacker's control that must exist in order to exploit the
+      vulnerability.
+    attackVector: This metric reflects the context by which vulnerability
+      exploitation is possible.
+    availabilityImpact: This metric measures the impact to the availability of
+      the impacted component resulting from a successfully exploited
+      vulnerability.
+    baseScore: The base score is a function of the base metric scores.
+      https://www.first.org/cvss/specification-document#Base-Metrics
+    confidentialityImpact: This metric measures the impact to the
+      confidentiality of the information resources managed by a software
+      component due to a successfully exploited vulnerability.
+    exploitabilityScore: The Exploitability sub-score equation is derived from
+      the Base Exploitability metrics.
+      https://www.first.org/cvss/specification-document#2-1-Exploitability-
+      Metrics
+    impactScore: The Impact sub-score equation is derived from the Base Impact
+      metrics.
+    integrityImpact: This metric measures the impact to integrity of a
+      successfully exploited vulnerability.
+    privilegesRequired: This metric describes the level of privileges an
+      attacker must possess before successfully exploiting the vulnerability.
+    scope: The Scope metric captures whether a vulnerability in one vulnerable
+      component impacts resources in components beyond its security scope.
+    userInteraction: This metric captures the requirement for a human user,
+      other than the attacker, to participate in the successful compromise of
+      the vulnerable component.
+  """
+
+  class AttackComplexityValueValuesEnum(_messages.Enum):
+    r"""This metric describes the conditions beyond the attacker's control
+    that must exist in order to exploit the vulnerability.
+
+    Values:
+      ATTACK_COMPLEXITY_UNSPECIFIED: Invalid value.
+      ATTACK_COMPLEXITY_LOW: Specialized access conditions or extenuating
+        circumstances do not exist. An attacker can expect repeatable success
+        when attacking the vulnerable component.
+      ATTACK_COMPLEXITY_HIGH: A successful attack depends on conditions beyond
+        the attacker's control. That is, a successful attack cannot be
+        accomplished at will, but requires the attacker to invest in some
+        measurable amount of effort in preparation or execution against the
+        vulnerable component before a successful attack can be expected.
+    """
+    ATTACK_COMPLEXITY_UNSPECIFIED = 0
+    ATTACK_COMPLEXITY_LOW = 1
+    ATTACK_COMPLEXITY_HIGH = 2
+
+  class AttackVectorValueValuesEnum(_messages.Enum):
+    r"""This metric reflects the context by which vulnerability exploitation
+    is possible.
+
+    Values:
+      ATTACK_VECTOR_UNSPECIFIED: Invalid value.
+      ATTACK_VECTOR_NETWORK: The vulnerable component is bound to the network
+        stack and the set of possible attackers extends beyond the other
+        options listed below, up to and including the entire Internet.
+      ATTACK_VECTOR_ADJACENT: The vulnerable component is bound to the network
+        stack, but the attack is limited at the protocol level to a logically
+        adjacent topology.
+      ATTACK_VECTOR_LOCAL: The vulnerable component is not bound to the
+        network stack and the attacker's path is via read/write/execute
+        capabilities.
+      ATTACK_VECTOR_PHYSICAL: The attack requires the attacker to physically
+        touch or manipulate the vulnerable component.
+    """
+    ATTACK_VECTOR_UNSPECIFIED = 0
+    ATTACK_VECTOR_NETWORK = 1
+    ATTACK_VECTOR_ADJACENT = 2
+    ATTACK_VECTOR_LOCAL = 3
+    ATTACK_VECTOR_PHYSICAL = 4
+
+  class AvailabilityImpactValueValuesEnum(_messages.Enum):
+    r"""This metric measures the impact to the availability of the impacted
+    component resulting from a successfully exploited vulnerability.
+
+    Values:
+      IMPACT_UNSPECIFIED: Invalid value.
+      IMPACT_HIGH: High impact.
+      IMPACT_LOW: Low impact.
+      IMPACT_NONE: No impact.
+    """
+    IMPACT_UNSPECIFIED = 0
+    IMPACT_HIGH = 1
+    IMPACT_LOW = 2
+    IMPACT_NONE = 3
+
+  class ConfidentialityImpactValueValuesEnum(_messages.Enum):
+    r"""This metric measures the impact to the confidentiality of the
+    information resources managed by a software component due to a
+    successfully exploited vulnerability.
+
+    Values:
+      IMPACT_UNSPECIFIED: Invalid value.
+      IMPACT_HIGH: High impact.
+      IMPACT_LOW: Low impact.
+      IMPACT_NONE: No impact.
+    """
+    IMPACT_UNSPECIFIED = 0
+    IMPACT_HIGH = 1
+    IMPACT_LOW = 2
+    IMPACT_NONE = 3
+
+  class IntegrityImpactValueValuesEnum(_messages.Enum):
+    r"""This metric measures the impact to integrity of a successfully
+    exploited vulnerability.
+
+    Values:
+      IMPACT_UNSPECIFIED: Invalid value.
+      IMPACT_HIGH: High impact.
+      IMPACT_LOW: Low impact.
+      IMPACT_NONE: No impact.
+    """
+    IMPACT_UNSPECIFIED = 0
+    IMPACT_HIGH = 1
+    IMPACT_LOW = 2
+    IMPACT_NONE = 3
+
+  class PrivilegesRequiredValueValuesEnum(_messages.Enum):
+    r"""This metric describes the level of privileges an attacker must possess
+    before successfully exploiting the vulnerability.
+
+    Values:
+      PRIVILEGES_REQUIRED_UNSPECIFIED: Invalid value.
+      PRIVILEGES_REQUIRED_NONE: The attacker is unauthorized prior to attack,
+        and therefore does not require any access to settings or files of the
+        vulnerable system to carry out an attack.
+      PRIVILEGES_REQUIRED_LOW: The attacker requires privileges that provide
+        basic user capabilities that could normally affect only settings and
+        files owned by a user. Alternatively, an attacker with Low privileges
+        has the ability to access only non-sensitive resources.
+      PRIVILEGES_REQUIRED_HIGH: The attacker requires privileges that provide
+        significant (e.g., administrative) control over the vulnerable
+        component allowing access to component-wide settings and files.
+    """
+    PRIVILEGES_REQUIRED_UNSPECIFIED = 0
+    PRIVILEGES_REQUIRED_NONE = 1
+    PRIVILEGES_REQUIRED_LOW = 2
+    PRIVILEGES_REQUIRED_HIGH = 3
+
+  class ScopeValueValuesEnum(_messages.Enum):
+    r"""The Scope metric captures whether a vulnerability in one vulnerable
+    component impacts resources in components beyond its security scope.
+
+    Values:
+      SCOPE_UNSPECIFIED: Invalid value.
+      SCOPE_UNCHANGED: An exploited vulnerability can only affect resources
+        managed by the same security authority.
+      SCOPE_CHANGED: An exploited vulnerability can affect resources beyond
+        the security scope managed by the security authority of the vulnerable
+        component.
+    """
+    SCOPE_UNSPECIFIED = 0
+    SCOPE_UNCHANGED = 1
+    SCOPE_CHANGED = 2
+
+  class UserInteractionValueValuesEnum(_messages.Enum):
+    r"""This metric captures the requirement for a human user, other than the
+    attacker, to participate in the successful compromise of the vulnerable
+    component.
+
+    Values:
+      USER_INTERACTION_UNSPECIFIED: Invalid value.
+      USER_INTERACTION_NONE: The vulnerable system can be exploited without
+        interaction from any user.
+      USER_INTERACTION_REQUIRED: Successful exploitation of this vulnerability
+        requires a user to take some action before the vulnerability can be
+        exploited.
+    """
+    USER_INTERACTION_UNSPECIFIED = 0
+    USER_INTERACTION_NONE = 1
+    USER_INTERACTION_REQUIRED = 2
+
+  attackComplexity = _messages.EnumField('AttackComplexityValueValuesEnum', 1)
+  attackVector = _messages.EnumField('AttackVectorValueValuesEnum', 2)
+  availabilityImpact = _messages.EnumField('AvailabilityImpactValueValuesEnum', 3)
+  baseScore = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
+  confidentialityImpact = _messages.EnumField('ConfidentialityImpactValueValuesEnum', 5)
+  exploitabilityScore = _messages.FloatField(6, variant=_messages.Variant.FLOAT)
+  impactScore = _messages.FloatField(7, variant=_messages.Variant.FLOAT)
+  integrityImpact = _messages.EnumField('IntegrityImpactValueValuesEnum', 8)
+  privilegesRequired = _messages.EnumField('PrivilegesRequiredValueValuesEnum', 9)
+  scope = _messages.EnumField('ScopeValueValuesEnum', 10)
+  userInteraction = _messages.EnumField('UserInteractionValueValuesEnum', 11)
+
+
 class CancelPatchJobRequest(_messages.Message):
   r"""Message for canceling a patch job."""
 
@@ -188,7 +404,12 @@ class GooSettings(_messages.Message):
 
 
 class Inventory(_messages.Message):
-  r"""The inventory details of a VM.
+  r"""This API resource represents the available inventory data for a Compute
+  Engine virtual machine (VM) instance at a given point in time. You can use
+  this API resource to determine the inventory data of your VM. For more
+  information, see [Information provided by OS inventory
+  management](https://cloud.google.com/compute/docs/instances/os-inventory-
+  management#data-collected).
 
   Messages:
     ItemsValue: Inventory items related to the VM keyed by an opaque unique
@@ -201,7 +422,11 @@ class Inventory(_messages.Message):
       identifier for each inventory item. The identifier is unique to each
       distinct and addressable inventory item and will change, when there is a
       new package version.
+    name: Output only. The `Inventory` API resource name. Format: `projects/{p
+      roject_number}/locations/{location}/instances/{instance_id}/inventory`
     osInfo: Base level operating system information for the VM.
+    updateTime: Output only. Timestamp of the last reported inventory for the
+      VM.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -232,7 +457,9 @@ class Inventory(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   items = _messages.MessageField('ItemsValue', 1)
-  osInfo = _messages.MessageField('InventoryOsInfo', 2)
+  name = _messages.StringField(2)
+  osInfo = _messages.MessageField('InventoryOsInfo', 3)
+  updateTime = _messages.StringField(4)
 
 
 class InventoryItem(_messages.Message):
@@ -448,6 +675,20 @@ class InventoryZypperPatch(_messages.Message):
   summary = _messages.StringField(4)
 
 
+class ListInventoriesResponse(_messages.Message):
+  r"""A response message for listing inventory data for all VMs in a specified
+  location.
+
+  Fields:
+    inventories: List of inventory objects.
+    nextPageToken: The pagination token to retrieve the next page of inventory
+      objects.
+  """
+
+  inventories = _messages.MessageField('Inventory', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class ListOperationsResponse(_messages.Message):
   r"""The response message for Operations.ListOperations.
 
@@ -498,6 +739,20 @@ class ListPatchJobsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   patchJobs = _messages.MessageField('PatchJob', 2, repeated=True)
+
+
+class ListVulnerabilityReportsResponse(_messages.Message):
+  r"""A response message for listing vulnerability reports for all VM
+  instances in the specified location.
+
+  Fields:
+    nextPageToken: The pagination token to retrieve the next page of
+      vulnerabilityReports object.
+    vulnerabilityReports: List of vulnerabilityReport objects.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  vulnerabilityReports = _messages.MessageField('VulnerabilityReport', 2, repeated=True)
 
 
 class MonthlySchedule(_messages.Message):
@@ -714,6 +969,122 @@ class OsconfigOperationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class OsconfigProjectsLocationsInstancesInventoriesGetRequest(_messages.Message):
+  r"""A OsconfigProjectsLocationsInstancesInventoriesGetRequest object.
+
+  Enums:
+    ViewValueValuesEnum: Inventory view indicating what information should be
+      included in the inventory resource. If unspecified, the default view is
+      BASIC.
+
+  Fields:
+    name: Required. API resource name for inventory resource. Format:
+      `projects/{project}/locations/{location}/instances/{instance}/inventory`
+      For `{project}`, either `project-number` or `project-id` can be
+      provided. For `{instance}`, either Compute Engine `instance-id` or
+      `instance-name` can be provided.
+    view: Inventory view indicating what information should be included in the
+      inventory resource. If unspecified, the default view is BASIC.
+  """
+
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""Inventory view indicating what information should be included in the
+    inventory resource. If unspecified, the default view is BASIC.
+
+    Values:
+      INVENTORY_VIEW_UNSPECIFIED: The default value. The API defaults to the
+        BASIC view.
+      BASIC: Returns the basic inventory information that includes `os_info`.
+      FULL: Returns all fields.
+    """
+    INVENTORY_VIEW_UNSPECIFIED = 0
+    BASIC = 1
+    FULL = 2
+
+  name = _messages.StringField(1, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 2)
+
+
+class OsconfigProjectsLocationsInstancesInventoriesListRequest(_messages.Message):
+  r"""A OsconfigProjectsLocationsInstancesInventoriesListRequest object.
+
+  Enums:
+    ViewValueValuesEnum: Inventory view indicating what information should be
+      included in the inventory resource. If unspecified, the default view is
+      BASIC.
+
+  Fields:
+    filter: If provided, this field specifies the criteria that must be met by
+      a `Inventory` API resource to be included in the response.
+    pageSize: The maximum number of results to return.
+    pageToken: A pagination token returned from a previous call to
+      `ListInventories` that indicates where this listing should continue
+      from.
+    parent: Required. The parent resource name. Format:
+      `projects/{project}/locations/{location}/instances/-` For `{project}`,
+      either `project-number` or `project-id` can be provided.
+    view: Inventory view indicating what information should be included in the
+      inventory resource. If unspecified, the default view is BASIC.
+  """
+
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""Inventory view indicating what information should be included in the
+    inventory resource. If unspecified, the default view is BASIC.
+
+    Values:
+      INVENTORY_VIEW_UNSPECIFIED: The default value. The API defaults to the
+        BASIC view.
+      BASIC: Returns the basic inventory information that includes `os_info`.
+      FULL: Returns all fields.
+    """
+    INVENTORY_VIEW_UNSPECIFIED = 0
+    BASIC = 1
+    FULL = 2
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 5)
+
+
+class OsconfigProjectsLocationsInstancesVulnerabilityReportsGetRequest(_messages.Message):
+  r"""A OsconfigProjectsLocationsInstancesVulnerabilityReportsGetRequest
+  object.
+
+  Fields:
+    name: Required. API resource name for vulnerability resource. Format: `pro
+      jects/{project}/locations/{location}/instances/{instance}/vulnerabilityR
+      eport` For `{project}`, either `project-number` or `project-id` can be
+      provided. For `{instance}`, either Compute Engine `instance-id` or
+      `instance-name` can be provided.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class OsconfigProjectsLocationsInstancesVulnerabilityReportsListRequest(_messages.Message):
+  r"""A OsconfigProjectsLocationsInstancesVulnerabilityReportsListRequest
+  object.
+
+  Fields:
+    filter: If provided, this field specifies the criteria that must be met by
+      a `vulnerabilityReport` API resource to be included in the response.
+    pageSize: The maximum number of results to return.
+    pageToken: A pagination token returned from a previous call to
+      `ListVulnerabilityReports` that indicates where this listing should
+      continue from.
+    parent: Required. The parent resource name. Format:
+      `projects/{project}/locations/{location}/instances/-` For `{project}`,
+      either `project-number` or `project-id` can be provided.
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class OsconfigProjectsPatchDeploymentsCreateRequest(_messages.Message):
@@ -1467,6 +1838,94 @@ class TimeZone(_messages.Message):
 
   id = _messages.StringField(1)
   version = _messages.StringField(2)
+
+
+class VulnerabilityReport(_messages.Message):
+  r"""This API resource represents the vulnerability report for a specified
+  Compute Engine virtual machine (VM) instance at a given point in time. For
+  more information, see [Vulnerability
+  reports](https://cloud.google.com/compute/docs/instances/os-inventory-
+  management#vulnerability-reports).
+
+  Fields:
+    name: Output only. The `vulnerabilityReport` API resource name. Format: `p
+      rojects/{project_number}/locations/{location}/instances/{instance_id}/vu
+      lnerabilityReport`
+    updateTime: Output only. The timestamp for when the last vulnerability
+      report was generated for the VM.
+    vulnerabilities: Output only. List of vulnerabilities affecting the VM.
+  """
+
+  name = _messages.StringField(1)
+  updateTime = _messages.StringField(2)
+  vulnerabilities = _messages.MessageField('VulnerabilityReportVulnerability', 3, repeated=True)
+
+
+class VulnerabilityReportVulnerability(_messages.Message):
+  r"""A vulnerability affecting the VM instance.
+
+  Fields:
+    availableInventoryItemIds: Corresponds to the `AVAILABLE_PACKAGE`
+      inventory item on the VM. If the vulnerability report was not updated
+      after the VM inventory update, these values might not display in VM
+      inventory. If there is no available fix, the field is empty. The
+      `inventory_item` value specifies the latest `SoftwarePackage` available
+      to the VM that fixes the vulnerability.
+    createTime: The timestamp for when the vulnerability was first detected.
+    details: Contains metadata as per the upstream feed of the operating
+      system and NVD.
+    installedInventoryItemIds: Corresponds to the `INSTALLED_PACKAGE`
+      inventory item on the VM. This field displays the inventory items
+      affected by this vulnerability. If the vulnerability report was not
+      updated after the VM inventory update, these values might not display in
+      VM inventory. For some distros, this field may be empty.
+    updateTime: The timestamp for when the vulnerability was last modified.
+  """
+
+  availableInventoryItemIds = _messages.StringField(1, repeated=True)
+  createTime = _messages.StringField(2)
+  details = _messages.MessageField('VulnerabilityReportVulnerabilityDetails', 3)
+  installedInventoryItemIds = _messages.StringField(4, repeated=True)
+  updateTime = _messages.StringField(5)
+
+
+class VulnerabilityReportVulnerabilityDetails(_messages.Message):
+  r"""Contains metadata information for the vulnerability. This information is
+  collected from the upstream feed of the operating system.
+
+  Fields:
+    cve: The CVE of the vulnerability. CVE cannot be empty and the combination
+      of should be unique across vulnerabilities for a VM.
+    cvssV2Score: The CVSS V2 score of this vulnerability. CVSS V2 score is on
+      a scale of 0 - 10 where 0 indicates low severity and 10 indicates high
+      severity.
+    cvssV3: The full description of the CVSSv3 for this vulnerability from
+      NVD.
+    description: The note or description describing the vulnerability from the
+      distro.
+    references: Corresponds to the references attached to the
+      `VulnerabilityDetails`.
+    severity: Assigned severity/impact ranking from the distro.
+  """
+
+  cve = _messages.StringField(1)
+  cvssV2Score = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  cvssV3 = _messages.MessageField('CVSSv3', 3)
+  description = _messages.StringField(4)
+  references = _messages.MessageField('VulnerabilityReportVulnerabilityDetailsReference', 5, repeated=True)
+  severity = _messages.StringField(6)
+
+
+class VulnerabilityReportVulnerabilityDetailsReference(_messages.Message):
+  r"""A reference for this vulnerability.
+
+  Fields:
+    source: The source of the reference e.g. NVD.
+    url: The url of the reference.
+  """
+
+  source = _messages.StringField(1)
+  url = _messages.StringField(2)
 
 
 class WeekDayOfMonth(_messages.Message):

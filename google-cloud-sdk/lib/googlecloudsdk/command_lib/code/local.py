@@ -19,6 +19,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import base64
+import collections
 import glob
 import json
 import os
@@ -31,10 +32,12 @@ from googlecloudsdk.api_lib.run import service as k8s_service
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import messages as messages_util
 from googlecloudsdk.command_lib.auth import auth_util
+from googlecloudsdk.command_lib.code import secrets
 from googlecloudsdk.command_lib.code import yaml_helper
 from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.console import console_io
@@ -45,6 +48,8 @@ import six
 IAM_MESSAGE_MODULE = apis.GetMessagesModule('iam', 'v1')
 CRM_MESSAGE_MODULE = apis.GetMessagesModule('cloudresourcemanager', 'v1')
 RUN_MESSAGES_MODULE = apis.GetMessagesModule('run', 'v1')
+
+_C_IDENTIFIER = r'^[a-zA-Z_][a-zA-Z_0-9]*$'
 
 
 class InvalidLocationError(exceptions.Error):
@@ -185,16 +190,20 @@ class Settings(DataObject):
       builder: The builder specification or None.
       local_port: Local port to which to forward the service connection.
       env_vars: Container environment variables.
+      env_vars_secrets: Container environment variables where the values come
+        from Secret Manager.
       cloudsql_instances: Cloud SQL instances.
       memory: Memory limit.
       cpu: CPU limit.
       namespace: Kubernetes namespace to run in.
       readiness_probe: If true, create readiness probe.
+      allow_secret_manager: If true, allow fetching secrets from secret manager
   """
 
   NAMES = ('service_name', 'image', 'credential', 'context', 'builder',
-           'local_port', 'env_vars', 'cloudsql_instances', 'memory', 'cpu',
-           'namespace', 'readiness_probe')
+           'local_port', 'env_vars', 'env_vars_secrets', 'cloudsql_instances',
+           'memory', 'cpu', 'namespace', 'readiness_probe',
+           'allow_secret_manager')
 
   @classmethod
   def Defaults(cls):
@@ -213,6 +222,9 @@ class Settings(DataObject):
         context=os.path.abspath(files.GetCWD()),
         image=None,  # See Build() below.
         service_name=service_name,
+        env_vars={},
+        env_vars_secrets={},
+        allow_secret_manager=None,
     )
 
   def WithServiceYaml(self, yaml_path):
@@ -231,9 +243,22 @@ class Settings(DataObject):
     except ValueError:
       raise exceptions.Error('knative Service must have exactly one container.')
 
+    new_env_vars = {}
+    new_env_vars_secrets = {}
     for var in container.env:
-      replacements.setdefault('env_vars', {})[var.name] = var.value
-
+      if var.valueFrom:
+        if var.valueFrom.configMapKeyRef:
+          raise exceptions.Error('env_vars from config_maps are not supported')
+        elif var.valueFrom.secretKeyRef:
+          new_env_vars_secrets[var.name] = {
+              'key': var.valueFrom.secretKeyRef.key,
+              'name': var.valueFrom.secretKeyRef.name
+          }
+      else:
+        new_env_vars[var.name] = var.value
+    replacements.update(
+        _MergedEnvVars(self.env_vars, self.env_vars_secrets, new_env_vars,
+                       new_env_vars_secrets))
     service_account_name = knative_service.spec.template.spec.serviceAccountName
     if service_account_name:
       replacements['credential'] = ServiceAccountSetting(
@@ -271,6 +296,7 @@ class Settings(DataObject):
         'cloudsql_instances',
         'image',
         'service_name',
+        'allow_secret_manager',
     ]:
       if args.IsKnownAndSpecified(override_arg):
         replacements[override_arg] = getattr(args, override_arg)
@@ -294,11 +320,12 @@ class Settings(DataObject):
         replacements['builder'] = _GaeBuilder(context)
       elif args.IsKnownAndSpecified('dockerfile'):
         replacements['builder'] = DockerfileBuilder(dockerfile=args.dockerfile)
-
     if getattr(args, 'env_vars', None):
-      replacements['env_vars'] = args.env_vars
-    elif getattr(args, 'env_vars_file', None):
-      replacements['env_vars'] = args.env_vars_file
+      new_envs = args.env_vars
+    else:
+      new_envs = getattr(args, 'env_vars_file', {}) or {}
+    replacements.update(
+        _MergedEnvVars(self.env_vars, self.env_vars_secrets, new_envs, {}))
 
     return self.replace(**replacements)
 
@@ -341,6 +368,33 @@ def _ChooseExistingServiceYaml(context, arg):
     if matches:
       return sorted(matches)[0]
   return None
+
+
+def _MergedEnvVars(env_vars, env_vars_secrets, new_env_vars,
+                   new_env_vars_secrets):
+  """Add the new env vars (both values and secrets) to the existing ones."""
+
+  env_vars = env_vars.copy()
+  env_vars_secrets = env_vars_secrets.copy()
+
+  # Env Vars can either be values or secrets, but not both.
+  # If the variable is set as both, error.
+  conflicts = set(new_env_vars).intersection(new_env_vars_secrets)
+  if conflicts:
+    raise exceptions.Error('{} cannot be secret and literal'.format(conflicts))
+
+  # If the user is overriding an existing env var that was a secret with a
+  # literal or vice versa, make sure to remove the old value from the other
+  # dict.
+  for new_env, val in new_env_vars.items():
+    if new_env in env_vars_secrets:
+      del env_vars_secrets[new_env]
+    env_vars[new_env] = val
+  for new_secret, val in new_env_vars_secrets.items():
+    if new_secret in env_vars:
+      del env_vars[new_secret]
+    env_vars_secrets[new_secret] = val
+  return {'env_vars': env_vars, 'env_vars_secrets': env_vars_secrets}
 
 
 def AssembleSettings(args):
@@ -520,8 +574,28 @@ def _AddEnvironmentVariables(container, env_vars):
     env_vars: (dict) Key value environment variable pairs.
   """
   env_list = yaml_helper.GetOrCreate(container, ('env',), constructor=list)
+  invalid_keys = []
   for key, value in sorted(env_vars.items()):
+    if not re.match(_C_IDENTIFIER, key):
+      invalid_keys.append(six.ensure_str(key))
+      continue
     env_list.append({'name': key, 'value': value})
+  if invalid_keys:
+    raise ValueError('Environment variable name must be a C_IDENTIFIER. '
+                     'Invalid names: %r' % invalid_keys)
+
+
+def _AddSecretEnvironmentVariables(container, env_vars_secrets):
+  """Add environment variables from secrets to a container.
+
+  Args:
+    container: (dict) Container to edit.
+    env_vars_secrets: (dict) Key value environment variable pairs. Values are
+      dict with key/name keys in them.
+  """
+  env_list = yaml_helper.GetOrCreate(container, ('env',), constructor=list)
+  for key, value in sorted(env_vars_secrets.items()):
+    env_list.append({'name': key, 'valueFrom': {'secretKeyRef': value.copy()}})
 
 
 def CreateDevelopmentServiceAccount(service_account_email):
@@ -744,6 +818,7 @@ class AppContainerGenerator(KubeConfigGenerator):
                service_name,
                image_name,
                env_vars=None,
+               env_vars_secrets=None,
                memory_limit=None,
                cpu_limit=None,
                cpu_request=None,
@@ -751,6 +826,7 @@ class AppContainerGenerator(KubeConfigGenerator):
     self._service_name = service_name
     self._image_name = image_name
     self._env_vars = env_vars
+    self._env_vars_secrets = env_vars_secrets
     self._memory_limit = memory_limit
     self._cpu_limit = cpu_limit
     self._cpu_request = cpu_request
@@ -769,6 +845,8 @@ class AppContainerGenerator(KubeConfigGenerator):
     _AddEnvironmentVariables(container, default_env_vars)
     if self._env_vars:
       _AddEnvironmentVariables(container, self._env_vars)
+    if self._env_vars_secrets:
+      _AddSecretEnvironmentVariables(container, self._env_vars_secrets)
     service = CreateService(self._service_name)
     return [deployment, service]
 
@@ -875,6 +953,50 @@ class CloudSqlProxyGenerator(KubeConfigGenerator):
         'mountPath': '/cloudsql',
         'readOnly': True
     })
+
+
+class SecretsNotAllowedError(exceptions.Error):
+  """Error thrown when the deploy is not allowed to access secret manager."""
+  pass
+
+
+class SecretsGenerator(KubeConfigGenerator):
+  """Generate kubernetes secrets for referenced secrets."""
+
+  def __init__(self, referenced_secrets, namespace, allow_secret_manager=None):
+    self.project_name = properties.VALUES.core.project.Get()
+
+    self.secret_map = collections.defaultdict(list)
+    for _, secret in referenced_secrets.items():
+      self.secret_map[secret['name']].append(secret['key'])
+    self.namespace = namespace
+    self.allow_secret_manager = allow_secret_manager
+
+  def CreateConfigs(self):
+    if not self.secret_map:
+      return []
+    # If secret manager was unspecified, prompt to continue
+    if self.allow_secret_manager is None:
+      secrets_msg = ('This config references secrets stored in secret manager.'
+                     ' Continuing will fetch the secret values and download '
+                     'the secrets to your local machine.')
+      prompt_string = ('Fetch secrets from secret manager for {}?'.format(
+          list(self.secret_map.keys())))
+      # Make the service account an editor on the project
+      if console_io.CanPrompt() and console_io.PromptContinue(
+          message=secrets_msg, prompt_string=prompt_string):
+        log.status.Print(
+            'You can skip this message in the future by passing the '
+            'flag --use-secret-manager=true')
+        self.allow_secret_manager = True
+
+    if not self.allow_secret_manager:
+      raise SecretsNotAllowedError(
+          'Config requires secrets but access to secret manager was not '
+          'allowed. Replace secrets with environment variables or '
+          'allow secret manager with --allow-secret-manager to proceed.')
+    return secrets.BuildSecrets(self.project_name, self.secret_map,
+                                self.namespace)
 
 
 _CLOUD_SQL_PROXY_VERSION = '1.16'

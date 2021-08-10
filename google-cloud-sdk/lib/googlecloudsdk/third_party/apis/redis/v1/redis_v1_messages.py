@@ -192,7 +192,7 @@ class InputConfig(_messages.Message):
 
 
 class Instance(_messages.Message):
-  r"""A Google Cloud Redis instance. next id = 30
+  r"""A Google Cloud Redis instance. next id = 36
 
   Enums:
     ConnectModeValueValuesEnum: Optional. The network connect mode of the
@@ -237,10 +237,11 @@ class Instance(_messages.Message):
       used by clients to connect to the service.
     labels: Resource labels to represent user provided metadata
     locationId: Optional. The zone where the instance will be provisioned. If
-      not provided, the service will choose a zone for the instance. For
-      STANDARD_HA tier, instances will be created across two zones for
-      protection against zonal failures. If alternative_location_id is also
-      provided, it must be different from location_id.
+      not provided, the service will choose a zone from the specified region
+      for the instance. For standard tier, instances will be created across
+      two zones for protection against zonal failures. If
+      [alternative_location_id] is also provided, it must be different from
+      [location_id].
     maintenancePolicy: Optional. The maintenance policy for the instance. If
       not provided, maintenance events can be performed at any time.
     maintenanceSchedule: Output only. Date and time of upcoming maintenance

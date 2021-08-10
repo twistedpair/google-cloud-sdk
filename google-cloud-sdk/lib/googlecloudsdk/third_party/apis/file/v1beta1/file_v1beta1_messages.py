@@ -35,13 +35,13 @@ class Backup(_messages.Message):
       backup is restored
     labels: Resource labels to represent user provided metadata.
     name: Output only. The resource name of the backup, in the format
-      projects/{project_id}/locations/{location_id}/backups/{backup_id}.
+      `projects/{project_id}/locations/{location_id}/backups/{backup_id}`.
     satisfiesPzs: Output only. Reserved for future use.
     sourceFileShare: Name of the file share in the source Cloud Filestore
       instance that the backup is created from.
     sourceInstance: The resource name of the source Cloud Filestore instance,
       in the format
-      projects/{project_id}/locations/{location_id}/instances/{instance_id},
+      `projects/{project_id}/locations/{location_id}/instances/{instance_id}`,
       used to create this backup.
     sourceInstanceTier: Output only. The service tier of the source Cloud
       Filestore instance that this backup is created from.
@@ -218,7 +218,7 @@ class FileProjectsLocationsBackupsCreateRequest(_messages.Message):
       lowercase letter followed by up to 62 lowercase letters, numbers, or
       hyphens, and cannot end with a hyphen.
     parent: Required. The backup's project and location, in the format
-      projects/{project_id}/locations/{location}. In Cloud Filestore, backup
+      `projects/{project_id}/locations/{location}`. In Cloud Filestore, backup
       locations map to GCP regions, for example **us-west1**.
   """
 
@@ -232,7 +232,7 @@ class FileProjectsLocationsBackupsDeleteRequest(_messages.Message):
 
   Fields:
     name: Required. The backup resource name, in the format
-      projects/{project_id}/locations/{location}/backups/{backup_id}
+      `projects/{project_id}/locations/{location}/backups/{backup_id}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -243,7 +243,7 @@ class FileProjectsLocationsBackupsGetRequest(_messages.Message):
 
   Fields:
     name: Required. The backup resource name, in the format
-      projects/{project_id}/locations/{location}/backups/{backup_id}.
+      `projects/{project_id}/locations/{location}/backups/{backup_id}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -260,10 +260,10 @@ class FileProjectsLocationsBackupsListRequest(_messages.Message):
     pageToken: The next_page_token value to use if there are additional
       results to retrieve for this list request.
     parent: Required. The project and location for which to retrieve backup
-      information, in the format projects/{project_id}/locations/{location}.
+      information, in the format `projects/{project_id}/locations/{location}`.
       In Cloud Filestore, backup locations map to GCP regions, for example
       **us-west1**. To retrieve backup information for all locations, use "-"
-      for the {location} value.
+      for the `{location}` value.
   """
 
   filter = _messages.StringField(1)
@@ -279,7 +279,7 @@ class FileProjectsLocationsBackupsPatchRequest(_messages.Message):
   Fields:
     backup: A Backup resource to be passed as the request body.
     name: Output only. The resource name of the backup, in the format
-      projects/{project_id}/locations/{location_id}/backups/{backup_id}.
+      `projects/{project_id}/locations/{location_id}/backups/{backup_id}`.
     updateMask: Required. Mask of fields to update. At least one path must be
       supplied in this field.
   """
@@ -309,7 +309,7 @@ class FileProjectsLocationsInstancesCreateRequest(_messages.Message):
       with a lowercase letter followed by up to 62 lowercase letters, numbers,
       or hyphens, and cannot end with a hyphen.
     parent: Required. The instance's project and location, in the format
-      projects/{project_id}/locations/{location}. In Cloud Filestore,
+      `projects/{project_id}/locations/{location}`. In Cloud Filestore,
       locations map to GCP zones, for example **us-west1-b**.
   """
 
@@ -323,7 +323,7 @@ class FileProjectsLocationsInstancesDeleteRequest(_messages.Message):
 
   Fields:
     name: Required. The instance resource name, in the format
-      projects/{project_id}/locations/{location}/instances/{instance_id}
+      `projects/{project_id}/locations/{location}/instances/{instance_id}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -334,7 +334,7 @@ class FileProjectsLocationsInstancesGetRequest(_messages.Message):
 
   Fields:
     name: Required. The instance resource name, in the format
-      projects/{project_id}/locations/{location}/instances/{instance_id}.
+      `projects/{project_id}/locations/{location}/instances/{instance_id}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -351,10 +351,10 @@ class FileProjectsLocationsInstancesListRequest(_messages.Message):
     pageToken: The next_page_token value to use if there are additional
       results to retrieve for this list request.
     parent: Required. The project and location for which to retrieve instance
-      information, in the format projects/{project_id}/locations/{location}.
+      information, in the format `projects/{project_id}/locations/{location}`.
       In Cloud Filestore, locations map to GCP zones, for example **us-
       west1-b**. To retrieve instance information for all locations, use "-"
-      for the {location} value.
+      for the `{location}` value.
   """
 
   filter = _messages.StringField(1)
@@ -370,7 +370,7 @@ class FileProjectsLocationsInstancesPatchRequest(_messages.Message):
   Fields:
     instance: A Instance resource to be passed as the request body.
     name: Output only. The resource name of the instance, in the format
-      projects/{project_id}/locations/{location_id}/instances/{instance_id}.
+      `projects/{project_id}/locations/{location_id}/instances/{instance_id}`.
     updateMask: Required. Mask of fields to update. At least one path must be
       supplied in this field. The elements of the repeated paths field may
       only include these fields: * "description" * "file_shares" * "labels"
@@ -386,7 +386,7 @@ class FileProjectsLocationsInstancesRestoreRequest(_messages.Message):
 
   Fields:
     name: Required. The resource name of the instance, in the format
-      projects/{project_id}/locations/{location_id}/instances/{instance_id}.
+      `projects/{project_id}/locations/{location_id}/instances/{instance_id}`.
     restoreInstanceRequest: A RestoreInstanceRequest resource to be passed as
       the request body.
   """
@@ -401,7 +401,7 @@ class FileProjectsLocationsInstancesSnapshotsCreateRequest(_messages.Message):
   Fields:
     parent: Required. The Filestore Instance to create the snapshots of, in
       the format
-      projects/{project_id}/locations/{location}/instances/{instance_id}
+      `projects/{project_id}/locations/{location}/instances/{instance_id}`
     snapshot: A Snapshot resource to be passed as the request body.
     snapshotId: Required. The ID to use for the snapshot. The ID must be
       unique within the specified instance. This value must start with a
@@ -418,9 +418,9 @@ class FileProjectsLocationsInstancesSnapshotsDeleteRequest(_messages.Message):
   r"""A FileProjectsLocationsInstancesSnapshotsDeleteRequest object.
 
   Fields:
-    name: Required. The snapshot resource name, in the format projects/{projec
-      t_id}/locations/{location}/instances/{instance_id}/snapshots/{snapshot_i
-      d}
+    name: Required. The snapshot resource name, in the format `projects/{proje
+      ct_id}/locations/{location}/instances/{instance_id}/snapshots/{snapshot_
+      id}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -430,9 +430,9 @@ class FileProjectsLocationsInstancesSnapshotsGetRequest(_messages.Message):
   r"""A FileProjectsLocationsInstancesSnapshotsGetRequest object.
 
   Fields:
-    name: Required. The snapshot resource name, in the format projects/{projec
-      t_id}/locations/{location}/instances/{instance_id}/snapshots/{snapshot_i
-      d}
+    name: Required. The snapshot resource name, in the format `projects/{proje
+      ct_id}/locations/{location}/instances/{instance_id}/snapshots/{snapshot_
+      id}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -450,7 +450,7 @@ class FileProjectsLocationsInstancesSnapshotsListRequest(_messages.Message):
       results to retrieve for this list request.
     parent: Required. The instance for which to retrieve snapshot information,
       in the format
-      projects/{project_id}/locations/{location}/instances/{instance_id}.
+      `projects/{project_id}/locations/{location}/instances/{instance_id}`.
   """
 
   filter = _messages.StringField(1)
@@ -464,9 +464,9 @@ class FileProjectsLocationsInstancesSnapshotsPatchRequest(_messages.Message):
   r"""A FileProjectsLocationsInstancesSnapshotsPatchRequest object.
 
   Fields:
-    name: Output only. The resource name of the snapshot, in the format projec
-      ts/{project_id}/locations/{location_id}/instances/{instance_id}/snapshot
-      s/{snapshot_id}.
+    name: Output only. The resource name of the snapshot, in the format `proje
+      cts/{project_id}/locations/{location_id}/instances/{instance_id}/snapsho
+      ts/{snapshot_id}`.
     snapshot: A Snapshot resource to be passed as the request body.
     updateMask: Required. Mask of fields to update. At least one path must be
       supplied in this field.
@@ -555,13 +555,14 @@ class FileShareConfig(_messages.Message):
   Fields:
     capacityGb: File share capacity in gigabytes (GB). Cloud Filestore defines
       1 GB as 1024^3 bytes.
-    name: The name of the file share (must be 32 characters or less for High
-      Scale SSD tier, 16 characters or less for all other tiers).
+    name: The name of the file share (must be 32 characters or less for
+      Enterprise and High Scale SSD tiers and 16 characters or less for all
+      other tiers).
     nfsExportOptions: Nfs Export Options. There is a limit of 10 export
       options per file share.
     sourceBackup: The resource name of the backup, in the format
-      projects/{project_id}/locations/{location_id}/backups/{backup_id}, that
-      this file share has been restored from.
+      `projects/{project_id}/locations/{location_id}/backups/{backup_id}`,
+      that this file share has been restored from.
   """
 
   capacityGb = _messages.IntegerField(1)
@@ -1122,7 +1123,7 @@ class Instance(_messages.Message):
       single file share is supported.
     labels: Resource labels to represent user provided metadata.
     name: Output only. The resource name of the instance, in the format
-      projects/{project_id}/locations/{location_id}/instances/{instance_id}.
+      `projects/{project_id}/locations/{location_id}/instances/{instance_id}`.
     networks: VPC networks to which the instance is connected. For this
       version, only a single network is supported.
     satisfiesPzs: Output only. Reserved for future use.
@@ -1224,8 +1225,8 @@ class ListBackupsResponse(_messages.Message):
 
   Fields:
     backups: A list of backups in the project for the specified location. If
-      the {location} value in the request is "-", the response contains a list
-      of backups from all locations. If any location is unreachable, the
+      the `{location}` value in the request is "-", the response contains a
+      list of backups from all locations. If any location is unreachable, the
       response will only return backups in reachable locations and the
       "unreachable" field will be populated with a list of unreachable
       locations.
@@ -1244,7 +1245,7 @@ class ListInstancesResponse(_messages.Message):
 
   Fields:
     instances: A list of instances in the project for the specified location.
-      If the {location} value in the request is "-", the response contains a
+      If the `{location}` value in the request is "-", the response contains a
       list of instances from all locations. If any location is unreachable,
       the response will only return instances in reachable locations and the
       "unreachable" field will be populated with a list of unreachable
@@ -1479,28 +1480,29 @@ class NetworkConfig(_messages.Message):
   Fields:
     connectMode: The network connect mode of the Filestore instance. If not
       provided, the connect mode defaults to DIRECT_PEERING.
-    ipAddresses: Output only. IPv4 addresses in the format {octet 1}.{octet
-      2}.{octet 3}.{octet 4} or IPv6 addresses in the format {block 1}:{block
-      2}:{block 3}:{block 4}:{block 5}:{block 6}:{block 7}:{block 8}.
+    ipAddresses: Output only. IPv4 addresses in the format
+      `{octet1}.{octet2}.{octet3}.{octet4}` or IPv6 addresses in the format `{
+      block1}:{block2}:{block3}:{block4}:{block5}:{block6}:{block7}:{block8}`.
     modes: Internet protocol versions for which the instance has IP addresses
       assigned. For this version, only MODE_IPV4 is supported.
     network: The name of the Google Compute Engine [VPC
-      network](/compute/docs/networks-and-firewalls#networks) to which the
-      instance is connected.
+      network](https://cloud.google.com/vpc/docs/vpc) to which the instance is
+      connected.
     reservedIpRange: Optional, reserved_ip_range can have one of the following
       two types of values. * CIDR range value when using DIRECT_PEERING
-      connect mode. * [Named Address
-      Range](https://cloud.google.com/compute/docs/ip-addresses/reserve-
+      connect mode. * [Allocated IP address
+      range](https://cloud.google.com/compute/docs/ip-addresses/reserve-
       static-internal-ip-address) when using PRIVATE_SERVICE_ACCESS connect
-      mode. For both cases, the range value (direct CIDR value or the range
-      value with which the named range was created) must be a /29 CIDR block
-      for Basic tier or a /23 CIDR block for High Scale or Enterprise tier in
-      one of the [internal IP address
-      ranges](https://www.arin.net/knowledge/address_filters.html) that
-      identifies the range of IP addresses reserved for this instance. For
-      example, 10.0.0.0/29 or 192.168.0.0/23. The range you specify can't
-      overlap with either existing subnets or assigned IP address ranges for
-      other Cloud Filestore instances in the selected VPC network.
+      mode. When the name of an allocated IP address range is specified, it
+      must be one of the ranges associated with the private service access
+      connection. When specified as a direct CIDR value, it must be a /29 CIDR
+      block for Basic tier or a /23 CIDR block for High Scale or Enterprise
+      tier in one of the [internal IP address ranges](https://www.arin.net/ref
+      erence/research/statistics/address_filters/) that identifies the range
+      of IP addresses reserved for this instance. For example, 10.0.0.0/29 or
+      192.168.0.0/23. The range you specify can't overlap with either existing
+      subnets or assigned IP address ranges for other Cloud Filestore
+      instances in the selected VPC network.
   """
 
   class ConnectModeValueValuesEnum(_messages.Enum):
@@ -1558,11 +1560,11 @@ class NfsExportOptions(_messages.Message):
       value of 65534. Anon_uid may only be set with squash_mode of
       ROOT_SQUASH. An error will be returned if this field is specified for
       other squash_mode settings.
-    ipRanges: List of either an IPv4 addresses in the format {octet 1}.{octet
-      2}.{octet 3}.{octet 4} or CIDR ranges in the format {octet 1}.{octet
-      2}.{octet 3}.{octet 4}/{mask size} which may mount the file share.
-      Overlapping IP ranges are not allowed, both within and across
-      NfsExportOptions. An error will be returned. The limit is 64 IP
+    ipRanges: List of either an IPv4 addresses in the format
+      `{octet1}.{octet2}.{octet3}.{octet4}` or CIDR ranges in the format
+      `{octet1}.{octet2}.{octet3}.{octet4}/{mask size}` which may mount the
+      file share. Overlapping IP ranges are not allowed, both within and
+      across NfsExportOptions. An error will be returned. The limit is 64 IP
       ranges/addresses for each FileShareConfig among all NfsExportOptions.
     squashMode: Either NO_ROOT_SQUASH, for allowing root access on the
       exported directory, or ROOT_SQUASH, for not allowing root access. The
@@ -1719,9 +1721,9 @@ class OperationMetadata(_messages.Message):
   Fields:
     apiVersion: Output only. API version used to start the operation.
     cancelRequested: Output only. Identifies whether the user has requested
-      cancellation of the operation. Operations that have successfully been
-      cancelled have Operation.error value with a google.rpc.Status.code of 1,
-      corresponding to `Code.CANCELLED`.
+      cancellation of the operation. Operations that have been cancelled
+      successfully have Operation.error value with a google.rpc.Status.code of
+      1, corresponding to `Code.CANCELLED`.
     createTime: Output only. The time the operation was created.
     endTime: Output only. The time the operation finished running.
     statusDetail: Output only. Human-readable status of the operation, if any.
@@ -1747,9 +1749,9 @@ class RestoreInstanceRequest(_messages.Message):
     fileShare: Required. Name of the file share in the Cloud Filestore
       instance that the snapshot is being restored to.
     sourceBackup: The resource name of the backup, in the format
-      projects/{project_id}/locations/{location_id}/backups/{backup_id}.
+      `projects/{project_id}/locations/{location_id}/backups/{backup_id}`.
     sourceSnapshot: The resource name of the snapshot, in the format
-      projects/{project_id}/locations/{location_id}/snapshots/{snapshot_id}.
+      `projects/{project_id}/locations/{location_id}/snapshots/{snapshot_id}`.
   """
 
   fileShare = _messages.StringField(1)
@@ -1814,9 +1816,9 @@ class Snapshot(_messages.Message):
     filesystemUsedBytes: Output only. The amount of bytes needed to allocate a
       full copy of the snapshot content
     labels: Resource labels to represent user provided metadata.
-    name: Output only. The resource name of the snapshot, in the format projec
-      ts/{project_id}/locations/{location_id}/instances/{instance_id}/snapshot
-      s/{snapshot_id}.
+    name: Output only. The resource name of the snapshot, in the format `proje
+      cts/{project_id}/locations/{location_id}/instances/{instance_id}/snapsho
+      ts/{snapshot_id}`.
     state: Output only. The snapshot state.
   """
 

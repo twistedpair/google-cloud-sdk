@@ -50,9 +50,9 @@ and set:
 
 DEFAULT_LOGS_BUCKET_IS_OUTSIDE_SECURITY_PERIMETER_TEXT = """
 The build is running, and logs are being written to the default logs bucket.
-Unfortunately, the default logs bucket is always outside any VPC-SC security
-perimeter, so this tool cannot stream the logs for you.
+This tool can only stream logs if you are Viewer/Owner of the project and, if applicable, allowed by your VPC-SC security policy.
 
+The default logs bucket is always outside any VPC-SC security perimeter.
 If you want your logs saved inside your VPC-SC perimeter, use your own bucket.
 See https://cloud.google.com/build/docs/securing-builds/store-manage-build-logs.
 """
@@ -228,9 +228,7 @@ class GCLLogTailer(TailerBase):
                         build_id=self.build_id)
 
     output_logs = self.tailer.TailLogs(
-        [parent],
-        log_filter,
-        buffer_window_seconds=self.buffer_window_seconds)
+        [parent], log_filter, buffer_window_seconds=self.buffer_window_seconds)
 
     self._PrintFirstLine()
 

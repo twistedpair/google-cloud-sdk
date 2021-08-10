@@ -182,3 +182,22 @@ def AddIgnoreFileFlag(parser, hidden=False):
       hidden=hidden,
       help='Override the `.gcloudignore` file and use the specified file '
       'instead. See `gcloud topic gcloudignore` for more information.')
+
+
+def AddTimeoutFlag(parser):
+  """Adds --reconcile-timeout flag."""
+
+  help_text = ('Set a reconcile timeout for the deployment. If the resources '
+               'fail to reconcile within the timeout, the deployment will fail.'
+               '\n\n'
+               'If unspecified, the deployment will not timeout waiting to '
+               'reconcile resources.'
+               '\n\n'
+               'See $ gcloud topic datetimes for information about absolute '
+               'duration formats.')
+
+  parser.add_argument(
+      '--reconcile-timeout',
+      type=arg_parsers.Duration(default_unit='s', parsed_unit='s'),
+      default=0,
+      help=help_text)

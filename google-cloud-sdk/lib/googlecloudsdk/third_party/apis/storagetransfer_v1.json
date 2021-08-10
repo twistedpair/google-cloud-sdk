@@ -243,6 +243,10 @@
           "description": "Notification configuration. This is not supported for transfers involving PosixFilesystem.",
           "$ref": "NotificationConfig"
         },
+        "loggingConfig": {
+          "description": "Logging configuration.",
+          "$ref": "LoggingConfig"
+        },
         "schedule": {
           "description": "Specifies schedule for the transfer job. This is an optional field. When the field is not set, the job never executes a transfer, unless you invoke RunTransferJob or update the job to have a non-empty schedule.",
           "$ref": "Schedule"
@@ -307,6 +311,10 @@
         "httpDataSource": {
           "description": "An HTTP URL data source.",
           "$ref": "HttpData"
+        },
+        "posixDataSource": {
+          "description": "A POSIX Filesystem data source.",
+          "$ref": "PosixFilesystem"
         },
         "azureBlobStorageDataSource": {
           "description": "An Azure Blob Storage data source.",
@@ -382,6 +390,17 @@
       "properties": {
         "listUrl": {
           "description": "Required. The URL that points to the file that stores the object list entries. This file must allow public access. Currently, only URLs with HTTP and HTTPS schemes are supported.",
+          "type": "string"
+        }
+      }
+    },
+    "PosixFilesystem": {
+      "id": "PosixFilesystem",
+      "description": "A POSIX filesystem data source or sink.",
+      "type": "object",
+      "properties": {
+        "rootDirectory": {
+          "description": "Root directory path to the filesystem.",
           "type": "string"
         }
       }
@@ -521,6 +540,17 @@
             "NONE",
             "JSON"
           ]
+        }
+      }
+    },
+    "LoggingConfig": {
+      "id": "LoggingConfig",
+      "description": "Logging configure.",
+      "type": "object",
+      "properties": {
+        "enableOnpremGcsTransferLogs": {
+          "description": "Enables the Cloud Storage transfer logs for this transfer. This is only supported for transfer jobs with PosixFilesystem sources. The default is that logs are not generated for this transfer.",
+          "type": "boolean"
         }
       }
     },
@@ -816,6 +846,21 @@
         },
         "bytesFailedToDeleteFromSink": {
           "description": "Bytes that failed to be deleted from the data sink.",
+          "type": "string",
+          "format": "int64"
+        },
+        "directoriesFoundFromSource": {
+          "description": "For transfers involving PosixFilesystem only. Number of directories found while listing. For example, if the root directory of the transfer is `base\/` and there are two other directories, `a\/` and `b\/` under this directory, the count after listing `base\/`, `base\/a\/` and `base\/b\/` is 3.",
+          "type": "string",
+          "format": "int64"
+        },
+        "directoriesFailedToListFromSource": {
+          "description": "For transfers involving PosixFilesystem only. Number of listing failures for each directory found at the source. Potential failures when listing a directory include permission failure or block failure. If listing a directory fails, no files in the directory are transferred.",
+          "type": "string",
+          "format": "int64"
+        },
+        "directoriesSuccessfullyListedFromSource": {
+          "description": "For transfers involving PosixFilesystem only. Number of successful listings for each directory found at the source.",
           "type": "string",
           "format": "int64"
         }

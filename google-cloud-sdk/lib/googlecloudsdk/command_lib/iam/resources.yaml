@@ -53,6 +53,19 @@ iam_account:
       The name of the IAM ServiceAccount.
   disable_auto_completers: false
 
+iam_key:
+  name: iamKey
+  collection: iam.projects.serviceAccounts.keys
+  attributes:
+  - *project
+  - *iam_account
+  - &iam_key
+    parameter_name: keysId
+    attribute_name: iam_key
+    help: |
+      The ID of the IAM ServiceAccountKey.
+  disable_auto_completers: false
+
 # Gcloud disallows positional arguments with dashes (-) but the resource is expected to be referred
 # to with dashes when used in non-positional manner. To avoid the conflict, we define two
 # near-identical resources (only differing by attribute_name).

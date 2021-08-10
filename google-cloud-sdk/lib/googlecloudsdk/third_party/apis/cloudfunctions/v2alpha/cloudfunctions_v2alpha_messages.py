@@ -694,12 +694,13 @@ class GoogleCloudFunctionsV2alphaStage(_messages.Message):
   r"""Each Stage of the deployment process
 
   Enums:
-    NameValueValuesEnum: Name of the Stage
+    NameValueValuesEnum: Name of the Stage. This will be unique for each
+      Stage.
     StateValueValuesEnum: Current state of the Stage
 
   Fields:
     message: Message describing the Stage
-    name: Name of the Stage
+    name: Name of the Stage. This will be unique for each Stage.
     resource: Resource of the Stage
     resourceUri: Link to the current Stage resource
     state: Current state of the Stage
@@ -707,7 +708,7 @@ class GoogleCloudFunctionsV2alphaStage(_messages.Message):
   """
 
   class NameValueValuesEnum(_messages.Enum):
-    r"""Name of the Stage
+    r"""Name of the Stage. This will be unique for each Stage.
 
     Values:
       NAME_UNSPECIFIED: Not specified. Invalid name.

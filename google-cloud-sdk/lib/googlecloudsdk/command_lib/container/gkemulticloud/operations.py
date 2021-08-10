@@ -18,11 +18,13 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from apitools.base.py import encoding
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.container.gkemulticloud import util as api_util
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.container.gkemulticloud import constants
+from googlecloudsdk.core.console import progress_tracker
 
 _OPERATION_TABLE_FORMAT = """\
     table(
@@ -78,8 +80,41 @@ class Client(object):
       operation_ref: object, passed to operation poller poll method.
       message: str, string to display for the progress tracker.
     """
+    poller = _Poller(self.service)
     waiter.WaitFor(
-        poller=waiter.CloudOperationPollerNoResources(self.service),
+        poller=poller,
         operation_ref=operation_ref,
-        message=message,
+        custom_tracker=progress_tracker.ProgressTracker(
+            message=message,
+            detail_message_callback=poller.GetStatusDetail,
+            aborted_message='Aborting wait for operation {}.\n'.format(
+                operation_ref)),
         wait_ceiling_ms=constants.MAX_LRO_POLL_INTERVAL_MS)
+
+
+class _Poller(waiter.CloudOperationPollerNoResources):
+  """Poller for Anthos Multi-cloud operations.
+
+  The poller stores the status detail from the operation message to update
+  the progress tracker.
+  """
+
+  def __init__(self, operation_service):
+    """See base class."""
+    self.operation_service = operation_service
+    self.status_detail = None
+
+  def Poll(self, operation_ref):
+    """See base class."""
+    request_type = self.operation_service.GetRequestType('Get')
+    operation = self.operation_service.Get(
+        request_type(name=operation_ref.RelativeName()))
+    if operation.metadata is not None:
+      metadata = encoding.MessageToPyValue(operation.metadata)
+      if 'statusDetail' in metadata:
+        self.status_detail = metadata['statusDetail']
+    return operation
+
+  def GetStatusDetail(self):
+    # type: () -> str
+    return self.status_detail

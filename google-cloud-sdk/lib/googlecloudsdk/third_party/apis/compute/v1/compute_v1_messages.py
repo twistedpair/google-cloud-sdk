@@ -36421,7 +36421,8 @@ class Network(_messages.Message):
     kind: [Output Only] Type of the resource. Always compute#network for
       networks.
     mtu: Maximum Transmission Unit in bytes. The minimum value for this field
-      is 1460 and the maximum value is 1500 bytes.
+      is 1460 and the maximum value is 1500 bytes. If unspecified, defaults to
+      1460.
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the

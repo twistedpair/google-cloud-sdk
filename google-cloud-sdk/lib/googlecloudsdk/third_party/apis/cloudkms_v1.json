@@ -236,6 +236,15 @@
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "importOnly": {
+          "description": "Immutable. Whether this key may contain imported versions only.",
+          "type": "boolean"
+        },
+        "destroyScheduledDuration": {
+          "description": "Immutable. The period of time that versions of this key spend in the DESTROY_SCHEDULED state before transitioning to DESTROYED. If not specified at creation time, the default duration is 24 hours.",
+          "type": "string",
+          "format": "google-duration"
         }
       }
     },
@@ -823,6 +832,31 @@
         }
       }
     },
+    "UpdateCryptoKeyPrimaryVersionRequest": {
+      "id": "UpdateCryptoKeyPrimaryVersionRequest",
+      "description": "Request message for KeyManagementService.UpdateCryptoKeyPrimaryVersion.",
+      "type": "object",
+      "properties": {
+        "cryptoKeyVersionId": {
+          "description": "Required. The id of the child CryptoKeyVersion to use as primary.",
+          "type": "string"
+        }
+      }
+    },
+    "DestroyCryptoKeyVersionRequest": {
+      "id": "DestroyCryptoKeyVersionRequest",
+      "description": "Request message for KeyManagementService.DestroyCryptoKeyVersion.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "RestoreCryptoKeyVersionRequest": {
+      "id": "RestoreCryptoKeyVersionRequest",
+      "description": "Request message for KeyManagementService.RestoreCryptoKeyVersion.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "EncryptRequest": {
       "id": "EncryptRequest",
       "description": "Request message for KeyManagementService.Encrypt.",
@@ -1220,29 +1254,49 @@
         }
       }
     },
-    "UpdateCryptoKeyPrimaryVersionRequest": {
-      "id": "UpdateCryptoKeyPrimaryVersionRequest",
-      "description": "Request message for KeyManagementService.UpdateCryptoKeyPrimaryVersion.",
+    "GenerateRandomBytesRequest": {
+      "id": "GenerateRandomBytesRequest",
+      "description": "Request message for KeyManagementService.GenerateRandomBytes.",
       "type": "object",
       "properties": {
-        "cryptoKeyVersionId": {
-          "description": "Required. The id of the child CryptoKeyVersion to use as primary.",
-          "type": "string"
+        "lengthBytes": {
+          "description": "The length in bytes of the amount of randomness to retrieve. Minimum 8 bytes, maximum 1024 bytes.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "protectionLevel": {
+          "description": "The ProtectionLevel to use when generating the random data. Defaults to SOFTWARE.",
+          "type": "string",
+          "enumDescriptions": [
+            "Not specified.",
+            "Crypto operations are performed in software.",
+            "Crypto operations are performed in a Hardware Security Module.",
+            "Crypto operations are performed by an external key manager."
+          ],
+          "enum": [
+            "PROTECTION_LEVEL_UNSPECIFIED",
+            "SOFTWARE",
+            "HSM",
+            "EXTERNAL"
+          ]
         }
       }
     },
-    "DestroyCryptoKeyVersionRequest": {
-      "id": "DestroyCryptoKeyVersionRequest",
-      "description": "Request message for KeyManagementService.DestroyCryptoKeyVersion.",
+    "GenerateRandomBytesResponse": {
+      "id": "GenerateRandomBytesResponse",
+      "description": "Response message for KeyManagementService.GenerateRandomBytes.",
       "type": "object",
       "properties": {
-      }
-    },
-    "RestoreCryptoKeyVersionRequest": {
-      "id": "RestoreCryptoKeyVersionRequest",
-      "description": "Request message for KeyManagementService.RestoreCryptoKeyVersion.",
-      "type": "object",
-      "properties": {
+        "data": {
+          "description": "The generated data.",
+          "type": "string",
+          "format": "byte"
+        },
+        "dataCrc32c": {
+          "description": "Integrity verification field. A CRC32C checksum of the returned GenerateRandomBytesResponse.data. An integrity check of GenerateRandomBytesResponse.data can be performed by computing the CRC32C checksum of GenerateRandomBytesResponse.data and comparing your results to this field. Discard the response in case of non-matching checksum values, and perform a limited number of retries. A persistent mismatch may indicate an issue in your computation of the CRC32C checksum. Note: This field is defined as int64 for reasons of compatibility across different languages. However, it is a non-negative integer, which will never exceed 2^32-1, and can be safely downconverted to uint32 in languages that support this type.",
+          "type": "string",
+          "format": "int64"
+        }
       }
     },
     "ListLocationsResponse": {
@@ -1486,6 +1540,35 @@
       "resources": {
         "locations": {
           "methods": {
+            "generateRandomBytes": {
+              "id": "cloudkms.projects.locations.generateRandomBytes",
+              "path": "v1/{+location}:generateRandomBytes",
+              "flatPath": "v1/projects/{projectsId}/locations/{locationsId}:generateRandomBytes",
+              "httpMethod": "POST",
+              "parameters": {
+                "location": {
+                  "description": "The project-specific location in which to generate random bytes. For example, \"projects\/my-project\/locations\/us-central1\".",
+                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "location"
+              ],
+              "request": {
+                "$ref": "GenerateRandomBytesRequest"
+              },
+              "response": {
+                "$ref": "GenerateRandomBytesResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/cloudkms"
+              ],
+              "description": "Generate random bytes using the Cloud KMS randomness source in the provided location."
+            },
             "list": {
               "id": "cloudkms.projects.locations.list",
               "path": "v1/{+name}/locations",
@@ -1921,6 +2004,35 @@
                       ],
                       "description": "Update a CryptoKey."
                     },
+                    "updatePrimaryVersion": {
+                      "id": "cloudkms.projects.locations.keyRings.cryptoKeys.updatePrimaryVersion",
+                      "path": "v1/{+name}:updatePrimaryVersion",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}:updatePrimaryVersion",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The resource name of the CryptoKey to update.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/cryptoKeys\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "UpdateCryptoKeyPrimaryVersionRequest"
+                      },
+                      "response": {
+                        "$ref": "CryptoKey"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform",
+                        "https://www.googleapis.com/auth/cloudkms"
+                      ],
+                      "description": "Update the version of a CryptoKey that will be used in Encrypt. Returns an error if called on a key whose purpose is not ENCRYPT_DECRYPT."
+                    },
                     "encrypt": {
                       "id": "cloudkms.projects.locations.keyRings.cryptoKeys.encrypt",
                       "path": "v1/{+name}:encrypt",
@@ -1978,35 +2090,6 @@
                         "https://www.googleapis.com/auth/cloudkms"
                       ],
                       "description": "Decrypts data that was protected by Encrypt. The CryptoKey.purpose must be ENCRYPT_DECRYPT."
-                    },
-                    "updatePrimaryVersion": {
-                      "id": "cloudkms.projects.locations.keyRings.cryptoKeys.updatePrimaryVersion",
-                      "path": "v1/{+name}:updatePrimaryVersion",
-                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}:updatePrimaryVersion",
-                      "httpMethod": "POST",
-                      "parameters": {
-                        "name": {
-                          "description": "Required. The resource name of the CryptoKey to update.",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/cryptoKeys\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "request": {
-                        "$ref": "UpdateCryptoKeyPrimaryVersionRequest"
-                      },
-                      "response": {
-                        "$ref": "CryptoKey"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform",
-                        "https://www.googleapis.com/auth/cloudkms"
-                      ],
-                      "description": "Update the version of a CryptoKey that will be used in Encrypt. Returns an error if called on a key whose purpose is not ENCRYPT_DECRYPT."
                     },
                     "setIamPolicy": {
                       "id": "cloudkms.projects.locations.keyRings.cryptoKeys.setIamPolicy",
@@ -2308,6 +2391,64 @@
                           ],
                           "description": "Update a CryptoKeyVersion's metadata. state may be changed between ENABLED and DISABLED using this method. See DestroyCryptoKeyVersion and RestoreCryptoKeyVersion to move between other states."
                         },
+                        "destroy": {
+                          "id": "cloudkms.projects.locations.keyRings.cryptoKeys.cryptoKeyVersions.destroy",
+                          "path": "v1/{+name}:destroy",
+                          "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}/cryptoKeyVersions/{cryptoKeyVersionsId}:destroy",
+                          "httpMethod": "POST",
+                          "parameters": {
+                            "name": {
+                              "description": "Required. The resource name of the CryptoKeyVersion to destroy.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/cryptoKeys\/[^\/]+\/cryptoKeyVersions\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "request": {
+                            "$ref": "DestroyCryptoKeyVersionRequest"
+                          },
+                          "response": {
+                            "$ref": "CryptoKeyVersion"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform",
+                            "https://www.googleapis.com/auth/cloudkms"
+                          ],
+                          "description": "Schedule a CryptoKeyVersion for destruction. Upon calling this method, CryptoKeyVersion.state will be set to DESTROY_SCHEDULED and destroy_time will be set to a time 24 hours in the future, at which point the state will be changed to DESTROYED, and the key material will be irrevocably destroyed. Before the destroy_time is reached, RestoreCryptoKeyVersion may be called to reverse the process."
+                        },
+                        "restore": {
+                          "id": "cloudkms.projects.locations.keyRings.cryptoKeys.cryptoKeyVersions.restore",
+                          "path": "v1/{+name}:restore",
+                          "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}/cryptoKeyVersions/{cryptoKeyVersionsId}:restore",
+                          "httpMethod": "POST",
+                          "parameters": {
+                            "name": {
+                              "description": "Required. The resource name of the CryptoKeyVersion to restore.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/cryptoKeys\/[^\/]+\/cryptoKeyVersions\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "request": {
+                            "$ref": "RestoreCryptoKeyVersionRequest"
+                          },
+                          "response": {
+                            "$ref": "CryptoKeyVersion"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform",
+                            "https://www.googleapis.com/auth/cloudkms"
+                          ],
+                          "description": "Restore a CryptoKeyVersion in the DESTROY_SCHEDULED state. Upon restoration of the CryptoKeyVersion, state will be set to DISABLED, and destroy_time will be cleared."
+                        },
                         "asymmetricSign": {
                           "id": "cloudkms.projects.locations.keyRings.cryptoKeys.cryptoKeyVersions.asymmetricSign",
                           "path": "v1/{+name}:asymmetricSign",
@@ -2423,64 +2564,6 @@
                             "https://www.googleapis.com/auth/cloudkms"
                           ],
                           "description": "Verifies MAC tag using a CryptoKeyVersion with CryptoKey.purpose MAC, and returns a response that indicates whether or not the verification was successful."
-                        },
-                        "destroy": {
-                          "id": "cloudkms.projects.locations.keyRings.cryptoKeys.cryptoKeyVersions.destroy",
-                          "path": "v1/{+name}:destroy",
-                          "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}/cryptoKeyVersions/{cryptoKeyVersionsId}:destroy",
-                          "httpMethod": "POST",
-                          "parameters": {
-                            "name": {
-                              "description": "Required. The resource name of the CryptoKeyVersion to destroy.",
-                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/cryptoKeys\/[^\/]+\/cryptoKeyVersions\/[^\/]+$",
-                              "location": "path",
-                              "required": true,
-                              "type": "string"
-                            }
-                          },
-                          "parameterOrder": [
-                            "name"
-                          ],
-                          "request": {
-                            "$ref": "DestroyCryptoKeyVersionRequest"
-                          },
-                          "response": {
-                            "$ref": "CryptoKeyVersion"
-                          },
-                          "scopes": [
-                            "https://www.googleapis.com/auth/cloud-platform",
-                            "https://www.googleapis.com/auth/cloudkms"
-                          ],
-                          "description": "Schedule a CryptoKeyVersion for destruction. Upon calling this method, CryptoKeyVersion.state will be set to DESTROY_SCHEDULED and destroy_time will be set to a time 24 hours in the future, at which point the state will be changed to DESTROYED, and the key material will be irrevocably destroyed. Before the destroy_time is reached, RestoreCryptoKeyVersion may be called to reverse the process."
-                        },
-                        "restore": {
-                          "id": "cloudkms.projects.locations.keyRings.cryptoKeys.cryptoKeyVersions.restore",
-                          "path": "v1/{+name}:restore",
-                          "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/keyRings/{keyRingsId}/cryptoKeys/{cryptoKeysId}/cryptoKeyVersions/{cryptoKeyVersionsId}:restore",
-                          "httpMethod": "POST",
-                          "parameters": {
-                            "name": {
-                              "description": "Required. The resource name of the CryptoKeyVersion to restore.",
-                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/keyRings\/[^\/]+\/cryptoKeys\/[^\/]+\/cryptoKeyVersions\/[^\/]+$",
-                              "location": "path",
-                              "required": true,
-                              "type": "string"
-                            }
-                          },
-                          "parameterOrder": [
-                            "name"
-                          ],
-                          "request": {
-                            "$ref": "RestoreCryptoKeyVersionRequest"
-                          },
-                          "response": {
-                            "$ref": "CryptoKeyVersion"
-                          },
-                          "scopes": [
-                            "https://www.googleapis.com/auth/cloud-platform",
-                            "https://www.googleapis.com/auth/cloudkms"
-                          ],
-                          "description": "Restore a CryptoKeyVersion in the DESTROY_SCHEDULED state. Upon restoration of the CryptoKeyVersion, state will be set to DISABLED, and destroy_time will be cleared."
                         }
                       }
                     }

@@ -113,41 +113,6 @@ def ParseReplacementMethod(method_type_str, messages):
        .ReplacementMethodValueValuesEnum))
 
 
-def ValidateUpdateInstancesArgs(args):
-  """Validates update arguments provided by the user.
-
-  Args:
-    args: arguments provided by the user.
-  """
-  if args.action == 'restart':
-    if args.version_original:
-      raise exceptions.InvalidArgumentException(
-          '--version-original', 'can\'t be specified for --action restart.')
-    if args.version_new:
-      raise exceptions.InvalidArgumentException(
-          '--version-new', 'can\'t be specified for --action restart.')
-
-  elif args.action == 'replace':
-    if not args.version_new:
-      raise exceptions.RequiredArgumentException(
-          '--version-new',
-          'must be specified for --action replace (or default).')
-
-    if not args.version_original and (TARGET_SIZE_NAME in args.version_new):
-      if args.version_new[TARGET_SIZE_NAME] == '100%':
-        del args.version_new[TARGET_SIZE_NAME]
-      else:
-        raise exceptions.InvalidArgumentException(
-            '--version-new',
-            'target-size can\'t be specified if there is only one version.')
-
-    if (args.version_original and args.version_new and
-        (TARGET_SIZE_NAME in args.version_original)
-        == (TARGET_SIZE_NAME in args.version_new)):
-      raise exceptions.ToolException(
-          'Exactly one version must have the target-size specified.')
-
-
 def ParseVersion(project, flag_name, version_map, resources, messages):
   """Retrieves version from input map.
 

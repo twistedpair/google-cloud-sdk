@@ -116,6 +116,12 @@ def AddBulkExportArgs(parser):
   AddPathFlag(parser)
   AddFormatFlag(parser)
   AddResourceTypeFlags(parser)
+  parser.add_argument(
+      '--storage-path',
+      required=False,
+      help=('Google Cloud Storage path where a Cloud Asset Inventory export '
+            'will be stored, example: '
+            '`gs://your-bucket-name/your/prefix/path`'))
   _GetBulkExportParentGroup(parser)
 
 

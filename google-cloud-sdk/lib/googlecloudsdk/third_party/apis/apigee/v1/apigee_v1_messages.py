@@ -2817,6 +2817,76 @@ class ApigeeOrganizationsHostQueriesListRequest(_messages.Message):
   to = _messages.StringField(8)
 
 
+class ApigeeOrganizationsHostSecurityReportsCreateRequest(_messages.Message):
+  r"""A ApigeeOrganizationsHostSecurityReportsCreateRequest object.
+
+  Fields:
+    googleCloudApigeeV1SecurityReportQuery: A
+      GoogleCloudApigeeV1SecurityReportQuery resource to be passed as the
+      request body.
+    parent: Required. The parent resource name. Must be of the form
+      `organizations/{org}`.
+  """
+
+  googleCloudApigeeV1SecurityReportQuery = _messages.MessageField('GoogleCloudApigeeV1SecurityReportQuery', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class ApigeeOrganizationsHostSecurityReportsGetRequest(_messages.Message):
+  r"""A ApigeeOrganizationsHostSecurityReportsGetRequest object.
+
+  Fields:
+    name: Required. Name of the asynchronous query to get. Must be of the form
+      `organizations/{org}/securityReports/{reportId}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApigeeOrganizationsHostSecurityReportsGetResultRequest(_messages.Message):
+  r"""A ApigeeOrganizationsHostSecurityReportsGetResultRequest object.
+
+  Fields:
+    name: Required. Name of the asynchronous query result to get. Must be of
+      the form `organizations/{org}/securityReports/{reportId}/result`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApigeeOrganizationsHostSecurityReportsListRequest(_messages.Message):
+  r"""A ApigeeOrganizationsHostSecurityReportsListRequest object.
+
+  Fields:
+    dataset: Filter response list by dataset. Example: `api`, `mint`
+    envgroupHostname: Required. Filter response list by hostname.
+    from_: Filter response list by returning asynchronous queries that created
+      after this date time. Time must be in ISO date-time format like
+      '2011-12-03T10:15:30Z'.
+    pageSize: The maximum number of security report to return in the list
+      response.
+    pageToken: Token returned from the previous list response to fetch the
+      next page.
+    parent: Required. The parent resource name. Must be of the form
+      `organizations/{org}`.
+    status: Filter response list by asynchronous query status.
+    submittedBy: Filter response list by user who submitted queries.
+    to: Filter response list by returning asynchronous queries that created
+      before this date time. Time must be in ISO date-time format like
+      '2011-12-03T10:16:30Z'.
+  """
+
+  dataset = _messages.StringField(1)
+  envgroupHostname = _messages.StringField(2)
+  from_ = _messages.StringField(3)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
+  parent = _messages.StringField(6, required=True)
+  status = _messages.StringField(7)
+  submittedBy = _messages.StringField(8)
+  to = _messages.StringField(9)
+
+
 class ApigeeOrganizationsHostStatsGetRequest(_messages.Message):
   r"""A ApigeeOrganizationsHostStatsGetRequest object.
 
@@ -3273,76 +3343,6 @@ class ApigeeOrganizationsReportsListRequest(_messages.Message):
   parent = _messages.StringField(2, required=True)
 
 
-class ApigeeOrganizationsSecurityHostReportsCreateRequest(_messages.Message):
-  r"""A ApigeeOrganizationsSecurityHostReportsCreateRequest object.
-
-  Fields:
-    googleCloudApigeeV1SecurityReportQuery: A
-      GoogleCloudApigeeV1SecurityReportQuery resource to be passed as the
-      request body.
-    parent: Required. The parent resource name. Must be of the form
-      `organizations/{org}`.
-  """
-
-  googleCloudApigeeV1SecurityReportQuery = _messages.MessageField('GoogleCloudApigeeV1SecurityReportQuery', 1)
-  parent = _messages.StringField(2, required=True)
-
-
-class ApigeeOrganizationsSecurityHostReportsGetRequest(_messages.Message):
-  r"""A ApigeeOrganizationsSecurityHostReportsGetRequest object.
-
-  Fields:
-    name: Required. Name of the asynchronous query to get. Must be of the form
-      `organizations/{org}/securityReports/{reportId}`.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class ApigeeOrganizationsSecurityHostReportsGetResultRequest(_messages.Message):
-  r"""A ApigeeOrganizationsSecurityHostReportsGetResultRequest object.
-
-  Fields:
-    name: Required. Name of the asynchronous query result to get. Must be of
-      the form `organizations/{org}/securityReports/{reportId}/result`.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class ApigeeOrganizationsSecurityHostReportsListRequest(_messages.Message):
-  r"""A ApigeeOrganizationsSecurityHostReportsListRequest object.
-
-  Fields:
-    dataset: Filter response list by dataset. Example: `api`, `mint`
-    envgroupHostname: Required. Filter response list by hostname.
-    from_: Filter response list by returning asynchronous queries that created
-      after this date time. Time must be in ISO date-time format like
-      '2011-12-03T10:15:30Z'.
-    pageSize: The maximum number of security report to return in the list
-      response.
-    pageToken: Token returned from the previous list response to fetch the
-      next page.
-    parent: Required. The parent resource name. Must be of the form
-      `organizations/{org}`.
-    status: Filter response list by asynchronous query status.
-    submittedBy: Filter response list by user who submitted queries.
-    to: Filter response list by returning asynchronous queries that created
-      before this date time. Time must be in ISO date-time format like
-      '2011-12-03T10:16:30Z'.
-  """
-
-  dataset = _messages.StringField(1)
-  envgroupHostname = _messages.StringField(2)
-  from_ = _messages.StringField(3)
-  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(5)
-  parent = _messages.StringField(6, required=True)
-  status = _messages.StringField(7)
-  submittedBy = _messages.StringField(8)
-  to = _messages.StringField(9)
-
-
 class ApigeeOrganizationsSetAddonsRequest(_messages.Message):
   r"""A ApigeeOrganizationsSetAddonsRequest object.
 
@@ -3713,13 +3713,11 @@ class GoogleCloudApigeeV1AddonsConfig(_messages.Message):
 
   Fields:
     advancedApiOpsConfig: Configuration for the Advanced API Ops add-on.
-    integrationConfig: Configuration for the Integration add-on.
     monetizationConfig: Configuration for the Monetization add-on.
   """
 
   advancedApiOpsConfig = _messages.MessageField('GoogleCloudApigeeV1AdvancedApiOpsConfig', 1)
-  integrationConfig = _messages.MessageField('GoogleCloudApigeeV1IntegrationConfig', 2)
-  monetizationConfig = _messages.MessageField('GoogleCloudApigeeV1MonetizationConfig', 3)
+  monetizationConfig = _messages.MessageField('GoogleCloudApigeeV1MonetizationConfig', 2)
 
 
 class GoogleCloudApigeeV1AdvancedApiOpsConfig(_messages.Message):
@@ -5980,19 +5978,6 @@ class GoogleCloudApigeeV1InstanceDeploymentStatusDeployedRoute(_messages.Message
   envgroup = _messages.StringField(2)
   environment = _messages.StringField(3)
   percentage = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-
-
-class GoogleCloudApigeeV1IntegrationConfig(_messages.Message):
-  r"""Configuration for the Integration add-on.
-
-  Fields:
-    enabled: Flag that specifies whether the Integration add-on is enabled.
-    expiresAt: Output only. Time at which the Integration add-on expires in in
-      milliseconds since epoch. If unspecified, the add-on will never expire.
-  """
-
-  enabled = _messages.BooleanField(1)
-  expiresAt = _messages.IntegerField(2)
 
 
 class GoogleCloudApigeeV1KeyAliasReference(_messages.Message):

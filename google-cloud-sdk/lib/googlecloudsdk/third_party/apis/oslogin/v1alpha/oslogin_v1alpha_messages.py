@@ -46,6 +46,7 @@ class LoginProfile(_messages.Message):
   Fields:
     name: Required. A unique user ID.
     posixAccounts: The list of POSIX accounts associated with the user.
+    securityKeys: The registered security key credentials for a user.
     sshPublicKeys: A map from SSH public key fingerprint to the associated key
       object.
   """
@@ -77,7 +78,8 @@ class LoginProfile(_messages.Message):
 
   name = _messages.StringField(1)
   posixAccounts = _messages.MessageField('PosixAccount', 2, repeated=True)
-  sshPublicKeys = _messages.MessageField('SshPublicKeysValue', 3)
+  securityKeys = _messages.MessageField('SecurityKey', 3, repeated=True)
+  sshPublicKeys = _messages.MessageField('SshPublicKeysValue', 4)
 
 
 class OsloginUsersGetLoginProfileRequest(_messages.Message):
@@ -285,6 +287,23 @@ class PosixAccount(_messages.Message):
   username = _messages.StringField(11)
 
 
+class SecurityKey(_messages.Message):
+  r"""The credential information for a Google registered security key.
+
+  Fields:
+    privateKey: Hardware-backed private key text in SSH format.
+    publicKey: Public key text in SSH format, defined by
+      [RFC4253]("https://www.ietf.org/rfc/rfc4253.txt") section 6.6.
+    universalTwoFactor: The U2F protocol type.
+    webAuthn: The Web Authentication protocol type.
+  """
+
+  privateKey = _messages.StringField(1)
+  publicKey = _messages.StringField(2)
+  universalTwoFactor = _messages.MessageField('UniversalTwoFactor', 3)
+  webAuthn = _messages.MessageField('WebAuthn', 4)
+
+
 class SshPublicKey(_messages.Message):
   r"""The SSH public key information associated with a Google account.
 
@@ -362,6 +381,26 @@ class StandardQueryParameters(_messages.Message):
   trace = _messages.StringField(10)
   uploadType = _messages.StringField(11)
   upload_protocol = _messages.StringField(12)
+
+
+class UniversalTwoFactor(_messages.Message):
+  r"""Security key information specific to the U2F protocol.
+
+  Fields:
+    appId: Application ID for the U2F protocol.
+  """
+
+  appId = _messages.StringField(1)
+
+
+class WebAuthn(_messages.Message):
+  r"""Security key information specific to the Web Authentication protocol.
+
+  Fields:
+    rpId: Relying party ID for Web Authentication.
+  """
+
+  rpId = _messages.StringField(1)
 
 
 encoding.AddCustomJsonFieldMapping(

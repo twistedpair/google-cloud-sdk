@@ -47,6 +47,10 @@ class SparkSqlBatchFactory(object):
 
     Returns:
       A SparkSqlBatch message instance.
+
+    Raises:
+      AttributeError: Bucket is required to upload local files, but not
+      specified.
     """
 
     kwargs = {}
@@ -65,7 +69,10 @@ class SparkSqlBatchFactory(object):
           self.dataproc.messages.SparkSqlBatch.ScriptVariablesValue,
           sort_items=True)
 
-    dependencies = local_file_uploader.Upload(args.bucket, dependencies)
+    if local_file_uploader.HasLocalFiles(dependencies):
+      if not args.bucket:
+        raise AttributeError('--bucket was not specified.')
+      dependencies = local_file_uploader.Upload(args.bucket, dependencies)
 
     # Move main SQL script out of the list.
     dependencies['queryFileUri'] = dependencies['queryFileUri'][0]

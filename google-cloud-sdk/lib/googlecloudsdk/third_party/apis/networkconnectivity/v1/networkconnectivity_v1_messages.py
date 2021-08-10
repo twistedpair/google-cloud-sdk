@@ -417,6 +417,11 @@ class Hub(_messages.Message):
     name: Immutable. The name of the hub. Hub names must be unique. They use
       the following form:
       `projects/{project_number}/locations/global/hubs/{hub_id}`
+    routingVpcs: The VPC network associated with this hub's spokes. All of the
+      VPN tunnels, VLAN attachments, and router appliance instances referenced
+      by this hub's spokes must belong to this VPC network. This field is
+      read-only. Network Connectivity Center automatically populates it based
+      on the set of spokes attached to the hub.
     state: Output only. The current lifecycle state of this hub.
     uniqueId: Output only. The Google-generated UUID for the hub. This value
       is unique across all hub resources. If a hub is deleted and another with
@@ -468,9 +473,10 @@ class Hub(_messages.Message):
   description = _messages.StringField(2)
   labels = _messages.MessageField('LabelsValue', 3)
   name = _messages.StringField(4)
-  state = _messages.EnumField('StateValueValuesEnum', 5)
-  uniqueId = _messages.StringField(6)
-  updateTime = _messages.StringField(7)
+  routingVpcs = _messages.MessageField('RoutingVPC', 5, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+  uniqueId = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
 
 
 class LinkedInterconnectAttachments(_messages.Message):
@@ -512,16 +518,6 @@ class LinkedRouterApplianceInstances(_messages.Message):
 
   instances = _messages.MessageField('RouterApplianceInstance', 1, repeated=True)
   siteToSiteDataTransfer = _messages.BooleanField(2)
-
-
-class LinkedVpcNetwork(_messages.Message):
-  r"""An existing VPC network.
-
-  Fields:
-    uri: The URI of the VPC network resource
-  """
-
-  uri = _messages.StringField(1)
 
 
 class LinkedVpnTunnels(_messages.Message):
@@ -1167,8 +1163,8 @@ class OperationMetadata(_messages.Message):
     createTime: Output only. The time the operation was created.
     endTime: Output only. The time the operation finished running.
     requestedCancellation: Output only. Identifies whether the user has
-      requested cancellation of the operation. Operations that have
-      successfully been cancelled have Operation.error value with a
+      requested cancellation of the operation. Operations that have been
+      cancelled successfully have Operation.error value with a
       google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
     statusMessage: Output only. Human-readable status of the operation, if
       any.
@@ -1273,6 +1269,17 @@ class RouterApplianceInstance(_messages.Message):
   virtualMachine = _messages.StringField(2)
 
 
+class RoutingVPC(_messages.Message):
+  r"""RoutingsVPC contains information about a VPC network that is associated
+  with a hub's spokes.
+
+  Fields:
+    uri: The URI of a VPC network.
+  """
+
+  uri = _messages.StringField(1)
+
+
 class SetIamPolicyRequest(_messages.Message):
   r"""Request message for `SetIamPolicy` method.
 
@@ -1318,7 +1325,6 @@ class Spoke(_messages.Message):
       the spoke.
     linkedRouterApplianceInstances: Router appliance instances that are
       associated with the spoke.
-    linkedVpcNetwork: VPC network that is associated with to the spoke.
     linkedVpnTunnels: VPN tunnels that are associated with the spoke.
     name: Immutable. The name of the spoke. Spoke names must be unique. They
       use the following form:
@@ -1377,12 +1383,11 @@ class Spoke(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 4)
   linkedInterconnectAttachments = _messages.MessageField('LinkedInterconnectAttachments', 5)
   linkedRouterApplianceInstances = _messages.MessageField('LinkedRouterApplianceInstances', 6)
-  linkedVpcNetwork = _messages.MessageField('LinkedVpcNetwork', 7)
-  linkedVpnTunnels = _messages.MessageField('LinkedVpnTunnels', 8)
-  name = _messages.StringField(9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  uniqueId = _messages.StringField(11)
-  updateTime = _messages.StringField(12)
+  linkedVpnTunnels = _messages.MessageField('LinkedVpnTunnels', 7)
+  name = _messages.StringField(8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  uniqueId = _messages.StringField(10)
+  updateTime = _messages.StringField(11)
 
 
 class StandardQueryParameters(_messages.Message):

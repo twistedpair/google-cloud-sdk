@@ -1205,6 +1205,11 @@ class _SectionBuilds(_Section):
   def __init__(self):
     super(_SectionBuilds, self).__init__('builds')
 
+    self.region = self._Add(
+        'region',
+        help_text='Default region to use when working with Cloud Build '
+        'resources. When a `--region` flag is required but not provided, the '
+        'command will fall back to this value, if set.')
     self.timeout = self._Add(
         'timeout',
         validator=_BuildTimeoutValidator,
@@ -2178,6 +2183,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.apigee = self._Add('apigee')
     self.appengine = self._Add('appengine')
     self.assuredworkloads = self._Add('assuredworkloads')
+    self.baremetalsolution = self._Add('baremetalsolution')
     self.bigtableadmin = self._Add('bigtableadmin')
     self.binaryauthorization = self._Add('binaryauthorization')
     self.blueprints = self._Add('config')
@@ -2313,7 +2319,9 @@ class _SectionApiClientOverrides(_Section):
   def __init__(self):
     super(_SectionApiClientOverrides, self).__init__(
         'api_client_overrides', hidden=True)
+    self.alloydb = self._Add('alloydb')
     self.appengine = self._Add('appengine')
+    self.baremetalsolution = self._Add('baremetalsolution')
     self.cloudidentity = self._Add('cloudidentity')
     self.compute = self._Add('compute')
     self.compute_alpha = self._Add('compute/alpha')
@@ -2650,6 +2658,13 @@ class _SectionStorage(_Section):
         'the maximum number of objects the API allows composing at once. For '
         'Cloud Storage this limit is 32. If this property is set to 0, then '
         'automatic parallel uploads will never occur.')
+
+    self.s3_endpoint_url = self._Add(
+        's3_endpoint_url',
+        default=None,
+        help_text='If set, boto3 client will connect to this endpoint.'
+        ' Otherwise, boto3 selects a default endpoint based on the AWS service'
+        ' used.')
 
     self.tracker_files_directory = self._Add(
         'tracker_files_directory',

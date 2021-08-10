@@ -5,6 +5,63 @@ Copyright 2014-2021 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 352.0.0 (2021-08-10)
+
+### Access Approval
+
+* Promoted `gcloud access-appoval` command group to GA.
+
+### Apigee
+
+* Add archive deployment status column to `archives list` and `archives describe` commands.
+
+### Cloud Build
+
+* Added `--region` flag to `gcloud beta builds triggers` commands.
+
+### Cloud Composer
+
+* Removed Composer image versions with different major version of Airflow from list of suggested image versions of `gcloud beta composer environments list-upgrades` command.
+
+### Cloud On Demand Scanning
+
+*  Updated `local-extract` to version 1.3.1 to fix various bugs.
+
+### Compute Engine
+
+* Added two new key types `http-header` and `xff-ip` to `--enforce-on-key` in
+  'gcloud compute security-policies rules'
+* Added `--enforce-on-key-name to 'gcloud compute security-policies rules' in
+  order to be able to specify the HTTP header name whose value becomes the rate
+  limiting key for `http-header` key type.
+* Modified `gcloud compute ssh` to also use IPv6 addresses if IPv4 addresses are
+  unavailable.
+
+### Config Connector
+
+* Updated Google Cloud Config Connector to version 1.58.0.
+  See Config Connector Overview for more details [https://cloud.google.com/config-connector/docs/overview](https://cloud.google.com/config-connector/docs/overview).
+
+### Dataproc Metastore
+
+*   Added `--encryption-kms-key` flag to `gcloud beta metastore services create`
+    to specify the Customer-managed KMS key name to use for encrypting the
+    Dataproc Metastore service.
+
+### GKE Hub
+
+* Removed the hidden label for `--has-private-issuer` flag in alpha and beta.
+* Promoted `gcloud container hub memberships register --enable-workload-identity --has-private-issuer` to GA.
+
+### Kubernetes Engine
+
+* Promoted `--autoscaling-profile` flag of
+`gcloud container clusters create` and `gcloud container clusters update` to GA.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 351.0.0 (2021-08-03)
 
 ### AI

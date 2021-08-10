@@ -1199,3 +1199,6 @@ apis:
     v1alpha:
       discovery_doc: mediaasset_v1alpha.json
       default: true
+  baremetalsolution:
+    v2:
+      discovery_doc: baremetalsolution_v2.json

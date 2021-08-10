@@ -658,6 +658,11 @@
         "network": {
           "description": "The full name of the Google Compute Engine [network](\/compute\/docs\/networks-and-firewalls#networks) to which the Endpoint should be peered. Private services access must already be configured for the network. If left unspecified, the Endpoint is not peered with any network. [Format](https:\/\/cloud.google.com\/compute\/docs\/reference\/rest\/v1\/networks\/insert): projects\/{project}\/global\/networks\/{network}. Where {project} is a project number, as in '12345', and {network} is network name.",
           "type": "string"
+        },
+        "modelDeploymentMonitoringJob": {
+          "description": "Output only. Resource name of the Model Monitoring job associated with this Endpoint if monitoring is enabled by CreateModelDeploymentMonitoringJob. Format: `projects\/{project}\/locations\/{location}\/modelDeploymentMonitoringJobs\/{model_deployment_monitoring_job}`",
+          "readOnly": true,
+          "type": "string"
         }
       }
     },
@@ -671,7 +676,7 @@
           "$ref": "GoogleCloudAiplatformV1beta1DedicatedResources"
         },
         "automaticResources": {
-          "description": "A description of resources that to large degree are decided by AI Platform, and require only a modest additional configuration.",
+          "description": "A description of resources that to large degree are decided by Vertex AI, and require only a modest additional configuration.",
           "$ref": "GoogleCloudAiplatformV1beta1AutomaticResources"
         },
         "id": {
@@ -991,7 +996,7 @@
       "type": "object",
       "properties": {
         "inputBaselines": {
-          "description": "Baseline inputs for this feature. If no baseline is specified, Vertex AI chooses the baseline for this feature. If multiple baselines are specified, Vertex AI returns the average attributions across them in Attributions.baseline_attribution. For Vertex AI-provided Tensorflow images (both 1.x and 2.x), the shape of each baseline must match the shape of the input tensor. If a scalar is provided, we broadcast to the same shape as the input tensor. For custom images, the element of the baselines must be in the same format as the feature's input in the instance[]. The schema of any single instance may be specified via Endpoint's DeployedModels' Model's PredictSchemata's instance_schema_uri.",
+          "description": "Baseline inputs for this feature. If no baseline is specified, Vertex AI chooses the baseline for this feature. If multiple baselines are specified, Vertex AI returns the average attributions across them in Attribution.feature_attributions. For Vertex AI-provided Tensorflow images (both 1.x and 2.x), the shape of each baseline must match the shape of the input tensor. If a scalar is provided, we broadcast to the same shape as the input tensor. For custom images, the element of the baselines must be in the same format as the feature's input in the instance[]. The schema of any single instance may be specified via Endpoint's DeployedModels' Model's PredictSchemata's instance_schema_uri.",
           "type": "array",
           "items": {
             "type": "any"
@@ -1062,7 +1067,7 @@
           "$ref": "GoogleCloudAiplatformV1beta1ExplanationMetadataInputMetadataVisualization"
         },
         "groupName": {
-          "description": "Name of the group that the input belongs to. Features with the same group name will be treated as one feature when computing attributions. Features grouped together can have different shapes in value. If provided, there will be one single attribution generated in featureAttributions, keyed by the group name.",
+          "description": "Name of the group that the input belongs to. Features with the same group name will be treated as one feature when computing attributions. Features grouped together can have different shapes in value. If provided, there will be one single attribution generated in Attribution.feature_attributions, keyed by the group name.",
           "type": "string"
         }
       }
@@ -1195,7 +1200,7 @@
           "type": "string"
         },
         "outputTensorName": {
-          "description": "Name of the output tensor. Required and is only applicable to AI Platform provided images for Tensorflow.",
+          "description": "Name of the output tensor. Required and is only applicable to Vertex AI provided images for Tensorflow.",
           "type": "string"
         }
       }
@@ -2372,6 +2377,10 @@
           "items": {
             "type": "string"
           }
+        },
+        "deploymentGroup": {
+          "description": "Optional. The deployment group can be no longer than 64 characters (eg: 'test', 'prod'). If not set, we will use the 'default' deployment group. Creating `deployment_groups` with `reserved_ip_ranges` is a recommended practice when the peered network has multiple peering ranges. This creates your deployments from predictable IP spaces for easier traffic administration. Also, one deployment_group (except 'default') can only be used with the same reserved_ip_ranges which means if the deployment_group has been used with reserved_ip_ranges: [a, b, c], using it with [a, b] or [d, e] is disallowed. Note: we only support up to 5 deployment groups(not including 'default').",
+          "type": "string"
         }
       }
     },
@@ -2573,7 +2582,7 @@
           "$ref": "GoogleCloudAiplatformV1beta1Scheduling"
         },
         "serviceAccount": {
-          "description": "Specifies the service account for workload run-as account. Users submitting jobs must have act-as permission on this run-as account. If unspecified, the [AI Platform Custom Code Service Agent](https:\/\/cloud.google.com\/vertex-ai\/docs\/general\/access-control#service-agents) for the CustomJob's project is used.",
+          "description": "Specifies the service account for workload run-as account. Users submitting jobs must have act-as permission on this run-as account. If unspecified, the [Vertex AI Custom Code Service Agent](https:\/\/cloud.google.com\/vertex-ai\/docs\/general\/access-control#service-agents) for the CustomJob's project is used.",
           "type": "string"
         },
         "network": {
@@ -4233,7 +4242,7 @@
           "type": "string",
           "enumDescriptions": [
             "Should not be set.",
-            "Predictions are in JSONL files, consistent from the definition here (http:\/\/shortn\/_4bS0hL7ofb).",
+            "Predictions are in JSONL files.",
             "Predictions are in BigQuery."
           ],
           "enum": [
@@ -5350,7 +5359,7 @@
     },
     "GoogleCloudAiplatformV1beta1MigrateResourceRequestMigrateDataLabelingDatasetConfig": {
       "id": "GoogleCloudAiplatformV1beta1MigrateResourceRequestMigrateDataLabelingDatasetConfig",
-      "description": "Config for migrating Dataset in datalabeling.googleapis.com to AI Platform's Dataset.",
+      "description": "Config for migrating Dataset in datalabeling.googleapis.com to Vertex AI's Dataset.",
       "type": "object",
       "properties": {
         "dataset": {
@@ -5572,7 +5581,7 @@
       "type": "object",
       "properties": {
         "imageUri": {
-          "description": "Required. Immutable. URI of the Docker image to be used as the custom container for serving predictions. This URI must identify an image in Artifact Registry or Container Registry. Learn more about the [container publishing requirements](https:\/\/cloud.google.com\/vertex-ai\/docs\/predictions\/custom-container-requirements#publishing), including permissions requirements for the AI Platform Service Agent. The container image is ingested upon ModelService.UploadModel, stored internally, and this original path is afterwards not used. To learn about the requirements for the Docker image itself, see [Custom container requirements](https:\/\/cloud.google.com\/vertex-ai\/docs\/predictions\/custom-container-requirements#). You can use the URI to one of Vertex AI's [pre-built container images for prediction](https:\/\/cloud.google.com\/vertex-ai\/docs\/predictions\/pre-built-containers) in this field.",
+          "description": "Required. Immutable. URI of the Docker image to be used as the custom container for serving predictions. This URI must identify an image in Artifact Registry or Container Registry. Learn more about the [container publishing requirements](https:\/\/cloud.google.com\/vertex-ai\/docs\/predictions\/custom-container-requirements#publishing), including permissions requirements for the Vertex AI Service Agent. The container image is ingested upon ModelService.UploadModel, stored internally, and this original path is afterwards not used. To learn about the requirements for the Docker image itself, see [Custom container requirements](https:\/\/cloud.google.com\/vertex-ai\/docs\/predictions\/custom-container-requirements#). You can use the URI to one of Vertex AI's [pre-built container images for prediction](https:\/\/cloud.google.com\/vertex-ai\/docs\/predictions\/pre-built-containers) in this field.",
           "type": "string"
         },
         "command": {
@@ -5597,7 +5606,7 @@
           }
         },
         "ports": {
-          "description": "Immutable. List of ports to expose from the container. Vertex AI sends any prediction requests that it receives to the first port on this list. AI Platform also sends [liveness and health checks](https:\/\/cloud.google.com\/vertex-ai\/docs\/predictions\/custom-container-requirements#liveness) to this port. If you do not specify this field, it defaults to following value: ```json [ { \"containerPort\": 8080 } ] ``` Vertex AI does not use ports other than the first one listed. This field corresponds to the `ports` field of the Kubernetes Containers [v1 core API](https:\/\/v1-18.docs.kubernetes.io\/docs\/reference\/generated\/kubernetes-api\/v1.18\/#container-v1-core).",
+          "description": "Immutable. List of ports to expose from the container. Vertex AI sends any prediction requests that it receives to the first port on this list. Vertex AI also sends [liveness and health checks](https:\/\/cloud.google.com\/vertex-ai\/docs\/predictions\/custom-container-requirements#liveness) to this port. If you do not specify this field, it defaults to following value: ```json [ { \"containerPort\": 8080 } ] ``` Vertex AI does not use ports other than the first one listed. This field corresponds to the `ports` field of the Kubernetes Containers [v1 core API](https:\/\/v1-18.docs.kubernetes.io\/docs\/reference\/generated\/kubernetes-api\/v1.18\/#container-v1-core).",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudAiplatformV1beta1Port"
@@ -7964,7 +7973,7 @@
           "$ref": "GoogleCloudAiplatformInternalDedicatedResources"
         },
         "automaticResources": {
-          "description": "A description of resources that to large degree are decided by AI Platform, and require only a modest additional configuration.",
+          "description": "A description of resources that to large degree are decided by Vertex AI, and require only a modest additional configuration.",
           "$ref": "GoogleCloudAiplatformInternalAutomaticResources"
         },
         "id": {
@@ -8315,7 +8324,7 @@
       "type": "object",
       "properties": {
         "inputBaselines": {
-          "description": "Baseline inputs for this feature. If no baseline is specified, Vertex AI chooses the baseline for this feature. If multiple baselines are specified, Vertex AI returns the average attributions across them in Attributions.baseline_attribution. For Vertex AI-provided Tensorflow images (both 1.x and 2.x), the shape of each baseline must match the shape of the input tensor. If a scalar is provided, we broadcast to the same shape as the input tensor. For custom images, the element of the baselines must be in the same format as the feature's input in the instance[]. The schema of any single instance may be specified via Endpoint's DeployedModels' Model's PredictSchemata's instance_schema_uri.",
+          "description": "Baseline inputs for this feature. If no baseline is specified, Vertex AI chooses the baseline for this feature. If multiple baselines are specified, Vertex AI returns the average attributions across them in Attribution.feature_attributions. For Vertex AI-provided Tensorflow images (both 1.x and 2.x), the shape of each baseline must match the shape of the input tensor. If a scalar is provided, we broadcast to the same shape as the input tensor. For custom images, the element of the baselines must be in the same format as the feature's input in the instance[]. The schema of any single instance may be specified via Endpoint's DeployedModels' Model's PredictSchemata's instance_schema_uri.",
           "type": "array",
           "items": {
             "type": "any"
@@ -8386,7 +8395,7 @@
           "$ref": "GoogleCloudAiplatformInternalExplanationMetadataInputMetadataVisualization"
         },
         "groupName": {
-          "description": "Name of the group that the input belongs to. Features with the same group name will be treated as one feature when computing attributions. Features grouped together can have different shapes in value. If provided, there will be one single attribution generated in featureAttributions, keyed by the group name.",
+          "description": "Name of the group that the input belongs to. Features with the same group name will be treated as one feature when computing attributions. Features grouped together can have different shapes in value. If provided, there will be one single attribution generated in Attribution.feature_attributions, keyed by the group name.",
           "type": "string"
         }
       }
@@ -8519,7 +8528,7 @@
           "type": "string"
         },
         "outputTensorName": {
-          "description": "Name of the output tensor. Required and is only applicable to AI Platform provided images for Tensorflow.",
+          "description": "Name of the output tensor. Required and is only applicable to Vertex AI provided images for Tensorflow.",
           "type": "string"
         }
       }
@@ -9531,7 +9540,7 @@
     },
     "GoogleCloudAiplatformUiMigrateResourceRequestMigrateDataLabelingDatasetConfig": {
       "id": "GoogleCloudAiplatformUiMigrateResourceRequestMigrateDataLabelingDatasetConfig",
-      "description": "Config for migrating Dataset in datalabeling.googleapis.com to AI Platform's Dataset.",
+      "description": "Config for migrating Dataset in datalabeling.googleapis.com to Vertex AI's Dataset.",
       "type": "object",
       "properties": {
         "dataset": {
@@ -10477,7 +10486,7 @@
           "$ref": "GoogleCloudAiplatformUiDedicatedResources"
         },
         "automaticResources": {
-          "description": "A description of resources that to large degree are decided by AI Platform, and require only a modest additional configuration.",
+          "description": "A description of resources that to large degree are decided by Vertex AI, and require only a modest additional configuration.",
           "$ref": "GoogleCloudAiplatformUiAutomaticResources"
         },
         "id": {
@@ -10874,7 +10883,7 @@
       "type": "object",
       "properties": {
         "inputBaselines": {
-          "description": "Baseline inputs for this feature. If no baseline is specified, Vertex AI chooses the baseline for this feature. If multiple baselines are specified, Vertex AI returns the average attributions across them in Attributions.baseline_attribution. For Vertex AI-provided Tensorflow images (both 1.x and 2.x), the shape of each baseline must match the shape of the input tensor. If a scalar is provided, we broadcast to the same shape as the input tensor. For custom images, the element of the baselines must be in the same format as the feature's input in the instance[]. The schema of any single instance may be specified via Endpoint's DeployedModels' Model's PredictSchemata's instance_schema_uri.",
+          "description": "Baseline inputs for this feature. If no baseline is specified, Vertex AI chooses the baseline for this feature. If multiple baselines are specified, Vertex AI returns the average attributions across them in Attribution.feature_attributions. For Vertex AI-provided Tensorflow images (both 1.x and 2.x), the shape of each baseline must match the shape of the input tensor. If a scalar is provided, we broadcast to the same shape as the input tensor. For custom images, the element of the baselines must be in the same format as the feature's input in the instance[]. The schema of any single instance may be specified via Endpoint's DeployedModels' Model's PredictSchemata's instance_schema_uri.",
           "type": "array",
           "items": {
             "type": "any"
@@ -10945,7 +10954,7 @@
           "$ref": "GoogleCloudAiplatformUiExplanationMetadataInputMetadataVisualization"
         },
         "groupName": {
-          "description": "Name of the group that the input belongs to. Features with the same group name will be treated as one feature when computing attributions. Features grouped together can have different shapes in value. If provided, there will be one single attribution generated in featureAttributions, keyed by the group name.",
+          "description": "Name of the group that the input belongs to. Features with the same group name will be treated as one feature when computing attributions. Features grouped together can have different shapes in value. If provided, there will be one single attribution generated in Attribution.feature_attributions, keyed by the group name.",
           "type": "string"
         }
       }
@@ -11078,7 +11087,7 @@
           "type": "string"
         },
         "outputTensorName": {
-          "description": "Name of the output tensor. Required and is only applicable to AI Platform provided images for Tensorflow.",
+          "description": "Name of the output tensor. Required and is only applicable to Vertex AI provided images for Tensorflow.",
           "type": "string"
         }
       }
@@ -11291,7 +11300,7 @@
           "type": "string",
           "enumDescriptions": [
             "Should not be set.",
-            "Predictions are in JSONL files, consistent from the definition here (http:\/\/shortn\/_4bS0hL7ofb).",
+            "Predictions are in JSONL files.",
             "Predictions are in BigQuery."
           ],
           "enum": [
@@ -12871,7 +12880,7 @@
     },
     "GoogleCloudAiplatformV1alpha1MigrateResourceRequestMigrateDataLabelingDatasetConfig": {
       "id": "GoogleCloudAiplatformV1alpha1MigrateResourceRequestMigrateDataLabelingDatasetConfig",
-      "description": "Config for migrating Dataset in datalabeling.googleapis.com to AI Platform's Dataset.",
+      "description": "Config for migrating Dataset in datalabeling.googleapis.com to Vertex AI's Dataset.",
       "type": "object",
       "properties": {
         "dataset": {
@@ -13313,7 +13322,7 @@
           "$ref": "GoogleCloudAiplatformV1alpha1DedicatedResources"
         },
         "automaticResources": {
-          "description": "A description of resources that to large degree are decided by AI Platform, and require only a modest additional configuration.",
+          "description": "A description of resources that to large degree are decided by Vertex AI, and require only a modest additional configuration.",
           "$ref": "GoogleCloudAiplatformV1alpha1AutomaticResources"
         },
         "id": {
@@ -13521,7 +13530,7 @@
       "type": "object",
       "properties": {
         "inputBaselines": {
-          "description": "Baseline inputs for this feature. If no baseline is specified, Vertex AI chooses the baseline for this feature. If multiple baselines are specified, Vertex AI returns the average attributions across them in Attributions.baseline_attribution. For Vertex AI-provided Tensorflow images (both 1.x and 2.x), the shape of each baseline must match the shape of the input tensor. If a scalar is provided, we broadcast to the same shape as the input tensor. For custom images, the element of the baselines must be in the same format as the feature's input in the instance[]. The schema of any single instance may be specified via Endpoint's DeployedModels' Model's PredictSchemata's instance_schema_uri.",
+          "description": "Baseline inputs for this feature. If no baseline is specified, Vertex AI chooses the baseline for this feature. If multiple baselines are specified, Vertex AI returns the average attributions across them in Attribution.feature_attributions. For Vertex AI-provided Tensorflow images (both 1.x and 2.x), the shape of each baseline must match the shape of the input tensor. If a scalar is provided, we broadcast to the same shape as the input tensor. For custom images, the element of the baselines must be in the same format as the feature's input in the instance[]. The schema of any single instance may be specified via Endpoint's DeployedModels' Model's PredictSchemata's instance_schema_uri.",
           "type": "array",
           "items": {
             "type": "any"
@@ -17846,7 +17855,7 @@
     },
     "GoogleCloudAiplatformV1MigrateResourceRequestMigrateDataLabelingDatasetConfig": {
       "id": "GoogleCloudAiplatformV1MigrateResourceRequestMigrateDataLabelingDatasetConfig",
-      "description": "Config for migrating Dataset in datalabeling.googleapis.com to AI Platform's Dataset.",
+      "description": "Config for migrating Dataset in datalabeling.googleapis.com to Vertex AI's Dataset.",
       "type": "object",
       "properties": {
         "dataset": {
@@ -18064,6 +18073,124 @@
         }
       }
     },
+    "GoogleCloudAiplatformV1CreateIndexOperationMetadata": {
+      "id": "GoogleCloudAiplatformV1CreateIndexOperationMetadata",
+      "description": "Runtime operation information for IndexService.CreateIndex.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "The operation generic information.",
+          "$ref": "GoogleCloudAiplatformV1GenericOperationMetadata"
+        },
+        "nearestNeighborSearchOperationMetadata": {
+          "description": "The operation metadata with regard to Matching Engine Index operation.",
+          "$ref": "GoogleCloudAiplatformV1NearestNeighborSearchOperationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1NearestNeighborSearchOperationMetadata": {
+      "id": "GoogleCloudAiplatformV1NearestNeighborSearchOperationMetadata",
+      "description": "Runtime operation metadata with regard to Matching Engine Index.",
+      "type": "object",
+      "properties": {
+        "contentValidationStats": {
+          "description": "The validation stats of the content (per file) to be inserted or updated on the Matching Engine Index resource. Populated if contentsDeltaUri is provided as part of Index.metadata. Please note that, currently for those files that are broken or has unsupported file format, we will not have the stats for those files.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1NearestNeighborSearchOperationMetadataContentValidationStats"
+          }
+        },
+        "dataBytesCount": {
+          "description": "The ingested data size in bytes.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1NearestNeighborSearchOperationMetadataContentValidationStats": {
+      "id": "GoogleCloudAiplatformV1NearestNeighborSearchOperationMetadataContentValidationStats",
+      "type": "object",
+      "properties": {
+        "sourceGcsUri": {
+          "description": "Cloud Storage URI pointing to the original file in user's bucket.",
+          "type": "string"
+        },
+        "validRecordCount": {
+          "description": "Number of records in this file that were successfully processed.",
+          "type": "string",
+          "format": "int64"
+        },
+        "invalidRecordCount": {
+          "description": "Number of records in this file we skipped due to validate errors.",
+          "type": "string",
+          "format": "int64"
+        },
+        "partialErrors": {
+          "description": "The detail information of the partial failures encountered for those invalid records that couldn't be parsed. Up to 50 partial errors will be reported.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1NearestNeighborSearchOperationMetadataRecordError"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1NearestNeighborSearchOperationMetadataRecordError": {
+      "id": "GoogleCloudAiplatformV1NearestNeighborSearchOperationMetadataRecordError",
+      "type": "object",
+      "properties": {
+        "errorType": {
+          "description": "The error type of this record.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default, shall not be used.",
+            "The record is empty.",
+            "Invalid json format.",
+            "Invalid csv format.",
+            "Invalid avro format.",
+            "The embedding id is not valid.",
+            "The size of the embedding vectors does not match with the specified dimension.",
+            "The `namespace` field is missing."
+          ],
+          "enum": [
+            "ERROR_TYPE_UNSPECIFIED",
+            "EMPTY_LINE",
+            "INVALID_JSON_SYNTAX",
+            "INVALID_CSV_SYNTAX",
+            "INVALID_AVRO_SYNTAX",
+            "INVALID_EMBEDDING_ID",
+            "EMBEDDING_SIZE_MISMATCH",
+            "NAMESPACE_MISSING"
+          ]
+        },
+        "errorMessage": {
+          "description": "A human-readable message that is shown to the user to help them fix the error. Note that this message may change from time to time, your code should check against error_type as the source of truth.",
+          "type": "string"
+        },
+        "sourceGcsUri": {
+          "description": "Cloud Storage URI pointing to the original file in user's bucket.",
+          "type": "string"
+        },
+        "embeddingId": {
+          "description": "Empty if the embedding id is failed to parse.",
+          "type": "string"
+        },
+        "rawRecord": {
+          "description": "The original content of this record.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1CreateIndexEndpointOperationMetadata": {
+      "id": "GoogleCloudAiplatformV1CreateIndexEndpointOperationMetadata",
+      "description": "Runtime operation information for IndexEndpointService.CreateIndexEndpoint.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "The operation generic information.",
+          "$ref": "GoogleCloudAiplatformV1GenericOperationMetadata"
+        }
+      }
+    },
     "GoogleCloudAiplatformV1DeleteOperationMetadata": {
       "id": "GoogleCloudAiplatformV1DeleteOperationMetadata",
       "description": "Details of operations that perform deletes of any entities.",
@@ -18107,7 +18234,7 @@
           "$ref": "GoogleCloudAiplatformV1DedicatedResources"
         },
         "automaticResources": {
-          "description": "A description of resources that to large degree are decided by AI Platform, and require only a modest additional configuration.",
+          "description": "A description of resources that to large degree are decided by Vertex AI, and require only a modest additional configuration.",
           "$ref": "GoogleCloudAiplatformV1AutomaticResources"
         },
         "id": {
@@ -18422,7 +18549,7 @@
       "type": "object",
       "properties": {
         "inputBaselines": {
-          "description": "Baseline inputs for this feature. If no baseline is specified, Vertex AI chooses the baseline for this feature. If multiple baselines are specified, Vertex AI returns the average attributions across them in Attributions.baseline_attribution. For Vertex AI-provided Tensorflow images (both 1.x and 2.x), the shape of each baseline must match the shape of the input tensor. If a scalar is provided, we broadcast to the same shape as the input tensor. For custom images, the element of the baselines must be in the same format as the feature's input in the instance[]. The schema of any single instance may be specified via Endpoint's DeployedModels' Model's PredictSchemata's instance_schema_uri.",
+          "description": "Baseline inputs for this feature. If no baseline is specified, Vertex AI chooses the baseline for this feature. If multiple baselines are specified, Vertex AI returns the average attributions across them in Attribution.feature_attributions. For Vertex AI-provided Tensorflow images (both 1.x and 2.x), the shape of each baseline must match the shape of the input tensor. If a scalar is provided, we broadcast to the same shape as the input tensor. For custom images, the element of the baselines must be in the same format as the feature's input in the instance[]. The schema of any single instance may be specified via Endpoint's DeployedModels' Model's PredictSchemata's instance_schema_uri.",
           "type": "array",
           "items": {
             "type": "any"
@@ -18493,7 +18620,7 @@
           "$ref": "GoogleCloudAiplatformV1ExplanationMetadataInputMetadataVisualization"
         },
         "groupName": {
-          "description": "Name of the group that the input belongs to. Features with the same group name will be treated as one feature when computing attributions. Features grouped together can have different shapes in value. If provided, there will be one single attribution generated in featureAttributions, keyed by the group name.",
+          "description": "Name of the group that the input belongs to. Features with the same group name will be treated as one feature when computing attributions. Features grouped together can have different shapes in value. If provided, there will be one single attribution generated in Attribution.feature_attributions, keyed by the group name.",
           "type": "string"
         }
       }
@@ -18626,8 +18753,137 @@
           "type": "string"
         },
         "outputTensorName": {
-          "description": "Name of the output tensor. Required and is only applicable to AI Platform provided images for Tensorflow.",
+          "description": "Name of the output tensor. Required and is only applicable to Vertex AI provided images for Tensorflow.",
           "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1DeployIndexOperationMetadata": {
+      "id": "GoogleCloudAiplatformV1DeployIndexOperationMetadata",
+      "description": "Runtime operation information for IndexEndpointService.DeployIndex.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "The operation generic information.",
+          "$ref": "GoogleCloudAiplatformV1GenericOperationMetadata"
+        },
+        "deployedIndexId": {
+          "description": "The unique index id specified by user",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1DeployIndexResponse": {
+      "id": "GoogleCloudAiplatformV1DeployIndexResponse",
+      "description": "Response message for IndexEndpointService.DeployIndex.",
+      "type": "object",
+      "properties": {
+        "deployedIndex": {
+          "description": "The DeployedIndex that had been deployed in the IndexEndpoint.",
+          "$ref": "GoogleCloudAiplatformV1DeployedIndex"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1DeployedIndex": {
+      "id": "GoogleCloudAiplatformV1DeployedIndex",
+      "description": "A deployment of an Index. IndexEndpoints contain one or more DeployedIndexes.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "Required. The user specified ID of the DeployedIndex. The ID can be up to 128 characters long and must start with a letter and only contain letters, numbers, and underscores. The ID must be unique within the project it is created in.",
+          "type": "string"
+        },
+        "index": {
+          "description": "Required. The name of the Index this is the deployment of. We may refer to this Index as the DeployedIndex's \"original\" Index.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "The display name of the DeployedIndex. If not provided upon creation, the Index's display_name is used.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. Timestamp when the DeployedIndex was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "privateEndpoints": {
+          "description": "Output only. Provides paths for users to send requests directly to the deployed index services running on Cloud via private services access. This field is populated if network is configured.",
+          "readOnly": true,
+          "$ref": "GoogleCloudAiplatformV1IndexPrivateEndpoints"
+        },
+        "indexSyncTime": {
+          "description": "Output only. The DeployedIndex may depend on various data on its original Index. Additionally when certain changes to the original Index are being done (e.g. when what the Index contains is being changed) the DeployedIndex may be asynchronously updated in the background to reflect this changes. If this timestamp's value is at least the Index.update_time of the original Index, it means that this DeployedIndex and the original Index are in sync. If this timestamp is older, then to see which updates this DeployedIndex already contains (and which not), one must list Operations working on the original Index. Only the successfully completed Operations with Operations.metadata.generic_metadata.update_time equal or before this sync time are contained in this DeployedIndex.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "automaticResources": {
+          "description": "Optional. A description of resources that the DeployedIndex uses, which to large degree are decided by Vertex AI, and optionally allows only a modest additional configuration. If min_replica_count is not set, the default value is 1. If max_replica_count is not set, the default value is min_replica_count. The max allowed replica count is 1000. The user is billed for the resources (at least their minimal amount) even if the DeployedIndex receives no traffic.",
+          "$ref": "GoogleCloudAiplatformV1AutomaticResources"
+        },
+        "enableAccessLogging": {
+          "description": "Optional. If true, private endpoint's access logs are sent to StackDriver Logging. These logs are like standard server access logs, containing information like timestamp and latency for each MatchRequest. Note that Stackdriver logs may incur a cost, especially if the deployed index receives a high queries per second rate (QPS). Estimate your costs before enabling this option.",
+          "type": "boolean"
+        },
+        "deployedIndexAuthConfig": {
+          "description": "Optional. If set, the authentication is enabled for the private endpoint.",
+          "$ref": "GoogleCloudAiplatformV1DeployedIndexAuthConfig"
+        },
+        "reservedIpRanges": {
+          "description": "Optional. A list of reserved ip ranges under the VPC network that can be used for this DeployedIndex. If set, we will deploy the index within the provided ip ranges. Otherwise, the index might be deployed to any ip ranges under the provided VPC network. The value sohuld be the name of the address (https:\/\/cloud.google.com\/compute\/docs\/reference\/rest\/v1\/addresses) Example: 'vertex-ai-ip-range'.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "deploymentGroup": {
+          "description": "Optional. The deployment group can be no longer than 64 characters (eg: 'test', 'prod'). If not set, we will use the 'default' deployment group. Creating `deployment_groups` with `reserved_ip_ranges` is a recommended practice when the peered network has multiple peering ranges. This creates your deployments from predictable IP spaces for easier traffic administration. Also, one deployment_group (except 'default') can only be used with the same reserved_ip_ranges which means if the deployment_group has been used with reserved_ip_ranges: [a, b, c], using it with [a, b] or [d, e] is disallowed. Note: we only support up to 5 deployment groups(not including 'default').",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1IndexPrivateEndpoints": {
+      "id": "GoogleCloudAiplatformV1IndexPrivateEndpoints",
+      "description": "IndexPrivateEndpoints proto is used to provide paths for users to send requests via private services access.",
+      "type": "object",
+      "properties": {
+        "matchGrpcAddress": {
+          "description": "Output only. The ip address used to send match gRPC requests.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1DeployedIndexAuthConfig": {
+      "id": "GoogleCloudAiplatformV1DeployedIndexAuthConfig",
+      "description": "Used to set up the auth on the DeployedIndex's private endpoint.",
+      "type": "object",
+      "properties": {
+        "authProvider": {
+          "description": "Defines the authentication provider that the DeployedIndex uses.",
+          "$ref": "GoogleCloudAiplatformV1DeployedIndexAuthConfigAuthProvider"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1DeployedIndexAuthConfigAuthProvider": {
+      "id": "GoogleCloudAiplatformV1DeployedIndexAuthConfigAuthProvider",
+      "description": "Configuration for an authentication provider, including support for [JSON Web Token (JWT)](https:\/\/tools.ietf.org\/html\/draft-ietf-oauth-json-web-token-32).",
+      "type": "object",
+      "properties": {
+        "audiences": {
+          "description": "The list of JWT [audiences](https:\/\/tools.ietf.org\/html\/draft-ietf-oauth-json-web-token-32#section-4.1.3). that are allowed to access. A JWT containing any of these audiences will be accepted.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "allowedIssuers": {
+          "description": "A list of allowed JWT issuers. Each entry must be a valid Google service account, in the following format: `service-account-name@project-id.iam.gserviceaccount.com`",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -18772,6 +19028,24 @@
       "properties": {
       }
     },
+    "GoogleCloudAiplatformV1UndeployIndexOperationMetadata": {
+      "id": "GoogleCloudAiplatformV1UndeployIndexOperationMetadata",
+      "description": "Runtime operation information for IndexEndpointService.UndeployIndex.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "The operation generic information.",
+          "$ref": "GoogleCloudAiplatformV1GenericOperationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1UndeployIndexResponse": {
+      "id": "GoogleCloudAiplatformV1UndeployIndexResponse",
+      "description": "Response message for IndexEndpointService.UndeployIndex.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "GoogleCloudAiplatformV1UpdateSpecialistPoolOperationMetadata": {
       "id": "GoogleCloudAiplatformV1UpdateSpecialistPoolOperationMetadata",
       "description": "Runtime operation metadata for SpecialistPoolService.UpdateSpecialistPool.",
@@ -18785,6 +19059,21 @@
         "genericMetadata": {
           "description": "The operation generic information.",
           "$ref": "GoogleCloudAiplatformV1GenericOperationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1UpdateIndexOperationMetadata": {
+      "id": "GoogleCloudAiplatformV1UpdateIndexOperationMetadata",
+      "description": "Runtime operation information for IndexService.UpdateIndex.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "The operation generic information.",
+          "$ref": "GoogleCloudAiplatformV1GenericOperationMetadata"
+        },
+        "nearestNeighborSearchOperationMetadata": {
+          "description": "The operation metadata with regard to Matching Engine Index operation.",
+          "$ref": "GoogleCloudAiplatformV1NearestNeighborSearchOperationMetadata"
         }
       }
     },
@@ -20283,7 +20572,7 @@
           "$ref": "GoogleCloudAiplatformV1Scheduling"
         },
         "serviceAccount": {
-          "description": "Specifies the service account for workload run-as account. Users submitting jobs must have act-as permission on this run-as account. If unspecified, the [AI Platform Custom Code Service Agent](https:\/\/cloud.google.com\/vertex-ai\/docs\/general\/access-control#service-agents) for the CustomJob's project is used.",
+          "description": "Specifies the service account for workload run-as account. Users submitting jobs must have act-as permission on this run-as account. If unspecified, the [Vertex AI Custom Code Service Agent](https:\/\/cloud.google.com\/vertex-ai\/docs\/general\/access-control#service-agents) for the CustomJob's project is used.",
           "type": "string"
         },
         "network": {
@@ -21671,6 +21960,161 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Waits until the specified long-running operation is done or reaches at most a specified timeout, returning the latest state. If the operation is already done, the latest state is immediately returned. If the timeout specified is greater than the default HTTP\/RPC timeout, the HTTP\/RPC timeout is used. If the server does not support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Note that this method is on a best-effort basis. It may return the latest state before the specified timeout (including immediately), meaning even an immediate response is no guarantee that the operation is done."
+                }
+              }
+            },
+            "edgeDevices": {
+              "resources": {
+                "operations": {
+                  "methods": {
+                    "list": {
+                      "id": "aiplatform.projects.locations.edgeDevices.operations.list",
+                      "path": "v1beta1/{+name}/operations",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/edgeDevices/{edgeDevicesId}/operations",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the operation's parent resource.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/edgeDevices\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "filter": {
+                          "description": "The standard list filter.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "The standard list page size.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "The standard list page token.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleLongrunningListOperationsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users\/*\/operations`. To override the binding, API services can add a binding such as `\"\/v1\/{name=users\/*}\/operations\"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id."
+                    },
+                    "get": {
+                      "id": "aiplatform.projects.locations.edgeDevices.operations.get",
+                      "path": "v1beta1/{+name}",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/edgeDevices/{edgeDevicesId}/operations/{operationsId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the operation resource.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/edgeDevices\/[^\/]+\/operations\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleLongrunningOperation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
+                    },
+                    "delete": {
+                      "id": "aiplatform.projects.locations.edgeDevices.operations.delete",
+                      "path": "v1beta1/{+name}",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/edgeDevices/{edgeDevicesId}/operations/{operationsId}",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the operation resource to be deleted.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/edgeDevices\/[^\/]+\/operations\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleProtobufEmpty"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`."
+                    },
+                    "cancel": {
+                      "id": "aiplatform.projects.locations.edgeDevices.operations.cancel",
+                      "path": "v1beta1/{+name}:cancel",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/edgeDevices/{edgeDevicesId}/operations/{operationsId}:cancel",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the operation resource to be cancelled.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/edgeDevices\/[^\/]+\/operations\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleProtobufEmpty"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`."
+                    },
+                    "wait": {
+                      "id": "aiplatform.projects.locations.edgeDevices.operations.wait",
+                      "path": "v1beta1/{+name}:wait",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/edgeDevices/{edgeDevicesId}/operations/{operationsId}:wait",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the operation resource to wait on.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/edgeDevices\/[^\/]+\/operations\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "timeout": {
+                          "description": "The maximum duration to wait before timing out. If left blank, the wait will be at most the time permitted by the underlying HTTP\/RPC protocol. If RPC context deadline is also specified, the shorter one will be used.",
+                          "location": "query",
+                          "type": "string",
+                          "format": "google-duration"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleLongrunningOperation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Waits until the specified long-running operation is done or reaches at most a specified timeout, returning the latest state. If the operation is already done, the latest state is immediately returned. If the timeout specified is greater than the default HTTP\/RPC timeout, the HTTP\/RPC timeout is used. If the server does not support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Note that this method is on a best-effort basis. It may return the latest state before the specified timeout (including immediately), meaning even an immediate response is no guarantee that the operation is done."
+                    }
+                  }
                 }
               }
             },

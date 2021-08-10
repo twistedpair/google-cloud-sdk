@@ -304,7 +304,7 @@
     },
     "GoogleCloudCommerceConsumerProcurementV1alpha1PlaceOrderRequest": {
       "id": "GoogleCloudCommerceConsumerProcurementV1alpha1PlaceOrderRequest",
-      "description": "Request message for ConsumerProcurementService.PlaceOrder. Next Id: 11",
+      "description": "Request message for ConsumerProcurementService.PlaceOrder. Next Id: 12",
       "type": "object",
       "properties": {
         "displayName": {
@@ -441,7 +441,7 @@
           "type": "string"
         },
         "services": {
-          "description": "The names of the Inception services to enable.",
+          "description": "The names of the Google Service Infrastructure services to enable.",
           "type": "array",
           "items": {
             "type": "string"
@@ -546,7 +546,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. The resource name of the order. Order names have the form `billingAccounts\/{billing-account-id}\/orders\/{order_id}`.",
+          "description": "Output only. The resource name of the order. Order names have the form `billingAccounts\/{billing_account}\/orders\/{order}`.",
           "readOnly": true,
           "type": "string"
         },
@@ -555,7 +555,7 @@
           "type": "string"
         },
         "provider": {
-          "description": "Provider of the products being purchased. Provider has the format of `providers\/{provider_id}`.",
+          "description": "Provider of the products being purchased. Provider has the format of `providers\/{provider}`.",
           "type": "string"
         },
         "account": {
@@ -788,7 +788,7 @@
     },
     "GoogleCloudCommerceConsumerProcurementV1alpha1ModifyOrderRequest": {
       "id": "GoogleCloudCommerceConsumerProcurementV1alpha1ModifyOrderRequest",
-      "description": "Request message for ConsumerProcurementService.ModifyOrder. Next Id: 7",
+      "description": "Request message for ConsumerProcurementService.ModifyOrder. Next Id: 8",
       "type": "object",
       "properties": {
         "modifications": {
@@ -1199,7 +1199,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. The resource name of the free trial item. This field is of the form: `projects\/{project_id}\/freeTrials\/{freetrial_id}`. Present if free trial is created under the project's associated billing account for 3p, or free trial is enabled for 1p product.",
+          "description": "Output only. The resource name of the free trial item. This field is of the form: `projects\/{project}\/freeTrials\/{free_trial}`. Present if free trial is created under the project's associated billing account for 3p, or free trial is enabled for 1p product.",
           "readOnly": true,
           "type": "string"
         },
@@ -1293,7 +1293,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The resource name of the allocation. This field is of the form: `billingAccounts\/{billing-account-id}\/orders\/{order-id}\/orderAllocations\/{order-allocation-id}`.",
+          "description": "The resource name of the allocation. This field is of the form: `billingAccounts\/{billing_account}\/orders\/{order}\/orderAllocations\/{order_allocation}`.",
           "type": "string"
         },
         "displayName": {
@@ -2176,7 +2176,7 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "The resource name of the allocation. This field is of the form: `billingAccounts\/{billing-account-id}\/orders\/{order-id}\/orderAllocations\/{order-allocation-id}`.",
+                      "description": "The resource name of the allocation. This field is of the form: `billingAccounts\/{billing_account}\/orders\/{order}\/orderAllocations\/{order_allocation}`.",
                       "pattern": "^billingAccounts\/[^\/]+\/orders\/[^\/]+\/orderAllocations\/[^\/]+$",
                       "location": "path",
                       "required": true,

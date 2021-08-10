@@ -18,10 +18,14 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import collections
+
+from apitools.base.py import encoding
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import resources
+from googlecloudsdk.core.console import progress_tracker
 
 _API_NAME = 'config'
 _ALPHA_API_VERSION = 'v1alpha1'
@@ -78,8 +82,7 @@ def GetRevision(name):
   client = GetClientInstance()
   messages = client.MESSAGES_MODULE
   return client.projects_locations_deployments_revisions.Get(
-      messages.ConfigProjectsLocationsDeploymentsRevisionsGetRequest(
-          name=name))
+      messages.ConfigProjectsLocationsDeploymentsRevisionsGetRequest(name=name))
 
 
 def GetDeployment(name):
@@ -98,10 +101,7 @@ def GetDeployment(name):
   client = GetClientInstance()
   messages = client.MESSAGES_MODULE
   return client.projects_locations_deployments.Get(
-      messages.ConfigProjectsLocationsDeploymentsGetRequest(
-          name=name
-      )
-  )
+      messages.ConfigProjectsLocationsDeploymentsGetRequest(name=name))
 
 
 def CreateDeployment(deployment, deployment_id, location):
@@ -121,11 +121,7 @@ def CreateDeployment(deployment, deployment_id, location):
   messages = client.MESSAGES_MODULE
   return client.projects_locations_deployments.Create(
       messages.ConfigProjectsLocationsDeploymentsCreateRequest(
-          parent=location,
-          deployment=deployment,
-          deploymentId=deployment_id
-      )
-  )
+          parent=location, deployment=deployment, deploymentId=deployment_id))
 
 
 def UpdateDeployment(deployment, deployment_full_name):
@@ -143,11 +139,7 @@ def UpdateDeployment(deployment, deployment_full_name):
   messages = client.MESSAGES_MODULE
   return client.projects_locations_deployments.Patch(
       messages.ConfigProjectsLocationsDeploymentsPatchRequest(
-          deployment=deployment,
-          name=deployment_full_name,
-          updateMask=None
-      )
-  )
+          deployment=deployment, name=deployment_full_name, updateMask=None))
 
 
 def DeleteDeployment(deployment_full_name):
@@ -165,39 +157,136 @@ def DeleteDeployment(deployment_full_name):
       messages.ConfigProjectsLocationsDeploymentsDeleteRequest(
           name=deployment_full_name,
           # Delete all child revisions.
-          force=True
-      )
-  )
+          force=True))
 
 
-def WaitForDeploymentOperation(
-    operation,
-    poll_resource_at_end,
-    progress_message):
-  """Waits for the given google.longrunning.Operation to complete.
+def WaitForDeleteDeploymentOperation(operation):
+  """Waits for the given "delete deployment" LRO to complete.
 
   Args:
     operation: the operation to poll.
-    poll_resource_at_end: bool, whether to expect a resource at the end of the
-      long-running operation.
+
+  Raises:
+    apitools.base.py.HttpError: if the request returns an HTTP error
+
+  Returns:
+    An Operation.ResponseValue instance
+  """
+  client = GetClientInstance()
+  operation_ref = resources.REGISTRY.ParseRelativeName(
+      operation.name, collection='config.projects.locations.operations')
+  poller = waiter.CloudOperationPollerNoResources(
+      client.projects_locations_operations)
+
+  return waiter.WaitFor(poller, operation_ref, 'Deleting the deployment')
+
+
+def WaitForApplyDeploymentOperation(operation, progress_message):
+  """Waits for the given "apply deployment" LRO to complete.
+
+  Args:
+    operation: the operation to poll.
     progress_message: string to display for default progress_tracker.
 
   Raises:
     apitools.base.py.HttpError: if the request returns an HTTP error
 
   Returns:
-    The return value of the long-running operation (e.g. if the LRO represented
-      creating a deployment, then this will be a Deployment resource).
+    A messages.Deployment resource.
   """
   client = GetClientInstance()
   operation_ref = resources.REGISTRY.ParseRelativeName(
       operation.name, collection='config.projects.locations.operations')
-  if poll_resource_at_end:
-    poller = waiter.CloudOperationPoller(
-        client.projects_locations_deployments,
-        client.projects_locations_operations)
-  else:
-    poller = waiter.CloudOperationPollerNoResources(
-        client.projects_locations_operations)
+  poller = waiter.CloudOperationPoller(client.projects_locations_deployments,
+                                       client.projects_locations_operations)
 
-  return waiter.WaitFor(poller, operation_ref, progress_message)
+  return WaitForApplyDeploymentLROWithStagedTracker(poller, operation_ref,
+                                                    progress_message)
+
+
+def ApplyDeploymentProgressStages():
+  """Gets an OrderedDict of progress_tracker.Stage keys to message mappings.
+
+  Returns:
+    An OrderedDict where the keys are the respective stage keys and the values
+    are the messages to show for the particular stage.
+  """
+  messages = GetMessagesModule()
+  step_enum = messages.DeploymentOperationMetadata.StepValueValuesEnum
+  stages = collections.OrderedDict()
+  stages[step_enum.PREPARING_STORAGE_BUCKET.name] = (
+      'Preparing storage bucket (this can take up to 7 minutes on the '
+      'first deployment).')
+  stages[step_enum.PREPARING_CONFIG_CONTROLLER.name] = (
+      'Preparing Config Controller instance (this can take up to 20 '
+      'minutes on the first deployment).')
+  # TODO(b/195148906): Add Cloud Build log URL to pipeline and apply messages.
+  stages[step_enum.RUNNING_PIPELINE
+         .name] = 'Processing blueprint through kpt pipeline.'
+  stages[
+      step_enum.RUNNING_APPLY.name] = 'Applying blueprint to Config Controller.'
+  return stages
+
+
+def WaitForApplyDeploymentLROWithStagedTracker(poller, operation_ref, message):
+  """Waits for an "apply" deployment LRO using a StagedProgressTracker.
+
+  This function is a wrapper around waiter.PollUntilDone that uses a
+  progress_tracker.StagedProgressTracker to display the individual steps of
+  an apply deployment LRO.
+
+  Args:
+    poller: a waiter.Poller instance
+    operation_ref: Reference to the operation to poll on.
+    message: string containing the main progress message to display.
+
+  Returns:
+    A messages.Deployment resource.
+  """
+  messages = GetMessagesModule()
+  state_enum = messages.Deployment.StateValueValuesEnum
+  stages = []
+  progress_stages = ApplyDeploymentProgressStages()
+  for key, msg in progress_stages.items():
+    stages.append(progress_tracker.Stage(msg, key))
+
+  with progress_tracker.StagedProgressTracker(
+      message=message, stages=stages,
+      tracker_id='meta.deployment_progress') as tracker:
+
+    def _StatusUpdate(result, status):
+      """Updates poller.detailed_message on every tick with an appropriate message.
+
+      Args:
+        result: the latest messages.Operation object.
+        status: unused.
+      """
+      del status  # Unused by this logic
+
+      # Need to encode to JSON and then decode to Message to be able to
+      # reasonably access attributes.
+      json = encoding.MessageToJson(result.metadata)
+      deployment_metadata = encoding.JsonToMessage(messages.OperationMetadata,
+                                                   json).deploymentMetadata
+
+      if deployment_metadata is not None and progress_stages.get(
+          deployment_metadata.step.name) is not None:
+        tracker.StartStage(deployment_metadata.step.name)
+
+        # Complete all previous stages.
+        ordered_stages = list(progress_stages.keys())
+        current_index = ordered_stages.index(deployment_metadata.step.name)
+        for i in range(current_index):
+          if not tracker.IsComplete(ordered_stages[i]):
+            tracker.CompleteStage(ordered_stages[i])
+
+    operation = waiter.PollUntilDone(
+        poller, operation_ref, status_update=_StatusUpdate)
+    result = poller.GetResult(operation)
+
+    if result is not None and result.state == state_enum.ACTIVE:
+      for stage in stages:
+        if not tracker.IsComplete(stage.key):
+          tracker.CompleteStage(stage.key)
+
+    return result

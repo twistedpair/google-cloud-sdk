@@ -858,8 +858,8 @@ class Policy(_messages.Message):
     Values:
       GLOBAL_POLICY_EVALUATION_MODE_UNSPECIFIED: Not specified: DISABLE is
         assumed.
-      ENABLE: Enables global policy evaluation.
-      DISABLE: Disables global policy evaluation.
+      ENABLE: Enables system policy evaluation.
+      DISABLE: Disables system policy evaluation.
     """
     GLOBAL_POLICY_EVALUATION_MODE_UNSPECIFIED = 0
     ENABLE = 1

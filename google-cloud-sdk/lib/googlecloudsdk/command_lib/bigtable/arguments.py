@@ -362,9 +362,14 @@ class ArgAdder(object):
                 'zone': str,
                 'nodes': int,
                 'kms-key': str,
+                'autoscaling-min-nodes': int,
+                'autoscaling-max-nodes': int,
+                'autoscaling-cpu-target': int,
             },
             required_keys=['id', 'zone'],
-            max_length=4),
+            max_length=7),
+        # TODO(b/192707501): unhide autoscaling properties, add it to metavar
+        # and help-text
         metavar='id=ID,zone=ZONE,nodes=NODES,kms-key=KMS_KEY',
         help=textwrap.dedent("""\
         *Repeatable*. Specify cluster config as a key-value dictionary.
@@ -387,6 +392,66 @@ class ArgAdder(object):
         """))
 
     return self
+
+  def AddScalingArgs(self,
+                     required=False,
+                     num_nodes_required=False,
+                     num_nodes_default=None,
+                     add_disable_autoscaling=False,
+                     require_all_autoscaling_args=False):
+    """Add scaling related arguments."""
+    # TODO(b/192707501): unhide autoscaling arguments for GA.
+    scaling_group = self.parser.add_mutually_exclusive_group(required=required)
+    manual_scaling_group = scaling_group.add_group('Manual Scaling')
+    manual_scaling_group.add_argument(
+        '--num-nodes',
+        help='Number of nodes to serve.',
+        default=num_nodes_default,
+        required=num_nodes_required,
+        type=int,
+        metavar='NUM_NODES')
+    if add_disable_autoscaling:
+      manual_scaling_group.add_argument(
+          '--disable-autoscaling',
+          help='Set to disable autoscaling. If not set, no-op whether autoscaling is enabled or not.',
+          action='store_true',
+          default=False,
+          required=False,
+          hidden=True)
+
+    autoscaling_group = scaling_group.add_group('Autoscaling', hidden=True)
+    autoscaling_group.add_argument(
+        '--autoscaling-min-nodes',
+        help='The minimum number of nodes for autoscaling. Must be between 10 and 80.',
+        default=None,
+        required=require_all_autoscaling_args,
+        type=int,
+        metavar='AUTOSCALING_MIN_NODES')
+    autoscaling_group.add_argument(
+        '--autoscaling-max-nodes',
+        help='The maximum number of nodes for autoscaling.',
+        default=None,
+        required=require_all_autoscaling_args,
+        type=int,
+        metavar='AUTOSCALING_MAX_NODES')
+    autoscaling_group.add_argument(
+        '--autoscaling-cpu-target',
+        help='The target CPU utilization percent for autoscaling.',
+        default=None,
+        required=require_all_autoscaling_args,
+        type=int,
+        metavar='AUTOSCALING_CPU_TARGET')
+    return self
+
+  def AddScalingArgsForClusterUpdate(self):
+    """Add scaling related arguments."""
+    return self.AddScalingArgs(
+        required=True, num_nodes_required=True, add_disable_autoscaling=True)
+
+  def AddScalingArgsForClusterCreate(self):
+    """Add scaling related arguments."""
+    return self.AddScalingArgs(num_nodes_default=3,
+                               require_all_autoscaling_args=True)
 
 
 def InstanceAttributeConfig():

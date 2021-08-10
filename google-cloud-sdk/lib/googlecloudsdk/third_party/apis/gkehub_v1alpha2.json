@@ -104,7 +104,7 @@
     "oauth2": {
       "scopes": {
         "https://www.googleapis.com/auth/cloud-platform": {
-          "description": "See, edit, configure, and delete your Google Cloud Platform data"
+          "description": "See, edit, configure, and delete your Google Cloud data and see the email address for your Google Account."
         }
       }
     }
@@ -381,6 +381,11 @@
           "readOnly": true,
           "type": "integer",
           "format": "int32"
+        },
+        "distribution": {
+          "description": "Output only. Distribution as identified by GKE Hub from Kubernetes node resources.",
+          "readOnly": true,
+          "type": "string"
         },
         "updateTime": {
           "description": "Output only. The time at which these details were last updated. This update_time is different from the Membership-level update_time since EndpointDetails are updated internally for API consumers.",

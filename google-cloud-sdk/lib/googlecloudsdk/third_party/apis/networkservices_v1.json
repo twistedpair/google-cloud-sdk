@@ -104,7 +104,7 @@
     "oauth2": {
       "scopes": {
         "https://www.googleapis.com/auth/cloud-platform": {
-          "description": "See, edit, configure, and delete your Google Cloud Platform data"
+          "description": "See, edit, configure, and delete your Google Cloud data and see the email address for your Google Account."
         }
       }
     }
@@ -960,14 +960,14 @@
           "type": "boolean"
         },
         "includedQueryParameters": {
-          "description": "Optional. Names of query string parameters to include in cache keys. All other parameters will be excluded. Either specify includedQueryParameters or excludedQueryParameters, not both. '&' and '=' will be percent encoded and not treated as delimiters. You may include up to 10 query parameters.",
+          "description": "Optional. Names of query string parameters to include in cache keys. All other parameters will be excluded. Either specify includedQueryParameters or excludedQueryParameters, not both. '&' and '=' will be percent encoded and not treated as delimiters. You may include up to 10 query parameters. Each query parameter name must be between 1 and 32 characters long (inclusive).",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "excludedQueryParameters": {
-          "description": "Optional. Names of query string parameters to exclude from cache keys. All other parameters will be included. Either specify includedQueryParameters or excludedQueryParameters, not both. '&' and '=' will be percent encoded and not treated as delimiters. You may exclude up to 10 query parameters.",
+          "description": "Optional. Names of query string parameters to exclude from cache keys. All other parameters will be included. Either specify includedQueryParameters or excludedQueryParameters, not both. '&' and '=' will be percent encoded and not treated as delimiters. You may exclude up to 10 query parameters. Each query parameter name must be between 1 and 32 characters long (inclusive).",
           "type": "array",
           "items": {
             "type": "string"

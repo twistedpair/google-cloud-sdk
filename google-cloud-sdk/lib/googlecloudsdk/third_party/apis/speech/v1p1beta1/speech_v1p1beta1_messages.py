@@ -175,11 +175,14 @@ class LongRunningRecognizeResponse(_messages.Message):
       relevant error.
     results: Sequential list of transcription results corresponding to
       sequential portions of audio.
+    totalBilledTime: When available, billed audio seconds for the
+      corresponding request.
   """
 
   outputConfig = _messages.MessageField('TranscriptOutputConfig', 1)
   outputError = _messages.MessageField('Status', 2)
   results = _messages.MessageField('SpeechRecognitionResult', 3, repeated=True)
+  totalBilledTime = _messages.StringField(4)
 
 
 class Operation(_messages.Message):
@@ -736,9 +739,12 @@ class RecognizeResponse(_messages.Message):
   Fields:
     results: Sequential list of transcription results corresponding to
       sequential portions of audio.
+    totalBilledTime: When available, billed audio seconds for the
+      corresponding request.
   """
 
   results = _messages.MessageField('SpeechRecognitionResult', 1, repeated=True)
+  totalBilledTime = _messages.StringField(2)
 
 
 class SpeakerDiarizationConfig(_messages.Message):

@@ -102,7 +102,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      r"""Gets a view.
+      r"""Gets a view on a log bucket..
 
       Args:
         request: (LoggingBillingAccountsBucketsViewsGetRequest) input message
@@ -139,7 +139,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      r"""Gets a bucket.
+      r"""Gets a log bucket.
 
       Args:
         request: (LoggingBillingAccountsBucketsGetRequest) input message
@@ -358,7 +358,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a view over logs in a bucket. A bucket may contain a maximum of 50 views.
+      r"""Creates a view over log entries in a log bucket. A bucket may contain a maximum of 30 views.
 
       Args:
         request: (LoggingBillingAccountsLocationsBucketsViewsCreateRequest) input message
@@ -385,7 +385,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a view from a bucket.
+      r"""Deletes a view on a log bucket.
 
       Args:
         request: (LoggingBillingAccountsLocationsBucketsViewsDeleteRequest) input message
@@ -412,7 +412,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists views on a bucket.
+      r"""Lists views on a log bucket.
 
       Args:
         request: (LoggingBillingAccountsLocationsBucketsViewsListRequest) input message
@@ -439,7 +439,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a view. This method replaces the following fields in the existing view with values from the new view: filter.
+      r"""Updates a view on a log bucket. This method replaces the following fields in the existing view with values from the new view: filter.
 
       Args:
         request: (LoggingBillingAccountsLocationsBucketsViewsPatchRequest) input message
@@ -476,7 +476,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a bucket that can be used to store log entries. Once a bucket has been created, the region cannot be changed.
+      r"""Creates a log bucket that can be used to store log entries. After a bucket has been created, the bucket's location cannot be changed.
 
       Args:
         request: (LoggingBillingAccountsLocationsBucketsCreateRequest) input message
@@ -503,7 +503,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a bucket. Moves the bucket to the DELETE_REQUESTED state. After 7 days, the bucket will be purged and all logs in the bucket will be permanently deleted.
+      r"""Deletes a log bucket.Changes the bucket's lifecycle_state to the DELETE_REQUESTED state. After 7 days, the bucket will be purged and all log entries in the bucket will be permanently deleted.
 
       Args:
         request: (LoggingBillingAccountsLocationsBucketsDeleteRequest) input message
@@ -530,7 +530,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists buckets.
+      r"""Lists log buckets.
 
       Args:
         request: (LoggingBillingAccountsLocationsBucketsListRequest) input message
@@ -557,7 +557,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a bucket. This method replaces the following fields in the existing bucket with values from the new bucket: retention_periodIf the retention period is decreased and the bucket is locked, FAILED_PRECONDITION will be returned.If the bucket has a LifecycleState of DELETE_REQUESTED, FAILED_PRECONDITION will be returned.A buckets region may not be modified after it is created.
+      r"""Updates a log bucket. This method replaces the following fields in the existing bucket with values from the new bucket: retention_periodIf the retention period is decreased and the bucket is locked, FAILED_PRECONDITION will be returned.If the bucket has a lifecycle_state of DELETE_REQUESTED, then FAILED_PRECONDITION will be returned.After a bucket has been created, the bucket's location cannot be changed.
 
       Args:
         request: (LoggingBillingAccountsLocationsBucketsPatchRequest) input message
@@ -584,7 +584,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Undelete(self, request, global_params=None):
-      r"""Undeletes a bucket. A bucket that has been deleted may be undeleted within the grace period of 7 days.
+      r"""Undeletes a log bucket. A bucket that has been deleted can be undeleted within the grace period of 7 days.
 
       Args:
         request: (LoggingBillingAccountsLocationsBucketsUndeleteRequest) input message
@@ -1032,7 +1032,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def Copy(self, request, global_params=None):
-      r"""Copies a set of log entries from a logging bucket to a Cloud Storage bucket.
+      r"""Copies a set of log entries from a log bucket to a Cloud Storage bucket.
 
       Args:
         request: (CopyLogEntriesRequest) input message
@@ -1499,7 +1499,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a view over logs in a bucket. A bucket may contain a maximum of 50 views.
+      r"""Creates a view over log entries in a log bucket. A bucket may contain a maximum of 30 views.
 
       Args:
         request: (LoggingFoldersLocationsBucketsViewsCreateRequest) input message
@@ -1526,7 +1526,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a view from a bucket.
+      r"""Deletes a view on a log bucket.
 
       Args:
         request: (LoggingFoldersLocationsBucketsViewsDeleteRequest) input message
@@ -1553,7 +1553,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets a view.
+      r"""Gets a view on a log bucket..
 
       Args:
         request: (LoggingFoldersLocationsBucketsViewsGetRequest) input message
@@ -1580,7 +1580,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists views on a bucket.
+      r"""Lists views on a log bucket.
 
       Args:
         request: (LoggingFoldersLocationsBucketsViewsListRequest) input message
@@ -1607,7 +1607,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a view. This method replaces the following fields in the existing view with values from the new view: filter.
+      r"""Updates a view on a log bucket. This method replaces the following fields in the existing view with values from the new view: filter.
 
       Args:
         request: (LoggingFoldersLocationsBucketsViewsPatchRequest) input message
@@ -1644,7 +1644,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a bucket that can be used to store log entries. Once a bucket has been created, the region cannot be changed.
+      r"""Creates a log bucket that can be used to store log entries. After a bucket has been created, the bucket's location cannot be changed.
 
       Args:
         request: (LoggingFoldersLocationsBucketsCreateRequest) input message
@@ -1671,7 +1671,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a bucket. Moves the bucket to the DELETE_REQUESTED state. After 7 days, the bucket will be purged and all logs in the bucket will be permanently deleted.
+      r"""Deletes a log bucket.Changes the bucket's lifecycle_state to the DELETE_REQUESTED state. After 7 days, the bucket will be purged and all log entries in the bucket will be permanently deleted.
 
       Args:
         request: (LoggingFoldersLocationsBucketsDeleteRequest) input message
@@ -1698,7 +1698,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets a bucket.
+      r"""Gets a log bucket.
 
       Args:
         request: (LoggingFoldersLocationsBucketsGetRequest) input message
@@ -1725,7 +1725,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists buckets.
+      r"""Lists log buckets.
 
       Args:
         request: (LoggingFoldersLocationsBucketsListRequest) input message
@@ -1752,7 +1752,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a bucket. This method replaces the following fields in the existing bucket with values from the new bucket: retention_periodIf the retention period is decreased and the bucket is locked, FAILED_PRECONDITION will be returned.If the bucket has a LifecycleState of DELETE_REQUESTED, FAILED_PRECONDITION will be returned.A buckets region may not be modified after it is created.
+      r"""Updates a log bucket. This method replaces the following fields in the existing bucket with values from the new bucket: retention_periodIf the retention period is decreased and the bucket is locked, FAILED_PRECONDITION will be returned.If the bucket has a lifecycle_state of DELETE_REQUESTED, then FAILED_PRECONDITION will be returned.After a bucket has been created, the bucket's location cannot be changed.
 
       Args:
         request: (LoggingFoldersLocationsBucketsPatchRequest) input message
@@ -1779,7 +1779,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Undelete(self, request, global_params=None):
-      r"""Undeletes a bucket. A bucket that has been deleted may be undeleted within the grace period of 7 days.
+      r"""Undeletes a log bucket. A bucket that has been deleted can be undeleted within the grace period of 7 days.
 
       Args:
         request: (LoggingFoldersLocationsBucketsUndeleteRequest) input message
@@ -2281,7 +2281,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a view over logs in a bucket. A bucket may contain a maximum of 50 views.
+      r"""Creates a view over log entries in a log bucket. A bucket may contain a maximum of 30 views.
 
       Args:
         request: (LoggingLocationsBucketsViewsCreateRequest) input message
@@ -2308,7 +2308,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a view from a bucket.
+      r"""Deletes a view on a log bucket.
 
       Args:
         request: (LoggingLocationsBucketsViewsDeleteRequest) input message
@@ -2335,7 +2335,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets a view.
+      r"""Gets a view on a log bucket..
 
       Args:
         request: (LoggingLocationsBucketsViewsGetRequest) input message
@@ -2362,7 +2362,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists views on a bucket.
+      r"""Lists views on a log bucket.
 
       Args:
         request: (LoggingLocationsBucketsViewsListRequest) input message
@@ -2389,7 +2389,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a view. This method replaces the following fields in the existing view with values from the new view: filter.
+      r"""Updates a view on a log bucket. This method replaces the following fields in the existing view with values from the new view: filter.
 
       Args:
         request: (LoggingLocationsBucketsViewsPatchRequest) input message
@@ -2426,7 +2426,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a bucket that can be used to store log entries. Once a bucket has been created, the region cannot be changed.
+      r"""Creates a log bucket that can be used to store log entries. After a bucket has been created, the bucket's location cannot be changed.
 
       Args:
         request: (LoggingLocationsBucketsCreateRequest) input message
@@ -2453,7 +2453,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a bucket. Moves the bucket to the DELETE_REQUESTED state. After 7 days, the bucket will be purged and all logs in the bucket will be permanently deleted.
+      r"""Deletes a log bucket.Changes the bucket's lifecycle_state to the DELETE_REQUESTED state. After 7 days, the bucket will be purged and all log entries in the bucket will be permanently deleted.
 
       Args:
         request: (LoggingLocationsBucketsDeleteRequest) input message
@@ -2480,7 +2480,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets a bucket.
+      r"""Gets a log bucket.
 
       Args:
         request: (LoggingLocationsBucketsGetRequest) input message
@@ -2507,7 +2507,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists buckets.
+      r"""Lists log buckets.
 
       Args:
         request: (LoggingLocationsBucketsListRequest) input message
@@ -2534,7 +2534,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a bucket. This method replaces the following fields in the existing bucket with values from the new bucket: retention_periodIf the retention period is decreased and the bucket is locked, FAILED_PRECONDITION will be returned.If the bucket has a LifecycleState of DELETE_REQUESTED, FAILED_PRECONDITION will be returned.A buckets region may not be modified after it is created.
+      r"""Updates a log bucket. This method replaces the following fields in the existing bucket with values from the new bucket: retention_periodIf the retention period is decreased and the bucket is locked, FAILED_PRECONDITION will be returned.If the bucket has a lifecycle_state of DELETE_REQUESTED, then FAILED_PRECONDITION will be returned.After a bucket has been created, the bucket's location cannot be changed.
 
       Args:
         request: (LoggingLocationsBucketsPatchRequest) input message
@@ -2561,7 +2561,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Undelete(self, request, global_params=None):
-      r"""Undeletes a bucket. A bucket that has been deleted may be undeleted within the grace period of 7 days.
+      r"""Undeletes a log bucket. A bucket that has been deleted can be undeleted within the grace period of 7 days.
 
       Args:
         request: (LoggingLocationsBucketsUndeleteRequest) input message
@@ -3035,7 +3035,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a view over logs in a bucket. A bucket may contain a maximum of 50 views.
+      r"""Creates a view over log entries in a log bucket. A bucket may contain a maximum of 30 views.
 
       Args:
         request: (LoggingOrganizationsLocationsBucketsViewsCreateRequest) input message
@@ -3062,7 +3062,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a view from a bucket.
+      r"""Deletes a view on a log bucket.
 
       Args:
         request: (LoggingOrganizationsLocationsBucketsViewsDeleteRequest) input message
@@ -3089,7 +3089,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets a view.
+      r"""Gets a view on a log bucket..
 
       Args:
         request: (LoggingOrganizationsLocationsBucketsViewsGetRequest) input message
@@ -3116,7 +3116,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists views on a bucket.
+      r"""Lists views on a log bucket.
 
       Args:
         request: (LoggingOrganizationsLocationsBucketsViewsListRequest) input message
@@ -3143,7 +3143,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a view. This method replaces the following fields in the existing view with values from the new view: filter.
+      r"""Updates a view on a log bucket. This method replaces the following fields in the existing view with values from the new view: filter.
 
       Args:
         request: (LoggingOrganizationsLocationsBucketsViewsPatchRequest) input message
@@ -3180,7 +3180,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a bucket that can be used to store log entries. Once a bucket has been created, the region cannot be changed.
+      r"""Creates a log bucket that can be used to store log entries. After a bucket has been created, the bucket's location cannot be changed.
 
       Args:
         request: (LoggingOrganizationsLocationsBucketsCreateRequest) input message
@@ -3207,7 +3207,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a bucket. Moves the bucket to the DELETE_REQUESTED state. After 7 days, the bucket will be purged and all logs in the bucket will be permanently deleted.
+      r"""Deletes a log bucket.Changes the bucket's lifecycle_state to the DELETE_REQUESTED state. After 7 days, the bucket will be purged and all log entries in the bucket will be permanently deleted.
 
       Args:
         request: (LoggingOrganizationsLocationsBucketsDeleteRequest) input message
@@ -3234,7 +3234,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets a bucket.
+      r"""Gets a log bucket.
 
       Args:
         request: (LoggingOrganizationsLocationsBucketsGetRequest) input message
@@ -3261,7 +3261,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists buckets.
+      r"""Lists log buckets.
 
       Args:
         request: (LoggingOrganizationsLocationsBucketsListRequest) input message
@@ -3288,7 +3288,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a bucket. This method replaces the following fields in the existing bucket with values from the new bucket: retention_periodIf the retention period is decreased and the bucket is locked, FAILED_PRECONDITION will be returned.If the bucket has a LifecycleState of DELETE_REQUESTED, FAILED_PRECONDITION will be returned.A buckets region may not be modified after it is created.
+      r"""Updates a log bucket. This method replaces the following fields in the existing bucket with values from the new bucket: retention_periodIf the retention period is decreased and the bucket is locked, FAILED_PRECONDITION will be returned.If the bucket has a lifecycle_state of DELETE_REQUESTED, then FAILED_PRECONDITION will be returned.After a bucket has been created, the bucket's location cannot be changed.
 
       Args:
         request: (LoggingOrganizationsLocationsBucketsPatchRequest) input message
@@ -3315,7 +3315,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Undelete(self, request, global_params=None):
-      r"""Undeletes a bucket. A bucket that has been deleted may be undeleted within the grace period of 7 days.
+      r"""Undeletes a log bucket. A bucket that has been deleted can be undeleted within the grace period of 7 days.
 
       Args:
         request: (LoggingOrganizationsLocationsBucketsUndeleteRequest) input message
@@ -3989,7 +3989,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a view over logs in a bucket. A bucket may contain a maximum of 50 views.
+      r"""Creates a view over log entries in a log bucket. A bucket may contain a maximum of 30 views.
 
       Args:
         request: (LoggingProjectsLocationsBucketsViewsCreateRequest) input message
@@ -4016,7 +4016,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a view from a bucket.
+      r"""Deletes a view on a log bucket.
 
       Args:
         request: (LoggingProjectsLocationsBucketsViewsDeleteRequest) input message
@@ -4043,7 +4043,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets a view.
+      r"""Gets a view on a log bucket..
 
       Args:
         request: (LoggingProjectsLocationsBucketsViewsGetRequest) input message
@@ -4070,7 +4070,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists views on a bucket.
+      r"""Lists views on a log bucket.
 
       Args:
         request: (LoggingProjectsLocationsBucketsViewsListRequest) input message
@@ -4097,7 +4097,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a view. This method replaces the following fields in the existing view with values from the new view: filter.
+      r"""Updates a view on a log bucket. This method replaces the following fields in the existing view with values from the new view: filter.
 
       Args:
         request: (LoggingProjectsLocationsBucketsViewsPatchRequest) input message
@@ -4134,7 +4134,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a bucket that can be used to store log entries. Once a bucket has been created, the region cannot be changed.
+      r"""Creates a log bucket that can be used to store log entries. After a bucket has been created, the bucket's location cannot be changed.
 
       Args:
         request: (LoggingProjectsLocationsBucketsCreateRequest) input message
@@ -4161,7 +4161,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a bucket. Moves the bucket to the DELETE_REQUESTED state. After 7 days, the bucket will be purged and all logs in the bucket will be permanently deleted.
+      r"""Deletes a log bucket.Changes the bucket's lifecycle_state to the DELETE_REQUESTED state. After 7 days, the bucket will be purged and all log entries in the bucket will be permanently deleted.
 
       Args:
         request: (LoggingProjectsLocationsBucketsDeleteRequest) input message
@@ -4188,7 +4188,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets a bucket.
+      r"""Gets a log bucket.
 
       Args:
         request: (LoggingProjectsLocationsBucketsGetRequest) input message
@@ -4215,7 +4215,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists buckets.
+      r"""Lists log buckets.
 
       Args:
         request: (LoggingProjectsLocationsBucketsListRequest) input message
@@ -4242,7 +4242,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a bucket. This method replaces the following fields in the existing bucket with values from the new bucket: retention_periodIf the retention period is decreased and the bucket is locked, FAILED_PRECONDITION will be returned.If the bucket has a LifecycleState of DELETE_REQUESTED, FAILED_PRECONDITION will be returned.A buckets region may not be modified after it is created.
+      r"""Updates a log bucket. This method replaces the following fields in the existing bucket with values from the new bucket: retention_periodIf the retention period is decreased and the bucket is locked, FAILED_PRECONDITION will be returned.If the bucket has a lifecycle_state of DELETE_REQUESTED, then FAILED_PRECONDITION will be returned.After a bucket has been created, the bucket's location cannot be changed.
 
       Args:
         request: (LoggingProjectsLocationsBucketsPatchRequest) input message
@@ -4269,7 +4269,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Undelete(self, request, global_params=None):
-      r"""Undeletes a bucket. A bucket that has been deleted may be undeleted within the grace period of 7 days.
+      r"""Undeletes a log bucket. A bucket that has been deleted can be undeleted within the grace period of 7 days.
 
       Args:
         request: (LoggingProjectsLocationsBucketsUndeleteRequest) input message

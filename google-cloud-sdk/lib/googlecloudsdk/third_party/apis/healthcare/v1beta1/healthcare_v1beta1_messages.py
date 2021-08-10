@@ -1621,6 +1621,13 @@ class ExportMessagesRequest(_messages.Message):
   startTime = _messages.StringField(3)
 
 
+class ExportMessagesResponse(_messages.Message):
+  r"""Final response for the export operation. This structure is included in
+  the response to describe the detailed outcome.
+  """
+
+
+
 class ExportResourcesRequest(_messages.Message):
   r"""Request to export resources.
 

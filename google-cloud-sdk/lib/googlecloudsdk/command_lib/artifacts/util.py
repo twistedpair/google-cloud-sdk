@@ -500,6 +500,22 @@ def EnableUpgradeRedirection(unused_ref, args):
   if not CheckRedirectionPermission(project):
     return None
 
+  messages = ar_requests.GetMessages()
+  settings = ar_requests.GetProjectSettings(project)
+  current_status = settings.legacyRedirectionState
+  if (current_status == messages.ProjectSettings
+      .LegacyRedirectionStateValueValuesEnum.REDIRECTION_FROM_GCR_IO_ENABLED or
+      current_status == messages.ProjectSettings):
+    log.status.Print(
+        "Redirection is already enabled for project {}.".format(project))
+  elif (
+      current_status == messages.ProjectSettings
+      .LegacyRedirectionStateValueValuesEnum.REDIRECTION_FROM_GCR_IO_FINALIZED):
+    log.status.Print(
+        "Redirection is already enabled (and finalized) for project {}.".format(
+            project))
+    return None
+
   failed_repos = GetRedirectionEnablementReport(project)
 
   if failed_repos:
@@ -599,6 +615,11 @@ def FinalizeUpgradeRedirection(unused_ref, args):
   log.status.Print("Checking current redirection status...\n")
   settings = ar_requests.GetProjectSettings(GetProject(args))
   current_status = settings.legacyRedirectionState
+  if (current_status == messages.ProjectSettings
+      .LegacyRedirectionStateValueValuesEnum.REDIRECTION_FROM_GCR_IO_FINALIZED):
+    log.status.Print(
+        "Redirection is already finalized for project {}.".format(project))
+    return None
   if (current_status != messages.ProjectSettings
       .LegacyRedirectionStateValueValuesEnum.REDIRECTION_FROM_GCR_IO_ENABLED):
     log.status.Print(

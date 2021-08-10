@@ -27,7 +27,6 @@ from googlecloudsdk.api_lib.compute import containers_utils
 from googlecloudsdk.api_lib.compute import csek_utils
 from googlecloudsdk.api_lib.compute import image_utils
 from googlecloudsdk.api_lib.compute import kms_utils
-from googlecloudsdk.api_lib.compute import utils
 from googlecloudsdk.api_lib.compute.zones import service as zones_service
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import actions
@@ -35,6 +34,7 @@ from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.compute import completers as compute_completers
+from googlecloudsdk.command_lib.compute import exceptions as compute_exceptions
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 from googlecloudsdk.command_lib.compute import scope as compute_scope
 from googlecloudsdk.command_lib.compute.kms import resource_args as kms_resource_args
@@ -927,9 +927,6 @@ def _GetAddress(compute_client, address_ref):
                      project=address_ref.project,
                      region=address_ref.region))],
       errors_to_collect=errors)
-  if errors:
-    utils.RaiseToolException(
-        errors, error_message='Could not fetch address resource:')
   return res[0]
 
 
@@ -1085,11 +1082,6 @@ def ValidateDiskBootFlags(args, enable_kms=False):
           '[--boot-disk-size] can only be used when creating a new boot '
           'disk.')
 
-    if args.boot_disk_provisioned_iops:
-      raise exceptions.ToolException(
-          '[--boot-disk-provisioned-iops] can only be used when creating a new boot '
-          'disk.')
-
     if not args.boot_disk_auto_delete:
       raise exceptions.BadArgumentException(
           '--no-boot-disk-auto-delete',
@@ -1184,13 +1176,13 @@ def ValidateCreateDiskFlags(args,
         '[--create-disk]. These fields are mutually exclusive.'.format(
             formatted_attributes))
     if len(disk_source) > 1:
-      raise exceptions.ToolException(source_error_message)
+      raise compute_exceptions.ArgumentError(source_error_message)
 
 
 def ValidateImageFlags(args):
   """Validates the image flags."""
   if args.image_project and not (args.image or args.image_family):
-    raise exceptions.ToolException(
+    raise compute_exceptions.ArgumentError(
         'Must specify either [--image] or [--image-family] when specifying '
         '[--image-project] flag.')
 
@@ -1838,7 +1830,7 @@ def ValidatePublicDnsFlags(args):
   if public_dns:
     if (network_interface is not None and
         network_interface != constants.DEFAULT_NETWORK_INTERFACE):
-      raise exceptions.ToolException(
+      raise compute_exceptions.ArgumentError(
           'Public DNS can only be enabled for default network interface '
           '\'{0}\' rather than \'{1}\'.'.format(
               constants.DEFAULT_NETWORK_INTERFACE, network_interface))
@@ -1852,7 +1844,7 @@ def ValidatePublicPtrFlags(args):
   if public_ptr is True:  # pylint:disable=g-bool-id-comparison
     if (network_interface is not None and
         network_interface != constants.DEFAULT_NETWORK_INTERFACE):
-      raise exceptions.ToolException(
+      raise compute_exceptions.ArgumentError(
           'Public PTR can only be enabled for default network interface '
           '\'{0}\' rather than \'{1}\'.'.format(
               constants.DEFAULT_NETWORK_INTERFACE, network_interface))
@@ -1870,7 +1862,7 @@ def ValidateIpv6PublicPtrFlags(args):
   if args.ipv6_public_ptr_domain is not None or args.no_ipv6_public_ptr:
     if (network_interface is not None and
         network_interface != constants.DEFAULT_NETWORK_INTERFACE):
-      raise exceptions.ToolException(
+      raise compute_exceptions.ArgumentError(
           'IPv6 Public PTR can only be enabled for default network interface '
           '\'{0}\' rather than \'{1}\'.'.format(
               constants.DEFAULT_NETWORK_INTERFACE, network_interface))

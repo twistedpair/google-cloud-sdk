@@ -18,7 +18,7 @@ import enum
 
 
 BASE_URL = 'https://accessapproval.googleapis.com/v1/'
-DOCS_URL = 'https://cloud.google.com/access-approval/docs'
+DOCS_URL = 'https://cloud.google.com/cloud-provider-access-management/access-approval/docs'
 
 
 class Collections(enum.Enum):

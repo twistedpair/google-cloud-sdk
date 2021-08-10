@@ -18,7 +18,7 @@ import enum
 
 
 BASE_URL = 'https://aiplatform.googleapis.com/v1/'
-DOCS_URL = 'https://cloud.google.com/ai-platform-unified/docs'
+DOCS_URL = 'https://cloud.google.com/vertex-ai/'
 
 
 class Collections(enum.Enum):
@@ -179,6 +179,17 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/operations/'
               '{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_PIPELINEJOBS = (
+      'projects.locations.pipelineJobs',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/pipelineJobs/'
+              '{pipelineJobsId}',
       },
       ['name'],
       True

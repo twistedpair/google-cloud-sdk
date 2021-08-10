@@ -417,7 +417,7 @@ class SettingsClient(object):
 
   def UpdateModuleConfig(self, args):
     """Update a config within a module."""
-    if args.clear_config:
+    if args.clear_config or args.config is None:
       config = None
     else:
       try:
@@ -428,11 +428,18 @@ class SettingsClient(object):
             'Invalid argument {}. Check help text for an example json.'.format(
                 args.config))
     enabled = args.enablement_state == 'enabled'
-    return self._UpdateModules(args, enabled, config)
+    return self._UpdateModules(args, enabled, args.clear_config, config)
 
-  def _UpdateModules(self, args, enabled, config=None):
+  def _UpdateModules(self, args, enabled, clear_config=False, config=None):
     """Update modules within service settings."""
     state = self.message_module.Config.ModuleEnablementStateValueValuesEnum.ENABLED if enabled else self.message_module.Config.ModuleEnablementStateValueValuesEnum.DISABLED
+    curr_modules = self.DescribeServiceExplicit(args).modules
+    if not clear_config and config is None and curr_modules is not None:
+      module = [
+          p for p in curr_modules.additionalProperties if p.key == args.module
+      ]
+      if len(module) == 1:
+        config = module[0].value.value
     if args.service == 'web-security-scanner':
       settings = self.message_module.WebSecurityScannerSettings(
           modules=self.message_module.WebSecurityScannerSettings.ModulesValue(
@@ -473,8 +480,6 @@ class SettingsClient(object):
                       value=self.message_module.Config(
                           moduleEnablementState=state, value=config))
               ]))
-
-    curr_modules = self.DescribeServiceExplicit(args).modules
     if curr_modules is not None:
       unmodified_additional_properties = [
           p for p in curr_modules.additionalProperties if p.key != args.module

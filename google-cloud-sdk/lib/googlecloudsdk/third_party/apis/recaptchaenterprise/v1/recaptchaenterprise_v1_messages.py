@@ -253,14 +253,17 @@ class GoogleCloudRecaptchaenterpriseV1Metrics(_messages.Message):
     challengeMetrics: Metrics will be continuous and in order by dates, and in
       the granularity of day. Only challenge-based keys (CHECKBOX, INVISIBLE),
       will have challenge-based data.
+    name: Output only. The name of the metrics, in the format
+      "projects/{project}/keys/{key}/metrics".
     scoreMetrics: Metrics will be continuous and in order by dates, and in the
       granularity of day. All Key types should have score-based data.
     startTime: Inclusive start time aligned to a day (UTC).
   """
 
   challengeMetrics = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1ChallengeMetrics', 1, repeated=True)
-  scoreMetrics = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1ScoreMetrics', 2, repeated=True)
-  startTime = _messages.StringField(3)
+  name = _messages.StringField(2)
+  scoreMetrics = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1ScoreMetrics', 3, repeated=True)
+  startTime = _messages.StringField(4)
 
 
 class GoogleCloudRecaptchaenterpriseV1MigrateKeyRequest(_messages.Message):

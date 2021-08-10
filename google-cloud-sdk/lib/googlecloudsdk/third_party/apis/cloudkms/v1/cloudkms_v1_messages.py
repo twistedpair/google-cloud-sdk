@@ -306,6 +306,20 @@ class CertificateChains(_messages.Message):
   googlePartitionCerts = _messages.StringField(3, repeated=True)
 
 
+class CloudkmsProjectsLocationsGenerateRandomBytesRequest(_messages.Message):
+  r"""A CloudkmsProjectsLocationsGenerateRandomBytesRequest object.
+
+  Fields:
+    generateRandomBytesRequest: A GenerateRandomBytesRequest resource to be
+      passed as the request body.
+    location: The project-specific location in which to generate random bytes.
+      For example, "projects/my-project/locations/us-central1".
+  """
+
+  generateRandomBytesRequest = _messages.MessageField('GenerateRandomBytesRequest', 1)
+  location = _messages.StringField(2, required=True)
+
+
 class CloudkmsProjectsLocationsGetRequest(_messages.Message):
   r"""A CloudkmsProjectsLocationsGetRequest object.
 
@@ -960,6 +974,12 @@ class CryptoKey(_messages.Message):
 
   Fields:
     createTime: Output only. The time at which this CryptoKey was created.
+    destroyScheduledDuration: Immutable. The period of time that versions of
+      this key spend in the DESTROY_SCHEDULED state before transitioning to
+      DESTROYED. If not specified at creation time, the default duration is 24
+      hours.
+    importOnly: Immutable. Whether this key may contain imported versions
+      only.
     labels: Labels with user-defined metadata. For more information, see
       [Labeling Keys](https://cloud.google.com/kms/docs/labeling-keys).
     name: Output only. The resource name for this CryptoKey in the format
@@ -1032,13 +1052,15 @@ class CryptoKey(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  labels = _messages.MessageField('LabelsValue', 2)
-  name = _messages.StringField(3)
-  nextRotationTime = _messages.StringField(4)
-  primary = _messages.MessageField('CryptoKeyVersion', 5)
-  purpose = _messages.EnumField('PurposeValueValuesEnum', 6)
-  rotationPeriod = _messages.StringField(7)
-  versionTemplate = _messages.MessageField('CryptoKeyVersionTemplate', 8)
+  destroyScheduledDuration = _messages.StringField(2)
+  importOnly = _messages.BooleanField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  nextRotationTime = _messages.StringField(6)
+  primary = _messages.MessageField('CryptoKeyVersion', 7)
+  purpose = _messages.EnumField('PurposeValueValuesEnum', 8)
+  rotationPeriod = _messages.StringField(9)
+  versionTemplate = _messages.MessageField('CryptoKeyVersionTemplate', 10)
 
 
 class CryptoKeyVersion(_messages.Message):
@@ -1581,6 +1603,61 @@ class ExternalProtectionLevelOptions(_messages.Message):
   """
 
   externalKeyUri = _messages.StringField(1)
+
+
+class GenerateRandomBytesRequest(_messages.Message):
+  r"""Request message for KeyManagementService.GenerateRandomBytes.
+
+  Enums:
+    ProtectionLevelValueValuesEnum: The ProtectionLevel to use when generating
+      the random data. Defaults to SOFTWARE.
+
+  Fields:
+    lengthBytes: The length in bytes of the amount of randomness to retrieve.
+      Minimum 8 bytes, maximum 1024 bytes.
+    protectionLevel: The ProtectionLevel to use when generating the random
+      data. Defaults to SOFTWARE.
+  """
+
+  class ProtectionLevelValueValuesEnum(_messages.Enum):
+    r"""The ProtectionLevel to use when generating the random data. Defaults
+    to SOFTWARE.
+
+    Values:
+      PROTECTION_LEVEL_UNSPECIFIED: Not specified.
+      SOFTWARE: Crypto operations are performed in software.
+      HSM: Crypto operations are performed in a Hardware Security Module.
+      EXTERNAL: Crypto operations are performed by an external key manager.
+    """
+    PROTECTION_LEVEL_UNSPECIFIED = 0
+    SOFTWARE = 1
+    HSM = 2
+    EXTERNAL = 3
+
+  lengthBytes = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  protectionLevel = _messages.EnumField('ProtectionLevelValueValuesEnum', 2)
+
+
+class GenerateRandomBytesResponse(_messages.Message):
+  r"""Response message for KeyManagementService.GenerateRandomBytes.
+
+  Fields:
+    data: The generated data.
+    dataCrc32c: Integrity verification field. A CRC32C checksum of the
+      returned GenerateRandomBytesResponse.data. An integrity check of
+      GenerateRandomBytesResponse.data can be performed by computing the
+      CRC32C checksum of GenerateRandomBytesResponse.data and comparing your
+      results to this field. Discard the response in case of non-matching
+      checksum values, and perform a limited number of retries. A persistent
+      mismatch may indicate an issue in your computation of the CRC32C
+      checksum. Note: This field is defined as int64 for reasons of
+      compatibility across different languages. However, it is a non-negative
+      integer, which will never exceed 2^32-1, and can be safely downconverted
+      to uint32 in languages that support this type.
+  """
+
+  data = _messages.BytesField(1)
+  dataCrc32c = _messages.IntegerField(2)
 
 
 class ImportCryptoKeyVersionRequest(_messages.Message):

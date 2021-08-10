@@ -474,6 +474,9 @@ class DatabaseInstance(_messages.Message):
       *SQLSERVER_2019_EXPRESS*, or *SQLSERVER_2019_WEB*,
       *SQLSERVER_2017_STANDARD* (default), *SQLSERVER_2017_ENTERPRISE*,
       *SQLSERVER_2017_EXPRESS*, or *SQLSERVER_2017_WEB*.
+    InstalledVersionValueValuesEnum: installed_version stores the current
+      fully resolved database version including minor version such as
+      MySQL_5.6.50
     InstanceTypeValueValuesEnum: The instance type. This can be one of the
       following. *CLOUD_SQL_INSTANCE*: A Cloud SQL instance that is not
       replicating from a primary instance. *ON_PREMISES_INSTANCE*: An instance
@@ -499,6 +502,9 @@ class DatabaseInstance(_messages.Message):
       database type.
     connectionName: Connection name of the Cloud SQL instance used in
       connection strings.
+    createTime: Output only. The time when the instance was created in RFC
+      3339 format (https://tools.ietf.org/html/rfc3339), for example
+      2012-11-15T16:19:00.094Z
     currentDiskSize: The current disk usage of the instance in bytes. This
       property has been deprecated. Use the
       "cloudsql.googleapis.com/database/disk/bytes_used" metric in Cloud
@@ -522,6 +528,8 @@ class DatabaseInstance(_messages.Message):
       from. This value could be different from the zone that was specified
       when the instance was created if the instance has failed over to its
       secondary zone.
+    installedVersion: installed_version stores the current fully resolved
+      database version including minor version such as MySQL_5.6.50
     instanceType: The instance type. This can be one of the following.
       *CLOUD_SQL_INSTANCE*: A Cloud SQL instance that is not replicating from
       a primary instance. *ON_PREMISES_INSTANCE*: An instance running on the
@@ -651,6 +659,55 @@ class DatabaseInstance(_messages.Message):
     SQLSERVER_2019_EXPRESS = 17
     SQLSERVER_2019_WEB = 18
 
+  class InstalledVersionValueValuesEnum(_messages.Enum):
+    r"""installed_version stores the current fully resolved database version
+    including minor version such as MySQL_5.6.50
+
+    Values:
+      SQL_DATABASE_VERSION_UNSPECIFIED: This is an unknown database version.
+      MYSQL_5_1: The database version is MySQL 5.1.
+      MYSQL_5_5: The database version is MySQL 5.5.
+      MYSQL_5_6: The database version is MySQL 5.6.
+      MYSQL_5_7: The database version is MySQL 5.7.
+      POSTGRES_9_6: The database version is PostgreSQL 9.6.
+      POSTGRES_11: The database version is PostgreSQL 11.
+      SQLSERVER_2017_STANDARD: The database version is SQL Server 2017
+        Standard.
+      SQLSERVER_2017_ENTERPRISE: The database version is SQL Server 2017
+        Enterprise.
+      SQLSERVER_2017_EXPRESS: The database version is SQL Server 2017 Express.
+      SQLSERVER_2017_WEB: The database version is SQL Server 2017 Web.
+      POSTGRES_10: The database version is PostgreSQL 10.
+      POSTGRES_12: The database version is PostgreSQL 12.
+      MYSQL_8_0: The database version is MySQL 8.
+      POSTGRES_13: The database version is PostgreSQL 13.
+      SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
+        Standard.
+      SQLSERVER_2019_ENTERPRISE: The database version is SQL Server 2019
+        Enterprise.
+      SQLSERVER_2019_EXPRESS: The database version is SQL Server 2019 Express.
+      SQLSERVER_2019_WEB: The database version is SQL Server 2019 Web.
+    """
+    SQL_DATABASE_VERSION_UNSPECIFIED = 0
+    MYSQL_5_1 = 1
+    MYSQL_5_5 = 2
+    MYSQL_5_6 = 3
+    MYSQL_5_7 = 4
+    POSTGRES_9_6 = 5
+    POSTGRES_11 = 6
+    SQLSERVER_2017_STANDARD = 7
+    SQLSERVER_2017_ENTERPRISE = 8
+    SQLSERVER_2017_EXPRESS = 9
+    SQLSERVER_2017_WEB = 10
+    POSTGRES_10 = 11
+    POSTGRES_12 = 12
+    MYSQL_8_0 = 13
+    POSTGRES_13 = 14
+    SQLSERVER_2019_STANDARD = 15
+    SQLSERVER_2019_ENTERPRISE = 16
+    SQLSERVER_2019_EXPRESS = 17
+    SQLSERVER_2019_WEB = 18
+
   class InstanceTypeValueValuesEnum(_messages.Enum):
     r"""The instance type. This can be one of the following.
     *CLOUD_SQL_INSTANCE*: A Cloud SQL instance that is not replicating from a
@@ -691,6 +748,8 @@ class DatabaseInstance(_messages.Message):
       MAINTENANCE: The instance is down for maintenance.
       FAILED: The creation of the instance failed or a fatal error occurred
         during maintenance.
+      ONLINE_MAINTENANCE: The instance is under maintenance operations and the
+        database is available.
     """
     SQL_INSTANCE_STATE_UNSPECIFIED = 0
     RUNNABLE = 1
@@ -699,6 +758,7 @@ class DatabaseInstance(_messages.Message):
     PENDING_CREATE = 4
     MAINTENANCE = 5
     FAILED = 6
+    ONLINE_MAINTENANCE = 7
 
   class SuspensionReasonValueListEntryValuesEnum(_messages.Enum):
     r"""SuspensionReasonValueListEntryValuesEnum enum type.
@@ -738,36 +798,38 @@ class DatabaseInstance(_messages.Message):
 
   backendType = _messages.EnumField('BackendTypeValueValuesEnum', 1)
   connectionName = _messages.StringField(2)
-  currentDiskSize = _messages.IntegerField(3)
-  databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 4)
-  diskEncryptionConfiguration = _messages.MessageField('DiskEncryptionConfiguration', 5)
-  diskEncryptionStatus = _messages.MessageField('DiskEncryptionStatus', 6)
-  etag = _messages.StringField(7)
-  failoverReplica = _messages.MessageField('FailoverReplicaValue', 8)
-  gceZone = _messages.StringField(9)
-  instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 10)
-  ipAddresses = _messages.MessageField('IpMapping', 11, repeated=True)
-  ipv6Address = _messages.StringField(12)
-  kind = _messages.StringField(13)
-  masterInstanceName = _messages.StringField(14)
-  maxDiskSize = _messages.IntegerField(15)
-  name = _messages.StringField(16)
-  onPremisesConfiguration = _messages.MessageField('OnPremisesConfiguration', 17)
-  outOfDiskReport = _messages.MessageField('SqlOutOfDiskReport', 18)
-  project = _messages.StringField(19)
-  region = _messages.StringField(20)
-  replicaConfiguration = _messages.MessageField('ReplicaConfiguration', 21)
-  replicaNames = _messages.StringField(22, repeated=True)
-  rootPassword = _messages.StringField(23)
-  satisfiesPzs = _messages.BooleanField(24)
-  scheduledMaintenance = _messages.MessageField('SqlScheduledMaintenance', 25)
-  secondaryGceZone = _messages.StringField(26)
-  selfLink = _messages.StringField(27)
-  serverCaCert = _messages.MessageField('SslCert', 28)
-  serviceAccountEmailAddress = _messages.StringField(29)
-  settings = _messages.MessageField('Settings', 30)
-  state = _messages.EnumField('StateValueValuesEnum', 31)
-  suspensionReason = _messages.EnumField('SuspensionReasonValueListEntryValuesEnum', 32, repeated=True)
+  createTime = _messages.StringField(3)
+  currentDiskSize = _messages.IntegerField(4)
+  databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 5)
+  diskEncryptionConfiguration = _messages.MessageField('DiskEncryptionConfiguration', 6)
+  diskEncryptionStatus = _messages.MessageField('DiskEncryptionStatus', 7)
+  etag = _messages.StringField(8)
+  failoverReplica = _messages.MessageField('FailoverReplicaValue', 9)
+  gceZone = _messages.StringField(10)
+  installedVersion = _messages.EnumField('InstalledVersionValueValuesEnum', 11)
+  instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 12)
+  ipAddresses = _messages.MessageField('IpMapping', 13, repeated=True)
+  ipv6Address = _messages.StringField(14)
+  kind = _messages.StringField(15)
+  masterInstanceName = _messages.StringField(16)
+  maxDiskSize = _messages.IntegerField(17)
+  name = _messages.StringField(18)
+  onPremisesConfiguration = _messages.MessageField('OnPremisesConfiguration', 19)
+  outOfDiskReport = _messages.MessageField('SqlOutOfDiskReport', 20)
+  project = _messages.StringField(21)
+  region = _messages.StringField(22)
+  replicaConfiguration = _messages.MessageField('ReplicaConfiguration', 23)
+  replicaNames = _messages.StringField(24, repeated=True)
+  rootPassword = _messages.StringField(25)
+  satisfiesPzs = _messages.BooleanField(26)
+  scheduledMaintenance = _messages.MessageField('SqlScheduledMaintenance', 27)
+  secondaryGceZone = _messages.StringField(28)
+  selfLink = _messages.StringField(29)
+  serverCaCert = _messages.MessageField('SslCert', 30)
+  serviceAccountEmailAddress = _messages.StringField(31)
+  settings = _messages.MessageField('Settings', 32)
+  state = _messages.EnumField('StateValueValuesEnum', 33)
+  suspensionReason = _messages.EnumField('SuspensionReasonValueListEntryValuesEnum', 34, repeated=True)
 
 
 class DatabasesListResponse(_messages.Message):
@@ -809,6 +871,7 @@ class DemoteMasterContext(_messages.Message):
       primary instance in the replication setup.
     replicaConfiguration: Configuration specific to read-replicas replicating
       from the on-premises primary instance.
+    skipReplicationSetup: Flag to skip replication setup on the instance.
     verifyGtidConsistency: Verify GTID consistency for demote operation.
       Default value: *True*. Setting this flag to false enables you to bypass
       GTID consistency check between on-premises primary instance and Cloud
@@ -821,7 +884,8 @@ class DemoteMasterContext(_messages.Message):
   kind = _messages.StringField(1)
   masterInstanceName = _messages.StringField(2)
   replicaConfiguration = _messages.MessageField('DemoteMasterConfiguration', 3)
-  verifyGtidConsistency = _messages.BooleanField(4)
+  skipReplicationSetup = _messages.BooleanField(4)
+  verifyGtidConsistency = _messages.BooleanField(5)
 
 
 class DemoteMasterMySqlReplicaConfiguration(_messages.Message):
@@ -1284,6 +1348,22 @@ class InsightsConfig(_messages.Message):
   recordClientAddress = _messages.BooleanField(5)
 
 
+class InstanceReference(_messages.Message):
+  r"""Reference to another Cloud SQL instance.
+
+  Fields:
+    name: The name of the Cloud SQL instance being referenced. This does not
+      include the project ID.
+    project: The project ID of the Cloud SQL instance being referenced. The
+      default is the same project ID as the instance references it.
+    region: The region of the Cloud SQL instance being referenced.
+  """
+
+  name = _messages.StringField(1)
+  project = _messages.StringField(2)
+  region = _messages.StringField(3)
+
+
 class InstancesCloneRequest(_messages.Message):
   r"""Database instance clone request.
 
@@ -1602,6 +1682,8 @@ class OnPremisesConfiguration(_messages.Message):
       format
     kind: This is always *sql#onPremisesConfiguration*.
     password: The password for connecting to on-premises instance.
+    sourceInstance: The reference to Cloud SQL instance if the source is Cloud
+      SQL.
     username: The username for connecting to on-premises instance.
   """
 
@@ -1612,7 +1694,8 @@ class OnPremisesConfiguration(_messages.Message):
   hostPort = _messages.StringField(5)
   kind = _messages.StringField(6)
   password = _messages.StringField(7)
-  username = _messages.StringField(8)
+  sourceInstance = _messages.MessageField('InstanceReference', 8)
+  username = _messages.StringField(9)
 
 
 class Operation(_messages.Message):

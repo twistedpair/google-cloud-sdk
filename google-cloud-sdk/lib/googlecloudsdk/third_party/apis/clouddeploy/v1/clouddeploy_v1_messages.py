@@ -1715,9 +1715,6 @@ class Release(_messages.Message):
       Each resource is limited to 64 labels. Keys must conform to the regexp:
       a-zA-Z{0,62} Values must conform to the regexp: [a-zA-Z0-9_-]{0,63} Both
       keys and values are additionally constrained to be <= 128 bytes in size.
-    RenderedManifestsValue: Output only. Map from target ID to Cloud Storage
-      path of the rendered manifest for that target. One example key-value
-      pair would be ("staging": "gs://my-bucket/staging-manifest").
     TargetArtifactsValue: Output only. Map from target ID to the target
       artifacts created during the render operation.
 
@@ -1745,9 +1742,6 @@ class Release(_messages.Message):
     renderEndTime: Output only. Time at which the render completed.
     renderStartTime: Output only. Time at which the render began.
     renderState: Output only. Current state of the render operation.
-    renderedManifests: Output only. Map from target ID to Cloud Storage path
-      of the rendered manifest for that target. One example key-value pair
-      would be ("staging": "gs://my-bucket/staging-manifest").
     renderingBuild: Output only. The resource name of the Cloud Build `Build`
       object that is used to render the manifests. Format is
       `projects/{project}/locations/{location}/builds/{build}`.
@@ -1771,21 +1765,15 @@ class Release(_messages.Message):
 
     Values:
       RENDER_STATE_UNSPECIFIED: The render state is unspecified.
-      SUCCESS: The render operation has completed successfully. This will be
-        removed after we are fully migrated to SUCCEEDED.
       SUCCEEDED: All rendering operations have completed successfully.
-      FAILURE: The render operation has failed. This will be removed after we
-        are fully migrated to FAILED.
       FAILED: All rendering operations have completed, and one or more have
         failed.
       IN_PROGRESS: Rendering has started and is not complete.
     """
     RENDER_STATE_UNSPECIFIED = 0
-    SUCCESS = 1
-    SUCCEEDED = 2
-    FAILURE = 3
-    FAILED = 4
-    IN_PROGRESS = 5
+    SUCCEEDED = 1
+    FAILED = 2
+    IN_PROGRESS = 3
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
@@ -1843,34 +1831,6 @@ class Release(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
-  class RenderedManifestsValue(_messages.Message):
-    r"""Output only. Map from target ID to Cloud Storage path of the rendered
-    manifest for that target. One example key-value pair would be ("staging":
-    "gs://my-bucket/staging-manifest").
-
-    Messages:
-      AdditionalProperty: An additional property for a RenderedManifestsValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type
-        RenderedManifestsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a RenderedManifestsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
   class TargetArtifactsValue(_messages.Message):
     r"""Output only. Map from target ID to the target artifacts created during
     the render operation.
@@ -1907,14 +1867,13 @@ class Release(_messages.Message):
   renderEndTime = _messages.StringField(9)
   renderStartTime = _messages.StringField(10)
   renderState = _messages.EnumField('RenderStateValueValuesEnum', 11)
-  renderedManifests = _messages.MessageField('RenderedManifestsValue', 12)
-  renderingBuild = _messages.StringField(13)
-  skaffoldConfigPath = _messages.StringField(14)
-  skaffoldConfigUri = _messages.StringField(15)
-  skaffoldVersion = _messages.StringField(16)
-  targetArtifacts = _messages.MessageField('TargetArtifactsValue', 17)
-  targetSnapshots = _messages.MessageField('Target', 18, repeated=True)
-  uid = _messages.StringField(19)
+  renderingBuild = _messages.StringField(12)
+  skaffoldConfigPath = _messages.StringField(13)
+  skaffoldConfigUri = _messages.StringField(14)
+  skaffoldVersion = _messages.StringField(15)
+  targetArtifacts = _messages.MessageField('TargetArtifactsValue', 16)
+  targetSnapshots = _messages.MessageField('Target', 17, repeated=True)
+  uid = _messages.StringField(18)
 
 
 class Rollout(_messages.Message):
@@ -1995,11 +1954,7 @@ class Rollout(_messages.Message):
 
     Values:
       STATE_UNSPECIFIED: The `Rollout` has an unspecified state.
-      SUCCESS: The `Rollout` has completed successfully. This will be removed
-        after we are fully migrated to SUCCEEDED.
       SUCCEEDED: The `Rollout` has completed successfully.
-      FAILURE: The `Rollout` has failed. This will be removed after we are
-        fully migrated to FAILED.
       FAILED: The `Rollout` has failed.
       IN_PROGRESS: The `Rollout` is being deployed.
       PENDING_APPROVAL: The `Rollout` needs approval.
@@ -2010,15 +1965,13 @@ class Rollout(_messages.Message):
         rendered.
     """
     STATE_UNSPECIFIED = 0
-    SUCCESS = 1
-    SUCCEEDED = 2
-    FAILURE = 3
-    FAILED = 4
-    IN_PROGRESS = 5
-    PENDING_APPROVAL = 6
-    APPROVAL_REJECTED = 7
-    PENDING = 8
-    PENDING_RELEASE = 9
+    SUCCEEDED = 1
+    FAILED = 2
+    IN_PROGRESS = 3
+    PENDING_APPROVAL = 4
+    APPROVAL_REJECTED = 5
+    PENDING = 6
+    PENDING_RELEASE = 7
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
@@ -2388,18 +2341,23 @@ class TargetArtifact(_messages.Message):
   r"""The artifacts produced by a target render operation.
 
   Fields:
-    archiveUri: URI of the tar.gz archive containing the artifacts. This
-      archive contains deployment configuration used by Skaffold during a
-      rollout.
-    manifestPath: File path of the rendered manifest inside of the archive
-      URI.
-    skaffoldConfigPath: File path of the resolved Skaffold configuration
-      inside of the archive URI.
+    archiveUri: Output only. URI of the tar.gz archive containing the
+      artifacts. This archive contains deployment configuration used by
+      Skaffold during a rollout, and all paths are relative to the root of the
+      contents.
+    artifactUri: Output only. URI of a directory containing the artifacts.
+      This contains deployment configuration used by Skaffold during a
+      rollout, and all paths are relative to this location.
+    manifestPath: Output only. File path of the rendered manifest relative to
+      the URI.
+    skaffoldConfigPath: Output only. File path of the resolved Skaffold
+      configuration relative to the URI.
   """
 
   archiveUri = _messages.StringField(1)
-  manifestPath = _messages.StringField(2)
-  skaffoldConfigPath = _messages.StringField(3)
+  artifactUri = _messages.StringField(2)
+  manifestPath = _messages.StringField(3)
+  skaffoldConfigPath = _messages.StringField(4)
 
 
 class TargetsPresentCondition(_messages.Message):

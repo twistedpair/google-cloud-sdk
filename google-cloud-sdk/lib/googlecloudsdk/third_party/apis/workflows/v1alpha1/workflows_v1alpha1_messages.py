@@ -415,15 +415,15 @@ class Workflow(_messages.Message):
     labels: Labels associated with this workflow.
     name: Name of the workflow resource, for example,
       "projects/project1/locations/us-central1/workflows/workflow1".
-    serviceAccount: Name of the service account associated with the latest
-      workflow version. This service account represents the identity of the
-      workflow and determines what permissions the workflow has. It should
-      have the following format:
-      `projects/{PROJECT_ID}/serviceAccounts/{ACCOUNT}`. Using `-` as a
-      wildcard for the `PROJECT_ID` will infer the project from the account.
-      The `ACCOUNT` value can be the `email` address or the `unique_id` of the
-      service account. If not provided, workflow will use the project's
-      default service account.
+    serviceAccount: The service account associated with the latest workflow
+      version. This service account represents the identity of the workflow
+      and determines what permissions the workflow has. Format:
+      projects/{project}/serviceAccounts/{account} or {account} Using `-` as a
+      wildcard for the `{project}` or not providing one at all will infer the
+      project from the account. The `{account}` value can be the `email`
+      address or the `unique_id` of the service account. If not provided,
+      workflow will use the project's default service account. Modifying this
+      field for an existing workflow results in a new workflow revision.
     sourceContents: Workflow code to be executed.
     state: Output only. State of the workflow deployment.
     updateTime: Output only. The last update timestamp of the workflow.

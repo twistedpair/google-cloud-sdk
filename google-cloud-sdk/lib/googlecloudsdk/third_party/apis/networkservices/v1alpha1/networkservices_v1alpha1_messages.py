@@ -355,7 +355,8 @@ class CDNPolicyCacheKeyPolicy(_messages.Message):
       exclude from cache keys. All other parameters will be included. Either
       specify includedQueryParameters or excludedQueryParameters, not both.
       '&' and '=' will be percent encoded and not treated as delimiters. You
-      may exclude up to 10 query parameters.
+      may exclude up to 10 query parameters. Each query parameter name must be
+      between 1 and 32 characters long (inclusive).
     includeProtocol: Optional. If true, http and https requests will be cached
       separately.
     includeQueryString: Optional. If true, include query string parameters in
@@ -377,7 +378,8 @@ class CDNPolicyCacheKeyPolicy(_messages.Message):
       include in cache keys. All other parameters will be excluded. Either
       specify includedQueryParameters or excludedQueryParameters, not both.
       '&' and '=' will be percent encoded and not treated as delimiters. You
-      may include up to 10 query parameters.
+      may include up to 10 query parameters. Each query parameter name must be
+      between 1 and 32 characters long (inclusive).
   """
 
   excludeHost = _messages.BooleanField(1)
@@ -2133,6 +2135,36 @@ class ListRoutersResponse(_messages.Message):
   routers = _messages.MessageField('Router', 2, repeated=True)
 
 
+class ListServiceBindingsResponse(_messages.Message):
+  r"""Response returned by the ListServiceBindings method.
+
+  Fields:
+    nextPageToken: If there might be more results than those appearing in this
+      response, then `next_page_token` is included. To get the next set of
+      results, call this method again using the value of `next_page_token` as
+      `page_token`.
+    serviceBindings: List of ServiceBinding resources.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  serviceBindings = _messages.MessageField('ServiceBinding', 2, repeated=True)
+
+
+class ListTcpRoutesResponse(_messages.Message):
+  r"""Response returned by the ListTcpRoutes method.
+
+  Fields:
+    nextPageToken: If there might be more results than those appearing in this
+      response, then `next_page_token` is included. To get the next set of
+      results, call this method again using the value of `next_page_token` as
+      `page_token`.
+    tcpRoutes: List of TcpRoute resources.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  tcpRoutes = _messages.MessageField('TcpRoute', 2, repeated=True)
+
+
 class Location(_messages.Message):
   r"""A resource that represents Google Cloud Platform location.
 
@@ -3764,6 +3796,263 @@ class NetworkservicesProjectsLocationsRoutersTestIamPermissionsRequest(_messages
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
+class NetworkservicesProjectsLocationsServiceBindingsCreateRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsServiceBindingsCreateRequest object.
+
+  Fields:
+    parent: Required. The parent resource of the ServiceBinding. Must be in
+      the format `projects/*/locations/global`.
+    serviceBinding: A ServiceBinding resource to be passed as the request
+      body.
+    serviceBindingId: Required. Short name of the ServiceBinding resource to
+      be created.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  serviceBinding = _messages.MessageField('ServiceBinding', 2)
+  serviceBindingId = _messages.StringField(3)
+
+
+class NetworkservicesProjectsLocationsServiceBindingsDeleteRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsServiceBindingsDeleteRequest object.
+
+  Fields:
+    name: Required. A name of the ServiceBinding to delete. Must be in the
+      format `projects/*/locations/global/serviceBindings/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsServiceBindingsGetIamPolicyRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsServiceBindingsGetIamPolicyRequest
+  object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The policy format version to be
+      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected. Requests for policies with any conditional
+      bindings must specify version 3. Policies without any conditional
+      bindings may specify any valid value or leave the field unset. To learn
+      which resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class NetworkservicesProjectsLocationsServiceBindingsGetRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsServiceBindingsGetRequest object.
+
+  Fields:
+    name: Required. A name of the ServiceBinding to get. Must be in the format
+      `projects/*/locations/global/serviceBindings/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsServiceBindingsListRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsServiceBindingsListRequest object.
+
+  Fields:
+    pageSize: Maximum number of ServiceBindings to return per call.
+    pageToken: The value returned by the last `ListServiceBindingsResponse`
+      Indicates that this is a continuation of a prior `ListRouters` call, and
+      that the system should return the next page of data.
+    parent: Required. The project and location from which the ServiceBindings
+      should be listed, specified in the format `projects/*/locations/global`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class NetworkservicesProjectsLocationsServiceBindingsPatchRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsServiceBindingsPatchRequest object.
+
+  Fields:
+    name: Required. Name of the ServiceBinding resource. It matches pattern
+      `projects/*/locations/global/serviceBindings/service_binding_name>`.
+    serviceBinding: A ServiceBinding resource to be passed as the request
+      body.
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the ServiceBinding resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the user
+      does not provide a mask then all fields will be overwritten.
+  """
+
+  name = _messages.StringField(1, required=True)
+  serviceBinding = _messages.MessageField('ServiceBinding', 2)
+  updateMask = _messages.StringField(3)
+
+
+class NetworkservicesProjectsLocationsServiceBindingsSetIamPolicyRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsServiceBindingsSetIamPolicyRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class NetworkservicesProjectsLocationsServiceBindingsTestIamPermissionsRequest(_messages.Message):
+  r"""A
+  NetworkservicesProjectsLocationsServiceBindingsTestIamPermissionsRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
+class NetworkservicesProjectsLocationsTcpRoutesCreateRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsTcpRoutesCreateRequest object.
+
+  Fields:
+    parent: Required. The parent resource of the TcpRoute. Must be in the
+      format `projects/*/locations/global`.
+    tcpRoute: A TcpRoute resource to be passed as the request body.
+    tcpRouteId: Required. Short name of the TcpRoute resource to be created.
+      E.g. TODO(Add an example).
+  """
+
+  parent = _messages.StringField(1, required=True)
+  tcpRoute = _messages.MessageField('TcpRoute', 2)
+  tcpRouteId = _messages.StringField(3)
+
+
+class NetworkservicesProjectsLocationsTcpRoutesDeleteRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsTcpRoutesDeleteRequest object.
+
+  Fields:
+    name: Required. A name of the TcpRoute to delete. Must be in the format
+      `projects/*/locations/global/tcpRoutes/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsTcpRoutesGetIamPolicyRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsTcpRoutesGetIamPolicyRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The policy format version to be
+      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected. Requests for policies with any conditional
+      bindings must specify version 3. Policies without any conditional
+      bindings may specify any valid value or leave the field unset. To learn
+      which resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class NetworkservicesProjectsLocationsTcpRoutesGetRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsTcpRoutesGetRequest object.
+
+  Fields:
+    name: Required. A name of the TcpRoute to get. Must be in the format
+      `projects/*/locations/global/tcpRoutes/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsTcpRoutesListRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsTcpRoutesListRequest object.
+
+  Fields:
+    pageSize: Maximum number of TcpRoutes to return per call.
+    pageToken: The value returned by the last `ListTcpRoutesResponse`
+      Indicates that this is a continuation of a prior `ListRouters` call, and
+      that the system should return the next page of data.
+    parent: Required. The project and location from which the TcpRoutes should
+      be listed, specified in the format `projects/*/locations/global`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class NetworkservicesProjectsLocationsTcpRoutesPatchRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsTcpRoutesPatchRequest object.
+
+  Fields:
+    name: Required. Name of the TcpRoute resource. It matches pattern
+      `projects/*/locations/global/tcpRoutes/tcp_route_name>`.
+    tcpRoute: A TcpRoute resource to be passed as the request body.
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the TcpRoute resource by the update. The fields specified
+      in the update_mask are relative to the resource, not the full request. A
+      field will be overwritten if it is in the mask. If the user does not
+      provide a mask then all fields will be overwritten.
+  """
+
+  name = _messages.StringField(1, required=True)
+  tcpRoute = _messages.MessageField('TcpRoute', 2)
+  updateMask = _messages.StringField(3)
+
+
+class NetworkservicesProjectsLocationsTcpRoutesSetIamPolicyRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsTcpRoutesSetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class NetworkservicesProjectsLocationsTcpRoutesTestIamPermissionsRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsTcpRoutesTestIamPermissionsRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
 class ObservabilityPolicy(_messages.Message):
   r"""ObservabilityPolicy is a resource for defining observability parameters.
 
@@ -4376,6 +4665,21 @@ class SelectorLabelsMatcher(_messages.Message):
   type = _messages.EnumField('TypeValueValuesEnum', 2)
 
 
+class ServiceBinding(_messages.Message):
+  r"""ServiceBinding is the resource that defines a Service Directory Service
+  to be used in a BackendService resource.
+
+  Fields:
+    description: Optional. A free-text description of the resource. Max length
+      1024 characters.
+    name: Required. Name of the ServiceBinding resource. It matches pattern
+      `projects/*/locations/global/serviceBindings/service_binding_name>`.
+  """
+
+  description = _messages.StringField(1)
+  name = _messages.StringField(2)
+
+
 class ServiceGraph(_messages.Message):
   r"""Service Graph is one of the observability types, it stands for
   visualizing users service in a graph, in which services are the nodes and
@@ -4519,6 +4823,149 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class TcpRoute(_messages.Message):
+  r"""TcpRoute is the resource defining how TCP traffic should be routed by a
+  Router resource.
+
+  Fields:
+    createTime: Output only. The timestamp when the resource was created.
+    description: Optional. A free-text description of the resource. Max length
+      1024 characters.
+    name: Required. Name of the TcpRoute resource. It matches pattern
+      `projects/*/locations/global/tcpRoutes/tcp_route_name>`.
+    rules: Required. Rules that define how traffic is routed and handled. At
+      least one RouteRule must be supplied. If there are multiple rules then
+      the action taken will be the first rule to match.
+    updateTime: Output only. The timestamp when the resource was updated.
+  """
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  name = _messages.StringField(3)
+  rules = _messages.MessageField('TcpRouteRouteRule', 4, repeated=True)
+  updateTime = _messages.StringField(5)
+
+
+class TcpRouteFaultInjectionPolicy(_messages.Message):
+  r"""Configuration for fault injection.
+
+  Fields:
+    delay: Optional. The specification for how client requests are delayed as
+      part of fault injection, before being sent to a destination.
+    ratelimit: Optional. The specification for how client requests are rate
+      limited as part of fault injection, before being sent to a destination.
+  """
+
+  delay = _messages.MessageField('TcpRouteFaultInjectionPolicyDelay', 1)
+  ratelimit = _messages.MessageField('TcpRouteFaultInjectionPolicyRateLimit', 2)
+
+
+class TcpRouteFaultInjectionPolicyDelay(_messages.Message):
+  r"""The specification for how client requests are delayed as part of fault
+  injection, before being sent to a destination.
+
+  Fields:
+    fixedDelay: Required. Specified fixed delay. At least one fixed_delay is
+      required.
+    percentage: Optional. The percentage of traffic
+      (connections/operations/requests) on which delay will be introduced as
+      part of fault injection. The value must be between 0 and 100 inclusive.
+  """
+
+  fixedDelay = _messages.StringField(1)
+  percentage = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class TcpRouteFaultInjectionPolicyRateLimit(_messages.Message):
+  r"""The specification for how client requests are rate limited as part of
+  fault injection, before being sent to a destination.
+
+  Fields:
+    fixedLimit: Optional. Describes a fixed/constant rate limit.
+    percentage: Optional. The percentage of operations/connections/requests on
+      which the rate limit will be injected. The value must be between 0 and
+      100 inclusive.
+  """
+
+  fixedLimit = _messages.MessageField('TcpRouteFaultInjectionPolicyRateLimitFixedLimit', 1)
+  percentage = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class TcpRouteFaultInjectionPolicyRateLimitFixedLimit(_messages.Message):
+  r"""Describes a fixed/constant rate limit.
+
+  Fields:
+    limitKbps: Required. The limit supplied in KiB/s.
+  """
+
+  limitKbps = _messages.IntegerField(1)
+
+
+class TcpRouteRouteAction(_messages.Message):
+  r"""The specifications for routing traffic and applying associated policies.
+
+  Fields:
+    destinations: Required. The destination services to which traffic should
+      be forwarded. At least one destination service is required.
+    faultInjectionPolicy: Optional. The specification for fault injection
+      introduced into traffic to test the resiliency of clients to backend
+      service failure. As part of fault injection, when clients send requests
+      to a backend service, delays can be introduced on a percentage of
+      requests before sending those requests to the backend service.
+      idleTimeout and maxDownstreamConnectionDuration will be ignored by
+      clients that are configured with a faultInjectionPolicy.
+  """
+
+  destinations = _messages.MessageField('TcpRouteRouteDestination', 1, repeated=True)
+  faultInjectionPolicy = _messages.MessageField('TcpRouteFaultInjectionPolicy', 2)
+
+
+class TcpRouteRouteDestination(_messages.Message):
+  r"""Describe the destination for traffic to be routed to.
+
+  Fields:
+    serviceName: Required. The URL of a BackendService to route traffic to.
+    weight: Optional. Specifies the proportion of requests forwareded to the
+      backend referenced by the service_name field. This is computed as:
+      weight/Sum(weights in destinations) Weights in all destinations should
+      sum up to 100.
+  """
+
+  serviceName = _messages.StringField(1)
+  weight = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class TcpRouteRouteMatch(_messages.Message):
+  r"""RouteMatch defines the predicate used to match requests to a given
+  action. Multiple match types are "OR"ed for evaluation. If no routeMatch
+  field is specified, this rule will unconditionally match traffic.
+
+  Fields:
+    address: Optional. Specifies the destination IP Address to match against.
+      If not provided, any IP-address will be matched.
+    port: Required. Specifies the destination port to match against.
+  """
+
+  address = _messages.StringField(1)
+  port = _messages.StringField(2)
+
+
+class TcpRouteRouteRule(_messages.Message):
+  r"""Specifies how to match traffic and how to route traffic when traffic is
+  matched.
+
+  Fields:
+    action: Required. The detailed rule defining how to route matched traffic.
+    matches: Optional. RouteMatch defines the predicate used to match requests
+      to a given action. Multiple match types are "OR"ed for evaluation. If no
+      routeMatch field is specified, this rule will unconditionally match
+      traffic.
+  """
+
+  action = _messages.MessageField('TcpRouteRouteAction', 1)
+  matches = _messages.MessageField('TcpRouteRouteMatch', 2, repeated=True)
 
 
 class TestIamPermissionsRequest(_messages.Message):

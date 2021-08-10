@@ -267,6 +267,12 @@ class CloudschedulerProjectsLocationsJobsListRequest(_messages.Message):
   r"""A CloudschedulerProjectsLocationsJobsListRequest object.
 
   Fields:
+    filter: `filter` can be used to specify a subset of jobs. If `filter`
+      equals `target_config="HttpConfig"`, then the http target jobs are
+      retrieved. If `filter` equals `target_config="PubSubConfig"`, then the
+      Pub/Sub target jobs are retrieved. If `filter` equals `labels.foo=value1
+      labels.foo=value2` then only jobs which are labeled with foo=value1 AND
+      foo=value2 will be returned.
     legacyAppEngineCron: This field is used to manage the legacy App Engine
       Cron jobs using the Cloud Scheduler API. If the field is set to true,
       the jobs in the __cron queue will be listed instead.
@@ -284,10 +290,11 @@ class CloudschedulerProjectsLocationsJobsListRequest(_messages.Message):
       `projects/PROJECT_ID/locations/LOCATION_ID`.
   """
 
-  legacyAppEngineCron = _messages.BooleanField(1)
-  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(3)
-  parent = _messages.StringField(4, required=True)
+  filter = _messages.StringField(1)
+  legacyAppEngineCron = _messages.BooleanField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
 
 
 class CloudschedulerProjectsLocationsJobsPatchRequest(_messages.Message):

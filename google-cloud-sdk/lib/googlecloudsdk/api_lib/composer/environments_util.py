@@ -112,10 +112,9 @@ class CreateEnvironmentFlags():
       web server. Can be specified only in Composer 2.0.0.
     min_workers: int or None, minimum number of workers in the Environment. Can
       be specified only in Composer 2.0.0.
-    max_workers: int or None, maximumn number of workers in the Environment. Can
+    max_workers: int or None, maximum number of workers in the Environment. Can
       be specified only in Composer 2.0.0.
-    scheduler_count: int or None, number of schedulers in the Environment. Can
-      be specified only in Composer 2.0.0.
+    scheduler_count: int or None, number of schedulers in the Environment.
     maintenance_window_start: Datetime or None, the starting time of the
       maintenance window
     maintenance_window_end: Datetime or None, the ending time of the maintenance
@@ -368,12 +367,14 @@ def _CreateConfig(messages, flags, is_composer_v1):
   if flags.web_server_machine_type:
     config.webServerConfig = messages.WebServerConfig(
         machineType=flags.web_server_machine_type)
-  if not is_composer_v1 and (
+
+  composer_v2_flag_used = (
       flags.scheduler_cpu or flags.worker_cpu or flags.web_server_cpu or
       flags.scheduler_memory_gb or flags.worker_memory_gb or
       flags.web_server_memory_gb or flags.scheduler_storage_gb or
       flags.worker_storage_gb or flags.web_server_storage_gb or
-      flags.min_workers or flags.max_workers or flags.scheduler_count):
+      flags.min_workers or flags.max_workers)
+  if composer_v2_flag_used or (flags.scheduler_count and not is_composer_v1):
     config.workloadsConfig = messages.WorkloadsConfig(
         scheduler=messages.SchedulerResource(
             cpu=flags.scheduler_cpu,
@@ -390,7 +391,6 @@ def _CreateConfig(messages, flags, is_composer_v1):
             storageGb=flags.worker_storage_gb,
             minCount=flags.min_workers,
             maxCount=flags.max_workers))
-
   return config
 
 

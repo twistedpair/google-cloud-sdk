@@ -58,3 +58,18 @@ def ParseSecretManagerSecretVersion(secret_manager_version):
   return resources.REGISTRY.Parse(
       secret_manager_version,
       collection='secretmanager.projects.secrets.versions').RelativeName()
+
+
+def ParseCloudKmsKey(cloud_kms_key):
+  """Parses a Cloud KMS key using configuration properties for fallback.
+
+  Args:
+    cloud_kms_key: str, fully-qualified URL, or relative name
+
+  Returns:
+    str: the relative name of the Cloud KMS key resource
+  """
+  return resources.REGISTRY.Parse(
+      cloud_kms_key,
+      collection='cloudkms.projects.locations.keyRings.cryptoKeys'
+  ).RelativeName()

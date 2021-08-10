@@ -230,12 +230,11 @@ def AddArgs(parser):
       help='Arguments to pass to the driver.')
 
 
-def AddBucket(parser, required=True):
-  """Cloud Storage bucket to upload workload dependencies."""
-  parser.add_argument('--bucket',
-                      help=('A Cloud Storage bucket to store job '
-                            'dependencies.'),
-                      required=required)
+def AddBucket(parser):
+  """A Cloud Storage bucket to upload workload dependencies."""
+  parser.add_argument(
+      '--bucket',
+      help=('A Cloud Storage bucket to upload workload dependencies.'))
 
 
 def JobConfig():

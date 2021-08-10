@@ -39685,7 +39685,8 @@ class Network(_messages.Message):
     kind: [Output Only] Type of the resource. Always compute#network for
       networks.
     mtu: Maximum Transmission Unit in bytes. The minimum value for this field
-      is 1460 and the maximum value is 1500 bytes.
+      is 1460 and the maximum value is 1500 bytes. If unspecified, defaults to
+      1460.
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -51802,8 +51803,8 @@ class SecurityPolicy(_messages.Message):
       They filter requests before they hit the origin servers.
       CLOUD_ARMOR_EDGE - Cloud Armor edge security policies can be configured
       to filter incoming HTTP requests targeting backend services (including
-      Cloud CDN-enabled) as well as backend buckets (GCS). They filter
-      requests before the request is served from Google's cache.
+      Cloud CDN-enabled) as well as backend buckets (Cloud Storage). They
+      filter requests before the request is served from Google's cache.
 
   Messages:
     LabelsValue: Labels for this resource. These can only be added or modified
@@ -51873,8 +51874,8 @@ class SecurityPolicy(_messages.Message):
       requests before they hit the origin servers. CLOUD_ARMOR_EDGE - Cloud
       Armor edge security policies can be configured to filter incoming HTTP
       requests targeting backend services (including Cloud CDN-enabled) as
-      well as backend buckets (GCS). They filter requests before the request
-      is served from Google's cache.
+      well as backend buckets (Cloud Storage). They filter requests before the
+      request is served from Google's cache.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
@@ -51884,8 +51885,8 @@ class SecurityPolicy(_messages.Message):
     requests before they hit the origin servers. CLOUD_ARMOR_EDGE - Cloud
     Armor edge security policies can be configured to filter incoming HTTP
     requests targeting backend services (including Cloud CDN-enabled) as well
-    as backend buckets (GCS). They filter requests before the request is
-    served from Google's cache.
+    as backend buckets (Cloud Storage). They filter requests before the
+    request is served from Google's cache.
 
     Values:
       CLOUD_ARMOR: <no description>
@@ -52384,11 +52385,11 @@ class SecurityPolicyRuleRateLimitOptions(_messages.Message):
       "ALL_IPS" -- This definition, equivalent to "ALL", has been depprecated.
       "IP" -- The source IP address of the request is the key. Each IP has
       this limit enforced separately. "HTTP_HEADER" -- The value of the HTTP
-      Header whose name is configured under "enforce_on_key_name". The key
-      value is truncated to the first 128 bytes of the Header value. If no
+      header whose name is configured under "enforce_on_key_name". The key
+      value is truncated to the first 128 bytes of the header value. If no
       such header is present in the request, the key type defaults to "ALL".
       "XFF_IP" -- The first IP address (i.e. the originating client IP
-      address) specified in the list of IPs under X-Forwarded-For HTTP Header.
+      address) specified in the list of IPs under X-Forwarded-For HTTP header.
       If no such header is present or the value is not a valid IP, the key
       type defaults to "ALL".
 
@@ -52409,16 +52410,16 @@ class SecurityPolicyRuleRateLimitOptions(_messages.Message):
       this field 'enforce_on_key' is not configured. "ALL_IPS" -- This
       definition, equivalent to "ALL", has been depprecated. "IP" -- The
       source IP address of the request is the key. Each IP has this limit
-      enforced separately. "HTTP_HEADER" -- The value of the HTTP Header whose
+      enforced separately. "HTTP_HEADER" -- The value of the HTTP header whose
       name is configured under "enforce_on_key_name". The key value is
-      truncated to the first 128 bytes of the Header value. If no such header
+      truncated to the first 128 bytes of the header value. If no such header
       is present in the request, the key type defaults to "ALL". "XFF_IP" --
       The first IP address (i.e. the originating client IP address) specified
-      in the list of IPs under X-Forwarded-For HTTP Header. If no such header
+      in the list of IPs under X-Forwarded-For HTTP header. If no such header
       is present or the value is not a valid IP, the key type defaults to
       "ALL".
     enforceOnKeyName: Rate limit key name applicable only for the following
-      key types: HTTP_HEADER -- Name of the HTTP Header whose value is taken
+      key types: HTTP_HEADER -- Name of the HTTP header whose value is taken
       as the key value.
     exceedAction: When a request is denied, returns the HTTP response code
       specified. Valid options are "deny()" where valid values for status are
@@ -52433,12 +52434,12 @@ class SecurityPolicyRuleRateLimitOptions(_messages.Message):
     'enforce_on_key' is not configured. "ALL_IPS" -- This definition,
     equivalent to "ALL", has been depprecated. "IP" -- The source IP address
     of the request is the key. Each IP has this limit enforced separately.
-    "HTTP_HEADER" -- The value of the HTTP Header whose name is configured
+    "HTTP_HEADER" -- The value of the HTTP header whose name is configured
     under "enforce_on_key_name". The key value is truncated to the first 128
-    bytes of the Header value. If no such header is present in the request,
+    bytes of the header value. If no such header is present in the request,
     the key type defaults to "ALL". "XFF_IP" -- The first IP address (i.e. the
     originating client IP address) specified in the list of IPs under
-    X-Forwarded-For HTTP Header. If no such header is present or the value is
+    X-Forwarded-For HTTP header. If no such header is present or the value is
     not a valid IP, the key type defaults to "ALL".
 
     Values:

@@ -42685,14 +42685,11 @@ class InterconnectDiagnostics(_messages.Message):
     links: A list of InterconnectDiagnostics.LinkStatus objects, describing
       the status for each link on the Interconnect.
     macAddress: The MAC address of the Interconnect's bundle interface.
-    macsec: Describes the status of MACsec encryption on the Interconnect's
-      bundle interface.
   """
 
   arpCaches = _messages.MessageField('InterconnectDiagnosticsARPEntry', 1, repeated=True)
   links = _messages.MessageField('InterconnectDiagnosticsLinkStatus', 2, repeated=True)
   macAddress = _messages.StringField(3)
-  macsec = _messages.MessageField('InterconnectDiagnosticsMacsecStatus', 4)
 
 
 class InterconnectDiagnosticsARPEntry(_messages.Message):
@@ -42814,6 +42811,7 @@ class InterconnectDiagnosticsLinkStatus(_messages.Message):
     googleDemarc: The Demarc address assigned by Google and provided in the
       LoA.
     lacpStatus: A InterconnectDiagnosticsLinkLACPStatus attribute.
+    macsec: Describes the status of MACsec encryption on this link.
     receivingOpticalPower: An InterconnectDiagnostics.LinkOpticalPower object,
       describing the current value and status of the received light level.
     transmittingOpticalPower: An InterconnectDiagnostics.LinkOpticalPower
@@ -42825,73 +42823,22 @@ class InterconnectDiagnosticsLinkStatus(_messages.Message):
   circuitId = _messages.StringField(2)
   googleDemarc = _messages.StringField(3)
   lacpStatus = _messages.MessageField('InterconnectDiagnosticsLinkLACPStatus', 4)
-  receivingOpticalPower = _messages.MessageField('InterconnectDiagnosticsLinkOpticalPower', 5)
-  transmittingOpticalPower = _messages.MessageField('InterconnectDiagnosticsLinkOpticalPower', 6)
+  macsec = _messages.MessageField('InterconnectDiagnosticsMacsecStatus', 5)
+  receivingOpticalPower = _messages.MessageField('InterconnectDiagnosticsLinkOpticalPower', 6)
+  transmittingOpticalPower = _messages.MessageField('InterconnectDiagnosticsLinkOpticalPower', 7)
 
 
 class InterconnectDiagnosticsMacsecStatus(_messages.Message):
   r"""Describes the status of MACsec encryption on the link.
 
-  Enums:
-    StateValueValuesEnum: The current state of MACsec configuration on this
-      Interconnect, which can take one of the following values: - INITIALIZED:
-      MACsec has been configured on the bundle interface. The Google edge
-      router is waiting to establish a MACsec session with the customer router
-      on the other side of this Interconnect. In addition, when key rollover
-      fails between the two routers, the bundle interface will return to the
-      initialized state. - SECURED: MACsec session has been successfully
-      established between the Google edge router and the customer router. -
-      FAILED: MACsec configuration on the bundle interface encountered an
-      error. - DISABLED: MACsec is explicitly disabled on this Interconnect.
-
   Fields:
     ckn: Indicates the Connectivity Association Key Name (CKN) currently being
       used if MACsec is operational.
-    state: The current state of MACsec configuration on this Interconnect,
-      which can take one of the following values: - INITIALIZED: MACsec has
-      been configured on the bundle interface. The Google edge router is
-      waiting to establish a MACsec session with the customer router on the
-      other side of this Interconnect. In addition, when key rollover fails
-      between the two routers, the bundle interface will return to the
-      initialized state. - SECURED: MACsec session has been successfully
-      established between the Google edge router and the customer router. -
-      FAILED: MACsec configuration on the bundle interface encountered an
-      error. - DISABLED: MACsec is explicitly disabled on this Interconnect.
+    operational: Indicates whether or not MACsec is operational on this link.
   """
 
-  class StateValueValuesEnum(_messages.Enum):
-    r"""The current state of MACsec configuration on this Interconnect, which
-    can take one of the following values: - INITIALIZED: MACsec has been
-    configured on the bundle interface. The Google edge router is waiting to
-    establish a MACsec session with the customer router on the other side of
-    this Interconnect. In addition, when key rollover fails between the two
-    routers, the bundle interface will return to the initialized state. -
-    SECURED: MACsec session has been successfully established between the
-    Google edge router and the customer router. - FAILED: MACsec configuration
-    on the bundle interface encountered an error. - DISABLED: MACsec is
-    explicitly disabled on this Interconnect.
-
-    Values:
-      DISABLED: MACsec is explicitly disabled on this Interconnect.
-      FAILED: MACsec configuration on the bundle interface encountered an
-        error.
-      INITIALIZED: MACsec has been configured on the bundle interface. The
-        Google edge router is waiting to establish a MACsec session with the
-        customer router on the other side of this Interconnect. In addition,
-        when key rollover fails between the two routers, the bundle interface
-        will return to the initialized state.
-      SECURED: MACsec session has been successfully established between the
-        Google edge router and the customer router.
-      STATE_UNSPECIFIED: The default value.
-    """
-    DISABLED = 0
-    FAILED = 1
-    INITIALIZED = 2
-    SECURED = 3
-    STATE_UNSPECIFIED = 4
-
   ckn = _messages.StringField(1)
-  state = _messages.EnumField('StateValueValuesEnum', 2)
+  operational = _messages.BooleanField(2)
 
 
 class InterconnectList(_messages.Message):
@@ -45818,7 +45765,8 @@ class Network(_messages.Message):
     kind: [Output Only] Type of the resource. Always compute#network for
       networks.
     mtu: Maximum Transmission Unit in bytes. The minimum value for this field
-      is 1460 and the maximum value is 1500 bytes.
+      is 1460 and the maximum value is 1500 bytes. If unspecified, defaults to
+      1460.
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -59966,8 +59914,8 @@ class SecurityPolicy(_messages.Message):
       They filter requests before they hit the origin servers.
       CLOUD_ARMOR_EDGE - Cloud Armor edge security policies can be configured
       to filter incoming HTTP requests targeting backend services (including
-      Cloud CDN-enabled) as well as backend buckets (GCS). They filter
-      requests before the request is served from Google's cache.
+      Cloud CDN-enabled) as well as backend buckets (Cloud Storage). They
+      filter requests before the request is served from Google's cache.
 
   Messages:
     LabelsValue: Labels for this resource. These can only be added or modified
@@ -60041,8 +59989,8 @@ class SecurityPolicy(_messages.Message):
       requests before they hit the origin servers. CLOUD_ARMOR_EDGE - Cloud
       Armor edge security policies can be configured to filter incoming HTTP
       requests targeting backend services (including Cloud CDN-enabled) as
-      well as backend buckets (GCS). They filter requests before the request
-      is served from Google's cache.
+      well as backend buckets (Cloud Storage). They filter requests before the
+      request is served from Google's cache.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
@@ -60052,8 +60000,8 @@ class SecurityPolicy(_messages.Message):
     requests before they hit the origin servers. CLOUD_ARMOR_EDGE - Cloud
     Armor edge security policies can be configured to filter incoming HTTP
     requests targeting backend services (including Cloud CDN-enabled) as well
-    as backend buckets (GCS). They filter requests before the request is
-    served from Google's cache.
+    as backend buckets (Cloud Storage). They filter requests before the
+    request is served from Google's cache.
 
     Values:
       CLOUD_ARMOR: <no description>
@@ -60620,11 +60568,11 @@ class SecurityPolicyRuleRateLimitOptions(_messages.Message):
       "ALL_IPS" -- This definition, equivalent to "ALL", has been depprecated.
       "IP" -- The source IP address of the request is the key. Each IP has
       this limit enforced separately. "HTTP_HEADER" -- The value of the HTTP
-      Header whose name is configured under "enforce_on_key_name". The key
-      value is truncated to the first 128 bytes of the Header value. If no
+      header whose name is configured under "enforce_on_key_name". The key
+      value is truncated to the first 128 bytes of the header value. If no
       such header is present in the request, the key type defaults to "ALL".
       "XFF_IP" -- The first IP address (i.e. the originating client IP
-      address) specified in the list of IPs under X-Forwarded-For HTTP Header.
+      address) specified in the list of IPs under X-Forwarded-For HTTP header.
       If no such header is present or the value is not a valid IP, the key
       type defaults to "ALL".
 
@@ -60645,16 +60593,16 @@ class SecurityPolicyRuleRateLimitOptions(_messages.Message):
       this field 'enforce_on_key' is not configured. "ALL_IPS" -- This
       definition, equivalent to "ALL", has been depprecated. "IP" -- The
       source IP address of the request is the key. Each IP has this limit
-      enforced separately. "HTTP_HEADER" -- The value of the HTTP Header whose
+      enforced separately. "HTTP_HEADER" -- The value of the HTTP header whose
       name is configured under "enforce_on_key_name". The key value is
-      truncated to the first 128 bytes of the Header value. If no such header
+      truncated to the first 128 bytes of the header value. If no such header
       is present in the request, the key type defaults to "ALL". "XFF_IP" --
       The first IP address (i.e. the originating client IP address) specified
-      in the list of IPs under X-Forwarded-For HTTP Header. If no such header
+      in the list of IPs under X-Forwarded-For HTTP header. If no such header
       is present or the value is not a valid IP, the key type defaults to
       "ALL".
     enforceOnKeyName: Rate limit key name applicable only for the following
-      key types: HTTP_HEADER -- Name of the HTTP Header whose value is taken
+      key types: HTTP_HEADER -- Name of the HTTP header whose value is taken
       as the key value.
     exceedAction: When a request is denied, returns the HTTP response code
       specified. Valid options are "deny()" where valid values for status are
@@ -60669,12 +60617,12 @@ class SecurityPolicyRuleRateLimitOptions(_messages.Message):
     'enforce_on_key' is not configured. "ALL_IPS" -- This definition,
     equivalent to "ALL", has been depprecated. "IP" -- The source IP address
     of the request is the key. Each IP has this limit enforced separately.
-    "HTTP_HEADER" -- The value of the HTTP Header whose name is configured
+    "HTTP_HEADER" -- The value of the HTTP header whose name is configured
     under "enforce_on_key_name". The key value is truncated to the first 128
-    bytes of the Header value. If no such header is present in the request,
+    bytes of the header value. If no such header is present in the request,
     the key type defaults to "ALL". "XFF_IP" -- The first IP address (i.e. the
     originating client IP address) specified in the list of IPs under
-    X-Forwarded-For HTTP Header. If no such header is present or the value is
+    X-Forwarded-For HTTP header. If no such header is present or the value is
     not a valid IP, the key type defaults to "ALL".
 
     Values:

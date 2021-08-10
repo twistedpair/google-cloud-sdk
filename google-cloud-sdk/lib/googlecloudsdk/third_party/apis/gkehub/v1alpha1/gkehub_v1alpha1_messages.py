@@ -878,6 +878,8 @@ class FeatureStateDetails(_messages.Message):
     servicedirectoryFeatureState: State for the Service Directory Feature.
     servicemeshFeatureState: State for the Service Mesh Feature.
     updateTime: The last update time of this status by the controllers
+    workloadidentityplatformFeatureState: State for the Workload Identity
+      Platform Feature
   """
 
   class CodeValueValuesEnum(_messages.Enum):
@@ -918,6 +920,7 @@ class FeatureStateDetails(_messages.Message):
   servicedirectoryFeatureState = _messages.MessageField('ServiceDirectoryFeatureState', 15)
   servicemeshFeatureState = _messages.MessageField('ServiceMeshFeatureState', 16)
   updateTime = _messages.StringField(17)
+  workloadidentityplatformFeatureState = _messages.MessageField('WorkloadIdentityPlatformFeatureState', 18)
 
 
 class FeatureTest(_messages.Message):
@@ -2477,6 +2480,14 @@ class WorkloadIdentityPlatformFeatureSpec(_messages.Message):
   identity platform feature. This is required since Feature proto requires a
   spec. TODO(b/193825763) add this spec to v1main package once fields are
   required in the spec
+  """
+
+
+
+class WorkloadIdentityPlatformFeatureState(_messages.Message):
+  r"""WorkloadIdentityPlatformFeatureState describes the state of the workload
+  identity platform. This is required since FeatureStateDetails requires a
+  state.
   """
 
 

@@ -1046,10 +1046,11 @@ class ProvidedSoftwareCatalog(_messages.Message):
       AndroidX Test Orchestrator that is used in the environment. The package
       is available at
       https://maven.google.com/web/index.html#androidx.test:orchestrator.
-    orchestratorVersion: A string representing the current version of Android
-      Test Orchestrator that is used in the environment. The package is
-      available at https://maven.google.com/web/index.html#com.android.support
-      .test:orchestrator.
+    orchestratorVersion: Deprecated: Use AndroidX Test Orchestrator going
+      forward. A string representing the current version of Android Test
+      Orchestrator that is used in the environment. The package is available
+      at https://maven.google.com/web/index.html#com.android.support.test:orch
+      estrator.
   """
 
   androidxOrchestratorVersion = _messages.StringField(1)

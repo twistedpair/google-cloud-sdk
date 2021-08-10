@@ -4,7 +4,7 @@
   "id": "compute:alpha",
   "name": "compute",
   "version": "alpha",
-  "revision": "20210727",
+  "revision": "20210802",
   "title": "Compute Engine API",
   "description": "Creates and runs virtual machines on Google Cloud Platform. ",
   "ownerDomain": "google.com",
@@ -2660,7 +2660,7 @@
           "type": "string"
         },
         "type": {
-          "description": "The type indicates the intended use of the security policy. CLOUD_ARMOR - Cloud Armor backend security policies can be configured to filter incoming HTTP requests targeting backend services. They filter requests before they hit the origin servers. CLOUD_ARMOR_EDGE - Cloud Armor edge security policies can be configured to filter incoming HTTP requests targeting backend services (including Cloud CDN-enabled) as well as backend buckets (GCS). They filter requests before the request is served from Google\u2019s cache.",
+          "description": "The type indicates the intended use of the security policy. CLOUD_ARMOR - Cloud Armor backend security policies can be configured to filter incoming HTTP requests targeting backend services. They filter requests before they hit the origin servers. CLOUD_ARMOR_EDGE - Cloud Armor edge security policies can be configured to filter incoming HTTP requests targeting backend services (including Cloud CDN-enabled) as well as backend buckets (Cloud Storage). They filter requests before the request is served from Google's cache.",
           "type": "string",
           "enumDescriptions": [
             "",
@@ -2920,7 +2920,7 @@
           "type": "string"
         },
         "enforceOnKey": {
-          "description": "Determines the key to enforce the rate_limit_threshold on. Possible values are: \u201CALL\u201D -- A single rate limit threshold is applied to all the requests matching this rule. This is the default value if this field 'enforce_on_key' is not configured. \u201CALL_IPS\u201D -- This definition, equivalent to \"ALL\", has been depprecated. \u201CIP\u201D -- The source IP address of the request is the key. Each IP has this limit enforced separately. \u201CHTTP_HEADER\u201D -- The value of the HTTP Header whose name is configured under \u201Cenforce_on_key_name\u201D. The key value is truncated to the first 128 bytes of the Header value. If no such header is present in the request, the key type defaults to \u201CALL\u201D. \u201CXFF_IP\u201D -- The first IP address (i.e. the originating client IP address) specified in the list of IPs under X-Forwarded-For HTTP Header. If no such header is present or the value is not a valid IP, the key type defaults to \u201CALL\u201D.",
+          "description": "Determines the key to enforce the rate_limit_threshold on. Possible values are: \"ALL\" -- A single rate limit threshold is applied to all the requests matching this rule. This is the default value if this field 'enforce_on_key' is not configured. \"ALL_IPS\" -- This definition, equivalent to \"ALL\", has been depprecated. \"IP\" -- The source IP address of the request is the key. Each IP has this limit enforced separately. \"HTTP_HEADER\" -- The value of the HTTP header whose name is configured under \"enforce_on_key_name\". The key value is truncated to the first 128 bytes of the header value. If no such header is present in the request, the key type defaults to \"ALL\". \"XFF_IP\" -- The first IP address (i.e. the originating client IP address) specified in the list of IPs under X-Forwarded-For HTTP header. If no such header is present or the value is not a valid IP, the key type defaults to \"ALL\".",
           "type": "string",
           "enumDescriptions": [
             "",
@@ -2938,7 +2938,7 @@
           ]
         },
         "enforceOnKeyName": {
-          "description": "Rate limit key name applicable only for the following key types: HTTP_HEADER -- Name of the HTTP Header whose value is taken as the key value.",
+          "description": "Rate limit key name applicable only for the following key types: HTTP_HEADER -- Name of the HTTP header whose value is taken as the key value.",
           "type": "string"
         },
         "banThreshold": {
@@ -20269,10 +20269,6 @@
           "items": {
             "$ref": "InterconnectDiagnosticsLinkStatus"
           }
-        },
-        "macsec": {
-          "description": "Describes the status of MACsec encryption on the Interconnect's bundle interface.",
-          "$ref": "InterconnectDiagnosticsMacsecStatus"
         }
       }
     },
@@ -20320,6 +20316,10 @@
           "items": {
             "$ref": "InterconnectDiagnosticsARPEntry"
           }
+        },
+        "macsec": {
+          "description": "Describes the status of MACsec encryption on this link.",
+          "$ref": "InterconnectDiagnosticsMacsecStatus"
         }
       }
     },
@@ -20383,23 +20383,9 @@
       "description": "Describes the status of MACsec encryption on the link.",
       "type": "object",
       "properties": {
-        "state": {
-          "description": "The current state of MACsec configuration on this Interconnect, which can take one of the following values: - INITIALIZED: MACsec has been configured on the bundle interface. The Google edge router is waiting to establish a MACsec session with the customer router on the other side of this Interconnect. In addition, when key rollover fails between the two routers, the bundle interface will return to the initialized state. - SECURED: MACsec session has been successfully established between the Google edge router and the customer router. - FAILED: MACsec configuration on the bundle interface encountered an error. - DISABLED: MACsec is explicitly disabled on this Interconnect. ",
-          "type": "string",
-          "enumDescriptions": [
-            "MACsec is explicitly disabled on this Interconnect.",
-            "MACsec configuration on the bundle interface encountered an error.",
-            "MACsec has been configured on the bundle interface. The Google edge router is waiting to establish a MACsec session with the customer router on the other side of this Interconnect. In addition, when key rollover fails between the two routers, the bundle interface will return to the initialized state.",
-            "MACsec session has been successfully established between the Google edge router and the customer router.",
-            "The default value."
-          ],
-          "enum": [
-            "DISABLED",
-            "FAILED",
-            "INITIALIZED",
-            "SECURED",
-            "STATE_UNSPECIFIED"
-          ]
+        "operational": {
+          "description": "Indicates whether or not MACsec is operational on this link.",
+          "type": "boolean"
         },
         "ckn": {
           "description": "Indicates the Connectivity Association Key Name (CKN) currently being used if MACsec is operational.",
@@ -22925,7 +22911,7 @@
           "$ref": "NetworkRoutingConfig"
         },
         "mtu": {
-          "description": "Maximum Transmission Unit in bytes. The minimum value for this field is 1460 and the maximum value is 1500 bytes.",
+          "description": "Maximum Transmission Unit in bytes. The minimum value for this field is 1460 and the maximum value is 1500 bytes. If unspecified, defaults to 1460.",
           "type": "integer",
           "format": "int32"
         },

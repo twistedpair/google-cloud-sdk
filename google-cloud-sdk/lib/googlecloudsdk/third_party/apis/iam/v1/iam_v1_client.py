@@ -1620,6 +1620,60 @@ class IamV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Disable(self, request, global_params=None):
+      r"""Disable a ServiceAccountKey. A disabled service account key can be enabled through EnableServiceAccountKey.
+
+      Args:
+        request: (IamProjectsServiceAccountsKeysDisableRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Disable')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Disable.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}/keys/{keysId}:disable',
+        http_method='POST',
+        method_id='iam.projects.serviceAccounts.keys.disable',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:disable',
+        request_field='disableServiceAccountKeyRequest',
+        request_type_name='IamProjectsServiceAccountsKeysDisableRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Enable(self, request, global_params=None):
+      r"""Enable a ServiceAccountKey.
+
+      Args:
+        request: (IamProjectsServiceAccountsKeysEnableRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Enable')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Enable.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/serviceAccounts/{serviceAccountsId}/keys/{keysId}:enable',
+        http_method='POST',
+        method_id='iam.projects.serviceAccounts.keys.enable',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:enable',
+        request_field='enableServiceAccountKeyRequest',
+        request_type_name='IamProjectsServiceAccountsKeysEnableRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets a ServiceAccountKey.
 

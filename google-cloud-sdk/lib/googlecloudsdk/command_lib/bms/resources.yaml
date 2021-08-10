@@ -1,0 +1,33 @@
+project:
+  name: project
+  collection: baremetalsolution.projects
+  attributes:
+  - &project
+    parameter_name: projectsId
+    attribute_name: project
+    help: Project ID.
+    property: core/project
+  disable_auto_completers: false
+
+region:
+  name: region
+  collection: baremetalsolution.projects.locations
+  attributes:
+  - *project
+  - &region
+    parameter_name: locationsId
+    attribute_name: region
+    help: Region of the instance.
+  disable_auto_completers: false
+
+instance:
+  name: instance
+  collection: baremetalsolution.projects.locations.instances
+  attributes:
+  - *project
+  - *region
+  - &instance
+    parameter_name: instancesId
+    attribute_name: instance
+    help: Bare Metal Solution instance.
+  disable_auto_completers: false

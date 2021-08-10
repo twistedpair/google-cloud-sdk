@@ -50,6 +50,9 @@ def CheckFieldsSpecifiedAlpha(unused_instance_ref, args, patch_request):
       'maintenance_window_day',
       'maintenance_window_hour',
       'maintenance_window_any',
+      'persistence_mode',
+      'rdb_snapshot_period',
+      'rdb_snapshot_start_time',
   ]
   return CheckFieldsSpecifiedCommon(args, patch_request, additional_update_args)
 
@@ -166,16 +169,14 @@ def UpdateAuthEnabled(unused_instance_ref, args, patch_request):
 def UpdateMaintenanceWindowDay(unused_instance_ref, args, patch_request):
   """Hook to update maintenance window day to the update mask of the request."""
   if args.IsSpecified('maintenance_window_day'):
-    patch_request = AddFieldToUpdateMask('maintenance_policy',
-                                         patch_request)
+    patch_request = AddFieldToUpdateMask('maintenance_policy', patch_request)
   return patch_request
 
 
 def UpdateMaintenanceWindowHour(unused_instance_ref, args, patch_request):
   """Hook to update maintenance window hour to the update mask of the request."""
   if args.IsSpecified('maintenance_window_hour'):
-    patch_request = AddFieldToUpdateMask('maintenance_policy',
-                                         patch_request)
+    patch_request = AddFieldToUpdateMask('maintenance_policy', patch_request)
   return patch_request
 
 
@@ -183,6 +184,26 @@ def UpdateMaintenanceWindowAny(unused_instance_ref, args, patch_request):
   """Hook to remove maintenance window."""
   if args.IsSpecified('maintenance_window_any'):
     patch_request.instance.maintenancePolicy = None
-    patch_request = AddFieldToUpdateMask('maintenance_policy',
-                                         patch_request)
+    patch_request = AddFieldToUpdateMask('maintenance_policy', patch_request)
+  return patch_request
+
+
+def UpdatePersistenceMode(unused_instance_ref, args, patch_request):
+  """Hook to update persistence mode."""
+  if args.IsSpecified('persistence_mode'):
+    patch_request = AddFieldToUpdateMask('persistence_config', patch_request)
+  return patch_request
+
+
+def UpdateRdbSnapshotPeriod(unused_instance_ref, args, patch_request):
+  """Hook to update RDB snapshot period."""
+  if args.IsSpecified('rdb_snapshot_period'):
+    patch_request = AddFieldToUpdateMask('persistence_config', patch_request)
+  return patch_request
+
+
+def UpdateRdbSnapshotStartTime(unused_instance_ref, args, patch_request):
+  """Hook to update RDB snapshot start time."""
+  if args.IsSpecified('rdb_snapshot_start_time'):
+    patch_request = AddFieldToUpdateMask('persistence_config', patch_request)
   return patch_request

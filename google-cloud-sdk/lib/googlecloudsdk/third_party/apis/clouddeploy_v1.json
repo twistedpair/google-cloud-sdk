@@ -104,7 +104,7 @@
     "oauth2": {
       "scopes": {
         "https://www.googleapis.com/auth/cloud-platform": {
-          "description": "See, edit, configure, and delete your Google Cloud Platform data"
+          "description": "See, edit, configure, and delete your Google Cloud data and see the email address for your Google Account."
         }
       }
     }
@@ -609,28 +609,16 @@
           "type": "string",
           "enumDescriptions": [
             "The render state is unspecified.",
-            "The render operation has completed successfully. This will be removed after we are fully migrated to SUCCEEDED.",
             "All rendering operations have completed successfully.",
-            "The render operation has failed. This will be removed after we are fully migrated to FAILED.",
             "All rendering operations have completed, and one or more have failed.",
             "Rendering has started and is not complete."
           ],
           "enum": [
             "RENDER_STATE_UNSPECIFIED",
-            "SUCCESS",
             "SUCCEEDED",
-            "FAILURE",
             "FAILED",
             "IN_PROGRESS"
           ]
-        },
-        "renderedManifests": {
-          "description": "Output only. Map from target ID to Cloud Storage path of the rendered manifest for that target. One example key-value pair would be (\"staging\": \"gs:\/\/my-bucket\/staging-manifest\").",
-          "readOnly": true,
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
         },
         "renderingBuild": {
           "description": "Output only. The resource name of the Cloud Build `Build` object that is used to render the manifests. Format is `projects\/{project}\/locations\/{location}\/builds\/{build}`.",
@@ -676,15 +664,23 @@
       "type": "object",
       "properties": {
         "archiveUri": {
-          "description": "URI of the tar.gz archive containing the artifacts. This archive contains deployment configuration used by Skaffold during a rollout.",
+          "description": "Output only. URI of the tar.gz archive containing the artifacts. This archive contains deployment configuration used by Skaffold during a rollout, and all paths are relative to the root of the contents.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "artifactUri": {
+          "description": "Output only. URI of a directory containing the artifacts. This contains deployment configuration used by Skaffold during a rollout, and all paths are relative to this location.",
+          "readOnly": true,
           "type": "string"
         },
         "skaffoldConfigPath": {
-          "description": "File path of the resolved Skaffold configuration inside of the archive URI.",
+          "description": "Output only. File path of the resolved Skaffold configuration relative to the URI.",
+          "readOnly": true,
           "type": "string"
         },
         "manifestPath": {
-          "description": "File path of the rendered manifest inside of the archive URI.",
+          "description": "Output only. File path of the rendered manifest relative to the URI.",
+          "readOnly": true,
           "type": "string"
         }
       }
@@ -875,9 +871,7 @@
           "type": "string",
           "enumDescriptions": [
             "The `Rollout` has an unspecified state.",
-            "The `Rollout` has completed successfully. This will be removed after we are fully migrated to SUCCEEDED.",
             "The `Rollout` has completed successfully.",
-            "The `Rollout` has failed. This will be removed after we are fully migrated to FAILED.",
             "The `Rollout` has failed.",
             "The `Rollout` is being deployed.",
             "The `Rollout` needs approval.",
@@ -887,9 +881,7 @@
           ],
           "enum": [
             "STATE_UNSPECIFIED",
-            "SUCCESS",
             "SUCCEEDED",
-            "FAILURE",
             "FAILED",
             "IN_PROGRESS",
             "PENDING_APPROVAL",

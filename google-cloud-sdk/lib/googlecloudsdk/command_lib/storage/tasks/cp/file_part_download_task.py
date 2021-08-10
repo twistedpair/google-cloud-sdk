@@ -123,6 +123,7 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
                length,
                component_number=None,
                total_components=None,
+               do_not_decompress=False,
                strategy=cloud_api.DownloadStrategy.ONE_SHOT):
     """Initializes task.
 
@@ -139,12 +140,15 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
         component number.
       total_components (int|None): If a multipart operation, indicates the total
         number of components.
+      do_not_decompress (bool): Prevents automatically decompressing
+        downloaded gzips.
       strategy (cloud_api.DownloadStrategy): Determines what download
         implementation to use.
     """
     super(FilePartDownloadTask,
           self).__init__(source_resource, destination_resource, offset, length,
                          component_number, total_components)
+    self._do_not_decompress = do_not_decompress
     self._strategy = strategy
 
   def _perform_download(self, progress_callback, download_strategy, start_byte,
@@ -162,6 +166,7 @@ class FilePartDownloadTask(file_part_task.FilePartTask):
             self._source_resource,
             download_stream,
             digesters=digesters,
+            do_not_decompress=self._do_not_decompress,
             download_strategy=download_strategy,
             progress_callback=progress_callback,
             start_byte=start_byte,

@@ -414,9 +414,9 @@ class CloudcommerceconsumerprocurementBillingAccountsOrdersOrderAllocationsPatch
     googleCloudCommerceConsumerProcurementV1alpha1OrderAllocation: A
       GoogleCloudCommerceConsumerProcurementV1alpha1OrderAllocation resource
       to be passed as the request body.
-    name: The resource name of the allocation. This field is of the form:
-      `billingAccounts/{billing-account-id}/orders/{order-
-      id}/orderAllocations/{order-allocation-id}`.
+    name: The resource name of the allocation. This field is of the form: `bil
+      lingAccounts/{billing_account}/orders/{order}/orderAllocations/{order_al
+      location}`.
     updateMask: Optional. The update mask that applies to the resource. See
       the [FieldMask definition] (https://developers.google.com/protocol-
       buffers/docs/reference/google.protobuf#fieldmask) for more details.
@@ -943,7 +943,8 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1EntitlementInfo(_messages.Me
 
   Fields:
     id: ID of the entitlement info. Unique across all orders.
-    services: The names of the Inception services to enable.
+    services: The names of the Google Service Infrastructure services to
+      enable.
   """
 
   id = _messages.StringField(1)
@@ -986,9 +987,9 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1FreeTrial(_messages.Message)
   Fields:
     credit: Output only. Credit tracking the real time credit status.
     name: Output only. The resource name of the free trial item. This field is
-      of the form: `projects/{project_id}/freeTrials/{freetrial_id}`. Present
-      if free trial is created under the project's associated billing account
-      for 3p, or free trial is enabled for 1p product.
+      of the form: `projects/{project}/freeTrials/{free_trial}`. Present if
+      free trial is created under the project's associated billing account for
+      3p, or free trial is enabled for 1p product.
     productExternalName: External name for the product for which free trial
       exist.
     provider: Provider of the products for which free trial exist. Provider
@@ -1327,7 +1328,7 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1ModifyOrderMetadata(_message
 
 
 class GoogleCloudCommerceConsumerProcurementV1alpha1ModifyOrderRequest(_messages.Message):
-  r"""Request message for ConsumerProcurementService.ModifyOrder. Next Id: 7
+  r"""Request message for ConsumerProcurementService.ModifyOrder. Next Id: 8
 
   Fields:
     displayName: Optional. Updated display name of the order, leave as empty
@@ -1575,10 +1576,10 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1Order(_messages.Message):
     etag: The weak etag of the order.
     lineItems: Output only. The items being purchased.
     name: Output only. The resource name of the order. Order names have the
-      form `billingAccounts/{billing-account-id}/orders/{order_id}`.
+      form `billingAccounts/{billing_account}/orders/{order}`.
     orderState: Output only. The state of the order.
     provider: Provider of the products being purchased. Provider has the
-      format of `providers/{provider_id}`.
+      format of `providers/{provider}`.
     stateReason: Output only. An explanation for the order's state. Mainly
       used in the case of `OrderState.ORDER_STATE_CANCELLED` states to explain
       why the order is cancelled.
@@ -1630,9 +1631,9 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1OrderAllocation(_messages.Me
     displayName: Optional. The user-specified name of the allocation. Must be
       unique within an Order if specified.
     etag: The weak etag of the order allocation, which can be optionally set.
-    name: The resource name of the allocation. This field is of the form:
-      `billingAccounts/{billing-account-id}/orders/{order-
-      id}/orderAllocations/{order-allocation-id}`.
+    name: The resource name of the allocation. This field is of the form: `bil
+      lingAccounts/{billing_account}/orders/{order}/orderAllocations/{order_al
+      location}`.
     pendingAllocationEntry: Output only. The upcoming allocation entry.
     state: Output only. The state of the allocation.
     updateTime: Output only. The time when the resource was last updated.
@@ -1718,7 +1719,7 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1PlaceOrderMetadata(_messages
 
 
 class GoogleCloudCommerceConsumerProcurementV1alpha1PlaceOrderRequest(_messages.Message):
-  r"""Request message for ConsumerProcurementService.PlaceOrder. Next Id: 11
+  r"""Request message for ConsumerProcurementService.PlaceOrder. Next Id: 12
 
   Enums:
     AutoRenewalBehaviorValueValuesEnum: Optional. Auto renewal behavior of the

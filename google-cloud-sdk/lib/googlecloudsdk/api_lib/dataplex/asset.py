@@ -68,7 +68,8 @@ def SetIamPolicyFromFile(asset_ref, policy_file):
 def GenerateAssetForCreateRequest(description, display_name, labels,
                                   resource_name, resource_spec_type,
                                   creation_policy, deletion_policy,
-                                  discovery_spec_enabled, schedule):
+                                  discovery_spec_enabled, include_patterns,
+                                  exclude_patterns, inheritance_mode, schedule):
   """Create Asset for Message Create Requests."""
   module = dataplex_api.GetMessageModule()
   resource_spec = module.GoogleCloudDataplexV1AssetResourceSpec
@@ -84,7 +85,12 @@ def GenerateAssetForCreateRequest(description, display_name, labels,
           deletionPolicy=resource_spec.DeletionPolicyValueValuesEnum(
               deletion_policy)),
       discoverySpec=module.GoogleCloudDataplexV1AssetDiscoverySpec(
-          enabled=discovery_spec_enabled, schedule=schedule))
+          enabled=discovery_spec_enabled,
+          includePatterns=include_patterns,
+          excludePatterns=exclude_patterns,
+          inheritanceMode=module.GoogleCloudDataplexV1AssetDiscoverySpec
+          .InheritanceModeValueValuesEnum(inheritance_mode),
+          schedule=schedule))
 
 
 def WaitForOperation(operation):
@@ -92,4 +98,3 @@ def WaitForOperation(operation):
   return dataplex_api.WaitForOperation(
       operation,
       dataplex_api.GetClientInstance().projects_locations_lakes_zones_assets)
-

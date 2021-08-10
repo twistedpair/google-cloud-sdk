@@ -125,6 +125,8 @@ class Asset(_messages.Message):
     osInventory: A representation of runtime OS Inventory information. See
       [this topic](https://cloud.google.com/compute/docs/instances/os-
       inventory-management) for more information.
+    relatedAssets: The related assets of the asset of one relationship type.
+      One asset only represents one type of relationship.
     resource: A representation of the resource.
     servicePerimeter: Please also refer to the [service perimeter user
       guide](https://cloud.google.com/vpc-service-controls/docs/overview).
@@ -140,9 +142,10 @@ class Asset(_messages.Message):
   name = _messages.StringField(6)
   orgPolicy = _messages.MessageField('GoogleCloudOrgpolicyV1Policy', 7, repeated=True)
   osInventory = _messages.MessageField('Inventory', 8)
-  resource = _messages.MessageField('Resource', 9)
-  servicePerimeter = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1ServicePerimeter', 10)
-  updateTime = _messages.StringField(11)
+  relatedAssets = _messages.MessageField('RelatedAssets', 9)
+  resource = _messages.MessageField('Resource', 10)
+  servicePerimeter = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1ServicePerimeter', 11)
+  updateTime = _messages.StringField(12)
 
 
 class AttachedResource(_messages.Message):
@@ -568,6 +571,18 @@ class CloudassetAssetsListRequest(_messages.Message):
       (inclusive). If not specified, the current time will be used. Due to
       delays in resource data collection and indexing, there is a volatile
       window during which running the same query may get different results.
+    relationshipTypes: A list of relationship types to output, for example:
+      `INSTANCE_TO_INSTANCEGROUP`. This field should only be specified if
+      content_type=RELATIONSHIP. * If specified: it snapshots specified
+      relationships. It returns an error if any of the [relationship_types]
+      doesn't belong to the supported relationship types of the [asset_types]
+      or if any of the [asset_types] doesn't belong to the source types of the
+      [relationship_types]. * Otherwise: it snapshots the supported
+      relationships for all [asset_types] or returns an error if any of the
+      [asset_types] has no relationship support. An unspecified asset types
+      field means all supported asset_types. See [Introduction to Cloud Asset
+      Inventory](https://cloud.google.com/asset-inventory/docs/overview) for
+      all supported asset types and relationship types.
   """
 
   class ContentTypeValueValuesEnum(_messages.Enum):
@@ -581,6 +596,7 @@ class CloudassetAssetsListRequest(_messages.Message):
       ORG_POLICY: The Cloud Organization Policy set on an asset.
       ACCESS_POLICY: The Cloud Access context manager Policy set on an asset.
       OS_INVENTORY: The runtime OS Inventory information.
+      RELATIONSHIP: The related resources.
     """
     CONTENT_TYPE_UNSPECIFIED = 0
     RESOURCE = 1
@@ -588,6 +604,7 @@ class CloudassetAssetsListRequest(_messages.Message):
     ORG_POLICY = 3
     ACCESS_POLICY = 4
     OS_INVENTORY = 5
+    RELATIONSHIP = 6
 
   assetTypes = _messages.StringField(1, repeated=True)
   contentType = _messages.EnumField('ContentTypeValueValuesEnum', 2)
@@ -595,6 +612,7 @@ class CloudassetAssetsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
   readTime = _messages.StringField(6)
+  relationshipTypes = _messages.StringField(7, repeated=True)
 
 
 class CloudassetBatchGetAssetsHistoryRequest(_messages.Message):
@@ -617,6 +635,18 @@ class CloudassetBatchGetAssetsHistoryRequest(_messages.Message):
     readTimeWindow_endTime: End time of the time window (inclusive). If not
       specified, the current timestamp is used instead.
     readTimeWindow_startTime: Start time of the time window (exclusive).
+    relationshipTypes: Optional. A list of relationship types to output, for
+      example: `INSTANCE_TO_INSTANCEGROUP`. This field should only be
+      specified if content_type=RELATIONSHIP. * If specified: it outputs
+      specified relationships' history on the [asset_names]. It returns an
+      error if any of the [relationship_types] doesn't belong to the supported
+      relationship types of the [asset_names] or if any of the [asset_names]'s
+      types doesn't belong to the source types of the [relationship_types]. *
+      Otherwise: it outputs the supported relationships' history on the
+      [asset_names] or returns an error if any of the [asset_names]'s types
+      has no relationship support. See [Introduction to Cloud Asset
+      Inventory](https://cloud.google.com/asset-inventory/docs/overview) for
+      all supported asset types and relationship types.
   """
 
   class ContentTypeValueValuesEnum(_messages.Enum):
@@ -629,6 +659,7 @@ class CloudassetBatchGetAssetsHistoryRequest(_messages.Message):
       ORG_POLICY: The Cloud Organization Policy set on an asset.
       ACCESS_POLICY: The Cloud Access context manager Policy set on an asset.
       OS_INVENTORY: The runtime OS Inventory information.
+      RELATIONSHIP: The related resources.
     """
     CONTENT_TYPE_UNSPECIFIED = 0
     RESOURCE = 1
@@ -636,12 +667,14 @@ class CloudassetBatchGetAssetsHistoryRequest(_messages.Message):
     ORG_POLICY = 3
     ACCESS_POLICY = 4
     OS_INVENTORY = 5
+    RELATIONSHIP = 6
 
   assetNames = _messages.StringField(1, repeated=True)
   contentType = _messages.EnumField('ContentTypeValueValuesEnum', 2)
   parent = _messages.StringField(3, required=True)
   readTimeWindow_endTime = _messages.StringField(4)
   readTimeWindow_startTime = _messages.StringField(5)
+  relationshipTypes = _messages.StringField(6, repeated=True)
 
 
 class CloudassetExportAssetsRequest(_messages.Message):
@@ -1083,6 +1116,18 @@ class ExportAssetsRequest(_messages.Message):
       (inclusive). If not specified, the current time will be used. Due to
       delays in resource data collection and indexing, there is a volatile
       window during which running the same query may get different results.
+    relationshipTypes: A list of relationship types to export, for example:
+      `INSTANCE_TO_INSTANCEGROUP`. This field should only be specified if
+      content_type=RELATIONSHIP. * If specified: it snapshots specified
+      relationships. It returns an error if any of the [relationship_types]
+      doesn't belong to the supported relationship types of the [asset_types]
+      or if any of the [asset_types] doesn't belong to the source types of the
+      [relationship_types]. * Otherwise: it snapshots the supported
+      relationships for all [asset_types] or returns an error if any of the
+      [asset_types] has no relationship support. An unspecified asset types
+      field means all supported asset_types. See [Introduction to Cloud Asset
+      Inventory](https://cloud.google.com/asset-inventory/docs/overview) for
+      all supported asset types and relationship types.
   """
 
   class ContentTypeValueValuesEnum(_messages.Enum):
@@ -1096,6 +1141,7 @@ class ExportAssetsRequest(_messages.Message):
       ORG_POLICY: The Cloud Organization Policy set on an asset.
       ACCESS_POLICY: The Cloud Access context manager Policy set on an asset.
       OS_INVENTORY: The runtime OS Inventory information.
+      RELATIONSHIP: The related resources.
     """
     CONTENT_TYPE_UNSPECIFIED = 0
     RESOURCE = 1
@@ -1103,11 +1149,13 @@ class ExportAssetsRequest(_messages.Message):
     ORG_POLICY = 3
     ACCESS_POLICY = 4
     OS_INVENTORY = 5
+    RELATIONSHIP = 6
 
   assetTypes = _messages.StringField(1, repeated=True)
   contentType = _messages.EnumField('ContentTypeValueValuesEnum', 2)
   outputConfig = _messages.MessageField('OutputConfig', 3)
   readTime = _messages.StringField(4)
+  relationshipTypes = _messages.StringField(5, repeated=True)
 
 
 class Expr(_messages.Message):
@@ -1188,6 +1236,19 @@ class Feed(_messages.Message):
       organizations/{organization_number}/feeds/{client-
       assigned_feed_identifier} The client-assigned feed identifier must be
       unique within the parent project/folder/organization.
+    relationshipTypes: A list of relationship types to output, for example:
+      `INSTANCE_TO_INSTANCEGROUP`. This field should only be specified if
+      content_type=RELATIONSHIP. * If specified: it outputs specified
+      relationship updates on the [asset_names] or the [asset_types]. It
+      returns an error if any of the [relationship_types] doesn't belong to
+      the supported relationship types of the [asset_names] or [asset_types],
+      or any of the [asset_names] or the [asset_types] doesn't belong to the
+      source types of the [relationship_types]. * Otherwise: it outputs the
+      supported relationships of the types of [asset_names] and [asset_types]
+      or returns an error if any of the [asset_names] or the [asset_types] has
+      no replationship support. See [Introduction to Cloud Asset
+      Inventory](https://cloud.google.com/asset-inventory/docs/overview) for
+      all supported asset types and relationship types.
   """
 
   class ContentTypeValueValuesEnum(_messages.Enum):
@@ -1201,6 +1262,7 @@ class Feed(_messages.Message):
       ORG_POLICY: The Cloud Organization Policy set on an asset.
       ACCESS_POLICY: The Cloud Access context manager Policy set on an asset.
       OS_INVENTORY: The runtime OS Inventory information.
+      RELATIONSHIP: The related resources.
     """
     CONTENT_TYPE_UNSPECIFIED = 0
     RESOURCE = 1
@@ -1208,6 +1270,7 @@ class Feed(_messages.Message):
     ORG_POLICY = 3
     ACCESS_POLICY = 4
     OS_INVENTORY = 5
+    RELATIONSHIP = 6
 
   assetNames = _messages.StringField(1, repeated=True)
   assetTypes = _messages.StringField(2, repeated=True)
@@ -1215,6 +1278,7 @@ class Feed(_messages.Message):
   contentType = _messages.EnumField('ContentTypeValueValuesEnum', 4)
   feedOutputConfig = _messages.MessageField('FeedOutputConfig', 5)
   name = _messages.StringField(6)
+  relationshipTypes = _messages.StringField(7, repeated=True)
 
 
 class FeedOutputConfig(_messages.Message):
@@ -2768,7 +2832,12 @@ class IdentitySelector(_messages.Message):
 
 
 class Inventory(_messages.Message):
-  r"""The inventory details of a VM.
+  r"""This API resource represents the available inventory data for a Compute
+  Engine virtual machine (VM) instance at a given point in time. You can use
+  this API resource to determine the inventory data of your VM. For more
+  information, see [Information provided by OS inventory
+  management](https://cloud.google.com/compute/docs/instances/os-inventory-
+  management#data-collected).
 
   Messages:
     ItemsValue: Inventory items related to the VM keyed by an opaque unique
@@ -2781,7 +2850,11 @@ class Inventory(_messages.Message):
       identifier for each inventory item. The identifier is unique to each
       distinct and addressable inventory item and will change, when there is a
       new package version.
+    name: Output only. The `Inventory` API resource name. Format: `projects/{p
+      roject_number}/locations/{location}/instances/{instance_id}/inventory`
     osInfo: Base level operating system information for the VM.
+    updateTime: Output only. Timestamp of the last reported inventory for the
+      VM.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -2812,7 +2885,9 @@ class Inventory(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   items = _messages.MessageField('ItemsValue', 1)
-  osInfo = _messages.MessageField('OsInfo', 2)
+  name = _messages.StringField(2)
+  osInfo = _messages.MessageField('OsInfo', 3)
+  updateTime = _messages.StringField(4)
 
 
 class Item(_messages.Message):
@@ -3275,6 +3350,69 @@ class PubsubDestination(_messages.Message):
   """
 
   topic = _messages.StringField(1)
+
+
+class RelatedAsset(_messages.Message):
+  r"""An asset identify in Google Cloud which contains its name, type and
+  ancestors. An asset can be any resource in the Google Cloud [resource
+  hierarchy](https://cloud.google.com/resource-manager/docs/cloud-platform-
+  resource-hierarchy), a resource outside the Google Cloud resource hierarchy
+  (such as Google Kubernetes Engine clusters and objects), or a policy (e.g.
+  Cloud IAM policy). See [Supported asset
+  types](https://cloud.google.com/asset-inventory/docs/supported-asset-types)
+  for more information.
+
+  Fields:
+    ancestors: The ancestors of an asset in Google Cloud [resource
+      hierarchy](https://cloud.google.com/resource-manager/docs/cloud-
+      platform-resource-hierarchy), represented as a list of relative resource
+      names. An ancestry path starts with the closest ancestor in the
+      hierarchy and ends at root. Example: `["projects/123456789",
+      "folders/5432", "organizations/1234"]`
+    asset: The full name of the asset. Example: `//compute.googleapis.com/proj
+      ects/my_project_123/zones/zone1/instances/instance1` See [Resource names
+      ](https://cloud.google.com/apis/design/resource_names#full_resource_name
+      ) for more information.
+    assetType: The type of the asset. Example: `compute.googleapis.com/Disk`
+      See [Supported asset types](https://cloud.google.com/asset-
+      inventory/docs/supported-asset-types) for more information.
+  """
+
+  ancestors = _messages.StringField(1, repeated=True)
+  asset = _messages.StringField(2)
+  assetType = _messages.StringField(3)
+
+
+class RelatedAssets(_messages.Message):
+  r"""The detailed related assets with the `relationship_type`.
+
+  Fields:
+    assets: The peer resources of the relationship.
+    relationshipAttributes: The detailed relationship attributes.
+  """
+
+  assets = _messages.MessageField('RelatedAsset', 1, repeated=True)
+  relationshipAttributes = _messages.MessageField('RelationshipAttributes', 2)
+
+
+class RelationshipAttributes(_messages.Message):
+  r"""The relationship attributes which include `type`,
+  `source_resource_type`, `target_resource_type` and `action`.
+
+  Fields:
+    action: The detail of the relationship, e.g. `contains`, `attaches`
+    sourceResourceType: The source asset type. Example:
+      `compute.googleapis.com/Instance`
+    targetResourceType: The target asset type. Example:
+      `compute.googleapis.com/Disk`
+    type: The unique identifier of the relationship type. Example:
+      `INSTANCE_TO_INSTANCEGROUP`
+  """
+
+  action = _messages.StringField(1)
+  sourceResourceType = _messages.StringField(2)
+  targetResourceType = _messages.StringField(3)
+  type = _messages.StringField(4)
 
 
 class Resource(_messages.Message):

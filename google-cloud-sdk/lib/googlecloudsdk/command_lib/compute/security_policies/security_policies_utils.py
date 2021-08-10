@@ -130,6 +130,7 @@ def SecurityPolicyFromFile(input_file, messages, file_format):
               exceedAction=rate_limit_options['exceedAction'],
               enforceOnKey=messages.SecurityPolicyRuleRateLimitOptions
               .EnforceOnKeyValueValuesEnum(rate_limit_options['enforceOnKey']),
+              enforceOnKeyName=rate_limit_options['enforceOnKeyName'],
               banThreshold=messages.SecurityPolicyRuleRateLimitOptionsThreshold(
                   count=rate_limit_options['banThreshold']['count'],
                   intervalSec=rate_limit_options['banThreshold']
@@ -258,6 +259,9 @@ def CreateRateLimitOptions(client, args):
         messages.SecurityPolicyRuleRateLimitOptions.EnforceOnKeyValueValuesEnum(
             _ConvertEnforceOnKey(args.enforce_on_key)))
     is_updated = True
+  if args.IsSpecified('enforce_on_key_name'):
+    rate_limit_options.enforceOnKeyName = args.enforce_on_key_name
+    is_updated = True
 
   if (args.IsSpecified('ban_threshold_count') or
       args.IsSpecified('ban_threshold_interval_sec')):
@@ -277,7 +281,7 @@ def CreateRateLimitOptions(client, args):
 
 
 def _ConvertConformAction(action):
-  return {'drop-overload': 'drop_overload'}.get(action, action)
+  return {'allow': 'allow'}.get(action, action)
 
 
 def _ConvertExceedAction(action):
@@ -290,7 +294,13 @@ def _ConvertExceedAction(action):
 
 
 def _ConvertEnforceOnKey(enforce_on_key):
-  return {'ip': 'IP', 'all-ips': 'ALL_IPS'}.get(enforce_on_key, enforce_on_key)
+  return {
+      'ip': 'IP',
+      'all-ips': 'ALL_IPS',
+      'all': 'ALL',
+      'http-header': 'HTTP_HEADER',
+      'xff-ip': 'XFF_IP'
+  }.get(enforce_on_key, enforce_on_key)
 
 
 def CreateRedirectOptions(client, args):

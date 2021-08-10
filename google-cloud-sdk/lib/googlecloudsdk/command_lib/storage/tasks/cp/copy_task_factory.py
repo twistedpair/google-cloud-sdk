@@ -28,6 +28,7 @@ from googlecloudsdk.command_lib.storage.tasks.cp import intra_cloud_copy_task
 
 def get_copy_task(source_resource,
                   destination_resource,
+                  do_not_decompress=False,
                   user_request_args=None):
   """Factory method that returns the correct copy task for the arguments.
 
@@ -35,6 +36,8 @@ def get_copy_task(source_resource,
     source_resource (resource_reference.Resource): Reference to file to copy.
     destination_resource (resource_reference.Resource): Reference to
         destination to copy file to.
+    do_not_decompress (bool): Prevents automatically decompressing
+        downloaded gzips.
     user_request_args (UserRequestArgs|None): Values for RequestConfig.
 
   Returns:
@@ -54,8 +57,10 @@ def get_copy_task(source_resource,
 
   if (isinstance(source_url, storage_url.CloudUrl)
       and isinstance(destination_url, storage_url.FileUrl)):
-    return file_download_task.FileDownloadTask(source_resource,
-                                               destination_resource)
+    return file_download_task.FileDownloadTask(
+        source_resource,
+        destination_resource,
+        do_not_decompress=do_not_decompress)
 
   if (isinstance(source_url, storage_url.FileUrl)
       and isinstance(destination_url, storage_url.CloudUrl)):

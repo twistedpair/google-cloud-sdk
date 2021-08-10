@@ -804,7 +804,8 @@ class PrivateCloud(_messages.Message):
       cloud. This field is required during creation of the private cloud to
       provide details for the default cluster. The following fields can't be
       changed after private cloud creation: `ManagementCluster.clusterId`,
-      `ManagementCluster.nodeTypeId`.
+      `ManagementCluster.nodeTypeId`,
+      `ManagementCluster.nodeCustomVirtualCpuCount`.
     name: Output only. The resource name of this private cloud. Resource names
       are schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. For example:
@@ -1196,10 +1197,10 @@ class VmwareengineProjectsLocationsNodeTypesListRequest(_messages.Message):
     pageSize: The maximum number of node types to return in one page. The
       service may return fewer than this value. The maximum value is coerced
       to 50.
-    pageToken: A page token, received from a previous `ListNodeTypesRequest`
-      call. Provide this to retrieve the subsequent page. When paginating, all
-      other parameters provided to `ListNodeTypesRequest` must match the call
-      that provided the page token.
+    pageToken: A page token, received from a previous `ListNodeTypes` call.
+      Provide this to retrieve the subsequent page. When paginating, all other
+      parameters provided to `ListNodeTypes` must match the call that provided
+      the page token.
     parent: Required. The resource name of the location to be queried for node
       types. Resource names are schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. For example:
@@ -1402,10 +1403,10 @@ class VmwareengineProjectsLocationsPrivateCloudsClustersListRequest(_messages.Me
     pageSize: The maximum number of clusters to return in one page. The
       service may return fewer than this value. The maximum value is coerced
       to 25.
-    pageToken: A page token, received from a previous `ListClustersRequest`
-      call. Provide this to retrieve the subsequent page. When paginating, all
-      other parameters provided to `ListClustersRequest` must match the call
-      that provided the page token.
+    pageToken: A page token, received from a previous `ListClusters` call.
+      Provide this to retrieve the subsequent page. When paginating, all other
+      parameters provided to `ListClusters` must match the call that provided
+      the page token.
     parent: Required. The resource name of the private cloud to query for
       clusters. Resource names are schemeless URIs that follow the conventions
       in https://cloud.google.com/apis/design/resource_names. For example:

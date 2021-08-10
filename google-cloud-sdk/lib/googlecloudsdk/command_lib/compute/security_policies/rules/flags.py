@@ -144,16 +144,28 @@ def AddRateLimitOptions(parser):
       help=('When a request is denied, returns the HTTP response code '
             'specified.'))
 
-  enforce_on_key = ['ip', 'all-ips']
+  enforce_on_key = ['ip', 'all', 'http-header', 'xff-ip']
   parser.add_argument(
       '--enforce-on-key',
       choices=enforce_on_key,
       type=lambda x: x.lower(),
       help="""\
-      Determines the key to enforce the threshold_rps limit on. If key
-      is ``ip'', each IP has this limit enforced separately, whereas
-      ``all-ips'' means a single limit is applied to all requests
-      matching this rule.
+      Different key types available to enforce the rate limit threshold limit on:
+      - ``ip'': each client IP address has this limit enforced separately
+      - ``all'': a single limit is applied to all requests matching this rule
+      - ``http-header'': key type takes the value of the HTTP header configured
+                         in enforce-on-key-name as the key value
+      - ``xff-ip'': takes the original IP address specified in the X-Forwarded-For
+                    header as the key
+      """)
+
+  parser.add_argument(
+      '--enforce-on-key-name',
+      help="""\
+      Determines the key name for the rate limit key. Applicable only for the
+      following rate limit key types:
+      - http-header: The name of the HTTP header whose value is taken as the key
+      value.
       """)
 
   parser.add_argument(

@@ -286,10 +286,32 @@ BETA_ADDONS_OPTIONS = ADDONS_OPTIONS + [
 ]
 ALPHA_ADDONS_OPTIONS = BETA_ADDONS_OPTIONS + [CLOUDBUILD]
 
+NONE = 'NONE'
+SYSTEM = 'SYSTEM'
+WORKLOAD = 'WORKLOAD'
+# TODO(b/187793166): Remove APISERVER when deprecating the legacy API.
 APISERVER = 'APISERVER'
+API_SERVER = 'API_SERVER'
 SCHEDULER = 'SCHEDULER'
 CONTROLLER_MANAGER = 'CONTROLLER_MANAGER'
 ADDON_MANAGER = 'ADDON_MANAGER'
+LOGGING_OPTIONS = [
+    NONE,
+    SYSTEM,
+    WORKLOAD,
+    API_SERVER,
+    SCHEDULER,
+    CONTROLLER_MANAGER,
+    ADDON_MANAGER,
+]
+MONITORING_OPTIONS = [
+    NONE,
+    SYSTEM,
+    WORKLOAD,
+    API_SERVER,
+    SCHEDULER,
+    CONTROLLER_MANAGER,
+]
 PRIMARY_LOGS_OPTIONS = [
     APISERVER,
     SCHEDULER,
@@ -495,6 +517,7 @@ class CreateClusterOptions(object):
       enable_experimental_vertical_pod_autoscaling=None,
       security_profile=None,
       security_profile_runtime_rules=None,
+      autoscaling_profile=None,
       database_encryption_key=None,
       metadata=None,
       enable_network_egress_metering=None,
@@ -557,6 +580,8 @@ class CreateClusterOptions(object):
       cross_connect_subnetworks=None,
       enable_service_externalips=None,
       threads_per_core=None,
+      logging=None,
+      monitoring=None,
   ):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
@@ -640,6 +665,7 @@ class CreateClusterOptions(object):
     self.enable_experimental_vertical_pod_autoscaling = enable_experimental_vertical_pod_autoscaling
     self.security_profile = security_profile
     self.security_profile_runtime_rules = security_profile_runtime_rules
+    self.autoscaling_profile = autoscaling_profile
     self.database_encryption_key = database_encryption_key
     self.metadata = metadata
     self.enable_network_egress_metering = enable_network_egress_metering
@@ -702,6 +728,8 @@ class CreateClusterOptions(object):
     self.cross_connect_subnetworks = cross_connect_subnetworks
     self.enable_service_externalips = enable_service_externalips
     self.threads_per_core = threads_per_core
+    self.logging = logging
+    self.monitoring = monitoring
 
 
 class UpdateClusterOptions(object):
@@ -720,6 +748,8 @@ class UpdateClusterOptions(object):
                master_logs=None,
                no_master_logs=None,
                enable_master_metrics=None,
+               logging=None,
+               monitoring=None,
                disable_addons=None,
                istio_config=None,
                cloud_run_config=None,
@@ -793,7 +823,8 @@ class UpdateClusterOptions(object):
                clear_cross_connect_subnetworks=None,
                enable_service_externalips=None,
                security_group=None,
-               enable_gcfs=None):
+               enable_gcfs=None,
+               enable_image_streaming=None):
     self.version = version
     self.update_master = bool(update_master)
     self.update_nodes = bool(update_nodes)
@@ -806,6 +837,8 @@ class UpdateClusterOptions(object):
     self.no_master_logs = no_master_logs
     self.master_logs = master_logs
     self.enable_master_metrics = enable_master_metrics
+    self.logging = logging
+    self.monitoring = monitoring
     self.disable_addons = disable_addons
     self.istio_config = istio_config
     self.cloud_run_config = cloud_run_config
@@ -881,6 +914,7 @@ class UpdateClusterOptions(object):
     self.enable_service_externalips = enable_service_externalips
     self.security_group = security_group
     self.enable_gcfs = enable_gcfs
+    self.enable_image_streaming = enable_image_streaming
 
 
 class SetMasterAuthOptions(object):
@@ -1024,7 +1058,8 @@ class UpdateNodePoolOptions(object):
                node_taints=None,
                tags=None,
                enable_private_nodes=None,
-               enable_gcfs=None):
+               enable_gcfs=None,
+               enable_image_streaming=None):
     self.enable_autorepair = enable_autorepair
     self.enable_autoupgrade = enable_autoupgrade
     self.enable_autoscaling = enable_autoscaling
@@ -1042,6 +1077,7 @@ class UpdateNodePoolOptions(object):
     self.tags = tags
     self.enable_private_nodes = enable_private_nodes
     self.enable_gcfs = enable_gcfs
+    self.enable_image_streaming = enable_image_streaming
 
   def IsAutoscalingUpdate(self):
     return (self.enable_autoscaling is not None or self.max_nodes is not None or
@@ -1061,7 +1097,8 @@ class UpdateNodePoolOptions(object):
             self.system_config_from_file is not None or
             self.node_labels is not None or self.node_taints is not None or
             self.tags is not None or self.enable_private_nodes is not None or
-            self.enable_gcfs is not None)
+            self.enable_gcfs is not None or
+            self.enable_image_streaming is not None)
 
 
 class APIAdapter(object):
@@ -1510,6 +1547,8 @@ class APIAdapter(object):
 
     _AddNotificationConfigToCluster(cluster, options, self.messages)
 
+    cluster.loggingConfig = _GetLoggingConfig(options, self.messages)
+    cluster.monitoringConfig = _GetMonitoringConfig(options, self.messages)
     return cluster
 
   def ParseNodeConfig(self, options):
@@ -1852,7 +1891,8 @@ class APIAdapter(object):
       The operation to be executed.
     """
     cluster = self.CreateClusterCommon(cluster_ref, options)
-    if options.enable_autoprovisioning is not None:
+    if (options.enable_autoprovisioning is not None or
+        options.autoscaling_profile is not None):
       cluster.autoscaling = self.CreateClusterAutoscalingCommon(
           cluster_ref, options, False)
     if options.addons:
@@ -1995,8 +2035,34 @@ class APIAdapter(object):
         autoscaling.autoprovisioningLocations = \
             sorted(autoprovisioning_locations)
 
+    if options.autoscaling_profile is not None:
+      autoscaling.autoscalingProfile = self.CreateAutoscalingProfileCommon(
+          options)
+
     self.ValidateClusterAutoscaling(autoscaling, for_update)
     return autoscaling
+
+  def CreateAutoscalingProfileCommon(self, options):
+    """Create and validate cluster's autoscaling profile configuration.
+
+    Args:
+      options: Either CreateClusterOptions or UpdateClusterOptions.
+
+    Returns:
+      Cluster's autoscaling profile configuration.
+    """
+
+    cluster_autoscaling = self.messages.ClusterAutoscaling
+    profiles_enum = cluster_autoscaling.AutoscalingProfileValueValuesEnum
+    valid_choices = [
+        arg_utils.EnumNameToChoice(n)
+        for n in profiles_enum.names()
+        if n != 'profile-unspecified'
+    ]
+    return arg_utils.ChoiceToEnum(
+        choice=arg_utils.EnumNameToChoice(options.autoscaling_profile),
+        enum_type=profiles_enum,
+        valid_choices=valid_choices)
 
   def ValidateClusterAutoscaling(self, autoscaling, for_update):
     """Validate cluster autoscaling configuration.
@@ -2144,6 +2210,14 @@ class APIAdapter(object):
         update.desiredMonitoringService = options.monitoring_service
       if options.logging_service:
         update.desiredLoggingService = options.logging_service
+    elif options.logging or options.monitoring:
+      logging = _GetLoggingConfig(options, self.messages)
+      monitoring = _GetMonitoringConfig(options, self.messages)
+      update = self.messages.ClusterUpdate()
+      if logging:
+        update.desiredLoggingConfig = logging
+      if monitoring:
+        update.desiredMonitoringConfig = monitoring
     elif options.disable_addons:
       disable_node_local_dns = options.disable_addons.get(NODELOCALDNS)
       addons = self._AddonsConfig(
@@ -2323,6 +2397,11 @@ class APIAdapter(object):
       update = self.messages.ClusterUpdate(
           desiredGcfsConfig=self.messages.GcfsConfig(
               enabled=options.enable_gcfs))
+
+    if options.enable_image_streaming is not None:
+      update = self.messages.ClusterUpdate(
+          desiredGcfsConfig=self.messages.GcfsConfig(
+              enabled=options.enable_image_streaming))
 
     return update
 
@@ -2944,6 +3023,10 @@ class APIAdapter(object):
       update_request.nodeNetworkConfig = network_config
     elif options.enable_gcfs is not None:
       gcfs_config = self.messages.GcfsConfig(enabled=options.enable_gcfs)
+      update_request.gcfsConfig = gcfs_config
+    elif options.enable_image_streaming is not None:
+      gcfs_config = self.messages.GcfsConfig(
+          enabled=options.enable_image_streaming)
       update_request.gcfsConfig = gcfs_config
     return update_request
 
@@ -3797,28 +3880,6 @@ class V1Beta1Adapter(V1Adapter):
     self.ValidateClusterAutoscaling(autoscaling, for_update)
     return autoscaling
 
-  def CreateAutoscalingProfileCommon(self, options):
-    """Create and validate cluster's autoscaling profile configuration.
-
-    Args:
-      options: Either CreateClusterOptions or UpdateClusterOptions.
-
-    Returns:
-      Cluster's autoscaling profile configuration.
-    """
-
-    profiles_enum = \
-        self.messages.ClusterAutoscaling.AutoscalingProfileValueValuesEnum
-    valid_choices = [
-        arg_utils.EnumNameToChoice(n)
-        for n in profiles_enum.names()
-        if n != 'profile-unspecified'
-    ]
-    return arg_utils.ChoiceToEnum(
-        choice=arg_utils.EnumNameToChoice(options.autoscaling_profile),
-        enum_type=profiles_enum,
-        valid_choices=valid_choices)
-
   def ValidateClusterAutoscaling(self, autoscaling, for_update):
     """Validate cluster autoscaling configuration.
 
@@ -4656,6 +4717,96 @@ def _GetMasterForClusterUpdate(options, messages):
             .LogEnabledComponentsValueListEntryValuesEnum.COMPONENT_UNSPECIFIED
         ])
     return messages.Master(signalsConfig=config)
+
+
+def _GetLoggingConfig(options, messages):
+  """Gets the LoggingConfig from create and update options."""
+  if options.logging is None:
+    return None
+
+  # TODO(b/195524749): Validate the input in flags.py after Control Plane
+  # Signals is GA.
+  if any(c not in LOGGING_OPTIONS for c in options.logging):
+    raise util.Error(
+        '[' + ', '.join(options.logging) +
+        '] contains option(s) that are not supported for logging.')
+
+  config = messages.LoggingComponentConfig()
+  if NONE in options.logging:
+    if len(options.logging) > 1:
+      raise util.Error('Cannot include other values when None is specified.')
+    return messages.LoggingConfig(componentConfig=config)
+  if SYSTEM not in options.logging:
+    raise util.Error('Must include system logging if any logging is enabled.')
+  config.enableComponents.append(
+      messages.LoggingComponentConfig.EnableComponentsValueListEntryValuesEnum
+      .SYSTEM_COMPONENTS)
+  if WORKLOAD in options.logging:
+    config.enableComponents.append(
+        messages.LoggingComponentConfig
+        .EnableComponentsValueListEntryValuesEnum.WORKLOADS)
+  if API_SERVER in options.logging:
+    config.enableComponents.append(
+        messages.LoggingComponentConfig
+        .EnableComponentsValueListEntryValuesEnum.APISERVER)
+  if SCHEDULER in options.logging:
+    config.enableComponents.append(
+        messages.LoggingComponentConfig
+        .EnableComponentsValueListEntryValuesEnum.SCHEDULER)
+  if CONTROLLER_MANAGER in options.logging:
+    config.enableComponents.append(
+        messages.LoggingComponentConfig.EnableComponentsValueListEntryValuesEnum
+        .CONTROLLER_MANAGER)
+  if ADDON_MANAGER in options.logging:
+    config.enableComponents.append(
+        messages.LoggingComponentConfig
+        .EnableComponentsValueListEntryValuesEnum.ADDON_MANAGER)
+
+  return messages.LoggingConfig(componentConfig=config)
+
+
+def _GetMonitoringConfig(options, messages):
+  """Gets the MonitoringConfig from create and update options."""
+  if options.monitoring is None:
+    return None
+
+  # TODO(b/195524749): Validate the input in flags.py after Control Plane
+  # Signals is GA.
+  if any(c not in MONITORING_OPTIONS for c in options.monitoring):
+    raise util.Error(
+        '[' + ', '.join(options.monitoring) +
+        '] contains option(s) that are not supported for monitoring.')
+
+  config = messages.MonitoringComponentConfig()
+  if NONE in options.monitoring:
+    if len(options.monitoring) > 1:
+      raise util.Error('Cannot include other values when None is specified.')
+    return messages.MonitoringConfig(componentConfig=config)
+  if SYSTEM not in options.monitoring:
+    raise util.Error(
+        'Must include system monitoring if any monitoring is enabled.')
+  config.enableComponents.append(
+      messages.MonitoringComponentConfig
+      .EnableComponentsValueListEntryValuesEnum.SYSTEM_COMPONENTS)
+
+  if WORKLOAD in options.monitoring:
+    config.enableComponents.append(
+        messages.MonitoringComponentConfig
+        .EnableComponentsValueListEntryValuesEnum.WORKLOADS)
+  if API_SERVER in options.monitoring:
+    config.enableComponents.append(
+        messages.MonitoringComponentConfig
+        .EnableComponentsValueListEntryValuesEnum.APISERVER)
+  if SCHEDULER in options.monitoring:
+    config.enableComponents.append(
+        messages.MonitoringComponentConfig
+        .EnableComponentsValueListEntryValuesEnum.SCHEDULER)
+  if CONTROLLER_MANAGER in options.monitoring:
+    config.enableComponents.append(
+        messages.MonitoringComponentConfig
+        .EnableComponentsValueListEntryValuesEnum.CONTROLLER_MANAGER)
+
+  return messages.MonitoringConfig(componentConfig=config)
 
 
 def _GetKubernetesObjectsExportConfigForClusterCreate(options, messages):

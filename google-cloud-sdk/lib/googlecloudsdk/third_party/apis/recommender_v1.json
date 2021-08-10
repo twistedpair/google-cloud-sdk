@@ -468,6 +468,14 @@
           "items": {
             "$ref": "GoogleCloudRecommenderV1OperationGroup"
           }
+        },
+        "overview": {
+          "description": "Condensed overview information about the recommendation.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object."
+          }
         }
       }
     },
