@@ -46,7 +46,7 @@ _ASSET_TYPE_REGEX = re.compile(r'\"asset_type\"\: (\".*?)\,')
 
 ApiClientArgs = collections.namedtuple('ApiClientArgs', [
     'snapshot_time', 'limit', 'page_size', 'asset_types', 'parent',
-    'content_type', 'filter_func'
+    'content_type', 'filter_func', 'relationship_types'
 ])
 
 RESOURCE_LIST_FORMAT = (
@@ -223,13 +223,15 @@ def _GetAssetInventoryListInput(folder,
   asset_filter = asset_types_filter or []
   if kind_filter:
     asset_filter.extend(kind_filter)
-  args = ApiClientArgs(snapshot_time=None,
-                       limit=None,
-                       page_size=None,
-                       content_type=None,
-                       asset_types=asset_filter,
-                       parent=root_asset,
-                       filter_func=filter_func)
+  args = ApiClientArgs(
+      snapshot_time=None,
+      limit=None,
+      page_size=None,
+      content_type=None,
+      asset_types=asset_filter,
+      parent=root_asset,
+      filter_func=filter_func,
+      relationship_types=[])
   asset_results = asset_client.List(args, do_filter=True)
   asset_string_array = []
   for item in asset_results:  # list of apitools Asset messages.

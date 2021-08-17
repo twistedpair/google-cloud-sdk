@@ -936,9 +936,8 @@ class Registry(object):
     if _GRIsAreEnabled():
       # If collection is set already, it will be validated in the split method.
       # If it is unknown, it will come back with the parsed collection or None.
-      # TODO(b/35869924): Ideally we would pass the parsed GRI to the parser
-      # instead of reparsing it there, but this library would need some
-      # refactoring to make that clean.
+      # Ideally we would pass the parsed GRI to the parser instead of reparsing,
+      # but this library would need some refactoring to make that clean.
       collection = GRI.FromString(
           resource_id, collection=collection, validate=validate).collection
 

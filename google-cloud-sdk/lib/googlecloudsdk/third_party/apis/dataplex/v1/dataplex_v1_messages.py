@@ -933,19 +933,27 @@ class GoogleCloudDataplexV1ActionIncompatibleDataSchema(_messages.Message):
       types.
     newSchema: The new and incompatible schema within the table. The schema is
       provided as a JSON formatted structured listing columns and data types.
+    sampledDataLocations: The list of data locations sampled and used for
+      format/schema inference.
     table: The name of the table containing invalid data.
   """
 
   existingSchema = _messages.StringField(1)
   newSchema = _messages.StringField(2)
-  table = _messages.StringField(3)
+  sampledDataLocations = _messages.StringField(3, repeated=True)
+  table = _messages.StringField(4)
 
 
 class GoogleCloudDataplexV1ActionInvalidDataFormat(_messages.Message):
   r"""Action details for invalid or unsupported data files detected by
   discovery.
+
+  Fields:
+    sampledDataLocations: The list of data locations sampled and used for
+      format/schema inference.
   """
 
+  sampledDataLocations = _messages.StringField(1, repeated=True)
 
 
 class GoogleCloudDataplexV1ActionInvalidDataOrganization(_messages.Message):
@@ -1233,8 +1241,9 @@ class GoogleCloudDataplexV1AssetDiscoveryStatus(_messages.Message):
       STATE_UNSPECIFIED: State is unspecified.
       SCHEDULED: Discovery for the asset is scheduled.
       IN_PROGRESS: Discovery for the asset is running.
-      PAUSED: Discovery for the asset is paused and has actions to be resolved
-        before it can be resumed.
+      PAUSED: User-provided discovery schedule is temporarily ineffective, and
+        discovery runs on an alternative schedule when there is any pending
+        discovery action.
       ERROR: Discovery for the asset has errors.
       DISABLED: Discovery for the asset is disabled.
       PROCESSING_DATA: Discovery for the asset is processing all the data in

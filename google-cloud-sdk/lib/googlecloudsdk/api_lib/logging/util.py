@@ -358,7 +358,6 @@ def PrintPermissionInstructions(destination, writer_identity):
   else:
     grantee = 'the group `cloud-logs@google.com`'
 
-  # TODO(b/31449674): if ladder needs test coverage
   if destination.startswith('bigquery'):
     sdk_log.status.Print('Please remember to grant {0} the BigQuery Data '
                          'Editor role on the dataset.'.format(grantee))

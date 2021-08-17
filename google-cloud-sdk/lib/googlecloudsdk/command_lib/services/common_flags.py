@@ -24,6 +24,7 @@ from googlecloudsdk.api_lib.services import services_util
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope.concepts import concepts
+from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.command_lib.util import completers
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.command_lib.util.concepts import presentation_specs
@@ -93,18 +94,30 @@ def available_service_flag(suffix='to act on', flag_name='service'):
       help='The name of the service(s) {0}.'.format(suffix))
 
 
-def _create_key_resource_arg(help_txt):
+def _create_key_resource_arg(help_txt, api_version):
   return presentation_specs.ResourcePresentationSpec(
-      'key', _get_key_resource_spec(), help_txt, required=True)
+      'key', _get_key_resource_spec(api_version), help_txt, required=True)
 
 
-def _get_key_resource_spec():
+def _get_key_resource_spec(api_version):
   """Return the resource specification for a key."""
-  return concepts.ResourceSpec(
-      'apikeys.projects.keys',
-      resource_name='key',
-      keysId=_key_attribute_config(),
-      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
+  if api_version == 'v2':
+    return concepts.ResourceSpec(
+        'apikeys.projects.locations.keys',
+        api_version=api_version,
+        resource_name='key',
+        disable_auto_completers=True,
+        keysId=_key_attribute_config(),
+        locationsId=_location_attribute_config(),
+        projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
+  else:
+    return concepts.ResourceSpec(
+        'apikeys.projects.keys',
+        api_version=api_version,
+        resource_name='key',
+        disable_auto_completers=True,
+        keysId=_key_attribute_config(),
+        projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
 
 
 def _key_attribute_config():
@@ -112,10 +125,24 @@ def _key_attribute_config():
       name='key', help_text='Id of the key')
 
 
-def key_flag(parser, suffix='to act on'):
+def _location_attribute_config():
+  return concepts.ResourceParameterAttributeConfig(
+      name='location',
+      help_text='Location of the key.',
+      fallthroughs=[
+          deps.Fallthrough(
+              function=lambda: 'global',
+              hint='location will default to {}'.format('global'),
+              active=True,
+              plural=False)
+      ])
+
+
+def key_flag(parser, suffix='to act on', api_version='v2alpha1'):
   return concept_parsers.ConceptParser([
       _create_key_resource_arg(
-          help_txt='The name of the key {0}.'.format(suffix))
+          help_txt='The name of the key {0}.'.format(suffix),
+          api_version=api_version)
   ]).AddToParser(parser)
 
 
@@ -163,8 +190,7 @@ def _allowed_referrers_arg(parser):
       type=arg_parsers.ArgList(),
       metavar='ALLOWED_REFERRERS',
       help='A list of regular expressions for the referrer URLs that are '
-           'allowed to make API calls with this key.'
-  ).AddToParser(parser)
+      'allowed to make API calls with this key.').AddToParser(parser)
 
 
 def _allowed_ips_arg(parser):
@@ -174,8 +200,7 @@ def _allowed_ips_arg(parser):
       type=arg_parsers.ArgList(),
       metavar='ALLOWED_IPS',
       help='A list of the caller IP addresses that are allowed to make API '
-           'calls with this key.'
-  ).AddToParser(parser)
+      'calls with this key.').AddToParser(parser)
 
 
 def _allowed_bundle_ids(parser):

@@ -81,7 +81,7 @@ class RegistrationsClient(object):
       validate_only: If set to true, performs only validation, without creating.
 
     Returns:
-      Operation: the long running operation to regsiter a domain.
+      Operation: the long running operation to register a domain.
     """
     domain_notices = []
     if hsts_notice_accepted:
@@ -110,6 +110,62 @@ class RegistrationsClient(object):
             validateOnly=validate_only))
 
     return self._service.Register(req)
+
+  def Transfer(self,
+               parent_ref,
+               domain,
+               dns_settings,
+               contact_settings,
+               authorization_code,
+               yearly_price,
+               labels=None,
+               public_privacy_accepted=False,
+               validate_only=False):
+    """Transfers a domain and creates a new Registration.
+
+    Args:
+      parent_ref: a Resource reference to a domains.projects.locations resource
+        for the parent of this registration.
+      domain: str, the name of the domain to transfer. Used as resource name.
+      dns_settings: DnsSettings to be used.
+      contact_settings: ContactSettings to be used.
+      authorization_code: The authorization code needed to transfer the domain.
+      yearly_price: price for the domain transfer and its cost for the following
+        years.
+      labels: Unified GCP Labels for the resource.
+      public_privacy_accepted: bool, Whether public privacy notice was presented
+        & accepted.
+      validate_only: If set to true, performs only validation, without
+        transferring.
+
+    Returns:
+      Operation: the long running operation to transfer a domain.
+    """
+    contact_notices = []
+    if public_privacy_accepted:
+      contact_notices = [
+          self.messages.TransferDomainRequest
+          .ContactNoticesValueListEntryValuesEnum
+          .PUBLIC_CONTACT_DATA_ACKNOWLEDGEMENT
+      ]
+
+    registration = self.messages.Registration(
+        domainName=domain,
+        dnsSettings=dns_settings,
+        contactSettings=contact_settings,
+        labels=labels)
+
+    req = self.messages.DomainsProjectsLocationsRegistrationsTransferRequest(
+        parent=parent_ref.RelativeName(),
+        transferDomainRequest=self.messages.TransferDomainRequest(
+            registration=registration,
+            contactNotices=contact_notices,
+            authorizationCode=self.messages.AuthorizationCode(
+                code=authorization_code),
+            yearlyPrice=yearly_price,
+            validateOnly=validate_only))
+
+    return self._service.Transfer(req)
 
   def Export(self, registration_ref):
     req = self.messages.DomainsProjectsLocationsRegistrationsExportRequest(
@@ -337,6 +393,12 @@ class RegistrationsClient(object):
     request = self.messages.DomainsProjectsLocationsRegistrationsRetrieveRegisterParametersRequest(
         location=parent_ref.RelativeName(), domainName=domain)
     return self._service.RetrieveRegisterParameters(request).registerParameters
+
+  def RetrieveTransferParameters(self, parent_ref, domain):
+    # pylint: disable=line-too-long
+    request = self.messages.DomainsProjectsLocationsRegistrationsRetrieveTransferParametersRequest(
+        location=parent_ref.RelativeName(), domainName=domain)
+    return self._service.RetrieveTransferParameters(request).transferParameters
 
   def SearchDomains(self, parent_ref, query):
     # pylint: disable=line-too-long

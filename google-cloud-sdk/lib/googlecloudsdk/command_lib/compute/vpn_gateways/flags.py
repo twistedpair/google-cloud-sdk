@@ -22,6 +22,7 @@ from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
+from googlecloudsdk.command_lib.util.apis import arg_utils
 
 # The default output format for the list sub-command.
 DEFAULT_LIST_FORMAT = """\
@@ -132,3 +133,24 @@ def GetInterconnectAttachmentRef(resources, name, region, project):
           'project': project,
           'region': region
       })
+
+
+def GetStackType():
+  """Returns the flag for VPN gateway stack type.
+
+  Return:
+    An enum presents the stack type for the VPN gateway.
+  """
+  return base.Argument(
+      '--stack-type',
+      choices={
+          'IPV4_ONLY':
+              'Only IPv4 protocol is enabled on this vpn gateway.',
+          'IPV4_IPV6':
+              'Both IPv4 and IPv6 protocols are enabled on this vpn gateway.',
+      },
+      type=arg_utils.ChoiceToEnumName,
+      help="""\
+      The stack type of the protocol(s) enabled on this vpn gateway.
+      If not provided, `IPV4_ONLY` will be used.
+      """)

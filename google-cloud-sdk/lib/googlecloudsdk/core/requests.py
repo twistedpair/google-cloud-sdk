@@ -42,7 +42,8 @@ from urllib3.util.ssl_ import create_urllib3_context
 def GetSession(timeout='unset',
                ca_certs=None,
                session=None,
-               streaming_response_body=False):
+               streaming_response_body=False,
+               redact_request_body_reason=None):
   """Get a requests.Session that is properly configured for use by gcloud.
 
   This method does not add credentials to the client. For a requests.Session
@@ -59,6 +60,8 @@ def GetSession(timeout='unset',
     session: requests.Session instance
     streaming_response_body: bool, True indicates that the response body will
         be a streaming body.
+    redact_request_body_reason: str, the reason why the request body must be
+        redacted if --log-http is used. If None, the body is not redacted.
 
   Returns:
     A requests.Session object configured with all the required settings
@@ -66,7 +69,9 @@ def GetSession(timeout='unset',
   """
   http_client = _CreateRawSession(timeout, ca_certs, session)
   http_client = RequestWrapper().WrapWithDefaults(
-      http_client, streaming_response_body=streaming_response_body)
+      http_client,
+      streaming_response_body=streaming_response_body,
+      redact_request_body_reason=redact_request_body_reason)
   return http_client
 
 

@@ -18,9 +18,6 @@ connection_profile:
     parameter_name: connectionProfilesId
     attribute_name: connection_profile
     help: The connection profile name.
-    completion_request_params:
-    - fieldName: fieldMask
-      value: name
   disable_auto_completers: false
 
 migration_job:
@@ -33,9 +30,6 @@ migration_job:
     parameter_name: migrationJobsId
     attribute_name: migration_job
     help: The migration job name.
-    completion_request_params:
-    - fieldName: fieldMask
-      value: name
   disable_auto_completers: false
 
 operation:
@@ -48,7 +42,4 @@ operation:
     parameter_name: operationsId
     attribute_name: operation
     help: The operation name.
-    completion_request_params:
-    - fieldName: fieldMask
-      value: name
   disable_auto_completers: false

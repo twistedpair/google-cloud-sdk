@@ -33,7 +33,8 @@ def GetApitoolsTransport(timeout='unset',
                          ca_certs=None,
                          allow_account_impersonation=True,
                          use_google_auth=None,
-                         response_handler=None):
+                         response_handler=None,
+                         redact_request_body_reason=None):
   """Get an transport client for use with apitools.
 
   Args:
@@ -48,13 +49,15 @@ def GetApitoolsTransport(timeout='unset',
     ca_certs: str, absolute filename of a ca_certs file that overrides the
         default
     allow_account_impersonation: bool, True to allow use of impersonated service
-      account credentials for calls made with this client. If False, the active
-      user credentials will always be used.
+        account credentials for calls made with this client. If False, the
+        active user credentials will always be used.
     use_google_auth: bool, True if the calling command indicates to use
-      google-auth library for authentication. If False, authentication will
-      fallback to using the oauth2client library.
+        google-auth library for authentication. If False, authentication will
+        fallback to using the oauth2client library.
     response_handler: requests.ResponseHandler, handler that gets executed
-      before any other response handling.
+        before any other response handling.
+    redact_request_body_reason: str, the reason why the request body must be
+        redacted if --log-http is used. If None, the body is not redacted.
 
   Returns:
     1. A httplib2.Http-like object backed by httplib2 or requests.
@@ -79,7 +82,8 @@ def GetApitoolsTransport(timeout='unset',
         enable_resource_quota=enable_resource_quota,
         ca_certs=ca_certs,
         allow_account_impersonation=allow_account_impersonation,
-        streaming_response_body=streaming_response_body)
+        streaming_response_body=streaming_response_body,
+        redact_request_body_reason=redact_request_body_reason)
 
     return core_requests.GetApitoolsRequests(session, response_handler,
                                              response_encoding)

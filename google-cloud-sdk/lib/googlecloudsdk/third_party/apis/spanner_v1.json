@@ -776,6 +776,21 @@
           "description": "Output only. The read-write region which contains the database's leader replicas. This is the same as the value of default_leader database option set using DatabaseAdmin.CreateDatabase or DatabaseAdmin.UpdateDatabaseDdl. If not explicitly set, this is empty.",
           "readOnly": true,
           "type": "string"
+        },
+        "databaseDialect": {
+          "description": "Output only. The dialect of the Cloud Spanner Database.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Default value. This value will create a database with the GOOGLE_STANDARD_SQL dialect.",
+            "Google standard SQL.",
+            "PostgreSQL supported SQL."
+          ],
+          "enum": [
+            "DATABASE_DIALECT_UNSPECIFIED",
+            "GOOGLE_STANDARD_SQL",
+            "POSTGRESQL"
+          ]
         }
       }
     },
@@ -889,6 +904,20 @@
         "encryptionConfig": {
           "description": "Optional. The encryption configuration for the database. If this field is not specified, Cloud Spanner will encrypt\/decrypt all data at rest using Google default encryption.",
           "$ref": "EncryptionConfig"
+        },
+        "databaseDialect": {
+          "description": "Optional. The dialect of the Cloud Spanner Database.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value. This value will create a database with the GOOGLE_STANDARD_SQL dialect.",
+            "Google standard SQL.",
+            "PostgreSQL supported SQL."
+          ],
+          "enum": [
+            "DATABASE_DIALECT_UNSPECIFIED",
+            "GOOGLE_STANDARD_SQL",
+            "POSTGRESQL"
+          ]
         }
       }
     },

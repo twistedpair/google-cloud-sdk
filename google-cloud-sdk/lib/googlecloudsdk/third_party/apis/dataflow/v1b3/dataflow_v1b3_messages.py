@@ -203,7 +203,7 @@ class BigQueryIODetails(_messages.Message):
 
 
 class BigTableIODetails(_messages.Message):
-  r"""Metadata for a Cloud BigTable connector used by the job.
+  r"""Metadata for a Cloud Bigtable connector used by the job.
 
   Fields:
     instanceId: InstanceId accessed in the connection.
@@ -3305,14 +3305,15 @@ class JobMetadata(_messages.Message):
   ListJob response and Job SUMMARY view.
 
   Fields:
-    bigTableDetails: Identification of a Cloud BigTable source used in the
+    bigTableDetails: Identification of a Cloud Bigtable source used in the
       Dataflow job.
     bigqueryDetails: Identification of a BigQuery source used in the Dataflow
       job.
     datastoreDetails: Identification of a Datastore source used in the
       Dataflow job.
     fileDetails: Identification of a File source used in the Dataflow job.
-    pubsubDetails: Identification of a PubSub source used in the Dataflow job.
+    pubsubDetails: Identification of a Pub/Sub source used in the Dataflow
+      job.
     sdkVersion: The SDK version used to run the job.
     spannerDetails: Identification of a Spanner source used in the Dataflow
       job.
@@ -4722,7 +4723,8 @@ class RuntimeEnvironment(_messages.Message):
       value pairs. Example: { "name": "wrench", "mass": "1kg", "count": "3" }.
 
   Fields:
-    additionalExperiments: Additional experiment flags for the job.
+    additionalExperiments: Additional experiment flags for the job, specified
+      with the `--experiments` option.
     additionalUserLabels: Additional user labels to be specified for the job.
       Keys and values should follow the restrictions specified in the
       [labeling restrictions](https://cloud.google.com/compute/docs/labeling-
@@ -5167,7 +5169,7 @@ class Snapshot(_messages.Message):
       snapshots in READY state.
     id: The unique ID of this snapshot.
     projectId: The project this snapshot belongs to.
-    pubsubMetadata: PubSub snapshot metadata.
+    pubsubMetadata: Pub/Sub snapshot metadata.
     region: Cloud region where this snapshot lives in, e.g., "us-central1".
     sourceJobId: The job this snapshot was created from.
     state: State of the snapshot.

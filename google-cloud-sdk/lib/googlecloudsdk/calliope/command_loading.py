@@ -243,7 +243,6 @@ def CreateYamlLoader(impl_path):
   Returns:
     yaml.Loader, A yaml loader to use.
   """
-  # TODO(b/64147277) Allow for importing from other places.
   common_file_path = os.path.join(os.path.dirname(impl_path), '__init__.yaml')
   common_data = None
   try:

@@ -269,7 +269,8 @@ class UpdateManager(object):
     # pylint: disable=protected-access
     manager._PerformUpdateCheck(command_path, force=force)
 
-  def __init__(self, sdk_root=None, url=None, platform_filter=None, warn=True):
+  def __init__(self, sdk_root=None, url=None, platform_filter=None, warn=True,
+               skip_compile_python=False):
     """Creates a new UpdateManager.
 
     Args:
@@ -286,6 +287,8 @@ class UpdateManager(object):
         to False when using this class for background operations like checking
         for updates so the user only sees the warnings when they are actually
         dealing directly with the component manager.
+      skip_compile_python: bool, if True the UpdateManager will not pre compile
+      installed python files.
 
     Raises:
       local_state.InvalidSDKRootError: If the Cloud SDK root cannot be found.
@@ -322,6 +325,7 @@ class UpdateManager(object):
 
     fixed_version = properties.VALUES.component_manager.fixed_sdk_version.Get()
     self.__fixed_version = fixed_version
+    self.__skip_compile_python = skip_compile_python
 
   def _EnableFallback(self):
     # pylint: disable=line-too-long
@@ -1536,8 +1540,9 @@ prompt, or run:
       if snapshot.sdk_definition.gcloud_rel_path:
         gcloud_path = os.path.join(self.__sdk_root,
                                    snapshot.sdk_definition.gcloud_rel_path)
-
     command = command or ['components', 'post-process']
+    if self.__skip_compile_python:
+      command.append('--no-compile-python')
     gcloud_path = gcloud_path or config.GcloudPath()
 
     args = execution_utils.ArgsForPythonTool(gcloud_path, *command)

@@ -180,7 +180,6 @@ def _GetField(message, field_name):
     raise UnknownFieldError(field_name, message)
 
 
-# TODO(b/64147277): Pass this down from the generator, don't hard code.
 DEFAULT_PARAMS = {'project': properties.VALUES.core.project.Get,
                   'projectId': properties.VALUES.core.project.Get,
                   'projectsId': properties.VALUES.core.project.Get,

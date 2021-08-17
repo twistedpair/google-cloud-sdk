@@ -22,6 +22,8 @@ MAX_LRO_POLL_INTERVAL_MS = 10000
 
 LRO_KIND = 'Operation'
 
+AZURE_CLIENT_KIND = 'Azure Client'
+
 AZURE_CLUSTER_KIND = 'Azure Cluster'
 
 AZURE_NODEPOOL_KIND = 'Azure Node Pool'

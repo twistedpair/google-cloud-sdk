@@ -780,6 +780,11 @@ class NodeConfig(_messages.Message):
       is 20GB. If unspecified, defaults to 100GB. Cannot be updated. This
       field is supported for Cloud Composer environments in versions
       composer-1.*.*-airflow-*.*.*.
+    enableIpMasqAgent: Optional. Deploys 'ip-masq-agent' daemon set in the GKE
+      cluster and defines nonMasqueradeCIDRs equals to pod IP range so IP
+      masquerading is used for all destination addresses, except between pods
+      traffic. See: https://cloud.google.com/kubernetes-engine/docs/how-to/ip-
+      masquerade-agent
     ipAllocationPolicy: Optional. The IPAllocationPolicy fields for the GKE
       cluster.
     location: Optional. The Compute Engine [zone](/compute/docs/regions-zones)
@@ -857,15 +862,16 @@ class NodeConfig(_messages.Message):
   """
 
   diskSizeGb = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  ipAllocationPolicy = _messages.MessageField('IPAllocationPolicy', 2)
-  location = _messages.StringField(3)
-  machineType = _messages.StringField(4)
-  maxPodsPerNode = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  network = _messages.StringField(6)
-  oauthScopes = _messages.StringField(7, repeated=True)
-  serviceAccount = _messages.StringField(8)
-  subnetwork = _messages.StringField(9)
-  tags = _messages.StringField(10, repeated=True)
+  enableIpMasqAgent = _messages.BooleanField(2)
+  ipAllocationPolicy = _messages.MessageField('IPAllocationPolicy', 3)
+  location = _messages.StringField(4)
+  machineType = _messages.StringField(5)
+  maxPodsPerNode = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  network = _messages.StringField(7)
+  oauthScopes = _messages.StringField(8, repeated=True)
+  serviceAccount = _messages.StringField(9)
+  subnetwork = _messages.StringField(10)
+  tags = _messages.StringField(11, repeated=True)
 
 
 class Operation(_messages.Message):
@@ -1080,6 +1086,10 @@ class PrivateEnvironmentConfig(_messages.Message):
       environment is created. If this field is set to true,
       `IPAllocationPolicy.use_ip_aliases` must be set to true for Cloud
       Composer environments in versions composer-1.*.*-airflow-*.*.*.
+    enablePrivatelyUsedPublicIps: Optional. When enabled, IPs from public
+      (non-RFC1918) ranges can be used for
+      `IPAllocationPolicy.cluster_ipv4_cidr_block` and
+      `IPAllocationPolicy.service_ipv4_cidr_block`.
     privateClusterConfig: Optional. Configuration for the private GKE cluster
       for a Private IP Cloud Composer environment.
     webServerIpv4CidrBlock: Optional. The CIDR block from which IP range for
@@ -1096,9 +1106,10 @@ class PrivateEnvironmentConfig(_messages.Message):
   cloudComposerNetworkIpv4ReservedRange = _messages.StringField(2)
   cloudSqlIpv4CidrBlock = _messages.StringField(3)
   enablePrivateEnvironment = _messages.BooleanField(4)
-  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 5)
-  webServerIpv4CidrBlock = _messages.StringField(6)
-  webServerIpv4ReservedRange = _messages.StringField(7)
+  enablePrivatelyUsedPublicIps = _messages.BooleanField(5)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 6)
+  webServerIpv4CidrBlock = _messages.StringField(7)
+  webServerIpv4ReservedRange = _messages.StringField(8)
 
 
 class RestartWebServerRequest(_messages.Message):

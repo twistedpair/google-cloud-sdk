@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-
-# Copyright 2021 Google LLC
+# Copyright 2020 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,12 +13,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
 import proto  # type: ignore
 
-
-from google.protobuf import field_mask_pb2 as field_mask  # type: ignore
-from google.protobuf import timestamp_pb2 as timestamp  # type: ignore
+from google.protobuf import field_mask_pb2  # type: ignore
+from google.protobuf import timestamp_pb2  # type: ignore
 
 
 __protobuf__ = proto.module(
@@ -72,7 +69,6 @@ class LifecycleState(proto.Enum):
 
 class LogBucket(proto.Message):
     r"""Describes a repository of logs.
-
     Attributes:
         name (str):
             Output only. The resource name of the bucket. For example:
@@ -109,30 +105,41 @@ class LogBucket(proto.Message):
             Output only. The bucket lifecycle state.
     """
 
-    name = proto.Field(proto.STRING, number=1)
-
-    description = proto.Field(proto.STRING, number=3)
-
-    create_time = proto.Field(proto.MESSAGE, number=4,
-        message=timestamp.Timestamp,
+    name = proto.Field(
+        proto.STRING,
+        number=1,
     )
-
-    update_time = proto.Field(proto.MESSAGE, number=5,
-        message=timestamp.Timestamp,
+    description = proto.Field(
+        proto.STRING,
+        number=3,
     )
-
-    retention_days = proto.Field(proto.INT32, number=11)
-
-    locked = proto.Field(proto.BOOL, number=9)
-
-    lifecycle_state = proto.Field(proto.ENUM, number=12,
+    create_time = proto.Field(
+        proto.MESSAGE,
+        number=4,
+        message=timestamp_pb2.Timestamp,
+    )
+    update_time = proto.Field(
+        proto.MESSAGE,
+        number=5,
+        message=timestamp_pb2.Timestamp,
+    )
+    retention_days = proto.Field(
+        proto.INT32,
+        number=11,
+    )
+    locked = proto.Field(
+        proto.BOOL,
+        number=9,
+    )
+    lifecycle_state = proto.Field(
+        proto.ENUM,
+        number=12,
         enum='LifecycleState',
     )
 
 
 class LogView(proto.Message):
     r"""Describes a view over logs in a bucket.
-
     Attributes:
         name (str):
             The resource name of the view.
@@ -156,19 +163,28 @@ class LogView(proto.Message):
             resource.type = "gce_instance" AND LOG_ID("stdout")
     """
 
-    name = proto.Field(proto.STRING, number=1)
-
-    description = proto.Field(proto.STRING, number=3)
-
-    create_time = proto.Field(proto.MESSAGE, number=4,
-        message=timestamp.Timestamp,
+    name = proto.Field(
+        proto.STRING,
+        number=1,
     )
-
-    update_time = proto.Field(proto.MESSAGE, number=5,
-        message=timestamp.Timestamp,
+    description = proto.Field(
+        proto.STRING,
+        number=3,
     )
-
-    filter = proto.Field(proto.STRING, number=7)
+    create_time = proto.Field(
+        proto.MESSAGE,
+        number=4,
+        message=timestamp_pb2.Timestamp,
+    )
+    update_time = proto.Field(
+        proto.MESSAGE,
+        number=5,
+        message=timestamp_pb2.Timestamp,
+    )
+    filter = proto.Field(
+        proto.STRING,
+        number=7,
+    )
 
 
 class LogSink(proto.Message):
@@ -278,38 +294,59 @@ class LogSink(proto.Message):
         V2 = 1
         V1 = 2
 
-    name = proto.Field(proto.STRING, number=1)
-
-    destination = proto.Field(proto.STRING, number=3)
-
-    filter = proto.Field(proto.STRING, number=5)
-
-    description = proto.Field(proto.STRING, number=18)
-
-    disabled = proto.Field(proto.BOOL, number=19)
-
-    exclusions = proto.RepeatedField(proto.MESSAGE, number=16,
+    name = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+    destination = proto.Field(
+        proto.STRING,
+        number=3,
+    )
+    filter = proto.Field(
+        proto.STRING,
+        number=5,
+    )
+    description = proto.Field(
+        proto.STRING,
+        number=18,
+    )
+    disabled = proto.Field(
+        proto.BOOL,
+        number=19,
+    )
+    exclusions = proto.RepeatedField(
+        proto.MESSAGE,
+        number=16,
         message='LogExclusion',
     )
-
-    output_version_format = proto.Field(proto.ENUM, number=6,
+    output_version_format = proto.Field(
+        proto.ENUM,
+        number=6,
         enum=VersionFormat,
     )
-
-    writer_identity = proto.Field(proto.STRING, number=8)
-
-    include_children = proto.Field(proto.BOOL, number=9)
-
-    bigquery_options = proto.Field(proto.MESSAGE, number=12, oneof='options',
+    writer_identity = proto.Field(
+        proto.STRING,
+        number=8,
+    )
+    include_children = proto.Field(
+        proto.BOOL,
+        number=9,
+    )
+    bigquery_options = proto.Field(
+        proto.MESSAGE,
+        number=12,
+        oneof='options',
         message='BigQueryOptions',
     )
-
-    create_time = proto.Field(proto.MESSAGE, number=13,
-        message=timestamp.Timestamp,
+    create_time = proto.Field(
+        proto.MESSAGE,
+        number=13,
+        message=timestamp_pb2.Timestamp,
     )
-
-    update_time = proto.Field(proto.MESSAGE, number=14,
-        message=timestamp.Timestamp,
+    update_time = proto.Field(
+        proto.MESSAGE,
+        number=14,
+        message=timestamp_pb2.Timestamp,
     )
 
 
@@ -338,14 +375,18 @@ class BigQueryOptions(proto.Message):
             will have this field set to false.
     """
 
-    use_partitioned_tables = proto.Field(proto.BOOL, number=1)
-
-    uses_timestamp_column_partitioning = proto.Field(proto.BOOL, number=3)
+    use_partitioned_tables = proto.Field(
+        proto.BOOL,
+        number=1,
+    )
+    uses_timestamp_column_partitioning = proto.Field(
+        proto.BOOL,
+        number=3,
+    )
 
 
 class ListBucketsRequest(proto.Message):
     r"""The parameters to ``ListBuckets``.
-
     Attributes:
         parent (str):
             Required. The parent resource whose buckets are to be
@@ -374,16 +415,22 @@ class ListBucketsRequest(proto.Message):
             results might be available.
     """
 
-    parent = proto.Field(proto.STRING, number=1)
-
-    page_token = proto.Field(proto.STRING, number=2)
-
-    page_size = proto.Field(proto.INT32, number=3)
+    parent = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+    page_token = proto.Field(
+        proto.STRING,
+        number=2,
+    )
+    page_size = proto.Field(
+        proto.INT32,
+        number=3,
+    )
 
 
 class ListBucketsResponse(proto.Message):
     r"""The response from ListBuckets.
-
     Attributes:
         buckets (Sequence[googlecloudsdk.third_party.gapic_clients.logging_v2.types.LogBucket]):
             A list of buckets.
@@ -398,16 +445,19 @@ class ListBucketsResponse(proto.Message):
     def raw_page(self):
         return self
 
-    buckets = proto.RepeatedField(proto.MESSAGE, number=1,
+    buckets = proto.RepeatedField(
+        proto.MESSAGE,
+        number=1,
         message='LogBucket',
     )
-
-    next_page_token = proto.Field(proto.STRING, number=2)
+    next_page_token = proto.Field(
+        proto.STRING,
+        number=2,
+    )
 
 
 class CreateBucketRequest(proto.Message):
     r"""The parameters to ``CreateBucket``.
-
     Attributes:
         parent (str):
             Required. The resource in which to create the bucket:
@@ -429,18 +479,23 @@ class CreateBucketRequest(proto.Message):
             name field in the bucket is ignored.
     """
 
-    parent = proto.Field(proto.STRING, number=1)
-
-    bucket_id = proto.Field(proto.STRING, number=2)
-
-    bucket = proto.Field(proto.MESSAGE, number=3,
+    parent = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+    bucket_id = proto.Field(
+        proto.STRING,
+        number=2,
+    )
+    bucket = proto.Field(
+        proto.MESSAGE,
+        number=3,
         message='LogBucket',
     )
 
 
 class UpdateBucketRequest(proto.Message):
     r"""The parameters to ``UpdateBucket``.
-
     Attributes:
         name (str):
             Required. The full resource name of the bucket to update.
@@ -471,20 +526,24 @@ class UpdateBucketRequest(proto.Message):
             Example: ``updateMask=retention_days``.
     """
 
-    name = proto.Field(proto.STRING, number=1)
-
-    bucket = proto.Field(proto.MESSAGE, number=2,
+    name = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+    bucket = proto.Field(
+        proto.MESSAGE,
+        number=2,
         message='LogBucket',
     )
-
-    update_mask = proto.Field(proto.MESSAGE, number=4,
-        message=field_mask.FieldMask,
+    update_mask = proto.Field(
+        proto.MESSAGE,
+        number=4,
+        message=field_mask_pb2.FieldMask,
     )
 
 
 class GetBucketRequest(proto.Message):
     r"""The parameters to ``GetBucket``.
-
     Attributes:
         name (str):
             Required. The resource name of the bucket:
@@ -500,12 +559,14 @@ class GetBucketRequest(proto.Message):
             ``"projects/my-project-id/locations/my-location/buckets/my-bucket-id"``.
     """
 
-    name = proto.Field(proto.STRING, number=1)
+    name = proto.Field(
+        proto.STRING,
+        number=1,
+    )
 
 
 class DeleteBucketRequest(proto.Message):
     r"""The parameters to ``DeleteBucket``.
-
     Attributes:
         name (str):
             Required. The full resource name of the bucket to delete.
@@ -521,12 +582,14 @@ class DeleteBucketRequest(proto.Message):
             ``"projects/my-project-id/locations/my-location/buckets/my-bucket-id"``.
     """
 
-    name = proto.Field(proto.STRING, number=1)
+    name = proto.Field(
+        proto.STRING,
+        number=1,
+    )
 
 
 class UndeleteBucketRequest(proto.Message):
     r"""The parameters to ``UndeleteBucket``.
-
     Attributes:
         name (str):
             Required. The full resource name of the bucket to undelete.
@@ -542,12 +605,14 @@ class UndeleteBucketRequest(proto.Message):
             ``"projects/my-project-id/locations/my-location/buckets/my-bucket-id"``.
     """
 
-    name = proto.Field(proto.STRING, number=1)
+    name = proto.Field(
+        proto.STRING,
+        number=1,
+    )
 
 
 class ListViewsRequest(proto.Message):
     r"""The parameters to ``ListViews``.
-
     Attributes:
         parent (str):
             Required. The bucket whose views are to be listed:
@@ -568,16 +633,22 @@ class ListViewsRequest(proto.Message):
             results might be available.
     """
 
-    parent = proto.Field(proto.STRING, number=1)
-
-    page_token = proto.Field(proto.STRING, number=2)
-
-    page_size = proto.Field(proto.INT32, number=3)
+    parent = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+    page_token = proto.Field(
+        proto.STRING,
+        number=2,
+    )
+    page_size = proto.Field(
+        proto.INT32,
+        number=3,
+    )
 
 
 class ListViewsResponse(proto.Message):
     r"""The response from ListViews.
-
     Attributes:
         views (Sequence[googlecloudsdk.third_party.gapic_clients.logging_v2.types.LogView]):
             A list of views.
@@ -592,16 +663,19 @@ class ListViewsResponse(proto.Message):
     def raw_page(self):
         return self
 
-    views = proto.RepeatedField(proto.MESSAGE, number=1,
+    views = proto.RepeatedField(
+        proto.MESSAGE,
+        number=1,
         message='LogView',
     )
-
-    next_page_token = proto.Field(proto.STRING, number=2)
+    next_page_token = proto.Field(
+        proto.STRING,
+        number=2,
+    )
 
 
 class CreateViewRequest(proto.Message):
     r"""The parameters to ``CreateView``.
-
     Attributes:
         parent (str):
             Required. The bucket in which to create the view
@@ -618,18 +692,23 @@ class CreateViewRequest(proto.Message):
             Required. The new view.
     """
 
-    parent = proto.Field(proto.STRING, number=1)
-
-    view_id = proto.Field(proto.STRING, number=2)
-
-    view = proto.Field(proto.MESSAGE, number=3,
+    parent = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+    view_id = proto.Field(
+        proto.STRING,
+        number=2,
+    )
+    view = proto.Field(
+        proto.MESSAGE,
+        number=3,
         message='LogView',
     )
 
 
 class UpdateViewRequest(proto.Message):
     r"""The parameters to ``UpdateView``.
-
     Attributes:
         name (str):
             Required. The full resource name of the view to update
@@ -654,20 +733,24 @@ class UpdateViewRequest(proto.Message):
             Example: ``updateMask=filter``.
     """
 
-    name = proto.Field(proto.STRING, number=1)
-
-    view = proto.Field(proto.MESSAGE, number=2,
+    name = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+    view = proto.Field(
+        proto.MESSAGE,
+        number=2,
         message='LogView',
     )
-
-    update_mask = proto.Field(proto.MESSAGE, number=4,
-        message=field_mask.FieldMask,
+    update_mask = proto.Field(
+        proto.MESSAGE,
+        number=4,
+        message=field_mask_pb2.FieldMask,
     )
 
 
 class GetViewRequest(proto.Message):
     r"""The parameters to ``GetView``.
-
     Attributes:
         name (str):
             Required. The resource name of the policy:
@@ -680,12 +763,14 @@ class GetViewRequest(proto.Message):
             ``"projects/my-project-id/locations/my-location/buckets/my-bucket-id/views/my-view-id"``.
     """
 
-    name = proto.Field(proto.STRING, number=1)
+    name = proto.Field(
+        proto.STRING,
+        number=1,
+    )
 
 
 class DeleteViewRequest(proto.Message):
     r"""The parameters to ``DeleteView``.
-
     Attributes:
         name (str):
             Required. The full resource name of the view to delete:
@@ -698,12 +783,14 @@ class DeleteViewRequest(proto.Message):
             ``"projects/my-project-id/locations/my-location/buckets/my-bucket-id/views/my-view-id"``.
     """
 
-    name = proto.Field(proto.STRING, number=1)
+    name = proto.Field(
+        proto.STRING,
+        number=1,
+    )
 
 
 class ListSinksRequest(proto.Message):
     r"""The parameters to ``ListSinks``.
-
     Attributes:
         parent (str):
             Required. The parent resource whose sinks are to be listed:
@@ -727,16 +814,22 @@ class ListSinksRequest(proto.Message):
             results might be available.
     """
 
-    parent = proto.Field(proto.STRING, number=1)
-
-    page_token = proto.Field(proto.STRING, number=2)
-
-    page_size = proto.Field(proto.INT32, number=3)
+    parent = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+    page_token = proto.Field(
+        proto.STRING,
+        number=2,
+    )
+    page_size = proto.Field(
+        proto.INT32,
+        number=3,
+    )
 
 
 class ListSinksResponse(proto.Message):
     r"""Result returned from ``ListSinks``.
-
     Attributes:
         sinks (Sequence[googlecloudsdk.third_party.gapic_clients.logging_v2.types.LogSink]):
             A list of sinks.
@@ -751,16 +844,19 @@ class ListSinksResponse(proto.Message):
     def raw_page(self):
         return self
 
-    sinks = proto.RepeatedField(proto.MESSAGE, number=1,
+    sinks = proto.RepeatedField(
+        proto.MESSAGE,
+        number=1,
         message='LogSink',
     )
-
-    next_page_token = proto.Field(proto.STRING, number=2)
+    next_page_token = proto.Field(
+        proto.STRING,
+        number=2,
+    )
 
 
 class GetSinkRequest(proto.Message):
     r"""The parameters to ``GetSink``.
-
     Attributes:
         sink_name (str):
             Required. The resource name of the sink:
@@ -775,12 +871,14 @@ class GetSinkRequest(proto.Message):
             Example: ``"projects/my-project-id/sinks/my-sink-id"``.
     """
 
-    sink_name = proto.Field(proto.STRING, number=1)
+    sink_name = proto.Field(
+        proto.STRING,
+        number=1,
+    )
 
 
 class CreateSinkRequest(proto.Message):
     r"""The parameters to ``CreateSink``.
-
     Attributes:
         parent (str):
             Required. The resource in which to create the sink:
@@ -814,18 +912,23 @@ class CreateSinkRequest(proto.Message):
             [LogSink][google.logging.v2.LogSink].
     """
 
-    parent = proto.Field(proto.STRING, number=1)
-
-    sink = proto.Field(proto.MESSAGE, number=2,
+    parent = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+    sink = proto.Field(
+        proto.MESSAGE,
+        number=2,
         message='LogSink',
     )
-
-    unique_writer_identity = proto.Field(proto.BOOL, number=3)
+    unique_writer_identity = proto.Field(
+        proto.BOOL,
+        number=3,
+    )
 
 
 class UpdateSinkRequest(proto.Message):
     r"""The parameters to ``UpdateSink``.
-
     Attributes:
         sink_name (str):
             Required. The full resource name of the sink to update,
@@ -876,22 +979,28 @@ class UpdateSinkRequest(proto.Message):
             Example: ``updateMask=filter``.
     """
 
-    sink_name = proto.Field(proto.STRING, number=1)
-
-    sink = proto.Field(proto.MESSAGE, number=2,
+    sink_name = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+    sink = proto.Field(
+        proto.MESSAGE,
+        number=2,
         message='LogSink',
     )
-
-    unique_writer_identity = proto.Field(proto.BOOL, number=3)
-
-    update_mask = proto.Field(proto.MESSAGE, number=4,
-        message=field_mask.FieldMask,
+    unique_writer_identity = proto.Field(
+        proto.BOOL,
+        number=3,
+    )
+    update_mask = proto.Field(
+        proto.MESSAGE,
+        number=4,
+        message=field_mask_pb2.FieldMask,
     )
 
 
 class DeleteSinkRequest(proto.Message):
     r"""The parameters to ``DeleteSink``.
-
     Attributes:
         sink_name (str):
             Required. The full resource name of the sink to delete,
@@ -907,7 +1016,10 @@ class DeleteSinkRequest(proto.Message):
             Example: ``"projects/my-project-id/sinks/my-sink-id"``.
     """
 
-    sink_name = proto.Field(proto.STRING, number=1)
+    sink_name = proto.Field(
+        proto.STRING,
+        number=1,
+    )
 
 
 class LogExclusion(proto.Message):
@@ -956,26 +1068,36 @@ class LogExclusion(proto.Message):
             exclusions.
     """
 
-    name = proto.Field(proto.STRING, number=1)
-
-    description = proto.Field(proto.STRING, number=2)
-
-    filter = proto.Field(proto.STRING, number=3)
-
-    disabled = proto.Field(proto.BOOL, number=4)
-
-    create_time = proto.Field(proto.MESSAGE, number=5,
-        message=timestamp.Timestamp,
+    name = proto.Field(
+        proto.STRING,
+        number=1,
     )
-
-    update_time = proto.Field(proto.MESSAGE, number=6,
-        message=timestamp.Timestamp,
+    description = proto.Field(
+        proto.STRING,
+        number=2,
+    )
+    filter = proto.Field(
+        proto.STRING,
+        number=3,
+    )
+    disabled = proto.Field(
+        proto.BOOL,
+        number=4,
+    )
+    create_time = proto.Field(
+        proto.MESSAGE,
+        number=5,
+        message=timestamp_pb2.Timestamp,
+    )
+    update_time = proto.Field(
+        proto.MESSAGE,
+        number=6,
+        message=timestamp_pb2.Timestamp,
     )
 
 
 class ListExclusionsRequest(proto.Message):
     r"""The parameters to ``ListExclusions``.
-
     Attributes:
         parent (str):
             Required. The parent resource whose exclusions are to be
@@ -1000,16 +1122,22 @@ class ListExclusionsRequest(proto.Message):
             results might be available.
     """
 
-    parent = proto.Field(proto.STRING, number=1)
-
-    page_token = proto.Field(proto.STRING, number=2)
-
-    page_size = proto.Field(proto.INT32, number=3)
+    parent = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+    page_token = proto.Field(
+        proto.STRING,
+        number=2,
+    )
+    page_size = proto.Field(
+        proto.INT32,
+        number=3,
+    )
 
 
 class ListExclusionsResponse(proto.Message):
     r"""Result returned from ``ListExclusions``.
-
     Attributes:
         exclusions (Sequence[googlecloudsdk.third_party.gapic_clients.logging_v2.types.LogExclusion]):
             A list of exclusions.
@@ -1024,16 +1152,19 @@ class ListExclusionsResponse(proto.Message):
     def raw_page(self):
         return self
 
-    exclusions = proto.RepeatedField(proto.MESSAGE, number=1,
+    exclusions = proto.RepeatedField(
+        proto.MESSAGE,
+        number=1,
         message='LogExclusion',
     )
-
-    next_page_token = proto.Field(proto.STRING, number=2)
+    next_page_token = proto.Field(
+        proto.STRING,
+        number=2,
+    )
 
 
 class GetExclusionRequest(proto.Message):
     r"""The parameters to ``GetExclusion``.
-
     Attributes:
         name (str):
             Required. The resource name of an existing exclusion:
@@ -1049,12 +1180,14 @@ class GetExclusionRequest(proto.Message):
             ``"projects/my-project-id/exclusions/my-exclusion-id"``.
     """
 
-    name = proto.Field(proto.STRING, number=1)
+    name = proto.Field(
+        proto.STRING,
+        number=1,
+    )
 
 
 class CreateExclusionRequest(proto.Message):
     r"""The parameters to ``CreateExclusion``.
-
     Attributes:
         parent (str):
             Required. The parent resource in which to create the
@@ -1075,16 +1208,19 @@ class CreateExclusionRequest(proto.Message):
             resource.
     """
 
-    parent = proto.Field(proto.STRING, number=1)
-
-    exclusion = proto.Field(proto.MESSAGE, number=2,
+    parent = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+    exclusion = proto.Field(
+        proto.MESSAGE,
+        number=2,
         message='LogExclusion',
     )
 
 
 class UpdateExclusionRequest(proto.Message):
     r"""The parameters to ``UpdateExclusion``.
-
     Attributes:
         name (str):
             Required. The resource name of the exclusion to update:
@@ -1114,20 +1250,24 @@ class UpdateExclusionRequest(proto.Message):
             ``"filter,description"``.
     """
 
-    name = proto.Field(proto.STRING, number=1)
-
-    exclusion = proto.Field(proto.MESSAGE, number=2,
+    name = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+    exclusion = proto.Field(
+        proto.MESSAGE,
+        number=2,
         message='LogExclusion',
     )
-
-    update_mask = proto.Field(proto.MESSAGE, number=3,
-        message=field_mask.FieldMask,
+    update_mask = proto.Field(
+        proto.MESSAGE,
+        number=3,
+        message=field_mask_pb2.FieldMask,
     )
 
 
 class DeleteExclusionRequest(proto.Message):
     r"""The parameters to ``DeleteExclusion``.
-
     Attributes:
         name (str):
             Required. The resource name of an existing exclusion to
@@ -1144,7 +1284,10 @@ class DeleteExclusionRequest(proto.Message):
             ``"projects/my-project-id/exclusions/my-exclusion-id"``.
     """
 
-    name = proto.Field(proto.STRING, number=1)
+    name = proto.Field(
+        proto.STRING,
+        number=1,
+    )
 
 
 class GetCmekSettingsRequest(proto.Message):
@@ -1173,7 +1316,10 @@ class GetCmekSettingsRequest(proto.Message):
             applies to all projects and folders in the GCP organization.
     """
 
-    name = proto.Field(proto.STRING, number=1)
+    name = proto.Field(
+        proto.STRING,
+        number=1,
+    )
 
 
 class UpdateCmekSettingsRequest(proto.Message):
@@ -1218,14 +1364,19 @@ class UpdateCmekSettingsRequest(proto.Message):
             Example: ``"updateMask=kmsKeyName"``
     """
 
-    name = proto.Field(proto.STRING, number=1)
-
-    cmek_settings = proto.Field(proto.MESSAGE, number=2,
+    name = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+    cmek_settings = proto.Field(
+        proto.MESSAGE,
+        number=2,
         message='CmekSettings',
     )
-
-    update_mask = proto.Field(proto.MESSAGE, number=3,
-        message=field_mask.FieldMask,
+    update_mask = proto.Field(
+        proto.MESSAGE,
+        number=3,
+        message=field_mask_pb2.FieldMask,
     )
 
 
@@ -1291,11 +1442,18 @@ class CmekSettings(proto.Message):
             for more information.
     """
 
-    name = proto.Field(proto.STRING, number=1)
-
-    kms_key_name = proto.Field(proto.STRING, number=2)
-
-    service_account_id = proto.Field(proto.STRING, number=3)
+    name = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+    kms_key_name = proto.Field(
+        proto.STRING,
+        number=2,
+    )
+    service_account_id = proto.Field(
+        proto.STRING,
+        number=3,
+    )
 
 
 __all__ = tuple(sorted(__protobuf__.manifest))

@@ -382,33 +382,6 @@ class ArtifactregistryV1alpha1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
-    def Import(self, request, global_params=None):
-      r"""Imports artifacts. The returned Operation will complete once the resources are imported. Package, Version, and File resources are created based on the imported artifacts. Imported artifacts that conflict with existing resources are ignored.
-
-      Args:
-        request: (ArtifactregistryProjectsLocationsRepositoriesImportRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Import')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Import.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}:import',
-        http_method='POST',
-        method_id='artifactregistry.projects.locations.repositories.import',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=[],
-        relative_path='v1alpha1/{+parent}:import',
-        request_field='googleDevtoolsArtifactregistryV1alpha1ImportArtifactsRequest',
-        request_type_name='ArtifactregistryProjectsLocationsRepositoriesImportRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""
 

@@ -3200,10 +3200,11 @@ class Backend(_messages.Message):
     BalancingModeValueValuesEnum: Specifies how to determine whether the
       backend of a load balancer can handle additional traffic or is fully
       loaded. For usage guidelines, see Connection balancing mode. Backends
-      must use compatible balancing modes. For more information, see
-      Restrictions and guidelines. Note: Currently, if you use the API to
+      must use compatible balancing modes. For more information, see Supported
+      balancing modes and target capacity settings and Restrictions and
+      guidance for instance groups. Note: Currently, if you use the API to
       configure incompatible balancing modes, the configuration might be
-      accepted even though it has no impact and will be ignored. Specifically,
+      accepted even though it has no impact and is ignored. Specifically,
       Backend.maxUtilization is ignored when Backend.balancingMode is RATE. In
       the future, this incompatible combination will be rejected.
 
@@ -3211,12 +3212,13 @@ class Backend(_messages.Message):
     balancingMode: Specifies how to determine whether the backend of a load
       balancer can handle additional traffic or is fully loaded. For usage
       guidelines, see Connection balancing mode. Backends must use compatible
-      balancing modes. For more information, see Restrictions and guidelines.
-      Note: Currently, if you use the API to configure incompatible balancing
-      modes, the configuration might be accepted even though it has no impact
-      and will be ignored. Specifically, Backend.maxUtilization is ignored
-      when Backend.balancingMode is RATE. In the future, this incompatible
-      combination will be rejected.
+      balancing modes. For more information, see Supported balancing modes and
+      target capacity settings and Restrictions and guidance for instance
+      groups. Note: Currently, if you use the API to configure incompatible
+      balancing modes, the configuration might be accepted even though it has
+      no impact and is ignored. Specifically, Backend.maxUtilization is
+      ignored when Backend.balancingMode is RATE. In the future, this
+      incompatible combination will be rejected.
     capacityScaler: A multiplier applied to the backend's target capacity of
       its balancing mode. The default value is 1, which means the group serves
       up to 100% of its configured capacity (depending on balancingMode). A
@@ -3268,9 +3270,10 @@ class Backend(_messages.Message):
     r"""Specifies how to determine whether the backend of a load balancer can
     handle additional traffic or is fully loaded. For usage guidelines, see
     Connection balancing mode. Backends must use compatible balancing modes.
-    For more information, see Restrictions and guidelines. Note: Currently, if
-    you use the API to configure incompatible balancing modes, the
-    configuration might be accepted even though it has no impact and will be
+    For more information, see Supported balancing modes and target capacity
+    settings and Restrictions and guidance for instance groups. Note:
+    Currently, if you use the API to configure incompatible balancing modes,
+    the configuration might be accepted even though it has no impact and is
     ignored. Specifically, Backend.maxUtilization is ignored when
     Backend.balancingMode is RATE. In the future, this incompatible
     combination will be rejected.
@@ -3943,6 +3946,11 @@ class BackendService(_messages.Message):
     selfLink: [Output Only] Server-defined URL for the resource.
     selfLinkWithId: [Output Only] Server-defined URL for this resource with
       the resource id.
+    serviceLbPolicy: URL to networkservices.ServiceLbPolicy resource. Can only
+      be set if load balancing scheme is EXTERNAL, INTERNAL_MANAGED or
+      INTERNAL_SELF_MANAGED. If used with a backend service, must reference a
+      global policy. If used with a regional backend service, must reference a
+      regional policy.
     sessionAffinity: Type of session affinity to use. The default is NONE. For
       a detailed description of session affinity options, see: [Session
       affinity](https://cloud.google.com/load-balancing/docs/backend-
@@ -4159,9 +4167,10 @@ class BackendService(_messages.Message):
   securitySettings = _messages.MessageField('SecuritySettings', 33)
   selfLink = _messages.StringField(34)
   selfLinkWithId = _messages.StringField(35)
-  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 36)
-  subsetting = _messages.MessageField('Subsetting', 37)
-  timeoutSec = _messages.IntegerField(38, variant=_messages.Variant.INT32)
+  serviceLbPolicy = _messages.StringField(36)
+  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 37)
+  subsetting = _messages.MessageField('Subsetting', 38)
+  timeoutSec = _messages.IntegerField(39, variant=_messages.Variant.INT32)
 
 
 class BackendServiceAggregatedList(_messages.Message):
@@ -5845,6 +5854,7 @@ class Commitment(_messages.Message):
       GENERAL_PURPOSE_E2: <no description>
       GENERAL_PURPOSE_N2: <no description>
       GENERAL_PURPOSE_N2D: <no description>
+      GENERAL_PURPOSE_T2D: <no description>
       MEMORY_OPTIMIZED: <no description>
       TYPE_UNSPECIFIED: <no description>
     """
@@ -5855,8 +5865,9 @@ class Commitment(_messages.Message):
     GENERAL_PURPOSE_E2 = 4
     GENERAL_PURPOSE_N2 = 5
     GENERAL_PURPOSE_N2D = 6
-    MEMORY_OPTIMIZED = 7
-    TYPE_UNSPECIFIED = 8
+    GENERAL_PURPOSE_T2D = 7
+    MEMORY_OPTIMIZED = 8
+    TYPE_UNSPECIFIED = 9
 
   autoRenew = _messages.BooleanField(1)
   category = _messages.EnumField('CategoryValueValuesEnum', 2)
@@ -58194,14 +58205,14 @@ class RouterBgpPeerBfd(_messages.Message):
       control packets received from the peer router. The actual value is
       negotiated between the two routers and is equal to the greater of this
       value and the transmit interval of the other router. Not currently
-      available publicly. If set, this value must be between 100 and 30000.
-      The default is 300.
+      available publicly. If set, this value must be between 1000 and 30000.
+      The default is 1000.
     minTransmitInterval: The minimum interval, in milliseconds, between BFD
       control packets transmitted to the peer router. The actual value is
       negotiated between the two routers and is equal to the greater of this
       value and the corresponding receive interval of the other router. Not
-      currently available publicly. If set, this value must be between 100 and
-      30000. The default is 300.
+      currently available publicly. If set, this value must be between 1000
+      and 30000. The default is 1000.
     mode: The BFD session initialization mode for this BGP peer. If set to
       ACTIVE, the Cloud Router will initiate the BFD session for this BGP
       peer. If set to PASSIVE, the Cloud Router will wait for the peer router
@@ -58209,8 +58220,8 @@ class RouterBgpPeerBfd(_messages.Message):
       is disabled for this BGP peer. The default is PASSIVE.
     multiplier: The number of consecutive BFD packets that must be missed
       before BFD declares that a peer is unavailable. Not currently available
-      publicly. If set, the value must be a value between 2 and 16. The
-      default is 3.
+      publicly. If set, the value must be a value between 5 and 16. The
+      default is 5.
     packetMode: The BFD packet mode for this BGP peer. If set to
       CONTROL_AND_ECHO, BFD echo mode is enabled for this BGP peer. In this
       mode, if the peer router also has BFD echo mode enabled, BFD echo
@@ -59390,6 +59401,8 @@ class Scheduling(_messages.Message):
   r"""Sets the scheduling options for an Instance. NextID: 21
 
   Enums:
+    InstanceTerminationActionValueValuesEnum: Specifies the termination action
+      for the instance.
     MaintenanceIntervalValueValuesEnum: For more information about maintenance
       intervals, see Setting maintenance intervals.
     OnHostMaintenanceValueValuesEnum: Defines the maintenance behavior for
@@ -59421,6 +59434,8 @@ class Scheduling(_messages.Message):
       detection, the value must be within the range of [90, 330] with the
       increment of 30, if unset, the default behavior of host error recovery
       will be used.
+    instanceTerminationAction: Specifies the termination action for the
+      instance.
     latencyTolerant: Defines whether the instance is tolerant of higher cpu
       latency. This can only be set during instance creation, or when the
       instance is not currently running. It must not be set if the preemptible
@@ -59447,6 +59462,19 @@ class Scheduling(_messages.Message):
       information on the possible instance states.
     provisioningModel: Specifies the provisioning model of the instance.
   """
+
+  class InstanceTerminationActionValueValuesEnum(_messages.Enum):
+    r"""Specifies the termination action for the instance.
+
+    Values:
+      DELETE: Delete the VM.
+      INSTANCE_TERMINATION_ACTION_UNSPECIFIED: Default value. This value is
+        unused.
+      STOP: Stop the VM without storing in-memory content. default action.
+    """
+    DELETE = 0
+    INSTANCE_TERMINATION_ACTION_UNSPECIFIED = 1
+    STOP = 2
 
   class MaintenanceIntervalValueValuesEnum(_messages.Enum):
     r"""For more information about maintenance intervals, see Setting
@@ -59493,15 +59521,16 @@ class Scheduling(_messages.Message):
   currentCpus = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   currentMemoryMb = _messages.IntegerField(4)
   hostErrorTimeoutSeconds = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  latencyTolerant = _messages.BooleanField(6)
-  locationHint = _messages.StringField(7)
-  maintenanceFreezeDurationHours = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  maintenanceInterval = _messages.EnumField('MaintenanceIntervalValueValuesEnum', 9)
-  minNodeCpus = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  nodeAffinities = _messages.MessageField('SchedulingNodeAffinity', 11, repeated=True)
-  onHostMaintenance = _messages.EnumField('OnHostMaintenanceValueValuesEnum', 12)
-  preemptible = _messages.BooleanField(13)
-  provisioningModel = _messages.EnumField('ProvisioningModelValueValuesEnum', 14)
+  instanceTerminationAction = _messages.EnumField('InstanceTerminationActionValueValuesEnum', 6)
+  latencyTolerant = _messages.BooleanField(7)
+  locationHint = _messages.StringField(8)
+  maintenanceFreezeDurationHours = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  maintenanceInterval = _messages.EnumField('MaintenanceIntervalValueValuesEnum', 10)
+  minNodeCpus = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  nodeAffinities = _messages.MessageField('SchedulingNodeAffinity', 12, repeated=True)
+  onHostMaintenance = _messages.EnumField('OnHostMaintenanceValueValuesEnum', 13)
+  preemptible = _messages.BooleanField(14)
+  provisioningModel = _messages.EnumField('ProvisioningModelValueValuesEnum', 15)
 
 
 class SchedulingNodeAffinity(_messages.Message):
@@ -60841,7 +60870,7 @@ class ServiceAttachment(_messages.Message):
   r"""Represents a ServiceAttachment resource. A service attachment represents
   a service that a producer has exposed. It encapsulates the load balancer
   which fronts the service runs and a list of NAT IP ranges that the producers
-  uses to represent the consumers connecting to the service. next tag = 19
+  uses to represent the consumers connecting to the service. next tag = 20
 
   Enums:
     ConnectionPreferenceValueValuesEnum: The connection preference of service

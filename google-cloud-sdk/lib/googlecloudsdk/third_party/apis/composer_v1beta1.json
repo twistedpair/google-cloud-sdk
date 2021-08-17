@@ -428,6 +428,10 @@
           "description": "Optional. The maximum number of pods per node in the Cloud Composer GKE cluster. The value must be between 8 and 110 and it can be set only if the environment is VPC-native. The default value is 32. Values of this field will be propagated both to the `default-pool` node pool of the newly created GKE cluster, and to the default \"Maximum Pods per Node\" value which is used for newly created node pools if their value is not explicitly set during node pool creation. For more information, see [Optimizing IP address allocation] (https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/flexible-pod-cidr). Cannot be updated. This field is supported for Cloud Composer environments in versions composer-1.*.*-airflow-*.*.*.",
           "type": "integer",
           "format": "int32"
+        },
+        "enableIpMasqAgent": {
+          "description": "Optional. Deploys 'ip-masq-agent' daemon set in the GKE cluster and defines nonMasqueradeCIDRs equals to pod IP range so IP masquerading is used for all destination addresses, except between pods traffic. See: https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/ip-masquerade-agent",
+          "type": "boolean"
         }
       }
     },
@@ -492,6 +496,10 @@
           "description": "Output only. The IP range reserved for the tenant project's Cloud Composer network. This field is supported for Cloud Composer environments in versions composer-2.*.*-airflow-*.*.* and newer.",
           "readOnly": true,
           "type": "string"
+        },
+        "enablePrivatelyUsedPublicIps": {
+          "description": "Optional. When enabled, IPs from public (non-RFC1918) ranges can be used for `IPAllocationPolicy.cluster_ipv4_cidr_block` and `IPAllocationPolicy.service_ipv4_cidr_block`.",
+          "type": "boolean"
         }
       }
     },

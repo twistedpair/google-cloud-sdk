@@ -58,11 +58,11 @@ def ParseRegionDisksResources(resources, disks, replica_zones, project,
   """
   result_disks = []
   project_to_region = {}  # cache
-  dummy = '$DUMMY$'  # shouldn't escape from this function
+  sample = '$SAMPLE$'  # shouldn't escape from this function
 
   # --project may be provided or not, URI should be accepted
   project_res = resources.Parse(
-      project, collection='compute.projects', params={'project': dummy})
+      project, collection='compute.projects', params={'project': sample})
   project_name = project_res.project
   # --region may be provided or not, URI should be accepted
   # project embedded in URI takes precedence over project_res
@@ -70,16 +70,16 @@ def ParseRegionDisksResources(resources, disks, replica_zones, project,
       region,
       collection='compute.regions',
       params={'project': project_name,
-              'region': dummy})
+              'region': sample})
   if region_res.project != project_name:
     project_name = region_res.project
   region_name = region_res.region
-  if project_name == dummy:
+  if project_name == sample:
     # no project in --project nor --region - fallback to property
     project_name = properties.VALUES.core.project.GetOrFail
   # parse each disk separately as meaning of other flags may depend on disk URI
   for disk in disks:
-    result_disk = _ParseDisk(resources, disk, dummy, project_name,
+    result_disk = _ParseDisk(resources, disk, sample, project_name,
                              project_to_region, region, region_name,
                              replica_zones)
     result_disks.append(result_disk)
@@ -87,7 +87,7 @@ def ParseRegionDisksResources(resources, disks, replica_zones, project,
   return result_disks
 
 
-def _ParseDisk(resources, disk, dummy, project_name, project_to_region,
+def _ParseDisk(resources, disk, sample, project_name, project_to_region,
                region, region_name, replica_zones):
   """Parse single disk reference."""
   # I need project to parse zone URI - parse disk argument, stage 1
@@ -102,7 +102,7 @@ def _ParseDisk(resources, disk, dummy, project_name, project_to_region,
   # maintain cache
   if current_project not in project_to_region:
     project_to_region[current_project] = _DeduceRegionInProject(
-        resources, current_project, disk_resource, dummy, region,
+        resources, current_project, disk_resource, sample, region,
         region_name, replica_zones)
   # parse disk argument using real region, stage 2
   # doesn't support scope listing/prompting, because scope is already chosen.
@@ -122,7 +122,7 @@ def _ParseDisk(resources, disk, dummy, project_name, project_to_region,
 
 
 def _DeduceRegionInProject(resources, current_project, disk_resource,
-                           dummy, region, region_name, replica_zones):
+                           sample, region, region_name, replica_zones):
   """Deduce region from zones in given project."""
   # parse all --replica-zones, consuming project from above
   current_zones = [
@@ -150,7 +150,7 @@ def _DeduceRegionInProject(resources, current_project, disk_resource,
               utils.ZoneNameToRegionName(current_zones[i + 1].zone)))
   # check if --replica-zones is consistent with --region
   result = utils.ZoneNameToRegionName(current_zones[0].zone)
-  if region is not None and region_name != dummy and region_name != result:
+  if region is not None and region_name != sample and region_name != result:
     raise exceptions.InvalidArgumentException('--replica-zones', (
         'Region from [--replica-zones] ({}) is different from [--region] '
         '({}).').format(result, region_name))

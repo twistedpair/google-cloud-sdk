@@ -349,12 +349,17 @@ class CreateDatabaseMetadata(_messages.Message):
 class CreateDatabaseRequest(_messages.Message):
   r"""The request for CreateDatabase.
 
+  Enums:
+    DatabaseDialectValueValuesEnum: Optional. The dialect of the Cloud Spanner
+      Database.
+
   Fields:
     createStatement: Required. A `CREATE DATABASE` statement, which specifies
       the ID of the new database. The database ID must conform to the regular
       expression `a-z*[a-z0-9]` and be between 2 and 30 characters in length.
       If the database ID is a reserved word or if it contains a hyphen, the
       database ID must be enclosed in backticks (`` ` ``).
+    databaseDialect: Optional. The dialect of the Cloud Spanner Database.
     encryptionConfig: Optional. The encryption configuration for the database.
       If this field is not specified, Cloud Spanner will encrypt/decrypt all
       data at rest using Google default encryption.
@@ -364,9 +369,23 @@ class CreateDatabaseRequest(_messages.Message):
       if there is an error in any statement, the database is not created.
   """
 
+  class DatabaseDialectValueValuesEnum(_messages.Enum):
+    r"""Optional. The dialect of the Cloud Spanner Database.
+
+    Values:
+      DATABASE_DIALECT_UNSPECIFIED: Default value. This value will create a
+        database with the GOOGLE_STANDARD_SQL dialect.
+      GOOGLE_STANDARD_SQL: Google standard SQL.
+      POSTGRESQL: PostgreSQL supported SQL.
+    """
+    DATABASE_DIALECT_UNSPECIFIED = 0
+    GOOGLE_STANDARD_SQL = 1
+    POSTGRESQL = 2
+
   createStatement = _messages.StringField(1)
-  encryptionConfig = _messages.MessageField('EncryptionConfig', 2)
-  extraStatements = _messages.StringField(3, repeated=True)
+  databaseDialect = _messages.EnumField('DatabaseDialectValueValuesEnum', 2)
+  encryptionConfig = _messages.MessageField('EncryptionConfig', 3)
+  extraStatements = _messages.StringField(4, repeated=True)
 
 
 class CreateInstanceMetadata(_messages.Message):
@@ -417,11 +436,14 @@ class Database(_messages.Message):
   r"""A Cloud Spanner database.
 
   Enums:
+    DatabaseDialectValueValuesEnum: Output only. The dialect of the Cloud
+      Spanner Database.
     StateValueValuesEnum: Output only. The current database state.
 
   Fields:
     createTime: Output only. If exists, the time at which the database
       creation started.
+    databaseDialect: Output only. The dialect of the Cloud Spanner Database.
     defaultLeader: Output only. The read-write region which contains the
       database's leader replicas. This is the same as the value of
       default_leader database option set using DatabaseAdmin.CreateDatabase or
@@ -456,6 +478,19 @@ class Database(_messages.Message):
       UpdateDatabaseDdl. Defaults to 1 hour, if not set.
   """
 
+  class DatabaseDialectValueValuesEnum(_messages.Enum):
+    r"""Output only. The dialect of the Cloud Spanner Database.
+
+    Values:
+      DATABASE_DIALECT_UNSPECIFIED: Default value. This value will create a
+        database with the GOOGLE_STANDARD_SQL dialect.
+      GOOGLE_STANDARD_SQL: Google standard SQL.
+      POSTGRESQL: PostgreSQL supported SQL.
+    """
+    DATABASE_DIALECT_UNSPECIFIED = 0
+    GOOGLE_STANDARD_SQL = 1
+    POSTGRESQL = 2
+
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The current database state.
 
@@ -477,14 +512,15 @@ class Database(_messages.Message):
     READY_OPTIMIZING = 3
 
   createTime = _messages.StringField(1)
-  defaultLeader = _messages.StringField(2)
-  earliestVersionTime = _messages.StringField(3)
-  encryptionConfig = _messages.MessageField('EncryptionConfig', 4)
-  encryptionInfo = _messages.MessageField('EncryptionInfo', 5, repeated=True)
-  name = _messages.StringField(6)
-  restoreInfo = _messages.MessageField('RestoreInfo', 7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
-  versionRetentionPeriod = _messages.StringField(9)
+  databaseDialect = _messages.EnumField('DatabaseDialectValueValuesEnum', 2)
+  defaultLeader = _messages.StringField(3)
+  earliestVersionTime = _messages.StringField(4)
+  encryptionConfig = _messages.MessageField('EncryptionConfig', 5)
+  encryptionInfo = _messages.MessageField('EncryptionInfo', 6, repeated=True)
+  name = _messages.StringField(7)
+  restoreInfo = _messages.MessageField('RestoreInfo', 8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  versionRetentionPeriod = _messages.StringField(10)
 
 
 class Delete(_messages.Message):

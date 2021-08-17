@@ -835,6 +835,8 @@ class OSPolicyAssignment(_messages.Message):
       assignment.
     description: OS policy assignment description. Length of the description
       is limited to 1024 characters.
+    etag: The etag for this OS policy assignment. If this is provided on
+      update, it must match the server's etag.
     instanceFilter: Required. Filter to select VMs.
     name: Resource name. Format: `projects/{project_number}/locations/{locatio
       n}/osPolicyAssignments/{os_policy_assignment_id}` This field is ignored
@@ -876,15 +878,16 @@ class OSPolicyAssignment(_messages.Message):
   baseline = _messages.BooleanField(1)
   deleted = _messages.BooleanField(2)
   description = _messages.StringField(3)
-  instanceFilter = _messages.MessageField('OSPolicyAssignmentInstanceFilter', 4)
-  name = _messages.StringField(5)
-  osPolicies = _messages.MessageField('OSPolicy', 6, repeated=True)
-  reconciling = _messages.BooleanField(7)
-  revisionCreateTime = _messages.StringField(8)
-  revisionId = _messages.StringField(9)
-  rollout = _messages.MessageField('OSPolicyAssignmentRollout', 10)
-  rolloutState = _messages.EnumField('RolloutStateValueValuesEnum', 11)
-  uid = _messages.StringField(12)
+  etag = _messages.StringField(4)
+  instanceFilter = _messages.MessageField('OSPolicyAssignmentInstanceFilter', 5)
+  name = _messages.StringField(6)
+  osPolicies = _messages.MessageField('OSPolicy', 7, repeated=True)
+  reconciling = _messages.BooleanField(8)
+  revisionCreateTime = _messages.StringField(9)
+  revisionId = _messages.StringField(10)
+  rollout = _messages.MessageField('OSPolicyAssignmentRollout', 11)
+  rolloutState = _messages.EnumField('RolloutStateValueValuesEnum', 12)
+  uid = _messages.StringField(13)
 
 
 class OSPolicyAssignmentInstanceFilter(_messages.Message):

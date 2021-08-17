@@ -29,7 +29,6 @@ import subprocess
 import sys
 import tempfile
 import time
-import uuid
 
 from googlecloudsdk.core import config
 from googlecloudsdk.core import execution_utils
@@ -38,7 +37,6 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import encoding
-from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
 
 import six
@@ -87,7 +85,7 @@ class CommonParams(object):
 
     current_platform = platforms.Platform.Current()
 
-    self.client_id = GetCID()
+    self.client_id = config.GetCID()
     self.current_platform = current_platform
     self.user_agent = GetUserAgent(current_platform)
     self.release_channel = config.INSTALLATION_CONFIG.release_channel
@@ -103,29 +101,6 @@ class CommonParams(object):
 
 def GetTimeMillis(time_secs=None):
   return int(round((time_secs or time.time()) * 1000))
-
-
-def _GenerateCID(uuid_path):
-  cid = uuid.uuid4().hex  # A random UUID
-  files.MakeDir(os.path.dirname(uuid_path))
-  files.WriteFileContents(uuid_path, cid)
-  return cid
-
-
-def GetCID():
-  """Gets the client id from the config file, or generates a new one.
-
-  Returns:
-    str, The hex string of the client id.
-  """
-  uuid_path = config.Paths().analytics_cid_path
-  try:
-    cid = files.ReadFileContents(uuid_path)
-    if cid:
-      return cid
-  except files.Error:
-    pass
-  return _GenerateCID(uuid_path)
 
 
 def GetUserAgent(current_platform=None):
@@ -718,7 +693,7 @@ def GetCIDIfMetricsEnabled():
     # We directly set an environment variable with the return value of this
     # function, and so return the empty string rather than None.
     return ''
-  return GetCID()
+  return config.GetCID()
   # pylint: enable=protected-access
 
 

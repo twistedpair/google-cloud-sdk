@@ -1687,6 +1687,8 @@ class Instance(_messages.Message):
       128 bytes.
 
   Fields:
+    createTime: Output only. A server-assigned timestamp representing when
+      this Instance was created.
     displayName: Required. The descriptive name for this instance as it
       appears in UIs. Can be changed at any time, but should be kept globally
       unique to avoid confusion.
@@ -1768,11 +1770,12 @@ class Instance(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  displayName = _messages.StringField(1)
-  labels = _messages.MessageField('LabelsValue', 2)
-  name = _messages.StringField(3)
-  state = _messages.EnumField('StateValueValuesEnum', 4)
-  type = _messages.EnumField('TypeValueValuesEnum', 5)
+  createTime = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
+  type = _messages.EnumField('TypeValueValuesEnum', 6)
 
 
 class Intersection(_messages.Message):

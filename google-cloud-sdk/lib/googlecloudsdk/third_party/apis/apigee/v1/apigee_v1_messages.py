@@ -4508,9 +4508,13 @@ class GoogleCloudApigeeV1CreditDeveloperBalanceRequest(_messages.Message):
       `transaction_amount` as "USD", then the amount would be added to the
       wallet which has the "USD" currency or if no such wallet exists, a new
       wallet will be created with the "USD" currency.
+    transactionId: Each transaction_id uniquely identifies a credit balance
+      request. If multiple requests are received with the same transaction_id,
+      only one of them will be considered.
   """
 
   transactionAmount = _messages.MessageField('GoogleTypeMoney', 1)
+  transactionId = _messages.StringField(2)
 
 
 class GoogleCloudApigeeV1CustomReport(_messages.Message):

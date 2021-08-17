@@ -236,10 +236,8 @@ class Attribute(_Attribute):
 class ResourceSpec(ConceptSpec):
   """Defines a Cloud resource as a set of attributes for argument creation.
   """
-  # TODO(b/67707644): Enable completers by default when confident enough.
   disable_auto_complete = True
 
-  # TODO(b/78851830): update the documentation to use this method.
   @classmethod
   def FromYaml(cls, yaml_data, api_version=None):
     """Constructs an instance of ResourceSpec from yaml data.

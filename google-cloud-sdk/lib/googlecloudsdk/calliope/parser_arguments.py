@@ -604,7 +604,6 @@ class ArgumentInterceptor(Argument):
     # Not a Boolean flag.
     return False, None
 
-  # TODO(b/38374705): Drop the deprecated code.
   def _AttachCompleter(self, arg, completer, positional):
     """Attaches a completer to arg if one is specified.
 

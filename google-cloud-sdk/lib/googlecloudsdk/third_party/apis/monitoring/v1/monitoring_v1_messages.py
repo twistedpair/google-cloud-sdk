@@ -478,6 +478,8 @@ class DataSet(_messages.Message):
 
   Enums:
     PlotTypeValueValuesEnum: How this data should be plotted on the chart.
+    TargetAxisValueValuesEnum: Optional. The target axis to use for plotting
+      the metric.
 
   Fields:
     legendTemplate: A template string for naming TimeSeries in the resulting
@@ -490,6 +492,7 @@ class DataSet(_messages.Message):
       minutes. It would not make sense to fetch and align data at one minute
       intervals.
     plotType: How this data should be plotted on the chart.
+    targetAxis: Optional. The target axis to use for plotting the metric.
     timeSeriesQuery: Required. Fields for querying time series data from the
       Stackdriver metrics API.
   """
@@ -522,10 +525,24 @@ class DataSet(_messages.Message):
     STACKED_BAR = 3
     HEATMAP = 4
 
+  class TargetAxisValueValuesEnum(_messages.Enum):
+    r"""Optional. The target axis to use for plotting the metric.
+
+    Values:
+      TARGET_AXIS_UNSPECIFIED: The target axis was not specified. Defaults to
+        Y1.
+      Y1: The y_axis (the right axis of chart).
+      Y2: The y2_axis (the left axis of chart).
+    """
+    TARGET_AXIS_UNSPECIFIED = 0
+    Y1 = 1
+    Y2 = 2
+
   legendTemplate = _messages.StringField(1)
   minAlignmentPeriod = _messages.StringField(2)
   plotType = _messages.EnumField('PlotTypeValueValuesEnum', 3)
-  timeSeriesQuery = _messages.MessageField('TimeSeriesQuery', 4)
+  targetAxis = _messages.EnumField('TargetAxisValueValuesEnum', 4)
+  timeSeriesQuery = _messages.MessageField('TimeSeriesQuery', 5)
 
 
 class DroppedLabels(_messages.Message):
@@ -1525,6 +1542,8 @@ class Threshold(_messages.Message):
       allowed in a XyChart.
     DirectionValueValuesEnum: The direction for the current threshold.
       Direction is not allowed in a XyChart.
+    TargetAxisValueValuesEnum: The target axis to use for plotting the
+      threshold. Target axis is not allowed in a Scorecard.
 
   Fields:
     color: The state color for this threshold. Color is not allowed in a
@@ -1532,6 +1551,8 @@ class Threshold(_messages.Message):
     direction: The direction for the current threshold. Direction is not
       allowed in a XyChart.
     label: A label for the threshold.
+    targetAxis: The target axis to use for plotting the threshold. Target axis
+      is not allowed in a Scorecard.
     value: The value of the threshold. The value should be defined in the
       native scale of the metric.
   """
@@ -1564,10 +1585,25 @@ class Threshold(_messages.Message):
     ABOVE = 1
     BELOW = 2
 
+  class TargetAxisValueValuesEnum(_messages.Enum):
+    r"""The target axis to use for plotting the threshold. Target axis is not
+    allowed in a Scorecard.
+
+    Values:
+      TARGET_AXIS_UNSPECIFIED: The target axis was not specified. Defaults to
+        Y1.
+      Y1: The y_axis (the right axis of chart).
+      Y2: The y2_axis (the left axis of chart).
+    """
+    TARGET_AXIS_UNSPECIFIED = 0
+    Y1 = 1
+    Y2 = 2
+
   color = _messages.EnumField('ColorValueValuesEnum', 1)
   direction = _messages.EnumField('DirectionValueValuesEnum', 2)
   label = _messages.StringField(3)
-  value = _messages.FloatField(4)
+  targetAxis = _messages.EnumField('TargetAxisValueValuesEnum', 4)
+  value = _messages.FloatField(5)
 
 
 class Tile(_messages.Message):
@@ -1731,6 +1767,7 @@ class XyChart(_messages.Message):
       positive, and it can only be applied to charts with data sets of LINE
       plot type.
     xAxis: The properties applied to the X axis.
+    y2Axis: The properties applied to the Y2 axis.
     yAxis: The properties applied to the Y axis.
   """
 
@@ -1739,7 +1776,8 @@ class XyChart(_messages.Message):
   thresholds = _messages.MessageField('Threshold', 3, repeated=True)
   timeshiftDuration = _messages.StringField(4)
   xAxis = _messages.MessageField('Axis', 5)
-  yAxis = _messages.MessageField('Axis', 6)
+  y2Axis = _messages.MessageField('Axis', 6)
+  yAxis = _messages.MessageField('Axis', 7)
 
 
 encoding.AddCustomJsonFieldMapping(

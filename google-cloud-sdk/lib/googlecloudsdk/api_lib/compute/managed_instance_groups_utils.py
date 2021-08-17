@@ -69,9 +69,6 @@ _MAX_AUTOSCALER_NAME_LENGTH = 63
 _NUM_RANDOM_CHARACTERS_IN_AS_NAME = 4
 
 
-# TODO(b/110191362): resign from passing whole args to functions in this file
-
-
 class Error(exceptions.Error):
   """Base exception for managed instance group exceptions."""
 
@@ -1026,7 +1023,7 @@ def _RemoveScheduleEncoder(message, unused_encoder=None):
 
 
 def _RemoveScheduleDecoder(unused_data, unused_decoder=None):
-  """Dummy decoder for schedule removal message.
+  """Placeholder decoder for schedule removal message.
 
   It's passed when registering message codec, but it will never be used as
   removing schedules is a write-only operation.

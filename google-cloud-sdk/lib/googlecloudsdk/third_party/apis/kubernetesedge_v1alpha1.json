@@ -572,6 +572,71 @@
         "enableHighAvailability": {
           "description": "Whether this VPN connection has HA enabled on cluster side. If enabled, when creating VPN connection we will attempt to use 2 ANG floating IPs.",
           "type": "boolean"
+        },
+        "details": {
+          "description": "Output only. The created connection details.",
+          "readOnly": true,
+          "$ref": "Details"
+        }
+      }
+    },
+    "Details": {
+      "id": "Details",
+      "description": "The created connection details.",
+      "type": "object",
+      "properties": {
+        "state": {
+          "description": "The state of this connection.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unknown.",
+            "Connected.",
+            "Still connecting.",
+            "Error occurred."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "STATE_CONNECTED",
+            "STATE_CONNECTING",
+            "STATE_ERROR"
+          ]
+        },
+        "error": {
+          "description": "The error message. This is only populated when state=ERROR.",
+          "type": "string"
+        },
+        "cloudRouter": {
+          "description": "The Cloud Router info.",
+          "$ref": "CloudRouter"
+        },
+        "cloudVpns": {
+          "description": "Each connection has multiple Cloud VPN gateways.",
+          "type": "array",
+          "items": {
+            "$ref": "CloudVpn"
+          }
+        }
+      }
+    },
+    "CloudRouter": {
+      "id": "CloudRouter",
+      "description": "The Cloud Router info.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The created Cloud Router name.",
+          "type": "string"
+        }
+      }
+    },
+    "CloudVpn": {
+      "id": "CloudVpn",
+      "description": "The Cloud VPN info.",
+      "type": "object",
+      "properties": {
+        "gateway": {
+          "description": "The created Cloud VPN gateway name.",
+          "type": "string"
         }
       }
     },

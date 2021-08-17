@@ -640,6 +640,14 @@
           "additionalProperties": {
             "$ref": "TargetArtifact"
           }
+        },
+        "targetRenders": {
+          "description": "Output only. Map from target ID to details of the render operation for that target.",
+          "readOnly": true,
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "TargetRender"
+          }
         }
       }
     },
@@ -682,6 +690,35 @@
           "description": "Output only. File path of the rendered manifest relative to the URI.",
           "readOnly": true,
           "type": "string"
+        }
+      }
+    },
+    "TargetRender": {
+      "id": "TargetRender",
+      "description": "Details of rendering for a single target.",
+      "type": "object",
+      "properties": {
+        "renderingBuild": {
+          "description": "Output only. The resource name of the Cloud Build `Build` object that is used to render the manifest for this target. Format is `projects\/{project}\/locations\/{location}\/builds\/{build}`.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "renderingState": {
+          "description": "Output only. Current state of the render operation for this Target.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "The render operation state is unspecified.",
+            "The render operation has completed successfully.",
+            "The render operation has failed.",
+            "The render operation is in progress."
+          ],
+          "enum": [
+            "TARGET_RENDER_STATE_UNSPECIFIED",
+            "SUCCEEDED",
+            "FAILED",
+            "IN_PROGRESS"
+          ]
         }
       }
     },

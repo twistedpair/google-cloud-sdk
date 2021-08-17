@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-
-# Copyright 2021 Google LLC
+# Copyright 2020 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,10 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
 from typing import Any, AsyncIterable, Awaitable, Callable, Iterable, Sequence, Tuple, Optional
 
-from google.api import monitored_resource_pb2 as monitored_resource  # type: ignore
+from google.api import monitored_resource_pb2  # type: ignore
 from googlecloudsdk.third_party.gapic_clients.logging_v2.types import log_entry
 from googlecloudsdk.third_party.gapic_clients.logging_v2.types import logging
 
@@ -104,7 +102,7 @@ class ListLogEntriesAsyncPager:
             response: logging.ListLogEntriesResponse,
             *,
             metadata: Sequence[Tuple[str, str]] = ()):
-        """Instantiate the pager.
+        """Instantiates the pager.
 
         Args:
             method (Callable): The method that was originally called, and
@@ -195,7 +193,7 @@ class ListMonitoredResourceDescriptorsPager:
             self._response = self._method(self._request, metadata=self._metadata)
             yield self._response
 
-    def __iter__(self) -> Iterable[monitored_resource.MonitoredResourceDescriptor]:
+    def __iter__(self) -> Iterable[monitored_resource_pb2.MonitoredResourceDescriptor]:
         for page in self.pages:
             yield from page.resource_descriptors
 
@@ -226,7 +224,7 @@ class ListMonitoredResourceDescriptorsAsyncPager:
             response: logging.ListMonitoredResourceDescriptorsResponse,
             *,
             metadata: Sequence[Tuple[str, str]] = ()):
-        """Instantiate the pager.
+        """Instantiates the pager.
 
         Args:
             method (Callable): The method that was originally called, and
@@ -254,7 +252,7 @@ class ListMonitoredResourceDescriptorsAsyncPager:
             self._response = await self._method(self._request, metadata=self._metadata)
             yield self._response
 
-    def __aiter__(self) -> AsyncIterable[monitored_resource.MonitoredResourceDescriptor]:
+    def __aiter__(self) -> AsyncIterable[monitored_resource_pb2.MonitoredResourceDescriptor]:
         async def async_generator():
             async for page in self.pages:
                 for response in page.resource_descriptors:
@@ -348,7 +346,7 @@ class ListLogsAsyncPager:
             response: logging.ListLogsResponse,
             *,
             metadata: Sequence[Tuple[str, str]] = ()):
-        """Instantiate the pager.
+        """Instantiates the pager.
 
         Args:
             method (Callable): The method that was originally called, and

@@ -266,7 +266,8 @@ def Run(args, track=None, enable_runtime=True):
     max_instances = 0 if args.clear_max_instances else args.max_instances
     function.maxInstances = max_instances
     updated_fields.append('maxInstances')
-  if track == calliope_base.ReleaseTrack.ALPHA:
+  if track in (calliope_base.ReleaseTrack.ALPHA,
+               calliope_base.ReleaseTrack.BETA):
     if (args.IsSpecified('min_instances') or
         args.IsSpecified('clear_min_instances')):
       min_instances = 0 if args.clear_min_instances else args.min_instances

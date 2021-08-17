@@ -344,10 +344,24 @@ def _SetSource(build_config,
 def _SetLogsBucket(build_config, arg_gcs_log_dir):
   """Set a Google Cloud Storage directory to hold build logs."""
   if arg_gcs_log_dir:
-    gcs_log_dir = resources.REGISTRY.Parse(
-        arg_gcs_log_dir, collection='storage.objects')
-    build_config.logsBucket = ('gs://' + gcs_log_dir.bucket + '/' +
-                               gcs_log_dir.object)
+    # Parse the logs directory as a folder object.
+    try:
+      gcs_log_dir = resources.REGISTRY.Parse(
+          arg_gcs_log_dir, collection='storage.objects')
+      build_config.logsBucket = ('gs://' + gcs_log_dir.bucket + '/' +
+                                 gcs_log_dir.object)
+      return build_config
+    except resources.WrongResourceCollectionException:
+      pass
+
+    # Parse the logs directory as a bucket.
+    try:
+      gcs_log_dir = resources.REGISTRY.Parse(
+          arg_gcs_log_dir, collection='storage.buckets')
+      build_config.logsBucket = ('gs://' + gcs_log_dir.bucket)
+    except resources.WrongResourceCollectionException as e:
+      raise resources.WrongResourceCollectionException(
+          expected='storage.buckets,storage.objects', got=e.got, path=e.path)
 
   return build_config
 

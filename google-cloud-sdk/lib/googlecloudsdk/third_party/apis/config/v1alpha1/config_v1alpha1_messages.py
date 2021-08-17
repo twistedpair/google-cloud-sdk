@@ -13,6 +13,23 @@ from apitools.base.py import extra_types
 package = 'config'
 
 
+class ApplyInput(_messages.Message):
+  r"""Input parameters for preview of apply operation.
+
+  Fields:
+    blueprint: Required. Blueprint to preview.
+    deployment: Deployment to dry-run modification to during preview. For
+      preview of new deployment this could be left empty. For preview
+      modifications to existing deployment this must match an existing
+      deployment, otherwise this will be considered as a new deployment.
+      Format:
+      `projects/{project}/locations/{location}/deployments/{deployment}`
+  """
+
+  blueprint = _messages.MessageField('Blueprint', 1)
+  deployment = _messages.StringField(2)
+
+
 class ApplyResults(_messages.Message):
   r"""Locations of outputs from config application.
 
@@ -463,6 +480,44 @@ class ConfigProjectsLocationsOperationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class ConfigProjectsLocationsPreviewsCreateRequest(_messages.Message):
+  r"""A ConfigProjectsLocationsPreviewsCreateRequest object.
+
+  Fields:
+    parent: Required. The parent in whose context the Preview is created. The
+      parent value is in the format:
+      'projects/{project_id}/locations/{location}'.
+    preview: A Preview resource to be passed as the request body.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  parent = _messages.StringField(1, required=True)
+  preview = _messages.MessageField('Preview', 2)
+  requestId = _messages.StringField(3)
+
+
+class DeleteInput(_messages.Message):
+  r"""Input parameters for preview of delete operation.
+
+  Fields:
+    deployment: Required. Name of existing deployment to preview its deletion.
+      Format:
+      `projects/{project}/locations/{location}/deployments/{deployment}`
+  """
+
+  deployment = _messages.StringField(1)
 
 
 class Deployment(_messages.Message):
@@ -1098,6 +1153,47 @@ class Policy(_messages.Message):
   bindings = _messages.MessageField('Binding', 2, repeated=True)
   etag = _messages.BytesField(3)
   version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
+class Preview(_messages.Message):
+  r"""Preview message contains preview results.
+
+  Fields:
+    applyInput: Input parameters for preview of apply operation.
+    createTime: Output only. Time the preview was created.
+    deleteInput: Input parameters for preview of delete operation.
+    name: Output only. Resource name of the preview. Format:
+      `projects/{project}/locations/{location}/previews/{preview}`
+    previewResults: Output only. Locations of outputs from preview operation.
+  """
+
+  applyInput = _messages.MessageField('ApplyInput', 1)
+  createTime = _messages.StringField(2)
+  deleteInput = _messages.MessageField('DeleteInput', 3)
+  name = _messages.StringField(4)
+  previewResults = _messages.MessageField('PreviewResults', 5)
+
+
+class PreviewResults(_messages.Message):
+  r"""Locations of outputs from config preview.
+
+  Fields:
+    artifacts: Location of kpt artifacts in Google Cloud Storage. Format:
+      `gs://{bucket}/{object}`
+    build: Name of the corresponding Cloud Build run. Format:
+      `projects/{project}/locations/{location}/builds/{build}` See https://clo
+      ud.google.com/build/docs/api/reference/rest/v1/projects.builds/get#query
+      -parameters for how to get build details.
+    content: Location of generated preview data in Google Cloud Storage.
+      Format: `gs://{bucket}/{object}`
+    logs: Location of logs in Google Cloud Storage. Format:
+      `gs://{bucket}/{object}`
+  """
+
+  artifacts = _messages.StringField(1)
+  build = _messages.StringField(2)
+  content = _messages.StringField(3)
+  logs = _messages.StringField(4)
 
 
 class Revision(_messages.Message):

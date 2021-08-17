@@ -1027,6 +1027,8 @@ apis:
   sqladmin:
     v1beta4:
       discovery_doc: sqladmin_v1beta4.json
+      unelidable_request_methods:
+      - sql.instances.insert
   storage:
     v1:
       discovery_doc: storage_v1.json

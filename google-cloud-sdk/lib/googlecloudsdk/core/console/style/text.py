@@ -88,7 +88,6 @@ class _TextTypes(enum.Enum):
     return TypedText(list(args), self)
 
 
-# TODO(b/113525269): Add more types.
 class TextTypes(_TextTypes):
   """Defines text types that can be used for styling text."""
   RESOURCE_NAME = 1

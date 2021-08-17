@@ -41,7 +41,9 @@ def _get_operation_to_poll(job_name, operation_name):
         'job_name or operation_name must be provided but not both.')
 
   if job_name:
-    return jobs_util.block_until_operation_created(job_name)
+    latest_operation_name = jobs_util.block_until_operation_created(job_name)
+    log.status.Print('Latest Operation: {}'.format(latest_operation_name))
+    return latest_operation_name
   return operation_name
 
 
@@ -72,9 +74,9 @@ def block_until_done(job_name=None, operation_name=None):
   Raises:
     ValueError: One of job_name or operation_name must be provided.
   """
-  with progress_tracker.ProgressTracker(message='Waiting for operation'):
-    polling_operation_name = _get_operation_to_poll(job_name, operation_name)
-
+  polling_operation_name = _get_operation_to_poll(job_name, operation_name)
+  with progress_tracker.ProgressTracker(
+      message='Waiting for operation to complete'):
     retry.Retryer().RetryOnResult(
         api_get,
         args=[polling_operation_name],

@@ -32,7 +32,8 @@ from six.moves.urllib.parse import urlparse
 
 # Resource path constants
 PROJECTS_RESOURCE_PATH = 'projects/'
-LOCATIONS_RESOUCE_PATH = 'locations/'
+LOCATIONS_RESOURCE_PATH = 'locations/'
+RESERVATIONS_RESOURCE_PATH = 'reservations/'
 TOPICS_RESOURCE_PATH = 'topics/'
 SUBSCRIPTIONS_RESOURCE_PATH = 'subscriptions/'
 
@@ -84,17 +85,19 @@ def StripPathFromUrl(url):
   return parsed.scheme + '://' + parsed.netloc + '/'
 
 
-def DeriveRegionFromZone(zone):
-  """Returns the region from a zone string.
+def DeriveRegionFromLocation(location):
+  """Returns the region from a location string.
 
   Args:
-    zone: A str of the form `<region>-<zone>`. Example: `us-central1-a`. Any
-      other form will cause undefined behavior.
+    location: A str of the form `<region>-<zone>` or `<region>`, such as
+      `us-central1-a` or `us-central1`. Any other form will cause undefined
+      behavior.
 
   Returns:
     The str region. Example: `us-central1`.
   """
-  return zone[:zone.rindex('-')]
+  splits = location.split('-')
+  return '-'.join(splits[:2])
 
 
 def DeriveRegionFromEndpoint(endpoint):
@@ -162,12 +165,12 @@ def GetResourceInfo(request):
   return resource, resource_name
 
 
-def DeriveZoneFromResource(resource):
-  """Returns the zone from a resource string."""
-  zone = resource[resource.index(LOCATIONS_RESOUCE_PATH) +
-                  len(LOCATIONS_RESOUCE_PATH):]
-  zone = zone.split('/')[0]
-  return zone
+def DeriveLocationFromResource(resource):
+  """Returns the location from a resource string."""
+  location = resource[resource.index(LOCATIONS_RESOURCE_PATH) +
+                      len(LOCATIONS_RESOURCE_PATH):]
+  location = location.split('/')[0]
+  return location
 
 
 def DeriveProjectFromResource(resource):
@@ -190,7 +193,7 @@ def ParseResource(request):
 def OverrideEndpointWithRegion(request, url):
   """Sets the pubsublite endpoint override to include the region."""
   resource, _ = GetResourceInfo(request)
-  region = DeriveRegionFromZone(DeriveZoneFromResource(resource))
+  region = DeriveRegionFromLocation(DeriveLocationFromResource(resource))
 
   endpoint = StripPathFromUrl(url)
 
@@ -248,6 +251,54 @@ def UpdateCommitCursorRequest(resource_ref, args, request):
   # is included in the list of messages that are acknowledged.
   request.commitCursorRequest.cursor.offset += 1
   OverrideEndpointWithRegion(request, resource_ref.SelfLink())
+
+  return request
+
+
+def _HasReservation(topic):
+  """Returns whether the topic has a reservation set."""
+  if topic.reservationConfig is None:
+    return False
+  return bool(topic.reservationConfig.throughputReservation)
+
+
+def AddTopicDefaultsWithoutReservation(resource_ref, args, request):
+  """Adds the default values for topic throughput fields with no reservation."""
+  # Unused resource reference and arguments.
+  del resource_ref, args
+
+  topic = request.topic
+  if not _HasReservation(topic):
+    if topic.partitionConfig is None:
+      topic.partitionConfig = {}
+    if topic.partitionConfig.capacity is None:
+      topic.partitionConfig.capacity = {}
+    capacity = topic.partitionConfig.capacity
+    if capacity.publishMibPerSec is None:
+      capacity.publishMibPerSec = 4
+    if capacity.subscribeMibPerSec is None:
+      capacity.subscribeMibPerSec = 8
+
+  return request
+
+
+def AddTopicReservationResource(resource_ref, args, request):
+  """Returns an updated `request` with a resource path on the reservation."""
+  # Unused resource reference and arguments.
+  del resource_ref, args
+
+  topic = request.topic
+  if not _HasReservation(topic):
+    return request
+
+  resource, _ = GetResourceInfo(request)
+  project = DeriveProjectFromResource(resource)
+  region = DeriveRegionFromLocation(DeriveLocationFromResource(resource))
+  reservation = topic.reservationConfig.throughputReservation
+  request.topic.reservationConfig.throughputReservation = (
+      '{}{}/{}{}/{}{}'.format(
+          PROJECTS_RESOURCE_PATH, project, LOCATIONS_RESOURCE_PATH, region,
+          RESERVATIONS_RESOURCE_PATH, reservation))
 
   return request
 

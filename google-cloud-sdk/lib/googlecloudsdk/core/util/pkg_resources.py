@@ -87,8 +87,7 @@ def IsImportable(name, path):
     return os.path.exists(name_path + '.py')
 
   try:
-    result = imp.find_module(name, [path])
-    if result:
+    if imp.find_module(name, [path]):
       return True
   except ImportError:
     pass
@@ -138,12 +137,7 @@ def GetModuleFromPath(name_to_give, module_path):
   else:
     try:
       f, file_path, items = result
-      module = imp.load_module(name_to_give, f, file_path, items)
-      if module.__name__ not in sys.modules:
-        # Python 2.6 does not add this to sys.modules. This is to make sure
-        # we get uniform behaviour with 2.7.
-        sys.modules[module.__name__] = module
-      return module
+      return imp.load_module(name_to_give, f, file_path, items)
     finally:
       if f:
         f.close()
@@ -153,13 +147,7 @@ def _GetModuleFromPathViaPkgutil(module_path, name_to_give):
   """Loads module by using pkgutil.get_importer mechanism."""
   importer = pkgutil.get_importer(os.path.dirname(module_path))
   if importer:
-    if hasattr(importer, '_par'):
-      # par zipimporters must have full path from the zip root.
-      # pylint:disable=protected-access
-      module_name = '.'.join(
-          module_path[len(importer._par._zip_filename) + 1:].split(os.sep))
-    else:
-      module_name = os.path.basename(module_path)
+    module_name = os.path.basename(module_path)
 
     if importer.find_module(module_name):
       return _LoadModule(importer, module_path, module_name, name_to_give)
@@ -262,16 +250,6 @@ def ListPackage(path, extra_extensions=None):
       # pylint:disable=protected-access
       iter_modules = _IterModules(
           importer._files, extra_extensions, importer.prefix)
-    elif hasattr(importer, '_par'):
-      # pylint:disable=protected-access
-      prefix = os.path.join(*importer._prefix.split('.'))
-      iter_modules = _IterModules(
-          importer._par._filename_list, extra_extensions, prefix)
-    elif hasattr(importer, 'ziparchive'):
-      prefix = os.path.join(*importer.prefix.split('.'))
-      # pylint:disable=protected-access
-      iter_modules = _IterModules(
-          importer.ziparchive._files, extra_extensions, prefix)
   packages, modules = [], []
   for name, ispkg in iter_modules:
     if ispkg:
@@ -279,60 +257,3 @@ def ListPackage(path, extra_extensions=None):
     else:
       modules.append(name)
   return sorted(packages), sorted(modules)
-
-
-def _IterPrefixFiles(file_list, prefix=None, depth=0):
-  """Returns list of files located at specified prefix dir.
-
-  Args:
-    file_list: list(str), filepaths, usually absolute.
-    prefix: str, filepath prefix, usually proper path itself. Used to filter
-        out files in files_list.
-    depth: int, relative to prefix, of whether to returns files in
-        subdirectories. Depth of 0 would return files in prefix directory.
-
-  Yields:
-    file paths, relative to prefix at given depth or less.
-  """
-  if prefix is None:
-    prefix = ''
-  for file_path in file_list:
-    if not file_path.startswith(prefix):
-      continue
-
-    rel_file_path = file_path[len(prefix):]
-
-    sep_count = depth
-    if rel_file_path.endswith(os.sep):
-      sep_count += 1
-    if rel_file_path.count(os.sep) > sep_count:
-      continue
-    yield rel_file_path
-
-
-def ListPackageResources(path):
-  """Returns list of resources at given path.
-
-  Similar to pkg_resources.resource_listdir.
-
-  Args:
-    path: filesystem like path to a directory/package.
-
-  Returns:
-    list of files/resources at specified path.
-  """
-  if os.path.isdir(path):
-    return [f + os.sep if os.path.isdir(os.path.join(path, f)) else f
-            for f in os.listdir(path)]
-
-  importer = pkgutil.get_importer(path)
-  if hasattr(importer, '_files'):
-    # pylint:disable=protected-access
-    return _IterPrefixFiles(importer._files, importer.prefix, 0)
-
-  if hasattr(importer, '_par'):
-    # pylint:disable=protected-access
-    prefix = os.path.join(*importer._prefix.split('.'))
-    return _IterPrefixFiles(importer._par._filename_list, prefix, 0)
-
-  return []

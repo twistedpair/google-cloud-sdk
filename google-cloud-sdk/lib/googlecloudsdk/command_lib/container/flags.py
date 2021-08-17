@@ -965,17 +965,17 @@ def AddLoggingFlag(parser):
   help_text = """\
 Set the components that have logging enabled.
 
-Example:
+Examples:
 
-  $ {command} --logging NONE
-  $ {command} --logging SYSTEM,WORKLOAD
+  $ {command} --logging=NONE
+  $ {command} --logging=SYSTEM
+  $ {command} --logging=SYSTEM,WORKLOAD
 """
   parser.add_argument(
       '--logging',
       type=arg_parsers.ArgList(),
       default=None,
       help=help_text,
-      hidden=True,
       metavar='COMPONENT',
   )
 
@@ -985,17 +985,16 @@ def AddMonitoringFlag(parser):
   help_text = """\
 Set the components that have monitoring enabled.
 
-Example:
+Examples:
 
-  $ {command} --monitoring NONE
-  $ {command} --monitoring SYSTEM
+  $ {command} --monitoring=NONE
+  $ {command} --monitoring=SYSTEM
 """
   parser.add_argument(
       '--monitoring',
       type=arg_parsers.ArgList(),
       default=None,
       help=help_text,
-      hidden=True,
       metavar='COMPONENT',
   )
 
@@ -3784,7 +3783,7 @@ pool. NAME must be the name of an existing subnetwork secondary range in the
 subnetwork for this cluster.
 
 Must be used in VPC native clusters. Cannot be used with
---create-ipv4-pod-range.
+`--create-ipv4-pod-range`.
 
 Examples:
 
@@ -3798,15 +3797,17 @@ Specify a pod range called ``other-range''
       type=arg_parsers.ArgDict(),
       help="""
 Create a new pod range for the node pool. The name and range of the
-pod range can be customized via optional ``name'' and ``range'' key-value
-pairs.
+pod range can be customized via optional ``name'' and ``range'' keys.
 
 ``name'' specifies the name of the secondary range to be created.
 
 ``range'' specifies the IP range for the new secondary range. This can either
-be a netmask size (e.g. '/20') or a CIDR range (e.g. '10.0.0.0/20').
+be a netmask size (e.g. "/20") or a CIDR range (e.g. "10.0.0.0/20").
 If a netmask size is specified, the IP is automatically taken from the
 free space in the cluster's network.
+
+Must be used in VPC native clusters. Can not be used in conjunction with the
+`--pod-ipv4-range` option.
 
 Examples:
 
@@ -3814,12 +3815,12 @@ Create a new pod range with a default name and size.
 
   $ {command} --create-pod-ipv4-range ""
 
-Create a new pod range named ``my-range'' with netmask of size 21.
+Create a new pod range named ``my-range'' with netmask of size ``21''.
 
   $ {command} --create-pod-ipv4-range name=my-range,range=/21
 
 Create a new pod range with a default name with the primary range of
-10.100.0.0/16.
+``10.100.0.0/16''.
 
   $ {command} --create-pod-ipv4-range range=10.100.0.0/16
 

@@ -14,6 +14,14 @@ subscription-name:
   help_text: |
     Subscription ID.
 
+reservation-name:
+  api_field: reservationId
+  arg_name: reservation
+  required: true
+  is_positional: true
+  help_text: |
+    Reservation ID.
+
 subscription-topic-name:
   api_field: subscription.topic
   arg_name: topic
@@ -21,24 +29,28 @@ subscription-topic-name:
   help_text: |
     Topic ID associated with the subscription.
 
+topic-throughput-reservation-name:
+  api_field: topic.reservationConfig.throughputReservation
+  arg_name: throughput-reservation
+  is_positional: false
+  help_text: |
+    Reservation ID to use for topic throughput.
+
 partitions:
   api_field: topic.partitionConfig.count
   arg_name: partitions
-  required: false
   help_text: |
     Number of partitions in the topic.
 
 per-partition-publish-mib:
   api_field: topic.partitionConfig.capacity.publishMibPerSec
   arg_name: per-partition-publish-mib
-  required: false
   help_text: |
     Topic partition publish throughput capacity in MiB/s. Must be between 4 and 16.
 
 per-partition-subscribe-mib:
   api_field: topic.partitionConfig.capacity.subscribeMibPerSec
   arg_name: per-partition-subscribe-mib
-  required: false
   help_text: |
     Topic partition subscribe throughput capacity in MiB/s. Must be between 4 and 32.
 
@@ -46,7 +58,6 @@ per-partition-bytes:
   api_field: topic.retentionConfig.perPartitionBytes
   arg_name: per-partition-bytes
   type: googlecloudsdk.core.util.scaled_integer:ParseInteger
-  required: false
   help_text: |
     Provisioned storage, in bytes, per partition. If the number of bytes
     stored in any of the topic's partitions exceeds this value, older
@@ -59,7 +70,6 @@ message-retention-period:
   arg_name: message-retention-period
   type: googlecloudsdk.core.util.times:ParseDuration
   processor: googlecloudsdk.command_lib.pubsub.lite_util:DurationToSeconds
-  required: false
   help_text: |
     How long a published message is retained. If unset, messages will only be
     dropped to make space for new ones once the `per-partition-bytes` limit is
@@ -79,6 +89,14 @@ delivery-requirement:
     messages persistence in storage.
     See https://cloud.google.com/pubsub/lite/docs/subscriptions#creating_lite_subscriptions
     for more info.
+
+throughput-capacity:
+  api_field: reservation.throughputCapacity
+  arg_name: throughput-capacity
+  help_text: |
+    Reservation throughput capacity. Every unit of throughput capacity is equivalent to 1 MiB/s of
+    published messages or 2 MiB/s of subscribed messages.
+
 
 # TODO(b/183139642): Make starting-offset flag case-insensitive
 starting-offset:
@@ -111,7 +129,6 @@ event-time:
 
 operation-done:
   arg_name: done
-  required: false
   # Not a bool type to allow one of: true|false|unspecified
   choices:
   - arg_value: 'true'
@@ -122,7 +139,6 @@ operation-done:
 
 operation-subscription:
   arg_name: subscription
-  required: false
   help_text: |
     Filter operations by target subscription. This flag is ignored if `--filter` is set.
 
@@ -133,7 +149,7 @@ partition:
   help_text: |
     The topic partition. Partitions are zero indexed, so the partition must be in the range
     [0, topic.num_partitions). If you do not know your topic.num_partitions, run `gcloud pubsub
-    lite-topic describe TOPIC --zone=ZONE`.
+    lite-topic describe TOPIC --location=ZONE`.
 
 offset:
   api_field: commitCursorRequest.cursor.offset
@@ -141,3 +157,16 @@ offset:
   required: true
   help_text: |
     The offset of a message within a topic partition. Must be greater than or equal to 0.
+
+
+# Deprecated flag, do not use
+zone:
+  arg_name: zone
+  hidden: true
+  help_text: |
+    ID of the location of the Pub/Sub Lite resource.
+  action:
+    deprecated:
+      removed: false
+      warn: |
+        zone is deprecated and will be removed in an upcoming release. Please use --location instead.

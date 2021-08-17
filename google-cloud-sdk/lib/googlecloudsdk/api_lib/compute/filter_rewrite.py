@@ -69,6 +69,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import re
+
 from apitools.base.protorpclite import messages
 from googlecloudsdk.core.resource import resource_expr_rewrite
 from googlecloudsdk.core.util import times
@@ -261,6 +263,11 @@ class Rewriter(resource_expr_rewrite.Backend):
     # TODO(b/77934881) compute API labels filter workaround
     if key.split('.')[0] == 'labels':
       # server side labels matching is currently problematic
+      return None
+
+    # TODO(b/73454982) compute API does not filter lists
+    if re.search(r'\[\d*\]', key):
+      # server side list objects filtering does not work
       return None
 
     if isinstance(operand, list):

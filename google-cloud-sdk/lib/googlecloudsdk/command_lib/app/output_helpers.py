@@ -52,7 +52,7 @@ CONFIG_TYPES = {
     'cron': 'cron jobs',
     'queue': 'task queues',
     'dispatch': 'routing rules',
-    'dos': 'DoS blacklist',
+    'dos': 'DoS denylist',
 }
 
 PROMOTE_MESSAGE_TEMPLATE = """\

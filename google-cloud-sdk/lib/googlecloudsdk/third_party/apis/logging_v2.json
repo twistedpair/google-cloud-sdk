@@ -319,58 +319,12 @@
           "type": "string"
         },
         "type": {
-          "description": "Required. The field data type.",
-          "type": "string",
-          "enumDescriptions": [
-            "Illegal value",
-            "UTF8 characters",
-            "64-bit signed",
-            "64-bit IEEE floating point",
-            "Aggregate type",
-            "Binary data",
-            "2-valued",
-            "64-bit signed usec since UTC epoch",
-            "Civil date - Year, Month, Day",
-            "Civil time - Hour, Minute, Second, Microseconds",
-            "Combination of civil date and civil time",
-            "Geography object",
-            "Numeric value",
-            "BigNumeric value",
-            "JSON value"
-          ],
-          "enum": [
-            "UNKNOWN_TYPE",
-            "STRING",
-            "INTEGER",
-            "FLOAT",
-            "RECORD",
-            "BYTES",
-            "BOOLEAN",
-            "TIMESTAMP",
-            "DATE",
-            "TIME",
-            "DATETIME",
-            "GEOGRAPHY",
-            "NUMERIC",
-            "BIGNUMERIC",
-            "JSON"
-          ]
+          "description": "Required. The field data type. Possible values include: STRING INTEGER (or INT64) FLOAT (or FLOAT64) BOOLEAN (or BOOL) TIMESTAMP RECORD (or STRUCT)Use of RECORD\/STRUT indicates that the field contains a nested schema.",
+          "type": "string"
         },
         "mode": {
           "description": "Optional. The field mode. Possible values include NULLABLE, REQUIRED and REPEATED. The default value is NULLABLE.",
-          "type": "string",
-          "enumDescriptions": [
-            "Illegal value",
-            "",
-            "",
-            ""
-          ],
-          "enum": [
-            "UNKNOWN_MODE",
-            "NULLABLE",
-            "REQUIRED",
-            "REPEATED"
-          ]
+          "type": "string"
         },
         "fields": {
           "description": "Optional. Describes the nested schema fields if the type property is set to RECORD.",

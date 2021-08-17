@@ -55,7 +55,7 @@ class PolicyanalyzerV1(base_api.BaseApiClient):
           }
 
     def Query(self, request, global_params=None):
-      r"""Queries policy activities on GCP resources.
+      r"""Queries policy activities on Google Cloud resources.
 
       Args:
         request: (PolicyanalyzerProjectsLocationsActivityTypesActivitiesQueryRequest) input message

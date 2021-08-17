@@ -140,11 +140,11 @@ class LibConfigRegistry(object):
     """Tries to import the configuration module if it is not already imported.
 
     This function always sets `self._module` to a value that is not `None`;
-    either the imported module (if it was imported successfully) or a dummy
+    either the imported module (if it was imported successfully) or a placeholder
     `object()` instance (if an `ImportError` was raised) is used. Other
     exceptions are not caught.
 
-    When a dummy instance is used, the instance is also put in `sys.modules`.
+    When a placeholder instance is used, the instance is also put in `sys.modules`.
     This usage allows us to detect when `sys.modules` was changed (as
     `dev_appserver.py` does when it notices source code changes) and retries the
     `import_module` in that case, while skipping it (for speed) if nothing has

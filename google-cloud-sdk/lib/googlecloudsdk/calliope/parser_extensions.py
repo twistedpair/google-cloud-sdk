@@ -175,6 +175,10 @@ class Namespace(argparse.Namespace):
         for dest, name in six.iteritems(self._specified_args)
     }
 
+  def GetSpecifiedArgsDict(self):
+    """Returns the _specified_args dictionary."""
+    return self._specified_args
+
   def IsSpecified(self, dest):
     """Returns True if args.dest was specified on the command line.
 
@@ -358,6 +362,8 @@ class ArgumentParser(argparse.ArgumentParser):
       metrics. This value is initialized and propagated to the deepest parser
       namespace in parse_known_args() from specified args collected in
       _get_values().
+      raise_error: This is set to true if we want to raise an exception for
+      errors.
   """
 
   _args = None
@@ -372,6 +378,7 @@ class ArgumentParser(argparse.ArgumentParser):
     self._error_context = None
     self._probe_error = False
     self.flags_locations = collections.defaultdict(set)
+    self.raise_error = False
     super(ArgumentParser, self).__init__(*args, **kwargs)
 
   def _Error(self, error):
@@ -707,9 +714,10 @@ class ArgumentParser(argparse.ArgumentParser):
   def _GetOriginalArgs(cls):
     return cls._args
 
-  def parse_args(self, args=None, namespace=None):
+  def parse_args(self, args=None, namespace=None, raise_error=False):
     """Overrides argparse.ArgumentParser's .parse_args method."""
     self._SaveOriginalArgs(args)
+    self.raise_error = raise_error
     namespace, unknown_args, _ = self._ParseKnownArgs(args, namespace)
 
     # pylint:disable=protected-access
@@ -1034,7 +1042,7 @@ class ArgumentParser(argparse.ArgumentParser):
       # pylint:disable=protected-access
       if self._calliope_command._sub_parser:
         self._calliope_command.LoadAllSubElements()
-    else:
+    elif not self.raise_error:
       message = console_attr.SafeText(message)
       log.error('({prog}) {message}'.format(prog=self.prog, message=message))
       # multi-line message means hints already added, no need for usage.
@@ -1096,7 +1104,9 @@ class ArgumentParser(argparse.ArgumentParser):
       exception: Exception, The exception that caused the exit, if any.
     """
     del message  # self.error() handles all messaging
-    del exception  # checked by the test harness to differentiate exit causes
+    if self.raise_error:
+      raise exception
+
     sys.exit(status)
 
   def _parse_optional(self, arg_string):

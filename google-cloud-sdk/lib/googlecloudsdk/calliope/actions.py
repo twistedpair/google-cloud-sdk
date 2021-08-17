@@ -67,12 +67,12 @@ def GetArgparseBuiltInAction(action):
   """
   # pylint:disable=protected-access
   # Disabling lint check to access argparse._ActionsContainer
-  dummy_actions_container = argparse._ActionsContainer(description=None,
-                                                       prefix_chars=None,
-                                                       argument_default=None,
-                                                       conflict_handler='error')
+  fake_actions_container = argparse._ActionsContainer(description=None,
+                                                      prefix_chars=None,
+                                                      argument_default=None,
+                                                      conflict_handler='error')
 
-  action_cls = dummy_actions_container._registry_get('action', action)
+  action_cls = fake_actions_container._registry_get('action', action)
 
   if action_cls is None:
     raise ValueError('unknown action "{0}"'.format(action))

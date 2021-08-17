@@ -30,6 +30,17 @@ class AccessSelector(_messages.Message):
   roles = _messages.StringField(2, repeated=True)
 
 
+class AnalyzeIamPolicyLongrunningMetadata(_messages.Message):
+  r"""Represents the metadata of the longrunning operation for the
+  AnalyzeIamPolicyLongrunning rpc.
+
+  Fields:
+    createTime: Output only. The time the operation was created.
+  """
+
+  createTime = _messages.StringField(1)
+
+
 class AnalyzeIamPolicyLongrunningRequest(_messages.Message):
   r"""A request message for AssetService.AnalyzeIamPolicyLongrunning.
 

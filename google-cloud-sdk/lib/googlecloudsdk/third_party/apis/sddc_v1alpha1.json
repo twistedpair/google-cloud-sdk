@@ -906,6 +906,32 @@
         }
       }
     },
+    "GenerateSupportBundleRequest": {
+      "id": "GenerateSupportBundleRequest",
+      "description": "Request message for SoftwareDefinedDataCenterCLH.GenerateSupportBundle.",
+      "type": "object",
+      "properties": {
+        "allEsxiNodes": {
+          "description": "Required. If True, generate the support bundle of all ESXi nodes.",
+          "type": "boolean"
+        },
+        "esxiNodeNames": {
+          "description": "Optional. If all_esxi_nodes is not true, generate the support bundle of specified ESXi nodes.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "vcenter": {
+          "description": "Required. If True, generate the support bundle of vCenter.",
+          "type": "boolean"
+        },
+        "nsxt": {
+          "description": "Required. If True, generate the support bundle of NSX-T.",
+          "type": "boolean"
+        }
+      }
+    },
     "SetIamPolicyRequest": {
       "id": "SetIamPolicyRequest",
       "description": "Request message for `SetIamPolicy` method.",
@@ -3339,6 +3365,34 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Reset the vCenter or NSX cloudadmin accounts."
+                },
+                "generateSupportBundle": {
+                  "id": "sddc.projects.locations.clusterGroups.generateSupportBundle",
+                  "path": "v1alpha1/{+clusterGroup}:generateSupportBundle",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusterGroups/{clusterGroupsId}:generateSupportBundle",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "clusterGroup": {
+                      "description": "Required. The resource name of the cluster group. For example, Format: `projects\/{PROJECT-NUMBER}\/locations\/us-central1\/clusterGroups\/{MY_GROUP}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusterGroups\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "clusterGroup"
+                  ],
+                  "request": {
+                    "$ref": "GenerateSupportBundleRequest"
+                  },
+                  "response": {
+                    "$ref": "GoogleLongrunningOperation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Consumer API (private) to generate support bundles of VMware stack."
                 },
                 "setIamPolicy": {
                   "id": "sddc.projects.locations.clusterGroups.setIamPolicy",

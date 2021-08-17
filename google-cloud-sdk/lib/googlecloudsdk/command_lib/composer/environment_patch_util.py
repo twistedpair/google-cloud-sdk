@@ -237,34 +237,38 @@ def ConstructPatch(is_composer_v1,
   if web_server_machine_type:
     return _ConstructWebServerMachineTypePatch(
         web_server_machine_type, release_track=release_track)
-  if not is_composer_v1 and (scheduler_cpu or worker_cpu or web_server_cpu or
-                             scheduler_memory_gb or worker_memory_gb or
-                             web_server_memory_gb or scheduler_storage_gb or
-                             worker_storage_gb or web_server_storage_gb or
-                             min_workers or max_workers or scheduler_count):
-    return _ConstructAutoscalingPatch(
-        scheduler_cpu=scheduler_cpu,
-        worker_cpu=worker_cpu,
-        web_server_cpu=web_server_cpu,
-        scheduler_memory_gb=scheduler_memory_gb,
-        worker_memory_gb=worker_memory_gb,
-        web_server_memory_gb=web_server_memory_gb,
-        scheduler_storage_gb=scheduler_storage_gb,
-        worker_storage_gb=worker_storage_gb,
-        web_server_storage_gb=web_server_storage_gb,
-        worker_min_count=min_workers,
-        worker_max_count=max_workers,
-        scheduler_count=scheduler_count,
-        release_track=release_track)
+  if is_composer_v1 and scheduler_count:
+    return _ConstructSoftwareConfigurationSchedulerCountPatch(
+        scheduler_count=scheduler_count, release_track=release_track)
+  if (scheduler_cpu or worker_cpu or web_server_cpu or scheduler_memory_gb or
+      worker_memory_gb or web_server_memory_gb or scheduler_storage_gb or
+      worker_storage_gb or web_server_storage_gb or min_workers or
+      max_workers or scheduler_count):
+    if is_composer_v1:
+      raise command_util.Error(
+          'You cannot use Workloads Config flags introduced in Composer 2.X'
+          ' when updating Composer 1.X environments.')
+    else:
+      return _ConstructAutoscalingPatch(
+          scheduler_cpu=scheduler_cpu,
+          worker_cpu=worker_cpu,
+          web_server_cpu=web_server_cpu,
+          scheduler_memory_gb=scheduler_memory_gb,
+          worker_memory_gb=worker_memory_gb,
+          web_server_memory_gb=web_server_memory_gb,
+          scheduler_storage_gb=scheduler_storage_gb,
+          worker_storage_gb=worker_storage_gb,
+          web_server_storage_gb=web_server_storage_gb,
+          worker_min_count=min_workers,
+          worker_max_count=max_workers,
+          scheduler_count=scheduler_count,
+          release_track=release_track)
   if maintenance_window_start and maintenance_window_end and maintenance_window_recurrence:
     return _ConstructMaintenanceWindowPatch(
         maintenance_window_start,
         maintenance_window_end,
         maintenance_window_recurrence,
         release_track=release_track)
-  if is_composer_v1 and scheduler_count:
-    return _ConstructSoftwareConfigurationSchedulerCountPatch(
-        scheduler_count=scheduler_count, release_track=release_track)
   raise command_util.Error(
       'Cannot update Environment with no update type specified.')
 

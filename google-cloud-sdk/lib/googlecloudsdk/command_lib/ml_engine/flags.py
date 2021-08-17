@@ -436,7 +436,6 @@ def GetModelName(positional=True, required=False):
     return base.Argument('--model', help=help_text, required=required)
 
 
-# TODO(b/33234717): remove after PACKAGES nargs=+ deprecation period.
 def ProcessPackages(args):
   """Flatten PACKAGES flag and warn if multiple arguments were used."""
   if args.packages is not None:

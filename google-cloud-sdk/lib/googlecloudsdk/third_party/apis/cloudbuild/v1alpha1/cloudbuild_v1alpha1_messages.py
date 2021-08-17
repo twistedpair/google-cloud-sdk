@@ -14,6 +14,59 @@ from apitools.base.py import extra_types
 package = 'cloudbuild'
 
 
+class ApprovalConfig(_messages.Message):
+  r"""ApprovalConfig describes configuration for manual approval of a build.
+
+  Fields:
+    approvalRequired: Whether or not approval is needed. If this is set on a
+      build, it will become pending when created, and will need to be
+      explicitly approved to start.
+  """
+
+  approvalRequired = _messages.BooleanField(1)
+
+
+class ApprovalResult(_messages.Message):
+  r"""ApprovalResult describes the decision and associated metadata of a
+  manual approval of a build.
+
+  Enums:
+    DecisionValueValuesEnum: Required. The decision of this manual approval.
+
+  Fields:
+    approvalTime: Output only. The time when the approval decision was made.
+    approverAccount: Output only. Email of the user that called the
+      ApproveBuild API to approve or reject a build at the time that the API
+      was called (the user's actual email that is tied to their GAIA ID may
+      have changed). This field is not stored, rather, it is calculated on the
+      fly using approver_id.
+    comment: Optional. An optional comment for this manual approval result.
+    decision: Required. The decision of this manual approval.
+    url: Optional. An optional URL tied to this manual approval result. This
+      field is essentially the same as comment, except that it will be
+      rendered by the UI differently. An example use case is a link to an
+      external job that approved this Build.
+  """
+
+  class DecisionValueValuesEnum(_messages.Enum):
+    r"""Required. The decision of this manual approval.
+
+    Values:
+      DECISION_UNSPECIFIED: Default enum type. This should not be used.
+      APPROVED: Build is approved.
+      REJECTED: Build is rejected.
+    """
+    DECISION_UNSPECIFIED = 0
+    APPROVED = 1
+    REJECTED = 2
+
+  approvalTime = _messages.StringField(1)
+  approverAccount = _messages.StringField(2)
+  comment = _messages.StringField(3)
+  decision = _messages.EnumField('DecisionValueValuesEnum', 4)
+  url = _messages.StringField(5)
+
+
 class ArtifactObjects(_messages.Message):
   r"""Files in the workspace to upload to Cloud Storage upon successful
   completion of all build steps.
@@ -98,6 +151,8 @@ class Build(_messages.Message):
       or images, these keys will not be included.
 
   Fields:
+    approval: Output only. Describes this build's approval configuration,
+      status, and result.
     artifacts: Artifacts produced by the build that should be uploaded upon
       successful completion of all build steps.
     availableSecrets: Secrets and secret environment variables.
@@ -166,6 +221,8 @@ class Build(_messages.Message):
 
     Values:
       STATUS_UNKNOWN: Status of the build is unknown.
+      PENDING: Build has been created and is pending execution and queuing. It
+        has not been queued.
       QUEUED: Build or step is queued; work has not yet begun.
       WORKING: Build or step is being executed.
       SUCCESS: Build or step finished successfully.
@@ -176,14 +233,15 @@ class Build(_messages.Message):
       EXPIRED: Build was enqueued for longer than the value of `queue_ttl`.
     """
     STATUS_UNKNOWN = 0
-    QUEUED = 1
-    WORKING = 2
-    SUCCESS = 3
-    FAILURE = 4
-    INTERNAL_ERROR = 5
-    TIMEOUT = 6
-    CANCELLED = 7
-    EXPIRED = 8
+    PENDING = 1
+    QUEUED = 2
+    WORKING = 3
+    SUCCESS = 4
+    FAILURE = 5
+    INTERNAL_ERROR = 6
+    TIMEOUT = 7
+    CANCELLED = 8
+    EXPIRED = 9
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class SubstitutionsValue(_messages.Message):
@@ -238,34 +296,69 @@ class Build(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  artifacts = _messages.MessageField('Artifacts', 1)
-  availableSecrets = _messages.MessageField('Secrets', 2)
-  buildTriggerId = _messages.StringField(3)
-  createTime = _messages.StringField(4)
-  failureInfo = _messages.MessageField('FailureInfo', 5)
-  finishTime = _messages.StringField(6)
-  id = _messages.StringField(7)
-  images = _messages.StringField(8, repeated=True)
-  logUrl = _messages.StringField(9)
-  logsBucket = _messages.StringField(10)
-  name = _messages.StringField(11)
-  options = _messages.MessageField('BuildOptions', 12)
-  projectId = _messages.StringField(13)
-  queueTtl = _messages.StringField(14)
-  results = _messages.MessageField('Results', 15)
-  secrets = _messages.MessageField('Secret', 16, repeated=True)
-  serviceAccount = _messages.StringField(17)
-  source = _messages.MessageField('Source', 18)
-  sourceProvenance = _messages.MessageField('SourceProvenance', 19)
-  startTime = _messages.StringField(20)
-  status = _messages.EnumField('StatusValueValuesEnum', 21)
-  statusDetail = _messages.StringField(22)
-  steps = _messages.MessageField('BuildStep', 23, repeated=True)
-  substitutions = _messages.MessageField('SubstitutionsValue', 24)
-  tags = _messages.StringField(25, repeated=True)
-  timeout = _messages.StringField(26)
-  timing = _messages.MessageField('TimingValue', 27)
-  warnings = _messages.MessageField('Warning', 28, repeated=True)
+  approval = _messages.MessageField('BuildApproval', 1)
+  artifacts = _messages.MessageField('Artifacts', 2)
+  availableSecrets = _messages.MessageField('Secrets', 3)
+  buildTriggerId = _messages.StringField(4)
+  createTime = _messages.StringField(5)
+  failureInfo = _messages.MessageField('FailureInfo', 6)
+  finishTime = _messages.StringField(7)
+  id = _messages.StringField(8)
+  images = _messages.StringField(9, repeated=True)
+  logUrl = _messages.StringField(10)
+  logsBucket = _messages.StringField(11)
+  name = _messages.StringField(12)
+  options = _messages.MessageField('BuildOptions', 13)
+  projectId = _messages.StringField(14)
+  queueTtl = _messages.StringField(15)
+  results = _messages.MessageField('Results', 16)
+  secrets = _messages.MessageField('Secret', 17, repeated=True)
+  serviceAccount = _messages.StringField(18)
+  source = _messages.MessageField('Source', 19)
+  sourceProvenance = _messages.MessageField('SourceProvenance', 20)
+  startTime = _messages.StringField(21)
+  status = _messages.EnumField('StatusValueValuesEnum', 22)
+  statusDetail = _messages.StringField(23)
+  steps = _messages.MessageField('BuildStep', 24, repeated=True)
+  substitutions = _messages.MessageField('SubstitutionsValue', 25)
+  tags = _messages.StringField(26, repeated=True)
+  timeout = _messages.StringField(27)
+  timing = _messages.MessageField('TimingValue', 28)
+  warnings = _messages.MessageField('Warning', 29, repeated=True)
+
+
+class BuildApproval(_messages.Message):
+  r"""BuildApproval describes a build's approval configuration, state, and
+  result.
+
+  Enums:
+    StateValueValuesEnum: Output only. The state of this build's approval.
+
+  Fields:
+    config: Output only. Configuration for manual approval of this build.
+    result: Output only. Result of manual approval for this Build.
+    state: Output only. The state of this build's approval.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of this build's approval.
+
+    Values:
+      STATE_UNSPECIFIED: Default enum type. This should not be used.
+      PENDING: Build approval is pending.
+      APPROVED: Build approval has been approved.
+      REJECTED: Build approval has been rejected.
+      CANCELLED: Build was cancelled while it was still pending approval.
+    """
+    STATE_UNSPECIFIED = 0
+    PENDING = 1
+    APPROVED = 2
+    REJECTED = 3
+    CANCELLED = 4
+
+  config = _messages.MessageField('ApprovalConfig', 1)
+  result = _messages.MessageField('ApprovalResult', 2)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
 
 
 class BuildOperationMetadata(_messages.Message):
@@ -520,6 +613,8 @@ class BuildStep(_messages.Message):
 
     Values:
       STATUS_UNKNOWN: Status of the build is unknown.
+      PENDING: Build has been created and is pending execution and queuing. It
+        has not been queued.
       QUEUED: Build or step is queued; work has not yet begun.
       WORKING: Build or step is being executed.
       SUCCESS: Build or step finished successfully.
@@ -530,14 +625,15 @@ class BuildStep(_messages.Message):
       EXPIRED: Build was enqueued for longer than the value of `queue_ttl`.
     """
     STATUS_UNKNOWN = 0
-    QUEUED = 1
-    WORKING = 2
-    SUCCESS = 3
-    FAILURE = 4
-    INTERNAL_ERROR = 5
-    TIMEOUT = 6
-    CANCELLED = 7
-    EXPIRED = 8
+    PENDING = 1
+    QUEUED = 2
+    WORKING = 3
+    SUCCESS = 4
+    FAILURE = 5
+    INTERNAL_ERROR = 6
+    TIMEOUT = 7
+    CANCELLED = 8
+    EXPIRED = 9
 
   args = _messages.StringField(1, repeated=True)
   dir = _messages.StringField(2)

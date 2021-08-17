@@ -230,7 +230,7 @@ class Configuration(_messages.Message):
   built. Users create new Revisions by updating the Configuration's spec. The
   "latest created" revision's name is available under status, as is the
   "latest ready" revision's name. See also: https://github.com/knative/serving
-  /blob/master/docs/spec/overview.md#configuration
+  /blob/main/docs/spec/overview.md#configuration
 
   Fields:
     apiVersion: The API version for this call such as
@@ -606,9 +606,10 @@ class GoogleCloudRunV1Condition(_messages.Message):
       Error, Warning, Info
     status: Status of the condition, one of True, False, Unknown.
     type: type is used to communicate the status of the reconciliation
-      process. See also: https://github.com/knative/serving/blob/master/docs/s
-      pec/errors.md#error-conditions-and-reporting Types common to all
-      resources include: * "Ready": True when the Resource is ready.
+      process. See also:
+      https://github.com/knative/serving/blob/main/docs/spec/errors.md#error-
+      conditions-and-reporting Types common to all resources include: *
+      "Ready": True when the Resource is ready.
   """
 
   lastTransitionTime = _messages.StringField(1)
@@ -1427,8 +1428,8 @@ class ResourceRequirements(_messages.Message):
 class Revision(_messages.Message):
   r"""Revision is an immutable snapshot of code and configuration. A revision
   references a container image. Revisions are created by updates to a
-  Configuration. See also: https://github.com/knative/serving/blob/master/docs
-  /spec/overview.md#revision
+  Configuration. See also:
+  https://github.com/knative/serving/blob/main/docs/spec/overview.md#revision
 
   Fields:
     apiVersion: The API version for this call such as
@@ -1463,7 +1464,7 @@ class RevisionSpec(_messages.Message):
       number of fields on this Container, including: name and lifecycle. In
       Cloud Run, only a single container may be provided. The runtime contract
       is documented here:
-      https://github.com/knative/serving/blob/master/docs/runtime-contract.md
+      https://github.com/knative/serving/blob/main/docs/runtime-contract.md
     serviceAccountName: Email address of the IAM service account associated
       with the revision of the service. The service account represents the
       identity of the running revision, and determines what permissions the
@@ -1551,7 +1552,7 @@ class Route(_messages.Message):
   these cases the Route is additionally responsible for monitoring the
   Configuration for "latest ready" revision changes, and smoothly rolling out
   latest revisions. See also:
-  https://github.com/knative/serving/blob/master/docs/spec/overview.md#route
+  https://github.com/knative/serving/blob/main/docs/spec/overview.md#route
   Cloud Run currently supports referencing a single Configuration to
   automatically deploy the "latest ready" Revision from that Configuration.
 
@@ -2731,7 +2732,7 @@ class Service(_messages.Message):
   orchestrates ReplicaSets). The Service's controller will track the statuses
   of its owned Configuration and Route, reflecting their statuses and
   conditions as its own. See also:
-  https://github.com/knative/serving/blob/master/docs/spec/overview.md#service
+  https://github.com/knative/serving/blob/main/docs/spec/overview.md#service
 
   Fields:
     apiVersion: The API version for this call such as

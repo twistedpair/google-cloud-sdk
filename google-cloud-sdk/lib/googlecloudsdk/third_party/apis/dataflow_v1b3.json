@@ -226,7 +226,7 @@
           ]
         },
         "pubsubMetadata": {
-          "description": "PubSub snapshot metadata.",
+          "description": "Pub\/Sub snapshot metadata.",
           "type": "array",
           "items": {
             "$ref": "PubsubSnapshotMetadata"
@@ -1372,14 +1372,14 @@
           }
         },
         "bigTableDetails": {
-          "description": "Identification of a Cloud BigTable source used in the Dataflow job.",
+          "description": "Identification of a Cloud Bigtable source used in the Dataflow job.",
           "type": "array",
           "items": {
             "$ref": "BigTableIODetails"
           }
         },
         "pubsubDetails": {
-          "description": "Identification of a PubSub source used in the Dataflow job.",
+          "description": "Identification of a Pub\/Sub source used in the Dataflow job.",
           "type": "array",
           "items": {
             "$ref": "PubSubIODetails"
@@ -1478,7 +1478,7 @@
     },
     "BigTableIODetails": {
       "id": "BigTableIODetails",
-      "description": "Metadata for a Cloud BigTable connector used by the job.",
+      "description": "Metadata for a Cloud Bigtable connector used by the job.",
       "type": "object",
       "properties": {
         "projectId": {
@@ -2140,7 +2140,7 @@
           "type": "string"
         },
         "additionalExperiments": {
-          "description": "Additional experiment flags for the job.",
+          "description": "Additional experiment flags for the job, specified with the `--experiments` option.",
           "type": "array",
           "items": {
             "type": "string"

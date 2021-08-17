@@ -18,13 +18,14 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import ipaddress
 import os
 
 from googlecloudsdk.command_lib.emulators import util
+from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import log
 from googlecloudsdk.core.util import platforms
-import ipaddress
 import six
 
 SPANNER_EMULATOR_PROPERTY_PREFIX = 'spanner'
@@ -35,6 +36,10 @@ SPANNER_EMULATOR_EXECUTABLE_FILE = 'gateway_main'
 SPANNER_EMULATOR_DOCKER_IMAGE = 'gcr.io/cloud-spanner-emulator/emulator:1.2.0'
 SPANNER_EMULATOR_DEFAULT_GRPC_PORT = 9010
 SPANNER_EMULATOR_DEFAULT_REST_PORT = 9020
+
+
+class InvalidHostPortFormat(exceptions.Error):
+  pass
 
 
 def GetDataDir():
@@ -53,8 +58,9 @@ def _BuildStartArgsForDocker(args):
   try:
     ipaddress.ip_address(host_ip)
   except ValueError:
-    raise ValueError('When using docker, hostname specified via --host-port '
-                     'must be an IPV4 or IPV6 address, found ' + host_ip)
+    raise InvalidHostPortFormat(
+        'When using docker, hostname specified via --host-port '
+        'must be an IPV4 or IPV6 address, found ' + host_ip)
 
   if args.enable_fault_injection:
     return execution_utils.ArgsForExecutableTool(
@@ -79,6 +85,9 @@ def _BuildStartArgsForNativeExecutable(args):
   spanner_executable = os.path.join(util.GetCloudSDKRoot(), 'bin',
                                     SPANNER_EMULATOR_EXECUTABLE_DIR,
                                     SPANNER_EMULATOR_EXECUTABLE_FILE)
+  if args.host_port.port is None:
+    raise InvalidHostPortFormat(
+        'Invalid value for --host-port. Must be in the format host:port')
   return execution_utils.ArgsForExecutableTool(
       spanner_executable, '--hostname', args.host_port.host, '--grpc_port',
       args.host_port.port, '--http_port', six.text_type(args.rest_port),

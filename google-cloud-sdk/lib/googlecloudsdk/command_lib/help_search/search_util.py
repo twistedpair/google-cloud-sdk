@@ -419,7 +419,6 @@ def GetSummary(command, found_terms_map,
       command, found_terms_map, length_per_snippet).GetSummary()
 
 
-# TODO(b/113525269): Use a defined text type -- possibly user input.
 def _Stylize(s):
   """Stylize a given string. Currently done by converting to upper-case."""
   return s.upper()

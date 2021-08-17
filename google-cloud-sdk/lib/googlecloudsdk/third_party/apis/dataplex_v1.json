@@ -538,6 +538,13 @@
       "description": "Action details for invalid or unsupported data files detected by discovery.",
       "type": "object",
       "properties": {
+        "sampledDataLocations": {
+          "description": "The list of data locations sampled and used for format\/schema inference.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
       }
     },
     "GoogleCloudDataplexV1ActionIncompatibleDataSchema": {
@@ -556,6 +563,13 @@
         "newSchema": {
           "description": "The new and incompatible schema within the table. The schema is provided as a JSON formatted structured listing columns and data types.",
           "type": "string"
+        },
+        "sampledDataLocations": {
+          "description": "The list of data locations sampled and used for format\/schema inference.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -1293,7 +1307,7 @@
             "State is unspecified.",
             "Discovery for the asset is scheduled.",
             "Discovery for the asset is running.",
-            "Discovery for the asset is paused and has actions to be resolved before it can be resumed.",
+            "User-provided discovery schedule is temporarily ineffective, and discovery runs on an alternative schedule when there is any pending discovery action.",
             "Discovery for the asset has errors.",
             "Discovery for the asset is disabled.",
             "Discovery for the asset is processing all the data in the storage resource.",

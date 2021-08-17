@@ -800,7 +800,11 @@ class GcsApi(cloud_api.CloudApi):
     """See CloudApi class for function doc strings."""
     del progress_callback  # Unused.
     if self._upload_http_client is None:
-      self._upload_http_client = transports.GetApitoolsTransport()
+      self._upload_http_client = transports.GetApitoolsTransport(
+          redact_request_body_reason=(
+              'Object data is not displayed to keep the log output clean.'
+              ' Set log_http_show_request_body property to True to print the'
+              ' body of this request.'))
 
     if upload_strategy == cloud_api.UploadStrategy.SIMPLE:
       upload = gcs_upload.SimpleUpload(self, self._upload_http_client,

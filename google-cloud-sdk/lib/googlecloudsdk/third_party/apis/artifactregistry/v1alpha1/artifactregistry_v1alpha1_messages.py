@@ -176,21 +176,6 @@ class ArtifactregistryProjectsLocationsRepositoriesGoogetartifactsUploadRequest(
   parent = _messages.StringField(2, required=True)
 
 
-class ArtifactregistryProjectsLocationsRepositoriesImportRequest(_messages.Message):
-  r"""A ArtifactregistryProjectsLocationsRepositoriesImportRequest object.
-
-  Fields:
-    googleDevtoolsArtifactregistryV1alpha1ImportArtifactsRequest: A
-      GoogleDevtoolsArtifactregistryV1alpha1ImportArtifactsRequest resource to
-      be passed as the request body.
-    parent: The name of the parent resource where the artifacts will be
-      imported.
-  """
-
-  googleDevtoolsArtifactregistryV1alpha1ImportArtifactsRequest = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1ImportArtifactsRequest', 1)
-  parent = _messages.StringField(2, required=True)
-
-
 class ArtifactregistryProjectsLocationsRepositoriesYumArtifactsImportRequest(_messages.Message):
   r"""A ArtifactregistryProjectsLocationsRepositoriesYumArtifactsImportRequest
   object.
@@ -304,31 +289,6 @@ class GoogleDevtoolsArtifactregistryV1alpha1AptArtifact(_messages.Message):
   packageType = _messages.EnumField('PackageTypeValueValuesEnum', 6)
 
 
-class GoogleDevtoolsArtifactregistryV1alpha1ErrorInfo(_messages.Message):
-  r"""Error information explaining why a package was not imported.
-
-  Fields:
-    error: The detailed error status.
-    gcsSource: Google Cloud Storage location requested.
-  """
-
-  error = _messages.MessageField('Status', 1)
-  gcsSource = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1GcsSource', 2)
-
-
-class GoogleDevtoolsArtifactregistryV1alpha1GcsSource(_messages.Message):
-  r"""Google Cloud Storage location where the artifacts currently reside.
-
-  Fields:
-    uris: Cloud Storage paths URI (e.g., gs://my_bucket//my_object).
-    useWildcards: Supports URI wildcards for matching multiple objects from a
-      single URI.
-  """
-
-  uris = _messages.StringField(1, repeated=True)
-  useWildcards = _messages.BooleanField(2)
-
-
 class GoogleDevtoolsArtifactregistryV1alpha1GooGetArtifact(_messages.Message):
   r"""A detailed representation of a GooGet artifact.
 
@@ -388,28 +348,6 @@ class GoogleDevtoolsArtifactregistryV1alpha1ImportAptArtifactsResponse(_messages
 
   aptArtifacts = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1AptArtifact', 1, repeated=True)
   errors = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1ImportAptArtifactsErrorInfo', 2, repeated=True)
-
-
-class GoogleDevtoolsArtifactregistryV1alpha1ImportArtifactsRequest(_messages.Message):
-  r"""The request to import new artifacts.
-
-  Fields:
-    gcsSource: Google Cloud Storage location where input content is located.
-  """
-
-  gcsSource = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1GcsSource', 1)
-
-
-class GoogleDevtoolsArtifactregistryV1alpha1ImportArtifactsResponse(_messages.Message):
-  r"""The response message from importing artifacts.
-
-  Fields:
-    errors: Detailed error info for packages that were not imported.
-    packages: The packages updated.
-  """
-
-  errors = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1ErrorInfo', 1, repeated=True)
-  packages = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1Package', 2, repeated=True)
 
 
 class GoogleDevtoolsArtifactregistryV1alpha1ImportGooGetArtifactsErrorInfo(_messages.Message):
@@ -504,25 +442,6 @@ class GoogleDevtoolsArtifactregistryV1alpha1ImportYumArtifactsResponse(_messages
 
   errors = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1ImportYumArtifactsErrorInfo', 1, repeated=True)
   yumArtifacts = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1YumArtifact', 2, repeated=True)
-
-
-class GoogleDevtoolsArtifactregistryV1alpha1Package(_messages.Message):
-  r"""Packages are named collections of versions.
-
-  Fields:
-    createTime: The time when the package was created.
-    displayName: The display name of the package.
-    name: The name of the package, for example: "projects/p1/locations/us-
-      central1/repositories/repo1/packages/pkg1". If the package ID part
-      contains slashes, the slashes are escaped.
-    updateTime: The time when the package was last updated. This includes
-      publishing a new version of the package.
-  """
-
-  createTime = _messages.StringField(1)
-  displayName = _messages.StringField(2)
-  name = _messages.StringField(3)
-  updateTime = _messages.StringField(4)
 
 
 class GoogleDevtoolsArtifactregistryV1alpha1Repository(_messages.Message):

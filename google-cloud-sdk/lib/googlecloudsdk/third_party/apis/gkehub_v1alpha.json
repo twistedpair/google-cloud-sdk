@@ -204,307 +204,6 @@
       "properties": {
       }
     },
-    "ListMembershipsResponse": {
-      "id": "ListMembershipsResponse",
-      "description": "Response message for the `GkeHub.ListMemberships` method.",
-      "type": "object",
-      "properties": {
-        "resources": {
-          "description": "The list of matching Memberships.",
-          "type": "array",
-          "items": {
-            "$ref": "Membership"
-          }
-        },
-        "nextPageToken": {
-          "description": "A token to request the next page of resources from the `ListMemberships` method. The value of an empty string means that there are no more resources to return.",
-          "type": "string"
-        },
-        "unreachable": {
-          "description": "List of locations that could not be reached while fetching this list.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "Membership": {
-      "id": "Membership",
-      "description": "Membership contains information about a member cluster.",
-      "type": "object",
-      "properties": {
-        "endpoint": {
-          "description": "Optional. Endpoint information to reach this member.",
-          "$ref": "MembershipEndpoint"
-        },
-        "name": {
-          "description": "Output only. The full, unique name of this Membership resource in the format `projects\/*\/locations\/*\/memberships\/{membership_id}`, set during creation. `membership_id` must be a valid RFC 1123 compliant DNS label: 1. At most 63 characters in length 2. It must consist of lower case alphanumeric characters or `-` 3. It must start and end with an alphanumeric character Which can be expressed as the regex: `[a-z0-9]([-a-z0-9]*[a-z0-9])?`, with a maximum length of 63 characters.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "labels": {
-          "description": "Optional. GCP labels for this membership.",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        },
-        "description": {
-          "description": "Output only. Description of this membership, limited to 63 characters. Must match the regex: `a-zA-Z0-9*` This field is present for legacy purposes.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "state": {
-          "description": "Output only. State of the Membership resource.",
-          "readOnly": true,
-          "$ref": "MembershipState"
-        },
-        "createTime": {
-          "description": "Output only. When the Membership was created.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "updateTime": {
-          "description": "Output only. When the Membership was last updated.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "deleteTime": {
-          "description": "Output only. When the Membership was deleted.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "externalId": {
-          "description": "Optional. An externally-generated and managed ID for this Membership. This ID may be modified after creation, but this is not recommended. The ID must match the regex: `a-zA-Z0-9*` If this Membership represents a Kubernetes cluster, this value should be set to the UID of the `kube-system` namespace object.",
-          "type": "string"
-        },
-        "lastConnectionTime": {
-          "description": "Output only. For clusters using Connect, the timestamp of the most recent connection established with Google Cloud. This time is updated every several minutes, not continuously. For clusters that do not use GKE Connect, or that have never connected successfully, this field will be unset.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "uniqueId": {
-          "description": "Output only. Google-generated UUID for this resource. This is unique across all Membership resources. If a Membership resource is deleted and another resource with the same name is created, it gets a different unique_id.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "authority": {
-          "description": "Optional. How to identify workloads from this Membership. See the documentation on Workload Identity for more details: https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/workload-identity",
-          "$ref": "Authority"
-        },
-        "infrastructureType": {
-          "description": "Optional. The infrastructure type this Membership is running on.",
-          "type": "string",
-          "enumDescriptions": [
-            "No type was specified. Some Hub functionality may require a type be specified, and will not support Memberships with this value.",
-            "Private infrastructure that is owned or operated by customer. This includes GKE distributions such as GKE-OnPrem and GKE-OnBareMetal.",
-            "Public cloud infrastructure."
-          ],
-          "enum": [
-            "INFRASTRUCTURE_TYPE_UNSPECIFIED",
-            "ON_PREM",
-            "MULTI_CLOUD"
-          ]
-        }
-      }
-    },
-    "MembershipEndpoint": {
-      "id": "MembershipEndpoint",
-      "description": "MembershipEndpoint contains information needed to contact a Kubernetes API, endpoint and any additional Kubernetes metadata.",
-      "type": "object",
-      "properties": {
-        "gkeCluster": {
-          "description": "Optional. GKE-specific information. Only present if this Membership is a GKE cluster.",
-          "$ref": "GkeCluster"
-        },
-        "kubernetesMetadata": {
-          "description": "Output only. Useful Kubernetes-specific metadata.",
-          "readOnly": true,
-          "$ref": "KubernetesMetadata"
-        },
-        "kubernetesResource": {
-          "description": "Optional. The in-cluster Kubernetes Resources that should be applied for a correctly registered cluster, in the steady state. These resources: * Ensure that the cluster is exclusively registered to one and only one Hub Membership. * Propagate Workload Pool Information available in the Membership Authority field. * Ensure proper initial configuration of default Hub Features.",
-          "$ref": "KubernetesResource"
-        }
-      }
-    },
-    "GkeCluster": {
-      "id": "GkeCluster",
-      "description": "GkeCluster contains information specific to GKE clusters.",
-      "type": "object",
-      "properties": {
-        "resourceLink": {
-          "description": "Immutable. Self-link of the GCP resource for the GKE cluster. For example: \/\/container.googleapis.com\/projects\/my-project\/locations\/us-west1-a\/clusters\/my-cluster Zonal clusters are also supported.",
-          "type": "string"
-        },
-        "clusterMissing": {
-          "description": "Output only. If cluster_missing is set then it denotes that the GKE cluster no longer exists in the GKE Control Plane.",
-          "readOnly": true,
-          "type": "boolean"
-        }
-      }
-    },
-    "KubernetesMetadata": {
-      "id": "KubernetesMetadata",
-      "description": "KubernetesMetadata provides informational metadata for Memberships representing Kubernetes clusters.",
-      "type": "object",
-      "properties": {
-        "kubernetesApiServerVersion": {
-          "description": "Output only. Kubernetes API server version string as reported by `\/version`.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "nodeProviderId": {
-          "description": "Output only. Node providerID as reported by the first node in the list of nodes on the Kubernetes endpoint. On Kubernetes platforms that support zero-node clusters (like GKE-on-GCP), the node_count will be zero and the node_provider_id will be empty.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "nodeCount": {
-          "description": "Output only. Node count as reported by Kubernetes nodes resources.",
-          "readOnly": true,
-          "type": "integer",
-          "format": "int32"
-        },
-        "vcpuCount": {
-          "description": "Output only. vCPU count as reported by Kubernetes nodes resources.",
-          "readOnly": true,
-          "type": "integer",
-          "format": "int32"
-        },
-        "memoryMb": {
-          "description": "Output only. The total memory capacity as reported by the sum of all Kubernetes nodes resources, defined in MB.",
-          "readOnly": true,
-          "type": "integer",
-          "format": "int32"
-        },
-        "updateTime": {
-          "description": "Output only. The time at which these details were last updated. This update_time is different from the Membership-level update_time since EndpointDetails are updated internally for API consumers.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        }
-      }
-    },
-    "KubernetesResource": {
-      "id": "KubernetesResource",
-      "description": "KubernetesResource contains the YAML manifests and configuration for Membership Kubernetes resources in the cluster. After CreateMembership or UpdateMembership, these resources should be re-applied in the cluster.",
-      "type": "object",
-      "properties": {
-        "membershipCrManifest": {
-          "description": "Input only. The YAML representation of the Membership CR. This field is ignored for GKE clusters where Hub can read the CR directly. Callers should provide the CR that is currently present in the cluster during CreateMembership or UpdateMembership, or leave this field empty if none exists. The CR manifest is used to validate the cluster has not been registered with another Membership.",
-          "type": "string"
-        },
-        "membershipResources": {
-          "description": "Output only. Additional Kubernetes resources that need to be applied to the cluster after Membership creation, and after every update. This field is only populated in the Membership returned from a successful long-running operation from CreateMembership or UpdateMembership. It is not populated during normal GetMembership or ListMemberships requests. To get the resource manifest after the initial registration, the caller should make a UpdateMembership call with an empty field mask.",
-          "readOnly": true,
-          "type": "array",
-          "items": {
-            "$ref": "ResourceManifest"
-          }
-        },
-        "connectResources": {
-          "description": "Output only. The Kubernetes resources for installing the GKE Connect agent This field is only populated in the Membership returned from a successful long-running operation from CreateMembership or UpdateMembership. It is not populated during normal GetMembership or ListMemberships requests. To get the resource manifest after the initial registration, the caller should make a UpdateMembership call with an empty field mask.",
-          "readOnly": true,
-          "type": "array",
-          "items": {
-            "$ref": "ResourceManifest"
-          }
-        },
-        "resourceOptions": {
-          "description": "Optional. Options for Kubernetes resource generation.",
-          "$ref": "ResourceOptions"
-        }
-      }
-    },
-    "ResourceManifest": {
-      "id": "ResourceManifest",
-      "description": "ResourceManifest represents a single Kubernetes resource to be applied to the cluster.",
-      "type": "object",
-      "properties": {
-        "manifest": {
-          "description": "YAML manifest of the resource.",
-          "type": "string"
-        },
-        "clusterScoped": {
-          "description": "Whether the resource provided in the manifest is `cluster_scoped`. If unset, the manifest is assumed to be namespace scoped. This field is used for REST mapping when applying the resource in a cluster.",
-          "type": "boolean"
-        }
-      }
-    },
-    "ResourceOptions": {
-      "id": "ResourceOptions",
-      "description": "ResourceOptions represent options for Kubernetes resource generation.",
-      "type": "object",
-      "properties": {
-        "connectVersion": {
-          "description": "Optional. The Connect agent version to use for connect_resources. Defaults to the latest GKE Connect version. The version must be a currently supported version, obsolete versions will be rejected.",
-          "type": "string"
-        },
-        "v1beta1Crd": {
-          "description": "Optional. Use `apiextensions\/v1beta1` instead of `apiextensions\/v1` for CustomResourceDefinition resources. This option should be set for clusters with Kubernetes apiserver versions <1.16.",
-          "type": "boolean"
-        }
-      }
-    },
-    "MembershipState": {
-      "id": "MembershipState",
-      "description": "MembershipState describes the state of a Membership resource.",
-      "type": "object",
-      "properties": {
-        "code": {
-          "description": "Output only. The current state of the Membership resource.",
-          "readOnly": true,
-          "type": "string",
-          "enumDescriptions": [
-            "The code is not set.",
-            "The cluster is being registered.",
-            "The cluster is registered.",
-            "The cluster is being unregistered.",
-            "The Membership is being updated.",
-            "The Membership is being updated by the Hub Service."
-          ],
-          "enum": [
-            "CODE_UNSPECIFIED",
-            "CREATING",
-            "READY",
-            "DELETING",
-            "UPDATING",
-            "SERVICE_UPDATING"
-          ]
-        }
-      }
-    },
-    "Authority": {
-      "id": "Authority",
-      "description": "Authority encodes how Google will recognize identities from this Membership. See the workload identity documentation for more details: https:\/\/cloud.google.com\/kubernetes-engine\/docs\/how-to\/workload-identity",
-      "type": "object",
-      "properties": {
-        "issuer": {
-          "description": "Optional. A JSON Web Token (JWT) issuer URI. `issuer` must start with `https:\/\/` and be a valid URL with length <2000 characters. If set, then Google will allow valid OIDC tokens from this issuer to authenticate within the workload_identity_pool. OIDC discovery will be performed on this URI to validate tokens from the issuer. Clearing `issuer` disables Workload Identity. `issuer` cannot be directly modified; it must be cleared (and Workload Identity disabled) before using a new issuer (and re-enabling Workload Identity).",
-          "type": "string"
-        },
-        "workloadIdentityPool": {
-          "description": "Output only. The name of the workload identity pool in which `issuer` will be recognized. There is a single Workload Identity Pool per Hub that is shared between all Memberships that belong to that Hub. For a Hub hosted in {PROJECT_ID}, the workload pool format is `{PROJECT_ID}.hub.id.goog`, although this is subject to change in newer versions of this API.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "identityProvider": {
-          "description": "Output only. An identity provider that reflects the `issuer` in the workload identity pool.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "oidcJwks": {
-          "description": "Optional. OIDC verification keys for this Membership in JWKS format (RFC 7517). When this field is set, OIDC discovery will NOT be performed on `issuer`, and instead OIDC tokens will be validated using this field.",
-          "type": "string",
-          "format": "byte"
-        }
-      }
-    },
     "ListFeaturesResponse": {
       "id": "ListFeaturesResponse",
       "description": "Response message for the `GkeHub.ListFeatures` method.",
@@ -625,10 +324,6 @@
           "description": "Multicluster Ingress-specific spec.",
           "$ref": "MultiClusterIngressFeatureSpec"
         },
-        "helloworld": {
-          "description": "Hello World-specific spec.",
-          "$ref": "HelloWorldFeatureSpec"
-        },
         "cloudauditlogging": {
           "description": "Cloud Audit Logging-specific spec.",
           "$ref": "CloudAuditLoggingFeatureSpec"
@@ -660,97 +355,6 @@
         }
       }
     },
-    "HelloWorldFeatureSpec": {
-      "id": "HelloWorldFeatureSpec",
-      "description": "**Hello World**: The Hub-wide input for the HelloWorld feature.",
-      "type": "object",
-      "properties": {
-        "featureTest": {
-          "description": "Message to hold fields to use in feature e2e create\/mutate testing.",
-          "$ref": "HelloWorldFeatureTest"
-        },
-        "customConfig": {
-          "description": "Custom config for the HelloWorld controller codelab. This should be a textpb string.",
-          "type": "string"
-        }
-      }
-    },
-    "HelloWorldFeatureTest": {
-      "id": "HelloWorldFeatureTest",
-      "description": "Represents message used in feature e2e create\/mutate testing.",
-      "type": "object",
-      "properties": {
-        "sixth": {
-          "type": "string",
-          "format": "int64"
-        },
-        "seventh": {
-          "type": "string"
-        },
-        "first": {
-          "description": "Singular scaler field.",
-          "type": "string"
-        },
-        "second": {
-          "description": "Singular scaler field.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "third": {
-          "type": "string",
-          "enumDescriptions": [
-            "",
-            "",
-            ""
-          ],
-          "enum": [
-            "BAR_UNSPECIFIED",
-            "FIRST",
-            "SECOND"
-          ]
-        },
-        "fourth": {
-          "description": "Singular Message fields.",
-          "type": "string",
-          "format": "google-duration"
-        },
-        "fifth": {
-          "type": "object",
-          "additionalProperties": {
-            "type": "any",
-            "description": "Properties of the object. Contains field @type with type URL."
-          }
-        },
-        "eighth": {
-          "description": "Repeated field.",
-          "type": "array",
-          "items": {
-            "$ref": "HelloWorldFooBar"
-          }
-        },
-        "ninth": {
-          "description": "Map field.",
-          "type": "object",
-          "additionalProperties": {
-            "$ref": "HelloWorldFooBar"
-          }
-        }
-      }
-    },
-    "HelloWorldFooBar": {
-      "id": "HelloWorldFooBar",
-      "description": "Nested Message.",
-      "type": "object",
-      "properties": {
-        "first": {
-          "type": "string"
-        },
-        "second": {
-          "type": "integer",
-          "format": "int32"
-        }
-      }
-    },
     "CloudAuditLoggingFeatureSpec": {
       "id": "CloudAuditLoggingFeatureSpec",
       "description": "**Cloud Audit Logging**: Spec for Audit Logging Allowlisting.",
@@ -770,36 +374,13 @@
       "description": "MembershipFeatureSpec contains configuration information for a single Membership.",
       "type": "object",
       "properties": {
-        "helloworld": {
-          "description": "Hello World-specific spec.",
-          "$ref": "HelloWorldMembershipSpec"
-        },
         "configmanagement": {
           "description": "Config Management-specific spec.",
           "$ref": "ConfigManagementMembershipSpec"
         },
-        "apigee": {
-          "description": "Apigee-specific spec.",
-          "$ref": "ApigeeMembershipSpec"
-        },
         "identityservice": {
           "description": "Identity Service-specific spec.",
           "$ref": "IdentityServiceMembershipSpec"
-        }
-      }
-    },
-    "HelloWorldMembershipSpec": {
-      "id": "HelloWorldMembershipSpec",
-      "description": "**Hello World**: The membership-specific input for HelloWorld feature.",
-      "type": "object",
-      "properties": {
-        "customConfig": {
-          "description": "Custom config for individual memberships. This should be a textpb string.",
-          "type": "string"
-        },
-        "featureTest": {
-          "description": "Message to hold fields to use in feature e2e create\/mutate testing.",
-          "$ref": "HelloWorldFeatureTest"
         }
       }
     },
@@ -954,24 +535,6 @@
         }
       }
     },
-    "ApigeeMembershipSpec": {
-      "id": "ApigeeMembershipSpec",
-      "description": "**Apigee**: Per-Membership Feature spec.",
-      "type": "object",
-      "properties": {
-        "location": {
-          "description": "Location of the cluster. This is used by Apigee management plane for making location-based routing decisions.",
-          "type": "string"
-        },
-        "organizationProjects": {
-          "description": "In Apigee hybrid install, a project can contain memberships that serve multiple Apigee org projects. This is the list of Apigee org projects that the membership serves. E.g., In order to get the memberships that serve a specific organization project, Consumers can filter based on this field.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
     "IdentityServiceMembershipSpec": {
       "id": "IdentityServiceMembershipSpec",
       "description": "**Anthos Identity Service**: Configuration for a single Membership.",
@@ -1064,10 +627,6 @@
         "servicemesh": {
           "description": "Service Mesh-specific state.",
           "$ref": "ServiceMeshFeatureState"
-        },
-        "helloworld": {
-          "description": "Hello World-specific state.",
-          "$ref": "HelloWorldFeatureState"
         },
         "state": {
           "description": "Output only. The \"running state\" of the Feature in this Hub.",
@@ -1167,13 +726,6 @@
         }
       }
     },
-    "HelloWorldFeatureState": {
-      "id": "HelloWorldFeatureState",
-      "description": "**Hello World**: An empty state left as an example Hub-wide Feature state.",
-      "type": "object",
-      "properties": {
-      }
-    },
     "FeatureState": {
       "id": "FeatureState",
       "description": "FeatureState describes the high-level state of a Feature. It may be used to describe a Feature's state at the environ-level, or per-membershop, depending on the context.",
@@ -1215,10 +767,6 @@
           "description": "Service Mesh-specific state.",
           "$ref": "ServiceMeshMembershipState"
         },
-        "helloworld": {
-          "description": "Hello World-specific state.",
-          "$ref": "HelloWorldMembershipState"
-        },
         "metering": {
           "description": "Metering-specific spec.",
           "$ref": "MeteringMembershipState"
@@ -1250,13 +798,6 @@
             "$ref": "ServiceMeshAnalysisMessage"
           }
         }
-      }
-    },
-    "HelloWorldMembershipState": {
-      "id": "HelloWorldMembershipState",
-      "description": "**Hello World**: An empty state left as an example membership-specific Feature state.",
-      "type": "object",
-      "properties": {
       }
     },
     "MeteringMembershipState": {
@@ -1853,80 +1394,6 @@
         }
       }
     },
-    "GenerateConnectManifestResponse": {
-      "id": "GenerateConnectManifestResponse",
-      "description": "GenerateConnectManifestResponse contains manifest information for installing\/upgrading a Connect agent.",
-      "type": "object",
-      "properties": {
-        "manifest": {
-          "description": "The ordered list of Kubernetes resources that need to be applied to the cluster for GKE Connect agent installation\/upgrade.",
-          "type": "array",
-          "items": {
-            "$ref": "ConnectAgentResource"
-          }
-        }
-      }
-    },
-    "ConnectAgentResource": {
-      "id": "ConnectAgentResource",
-      "description": "ConnectAgentResource represents a Kubernetes resource manifest for Connect Agent deployment.",
-      "type": "object",
-      "properties": {
-        "type": {
-          "description": "Kubernetes type of the resource.",
-          "$ref": "TypeMeta"
-        },
-        "manifest": {
-          "description": "YAML manifest of the resource.",
-          "type": "string"
-        }
-      }
-    },
-    "TypeMeta": {
-      "id": "TypeMeta",
-      "description": "TypeMeta is the type information needed for content unmarshalling of Kubernetes resources in the manifest.",
-      "type": "object",
-      "properties": {
-        "kind": {
-          "description": "Kind of the resource (e.g. Deployment).",
-          "type": "string"
-        },
-        "apiVersion": {
-          "description": "APIVersion of the resource (e.g. v1).",
-          "type": "string"
-        }
-      }
-    },
-    "Fleet": {
-      "id": "Fleet",
-      "description": "Contains the information of fleet resource.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "Output only. The full, unique resource name of this fleet in the format of `projects\/{project}\/locations\/{location}\/fleet`. Each GCP project can have at most one fleet resource.",
-          "readOnly": true,
-          "type": "string"
-        },
-        "fleetName": {
-          "description": "The name for the fleet. The name must meet the following constraints: + The name of a fleet should be unique within the organization; + It must consist of lower case alphanumeric characters or `-`; + The length of the name must be less than or equal to 63; + Unicode names must be expressed in Punycode format (rfc3492). Examples: + prod-fleet + xn--wlq33vhyw9jb \uFF08Punycode form for \"\u751F\u4EA7\u73AF\u5883\")",
-          "type": "string"
-        }
-      }
-    },
-    "SearchFleetsResponse": {
-      "id": "SearchFleetsResponse",
-      "description": "Response message for the `FleetService.SearchFleetsResponse` method.",
-      "type": "object",
-      "properties": {
-        "fleets": {
-          "description": "The list of matching fleets.",
-          "type": "array",
-          "items": {
-            "$ref": "Fleet"
-          }
-        }
-      }
-    },
     "ListLocationsResponse": {
       "id": "ListLocationsResponse",
       "description": "The response message for Locations.ListLocations.",
@@ -1997,7 +1464,7 @@
     },
     "Policy": {
       "id": "Policy",
-      "description": "An Identity and Access Management (IAM) policy, which specifies access controls for Google Cloud resources. A `Policy` is a collection of `bindings`. A `binding` binds one or more `members` to a single `role`. Members can be user accounts, service accounts, Google groups, and domains (such as G Suite). A `role` is a named list of permissions; each `role` can be an IAM predefined role or a user-created custom role. For some types of Google Cloud resources, a `binding` can also specify a `condition`, which is a logical expression that allows access to a resource only if the expression evaluates to `true`. A condition can add constraints based on attributes of the request, the resource, or both. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies). **JSON example:** { \"bindings\": [ { \"role\": \"roles\/resourcemanager.organizationAdmin\", \"members\": [ \"user:mike@example.com\", \"group:admins@example.com\", \"domain:google.com\", \"serviceAccount:my-project-id@appspot.gserviceaccount.com\" ] }, { \"role\": \"roles\/resourcemanager.organizationViewer\", \"members\": [ \"user:eve@example.com\" ], \"condition\": { \"title\": \"expirable access\", \"description\": \"Does not grant access after Sep 2020\", \"expression\": \"request.time < timestamp('2020-10-01T00:00:00.000Z')\", } } ], \"etag\": \"BwWWja0YfJA=\", \"version\": 3 } **YAML example:** bindings: - members: - user:mike@example.com - group:admins@example.com - domain:google.com - serviceAccount:my-project-id@appspot.gserviceaccount.com role: roles\/resourcemanager.organizationAdmin - members: - user:eve@example.com role: roles\/resourcemanager.organizationViewer condition: title: expirable access description: Does not grant access after Sep 2020 expression: request.time < timestamp('2020-10-01T00:00:00.000Z') - etag: BwWWja0YfJA= - version: 3 For a description of IAM and its features, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/docs\/).",
+      "description": "An Identity and Access Management (IAM) policy, which specifies access controls for Google Cloud resources. A `Policy` is a collection of `bindings`. A `binding` binds one or more `members` to a single `role`. Members can be user accounts, service accounts, Google groups, and domains (such as G Suite). A `role` is a named list of permissions; each `role` can be an IAM predefined role or a user-created custom role. For some types of Google Cloud resources, a `binding` can also specify a `condition`, which is a logical expression that allows access to a resource only if the expression evaluates to `true`. A condition can add constraints based on attributes of the request, the resource, or both. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies). **JSON example:** { \"bindings\": [ { \"role\": \"roles\/resourcemanager.organizationAdmin\", \"members\": [ \"user:mike@example.com\", \"group:admins@example.com\", \"domain:google.com\", \"serviceAccount:my-project-id@appspot.gserviceaccount.com\" ] }, { \"role\": \"roles\/resourcemanager.organizationViewer\", \"members\": [ \"user:eve@example.com\" ], \"condition\": { \"title\": \"expirable access\", \"description\": \"Does not grant access after Sep 2020\", \"expression\": \"request.time < timestamp('2020-10-01T00:00:00.000Z')\", } } ], \"etag\": \"BwWWja0YfJA=\", \"version\": 3 } **YAML example:** bindings: - members: - user:mike@example.com - group:admins@example.com - domain:google.com - serviceAccount:my-project-id@appspot.gserviceaccount.com role: roles\/resourcemanager.organizationAdmin - members: - user:eve@example.com role: roles\/resourcemanager.organizationViewer condition: title: expirable access description: Does not grant access after Sep 2020 expression: request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA= version: 3 For a description of IAM and its features, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/docs\/).",
       "type": "object",
       "properties": {
         "version": {
@@ -2197,65 +1664,6 @@
       "resources": {
         "locations": {
           "methods": {
-            "getFleet": {
-              "id": "gkehub.projects.locations.getFleet",
-              "path": "v1alpha/{+name}",
-              "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/fleet",
-              "httpMethod": "GET",
-              "parameters": {
-                "name": {
-                  "description": "Required. The resource name of the fleet to retrieve. Format: projects\/{project}\/locations\/{location}\/fleet.",
-                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/fleet$",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "name"
-              ],
-              "response": {
-                "$ref": "Fleet"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
-              "description": "Returns the details of a fleet."
-            },
-            "updateFleet": {
-              "id": "gkehub.projects.locations.updateFleet",
-              "path": "v1alpha/{+name}",
-              "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/fleet",
-              "httpMethod": "PATCH",
-              "parameters": {
-                "name": {
-                  "description": "Output only. The full, unique resource name of this fleet in the format of `projects\/{project}\/locations\/{location}\/fleet`. Each GCP project can have at most one fleet resource.",
-                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/fleet$",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                },
-                "updateMask": {
-                  "description": "The fields to be updated;",
-                  "location": "query",
-                  "type": "string",
-                  "format": "google-fieldmask"
-                }
-              },
-              "parameterOrder": [
-                "name"
-              ],
-              "request": {
-                "$ref": "Fleet"
-              },
-              "response": {
-                "$ref": "Fleet"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
-              "description": "Updates a fleet."
-            },
             "list": {
               "id": "gkehub.projects.locations.list",
               "path": "v1alpha/{+name}/locations",
@@ -2445,332 +1853,6 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`."
-                }
-              }
-            },
-            "memberships": {
-              "methods": {
-                "list": {
-                  "id": "gkehub.projects.locations.memberships.list",
-                  "path": "v1alpha/{+parent}/memberships",
-                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/memberships",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "parent": {
-                      "description": "Required. The parent (project and location) where the Memberships will be listed. Specified in the format `projects\/*\/locations\/*`.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "pageSize": {
-                      "description": "Optional. When requesting a 'page' of resources, `page_size` specifies number of resources to return. If unspecified or set to 0, all resources will be returned.",
-                      "location": "query",
-                      "type": "integer",
-                      "format": "int32"
-                    },
-                    "pageToken": {
-                      "description": "Optional. Token returned by previous call to `ListMemberships` which specifies the position in the list from where to continue listing the resources.",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "filter": {
-                      "description": "Optional. Lists Memberships that match the filter expression, following the syntax outlined in https:\/\/google.aip.dev\/160. Examples: - Name is `bar` in project `foo-proj` and location `global`: name = \"projects\/foo-proj\/locations\/global\/membership\/bar\" - Memberships that have a label called `foo`: labels.foo:* - Memberships that have a label called `foo` whose value is `bar`: labels.foo = bar - Memberships in the CREATING state: state = CREATING",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "orderBy": {
-                      "description": "Optional. One or more fields to compare and use to sort the output. See https:\/\/google.aip.dev\/132#ordering.",
-                      "location": "query",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "parent"
-                  ],
-                  "response": {
-                    "$ref": "ListMembershipsResponse"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Lists Memberships in a given project and location."
-                },
-                "get": {
-                  "id": "gkehub.projects.locations.memberships.get",
-                  "path": "v1alpha/{+name}",
-                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/memberships/{membershipsId}",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "name": {
-                      "description": "Required. The Membership resource name in the format `projects\/*\/locations\/*\/memberships\/*`.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/memberships\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "response": {
-                    "$ref": "Membership"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Gets the details of a Membership."
-                },
-                "create": {
-                  "id": "gkehub.projects.locations.memberships.create",
-                  "path": "v1alpha/{+parent}/memberships",
-                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/memberships",
-                  "httpMethod": "POST",
-                  "parameters": {
-                    "parent": {
-                      "description": "Required. The parent (project and location) where the Memberships will be created. Specified in the format `projects\/*\/locations\/*`.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "membershipId": {
-                      "description": "Required. Client chosen ID for the membership. `membership_id` must be a valid RFC 1123 compliant DNS label: 1. At most 63 characters in length 2. It must consist of lower case alphanumeric characters or `-` 3. It must start and end with an alphanumeric character Which can be expressed as the regex: `[a-z0-9]([-a-z0-9]*[a-z0-9])?`, with a maximum length of 63 characters.",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "requestId": {
-                      "description": "Optional. A request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes after the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
-                      "location": "query",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "parent"
-                  ],
-                  "request": {
-                    "$ref": "Membership"
-                  },
-                  "response": {
-                    "$ref": "Operation"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Creates a new Membership. **This is currently only supported for GKE clusters on Google Cloud**. To register other clusters, follow the instructions at https:\/\/cloud.google.com\/anthos\/multicluster-management\/connect\/registering-a-cluster."
-                },
-                "delete": {
-                  "id": "gkehub.projects.locations.memberships.delete",
-                  "path": "v1alpha/{+name}",
-                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/memberships/{membershipsId}",
-                  "httpMethod": "DELETE",
-                  "parameters": {
-                    "name": {
-                      "description": "Required. The Membership resource name in the format `projects\/*\/locations\/*\/memberships\/*`.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/memberships\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "requestId": {
-                      "description": "Optional. A request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes after the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
-                      "location": "query",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "response": {
-                    "$ref": "Operation"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Removes a Membership. **This is currently only supported for GKE clusters on Google Cloud**. To unregister other clusters, follow the instructions at https:\/\/cloud.google.com\/anthos\/multicluster-management\/connect\/unregistering-a-cluster."
-                },
-                "patch": {
-                  "id": "gkehub.projects.locations.memberships.patch",
-                  "path": "v1alpha/{+name}",
-                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/memberships/{membershipsId}",
-                  "httpMethod": "PATCH",
-                  "parameters": {
-                    "name": {
-                      "description": "Required. The Membership resource name in the format `projects\/*\/locations\/*\/memberships\/*`.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/memberships\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "updateMask": {
-                      "description": "Required. Mask of fields to update.",
-                      "location": "query",
-                      "type": "string",
-                      "format": "google-fieldmask"
-                    },
-                    "requestId": {
-                      "description": "Optional. A request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes after the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
-                      "location": "query",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "request": {
-                    "$ref": "Membership"
-                  },
-                  "response": {
-                    "$ref": "Operation"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Updates an existing Membership."
-                },
-                "generateConnectManifest": {
-                  "id": "gkehub.projects.locations.memberships.generateConnectManifest",
-                  "path": "v1alpha/{+name}:generateConnectManifest",
-                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/memberships/{membershipsId}:generateConnectManifest",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "name": {
-                      "description": "Required. The Membership resource name the Agent will associate with, in the format `projects\/*\/locations\/*\/memberships\/*`.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/memberships\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "namespace": {
-                      "description": "Optional. Namespace for GKE Connect agent resources. Defaults to `gke-connect`. The Connect Agent is authorized automatically when run in the default namespace. Otherwise, explicit authorization must be granted with an additional IAM binding.",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "proxy": {
-                      "description": "Optional. URI of a proxy if connectivity from the agent to gkeconnect.googleapis.com requires the use of a proxy. Format must be in the form `http(s):\/\/{proxy_address}`, depending on the HTTP\/HTTPS protocol supported by the proxy. This will direct the connect agent's outbound traffic through a HTTP(S) proxy.",
-                      "location": "query",
-                      "type": "string",
-                      "format": "byte"
-                    },
-                    "version": {
-                      "description": "Optional. The Connect agent version to use. Defaults to the most current version.",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "isUpgrade": {
-                      "description": "Optional. If true, generate the resources for upgrade only. Some resources generated only for installation (e.g. secrets) will be excluded.",
-                      "location": "query",
-                      "type": "boolean"
-                    },
-                    "registry": {
-                      "description": "Optional. The registry to fetch the connect agent image from. Defaults to gcr.io\/gkeconnect.",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "imagePullSecretContent": {
-                      "description": "Optional. The image pull secret content for the registry, if not public.",
-                      "location": "query",
-                      "type": "string",
-                      "format": "byte"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "response": {
-                    "$ref": "GenerateConnectManifestResponse"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Generates the manifest for deployment of the GKE connect agent. **This method is used internally by Google-provided libraries.** Most clients should not need to call this method directly."
-                },
-                "setIamPolicy": {
-                  "id": "gkehub.projects.locations.memberships.setIamPolicy",
-                  "path": "v1alpha/{+resource}:setIamPolicy",
-                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/memberships/{membershipsId}:setIamPolicy",
-                  "httpMethod": "POST",
-                  "parameters": {
-                    "resource": {
-                      "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/memberships\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "resource"
-                  ],
-                  "request": {
-                    "$ref": "SetIamPolicyRequest"
-                  },
-                  "response": {
-                    "$ref": "Policy"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors."
-                },
-                "getIamPolicy": {
-                  "id": "gkehub.projects.locations.memberships.getIamPolicy",
-                  "path": "v1alpha/{+resource}:getIamPolicy",
-                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/memberships/{membershipsId}:getIamPolicy",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "resource": {
-                      "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/memberships\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "options.requestedPolicyVersion": {
-                      "description": "Optional. The policy format version to be returned. Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected. Requests for policies with any conditional bindings must specify version 3. Policies without any conditional bindings may specify any valid value or leave the field unset. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
-                      "location": "query",
-                      "type": "integer",
-                      "format": "int32"
-                    }
-                  },
-                  "parameterOrder": [
-                    "resource"
-                  ],
-                  "response": {
-                    "$ref": "Policy"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set."
-                },
-                "testIamPermissions": {
-                  "id": "gkehub.projects.locations.memberships.testIamPermissions",
-                  "path": "v1alpha/{+resource}:testIamPermissions",
-                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/memberships/{membershipsId}:testIamPermissions",
-                  "httpMethod": "POST",
-                  "parameters": {
-                    "resource": {
-                      "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/memberships\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "resource"
-                  ],
-                  "request": {
-                    "$ref": "TestIamPermissionsRequest"
-                  },
-                  "response": {
-                    "$ref": "TestIamPermissionsResponse"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
                 }
               }
             },
@@ -3048,69 +2130,94 @@
                 }
               }
             },
-            "fleet": {
+            "memberships": {
               "methods": {
-                "create": {
-                  "id": "gkehub.projects.locations.fleet.create",
-                  "path": "v1alpha/{+parent}/fleet",
-                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/fleet",
+                "setIamPolicy": {
+                  "id": "gkehub.projects.locations.memberships.setIamPolicy",
+                  "path": "v1alpha/{+resource}:setIamPolicy",
+                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/memberships/{membershipsId}:setIamPolicy",
                   "httpMethod": "POST",
                   "parameters": {
-                    "parent": {
-                      "description": "Required. The parent (fleet-hosting project) under which the fleet will be created. Format: `projects\/{project}\/locations\/{location}`.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/memberships\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     }
                   },
                   "parameterOrder": [
-                    "parent"
+                    "resource"
                   ],
                   "request": {
-                    "$ref": "Fleet"
+                    "$ref": "SetIamPolicyRequest"
                   },
                   "response": {
-                    "$ref": "Fleet"
+                    "$ref": "Policy"
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Creates a fleet."
+                  "description": "Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors."
                 },
-                "searchFleets": {
-                  "id": "gkehub.projects.locations.fleet.searchFleets",
-                  "path": "v1alpha/projects/{projectsId}/locations/{locationsId}/fleet:searchFleets",
-                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/fleet:searchFleets",
+                "getIamPolicy": {
+                  "id": "gkehub.projects.locations.memberships.getIamPolicy",
+                  "path": "v1alpha/{+resource}:getIamPolicy",
+                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/memberships/{membershipsId}:getIamPolicy",
                   "httpMethod": "GET",
                   "parameters": {
-                    "projectsId": {
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/memberships\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
-                    "locationsId": {
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "query": {
-                      "description": "Required. A query string for searching for fleets. The currently supported query field is `ancestor`. Use \"ancestor=organizations\/{org_id}\" to search for fleets in an organization, and \"ancestor=folders\/{folder_id}\" to search for fleets in a folder. Search expressions are case insensitive.",
+                    "options.requestedPolicyVersion": {
+                      "description": "Optional. The policy format version to be returned. Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected. Requests for policies with any conditional bindings must specify version 3. Policies without any conditional bindings may specify any valid value or leave the field unset. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
                       "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    }
+                  },
+                  "parameterOrder": [
+                    "resource"
+                  ],
+                  "response": {
+                    "$ref": "Policy"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set."
+                },
+                "testIamPermissions": {
+                  "id": "gkehub.projects.locations.memberships.testIamPermissions",
+                  "path": "v1alpha/{+resource}:testIamPermissions",
+                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/memberships/{membershipsId}:testIamPermissions",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "resource": {
+                      "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/memberships\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
                       "type": "string"
                     }
                   },
                   "parameterOrder": [
-                    "projectsId",
-                    "locationsId"
+                    "resource"
                   ],
+                  "request": {
+                    "$ref": "TestIamPermissionsRequest"
+                  },
                   "response": {
-                    "$ref": "SearchFleetsResponse"
+                    "$ref": "TestIamPermissionsResponse"
                   },
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Search fleets within a given organization or folder, and whose hosting projects the caller has `gkehub.memberships.get` permission on."
+                  "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
                 }
               }
             }

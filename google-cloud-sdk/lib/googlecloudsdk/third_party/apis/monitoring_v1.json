@@ -298,6 +298,10 @@
           "description": "The properties applied to the Y axis.",
           "$ref": "Axis"
         },
+        "y2Axis": {
+          "description": "The properties applied to the Y2 axis.",
+          "$ref": "Axis"
+        },
         "chartOptions": {
           "description": "Display options for the chart.",
           "$ref": "ChartOptions"
@@ -339,6 +343,20 @@
           "description": "Optional. The lower bound on data point frequency for this data set, implemented by specifying the minimum alignment period to use in a time series query For example, if the data is published once every 10 minutes, the min_alignment_period should be at least 10 minutes. It would not make sense to fetch and align data at one minute intervals.",
           "type": "string",
           "format": "google-duration"
+        },
+        "targetAxis": {
+          "description": "Optional. The target axis to use for plotting the metric.",
+          "type": "string",
+          "enumDescriptions": [
+            "The target axis was not specified. Defaults to Y1.",
+            "The y_axis (the right axis of chart).",
+            "The y2_axis (the left axis of chart)."
+          ],
+          "enum": [
+            "TARGET_AXIS_UNSPECIFIED",
+            "Y1",
+            "Y2"
+          ]
         }
       }
     },
@@ -645,6 +663,20 @@
             "DIRECTION_UNSPECIFIED",
             "ABOVE",
             "BELOW"
+          ]
+        },
+        "targetAxis": {
+          "description": "The target axis to use for plotting the threshold. Target axis is not allowed in a Scorecard.",
+          "type": "string",
+          "enumDescriptions": [
+            "The target axis was not specified. Defaults to Y1.",
+            "The y_axis (the right axis of chart).",
+            "The y2_axis (the left axis of chart)."
+          ],
+          "enum": [
+            "TARGET_AXIS_UNSPECIFIED",
+            "Y1",
+            "Y2"
           ]
         }
       }
@@ -1483,7 +1515,7 @@
                     "https://www.googleapis.com/auth/monitoring",
                     "https://www.googleapis.com/auth/monitoring.read"
                   ],
-                  "description": "Returns a specific Metrics Scope."
+                  "description": "Returns a specific Metrics Scope, including the list of projects monitored by the specified Metrics Scope."
                 },
                 "listMetricsScopesByMonitoredProject": {
                   "id": "monitoring.locations.global.metricsScopes.listMetricsScopesByMonitoredProject",

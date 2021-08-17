@@ -974,6 +974,62 @@
         }
       }
     },
+    "Module": {
+      "id": "Module",
+      "description": "A module specifies the data types used in assets.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The resource name of the module, in the following form: `projects\/{project}\/locations\/{location}\/module\/{module}`.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. The creation time of the module.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The last-modified time of the module.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "schema": {
+          "description": "The Open API schema that defines this module.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object."
+          }
+        }
+      }
+    },
+    "ListModulesResponse": {
+      "id": "ListModulesResponse",
+      "description": "Response message for ModulesService.ListModules.",
+      "type": "object",
+      "properties": {
+        "modules": {
+          "description": "The list of modules.",
+          "type": "array",
+          "items": {
+            "$ref": "Module"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results, or empty if there are no more results in the list.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "Rule": {
       "id": "Rule",
       "description": "A rule resource is associated with an AssetType and manages the workflow pipelines of a collection of Assets under that AssetType.",
@@ -3596,6 +3652,173 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
+                }
+              }
+            },
+            "modules": {
+              "methods": {
+                "create": {
+                  "id": "mediaasset.projects.locations.modules.create",
+                  "path": "v1alpha/{+parent}/modules",
+                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/modules",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent resource name, in the following form: `projects\/{project}\/locations\/{location}`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "moduleId": {
+                      "description": "The ID of the module resource to be created.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "Module"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a new module in a given project and location."
+                },
+                "delete": {
+                  "id": "mediaasset.projects.locations.modules.delete",
+                  "path": "v1alpha/{+name}",
+                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/modules/{modulesId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the module to delete, in the following form: `projects\/{project}\/locations\/{location}\/modules\/{module}`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/modules\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes a single module."
+                },
+                "get": {
+                  "id": "mediaasset.projects.locations.modules.get",
+                  "path": "v1alpha/{+name}",
+                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/modules/{modulesId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the module to retrieve, in the following form: `projects\/{project}\/locations\/{location}\/modules\/{module}`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/modules\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Module"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets details of a single module."
+                },
+                "list": {
+                  "id": "mediaasset.projects.locations.modules.list",
+                  "path": "v1alpha/{+parent}/modules",
+                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/modules",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent resource name, in the following form: `projects\/{project}\/locations\/{location}`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The maximum number of items to return. If unspecified, server will pick an appropriate default. Server may return fewer items than requested. A caller should only rely on response's next_page_token to determine if there are more realms left to be queried.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "The next_page_token value returned from a previous List request, if any.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "The filter to apply to list results.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "orderBy": {
+                      "description": "Specifies the ordering of results following syntax at https:\/\/cloud.google.com\/apis\/design\/design_patterns#sorting_order.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListModulesResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists modules in a given project and location."
+                },
+                "patch": {
+                  "id": "mediaasset.projects.locations.modules.patch",
+                  "path": "v1alpha/{+name}",
+                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/modules/{modulesId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "The resource name of the module, in the following form: `projects\/{project}\/locations\/{location}\/module\/{module}`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/modules\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Field mask is used to specify the fields to be overwritten in the Module resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "Module"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Updates the parameters of a single module."
                 }
               }
             },

@@ -32,13 +32,10 @@ import six
 # Command noun and verb variants mapped to most likely gcloud counterpart.
 SYNONYMS = {
     'change': 'update',
-    # TODO(b/119555246): Delete 'copy-files' entry once
-    # 'gcloud compute copy-files' is removed.
     'copy-files': 'scp',
     'create': 'add',
     'delete': 'remove',
     'describe': 'get',
-    # TODO(b/119550681): Delete 'docker' entry once 'gcloud docker' is removed.
     'docker': 'auth-configure-docker',
     'get': 'describe',
     'image': 'images',

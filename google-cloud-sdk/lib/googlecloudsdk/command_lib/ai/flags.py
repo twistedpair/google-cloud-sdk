@@ -12,7 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Flags defination for gcloud aiplatform."""
+"""Flag definitions for gcloud ai."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -38,56 +38,6 @@ from googlecloudsdk.core import properties
 
 # TODO(b/185318075): Consider leaving only re-usable flags here and moving flags
 # that are specific to a subgroup/command to their corresponding modules.
-
-HPTUNING_JOB_DISPLAY_NAME = base.Argument(
-    '--display-name',
-    required=True,
-    help=('Display name of the hyperparameter tuning job to create.'))
-
-HPTUNING_MAX_TRIAL_COUNT = base.Argument(
-    '--max-trial-count',
-    type=int,
-    default=1,
-    help=('Desired total number of trials. The default value is 1.'))
-
-HPTUNING_PARALLEL_TRIAL_COUNT = base.Argument(
-    '--parallel-trial-count',
-    type=int,
-    default=1,
-    help=(
-        'Desired number of Trials to run in parallel. The default value is 1.'))
-
-HPTUNING_JOB_CONFIG = base.Argument(
-    '--config',
-    required=True,
-    help="""
-Path to the job configuration file. This file should be a YAML document containing a HyperparameterTuningSpec.
-If an option is specified both in the configuration file **and** via command line arguments, the command line arguments
-override the configuration file.
-
-Example(YAML):
-
-  displayName: TestHpTuningJob
-  maxTrialCount: 1
-  parallelTrialCount: 1
-  studySpec:
-    metrics:
-    - metricId: x
-      goal: MINIMIZE
-    parameters:
-    - parameterId: z
-      integerValueSpec:
-        minValue: 1
-        maxValue: 100
-    algorithm: RANDOM_SEARCH
-  trialJobSpec:
-    workerPoolSpecs:
-    - machineSpec:
-        machineType: n1-standard-4
-      replicaCount: 1
-      containerSpec:
-        imageUri: gcr.io/ucaip-test/ucaip-training-test
-""")
 
 _POLLING_INTERVAL_FLAG = base.Argument(
     '--polling-interval',
@@ -535,10 +485,6 @@ inclusive.
       '--container-health-route',
       help='HTTP path to send health checks to inside the container.')
 
-
-def AddUploadModelBetaFlags(parser):
-  """Adds additional flags for v1beta1 UploadModel."""
-
   # For Explanation.
   parser.add_argument(
       '--explanation-method',
@@ -918,49 +864,6 @@ def GetAcceleratorTypeMapper(version):
       help_str='The available types of accelerators.',
       include_filter=lambda x: x.startswith('NVIDIA'),
       required=False)
-
-
-def AddCreateHpTuningJobFlags(parser, algorithm_enum):
-  """Add arguments for creating hp tuning job."""
-  AddRegionResourceArg(parser, 'to upload model')
-  HPTUNING_JOB_DISPLAY_NAME.AddToParser(parser)
-  HPTUNING_JOB_CONFIG.AddToParser(parser)
-  HPTUNING_MAX_TRIAL_COUNT.AddToParser(parser)
-  HPTUNING_PARALLEL_TRIAL_COUNT.AddToParser(parser)
-  TRAINING_SERVICE_ACCOUNT.AddToParser(parser)
-  NETWORK.AddToParser(parser)
-  AddKmsKeyResourceArg(parser, 'hyperparameter tuning job')
-
-  arg_utils.ChoiceEnumMapper(
-      '--algorithm',
-      algorithm_enum,
-      help_str='Search algorithm specified for the given study. '
-  ).choice_arg.AddToParser(parser)
-
-
-def GetHptuningJobResourceSpec(resource_name='hptuning_job'):
-  return concepts.ResourceSpec(
-      constants.HPTUNING_JOB_COLLECTION,
-      resource_name=resource_name,
-      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
-      locationsId=RegionAttributeConfig(),
-      disable_auto_completers=False)
-
-
-def AddHptuningJobResourceArg(parser, verb):
-  """Add a resource argument for a Vertex AI hyperparameter tuning job.
-
-  NOTE: Must be used only if it's the only resource arg in the command.
-
-  Args:
-    parser: the parser for the command.
-    verb: str, the verb to describe the resource, such as 'to update'.
-  """
-  concept_parsers.ConceptParser.ForResource(
-      'hptuning_job',
-      GetHptuningJobResourceSpec(),
-      'The hyperparameter tuning job {}.'.format(verb),
-      required=True).AddToParser(parser)
 
 
 def AddKmsKeyResourceArg(parser, resource):

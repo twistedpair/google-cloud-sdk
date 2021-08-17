@@ -40,8 +40,31 @@ AI_PLATFORM_RELEASE_TRACK_TO_VERSION = {
     base.ReleaseTrack.ALPHA: ALPHA_VERSION
 }
 
+# The default available regions for most Vertex AI products. See
+# https://cloud.google.com/vertex-ai/docs/general/locations#feature-availability
+# for more details.
 SUPPORTED_REGION = ('us-central1', 'europe-west4', 'asia-east1')
 
+# Available regions specifically for training, including custom-jobs and
+# hp-tuning-jobs.
+SUPPORTED_TRAINING_REGIONS = (
+    'asia-east1',
+    'asia-northeast1',
+    'asia-northeast3',
+    'asia-southeast1',
+    'australia-southeast1',
+    'europe-west1',
+    'europe-west2',
+    'europe-west4',
+    'northamerica-northeast1',
+    'us-central1',
+    'us-east1',
+    'us-east4',
+    'us-west1',
+)
+
+# Available regions specifically for online predication, including endpoints and
+# models
 SUPPORTED_OP_REGIONS = (
     'asia-east1',
     'asia-northeast1',
@@ -82,26 +105,6 @@ TENSORBOARD_RUNS_COLLECTION = 'aiplatform.projects.locations.tensorboards.experi
 TENSORBOARD_TIME_SERIES_COLLECTION = 'aiplatform.projects.locations.tensorboards.experiments.runs.timeSeries'
 
 MODEL_MONITORING_JOBS_COLLECTION = 'aiplatform.projects.locations.modelDeploymentMonitoringJobs'
-
-HPTUNING_JOB_CREATION_DISPLAY_MESSAGE = """\
-Hyperparameter tuning job [{id}] submitted successfully.
-
-Your job is still active. You may view the status of your job with the command
-
-  $ gcloud{version} ai hp-tuning-jobs describe {id}
-
-Job State: {state}\
-"""
-
-HPTUNING_JOB_CANCEL_DISPLAY_MESSAGE = """\
-Request to cancel hyperparameter tuning job [{id}] has been sent
-
-You may view the status of your job with the command
-
-  $ gcloud{version} ai hp-tuning-jobs describe {id}
-"""
-
-HPTUNING_JOB_COLLECTION = 'aiplatform.projects.locations.hyperparameterTuningJobs'
 
 OP_AUTOSCALING_METRIC_NAME_MAPPER = {
     'cpu-usage':

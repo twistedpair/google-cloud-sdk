@@ -41,7 +41,7 @@ class Revision(container_resource.ContainerResource):
       READY_CONDITION,
   }
 
-  FIELD_BLACKLIST = ['container']
+  EXCLUDED_FIELDS = ['container']
 
   @classmethod
   def New(cls, client, namespace):

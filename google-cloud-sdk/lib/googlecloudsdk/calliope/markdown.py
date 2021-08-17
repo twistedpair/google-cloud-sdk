@@ -145,6 +145,8 @@ class ExampleCommandLineSplitter(object):
       split_index = quoted_space_index
       if quoted_space_quote == "'":
         separator = '\n'
+      else:
+        split_index += 1
     elif punct_index:
       split_index = punct_index
     else:

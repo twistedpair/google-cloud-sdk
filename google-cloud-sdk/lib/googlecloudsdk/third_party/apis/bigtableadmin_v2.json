@@ -295,6 +295,12 @@
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "createTime": {
+          "description": "Output only. A server-assigned timestamp representing when this Instance was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },

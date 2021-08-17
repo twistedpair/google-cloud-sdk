@@ -668,8 +668,6 @@ class _BaseStagedProgressTracker(collections.Mapping):
         raise ValueError('Duplicate stage key: {}'.format(stage.key))
       self._stages[stage.key] = stage
     self._stream = sys.stderr
-    # TODO(b/111637901): Support detailed message callback when true multiline
-    # support is available.
     self._message = message
     self._success_message = success_message
     self._warning_message = warning_message

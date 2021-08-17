@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 
 from argcomplete.completers import FilesCompleter
+from googlecloudsdk.api_lib.spanner import databases
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.spanner import ddl_parser
 from googlecloudsdk.command_lib.util import completers
@@ -136,6 +137,14 @@ def DdlFile(help_text):
   )
 
 
+def DatabaseDialect(help_text):
+  return base.Argument(
+      '--database-dialect',
+      required=False,
+      help=help_text,
+  )
+
+
 def GetDDLsFromArgs(args):
   if args.ddl_file:
     return [files.ReadFileContents(args.ddl_file)]
@@ -147,7 +156,16 @@ def SplitDdlIntoStatements(args):
   ddls = GetDDLsFromArgs(args)
   statements = []
   for x in ddls:
-    statements.extend(ddl_parser.PreprocessDDLWithParser(x))
+    if hasattr(args, 'database_dialect'
+              ) and args.database_dialect and args.database_dialect.upper(
+              ) == databases.DATABASE_DIALECT_POSTGRESQL:
+      # Split the ddl string by semi-colon and remove empty string to avoid
+      # adding a PG ddl parser.
+      # TODO(b/195711543): This would be incorrect if ';' is inside strings
+      # and / or comments.
+      statements.extend([stmt for stmt in x.split(';') if stmt])
+    else:
+      statements.extend(ddl_parser.PreprocessDDLWithParser(x))
   return statements
 
 

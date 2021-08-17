@@ -32,7 +32,7 @@ _DISPLAY_VARIABLES = ['DISPLAY', 'WAYLAND_DISPLAY', 'MIR_SOCKET']
 
 # A list of results for webbrowser.get().name that indicate we should not
 # attempt to open a web browser for the user.
-_WEBBROWSER_NAMES_BLACKLIST = [
+_WEBBROWSER_NAMES_BLOCKLIST = [
     'www-browser',
 ]
 
@@ -64,7 +64,7 @@ def ShouldLaunchBrowser(attempt_launch_browser):
     try:
       browser = webbrowser.get()
       if (hasattr(browser, 'name')
-          and browser.name in _WEBBROWSER_NAMES_BLACKLIST):
+          and browser.name in _WEBBROWSER_NAMES_BLOCKLIST):
         launch_browser = False
     except webbrowser.Error:
       launch_browser = False

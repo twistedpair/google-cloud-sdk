@@ -225,6 +225,10 @@
           "type": "string",
           "format": "google-datetime"
         },
+        "etag": {
+          "description": "The etag for this OS policy assignment. If this is provided on update, it must match the server's etag.",
+          "type": "string"
+        },
         "rolloutState": {
           "description": "Output only. OS policy assignment rollout state",
           "readOnly": true,

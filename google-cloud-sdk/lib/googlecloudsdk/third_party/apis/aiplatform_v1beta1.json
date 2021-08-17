@@ -1699,7 +1699,7 @@
           "type": "boolean"
         },
         "monitoringInterval": {
-          "description": "Will be deprecated by [FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval_days] soon. Configuration of the snapshot analysis based monitoring pipeline running interval. The value is rolled up to full day.",
+          "description": "Configuration of the snapshot analysis based monitoring pipeline running interval. The value is rolled up to full day.",
           "type": "string",
           "format": "google-duration"
         },
@@ -2119,6 +2119,72 @@
         "destinationField": {
           "description": "Specify the field name in the export destination. If not specified, Feature ID is used.",
           "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1QueryFeatureValuesRequest": {
+      "id": "GoogleCloudAiplatformV1beta1QueryFeatureValuesRequest",
+      "description": "Request message for FeaturestoreService.QueryFeatureValues.",
+      "type": "object",
+      "properties": {
+        "csvReadInstances": {
+          "description": "Each read instance consists of exactly one read timestamp and one or more entity IDs identifying entities of the corresponding EntityTypes whose Features are requested. Each output instance contains Feature values of requested entities concatenated together as of the read time. An example read instance may be `foo_entity_id, bar_entity_id, 2020-01-01T10:00:00.123Z`. An example output instance may be `foo_entity_id, bar_entity_id, 2020-01-01T10:00:00.123Z, foo_entity_feature1_value, bar_entity_feature2_value`. Timestamp in each read instance must be millisecond-aligned. `csv_read_instances` are read instances stored in a plain-text CSV file. The header should be: [ENTITY_TYPE_ID1], [ENTITY_TYPE_ID2], ..., timestamp The columns can be in any order. Values in the timestamp column must use the RFC 3339 format, e.g. `2012-07-30T10:43:17.123Z`.",
+          "$ref": "GoogleCloudAiplatformV1beta1CsvSource"
+        },
+        "bigqueryReadInstances": {
+          "description": "Similar to csv_read_instances, but from BigQuery source.",
+          "$ref": "GoogleCloudAiplatformV1beta1BigQuerySource"
+        },
+        "destination": {
+          "description": "Required. Specifies output location and format.",
+          "$ref": "GoogleCloudAiplatformV1beta1FeatureValueDestination"
+        },
+        "passThroughFields": {
+          "description": "When not empty, the specified fields in the *_read_instances source will be joined as-is in the output, in addition to those fields from the Featurestore Entity. For BigQuery source, the type of the pass-through values will be automatically inferred. For CSV source, the pass-through values will be passed as opaque bytes.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1QueryFeatureValuesRequestPassThroughField"
+          }
+        },
+        "entityTypeSpecs": {
+          "description": "Required. Specifies EntityType grouping Features to read values of and settings. Each EntityType referenced in [QueryFeatureValuesRequest.entity_type_specs] must have a column specifying entity IDs in tha EntityType in QueryFeatureValuesRequest.request .",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1QueryFeatureValuesRequestEntityTypeSpec"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1QueryFeatureValuesRequestPassThroughField": {
+      "id": "GoogleCloudAiplatformV1beta1QueryFeatureValuesRequestPassThroughField",
+      "description": "Describe pass-through fields in read_instance source.",
+      "type": "object",
+      "properties": {
+        "fieldName": {
+          "description": "Required. The name of the field in the CSV header or the name of the column in BigQuery table. The naming restriction is the same as Feature.name.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1QueryFeatureValuesRequestEntityTypeSpec": {
+      "id": "GoogleCloudAiplatformV1beta1QueryFeatureValuesRequestEntityTypeSpec",
+      "description": "Selects Features of an EntityType to read values of and specifies read settings.",
+      "type": "object",
+      "properties": {
+        "entityType": {
+          "description": "Required. The resource name (EntityType) from which to query Feature values. Format: `projects\/{project}\/locations\/{location}\/featurestores\/{featurestore}\/entityTypes\/{entity_type}`",
+          "type": "string"
+        },
+        "featureSelector": {
+          "description": "Required. Selectors choosing which Feature values to read from the EntityType.",
+          "$ref": "GoogleCloudAiplatformV1beta1FeatureSelector"
+        },
+        "settings": {
+          "description": "The setting for each Feature in the query output.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1DestinationFeatureSetting"
+          }
         }
       }
     },
@@ -3110,7 +3176,7 @@
           "$ref": "GoogleCloudAiplatformV1beta1StudySpecMedianAutomatedStoppingSpec"
         },
         "convexStopConfig": {
-          "description": "The automated early stopping using convex stopping rule.",
+          "description": "Deprecated, use convex_automated_stopping_spec instead. The automated early stopping using convex stopping rule.",
           "$ref": "GoogleCloudAiplatformV1beta1StudySpecConvexStopConfig"
         },
         "metrics": {
@@ -4647,7 +4713,7 @@
           "type": "string"
         },
         "metadata": {
-          "description": "Properties of the Artifact.",
+          "description": "Properties of the Artifact. The size of this field should not exceed 200KB.",
           "type": "object",
           "additionalProperties": {
             "type": "any",
@@ -4747,7 +4813,7 @@
           "type": "string"
         },
         "metadata": {
-          "description": "Properties of the Context.",
+          "description": "Properties of the Context. The size of this field should not exceed 200KB.",
           "type": "object",
           "additionalProperties": {
             "type": "any",
@@ -4938,7 +5004,7 @@
           "type": "string"
         },
         "metadata": {
-          "description": "Properties of the Execution.",
+          "description": "Properties of the Execution. The size of this field should not exceed 200KB.",
           "type": "object",
           "additionalProperties": {
             "type": "any",
@@ -7204,11 +7270,29 @@
         }
       }
     },
+    "GoogleCloudAiplatformV1beta1WriteTensorboardExperimentDataRequest": {
+      "id": "GoogleCloudAiplatformV1beta1WriteTensorboardExperimentDataRequest",
+      "description": "Request message for TensorboardService.WriteTensorboardExperimentData.",
+      "type": "object",
+      "properties": {
+        "writeRunDataRequests": {
+          "description": "Required. Requests containing per-run TensorboardTimeSeries data to write.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1WriteTensorboardRunDataRequest"
+          }
+        }
+      }
+    },
     "GoogleCloudAiplatformV1beta1WriteTensorboardRunDataRequest": {
       "id": "GoogleCloudAiplatformV1beta1WriteTensorboardRunDataRequest",
       "description": "Request message for TensorboardService.WriteTensorboardRunData.",
       "type": "object",
       "properties": {
+        "tensorboardRun": {
+          "description": "Required. The resource name of the TensorboardRun to write data to. Format: `projects\/{project}\/locations\/{location}\/tensorboards\/{tensorboard}\/experiments\/{experiment}\/runs\/{run}`",
+          "type": "string"
+        },
         "timeSeriesData": {
           "description": "Required. The TensorboardTimeSeries data to write. Values with in a time series are indexed by their step value. Repeated writes to the same step will overwrite the existing value for that step. The upper limit of data points per write request is 5000.",
           "type": "array",
@@ -7216,6 +7300,13 @@
             "$ref": "GoogleCloudAiplatformV1beta1TimeSeriesData"
           }
         }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1WriteTensorboardExperimentDataResponse": {
+      "id": "GoogleCloudAiplatformV1beta1WriteTensorboardExperimentDataResponse",
+      "description": "Response message for TensorboardService.WriteTensorboardExperimentData.",
+      "type": "object",
+      "properties": {
       }
     },
     "GoogleCloudAiplatformV1beta1WriteTensorboardRunDataResponse": {
@@ -7622,11 +7713,6 @@
         "disabled": {
           "description": "The monitoring schedule for snapshot analysis. For EntityType-level config: unset \/ disabled = true indicates disabled by default for Features under it; otherwise by default enable snapshot analysis monitoring with monitoring_interval for Features under it. Feature-level config: disabled = true indicates disabled regardless of the EntityType-level config; unset monitoring_interval indicates going with EntityType-level config; otherwise run snapshot analysis monitoring with monitoring_interval regardless of the EntityType-level config. Explicitly Disable the snapshot analysis based monitoring.",
           "type": "boolean"
-        },
-        "monitoringInterval": {
-          "description": "Will be deprecated by [FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval_days] soon. Configuration of the snapshot analysis based monitoring pipeline running interval. The value is rolled up to full day.",
-          "type": "string",
-          "format": "google-duration"
         },
         "monitoringIntervalDays": {
           "description": "Configuration of the snapshot analysis based monitoring pipeline running interval. The value indicates number of days. If both FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval_days and FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval are set when creating\/updating EntityTypes\/Features, FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval_days will be used.",
@@ -9775,6 +9861,10 @@
           "description": "The Cloud Storage\/BigQuery URI of the destination as specified in the request.",
           "type": "string"
         },
+        "destination": {
+          "description": "A proto representation of the destination, for easier UI parsing.",
+          "$ref": "GoogleCloudAiplatformUiFeatureValueDestination"
+        },
         "requestedEntityTypeCount": {
           "description": "The total number of Entity types in the request.",
           "type": "string",
@@ -9784,6 +9874,69 @@
           "description": "The total number of Feature in the request.",
           "type": "string",
           "format": "int64"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiFeatureValueDestination": {
+      "id": "GoogleCloudAiplatformUiFeatureValueDestination",
+      "description": "A destination location for Feature values and format.",
+      "type": "object",
+      "properties": {
+        "bigqueryDestination": {
+          "description": "Output in BigQuery format. BigQueryDestination.output_uri in FeatureValueDestination.bigquery_destination must refer to a table.",
+          "$ref": "GoogleCloudAiplatformUiBigQueryDestination"
+        },
+        "tfrecordDestination": {
+          "description": "Output in TFRecord format. Below are the mapping from Feature value type in Featurestore to Feature value type in TFRecord: Value type in Featurestore | Value type in TFRecord DOUBLE, DOUBLE_ARRAY | FLOAT_LIST INT64, INT64_ARRAY | INT64_LIST STRING, STRING_ARRAY, BYTES | BYTES_LIST true -> byte_string(\"true\"), false -> byte_string(\"false\") BOOL, BOOL_ARRAY (true, false) | BYTES_LIST",
+          "$ref": "GoogleCloudAiplatformUiTFRecordDestination"
+        },
+        "csvDestination": {
+          "description": "Output in CSV format. Array Feature value types are not allowed in CSV format.",
+          "$ref": "GoogleCloudAiplatformUiCsvDestination"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiBigQueryDestination": {
+      "id": "GoogleCloudAiplatformUiBigQueryDestination",
+      "description": "The BigQuery location for the output content.",
+      "type": "object",
+      "properties": {
+        "outputUri": {
+          "description": "Required. BigQuery URI to a project or table, up to 2000 characters long. When only the project is specified, the Dataset and Table is created. When the full table reference is specified, the Dataset must exist and table must not exist. Accepted forms: * BigQuery path. For example: `bq:\/\/projectId` or `bq:\/\/projectId.bqDatasetId` or `bq:\/\/projectId.bqDatasetId.bqTableId`.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiTFRecordDestination": {
+      "id": "GoogleCloudAiplatformUiTFRecordDestination",
+      "description": "The storage details for TFRecord output content.",
+      "type": "object",
+      "properties": {
+        "gcsDestination": {
+          "description": "Required. Google Cloud Storage location.",
+          "$ref": "GoogleCloudAiplatformUiGcsDestination"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiGcsDestination": {
+      "id": "GoogleCloudAiplatformUiGcsDestination",
+      "description": "The Google Cloud Storage location where the output is to be written to.",
+      "type": "object",
+      "properties": {
+        "outputUriPrefix": {
+          "description": "Required. Google Cloud Storage URI to output directory. If the uri doesn't end with '\/', a '\/' will be automatically appended. The directory is created if it doesn't exist.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiCsvDestination": {
+      "id": "GoogleCloudAiplatformUiCsvDestination",
+      "description": "The storage details for CSV output content.",
+      "type": "object",
+      "properties": {
+        "gcsDestination": {
+          "description": "Required. Google Cloud Storage location.",
+          "$ref": "GoogleCloudAiplatformUiGcsDestination"
         }
       }
     },
@@ -10108,7 +10261,7 @@
           "type": "boolean"
         },
         "monitoringInterval": {
-          "description": "Will be deprecated by [FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval_days] soon. Configuration of the snapshot analysis based monitoring pipeline running interval. The value is rolled up to full day.",
+          "description": "Configuration of the snapshot analysis based monitoring pipeline running interval. The value is rolled up to full day.",
           "type": "string",
           "format": "google-duration"
         },
@@ -11308,28 +11461,6 @@
             "JSONL",
             "BIGQUERY"
           ]
-        }
-      }
-    },
-    "GoogleCloudAiplatformUiGcsDestination": {
-      "id": "GoogleCloudAiplatformUiGcsDestination",
-      "description": "The Google Cloud Storage location where the output is to be written to.",
-      "type": "object",
-      "properties": {
-        "outputUriPrefix": {
-          "description": "Required. Google Cloud Storage URI to output directory. If the uri doesn't end with '\/', a '\/' will be automatically appended. The directory is created if it doesn't exist.",
-          "type": "string"
-        }
-      }
-    },
-    "GoogleCloudAiplatformUiBigQueryDestination": {
-      "id": "GoogleCloudAiplatformUiBigQueryDestination",
-      "description": "The BigQuery location for the output content.",
-      "type": "object",
-      "properties": {
-        "outputUri": {
-          "description": "Required. BigQuery URI to a project or table, up to 2000 characters long. When only the project is specified, the Dataset and Table is created. When the full table reference is specified, the Dataset must exist and table must not exist. Accepted forms: * BigQuery path. For example: `bq:\/\/projectId` or `bq:\/\/projectId.bqDatasetId` or `bq:\/\/projectId.bqDatasetId.bqTableId`.",
-          "type": "string"
         }
       }
     },
@@ -23899,6 +24030,44 @@
                   ],
                   "description": "Batch reads Feature values from a Featurestore. This API enables batch reading Feature values, where each read instance in the batch may read Feature values of entities from one or more EntityTypes. Point-in-time correctness is guaranteed for Feature values of each read instance as of each instance's read timestamp."
                 },
+                "queryFeatureValues": {
+                  "id": "aiplatform.projects.locations.featurestores.queryFeatureValues",
+                  "path": "v1beta1/projects/{projectsId}/locations/{locationsId}/featurestores/{featurestoresId}:queryFeatureValues",
+                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/featurestores/{featurestoresId}:queryFeatureValues",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "projectsId": {
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "locationsId": {
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "featurestoresId": {
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "projectsId",
+                    "locationsId",
+                    "featurestoresId"
+                  ],
+                  "request": {
+                    "$ref": "GoogleCloudAiplatformV1beta1QueryFeatureValuesRequest"
+                  },
+                  "response": {
+                    "$ref": "GoogleLongrunningOperation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Query Feature values from a Featurestore. Featurestore runs a managed query and combines multiple Features, possibly from multiple EntityTypes, according to the provided Entity IDs in the request."
+                },
                 "searchFeatures": {
                   "id": "aiplatform.projects.locations.featurestores.searchFeatures",
                   "path": "v1beta1/{+location}/featurestores:searchFeatures",
@@ -27197,7 +27366,7 @@
                       "type": "string"
                     },
                     "force": {
-                      "description": "If set to true, any child resources of this MetadataStore will be deleted. (Otherwise, the request will fail with a FAILED_PRECONDITION error if the MetadataStore has any child resources.)",
+                      "description": "Deprecated: Field is no longer supported.",
                       "location": "query",
                       "type": "boolean"
                     }
@@ -27211,7 +27380,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Deletes a single MetadataStore."
+                  "description": "Deletes a single MetadataStore and all its child resources (i.e. all Artifacts, Executions, Contexts)."
                 }
               }
               ,
@@ -27330,14 +27499,8 @@
                           "required": true,
                           "type": "string"
                         },
-                        "updateMask": {
-                          "description": "Required. A FieldMask indicating which fields should be updated.",
-                          "location": "query",
-                          "type": "string",
-                          "format": "google-fieldmask"
-                        },
                         "allowMissing": {
-                          "description": "If set to true, and the Artifact is not found, a new Artifact will be created. In this situation, `update_mask` is ignored.",
+                          "description": "If set to true, and the Artifact is not found, a new Artifact will be created.",
                           "location": "query",
                           "type": "boolean"
                         }
@@ -27566,14 +27729,8 @@
                           "required": true,
                           "type": "string"
                         },
-                        "updateMask": {
-                          "description": "Required. A FieldMask indicating which fields should be updated.",
-                          "location": "query",
-                          "type": "string",
-                          "format": "google-fieldmask"
-                        },
                         "allowMissing": {
-                          "description": "If set to true, and the Context is not found, a new Context will be created. In this situation, `update_mask` is ignored.",
+                          "description": "If set to true, and the Context is not found, a new Context will be created.",
                           "location": "query",
                           "type": "boolean"
                         }
@@ -27852,14 +28009,8 @@
                           "required": true,
                           "type": "string"
                         },
-                        "updateMask": {
-                          "description": "Required. A FieldMask indicating which fields should be updated.",
-                          "location": "query",
-                          "type": "string",
-                          "format": "google-fieldmask"
-                        },
                         "allowMissing": {
-                          "description": "If set to true, and the Execution is not found, a new Execution will be created. In this situation, `update_mask` is ignored.",
+                          "description": "If set to true, and the Execution is not found, a new Execution will be created.",
                           "location": "query",
                           "type": "boolean"
                         }
@@ -29995,7 +30146,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The resource name of the Location to list Tensorboards. Format: 'projects\/{project}\/locations\/{location}'",
+                      "description": "Required. The resource name of the Location to list Tensorboards. Format: `projects\/{project}\/locations\/{location}`",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -30389,6 +30540,34 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Deletes a TensorboardExperiment."
+                    },
+                    "write": {
+                      "id": "aiplatform.projects.locations.tensorboards.experiments.write",
+                      "path": "v1beta1/{+tensorboardExperiment}:write",
+                      "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}:write",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "tensorboardExperiment": {
+                          "description": "Required. The resource name of the TensorboardExperiment to write data to. Format: `projects\/{project}\/locations\/{location}\/tensorboards\/{tensorboard}\/experiments\/{experiment}`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+\/experiments\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "tensorboardExperiment"
+                      ],
+                      "request": {
+                        "$ref": "GoogleCloudAiplatformV1beta1WriteTensorboardExperimentDataRequest"
+                      },
+                      "response": {
+                        "$ref": "GoogleCloudAiplatformV1beta1WriteTensorboardExperimentDataResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Write time series data points of multiple TensorboardTimeSeries in multiple TensorboardRun's. If any data fail to be ingested, an error will be returned."
                     }
                   }
                   ,

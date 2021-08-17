@@ -122,7 +122,7 @@ class MonitoringV1(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      r"""Returns a specific Metrics Scope.
+      r"""Returns a specific Metrics Scope, including the list of projects monitored by the specified Metrics Scope.
 
       Args:
         request: (MonitoringLocationsGlobalMetricsScopesGetRequest) input message

@@ -27,7 +27,6 @@ from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.command_lib.ai import constants
 from googlecloudsdk.command_lib.ai import flags as shared_flags
 from googlecloudsdk.command_lib.ai import region_util
-from googlecloudsdk.command_lib.ai.custom_jobs import constants as custom_job_constants
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 
 _DISPLAY_NAME = base.Argument(
@@ -226,7 +225,7 @@ def AddCreateCustomJobFlags(parser, version):
       parser,
       'to create a custom job',
       prompt_func=region_util.GetPromptForRegionFunc(
-          custom_job_constants.REGIONS))
+          constants.SUPPORTED_TRAINING_REGIONS))
   shared_flags.TRAINING_SERVICE_ACCOUNT.AddToParser(parser)
   shared_flags.NETWORK.AddToParser(parser)
   shared_flags.AddKmsKeyResourceArg(parser, 'custom job')
@@ -246,7 +245,9 @@ def AddCreateCustomJobFlags(parser, version):
   worker_pool_spec_group.AddToParser(parser)
 
 
-def AddCustomJobResourceArg(parser, verb, regions=custom_job_constants.REGIONS):
+def AddCustomJobResourceArg(parser,
+                            verb,
+                            regions=constants.SUPPORTED_TRAINING_REGIONS):
   """Add a resource argument for a Vertex AI custom job.
 
   NOTE: Must be used only if it's the only resource arg in the command.
@@ -257,7 +258,7 @@ def AddCustomJobResourceArg(parser, verb, regions=custom_job_constants.REGIONS):
     regions: list[str], the list of supported regions.
   """
   job_resource_spec = concepts.ResourceSpec(
-      custom_job_constants.CUSTOM_JOB_COLLECTION,
+      resource_collection='aiplatform.projects.locations.customJobs',
       resource_name='custom job',
       locationsId=shared_flags.RegionAttributeConfig(
           prompt_func=region_util.GetPromptForRegionFunc(regions)),

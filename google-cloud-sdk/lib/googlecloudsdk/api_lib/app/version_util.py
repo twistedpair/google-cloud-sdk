@@ -336,7 +336,6 @@ def _SetDefaultVersion(new_version, api_client):
     api_client: appengine_api_client.AppengineApiClient to use to make requests.
   """
   metrics.CustomTimedEvent(metric_names.SET_DEFAULT_VERSION_API_START)
-  # TODO(b/31824825): It sometimes takes a while for a new service to show up.
   # Retry it if we get a service not found error.
   def ShouldRetry(exc_type, unused_exc_value, unused_traceback, unused_state):
     return issubclass(exc_type, apitools_exceptions.HttpError)

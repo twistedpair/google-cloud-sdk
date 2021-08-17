@@ -5586,11 +5586,6 @@ class TableFieldSchema(_messages.Message):
   and jsonPayload are not listed in the schema as they use a native JSON type
   field.
 
-  Enums:
-    ModeValueValuesEnum: Optional. The field mode. Possible values include
-      NULLABLE, REQUIRED and REPEATED. The default value is NULLABLE.
-    TypeValueValuesEnum: Required. The field data type.
-
   Fields:
     description: Optional. The field description.
     fields: Optional. Describes the nested schema fields if the type property
@@ -5598,65 +5593,17 @@ class TableFieldSchema(_messages.Message):
     mode: Optional. The field mode. Possible values include NULLABLE, REQUIRED
       and REPEATED. The default value is NULLABLE.
     name: Required. The field name corresponding to fields in the LogEntry.
-    type: Required. The field data type.
+    type: Required. The field data type. Possible values include: STRING
+      INTEGER (or INT64) FLOAT (or FLOAT64) BOOLEAN (or BOOL) TIMESTAMP RECORD
+      (or STRUCT)Use of RECORD/STRUT indicates that the field contains a
+      nested schema.
   """
-
-  class ModeValueValuesEnum(_messages.Enum):
-    r"""Optional. The field mode. Possible values include NULLABLE, REQUIRED
-    and REPEATED. The default value is NULLABLE.
-
-    Values:
-      UNKNOWN_MODE: Illegal value
-      NULLABLE: <no description>
-      REQUIRED: <no description>
-      REPEATED: <no description>
-    """
-    UNKNOWN_MODE = 0
-    NULLABLE = 1
-    REQUIRED = 2
-    REPEATED = 3
-
-  class TypeValueValuesEnum(_messages.Enum):
-    r"""Required. The field data type.
-
-    Values:
-      UNKNOWN_TYPE: Illegal value
-      STRING: UTF8 characters
-      INTEGER: 64-bit signed
-      FLOAT: 64-bit IEEE floating point
-      RECORD: Aggregate type
-      BYTES: Binary data
-      BOOLEAN: 2-valued
-      TIMESTAMP: 64-bit signed usec since UTC epoch
-      DATE: Civil date - Year, Month, Day
-      TIME: Civil time - Hour, Minute, Second, Microseconds
-      DATETIME: Combination of civil date and civil time
-      GEOGRAPHY: Geography object
-      NUMERIC: Numeric value
-      BIGNUMERIC: BigNumeric value
-      JSON: JSON value
-    """
-    UNKNOWN_TYPE = 0
-    STRING = 1
-    INTEGER = 2
-    FLOAT = 3
-    RECORD = 4
-    BYTES = 5
-    BOOLEAN = 6
-    TIMESTAMP = 7
-    DATE = 8
-    TIME = 9
-    DATETIME = 10
-    GEOGRAPHY = 11
-    NUMERIC = 12
-    BIGNUMERIC = 13
-    JSON = 14
 
   description = _messages.StringField(1)
   fields = _messages.MessageField('TableFieldSchema', 2, repeated=True)
-  mode = _messages.EnumField('ModeValueValuesEnum', 3)
+  mode = _messages.StringField(3)
   name = _messages.StringField(4)
-  type = _messages.EnumField('TypeValueValuesEnum', 5)
+  type = _messages.StringField(5)
 
 
 class TableSchema(_messages.Message):

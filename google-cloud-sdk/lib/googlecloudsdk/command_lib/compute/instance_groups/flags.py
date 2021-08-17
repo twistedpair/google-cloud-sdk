@@ -33,9 +33,6 @@ from googlecloudsdk.command_lib.util import completers
 import six
 
 
-# TODO(b/110191362): resign from passing whole args to functions in this file
-
-
 STATEFUL_IP_DEFAULT_INTERFACE_NAME = 'nic0'
 
 

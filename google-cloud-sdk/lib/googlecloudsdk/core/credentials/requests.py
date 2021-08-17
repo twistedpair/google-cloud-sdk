@@ -36,7 +36,8 @@ def GetSession(timeout='unset',
                enable_resource_quota=True,
                allow_account_impersonation=True,
                session=None,
-               streaming_response_body=False):
+               streaming_response_body=False,
+               redact_request_body_reason=None):
   """Get requests.Session object for working with the Google API.
 
   Args:
@@ -56,6 +57,8 @@ def GetSession(timeout='unset',
         be initialized.
     streaming_response_body: bool, True indicates that the response body will
         be a streaming body.
+    redact_request_body_reason: str, the reason why the request body must be
+        redacted if --log-http is used. If None, the body is not redacted.
 
   Returns:
     1. A regular requests.Session object if no credentials are available;
@@ -69,7 +72,8 @@ def GetSession(timeout='unset',
       timeout=timeout,
       ca_certs=ca_certs,
       session=session,
-      streaming_response_body=streaming_response_body)
+      streaming_response_body=streaming_response_body,
+      redact_request_body_reason=redact_request_body_reason)
   request_wrapper = RequestWrapper()
   session = request_wrapper.WrapQuota(session, enable_resource_quota,
                                       allow_account_impersonation, True)

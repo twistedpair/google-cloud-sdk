@@ -83,8 +83,10 @@ _INGRESS_MODES = {
 }
 
 _SANDBOX_CHOICES = {
-    'gvisor': 'Run the application in a gVisor sandbox.',
-    'minivm': 'Run the application in a mini VM sandbox.',
+    'gen1':
+        'Run the application in a first generation execution environement.',
+    'gen2':
+        'Run the application in a second generation execution environement.',
 }
 
 _DEFAULT_KUBECONFIG_PATH = '~/.kube/config'
@@ -641,9 +643,9 @@ def AddRevisionSuffixArg(parser):
 
 def AddSandboxArg(parser):
   parser.add_argument(
-      '--sandbox',
+      '--execution-environment',
       choices=_SANDBOX_CHOICES,
-      help='Selects the sandbox where the application will run.')
+      help='Selects the execution environment where the application will run.')
 
 
 def AddVpcConnectorArg(parser):
@@ -1388,8 +1390,8 @@ def GetServiceConfigurationChanges(args):
       changes.append(config_changes.SetAnnotationChange(key, value))
   if 'revision_suffix' in args and args.revision_suffix:
     changes.append(config_changes.RevisionNameChanges(args.revision_suffix))
-  if 'sandbox' in args and args.sandbox:
-    changes.append(config_changes.SandboxChange(args.sandbox))
+  if 'execution_environment' in args and args.execution_environment:
+    changes.append(config_changes.SandboxChange(args.execution_environment))
   if 'clear_vpc_connector' in args and args.clear_vpc_connector:
     # MUST be after 'vpc_egress' change.
     changes.append(config_changes.ClearVpcConnectorChange())
@@ -1708,10 +1710,10 @@ def VerifyGKEFlags(args, release_track, product):
             platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
                 platforms.PLATFORM_MANAGED]))
 
-  if FlagIsExplicitlySet(args, 'sandbox'):
+  if FlagIsExplicitlySet(args, 'execution_environment'):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
-            flag='--sandbox',
+            flag='--execution-environment',
             platform=platforms.PLATFORM_MANAGED,
             platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
                 platforms.PLATFORM_MANAGED]))
@@ -1842,10 +1844,10 @@ def VerifyKubernetesFlags(args, release_track, product):
             platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
                 platforms.PLATFORM_MANAGED]))
 
-  if FlagIsExplicitlySet(args, 'sandbox'):
+  if FlagIsExplicitlySet(args, 'execution_environment'):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
-            flag='--sandbox',
+            flag='--execution-environment',
             platform=platforms.PLATFORM_MANAGED,
             platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
                 platforms.PLATFORM_MANAGED]))

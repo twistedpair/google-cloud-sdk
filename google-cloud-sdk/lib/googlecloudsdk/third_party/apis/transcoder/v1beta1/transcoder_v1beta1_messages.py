@@ -631,32 +631,6 @@ class NormalizedCoordinate(_messages.Message):
   y = _messages.FloatField(2)
 
 
-class OperationMetadata(_messages.Message):
-  r"""Represents the metadata of the long-running operation.
-
-  Fields:
-    apiVersion: Output only. API version used to start the operation.
-    cancelRequested: Output only. Identifies whether the user has requested
-      cancellation of the operation. Operations that have been cancelled
-      successfully have Operation.error value with a google.rpc.Status.code of
-      1, corresponding to `Code.CANCELLED`.
-    createTime: Output only. The time the operation was created.
-    endTime: Output only. The time the operation finished running.
-    statusDetail: Output only. Human-readable status of the operation, if any.
-    target: Output only. Server-defined resource path for the target of the
-      operation.
-    verb: Output only. Name of the verb executed by the operation.
-  """
-
-  apiVersion = _messages.StringField(1)
-  cancelRequested = _messages.BooleanField(2)
-  createTime = _messages.StringField(3)
-  endTime = _messages.StringField(4)
-  statusDetail = _messages.StringField(5)
-  target = _messages.StringField(6)
-  verb = _messages.StringField(7)
-
-
 class OriginUri(_messages.Message):
   r"""The origin URI.
 
@@ -1069,8 +1043,9 @@ class VideoStream(_messages.Message):
       The default is 0.
     bPyramid: Allow B-pyramid for reference frame selection. This may not be
       supported on all decoders. The default is `false`.
-    bitrateBps: Required. The video bitrate in bits per second. Must be
-      between 1 and 1,000,000,000.
+    bitrateBps: Required. The video bitrate in bits per second. The minimum
+      value is 1,000. The maximum value for H264/H265 is 800,000,000. The
+      maximum value for VP9 is 480,000,000.
     codec: Codec type. The following codecs are supported: * `h264` (default)
       * `h265` * `vp9`
     crfLevel: Target CRF level. Must be between 10 and 36, where 10 is the

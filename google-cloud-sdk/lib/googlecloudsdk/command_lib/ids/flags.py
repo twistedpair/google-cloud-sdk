@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.command_lib.util.apis import yaml_data
@@ -84,3 +85,18 @@ def AddEndpointResource(parser):
       required=True,
       group_help="endpoint.")
   return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
+
+
+def AddMaxWait(parser,
+               default_max_wait,
+               help_text="Time to synchronously wait for the operation to "
+               "complete, after which the operation continues asynchronously. "
+               "Ignored if --no-async isn't specified. "
+               "See $ gcloud topic datetimes for information on time formats."):
+  parser.add_argument(
+      "--max-wait",
+      dest="max_wait",
+      required=False,
+      default=default_max_wait,
+      help=help_text,
+      type=arg_parsers.Duration())

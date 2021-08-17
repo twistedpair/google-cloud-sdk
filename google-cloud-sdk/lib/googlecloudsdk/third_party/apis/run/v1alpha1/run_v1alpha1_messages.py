@@ -549,12 +549,12 @@ class JobCondition(_messages.Message):
       Error, Warning, Info
     status: Required. Status of the condition, one of True, False, Unknown.
     type: Required. Type is used to communicate the status of the
-      reconciliation process. See also: https://github.com/knative/serving/blo
-      b/master/docs/spec/errors.md#error-conditions-and-reporting Types
-      include: * "Completed": True when the Job has successfully completed. *
-      "Started": True when the Job has successfully started running. *
-      "ResourcesAvailable": True when underlying resources have been
-      provisioned.
+      reconciliation process. See also:
+      https://github.com/knative/serving/blob/main/docs/spec/errors.md#error-
+      conditions-and-reporting Types include: * "Completed": True when the Job
+      has successfully completed. * "Started": True when the Job has
+      successfully started running. * "ResourcesAvailable": True when
+      underlying resources have been provisioned.
   """
 
   lastTransitionTime = _messages.StringField(1)

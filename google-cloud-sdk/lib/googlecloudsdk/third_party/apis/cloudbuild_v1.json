@@ -1383,11 +1383,11 @@
           "$ref": "ApprovalConfig"
         },
         "filter": {
-          "description": "Optional. A Common Expression Language string.",
+          "description": "A Common Expression Language string.",
           "type": "string"
         },
         "serviceAccount": {
-          "description": "Optional. The service account used for all user-controlled operations including UpdateBuildTrigger, RunBuildTrigger, CreateBuild, and CancelBuild. If no service account is set, then the standard Cloud Build service account ([PROJECT_NUM]@system.gserviceaccount.com) will be used instead. Format: `projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT_ID_OR_EMAIL}`",
+          "description": "The service account used for all user-controlled operations including UpdateBuildTrigger, RunBuildTrigger, CreateBuild, and CancelBuild. If no service account is set, then the standard Cloud Build service account ([PROJECT_NUM]@system.gserviceaccount.com) will be used instead. Format: `projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT_ID_OR_EMAIL}`",
           "type": "string"
         }
       }
@@ -1419,7 +1419,7 @@
           "$ref": "PushFilter"
         },
         "enterpriseConfigResourceName": {
-          "description": "Optional. The resource name of the github enterprise config that should be applied to this installation. For example: \"projects\/{$project_id}\/githubEnterpriseConfig\/{$config_id}\"",
+          "description": "Optional. The resource name of the github enterprise config that should be applied to this installation. For example: \"projects\/{$project_id}\/githubEnterpriseConfigs\/{$config_id}\"",
           "type": "string"
         },
         "enterpriseConfig": {
@@ -1483,7 +1483,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Optional. The full resource name for the GitHubEnterpriseConfig For example: \"projects\/{$project_id}\/githubEnterpriseConfig\/{$config_id}\"",
+          "description": "Optional. The full resource name for the GitHubEnterpriseConfig For example: \"projects\/{$project_id}\/githubEnterpriseConfigs\/{$config_id}\"",
           "type": "string"
         },
         "hostUrl": {
@@ -1954,7 +1954,7 @@
           "$ref": "GitHubRepositorySettingList"
         },
         "enterpriseConfigResourceName": {
-          "description": "Optional: The resource name of the github enterprise config that should be applied to this installation. For example: \"projects\/{$project_id}\/githubEnterpriseConfig\/{$config_id}\"",
+          "description": "Optional: The resource name of the github enterprise config that should be applied to this installation. For example: \"projects\/{$project_id}\/githubEnterpriseConfigs\/{$config_id}\"",
           "type": "string"
         },
         "enterpriseConfig": {
@@ -3812,7 +3812,7 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "Optional. The full resource name for the GitHubEnterpriseConfig For example: \"projects\/{$project_id}\/githubEnterpriseConfig\/{$config_id}\"",
+                      "description": "Optional. The full resource name for the GitHubEnterpriseConfig For example: \"projects\/{$project_id}\/githubEnterpriseConfigs\/{$config_id}\"",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/githubEnterpriseConfigs\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -3846,7 +3846,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "This field should contain the name of the enterprise config resource. For example: \"projects\/{$project_id}\/githubEnterpriseConfig\/{$config_id}\"",
+                      "description": "This field should contain the name of the enterprise config resource. For example: \"projects\/{$project_id}\/githubEnterpriseConfigs\/{$config_id}\"",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/githubEnterpriseConfigs\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -3911,7 +3911,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "This field should contain the name of the enterprise config resource. For example: \"projects\/{$project_id}\/githubEnterpriseConfig\/{$config_id}\"",
+                      "description": "This field should contain the name of the enterprise config resource. For example: \"projects\/{$project_id}\/githubEnterpriseConfigs\/{$config_id}\"",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/githubEnterpriseConfigs\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -3946,7 +3946,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "enterpriseConfigResource": {
-                      "description": "Required. The name of the enterprise config resource associated with the GitHub App. For example: \"projects\/{$project_id}\/githubEnterpriseConfig\/{$config_id}\"",
+                      "description": "Required. The name of the enterprise config resource associated with the GitHub App. For example: \"projects\/{$project_id}\/githubEnterpriseConfigs\/{$config_id}\"",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/githubEnterpriseConfigs\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -5042,7 +5042,7 @@
               "httpMethod": "PATCH",
               "parameters": {
                 "name": {
-                  "description": "Optional. The full resource name for the GitHubEnterpriseConfig For example: \"projects\/{$project_id}\/githubEnterpriseConfig\/{$config_id}\"",
+                  "description": "Optional. The full resource name for the GitHubEnterpriseConfig For example: \"projects\/{$project_id}\/githubEnterpriseConfigs\/{$config_id}\"",
                   "pattern": "^projects\/[^\/]+\/githubEnterpriseConfigs\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -5076,7 +5076,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "name": {
-                  "description": "This field should contain the name of the enterprise config resource. For example: \"projects\/{$project_id}\/githubEnterpriseConfig\/{$config_id}\"",
+                  "description": "This field should contain the name of the enterprise config resource. For example: \"projects\/{$project_id}\/githubEnterpriseConfigs\/{$config_id}\"",
                   "pattern": "^projects\/[^\/]+\/githubEnterpriseConfigs\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -5141,7 +5141,7 @@
               "httpMethod": "DELETE",
               "parameters": {
                 "name": {
-                  "description": "This field should contain the name of the enterprise config resource. For example: \"projects\/{$project_id}\/githubEnterpriseConfig\/{$config_id}\"",
+                  "description": "This field should contain the name of the enterprise config resource. For example: \"projects\/{$project_id}\/githubEnterpriseConfigs\/{$config_id}\"",
                   "pattern": "^projects\/[^\/]+\/githubEnterpriseConfigs\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -5176,7 +5176,7 @@
               "httpMethod": "GET",
               "parameters": {
                 "enterpriseConfigResource": {
-                  "description": "Required. The name of the enterprise config resource associated with the GitHub App. For example: \"projects\/{$project_id}\/githubEnterpriseConfig\/{$config_id}\"",
+                  "description": "Required. The name of the enterprise config resource associated with the GitHub App. For example: \"projects\/{$project_id}\/githubEnterpriseConfigs\/{$config_id}\"",
                   "pattern": "^projects\/[^\/]+\/githubEnterpriseConfigs\/[^\/]+$",
                   "location": "path",
                   "required": true,

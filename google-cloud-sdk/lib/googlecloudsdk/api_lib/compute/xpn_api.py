@@ -42,8 +42,6 @@ class XpnClient(object):
     self.client = compute_client.apitools_client
     self.messages = compute_client.messages
 
-  # TODO(b/30465957): Refactor to use apitools clients directly and not the
-  # compute utilities
   def _MakeRequest(self, request, errors):
     return self.compute_client.MakeRequests(
         requests=[request],

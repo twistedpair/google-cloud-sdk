@@ -911,9 +911,10 @@ class DocumentationRule(_messages.Message):
   Fields:
     deprecationDescription: Deprecation description of the selected
       element(s). It can be provided if an element is marked as `deprecated`.
-    description: The description is the comment in front of the selected proto
-      element, such as a message, a method, a 'service' definition, or a
-      field.
+    description: Description of the selected proto element (e.g. a message, a
+      method, a 'service' definition, or a field). Defaults to leading &
+      trailing comments taken from the proto source definition of the proto
+      element.
     selector: The selector is a comma-separated list of patterns for any
       element such as a method, a field, an enum value. Each pattern is a
       qualified name of the element which may end in "*", indicating a

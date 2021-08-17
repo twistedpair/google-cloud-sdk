@@ -25,7 +25,7 @@ from googlecloudsdk.api_lib.run import k8s_object
 USER_IMAGE_ANNOTATION = k8s_object.CLIENT_GROUP + '/user-image'
 CLOUDSQL_ANNOTATION = k8s_object.RUN_GROUP + '/cloudsql-instances'
 VPC_ACCESS_ANNOTATION = 'run.googleapis.com/vpc-access-connector'
-SANDBOX_ANNOTATION = 'run.googleapis.com/sandbox'
+SANDBOX_ANNOTATION = 'run.googleapis.com/execution-environment'
 CMEK_KEY_ANNOTATION = 'run.googleapis.com/encryption-key'
 POST_CMEK_KEY_REVOCATION_ACTION_TYPE_ANNOTATION = 'run.googleapis.com/post-key-revocation-action-type'
 SECRETS_ANNOTATION = 'run.googleapis.com/secrets'

@@ -32,7 +32,7 @@ class Configuration(k8s_object.KubernetesObject):
   API_CATEGORY = 'serving.knative.dev'
   KIND = 'Configuration'
 
-  FIELD_BLACKLIST = ['revisionTemplate', 'container']
+  EXCLUDED_FIELDS = ['revisionTemplate', 'container']
 
   @classmethod
   def New(cls, client, namespace):

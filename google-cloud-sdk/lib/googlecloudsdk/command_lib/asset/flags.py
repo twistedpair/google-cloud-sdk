@@ -105,7 +105,7 @@ def AddRelationshipTypesArgs(parser):
           ' for supported relationship types.'))
 
 
-def AddContentTypeArgs(parser, required, track=base.ReleaseTrack.GA):
+def AddContentTypeArgs(parser, required):
   """--content-type argument for asset export and get-history."""
   if required:
     help_text = ('Asset content type.')
@@ -114,34 +114,22 @@ def AddContentTypeArgs(parser, required, track=base.ReleaseTrack.GA):
         'Asset content type. If specified, only content matching the '
         'specified type will be returned. Otherwise, no content but the '
         'asset name will be returned.')
-  help_text += (' Specifying `resource` will export resource metadata, '
-                'specifying `iam-policy` will export the IAM policy for each '
-                'child asset, specifying `org-policy` will export the Org '
-                'Policy set on child assets, specifying `access-policy` will '
-                'export the Access Policy set on child assets, ')
-  if track.id != 'GA':
-    help_text += ('specifying `os-inventory` will export the OS inventory of VM'
-                  ' instances, and specifying `relationship` will export '
-                  'relationships of the assets.')
-    parser.add_argument(
-        '--content-type',
-        required=required,
-        choices=[
-            'resource', 'iam-policy', 'org-policy', 'access-policy',
-            'os-inventory', 'relationship'
-        ],
-        help=help_text)
-  else:
-    help_text += ('and specifying `os-inventory` will export the OS inventory '
-                  'of VM instances.')
-    parser.add_argument(
-        '--content-type',
-        required=required,
-        choices=[
-            'resource', 'iam-policy', 'org-policy', 'access-policy',
-            'os-inventory'
-        ],
-        help=help_text)
+  help_text += (
+      ' Specifying `resource` will export resource metadata, specifying '
+      '`iam-policy` will export the IAM policy for each child asset, '
+      'specifying `org-policy` will export the Org Policy set on child assets,'
+      ' specifying `access-policy` will export the Access Policy set on child '
+      'assets, specifying `os-inventory` will export the OS inventory of VM '
+      'instances, and specifying `relationship` will export relationships of '
+      'the assets.')
+  parser.add_argument(
+      '--content-type',
+      required=required,
+      choices=[
+          'resource', 'iam-policy', 'org-policy', 'access-policy',
+          'os-inventory', 'relationship'
+      ],
+      help=help_text)
 
 
 def AddOutputPathArgs(parser, required):
@@ -286,7 +274,7 @@ def AddListContentTypeArgs(parser):
       '--content-type',
       choices=[
           'resource', 'iam-policy', 'org-policy', 'access-policy',
-          'os-inventory'
+          'os-inventory', 'relationship'
       ],
       help=help_text)
 
@@ -314,6 +302,20 @@ def AddFeedAssetTypesArgs(parser):
       ))
 
 
+def AddFeedRelationshipTypesArgs(parser):
+  parser.add_argument(
+      '--relationship-types',
+      metavar='RELATIONSHIP_TYPES',
+      type=arg_parsers.ArgList(),
+      default=[],
+      help=(
+          'A comma-separated list of the relationship types (i.e., '
+          '"INSTANCE_TO_INSTANCEGROUP") to receive updates. This argument will '
+          'only be honoured if content_type=RELATIONSHIP.'
+          'See http://cloud.google.com/asset-inventory/docs/supported-asset-types'
+          ' for supported relationship types.'))
+
+
 def AddFeedAssetNamesArgs(parser):
   parser.add_argument(
       '--asset-names',
@@ -332,6 +334,7 @@ def AddFeedCriteriaArgs(parser):
   parent_group = parser.add_group(mutex=False, required=True)
   AddFeedAssetTypesArgs(parent_group)
   AddFeedAssetNamesArgs(parent_group)
+  AddFeedRelationshipTypesArgs(parent_group)
 
 
 def FeedContentTypeArgs(parser, help_text):
@@ -339,7 +342,7 @@ def FeedContentTypeArgs(parser, help_text):
       '--content-type',
       choices=[
           'resource', 'iam-policy', 'org-policy', 'access-policy',
-          'os-inventory'
+          'os-inventory', 'relationship'
       ],
       help=help_text)
 

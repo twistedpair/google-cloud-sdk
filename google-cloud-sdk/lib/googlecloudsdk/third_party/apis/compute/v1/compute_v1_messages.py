@@ -2913,10 +2913,11 @@ class Backend(_messages.Message):
     BalancingModeValueValuesEnum: Specifies how to determine whether the
       backend of a load balancer can handle additional traffic or is fully
       loaded. For usage guidelines, see Connection balancing mode. Backends
-      must use compatible balancing modes. For more information, see
-      Restrictions and guidelines. Note: Currently, if you use the API to
+      must use compatible balancing modes. For more information, see Supported
+      balancing modes and target capacity settings and Restrictions and
+      guidance for instance groups. Note: Currently, if you use the API to
       configure incompatible balancing modes, the configuration might be
-      accepted even though it has no impact and will be ignored. Specifically,
+      accepted even though it has no impact and is ignored. Specifically,
       Backend.maxUtilization is ignored when Backend.balancingMode is RATE. In
       the future, this incompatible combination will be rejected.
 
@@ -2924,12 +2925,13 @@ class Backend(_messages.Message):
     balancingMode: Specifies how to determine whether the backend of a load
       balancer can handle additional traffic or is fully loaded. For usage
       guidelines, see Connection balancing mode. Backends must use compatible
-      balancing modes. For more information, see Restrictions and guidelines.
-      Note: Currently, if you use the API to configure incompatible balancing
-      modes, the configuration might be accepted even though it has no impact
-      and will be ignored. Specifically, Backend.maxUtilization is ignored
-      when Backend.balancingMode is RATE. In the future, this incompatible
-      combination will be rejected.
+      balancing modes. For more information, see Supported balancing modes and
+      target capacity settings and Restrictions and guidance for instance
+      groups. Note: Currently, if you use the API to configure incompatible
+      balancing modes, the configuration might be accepted even though it has
+      no impact and is ignored. Specifically, Backend.maxUtilization is
+      ignored when Backend.balancingMode is RATE. In the future, this
+      incompatible combination will be rejected.
     capacityScaler: A multiplier applied to the backend's target capacity of
       its balancing mode. The default value is 1, which means the group serves
       up to 100% of its configured capacity (depending on balancingMode). A
@@ -2981,9 +2983,10 @@ class Backend(_messages.Message):
     r"""Specifies how to determine whether the backend of a load balancer can
     handle additional traffic or is fully loaded. For usage guidelines, see
     Connection balancing mode. Backends must use compatible balancing modes.
-    For more information, see Restrictions and guidelines. Note: Currently, if
-    you use the API to configure incompatible balancing modes, the
-    configuration might be accepted even though it has no impact and will be
+    For more information, see Supported balancing modes and target capacity
+    settings and Restrictions and guidance for instance groups. Note:
+    Currently, if you use the API to configure incompatible balancing modes,
+    the configuration might be accepted even though it has no impact and is
     ignored. Specifically, Backend.maxUtilization is ignored when
     Backend.balancingMode is RATE. In the future, this incompatible
     combination will be rejected.
@@ -48466,7 +48469,7 @@ class ServiceAttachment(_messages.Message):
   r"""Represents a ServiceAttachment resource. A service attachment represents
   a service that a producer has exposed. It encapsulates the load balancer
   which fronts the service runs and a list of NAT IP ranges that the producers
-  uses to represent the consumers connecting to the service. next tag = 19
+  uses to represent the consumers connecting to the service. next tag = 20
 
   Enums:
     ConnectionPreferenceValueValuesEnum: The connection preference of service

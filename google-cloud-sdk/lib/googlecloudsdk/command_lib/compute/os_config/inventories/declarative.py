@@ -160,7 +160,8 @@ def CreateDescribeTableViewResponseHook(response, args):
         continue
       for pkg_type in [
           'yumPackage', 'aptPackage', 'zypperPackage', 'googetPackage',
-          'zypperPatch', 'wuaPackage', 'qfePackage', 'cosPackage'
+          'zypperPatch', 'wuaPackage', 'qfePackage', 'cosPackage',
+          'windowsApplication'
       ]:
         if pkg_type in pkg:
           if pkg_type not in dest:

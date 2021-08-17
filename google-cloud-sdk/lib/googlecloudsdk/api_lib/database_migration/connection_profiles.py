@@ -42,6 +42,48 @@ class ConnectionProfilesClient(object):
     self.resource_parser = api_util.GetResourceParser(release_track)
     self._release_track = release_track
 
+  def _GetEngineFromCloudSql(self, cloudsql):
+    """Gets the SQL engine from the Cloud SQL version.
+
+    Args:
+      cloudsql: Cloud SQL connection profile
+
+    Returns:
+      A string representing the SQL engine
+    """
+    if cloudsql.settings.databaseVersion:
+      # Taking the DB engine from the version enum which is of the format:
+      # <SQL_ENGINE>_<VERSION_NUMBER> e.g. MYSQL_5_6
+      return '{}'.format(cloudsql.settings.databaseVersion).split('_')[0]
+    else:
+      return ''
+
+  def GetEngineName(self, profile):
+    """Gets the SQL engine name from the connection profile.
+
+    Args:
+      profile: the connection profile
+
+    Returns:
+      A string representing the SQL engine
+    """
+    try:
+      if profile.mysql:
+        return 'MYSQL'
+      if profile.cloudsql:
+        return self._GetEngineFromCloudSql(profile.cloudsql)
+      # Make sure to add new engines at the end of the list to avoid the except
+      # clause catching and skipping relevant cases for older/alpha versions
+      if profile.postgresql:
+        return 'POSTGRES'
+      # TODO(b/178304949): Add SQL Server case once supported.
+      return ''
+    except AttributeError as _:
+      # This exception is for Alpha/GA support since not all fields
+      # exists in alpha class version - it causes an exception to access them.
+      # This is the alternative for having a different impl. for each version.
+      return ''
+
   def _ClientCertificateArgName(self):
     if self._api_version == 'v1alpha2':
       return 'certificate'

@@ -304,6 +304,22 @@ class EndpointsClient(object):
         googleCloudAiplatformV1beta1PredictRequest=predict_request)
     return self.client.projects_locations_endpoints.Predict(req)
 
+  def Explain(self, endpoint_ref, instances_json, args):
+    """Sends online explanation request to an endpoint using v1beta1 API."""
+    explain_request = self.messages.GoogleCloudAiplatformV1ExplainRequest(
+        instances=_ConvertPyListToMessageList(extra_types.JsonValue,
+                                              instances_json['instances']))
+    if 'parameters' in instances_json:
+      explain_request.parameters = encoding.PyValueToMessage(
+          extra_types.JsonValue, instances_json['parameters'])
+    if args.deployed_model_id is not None:
+      explain_request.deployedModelId = args.deployed_model_id
+
+    req = self.messages.AiplatformProjectsLocationsEndpointsExplainRequest(
+        endpoint=endpoint_ref.RelativeName(),
+        googleCloudAiplatformV1ExplainRequest=explain_request)
+    return self.client.projects_locations_endpoints.Explain(req)
+
   def ExplainBeta(self, endpoint_ref, instances_json, args):
     """Sends online explanation request to an endpoint using v1beta1 API."""
     explain_request = self.messages.GoogleCloudAiplatformV1beta1ExplainRequest(

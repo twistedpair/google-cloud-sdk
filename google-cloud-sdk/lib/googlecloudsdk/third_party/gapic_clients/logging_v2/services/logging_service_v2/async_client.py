@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
-
-# Copyright 2021 Google LLC
+# Copyright 2020 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 #
-
 from collections import OrderedDict
 import functools
 import re
@@ -22,17 +20,16 @@ from typing import Dict, AsyncIterable, Awaitable, AsyncIterator, Sequence, Tupl
 import pkg_resources
 
 import google.api_core.client_options as ClientOptions # type: ignore
-from google.api_core import exceptions                 # type: ignore
+from google.api_core import exceptions as core_exceptions  # type: ignore
 from google.api_core import gapic_v1                   # type: ignore
 from google.api_core import retry as retries           # type: ignore
-from google.auth import credentials                    # type: ignore
+from google.auth import credentials as ga_credentials   # type: ignore
 from google.oauth2 import service_account              # type: ignore
 
-from google.api import monitored_resource_pb2 as monitored_resource  # type: ignore
+from google.api import monitored_resource_pb2  # type: ignore
 from googlecloudsdk.third_party.gapic_clients.logging_v2.services.logging_service_v2 import pagers
 from googlecloudsdk.third_party.gapic_clients.logging_v2.types import log_entry
 from googlecloudsdk.third_party.gapic_clients.logging_v2.types import logging
-
 from .transports.base import LoggingServiceV2Transport, DEFAULT_CLIENT_INFO
 from .transports.grpc_asyncio import LoggingServiceV2GrpcAsyncIOTransport
 from .client import LoggingServiceV2Client
@@ -48,25 +45,21 @@ class LoggingServiceV2AsyncClient:
 
     log_path = staticmethod(LoggingServiceV2Client.log_path)
     parse_log_path = staticmethod(LoggingServiceV2Client.parse_log_path)
-
     common_billing_account_path = staticmethod(LoggingServiceV2Client.common_billing_account_path)
     parse_common_billing_account_path = staticmethod(LoggingServiceV2Client.parse_common_billing_account_path)
-
     common_folder_path = staticmethod(LoggingServiceV2Client.common_folder_path)
     parse_common_folder_path = staticmethod(LoggingServiceV2Client.parse_common_folder_path)
-
     common_organization_path = staticmethod(LoggingServiceV2Client.common_organization_path)
     parse_common_organization_path = staticmethod(LoggingServiceV2Client.parse_common_organization_path)
-
     common_project_path = staticmethod(LoggingServiceV2Client.common_project_path)
     parse_common_project_path = staticmethod(LoggingServiceV2Client.parse_common_project_path)
-
     common_location_path = staticmethod(LoggingServiceV2Client.common_location_path)
     parse_common_location_path = staticmethod(LoggingServiceV2Client.parse_common_location_path)
 
     @classmethod
     def from_service_account_info(cls, info: dict, *args, **kwargs):
-        """Creates an instance of this client using the provided credentials info.
+        """Creates an instance of this client using the provided credentials
+            info.
 
         Args:
             info (dict): The service account private key info.
@@ -81,7 +74,7 @@ class LoggingServiceV2AsyncClient:
     @classmethod
     def from_service_account_file(cls, filename: str, *args, **kwargs):
         """Creates an instance of this client using the provided credentials
-        file.
+            file.
 
         Args:
             filename (str): The path to the service account private key json
@@ -98,7 +91,7 @@ class LoggingServiceV2AsyncClient:
 
     @property
     def transport(self) -> LoggingServiceV2Transport:
-        """Return the transport used by the client instance.
+        """Returns the transport used by the client instance.
 
         Returns:
             LoggingServiceV2Transport: The transport used by the client instance.
@@ -108,12 +101,12 @@ class LoggingServiceV2AsyncClient:
     get_transport_class = functools.partial(type(LoggingServiceV2Client).get_transport_class, type(LoggingServiceV2Client))
 
     def __init__(self, *,
-            credentials: credentials.Credentials = None,
-            transport: Union[str, LoggingServiceV2Transport] = 'grpc_asyncio',
+            credentials: ga_credentials.Credentials = None,
+            transport: Union[str, LoggingServiceV2Transport] = "grpc_asyncio",
             client_options: ClientOptions = None,
             client_info: gapic_v1.client_info.ClientInfo = DEFAULT_CLIENT_INFO,
             ) -> None:
-        """Instantiate the logging service v2 client.
+        """Instantiates the logging service v2 client.
 
         Args:
             credentials (Optional[google.auth.credentials.Credentials]): The
@@ -145,7 +138,6 @@ class LoggingServiceV2AsyncClient:
             google.auth.exceptions.MutualTlsChannelError: If mutual TLS transport
                 creation failed for any reason.
         """
-
         self._client = LoggingServiceV2Client(
             credentials=credentials,
             transport=transport,
@@ -190,7 +182,6 @@ class LoggingServiceV2AsyncClient:
                 This corresponds to the ``log_name`` field
                 on the ``request`` instance; if ``request`` is provided, this
                 should not be set.
-
             retry (google.api_core.retry.Retry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
@@ -202,14 +193,13 @@ class LoggingServiceV2AsyncClient:
         # gotten any keyword arguments that map to the request.
         has_flattened_params = any([log_name])
         if request is not None and has_flattened_params:
-            raise ValueError('If the `request` argument is set, then none of '
-                             'the individual field arguments should be set.')
+            raise ValueError("If the `request` argument is set, then none of "
+                             "the individual field arguments should be set.")
 
         request = logging.DeleteLogRequest(request)
 
         # If we have keyword arguments corresponding to fields on the
         # request, apply these.
-
         if log_name is not None:
             request.log_name = log_name
 
@@ -218,14 +208,12 @@ class LoggingServiceV2AsyncClient:
         rpc = gapic_v1.method_async.wrap_method(
             self._client._transport.delete_log,
             default_retry=retries.Retry(
-                initial=0.1,
-                maximum=60.0,
-                multiplier=1.3,
-                predicate=retries.if_exception_type(
-                    exceptions.DeadlineExceeded,
-                    exceptions.InternalServerError,
-                    exceptions.ServiceUnavailable,
+initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exception_type(
+                    core_exceptions.DeadlineExceeded,
+                    core_exceptions.InternalServerError,
+                    core_exceptions.ServiceUnavailable,
                 ),
+                deadline=60.0,
             ),
             default_timeout=60.0,
             client_info=DEFAULT_CLIENT_INFO,
@@ -235,7 +223,7 @@ class LoggingServiceV2AsyncClient:
         # add these here.
         metadata = tuple(metadata) + (
             gapic_v1.routing_header.to_grpc_metadata((
-                ('log_name', request.log_name),
+                ("log_name", request.log_name),
             )),
         )
 
@@ -251,7 +239,7 @@ class LoggingServiceV2AsyncClient:
             request: logging.WriteLogEntriesRequest = None,
             *,
             log_name: str = None,
-            resource: monitored_resource.MonitoredResource = None,
+            resource: monitored_resource_pb2.MonitoredResource = None,
             labels: Sequence[logging.WriteLogEntriesRequest.LabelsEntry] = None,
             entries: Sequence[log_entry.LogEntry] = None,
             retry: retries.Retry = gapic_v1.method.DEFAULT,
@@ -357,7 +345,6 @@ class LoggingServiceV2AsyncClient:
                 This corresponds to the ``entries`` field
                 on the ``request`` instance; if ``request`` is provided, this
                 should not be set.
-
             retry (google.api_core.retry.Retry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
@@ -373,14 +360,13 @@ class LoggingServiceV2AsyncClient:
         # gotten any keyword arguments that map to the request.
         has_flattened_params = any([log_name, resource, labels, entries])
         if request is not None and has_flattened_params:
-            raise ValueError('If the `request` argument is set, then none of '
-                             'the individual field arguments should be set.')
+            raise ValueError("If the `request` argument is set, then none of "
+                             "the individual field arguments should be set.")
 
         request = logging.WriteLogEntriesRequest(request)
 
         # If we have keyword arguments corresponding to fields on the
         # request, apply these.
-
         if log_name is not None:
             request.log_name = log_name
         if resource is not None:
@@ -388,7 +374,6 @@ class LoggingServiceV2AsyncClient:
 
         if labels:
             request.labels.update(labels)
-
         if entries:
             request.entries.extend(entries)
 
@@ -397,14 +382,12 @@ class LoggingServiceV2AsyncClient:
         rpc = gapic_v1.method_async.wrap_method(
             self._client._transport.write_log_entries,
             default_retry=retries.Retry(
-                initial=0.1,
-                maximum=60.0,
-                multiplier=1.3,
-                predicate=retries.if_exception_type(
-                    exceptions.DeadlineExceeded,
-                    exceptions.InternalServerError,
-                    exceptions.ServiceUnavailable,
+initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exception_type(
+                    core_exceptions.DeadlineExceeded,
+                    core_exceptions.InternalServerError,
+                    core_exceptions.ServiceUnavailable,
                 ),
+                deadline=60.0,
             ),
             default_timeout=60.0,
             client_info=DEFAULT_CLIENT_INFO,
@@ -489,7 +472,6 @@ class LoggingServiceV2AsyncClient:
                 This corresponds to the ``order_by`` field
                 on the ``request`` instance; if ``request`` is provided, this
                 should not be set.
-
             retry (google.api_core.retry.Retry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
@@ -509,19 +491,17 @@ class LoggingServiceV2AsyncClient:
         # gotten any keyword arguments that map to the request.
         has_flattened_params = any([resource_names, filter, order_by])
         if request is not None and has_flattened_params:
-            raise ValueError('If the `request` argument is set, then none of '
-                             'the individual field arguments should be set.')
+            raise ValueError("If the `request` argument is set, then none of "
+                             "the individual field arguments should be set.")
 
         request = logging.ListLogEntriesRequest(request)
 
         # If we have keyword arguments corresponding to fields on the
         # request, apply these.
-
         if filter is not None:
             request.filter = filter
         if order_by is not None:
             request.order_by = order_by
-
         if resource_names:
             request.resource_names.extend(resource_names)
 
@@ -530,14 +510,12 @@ class LoggingServiceV2AsyncClient:
         rpc = gapic_v1.method_async.wrap_method(
             self._client._transport.list_log_entries,
             default_retry=retries.Retry(
-                initial=0.1,
-                maximum=60.0,
-                multiplier=1.3,
-                predicate=retries.if_exception_type(
-                    exceptions.DeadlineExceeded,
-                    exceptions.InternalServerError,
-                    exceptions.ServiceUnavailable,
+initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exception_type(
+                    core_exceptions.DeadlineExceeded,
+                    core_exceptions.InternalServerError,
+                    core_exceptions.ServiceUnavailable,
                 ),
+                deadline=60.0,
             ),
             default_timeout=60.0,
             client_info=DEFAULT_CLIENT_INFO,
@@ -577,7 +555,6 @@ class LoggingServiceV2AsyncClient:
             request (:class:`googlecloudsdk.third_party.gapic_clients.logging_v2.types.ListMonitoredResourceDescriptorsRequest`):
                 The request object. The parameters to
                 ListMonitoredResourceDescriptors
-
             retry (google.api_core.retry.Retry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
@@ -594,7 +571,6 @@ class LoggingServiceV2AsyncClient:
 
         """
         # Create or coerce a protobuf request object.
-
         request = logging.ListMonitoredResourceDescriptorsRequest(request)
 
         # Wrap the RPC method; this adds retry and timeout information,
@@ -602,14 +578,12 @@ class LoggingServiceV2AsyncClient:
         rpc = gapic_v1.method_async.wrap_method(
             self._client._transport.list_monitored_resource_descriptors,
             default_retry=retries.Retry(
-                initial=0.1,
-                maximum=60.0,
-                multiplier=1.3,
-                predicate=retries.if_exception_type(
-                    exceptions.DeadlineExceeded,
-                    exceptions.InternalServerError,
-                    exceptions.ServiceUnavailable,
+initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exception_type(
+                    core_exceptions.DeadlineExceeded,
+                    core_exceptions.InternalServerError,
+                    core_exceptions.ServiceUnavailable,
                 ),
+                deadline=60.0,
             ),
             default_timeout=60.0,
             client_info=DEFAULT_CLIENT_INFO,
@@ -663,7 +637,6 @@ class LoggingServiceV2AsyncClient:
                 This corresponds to the ``parent`` field
                 on the ``request`` instance; if ``request`` is provided, this
                 should not be set.
-
             retry (google.api_core.retry.Retry): Designation of what errors, if any,
                 should be retried.
             timeout (float): The timeout for this request.
@@ -683,14 +656,13 @@ class LoggingServiceV2AsyncClient:
         # gotten any keyword arguments that map to the request.
         has_flattened_params = any([parent])
         if request is not None and has_flattened_params:
-            raise ValueError('If the `request` argument is set, then none of '
-                             'the individual field arguments should be set.')
+            raise ValueError("If the `request` argument is set, then none of "
+                             "the individual field arguments should be set.")
 
         request = logging.ListLogsRequest(request)
 
         # If we have keyword arguments corresponding to fields on the
         # request, apply these.
-
         if parent is not None:
             request.parent = parent
 
@@ -699,14 +671,12 @@ class LoggingServiceV2AsyncClient:
         rpc = gapic_v1.method_async.wrap_method(
             self._client._transport.list_logs,
             default_retry=retries.Retry(
-                initial=0.1,
-                maximum=60.0,
-                multiplier=1.3,
-                predicate=retries.if_exception_type(
-                    exceptions.DeadlineExceeded,
-                    exceptions.InternalServerError,
-                    exceptions.ServiceUnavailable,
+initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exception_type(
+                    core_exceptions.DeadlineExceeded,
+                    core_exceptions.InternalServerError,
+                    core_exceptions.ServiceUnavailable,
                 ),
+                deadline=60.0,
             ),
             default_timeout=60.0,
             client_info=DEFAULT_CLIENT_INFO,
@@ -716,7 +686,7 @@ class LoggingServiceV2AsyncClient:
         # add these here.
         metadata = tuple(metadata) + (
             gapic_v1.routing_header.to_grpc_metadata((
-                ('parent', request.parent),
+                ("parent", request.parent),
             )),
         )
 
@@ -770,14 +740,12 @@ class LoggingServiceV2AsyncClient:
         rpc = gapic_v1.method_async.wrap_method(
             self._client._transport.tail_log_entries,
             default_retry=retries.Retry(
-                initial=0.1,
-                maximum=60.0,
-                multiplier=1.3,
-                predicate=retries.if_exception_type(
-                    exceptions.DeadlineExceeded,
-                    exceptions.InternalServerError,
-                    exceptions.ServiceUnavailable,
+initial=0.1,maximum=60.0,multiplier=1.3,                predicate=retries.if_exception_type(
+                    core_exceptions.DeadlineExceeded,
+                    core_exceptions.InternalServerError,
+                    core_exceptions.ServiceUnavailable,
                 ),
+                deadline=3600.0,
             ),
             default_timeout=3600.0,
             client_info=DEFAULT_CLIENT_INFO,
@@ -798,12 +766,10 @@ class LoggingServiceV2AsyncClient:
 
 
 
-
-
 try:
     DEFAULT_CLIENT_INFO = gapic_v1.client_info.ClientInfo(
         gapic_version=pkg_resources.get_distribution(
-            'googlecloudsdk-third_party-gapic_clients-logging',
+            "googlecloudsdk-third_party-gapic_clients-logging",
         ).version,
     )
 except pkg_resources.DistributionNotFound:
@@ -811,5 +777,5 @@ except pkg_resources.DistributionNotFound:
 
 
 __all__ = (
-    'LoggingServiceV2AsyncClient',
+    "LoggingServiceV2AsyncClient",
 )

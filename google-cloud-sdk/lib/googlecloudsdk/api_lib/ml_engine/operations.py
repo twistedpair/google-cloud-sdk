@@ -34,7 +34,6 @@ def GetClientInstance(version='v1', no_http=False):
   return apis.GetClientInstance('ml', version, no_http=no_http)
 
 
-# TODO(b/30137432): Remove this and use api_lib.app.api.operations directly
 class CloudMlOperationPoller(waiter.CloudOperationPoller):
   """Poller for Cloud ML Engine operations API.
 

@@ -320,8 +320,10 @@ class ArtifactregistryProjectsLocationsRepositoriesPackagesTagsPatchRequest(_mes
 
   Fields:
     name: The name of the tag, for example: "projects/p1/locations/us-
-      central1/repositories/repo1/packages/pkg1/tags/tag1". If the package or
-      tag ID parts contain slashes, the slashes are escaped.
+      central1/repositories/repo1/packages/pkg1/tags/tag1". If the package
+      part contains slashes, the slashes are escaped. The tag part can only
+      have characters in [a-zA-Z0-9\-._~:@], anything else must be URL
+      encoded.
     tag: A Tag resource to be passed as the request body.
     updateMask: The update mask applies to the resource. For the `FieldMask`
       definition, see https://developers.google.com/protocol-
@@ -1012,7 +1014,7 @@ class Policy(_messages.Message):
   roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
   role: roles/resourcemanager.organizationViewer condition: title: expirable
   access description: Does not grant access after Sep 2020 expression:
-  request.time < timestamp('2020-10-01T00:00:00.000Z') - etag: BwWWja0YfJA= -
+  request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA=
   version: 3 For a description of IAM and its features, see the [IAM
   documentation](https://cloud.google.com/iam/docs/).
 
@@ -1277,8 +1279,10 @@ class Tag(_messages.Message):
 
   Fields:
     name: The name of the tag, for example: "projects/p1/locations/us-
-      central1/repositories/repo1/packages/pkg1/tags/tag1". If the package or
-      tag ID parts contain slashes, the slashes are escaped.
+      central1/repositories/repo1/packages/pkg1/tags/tag1". If the package
+      part contains slashes, the slashes are escaped. The tag part can only
+      have characters in [a-zA-Z0-9\-._~:@], anything else must be URL
+      encoded.
     version: The name of the version the tag refers to, for example:
       "projects/p1/locations/us-
       central1/repositories/repo1/packages/pkg1/versions/sha256:5243811"

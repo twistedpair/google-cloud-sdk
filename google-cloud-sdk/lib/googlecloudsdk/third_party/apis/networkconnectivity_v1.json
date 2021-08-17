@@ -14,7 +14,7 @@
     "x16": "http://www.google.com/images/icons/product/search-16.gif",
     "x32": "http://www.google.com/images/icons/product/search-32.gif"
    },
-  "documentationLink": "https://cloud.google.com/network-connectivity/docs",
+  "documentationLink": "https://cloud.google.com/network-connectivity/docs/reference/networkconnectivity/rest",
   "protocol": "rest",
   "rootUrl": "https://networkconnectivity.googleapis.com/",
   "mtlsRootUrl": "https://networkconnectivity.mtls.googleapis.com/",
@@ -465,7 +465,7 @@
           }
         },
         "siteToSiteDataTransfer": {
-          "description": "A value that controls whether site-to-site data transfer is enabled for these resources. If true, routes are propagated between the spoke associated with these resources and other spokes in the hub that have data transfer enabled. If false, the spoke associated with these resources provides connectivity only between the external site and Google Cloud. In regions where data transfer is unsupported, you cannot set this field to true.",
+          "description": "A value that controls whether site-to-site data transfer is enabled for these resources. This field is set to false by default, but you must set it to true. Note that data transfer is available only in supported locations.",
           "type": "boolean"
         }
       }
@@ -483,7 +483,7 @@
           }
         },
         "siteToSiteDataTransfer": {
-          "description": "A value that controls whether site-to-site data transfer is enabled for these resources. If true, routes are propagated between the spoke associated with these resources and other spokes in the hub that have data transfer enabled. If false, the spoke associated with these resources provides connectivity only between the external site and Google Cloud. In regions where data transfer is unsupported, you cannot set this field to true.",
+          "description": "A value that controls whether site-to-site data transfer is enabled for these resources. This field is set to false by default, but you must set it to true. Note that data transfer is available only in supported locations.",
           "type": "boolean"
         }
       }
@@ -501,7 +501,7 @@
           }
         },
         "siteToSiteDataTransfer": {
-          "description": "A value that controls whether site-to-site data transfer is enabled for these resources. If true, routes are propagated between the spoke associated with these resources and other spokes in the hub that have data transfer enabled. If false, the spoke associated with these resources provides connectivity only between the external site and Google Cloud. In regions where data transfer is unsupported, you cannot set this field to true.",
+          "description": "A value that controls whether site-to-site data transfer is enabled for these resources. This field is set to false by default, but you must set it to true. Note that data transfer is available only in supported locations.",
           "type": "boolean"
         }
       }
@@ -1493,7 +1493,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Deactivates the specified spoke. Deactivating keeps the spoke information for future re-activation, but disconnects the Google Cloud network from non-Google-Cloud network."
+                  "description": "Deactivates the specified spoke. A deactivated spoke can't be used to connect to the Google Cloud network. When you deactivate a spoke, Network Connectivity Center retains details about the spoke so that you can reactivate it later."
                 },
                 "activate": {
                   "id": "networkconnectivity.projects.locations.spokes.activate",
@@ -1521,7 +1521,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Activates the specified spoke. Activating reconnects the Google Cloud network with the non-Google-Cloud network."
+                  "description": "Activates the specified spoke. By activating a spoke, you permit connectivity through the spoke's linked resources to the Google Cloud network."
                 },
                 "delete": {
                   "id": "networkconnectivity.projects.locations.spokes.delete",

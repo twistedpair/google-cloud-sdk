@@ -132,6 +132,26 @@ class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
 
+class CloudRouter(_messages.Message):
+  r"""The Cloud Router info.
+
+  Fields:
+    name: The created Cloud Router name.
+  """
+
+  name = _messages.StringField(1)
+
+
+class CloudVpn(_messages.Message):
+  r"""The Cloud VPN info.
+
+  Fields:
+    gateway: The created Cloud VPN gateway name.
+  """
+
+  gateway = _messages.StringField(1)
+
+
 class Cluster(_messages.Message):
   r"""A Google Edge Cloud Kubernetes cluster.
 
@@ -199,6 +219,39 @@ class ClusterNetworking(_messages.Message):
 
   clusterIpv4CidrBlocks = _messages.StringField(1, repeated=True)
   servicesIpv4CidrBlocks = _messages.StringField(2, repeated=True)
+
+
+class Details(_messages.Message):
+  r"""The created connection details.
+
+  Enums:
+    StateValueValuesEnum: The state of this connection.
+
+  Fields:
+    cloudRouter: The Cloud Router info.
+    cloudVpns: Each connection has multiple Cloud VPN gateways.
+    error: The error message. This is only populated when state=ERROR.
+    state: The state of this connection.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""The state of this connection.
+
+    Values:
+      STATE_UNSPECIFIED: Unknown.
+      STATE_CONNECTED: Connected.
+      STATE_CONNECTING: Still connecting.
+      STATE_ERROR: Error occurred.
+    """
+    STATE_UNSPECIFIED = 0
+    STATE_CONNECTED = 1
+    STATE_CONNECTING = 2
+    STATE_ERROR = 3
+
+  cloudRouter = _messages.MessageField('CloudRouter', 1)
+  cloudVpns = _messages.MessageField('CloudVpn', 2, repeated=True)
+  error = _messages.StringField(3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
 
 
 class Empty(_messages.Message):
@@ -1560,6 +1613,7 @@ class VpnConnection(_messages.Message):
     cluster: The canonical Cluster name to connect to. It is in the form of
       projects/{project}/locations/{location}/clusters/{cluster}.
     createTime: Output only. The time when the VPN connection was created.
+    details: Output only. The created connection details.
     enableHighAvailability: Whether this VPN connection has HA enabled on
       cluster side. If enabled, when creating VPN connection we will attempt
       to use 2 ANG floating IPs.
@@ -1613,12 +1667,13 @@ class VpnConnection(_messages.Message):
   bgpRoutingMode = _messages.EnumField('BgpRoutingModeValueValuesEnum', 1)
   cluster = _messages.StringField(2)
   createTime = _messages.StringField(3)
-  enableHighAvailability = _messages.BooleanField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  natGatewayIp = _messages.StringField(7)
-  updateTime = _messages.StringField(8)
-  vpc = _messages.StringField(9)
+  details = _messages.MessageField('Details', 4)
+  enableHighAvailability = _messages.BooleanField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  natGatewayIp = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
+  vpc = _messages.StringField(10)
 
 
 encoding.AddCustomJsonFieldMapping(

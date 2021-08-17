@@ -18,7 +18,7 @@ Value, RepeatedField) which transform a source dictionary input to the target
 schema. The source dictionary is expected to be parsed from a JSON
 representation.
 
-Only fields listed in the schema will be converted (i.e. a whitelist).
+Only fields listed in the schema will be converted (i.e. an allowlist).
 A SchemaField is a recursive structure and employs the visitor pattern to
 convert an input structure.
 

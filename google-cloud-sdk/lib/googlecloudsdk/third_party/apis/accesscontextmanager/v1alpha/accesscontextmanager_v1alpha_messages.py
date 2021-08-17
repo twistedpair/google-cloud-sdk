@@ -754,6 +754,9 @@ class EgressTo(_messages.Message):
   to be allowed egress out of the perimeter.
 
   Fields:
+    externalResources: A list of external resources that are allowed to be
+      accessed. A request matches if it contains an external resource in this
+      list (Example: s3://bucket/path). Currently '*' is not allowed.
     operations: A list of ApiOperations allowed to be performed by the sources
       specified in the corresponding EgressFrom. A request matches if it uses
       an operation/service in this list.
@@ -764,8 +767,9 @@ class EgressTo(_messages.Message):
       will authorize access to all resources outside the perimeter.
   """
 
-  operations = _messages.MessageField('ApiOperation', 1, repeated=True)
-  resources = _messages.StringField(2, repeated=True)
+  externalResources = _messages.StringField(1, repeated=True)
+  operations = _messages.MessageField('ApiOperation', 2, repeated=True)
+  resources = _messages.StringField(3, repeated=True)
 
 
 class Expr(_messages.Message):

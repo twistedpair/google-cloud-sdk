@@ -1545,6 +1545,23 @@ def AddPreemptibleVmArgs(parser):
       """)
 
 
+def AddProvisioningModelVmArgs(parser):
+  """Set arguments for specifing provisioning model for instances."""
+  parser.add_argument(
+      '--provisioning-model',
+      choices={
+          'SPOT': (
+              'Spot VM instances are preemptible VM instances without '
+              'a 24-hour limit. They typically cost much less than '
+              'a default VM, but have no guaranteed runtime.')
+      },
+      type=arg_utils.ChoiceToEnumName,
+      help="""\
+      Specifies provisioning model, which determines price, obtainability,
+      and runtime for the VM instance.
+      """)
+
+
 def AddNetworkArgs(parser):
   """Set arguments for choosing the network/subnetwork."""
   parser.add_argument(

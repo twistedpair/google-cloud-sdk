@@ -246,7 +246,7 @@ class ArtifactregistryProjectsLocationsRepositoriesListRequest(_messages.Message
 
   Fields:
     pageSize: The maximum number of repositories to return. Maximum page size
-      is 10,000.
+      is 1,000.
     pageToken: The next_page_token value returned from a previous list
       request, if any.
     parent: The name of the parent resource whose repositories will be listed.
@@ -285,7 +285,7 @@ class ArtifactregistryProjectsLocationsRepositoriesPackagesListRequest(_messages
 
   Fields:
     pageSize: The maximum number of packages to return. Maximum page size is
-      10,000.
+      1,000.
     pageToken: The next_page_token value returned from a previous list
       request, if any.
     parent: The name of the parent resource whose packages will be listed.
@@ -363,8 +363,10 @@ class ArtifactregistryProjectsLocationsRepositoriesPackagesTagsPatchRequest(_mes
 
   Fields:
     name: The name of the tag, for example: "projects/p1/locations/us-
-      central1/repositories/repo1/packages/pkg1/tags/tag1". If the package or
-      tag ID parts contain slashes, the slashes are escaped.
+      central1/repositories/repo1/packages/pkg1/tags/tag1". If the package
+      part contains slashes, the slashes are escaped. The tag part can only
+      have characters in [a-zA-Z0-9\-._~:@], anything else must be URL
+      encoded.
     tag: A Tag resource to be passed as the request body.
     updateMask: The update mask applies to the resource. For the `FieldMask`
       definition, see https://developers.google.com/protocol-
@@ -434,7 +436,7 @@ class ArtifactregistryProjectsLocationsRepositoriesPackagesVersionsListRequest(_
   Fields:
     orderBy: Optional. Sorting field and order
     pageSize: The maximum number of versions to return. Maximum page size is
-      10,000.
+      1,000.
     pageToken: The next_page_token value returned from a previous list
       request, if any.
     parent: The name of the parent resource whose versions will be listed.
@@ -1123,7 +1125,7 @@ class Policy(_messages.Message):
   roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
   role: roles/resourcemanager.organizationViewer condition: title: expirable
   access description: Does not grant access after Sep 2020 expression:
-  request.time < timestamp('2020-10-01T00:00:00.000Z') - etag: BwWWja0YfJA= -
+  request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA=
   version: 3 For a description of IAM and its features, see the [IAM
   documentation](https://cloud.google.com/iam/docs/).
 
@@ -1424,8 +1426,10 @@ class Tag(_messages.Message):
 
   Fields:
     name: The name of the tag, for example: "projects/p1/locations/us-
-      central1/repositories/repo1/packages/pkg1/tags/tag1". If the package or
-      tag ID parts contain slashes, the slashes are escaped.
+      central1/repositories/repo1/packages/pkg1/tags/tag1". If the package
+      part contains slashes, the slashes are escaped. The tag part can only
+      have characters in [a-zA-Z0-9\-._~:@], anything else must be URL
+      encoded.
     version: The name of the version the tag refers to, for example:
       "projects/p1/locations/us-
       central1/repositories/repo1/packages/pkg1/versions/sha256:5243811" If

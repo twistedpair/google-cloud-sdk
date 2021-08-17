@@ -437,7 +437,7 @@ def MachineType(instance=None, tier=None, memory=None, cpu=None):
 
 
 def OnPremisesConfiguration(sql_messages, source_ip_address, source_port):
-  """Generates the external master configuration for the instance.
+  """Generates the external primary configuration for the instance.
 
   Args:
     sql_messages: module, The messages module that should be used.
@@ -472,21 +472,21 @@ def PrivateNetworkUrl(network):
 
 
 def ReplicaConfiguration(sql_messages,
-                         master_username,
-                         master_password,
-                         master_dump_file_path,
-                         master_ca_certificate_path=None,
+                         primary_username,
+                         primary_password,
+                         primary_dump_file_path,
+                         primary_ca_certificate_path=None,
                          client_certificate_path=None,
                          client_key_path=None):
-  """Generates the config for an external master replica.
+  """Generates the config for an external primary replica.
 
   Args:
     sql_messages: module, The messages module that should be used.
-    master_username: The username for connecting to the external instance.
-    master_password: The password for connecting to the external instance.
-    master_dump_file_path: ObjectReference, a wrapper for the URI of the Cloud
+    primary_username: The username for connecting to the external instance.
+    primary_password: The password for connecting to the external instance.
+    primary_dump_file_path: ObjectReference, a wrapper for the URI of the Cloud
       Storage path containing the dumpfile to seed the replica with.
-    master_ca_certificate_path: The path to the CA certificate PEM file.
+    primary_ca_certificate_path: The path to the CA certificate PEM file.
     client_certificate_path: The path to the client certificate PEM file.
     client_key_path: The path to the client private key PEM file.
 
@@ -495,12 +495,12 @@ def ReplicaConfiguration(sql_messages,
   """
   mysql_replica_configuration = sql_messages.MySqlReplicaConfiguration(
       kind='sql#mysqlReplicaConfiguration',
-      username=master_username,
-      password=master_password,
-      dumpFilePath=master_dump_file_path.ToUrl())
-  if master_ca_certificate_path:
+      username=primary_username,
+      password=primary_password,
+      dumpFilePath=primary_dump_file_path.ToUrl())
+  if primary_ca_certificate_path:
     mysql_replica_configuration.caCertificate = files.ReadFileContents(
-        master_ca_certificate_path)
+        primary_ca_certificate_path)
   if client_certificate_path:
     mysql_replica_configuration.clientCertificate = files.ReadFileContents(
         client_certificate_path)

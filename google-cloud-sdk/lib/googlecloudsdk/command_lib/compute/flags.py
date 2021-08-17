@@ -743,7 +743,6 @@ class ResourceArgument(object):
 
   # TODO(b/31933786) remove cust_metavar once surface supports metavars for
   # plural flags.
-  # TODO(b/32116723) remove mutex_group when argparse handles nesting groups
   def AddArgument(self,
                   parser,
                   mutex_group=None,

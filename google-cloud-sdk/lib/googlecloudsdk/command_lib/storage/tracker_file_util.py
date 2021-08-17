@@ -408,7 +408,7 @@ def write_tracker_file_with_component_data(tracker_file_path,
     slice_start_byte (int|None): Where to resume downloading from. Signals
       this is the tracker file of a component.
     total_components (int|None): Total number of components in download. Signals
-      this is the master tracker file of a sliced download.
+      this is the parent tracker file of a sliced download.
   """
   component_data = {
       'etag': source_object_resource.etag,
@@ -419,7 +419,7 @@ def write_tracker_file_with_component_data(tracker_file_path,
       raise ValueError(
           'Cannot have a tracker file with slice_start_byte and'
           ' total_components. slice_start_byte signals a component within a'
-          ' larger operation. total_components signals the master tracker for'
+          ' larger operation. total_components signals the parent tracker for'
           ' a multi-component operation.')
     component_data['slice_start_byte'] = slice_start_byte
   if total_components is not None:
@@ -495,7 +495,7 @@ def read_or_create_download_tracker_file(source_object_resource,
     component_number (int|None): The download component number to find the start
       point for. Indicates part of a multi-component download.
     total_components (int|None): The number of components in a sliced download.
-      Indicates this is the master tracker for a multi-component operation.
+      Indicates this is the parent tracker for a multi-component operation.
 
   Returns:
     tracker_file_path (str): The path to the tracker file (found or created).
@@ -511,7 +511,7 @@ def read_or_create_download_tracker_file(source_object_resource,
   if total_components and (slice_start_byte is not None or
                            component_number is not None):
     raise ValueError(
-        'total_components indicates this is the master tracker file for a'
+        'total_components indicates this is the parent tracker file for a'
         ' multi-component operation. slice_start_byte and component_number'
         ' cannot be present since this is not for an individual component.')
 

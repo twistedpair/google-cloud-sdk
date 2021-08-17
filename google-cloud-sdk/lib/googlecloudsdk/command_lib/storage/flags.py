@@ -25,10 +25,12 @@ def add_precondition_flags(parser):
   """Add flags indicating a precondition for an operation to happen."""
   parser.add_argument(
       '--if-generation-match',
+      metavar='GENERATION',
       help='Execute only if the generation matches the generation of the'
       ' requested object.')
   parser.add_argument(
       '--if-metageneration-match',
+      metavar='METAGENERATION',
       help='Execute only if the metageneration matches the metageneration of'
       ' the requested object.')
 
@@ -45,6 +47,7 @@ def add_object_metadata_flags(parser):
       '--content-encoding', help='How content is encoded (e.g. ``gzip\'\').')
   parser.add_argument(
       '--content-md5',
+      metavar='MD5_DIGEST',
       help=('Manually specified MD5 hash digest for the contents of an uploaded'
             ' file. This flag cannot be used when uploading multiple files. The'
             ' custom digest is used by the cloud provider for validation.'))

@@ -260,7 +260,6 @@ class AndroidModel(_messages.Message):
 class AndroidRoboTest(_messages.Message):
   r"""A test of an android application that explores the application on a
   virtual or physical Android Device, finding culprits and crashes as it goes.
-  Next tag: 30
 
   Enums:
     RoboModeValueValuesEnum: The mode in which Robo should run. Most clients
@@ -295,8 +294,8 @@ class AndroidRoboTest(_messages.Message):
     server to populate this field automatically.
 
     Values:
-      ROBO_MODE_UNSPECIFIED: LINT.IfChange This means that the server should
-        choose the mode. Recommended.
+      ROBO_MODE_UNSPECIFIED: This means that the server should choose the
+        mode. Recommended.
       ROBO_VERSION_1: Runs Robo in UIAutomator-only mode without app resigning
       ROBO_VERSION_2: Runs Robo in standard Espresso with UIAutomator fallback
     """
@@ -881,9 +880,9 @@ class IosTestSetup(_messages.Message):
       TestEnvironmentDiscoveryService.GetTestEnvironmentCatalog.
     pullDirectories: List of directories on the device to upload to Cloud
       Storage at the end of the test. Directories should either be in a shared
-      directory (e.g. /private/var/mobile/Media) or within an accessible
-      directory inside the app's filesystem (e.g. /Documents) by specifying
-      the bundle id.
+      directory (such as /private/var/mobile/Media) or within an accessible
+      directory inside the app's filesystem (such as /Documents) by specifying
+      the bundle ID.
     pushFiles: List of files to push to the device before starting the test.
   """
 

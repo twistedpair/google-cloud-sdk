@@ -3021,10 +3021,11 @@ class Backend(_messages.Message):
     BalancingModeValueValuesEnum: Specifies how to determine whether the
       backend of a load balancer can handle additional traffic or is fully
       loaded. For usage guidelines, see Connection balancing mode. Backends
-      must use compatible balancing modes. For more information, see
-      Restrictions and guidelines. Note: Currently, if you use the API to
+      must use compatible balancing modes. For more information, see Supported
+      balancing modes and target capacity settings and Restrictions and
+      guidance for instance groups. Note: Currently, if you use the API to
       configure incompatible balancing modes, the configuration might be
-      accepted even though it has no impact and will be ignored. Specifically,
+      accepted even though it has no impact and is ignored. Specifically,
       Backend.maxUtilization is ignored when Backend.balancingMode is RATE. In
       the future, this incompatible combination will be rejected.
 
@@ -3032,12 +3033,13 @@ class Backend(_messages.Message):
     balancingMode: Specifies how to determine whether the backend of a load
       balancer can handle additional traffic or is fully loaded. For usage
       guidelines, see Connection balancing mode. Backends must use compatible
-      balancing modes. For more information, see Restrictions and guidelines.
-      Note: Currently, if you use the API to configure incompatible balancing
-      modes, the configuration might be accepted even though it has no impact
-      and will be ignored. Specifically, Backend.maxUtilization is ignored
-      when Backend.balancingMode is RATE. In the future, this incompatible
-      combination will be rejected.
+      balancing modes. For more information, see Supported balancing modes and
+      target capacity settings and Restrictions and guidance for instance
+      groups. Note: Currently, if you use the API to configure incompatible
+      balancing modes, the configuration might be accepted even though it has
+      no impact and is ignored. Specifically, Backend.maxUtilization is
+      ignored when Backend.balancingMode is RATE. In the future, this
+      incompatible combination will be rejected.
     capacityScaler: A multiplier applied to the backend's target capacity of
       its balancing mode. The default value is 1, which means the group serves
       up to 100% of its configured capacity (depending on balancingMode). A
@@ -3089,9 +3091,10 @@ class Backend(_messages.Message):
     r"""Specifies how to determine whether the backend of a load balancer can
     handle additional traffic or is fully loaded. For usage guidelines, see
     Connection balancing mode. Backends must use compatible balancing modes.
-    For more information, see Restrictions and guidelines. Note: Currently, if
-    you use the API to configure incompatible balancing modes, the
-    configuration might be accepted even though it has no impact and will be
+    For more information, see Supported balancing modes and target capacity
+    settings and Restrictions and guidance for instance groups. Note:
+    Currently, if you use the API to configure incompatible balancing modes,
+    the configuration might be accepted even though it has no impact and is
     ignored. Specifically, Backend.maxUtilization is ignored when
     Backend.balancingMode is RATE. In the future, this incompatible
     combination will be rejected.
@@ -5478,6 +5481,7 @@ class Commitment(_messages.Message):
       GENERAL_PURPOSE_E2: <no description>
       GENERAL_PURPOSE_N2: <no description>
       GENERAL_PURPOSE_N2D: <no description>
+      GENERAL_PURPOSE_T2D: <no description>
       MEMORY_OPTIMIZED: <no description>
       TYPE_UNSPECIFIED: <no description>
     """
@@ -5487,8 +5491,9 @@ class Commitment(_messages.Message):
     GENERAL_PURPOSE_E2 = 3
     GENERAL_PURPOSE_N2 = 4
     GENERAL_PURPOSE_N2D = 5
-    MEMORY_OPTIMIZED = 6
-    TYPE_UNSPECIFIED = 7
+    GENERAL_PURPOSE_T2D = 6
+    MEMORY_OPTIMIZED = 7
+    TYPE_UNSPECIFIED = 8
 
   category = _messages.EnumField('CategoryValueValuesEnum', 1)
   creationTimestamp = _messages.StringField(2)
@@ -28657,6 +28662,13 @@ class ForwardingRule(_messages.Message):
     serviceName: [Output Only] The internal fully qualified service name for
       this Forwarding Rule. This field is only used for internal load
       balancing.
+    sourceIpRanges: If not empty, this Forwarding Rule will only forward the
+      traffic when the source IP address matches one of the IP addresses or
+      CIDR ranges set here. Note that a Forwarding Rule can only have up to 64
+      source IP ranges, and this field can only be used with a regional
+      Forwarding Rule whose scheme is EXTERNAL. Each source_ip_range entry
+      should be either an IP address (for example, 1.2.3.4) or a CIDR range
+      (for example, 1.2.3.0/24).
     subnetwork: This field identifies the subnetwork that the load balanced IP
       should belong to for this Forwarding Rule, used in internal load
       balancing and network load balancing with IPv6. If the network specified
@@ -28809,8 +28821,9 @@ class ForwardingRule(_messages.Message):
   serviceDirectoryRegistrations = _messages.MessageField('ForwardingRuleServiceDirectoryRegistration', 26, repeated=True)
   serviceLabel = _messages.StringField(27)
   serviceName = _messages.StringField(28)
-  subnetwork = _messages.StringField(29)
-  target = _messages.StringField(30)
+  sourceIpRanges = _messages.StringField(29, repeated=True)
+  subnetwork = _messages.StringField(30)
+  target = _messages.StringField(31)
 
 
 class ForwardingRuleAggregatedList(_messages.Message):
@@ -50600,18 +50613,18 @@ class RouterBgpPeerBfd(_messages.Message):
       control packets received from the peer router. The actual value is
       negotiated between the two routers and is equal to the greater of this
       value and the transmit interval of the other router. Not currently
-      available publicly. If set, this value must be between 100 and 30000.
-      The default is 300.
+      available publicly. If set, this value must be between 1000 and 30000.
+      The default is 1000.
     minTransmitInterval: The minimum interval, in milliseconds, between BFD
       control packets transmitted to the peer router. The actual value is
       negotiated between the two routers and is equal to the greater of this
       value and the corresponding receive interval of the other router. Not
-      currently available publicly. If set, this value must be between 100 and
-      30000. The default is 300.
+      currently available publicly. If set, this value must be between 1000
+      and 30000. The default is 1000.
     multiplier: The number of consecutive BFD packets that must be missed
       before BFD declares that a peer is unavailable. Not currently available
-      publicly. If set, the value must be a value between 2 and 16. The
-      default is 3.
+      publicly. If set, the value must be a value between 5 and 16. The
+      default is 5.
     sessionInitializationMode: The BFD session initialization mode for this
       BGP peer. Not currently available publicly. If set to ACTIVE, the Cloud
       Router will initiate the BFD session for this BGP peer. If set to
@@ -52603,7 +52616,7 @@ class ServiceAttachment(_messages.Message):
   r"""Represents a ServiceAttachment resource. A service attachment represents
   a service that a producer has exposed. It encapsulates the load balancer
   which fronts the service runs and a list of NAT IP ranges that the producers
-  uses to represent the consumers connecting to the service. next tag = 19
+  uses to represent the consumers connecting to the service. next tag = 20
 
   Enums:
     ConnectionPreferenceValueValuesEnum: The connection preference of service

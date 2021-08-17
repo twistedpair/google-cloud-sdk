@@ -501,7 +501,33 @@ def GetResponsePolicyNetworksArg(required=False):
       help='The comma-separated list of network names to associate with '
             'the response policy.')
 CHANGES_FORMAT = 'table(id, startTime, status)'
-RESOURCERECORDSETS_FORMAT = 'table(name, type, ttl, rrdatas.list():label=DATA)'
+
+
+def _FormatResourceRecordSet(rrdatas_or_routing_policy):
+  """Format rrset based on rrdatas or routing policy type."""
+  if 'wrr' in rrdatas_or_routing_policy:
+    return '; '.join([
+        '{}: {}'.format(item['weight'], ','.join(item['rrdatas']))
+        for item in rrdatas_or_routing_policy['wrr']['items']
+    ])
+  elif 'geo' in rrdatas_or_routing_policy:
+    return '; '.join([
+        '{}: {}'.format(item['location'], ','.join(item['rrdatas']))
+        for item in rrdatas_or_routing_policy['geo']['items']
+    ])
+  else:
+    return ','.join(rrdatas_or_routing_policy)
+
+RESOURCERECORDSETS_TRANSFORMS = {
+    'formatrrset': _FormatResourceRecordSet,
+}
+RESOURCERECORDSETS_FORMAT = """
+    table(
+        name,
+        type,
+        ttl,
+        firstof(rrdatas,routingPolicy).formatrrset():label=DATA)
+    """
 
 
 def GetResponsePolicyGkeClustersArg(required=False):

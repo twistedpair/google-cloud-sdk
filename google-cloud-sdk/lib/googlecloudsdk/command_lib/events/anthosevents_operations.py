@@ -193,7 +193,6 @@ class TimeLockedUnfailingConditionPoller(serverless_operations.ConditionPoller):
 
     if conditions.IsReady():
       self._tracker.UpdateHeaderMessage(self._ready_message)
-      # TODO(b/120679874): Should not have to manually call Tick()
       self._tracker.Tick()
 
     return conditions

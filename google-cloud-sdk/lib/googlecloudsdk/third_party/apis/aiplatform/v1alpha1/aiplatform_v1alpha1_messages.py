@@ -1912,19 +1912,16 @@ class AiplatformProjectsLocationsMetadataStoresArtifactsPatchRequest(_messages.M
 
   Fields:
     allowMissing: If set to true, and the Artifact is not found, a new
-      Artifact will be created. In this situation, `update_mask` is ignored.
+      Artifact will be created.
     googleCloudAiplatformV1alpha1Artifact: A
       GoogleCloudAiplatformV1alpha1Artifact resource to be passed as the
       request body.
     name: Output only. The resource name of the Artifact.
-    updateMask: Required. A FieldMask indicating which fields should be
-      updated.
   """
 
   allowMissing = _messages.BooleanField(1)
   googleCloudAiplatformV1alpha1Artifact = _messages.MessageField('GoogleCloudAiplatformV1alpha1Artifact', 2)
   name = _messages.StringField(3, required=True)
-  updateMask = _messages.StringField(4)
 
 
 class AiplatformProjectsLocationsMetadataStoresContextsAddContextArtifactsAndExecutionsRequest(_messages.Message):
@@ -2043,19 +2040,16 @@ class AiplatformProjectsLocationsMetadataStoresContextsPatchRequest(_messages.Me
 
   Fields:
     allowMissing: If set to true, and the Context is not found, a new Context
-      will be created. In this situation, `update_mask` is ignored.
+      will be created.
     googleCloudAiplatformV1alpha1Context: A
       GoogleCloudAiplatformV1alpha1Context resource to be passed as the
       request body.
     name: Output only. The resource name of the Context.
-    updateMask: Required. A FieldMask indicating which fields should be
-      updated.
   """
 
   allowMissing = _messages.BooleanField(1)
   googleCloudAiplatformV1alpha1Context = _messages.MessageField('GoogleCloudAiplatformV1alpha1Context', 2)
   name = _messages.StringField(3, required=True)
-  updateMask = _messages.StringField(4)
 
 
 class AiplatformProjectsLocationsMetadataStoresContextsQueryContextLineageSubgraphRequest(_messages.Message):
@@ -2104,9 +2098,7 @@ class AiplatformProjectsLocationsMetadataStoresDeleteRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsMetadataStoresDeleteRequest object.
 
   Fields:
-    force: If set to true, any child resources of this MetadataStore will be
-      deleted. (Otherwise, the request will fail with a FAILED_PRECONDITION
-      error if the MetadataStore has any child resources.)
+    force: Deprecated: Field is no longer supported.
     name: Required. The resource name of the MetadataStore to delete. Format:
       projects/{project}/locations/{location}/metadataStores/{metadatastore}
   """
@@ -2217,19 +2209,16 @@ class AiplatformProjectsLocationsMetadataStoresExecutionsPatchRequest(_messages.
 
   Fields:
     allowMissing: If set to true, and the Execution is not found, a new
-      Execution will be created. In this situation, `update_mask` is ignored.
+      Execution will be created.
     googleCloudAiplatformV1alpha1Execution: A
       GoogleCloudAiplatformV1alpha1Execution resource to be passed as the
       request body.
     name: Output only. The resource name of the Execution.
-    updateMask: Required. A FieldMask indicating which fields should be
-      updated.
   """
 
   allowMissing = _messages.BooleanField(1)
   googleCloudAiplatformV1alpha1Execution = _messages.MessageField('GoogleCloudAiplatformV1alpha1Execution', 2)
   name = _messages.StringField(3, required=True)
-  updateMask = _messages.StringField(4)
 
 
 class AiplatformProjectsLocationsMetadataStoresExecutionsQueryExecutionInputsAndOutputsRequest(_messages.Message):
@@ -4156,21 +4145,20 @@ class AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesReadReques
   tensorboardTimeSeries = _messages.StringField(3, required=True)
 
 
-class AiplatformProjectsLocationsTensorboardsExperimentsRunsWriteRequest(_messages.Message):
-  r"""A AiplatformProjectsLocationsTensorboardsExperimentsRunsWriteRequest
-  object.
+class AiplatformProjectsLocationsTensorboardsExperimentsWriteRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsTensorboardsExperimentsWriteRequest object.
 
   Fields:
-    googleCloudAiplatformV1alpha1WriteTensorboardRunDataRequest: A
-      GoogleCloudAiplatformV1alpha1WriteTensorboardRunDataRequest resource to
-      be passed as the request body.
-    tensorboardRun: Required. The resource name of the TensorboardRun to write
-      data to. Format: `projects/{project}/locations/{location}/tensorboards/{
-      tensorboard}/experiments/{experiment}/runs/{run}`
+    googleCloudAiplatformV1alpha1WriteTensorboardExperimentDataRequest: A
+      GoogleCloudAiplatformV1alpha1WriteTensorboardExperimentDataRequest
+      resource to be passed as the request body.
+    tensorboardExperiment: Required. The resource name of the
+      TensorboardExperiment to write data to. Format: `projects/{project}/loca
+      tions/{location}/tensorboards/{tensorboard}/experiments/{experiment}`
   """
 
-  googleCloudAiplatformV1alpha1WriteTensorboardRunDataRequest = _messages.MessageField('GoogleCloudAiplatformV1alpha1WriteTensorboardRunDataRequest', 1)
-  tensorboardRun = _messages.StringField(2, required=True)
+  googleCloudAiplatformV1alpha1WriteTensorboardExperimentDataRequest = _messages.MessageField('GoogleCloudAiplatformV1alpha1WriteTensorboardExperimentDataRequest', 1)
+  tensorboardExperiment = _messages.StringField(2, required=True)
 
 
 class AiplatformProjectsLocationsTensorboardsGetRequest(_messages.Message):
@@ -4200,7 +4188,7 @@ class AiplatformProjectsLocationsTensorboardsListRequest(_messages.Message):
       TensorboardService.ListTensorboards must match the call that provided
       the page token.
     parent: Required. The resource name of the Location to list Tensorboards.
-      Format: 'projects/{project}/locations/{location}'
+      Format: `projects/{project}/locations/{location}`
     readMask: Mask specifying which fields to read.
   """
 
@@ -5831,10 +5819,6 @@ class GoogleCloudAiplatformInternalFeaturestoreMonitoringConfigSnapshotAnalysis(
       level config; otherwise run snapshot analysis monitoring with
       monitoring_interval regardless of the EntityType-level config.
       Explicitly Disable the snapshot analysis based monitoring.
-    monitoringInterval: Will be deprecated by
-      [FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval_days]
-      soon. Configuration of the snapshot analysis based monitoring pipeline
-      running interval. The value is rolled up to full day.
     monitoringIntervalDays: Configuration of the snapshot analysis based
       monitoring pipeline running interval. The value indicates number of
       days. If both
@@ -5846,8 +5830,7 @@ class GoogleCloudAiplatformInternalFeaturestoreMonitoringConfigSnapshotAnalysis(
   """
 
   disabled = _messages.BooleanField(1)
-  monitoringInterval = _messages.StringField(2)
-  monitoringIntervalDays = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  monitoringIntervalDays = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudAiplatformInternalGcsSource(_messages.Message):
@@ -6751,6 +6734,8 @@ class GoogleCloudAiplatformUiBatchReadFeatureValuesOperationMetadata(_messages.M
   r"""Details of operations that batch reads Feature values.
 
   Fields:
+    destination: A proto representation of the destination, for easier UI
+      parsing.
     destinationUri: The Cloud Storage/BigQuery URI of the destination as
       specified in the request.
     genericMetadata: Operation metadata for Featurestore batch read Features
@@ -6761,11 +6746,12 @@ class GoogleCloudAiplatformUiBatchReadFeatureValuesOperationMetadata(_messages.M
     requestedFeatureCount: The total number of Feature in the request.
   """
 
-  destinationUri = _messages.StringField(1)
-  genericMetadata = _messages.MessageField('GoogleCloudAiplatformUiGenericOperationMetadata', 2)
-  instanceUri = _messages.StringField(3)
-  requestedEntityTypeCount = _messages.IntegerField(4)
-  requestedFeatureCount = _messages.IntegerField(5)
+  destination = _messages.MessageField('GoogleCloudAiplatformUiFeatureValueDestination', 1)
+  destinationUri = _messages.StringField(2)
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformUiGenericOperationMetadata', 3)
+  instanceUri = _messages.StringField(4)
+  requestedEntityTypeCount = _messages.IntegerField(5)
+  requestedFeatureCount = _messages.IntegerField(6)
 
 
 class GoogleCloudAiplatformUiBatchReadFeatureValuesResponse(_messages.Message):
@@ -6997,6 +6983,16 @@ class GoogleCloudAiplatformUiCreateTensorboardOperationMetadata(_messages.Messag
   """
 
   genericMetadata = _messages.MessageField('GoogleCloudAiplatformUiGenericOperationMetadata', 1)
+
+
+class GoogleCloudAiplatformUiCsvDestination(_messages.Message):
+  r"""The storage details for CSV output content.
+
+  Fields:
+    gcsDestination: Required. Google Cloud Storage location.
+  """
+
+  gcsDestination = _messages.MessageField('GoogleCloudAiplatformUiGcsDestination', 1)
 
 
 class GoogleCloudAiplatformUiDataLabelingJobRef(_messages.Message):
@@ -8034,6 +8030,28 @@ class GoogleCloudAiplatformUiFeatureStatsAnomaly(_messages.Message):
   startTime = _messages.StringField(7)
 
 
+class GoogleCloudAiplatformUiFeatureValueDestination(_messages.Message):
+  r"""A destination location for Feature values and format.
+
+  Fields:
+    bigqueryDestination: Output in BigQuery format.
+      BigQueryDestination.output_uri in
+      FeatureValueDestination.bigquery_destination must refer to a table.
+    csvDestination: Output in CSV format. Array Feature value types are not
+      allowed in CSV format.
+    tfrecordDestination: Output in TFRecord format. Below are the mapping from
+      Feature value type in Featurestore to Feature value type in TFRecord:
+      Value type in Featurestore | Value type in TFRecord DOUBLE, DOUBLE_ARRAY
+      | FLOAT_LIST INT64, INT64_ARRAY | INT64_LIST STRING, STRING_ARRAY, BYTES
+      | BYTES_LIST true -> byte_string("true"), false -> byte_string("false")
+      BOOL, BOOL_ARRAY (true, false) | BYTES_LIST
+  """
+
+  bigqueryDestination = _messages.MessageField('GoogleCloudAiplatformUiBigQueryDestination', 1)
+  csvDestination = _messages.MessageField('GoogleCloudAiplatformUiCsvDestination', 2)
+  tfrecordDestination = _messages.MessageField('GoogleCloudAiplatformUiTFRecordDestination', 3)
+
+
 class GoogleCloudAiplatformUiFeaturestoreMonitoringConfig(_messages.Message):
   r"""Configuration of how features in Featurestore are monitored.
 
@@ -8061,10 +8079,9 @@ class GoogleCloudAiplatformUiFeaturestoreMonitoringConfigSnapshotAnalysis(_messa
       level config; otherwise run snapshot analysis monitoring with
       monitoring_interval regardless of the EntityType-level config.
       Explicitly Disable the snapshot analysis based monitoring.
-    monitoringInterval: Will be deprecated by
-      [FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval_days]
-      soon. Configuration of the snapshot analysis based monitoring pipeline
-      running interval. The value is rolled up to full day.
+    monitoringInterval: Configuration of the snapshot analysis based
+      monitoring pipeline running interval. The value is rolled up to full
+      day.
     monitoringIntervalDays: Configuration of the snapshot analysis based
       monitoring pipeline running interval. The value indicates number of
       days. If both
@@ -9739,6 +9756,16 @@ class GoogleCloudAiplatformUiSuggestTrialsResponse(_messages.Message):
   startTime = _messages.StringField(2)
   studyState = _messages.EnumField('StudyStateValueValuesEnum', 3)
   trials = _messages.MessageField('GoogleCloudAiplatformUiTrial', 4, repeated=True)
+
+
+class GoogleCloudAiplatformUiTFRecordDestination(_messages.Message):
+  r"""The storage details for TFRecord output content.
+
+  Fields:
+    gcsDestination: Required. Google Cloud Storage location.
+  """
+
+  gcsDestination = _messages.MessageField('GoogleCloudAiplatformUiGcsDestination', 1)
 
 
 class GoogleCloudAiplatformUiTextStats(_messages.Message):
@@ -21552,7 +21579,8 @@ class GoogleCloudAiplatformV1alpha1StudySpec(_messages.Message):
 
   Fields:
     algorithm: The search algorithm specified for the Study.
-    convexStopConfig: The automated early stopping using convex stopping rule.
+    convexStopConfig: Deprecated, use convex_automated_stopping_spec instead.
+      The automated early stopping using convex stopping rule.
     decayCurveStoppingSpec: The automated early stopping spec using decay
       curve rule.
     medianAutomatedStoppingSpec: The automated early stopping spec using
@@ -22893,17 +22921,38 @@ class GoogleCloudAiplatformV1alpha1WorkerPoolSpec(_messages.Message):
   replicaCount = _messages.IntegerField(4)
 
 
+class GoogleCloudAiplatformV1alpha1WriteTensorboardExperimentDataRequest(_messages.Message):
+  r"""Request message for TensorboardService.WriteTensorboardExperimentData.
+
+  Fields:
+    writeRunDataRequests: Required. Requests containing per-run
+      TensorboardTimeSeries data to write.
+  """
+
+  writeRunDataRequests = _messages.MessageField('GoogleCloudAiplatformV1alpha1WriteTensorboardRunDataRequest', 1, repeated=True)
+
+
+class GoogleCloudAiplatformV1alpha1WriteTensorboardExperimentDataResponse(_messages.Message):
+  r"""Response message for TensorboardService.WriteTensorboardExperimentData.
+  """
+
+
+
 class GoogleCloudAiplatformV1alpha1WriteTensorboardRunDataRequest(_messages.Message):
   r"""Request message for TensorboardService.WriteTensorboardRunData.
 
   Fields:
+    tensorboardRun: Required. The resource name of the TensorboardRun to write
+      data to. Format: `projects/{project}/locations/{location}/tensorboards/{
+      tensorboard}/experiments/{experiment}/runs/{run}`
     timeSeriesData: Required. The TensorboardTimeSeries data to write. Values
       with in a time series are indexed by their step value. Repeated writes
       to the same step will overwrite the existing value for that step. The
       upper limit of data points per write request is 5000.
   """
 
-  timeSeriesData = _messages.MessageField('GoogleCloudAiplatformV1alpha1TimeSeriesData', 1, repeated=True)
+  tensorboardRun = _messages.StringField(1)
+  timeSeriesData = _messages.MessageField('GoogleCloudAiplatformV1alpha1TimeSeriesData', 2, repeated=True)
 
 
 class GoogleCloudAiplatformV1alpha1WriteTensorboardRunDataResponse(_messages.Message):
@@ -24284,10 +24333,9 @@ class GoogleCloudAiplatformV1beta1FeaturestoreMonitoringConfigSnapshotAnalysis(_
       level config; otherwise run snapshot analysis monitoring with
       monitoring_interval regardless of the EntityType-level config.
       Explicitly Disable the snapshot analysis based monitoring.
-    monitoringInterval: Will be deprecated by
-      [FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval_days]
-      soon. Configuration of the snapshot analysis based monitoring pipeline
-      running interval. The value is rolled up to full day.
+    monitoringInterval: Configuration of the snapshot analysis based
+      monitoring pipeline running interval. The value is rolled up to full
+      day.
     monitoringIntervalDays: Configuration of the snapshot analysis based
       monitoring pipeline running interval. The value indicates number of
       days. If both
@@ -27420,7 +27468,8 @@ class GoogleCloudAiplatformV1beta1StudySpec(_messages.Message):
 
   Fields:
     algorithm: The search algorithm specified for the Study.
-    convexStopConfig: The automated early stopping using convex stopping rule.
+    convexStopConfig: Deprecated, use convex_automated_stopping_spec instead.
+      The automated early stopping using convex stopping rule.
     decayCurveStoppingSpec: The automated early stopping spec using decay
       curve rule.
     measurementSelectionType: Describe which measurement selection type will

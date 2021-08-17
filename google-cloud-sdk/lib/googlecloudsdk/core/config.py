@@ -22,6 +22,7 @@ from __future__ import unicode_literals
 import json
 import os
 import time
+import uuid
 
 import googlecloudsdk
 from googlecloudsdk.core import exceptions
@@ -173,8 +174,6 @@ CLOUDSDK_SCOPES = (
     'openid',
     'https://www.googleapis.com/auth/userinfo.email',
     'https://www.googleapis.com/auth/cloud-platform',
-    # TODO(b/19019218): remove the following now that 'cloud-platform'
-    # is sufficient.
     'https://www.googleapis.com/auth/appengine.admin',
     'https://www.googleapis.com/auth/compute',  # needed by autoscaler
 )
@@ -278,12 +277,6 @@ class Paths(object):
     """Gets the dir path that will contain all cache objects."""
     return os.path.join(self.global_config_dir, 'cache')
 
-  # TODO(b/36751527): drop this in 2017Q3
-  @property
-  def completion_cache_dir(self):
-    """Gets the legacy completion cache dir path."""
-    return os.path.join(self.global_config_dir, 'completion_cache')
-
   @property
   def credentials_db_path(self):
     """Gets the path to the file to store credentials in.
@@ -316,8 +309,8 @@ class Paths(object):
     return os.path.join(self.global_config_dir, 'logs')
 
   @property
-  def analytics_cid_path(self):
-    """Gets the path to the file to store the client id for analytics.
+  def cid_path(self):
+    """Gets the path to the file to store the client ID.
 
     This is always stored in the global location because it is per install.
 
@@ -525,6 +518,29 @@ class Paths(object):
       str, The path to the GCE cache.
     """
     return os.path.join(self.global_config_dir, 'gce')
+
+
+def _GenerateCID(uuid_path):
+  cid = uuid.uuid4().hex  # A random UUID
+  file_utils.MakeDir(os.path.dirname(uuid_path))
+  file_utils.WriteFileContents(uuid_path, cid)
+  return cid
+
+
+def GetCID():
+  """Gets the client id from the config file, or generates a new one.
+
+  Returns:
+    str, The hex string of the client id.
+  """
+  uuid_path = Paths().cid_path
+  try:
+    cid = file_utils.ReadFileContents(uuid_path)
+    if cid:
+      return cid
+  except file_utils.Error:
+    pass
+  return _GenerateCID(uuid_path)
 
 
 def ADCFilePath():

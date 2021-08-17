@@ -651,7 +651,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
       r"""Creates a new Cloud SQL instance.
 
       Args:
-        request: (DatabaseInstance) input message
+        request: (SqlInstancesInsertRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -667,8 +667,8 @@ class SqladminV1beta4(base_api.BaseApiClient):
         path_params=['project'],
         query_params=[],
         relative_path='sql/v1beta4/projects/{project}/instances',
-        request_field='<request>',
-        request_type_name='DatabaseInstance',
+        request_field='databaseInstance',
+        request_type_name='SqlInstancesInsertRequest',
         response_type_name='Operation',
         supports_download=False,
     )

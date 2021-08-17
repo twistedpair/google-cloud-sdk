@@ -81,6 +81,18 @@ def DisableIamAccountConfirmation(response, args):
         args.service_account))
 
 
+def EnableIamKeyConfirmation(response, args):
+  del response  # Unused.
+  log.status.Print('Enabled key [{0}] for service account [{1}].'.format(
+      args.iam_key, args.iam_account))
+
+
+def DisableIamKeyConfirmation(response, args):
+  del response  # Unused.
+  log.status.Print('Disabled key [{0}] for service account [{1}].'.format(
+      args.iam_key, args.iam_account))
+
+
 def SetServiceAccountResource(ref, unused_args, request):
   """Add service account name to request name."""
 
@@ -102,17 +114,20 @@ def ValidateUpdateFieldMask(ref, unused_args, request):
 
 def UseMaxRequestedPolicyVersion(api_field):
   """Set requestedPolicyVersion to max supported in GetIamPolicy request."""
+
   def Process(ref, args, request):
     del ref, args  # Unused.
 
-    arg_utils.SetFieldInMessage(
-        request, api_field, iam_util.MAX_LIBRARY_IAM_SUPPORTED_VERSION)
+    arg_utils.SetFieldInMessage(request, api_field,
+                                iam_util.MAX_LIBRARY_IAM_SUPPORTED_VERSION)
     return request
+
   return Process
 
 
 def AddVersionToUpdateMaskIfNotPresent(update_mask_path):
   """Add ',version' to update_mask if it is not present."""
+
   def Process(ref, args, request):
     """The implementation of Process for the hook."""
     del ref, args  # Unused.
@@ -124,9 +139,9 @@ def AddVersionToUpdateMaskIfNotPresent(update_mask_path):
       else:
         update_mask += ',version'
 
-    arg_utils.SetFieldInMessage(
-        request, update_mask_path, update_mask)
+    arg_utils.SetFieldInMessage(request, update_mask_path, update_mask)
     return request
+
   return Process
 
 

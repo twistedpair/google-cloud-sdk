@@ -425,7 +425,6 @@ def WaitForJobTermination(dataproc,
       time.sleep(log_poll_period_s)
       now = time.time()
 
-  # TODO(b/34836493): Get better test coverage of the next 20 lines.
   state = job.status.state
 
   # goal_state and error_state will always be terminal

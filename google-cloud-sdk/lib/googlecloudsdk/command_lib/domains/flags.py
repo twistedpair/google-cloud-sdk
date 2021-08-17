@@ -34,6 +34,7 @@ class MutationOp(enum.Enum):
   """Different types of mutation operations."""
   REGISTER = 1
   UPDATE = 2
+  TRANSFER = 3
 
 
 def AddConfigureDNSSettingsFlagsToParser(parser):
@@ -42,8 +43,7 @@ def AddConfigureDNSSettingsFlagsToParser(parser):
   Args:
     parser: argparse parser to which to add these flags.
   """
-  _AddDNSSettingsFlagsToParser(
-      parser, allow_from_file=True, mutation_op=MutationOp.UPDATE)
+  _AddDNSSettingsFlagsToParser(parser, mutation_op=MutationOp.UPDATE)
 
   base.Argument(  # This is not a go/gcloud-style#commonly-used-flags.
       '--unsafe-dns-update',
@@ -67,9 +67,47 @@ def AddConfigureContactsSettingsFlagsToParser(parser):
       help='Notices about special properties of contacts.',
       metavar='NOTICE',
       type=arg_parsers.ArgList(
-          element_type=str,
-          choices=ContactNoticeEnumMapper(messages).choices)).AddToParser(
-              parser)
+          element_type=str, choices=ContactNoticeEnumMapper(
+              messages).choices)).AddToParser(parser)
+
+
+def AddTransferFlagsToParser(parser):
+  """Get flags for transferring a domain.
+
+  Args:
+    parser: argparse parser to which to add these flags.
+  """
+  _AddDNSSettingsFlagsToParser(parser, mutation_op=MutationOp.TRANSFER)
+  _AddContactSettingsFlagsToParser(parser, mutation_op=MutationOp.TRANSFER)
+  _AddPriceFlagsToParser(parser, MutationOp.TRANSFER)
+
+  help_text = """\
+    A file containing the authorizaton code. In most cases, you must provide an
+    authorization code from the domain's current registrar to transfer the
+    domain.
+
+    Examples of file contents:
+
+    ```
+    5YcCd!X&W@q0Xozj
+    ```
+    """
+
+  base.Argument(
+      '--authorization-code-from-file',
+      help=help_text,
+      metavar='AUTHORIZATION_CODE_FILE_NAME',
+      category=base.COMMONLY_USED_FLAGS).AddToParser(parser)
+
+  messages = apis.GetMessagesModule('domains', API_VERSION_FOR_FLAGS)
+  notice_choices = ContactNoticeEnumMapper(messages).choices.copy()
+
+  base.Argument(  # This is not a go/gcloud-style#commonly-used-flags.
+      '--notices',
+      help='Notices about special properties of certain domains or contacts.',
+      metavar='NOTICE',
+      type=arg_parsers.ArgList(element_type=str,
+                               choices=notice_choices)).AddToParser(parser)
 
 
 def AddRegisterFlagsToParser(parser):
@@ -78,16 +116,9 @@ def AddRegisterFlagsToParser(parser):
   Args:
     parser: argparse parser to which to add these flags.
   """
-  _AddDNSSettingsFlagsToParser(
-      parser, allow_from_file=False, mutation_op=MutationOp.REGISTER)
+  _AddDNSSettingsFlagsToParser(parser, mutation_op=MutationOp.REGISTER)
   _AddContactSettingsFlagsToParser(parser, mutation_op=MutationOp.REGISTER)
-  base.Argument(  # This is not a go/gcloud-style#commonly-used-flags.
-      '--yearly-price',
-      help=('You must accept the yearly price of the domain, either in the '
-            'interactive flow or using this flag. The expected format is a '
-            'number followed by a currency code, e.g. "12.00 USD". You can get '
-            'the price using the get-register-parameters command.'),
-  ).AddToParser(parser)
+  _AddPriceFlagsToParser(parser, MutationOp.REGISTER)
 
   messages = apis.GetMessagesModule('domains', API_VERSION_FOR_FLAGS)
   notice_choices = ContactNoticeEnumMapper(messages).choices.copy()
@@ -106,56 +137,109 @@ def AddRegisterFlagsToParser(parser):
                                choices=notice_choices)).AddToParser(parser)
 
 
-def _AddDNSSettingsFlagsToParser(parser, allow_from_file, mutation_op):
+def _AddDNSSettingsFlagsToParser(parser, mutation_op):
   """Get flags for providing DNS settings.
 
   Args:
     parser: argparse parser to which to add these flags.
-    allow_from_file: If true, --dns-settings-from-file will also be added.
     mutation_op: operation for which we're adding flags.
   """
+
+  dnssec_help_text = ''
   group_help_text = """\
       Set the authoritative name servers for the given domain.
       """
-  if mutation_op != MutationOp.REGISTER:
+  if mutation_op == MutationOp.REGISTER or mutation_op == MutationOp.UPDATE:
+    dnssec_help_text = ('If the zone is signed, DNSSEC will be enabled by '
+                        'default unless you pass --disable-dnssec.')
+
+  if mutation_op == MutationOp.UPDATE:
     group_help_text = group_help_text + """
 
-    Warning: Do not change name servers if ds_records is non-empty. Clear
-    ds_records first by calling this command with the --disable-dnssec flag, and
-    wait 24 hours before changing name servers. Otherwise your domain may stop
-    serving.
+    Warning: Do not change name servers if ds_records is non-empty.
+    Clear ds_records first by calling this command with the
+    --disable-dnssec flag, and wait 24 hours before changing
+    name servers. Otherwise your domain may stop serving.
+
+        """
+
+  if mutation_op == MutationOp.TRANSFER:
+    dnssec_help_text = ('DNSSEC will be disabled and will need to be enabled '
+                        'after the transfer completes, if desired.')
+    group_help_text = group_help_text + """
+
+    Warning: If your DNS is hosted by your old registrar, we do not
+    recommend keeping your current DNS settings, as these services
+    often terminate when you transfer out. Instead, you should
+    switch to another DNS provider such as Cloud DNS. To avoid
+    downtime during the transfer, copy your DNS records to your new
+    DNS provider before initiating transfer.
+
+    Warning: If you are changing your DNS settings and your domain
+    currently has DS records, make sure to remove the DS records at
+    your old registrar and wait a day before initiating transfer.
+    If you are keeping your current DNS settings, then no changes
+    to DS records are necessary.
 
         """
 
   dns_group = base.ArgumentGroup(
       mutex=True, help=group_help_text, category=base.COMMONLY_USED_FLAGS)
+
+  # Disable this flag for the transfer case.
+  if mutation_op != MutationOp.TRANSFER:
+    dns_group.AddArgument(
+        base.Argument(
+            '--name-servers',
+            help='List of DNS name servers for the domain.',
+            metavar='NAME_SERVER',
+            type=arg_parsers.ArgList(str, min_length=2)))
+
+  cloud_dns_transfer_help_text = ''
+  if mutation_op == MutationOp.TRANSFER:
+    cloud_dns_transfer_help_text = (
+        ' To avoid downtime following transfer, make sure the zone is '
+        'configured correctly before proceeding.')
+
+  cloud_dns_help_text = (
+      'The name of the Cloud DNS managed-zone to set as the name '
+      'server for the domain.\n'
+      'If it\'s in the same project, you can use short name. If not, '
+      'use the full resource name, e.g.: --cloud-dns-zone='
+      'projects/example-project/managedZones/example-zone.{}\n'
+      '{}').format(cloud_dns_transfer_help_text, dnssec_help_text)
+
+  google_dns_transfer_help_text = ''
+  if mutation_op == MutationOp.TRANSFER:
+    google_dns_transfer_help_text = (
+        ' This blank-slate option cannot be configured before transfer.')
+
+  google_dns_help_text = (
+      'Use free name servers provided by Google Domains.{}\n'
+      '{}').format(google_dns_transfer_help_text, dnssec_help_text)
+
   dns_group.AddArgument(
-      base.Argument(
-          '--name-servers',
-          help='List of DNS name servers for the domain.',
-          metavar='NAME_SERVER',
-          type=arg_parsers.ArgList(str, min_length=2)))
-  dns_group.AddArgument(
-      base.Argument(
-          '--cloud-dns-zone',
-          help=(
-              'The name of the Cloud DNS managed-zone to set as the name '
-              'server for the domain.\n'
-              'If it\'s in the same project, you can use short name. If not, '
-              'use the full resource name, e.g.: --cloud-dns-zone='
-              'projects/example-project/managedZones/example-zone.\n'
-              'If the zone is signed, DNSSEC will be enabled by default unless '
-              'you pass --disable-dnssec.')))
+      base.Argument('--cloud-dns-zone', help=cloud_dns_help_text))
   dns_group.AddArgument(
       base.Argument(
           '--use-google-domains-dns',
-          help=(
-              'Use free name servers provided by Google Domains. \n'
-              'If the zone is signed, DNSSEC will be enabled by default unless '
-              'you pass --disable-dnssec.'),
+          help=google_dns_help_text,
           default=False,
           action='store_true'))
-  if allow_from_file:
+  if mutation_op == MutationOp.TRANSFER:
+    dns_group.AddArgument(
+        base.Argument(
+            '--keep-dns-settings',
+            help=(
+                'Keep the domain\'s current DNS configuration from its current '
+                'registrar. Use this option only if you are sure that the '
+                'domain\'s current DNS service will not cease upon transfer, as'
+                ' is often the case for DNS services provided for free by the '
+                'registrar.'),
+            default=False,
+            action='store_true'))
+
+  if mutation_op == MutationOp.UPDATE:
     help_text = """\
     A YAML file containing the required DNS settings.
     If specified, its content will replace the values currently used in the
@@ -198,14 +282,16 @@ def _AddDNSSettingsFlagsToParser(parser, allow_from_file, mutation_op):
             help=help_text,
             metavar='DNS_SETTINGS_FILE_NAME'))
   dns_group.AddToParser(parser)
-  base.Argument(
-      '--disable-dnssec',
-      help="""\
-      Use this flag to disable DNSSEC, or to skip enabling it when switching
-      to a Cloud DNS Zone or Google Domains nameservers.
-      """,
-      default=False,
-      action='store_true').AddToParser(parser)
+
+  if mutation_op != MutationOp.TRANSFER:
+    base.Argument(
+        '--disable-dnssec',
+        help="""\
+        Use this flag to disable DNSSEC, or to skip enabling it when switching
+        to a Cloud DNS Zone or Google Domains nameservers.
+        """,
+        default=False,
+        action='store_true').AddToParser(parser)
 
 
 def _AddContactSettingsFlagsToParser(parser, mutation_op):
@@ -319,12 +405,27 @@ def _AddContactSettingsFlagsToParser(parser, mutation_op):
       category=base.COMMONLY_USED_FLAGS).AddToParser(parser)
 
 
-def AddValidateOnlyFlagToParser(parser, verb):
+def _AddPriceFlagsToParser(parser, mutation_op):
+  command = ''
+  if mutation_op == MutationOp.REGISTER:
+    command = 'get-register-parameters'
+  elif mutation_op == MutationOp.TRANSFER:
+    command = 'get-transfer-parameters'
+
+  base.Argument(  # This is not a go/gcloud-style#commonly-used-flags.
+      '--yearly-price',
+      help=('You must accept the yearly price of the domain, either in the '
+            'interactive flow or using this flag. The expected format is a '
+            'number followed by a currency code, e.g. "12.00 USD". You can get '
+            'the price using the {} command.'.format(command)),
+  ).AddToParser(parser)
+
+
+def AddValidateOnlyFlagToParser(parser, verb, noun='registration'):
   """Adds validate_only flag as go/gcloud-style#commonly-used-flags."""
   base.Argument(
       '--validate-only',
-      help='Don\'t actually {} registration. Only validate arguments.'.format(
-          verb),
+      help='Don\'t actually {} {}. Only validate arguments.'.format(verb, noun),
       default=False,
       action='store_true',
       category=base.COMMONLY_USED_FLAGS).AddToParser(parser)

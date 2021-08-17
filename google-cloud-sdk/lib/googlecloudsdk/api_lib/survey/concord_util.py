@@ -54,7 +54,7 @@ def _SurveyEnvironment():
 
   env = {
       'install_type': install_type,
-      'cid': metrics.GetCID(),
+      'cid': config.GetCID(),
       'user_agent': metrics.GetUserAgent(),
       'release_channel': config.INSTALLATION_CONFIG.release_channel,
       'python_version': platform.python_version(),
@@ -73,7 +73,7 @@ def _UpdateSurveyCache():
 def _ConcordEventForSurvey(survey_instance):
   return {
       'event_metadata': _SurveyEnvironment(),
-      'client_install_id': metrics.GetCID(),
+      'client_install_id': config.GetCID(),
       'console_type': 'CloudSDK',
       'event_type': 'hatsSurvey',
       'hats_response': _HatsResponseFromSurvey(survey_instance)
@@ -164,7 +164,7 @@ def _ClearcutRequest(survey_instance):
           }
       },
       'log_source_name': 'CONCORD',
-      'zwieback_cookie': metrics.GetCID(),
+      'zwieback_cookie': config.GetCID(),
       'request_time_ms': metrics.GetTimeMillis(),
       'log_event': log_event
   }

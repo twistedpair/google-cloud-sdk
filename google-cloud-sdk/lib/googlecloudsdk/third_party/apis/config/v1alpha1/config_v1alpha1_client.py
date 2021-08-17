@@ -42,6 +42,7 @@ class ConfigV1alpha1(base_api.BaseApiClient):
     self.projects_locations_deployments_revisions = self.ProjectsLocationsDeploymentsRevisionsService(self)
     self.projects_locations_deployments = self.ProjectsLocationsDeploymentsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
+    self.projects_locations_previews = self.ProjectsLocationsPreviewsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
 
@@ -450,6 +451,43 @@ class ConfigV1alpha1(base_api.BaseApiClient):
         request_field='',
         request_type_name='ConfigProjectsLocationsOperationsListRequest',
         response_type_name='ListOperationsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsPreviewsService(base_api.BaseApiService):
+    """Service class for the projects_locations_previews resource."""
+
+    _NAME = 'projects_locations_previews'
+
+    def __init__(self, client):
+      super(ConfigV1alpha1.ProjectsLocationsPreviewsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new Preview in a given project and location.
+
+      Args:
+        request: (ConfigProjectsLocationsPreviewsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/previews',
+        http_method='POST',
+        method_id='config.projects.locations.previews.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['requestId'],
+        relative_path='v1alpha1/{+parent}/previews',
+        request_field='preview',
+        request_type_name='ConfigProjectsLocationsPreviewsCreateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

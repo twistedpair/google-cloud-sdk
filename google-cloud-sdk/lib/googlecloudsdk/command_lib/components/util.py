@@ -63,6 +63,9 @@ def GetUpdateManager(group_args):
           if group_args.sdk_root_override else None)
   url = (files.ExpandHomeDir(group_args.snapshot_url_override)
          if group_args.snapshot_url_override else None)
-
+  compile_python = True
+  if hasattr(group_args, 'compile_python'):
+    compile_python = group_args.compile_python
   return update_manager.UpdateManager(
-      sdk_root=root, url=url, platform_filter=platform)
+      sdk_root=root, url=url, platform_filter=platform,
+      skip_compile_python=(not compile_python))

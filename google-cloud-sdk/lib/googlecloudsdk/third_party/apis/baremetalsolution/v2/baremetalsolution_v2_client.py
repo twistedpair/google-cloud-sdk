@@ -136,6 +136,33 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Reset(self, request, global_params=None):
+      r"""Performs a power reset on an Instance.
+
+      Args:
+        request: (BaremetalsolutionProjectsLocationsInstancesResetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Reset')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Reset.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:reset',
+        http_method='POST',
+        method_id='baremetalsolution.projects.locations.instances.reset',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}:reset',
+        request_field='resetInstanceRequest',
+        request_type_name='BaremetalsolutionProjectsLocationsInstancesResetRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def SetIamPolicy(self, request, global_params=None):
       r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
 

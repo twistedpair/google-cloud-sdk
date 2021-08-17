@@ -42,9 +42,9 @@ def Tokenize(string, separators):
   wrapped in Separator objects and everything else is wrapped in
   Literal objects.
 
-  For example, Partition('a:b,c:d', [':', ',']) returns [Literal('a'),
+  For example, Tokenize('a:b,c:d', [':', ',']) returns [Literal('a'),
   Separator(':'), Literal('b'), Separator(','), Literal('c'),
-  Seperator(':'), Literal('d')].
+  Separator(':'), Literal('d')].
 
   Args:
     string: str, The string to partition.

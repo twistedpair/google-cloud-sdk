@@ -247,7 +247,8 @@ def CreateSchedulingMessage(messages,
                             min_node_cpu=None,
                             location_hint=None,
                             maintenance_freeze_duration=None,
-                            maintenance_interval=None):
+                            maintenance_interval=None,
+                            provisioning_model=None):
   """Create scheduling message for VM."""
   # Note: We always specify automaticRestart=False for preemptible VMs. This
   # makes sense, since no-restart-on-failure is defined as "store-true", and
@@ -257,7 +258,7 @@ def CreateSchedulingMessage(messages,
   # specified no-restart-on-failure, the only usable setting.
   on_host_maintenance = CreateOnHostMaintenanceMessage(messages,
                                                        maintenance_policy)
-  if preemptible:
+  if preemptible or provisioning_model == 'SPOT':
     scheduling = messages.Scheduling(
         automaticRestart=False,
         onHostMaintenance=on_host_maintenance,
@@ -266,6 +267,12 @@ def CreateSchedulingMessage(messages,
     scheduling = messages.Scheduling(
         automaticRestart=restart_on_failure,
         onHostMaintenance=on_host_maintenance)
+
+  if provisioning_model:
+    scheduling.provisioningModel = (
+        messages.Scheduling.ProvisioningModelValueValuesEnum(provisioning_model)
+    )
+
   if node_affinities:
     scheduling.nodeAffinities = node_affinities
 
@@ -477,7 +484,8 @@ def GetScheduling(args,
                   support_node_affinity=False,
                   support_min_node_cpu=True,
                   support_location_hint=False,
-                  support_node_project=False):
+                  support_node_project=False,
+                  support_provisioning_model=False):
   """Generate a Scheduling Message or None based on specified args."""
   node_affinities = None
   if support_node_affinity:
@@ -501,6 +509,11 @@ def GetScheduling(args,
   if hasattr(args, 'maintenance_interval') and args.IsSpecified(
       'maintenance_interval'):
     maintenance_interval = args.maintenance_interval
+  provisioning_model = None
+  if (support_provisioning_model and hasattr(args, 'provisioning_model') and
+      args.IsSpecified('provisioning_model')):
+    provisioning_model = args.provisioning_model
+
   return CreateSchedulingMessage(
       messages=client.messages,
       maintenance_policy=args.maintenance_policy,
@@ -510,7 +523,8 @@ def GetScheduling(args,
       min_node_cpu=min_node_cpu,
       location_hint=location_hint,
       maintenance_freeze_duration=freeze_duration,
-      maintenance_interval=maintenance_interval)
+      maintenance_interval=maintenance_interval,
+      provisioning_model=provisioning_model)
 
 
 def GetServiceAccounts(args, client, skip_defaults):

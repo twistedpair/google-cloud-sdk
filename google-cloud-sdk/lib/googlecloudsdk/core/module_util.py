@@ -19,13 +19,11 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import compileall
 import imp
 import importlib
 import os
 
 from googlecloudsdk.core import exceptions
-from googlecloudsdk.core.util import files
 import six
 
 
@@ -106,6 +104,7 @@ def GetModulePath(obj):
     module = obj.__module__
   if six.PY3 and module == 'builtins':
     return None
+  # For example, '__builtins__' for Python 2 built-in types.
   if module.startswith('__'):
     module = _GetPrivateModulePath(module)  # pylint: disable=assignment-from-none, function is a test mock hook
     if not module:
@@ -135,11 +134,3 @@ def ImportPath(path):
   finally:
     if module_file:
       module_file.close()
-
-
-def CompileAll(directory):
-  """Recursively compiles all Python files in directory."""
-  # directory could contain unicode chars and py_compile chokes on unicode
-  # paths. Using relative paths from within directory works around the problem.
-  with files.ChDir(directory):
-    compileall.compile_dir('.', quiet=True)

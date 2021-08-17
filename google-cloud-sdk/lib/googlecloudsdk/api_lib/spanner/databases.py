@@ -30,8 +30,12 @@ KNOWN_ROLES = [
     'roles/spanner.viewer'
 ]
 
+# The available options of the SQL dialect for a Cloud Spanner database.
+DATABASE_DIALECT_GOOGLESQL = 'GOOGLE_STANDARD_SQL'
+DATABASE_DIALECT_POSTGRESQL = 'POSTGRESQL'
 
-def Create(instance_ref, database, ddl, kms_key=None):
+
+def Create(instance_ref, database, ddl, kms_key=None, database_dialect=None):
   """Create a new database."""
   client = apis.GetClientInstance('spanner', 'v1')
   msgs = apis.GetMessagesModule('spanner', 'v1')
@@ -39,6 +43,15 @@ def Create(instance_ref, database, ddl, kms_key=None):
       'createStatement': 'CREATE DATABASE `{}`'.format(database),
       'extraStatements': ddl,
   }
+  if database_dialect:
+    database_dialect = database_dialect.upper()
+    if database_dialect == DATABASE_DIALECT_POSTGRESQL:
+      req_args['createStatement'] = 'CREATE DATABASE "{}"'.format(database)
+      req_args[
+          'databaseDialect'] = msgs.CreateDatabaseRequest.DatabaseDialectValueValuesEnum.POSTGRESQL
+    else:
+      req_args[
+          'databaseDialect'] = msgs.CreateDatabaseRequest.DatabaseDialectValueValuesEnum.GOOGLE_STANDARD_SQL
   if kms_key:
     req_args['encryptionConfig'] = msgs.EncryptionConfig(kmsKeyName=kms_key)
   req = msgs.SpannerProjectsInstancesDatabasesCreateRequest(

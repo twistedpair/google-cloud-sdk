@@ -1717,6 +1717,8 @@ class Release(_messages.Message):
       keys and values are additionally constrained to be <= 128 bytes in size.
     TargetArtifactsValue: Output only. Map from target ID to the target
       artifacts created during the render operation.
+    TargetRendersValue: Output only. Map from target ID to details of the
+      render operation for that target.
 
   Fields:
     annotations: User annotations. These attributes can only be set and used
@@ -1755,6 +1757,8 @@ class Release(_messages.Message):
       Skaffold version will be used.
     targetArtifacts: Output only. Map from target ID to the target artifacts
       created during the render operation.
+    targetRenders: Output only. Map from target ID to details of the render
+      operation for that target.
     targetSnapshots: Output only. Snapshot of the parent pipeline's targets
       taken at release creation time.
     uid: Output only. Unique identifier of the `Release`.
@@ -1856,6 +1860,32 @@ class Release(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TargetRendersValue(_messages.Message):
+    r"""Output only. Map from target ID to details of the render operation for
+    that target.
+
+    Messages:
+      AdditionalProperty: An additional property for a TargetRendersValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type TargetRendersValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TargetRendersValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A TargetRender attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('TargetRender', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   annotations = _messages.MessageField('AnnotationsValue', 1)
   buildArtifacts = _messages.MessageField('BuildArtifact', 2, repeated=True)
   createTime = _messages.StringField(3)
@@ -1872,8 +1902,9 @@ class Release(_messages.Message):
   skaffoldConfigUri = _messages.StringField(14)
   skaffoldVersion = _messages.StringField(15)
   targetArtifacts = _messages.MessageField('TargetArtifactsValue', 16)
-  targetSnapshots = _messages.MessageField('Target', 17, repeated=True)
-  uid = _messages.StringField(18)
+  targetRenders = _messages.MessageField('TargetRendersValue', 17)
+  targetSnapshots = _messages.MessageField('Target', 18, repeated=True)
+  uid = _messages.StringField(19)
 
 
 class Rollout(_messages.Message):
@@ -2358,6 +2389,40 @@ class TargetArtifact(_messages.Message):
   artifactUri = _messages.StringField(2)
   manifestPath = _messages.StringField(3)
   skaffoldConfigPath = _messages.StringField(4)
+
+
+class TargetRender(_messages.Message):
+  r"""Details of rendering for a single target.
+
+  Enums:
+    RenderingStateValueValuesEnum: Output only. Current state of the render
+      operation for this Target.
+
+  Fields:
+    renderingBuild: Output only. The resource name of the Cloud Build `Build`
+      object that is used to render the manifest for this target. Format is
+      `projects/{project}/locations/{location}/builds/{build}`.
+    renderingState: Output only. Current state of the render operation for
+      this Target.
+  """
+
+  class RenderingStateValueValuesEnum(_messages.Enum):
+    r"""Output only. Current state of the render operation for this Target.
+
+    Values:
+      TARGET_RENDER_STATE_UNSPECIFIED: The render operation state is
+        unspecified.
+      SUCCEEDED: The render operation has completed successfully.
+      FAILED: The render operation has failed.
+      IN_PROGRESS: The render operation is in progress.
+    """
+    TARGET_RENDER_STATE_UNSPECIFIED = 0
+    SUCCEEDED = 1
+    FAILED = 2
+    IN_PROGRESS = 3
+
+  renderingBuild = _messages.StringField(1)
+  renderingState = _messages.EnumField('RenderingStateValueValuesEnum', 2)
 
 
 class TargetsPresentCondition(_messages.Message):

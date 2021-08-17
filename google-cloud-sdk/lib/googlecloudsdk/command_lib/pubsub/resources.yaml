@@ -42,9 +42,19 @@ location:
   attributes:
   - &location
     parameter_name: locationsId
-    attribute_name: zone
+    attribute_name: location
     help: |
       ID of the location of the Pub/Sub Lite resource.
+
+lite_reservation:
+  name: reservation
+  collection: pubsublite.admin.projects.locations.reservations
+  attributes:
+  - *location
+  - parameter_name: reservationsId
+    attribute_name: reservation
+    help: |
+      The reservation name.
 
 lite_topic:
   name: topic

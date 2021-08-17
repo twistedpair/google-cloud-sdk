@@ -247,7 +247,6 @@ class ConditionPoller(waiter.OperationPoller):
       self._tracker.UpdateHeaderMessage(self._ready_message)
       if terminal_condition in self._dependencies:
         self._PossiblyCompleteStage(terminal_condition, None)
-      # TODO(b/120679874): Should not have to manually call Tick()
       self._tracker.Tick()
     elif conditions.IsFailed():
       if terminal_condition in self._dependencies:

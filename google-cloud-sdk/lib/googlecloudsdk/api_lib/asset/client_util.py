@@ -372,15 +372,11 @@ class AnalyzeIamPolicyClient(object):
 class AssetExportClient(object):
   """Client for export asset."""
 
-  def __init__(self, parent, api_version=DEFAULT_API_VERSION, client=None):
+  def __init__(self, parent, client=None):
     self.parent = parent
-    self.message_module = GetMessages(api_version)
-    if api_version == V1P7BETA1_API_VERSION:
-      self.service = client.v1p7beta1 if client else GetClient(
-          api_version).v1p7beta1
-    else:
-      self.service = client.v1 if client else GetClient(api_version).v1
-    self.api_version = api_version
+    self.api_version = DEFAULT_API_VERSION
+    self.message_module = GetMessages(self.api_version)
+    self.service = client.v1 if client else GetClient(self.api_version).v1
 
   def Export(self, args):
     """Export assets with the asset export method."""
@@ -407,29 +403,15 @@ class AssetExportClient(object):
     snapshot_time = None
     if args.snapshot_time:
       snapshot_time = times.FormatDateTime(args.snapshot_time)
-    if (self.api_version == V1P7BETA1_API_VERSION and
-        content_type == 'RELATIONSHIP'):
-      content_type = getattr(
-          self.message_module.ExportAssetsRequest.ContentTypeValueValuesEnum,
-          content_type)
-      export_assets_request = self.message_module.ExportAssetsRequest(
-          assetTypes=args.asset_types,
-          contentType=content_type,
-          outputConfig=output_config,
-          readTime=snapshot_time,
-          relationshipTypes=args.relationship_types)
-    elif content_type == 'RELATIONSHIP':
-      raise gcloud_exceptions.InvalidArgumentException('Export relationship'
-                                                       ' not supported')
-    else:
-      content_type = getattr(
-          self.message_module.ExportAssetsRequest.ContentTypeValueValuesEnum,
-          content_type)
-      export_assets_request = self.message_module.ExportAssetsRequest(
-          assetTypes=args.asset_types,
-          contentType=content_type,
-          outputConfig=output_config,
-          readTime=snapshot_time)
+    content_type = getattr(
+        self.message_module.ExportAssetsRequest.ContentTypeValueValuesEnum,
+        content_type)
+    export_assets_request = self.message_module.ExportAssetsRequest(
+        assetTypes=args.asset_types,
+        contentType=content_type,
+        outputConfig=output_config,
+        readTime=snapshot_time,
+        relationshipTypes=args.relationship_types)
     request_message = self.message_module.CloudassetExportAssetsRequest(
         parent=self.parent, exportAssetsRequest=export_assets_request)
     try:
@@ -467,7 +449,8 @@ class AssetFeedClient(object):
         assetTypes=args.asset_types,
         contentType=content_type,
         feedOutputConfig=feed_output_config,
-        condition=feed_condition)
+        condition=feed_condition,
+        relationshipTypes=args.relationship_types)
     create_feed_request = self.message_module.CreateFeedRequest(
         feed=feed, feedId=args.feed)
     request_message = self.message_module.CloudassetFeedsCreateRequest(
@@ -509,7 +492,7 @@ class AssetFeedClient(object):
       update_masks.append('condition.title')
     if args.condition_description or args.clear_condition_description:
       update_masks.append('condition.description')
-    asset_names, asset_types = self.UpdateAssetNamesAndTypes(
+    asset_names, asset_types, relationship_types = self.UpdateAssetNamesTypesAndRelationships(
         args, feed_name, update_masks)
     update_mask = ','.join(update_masks)
     feed_output_config = self.message_module.FeedOutputConfig(
@@ -524,15 +507,17 @@ class AssetFeedClient(object):
         assetTypes=asset_types,
         contentType=content_type,
         feedOutputConfig=feed_output_config,
-        condition=feed_condition)
+        condition=feed_condition,
+        relationshipTypes=relationship_types)
     update_feed_request = self.message_module.UpdateFeedRequest(
         feed=feed, updateMask=update_mask)
     request_message = self.message_module.CloudassetFeedsPatchRequest(
         name=feed_name, updateFeedRequest=update_feed_request)
     return self.service.Patch(request_message)
 
-  def UpdateAssetNamesAndTypes(self, args, feed_name, update_masks):
-    """Get Updated assetNames and assetTypes."""
+  def UpdateAssetNamesTypesAndRelationships(self, args, feed_name,
+                                            update_masks):
+    """Get Updated assetNames, assetTypes and relationshipTypes."""
     feed = self.service.Get(
         self.message_module.CloudassetFeedsGetRequest(name=feed_name))
     asset_names = repeated.ParsePrimitiveArgs(args, 'asset_names',
@@ -547,7 +532,13 @@ class AssetFeedClient(object):
       update_masks.append('asset_types')
     else:
       asset_types = []
-    return asset_names, asset_types
+    relationship_types = repeated.ParsePrimitiveArgs(
+        args, 'relationship_types', lambda: feed.relationshipTypes)
+    if relationship_types is not None:
+      update_masks.append('relationship_types')
+    else:
+      relationship_types = []
+    return asset_names, asset_types, relationship_types
 
 
 class AssetSearchClient(object):
@@ -637,7 +628,8 @@ class AssetListClient(object):
             self.message_module.CloudassetAssetsListRequest
             .ContentTypeValueValuesEnum, content_type),
         assetTypes=args.asset_types,
-        readTime=snapshot_time)
+        readTime=snapshot_time,
+        relationshipTypes=args.relationship_types)
     return list_pager.YieldFromList(
         self.service,
         list_assets_request,

@@ -775,6 +775,149 @@ class GoogleCloudFunctionsV2alphaStateMessage(_messages.Message):
   type = _messages.StringField(3)
 
 
+class GoogleCloudFunctionsV2betaOperationMetadata(_messages.Message):
+  r"""Represents the metadata of the long-running operation.
+
+  Messages:
+    RequestResourceValue: The original request that started the operation.
+
+  Fields:
+    apiVersion: API version used to start the operation.
+    cancelRequested: Identifies whether the user has requested cancellation of
+      the operation. Operations that have successfully been cancelled have
+      Operation.error value with a google.rpc.Status.code of 1, corresponding
+      to `Code.CANCELLED`.
+    createTime: The time the operation was created.
+    endTime: The time the operation finished running.
+    requestResource: The original request that started the operation.
+    stages: Mechanism for reporting in-progress stages
+    statusDetail: Human-readable status of the operation, if any.
+    target: Server-defined resource path for the target of the operation.
+    verb: Name of the verb executed by the operation.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class RequestResourceValue(_messages.Message):
+    r"""The original request that started the operation.
+
+    Messages:
+      AdditionalProperty: An additional property for a RequestResourceValue
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a RequestResourceValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  apiVersion = _messages.StringField(1)
+  cancelRequested = _messages.BooleanField(2)
+  createTime = _messages.StringField(3)
+  endTime = _messages.StringField(4)
+  requestResource = _messages.MessageField('RequestResourceValue', 5)
+  stages = _messages.MessageField('GoogleCloudFunctionsV2betaStage', 6, repeated=True)
+  statusDetail = _messages.StringField(7)
+  target = _messages.StringField(8)
+  verb = _messages.StringField(9)
+
+
+class GoogleCloudFunctionsV2betaStage(_messages.Message):
+  r"""Each Stage of the deployment process
+
+  Enums:
+    NameValueValuesEnum: Name of the Stage. This will be unique for each
+      Stage.
+    StateValueValuesEnum: Current state of the Stage
+
+  Fields:
+    message: Message describing the Stage
+    name: Name of the Stage. This will be unique for each Stage.
+    resource: Resource of the Stage
+    resourceUri: Link to the current Stage resource
+    state: Current state of the Stage
+    stateMessages: State messages from the current Stage.
+  """
+
+  class NameValueValuesEnum(_messages.Enum):
+    r"""Name of the Stage. This will be unique for each Stage.
+
+    Values:
+      NAME_UNSPECIFIED: Not specified. Invalid name.
+      ARTIFACT_REGISTRY: Artifact Regsitry Stage
+      BUILD: Build Stage
+      SERVICE: Service Stage
+      TRIGGER: Trigger Stage
+    """
+    NAME_UNSPECIFIED = 0
+    ARTIFACT_REGISTRY = 1
+    BUILD = 2
+    SERVICE = 3
+    TRIGGER = 4
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Current state of the Stage
+
+    Values:
+      STATE_UNSPECIFIED: Not specified. Invalid state.
+      NOT_STARTED: Stage has not started.
+      IN_PROGRESS: Stage is in progress.
+      COMPLETE: Stage has completed.
+    """
+    STATE_UNSPECIFIED = 0
+    NOT_STARTED = 1
+    IN_PROGRESS = 2
+    COMPLETE = 3
+
+  message = _messages.StringField(1)
+  name = _messages.EnumField('NameValueValuesEnum', 2)
+  resource = _messages.StringField(3)
+  resourceUri = _messages.StringField(4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
+  stateMessages = _messages.MessageField('GoogleCloudFunctionsV2betaStateMessage', 6, repeated=True)
+
+
+class GoogleCloudFunctionsV2betaStateMessage(_messages.Message):
+  r"""Informational messages about the state of the Cloud Function or
+  Operation.
+
+  Enums:
+    SeverityValueValuesEnum: Severity of the state message.
+
+  Fields:
+    message: The message.
+    severity: Severity of the state message.
+    type: One-word CamelCase type of the state message.
+  """
+
+  class SeverityValueValuesEnum(_messages.Enum):
+    r"""Severity of the state message.
+
+    Values:
+      SEVERITY_UNSPECIFIED: Not specified. Invalid severity.
+      ERROR: ERROR-level severity.
+      WARNING: WARNING-level severity.
+    """
+    SEVERITY_UNSPECIFIED = 0
+    ERROR = 1
+    WARNING = 2
+
+  message = _messages.StringField(1)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 2)
+  type = _messages.StringField(3)
+
+
 class ListFunctionsResponse(_messages.Message):
   r"""Response for the `ListFunctions` method.
 
@@ -1198,6 +1341,11 @@ class ServiceConfig(_messages.Message):
       during function execution.
 
   Fields:
+    availableMemory: The amount of memory available for a function. Defaults
+      to 256M. Supported units are k, M, G, Mi, Gi. If no unit is supplied the
+      value is interpreted as bytes. See https://github.com/kubernetes/kuberne
+      tes/blob/master/staging/src/k8s.io/apimachinery/pkg/api/resource/quantit
+      y.go a full description.
     availableMemoryMb: The amount of memory in MB available for a function.
       Defaults to 256MB.
     environmentVariables: Environment variables that shall be available during
@@ -1295,17 +1443,18 @@ class ServiceConfig(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  availableMemoryMb = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  environmentVariables = _messages.MessageField('EnvironmentVariablesValue', 2)
-  ingressSettings = _messages.EnumField('IngressSettingsValueValuesEnum', 3)
-  maxInstanceCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  minInstanceCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  service = _messages.StringField(6)
-  serviceAccountEmail = _messages.StringField(7)
-  timeoutSeconds = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  uri = _messages.StringField(9)
-  vpcConnector = _messages.StringField(10)
-  vpcConnectorEgressSettings = _messages.EnumField('VpcConnectorEgressSettingsValueValuesEnum', 11)
+  availableMemory = _messages.StringField(1)
+  availableMemoryMb = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  environmentVariables = _messages.MessageField('EnvironmentVariablesValue', 3)
+  ingressSettings = _messages.EnumField('IngressSettingsValueValuesEnum', 4)
+  maxInstanceCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  minInstanceCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  service = _messages.StringField(7)
+  serviceAccountEmail = _messages.StringField(8)
+  timeoutSeconds = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  uri = _messages.StringField(10)
+  vpcConnector = _messages.StringField(11)
+  vpcConnectorEgressSettings = _messages.EnumField('VpcConnectorEgressSettingsValueValuesEnum', 12)
 
 
 class SetIamPolicyRequest(_messages.Message):

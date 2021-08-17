@@ -12,7 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """General IAM utilities used by the Cloud SDK."""
 
 from __future__ import absolute_import
@@ -37,7 +36,6 @@ from googlecloudsdk.core import yaml
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import files
 import six
-
 
 # generation from proto.
 kms_message = core_apis.GetMessagesModule('cloudkms', 'v1')
@@ -71,10 +69,10 @@ encoding.AddCustomJsonFieldMapping(
     .PrivatecaProjectsLocationsCertificateTemplatesGetIamPolicyRequest,
     'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
 
-MANAGED_BY = (msgs.IamProjectsServiceAccountsKeysListRequest
-              .KeyTypesValueValuesEnum)
-CREATE_KEY_TYPES = (msgs.CreateServiceAccountKeyRequest
-                    .PrivateKeyTypeValueValuesEnum)
+MANAGED_BY = (
+    msgs.IamProjectsServiceAccountsKeysListRequest.KeyTypesValueValuesEnum)
+CREATE_KEY_TYPES = (
+    msgs.CreateServiceAccountKeyRequest.PrivateKeyTypeValueValuesEnum)
 KEY_TYPES = (msgs.ServiceAccountKey.PrivateKeyTypeValueValuesEnum)
 PUBLIC_KEY_TYPES = (
     msgs.IamProjectsServiceAccountsKeysGetRequest.PublicKeyTypeValueValuesEnum)
@@ -88,7 +86,8 @@ SERVICE_ACCOUNT_KEY_FORMAT = """
     table(
         name.scope(keys):label=KEY_ID,
         validAfterTime:label=CREATED_AT,
-        validBeforeTime:label=EXPIRES_AT
+        validBeforeTime:label=EXPIRES_AT,
+        disabled:label=DISABLED
     )
 """
 CONDITION_FORMAT_EXCEPTION = gcloud_exceptions.InvalidArgumentException(
@@ -165,8 +164,7 @@ def _ConditionArgDict():
 def _ConditionHelpText(intro):
   """Get the help text for --condition."""
 
-  help_text = (
-      """\
+  help_text = ("""\
 {intro}
 
 When using the `--condition` flag, include the following key-value pairs:
@@ -331,10 +329,7 @@ def AddArgsForAddIamPolicyBinding(parser,
   """
 
   parser.add_argument(
-      '--role',
-      required=True,
-      completer=role_completer,
-      help=help_text)
+      '--role', required=True, completer=role_completer, help=help_text)
   AddMemberFlag(parser, 'to add the binding for', hide_special_member_types)
   if add_condition:
     _AddConditionFlagsForAddBindingToIamPolicy(parser)
@@ -406,8 +401,8 @@ def AddBindingToIamPolicy(binding_message_type, policy, member, role):
       return True
 
   # Third step: no binding was found that has the same role. Create a new one.
-  policy.bindings.append(binding_message_type(
-      members=[member], role='{0}'.format(role)))
+  policy.bindings.append(
+      binding_message_type(members=[member], role='{0}'.format(role)))
   return True
 
 
@@ -515,6 +510,7 @@ def PromptChoicesForAddBindingToIamPolicy(policy):
   `None` and `Specify a new condition`) are appended.
   Args:
     policy: the IAM policy which the binding is added to.
+
   Returns:
     a list of conditions appearing in policy plus the choices of `None` and
     `Specify a new condition`.
@@ -533,6 +529,7 @@ def PromptChoicesForRemoveBindingFromIamPolicy(policy, member, role):
     policy: the IAM policy which the binding is removed from.
     member: the member of the binding to be removed.
     role: the role of the binding to be removed.
+
   Returns:
     a list of conditions from the policy whose bindings contain the given member
     and role.
@@ -647,7 +644,7 @@ def RemoveBindingFromIamPolicyWithCondition(policy,
     role: The role of the member should be removed from.
     condition: The condition of the binding to be removed.
     all_conditions: If true, all bindings with the specified member and role
-    will be removed, regardless of the condition.
+      will be removed, regardless of the condition.
 
   Raises:
     IamPolicyBindingNotFound: If specified binding is not found.
@@ -763,6 +760,7 @@ def ConstructUpdateMaskFromPolicy(policy_file_path):
 
   Args:
     policy_file_path: Path to the JSON or YAML IAM policy file.
+
   Returns:
     a FieldMask containing policy fields to be modified, based on which fields
     are present in the input file.
@@ -782,6 +780,7 @@ def ParsePolicyFile(policy_file_path, policy_message_type):
   Args:
     policy_file_path: Path to the JSON or YAML IAM policy file.
     policy_message_type: Policy message type to convert JSON or YAML to.
+
   Returns:
     a protorpc.Message of type policy_message_type filled in from the JSON or
     YAML policy file.
@@ -808,6 +807,7 @@ def ParsePolicyFileWithUpdateMask(policy_file_path, policy_message_type):
   Args:
     policy_file_path: Path to the JSON or YAML IAM policy file.
     policy_message_type: Policy message type to convert JSON or YAML to.
+
   Returns:
     a tuple of (policy, updateMask) where policy is a protorpc.Message of type
     policy_message_type filled in from the JSON or YAML policy file and
@@ -837,6 +837,7 @@ def ParseYamlOrJsonPolicyFile(policy_file_path, policy_message_type):
   Args:
     policy_file_path: Path to the YAML or JSON IAM policy file.
     policy_message_type: Policy message type to convert YAML to.
+
   Returns:
     a tuple of (policy, updateMask) where policy is a protorpc.Message of type
     policy_message_type filled in from the JSON or YAML policy file and
@@ -854,13 +855,12 @@ def ParseYamlOrJsonPolicyFile(policy_file_path, policy_message_type):
     # Raised when the input file is not properly formatted YAML policy file.
     raise gcloud_exceptions.BadFileException(
         'Policy file [{0}] is not a properly formatted YAML or JSON '
-        'policy file. {1}'
-        .format(policy_file_path, six.text_type(e)))
+        'policy file. {1}'.format(policy_file_path, six.text_type(e)))
   except (apitools_messages.DecodeError, binascii.Error) as e:
     # DecodeError is raised when etag is badly formatted (not proper Base64)
     raise IamEtagReadError(
-        'The etag of policy file [{0}] is not properly formatted. {1}'
-        .format(policy_file_path, six.text_type(e)))
+        'The etag of policy file [{0}] is not properly formatted. {1}'.format(
+            policy_file_path, six.text_type(e)))
   return (policy, update_mask)
 
 
@@ -905,18 +905,20 @@ def ParseYamlToRole(file_path, role_message_type):
   except (AttributeError) as e:
     # Raised when the YAML file is not properly formatted YAML role file.
     raise gcloud_exceptions.BadFileException(
-        'Role file {0} is not a properly formatted YAML role file. {1}'
-        .format(file_path, six.text_type(e)))
+        'Role file {0} is not a properly formatted YAML role file. {1}'.format(
+            file_path, six.text_type(e)))
   except (apitools_messages.DecodeError, binascii.Error) as e:
     # DecodeError is raised when etag is badly formatted (not proper Base64)
     raise IamEtagReadError(
-        'The etag of role file {0} is not properly formatted. {1}'
-        .format(file_path, six.text_type(e)))
+        'The etag of role file {0} is not properly formatted. {1}'.format(
+            file_path, six.text_type(e)))
   return role
 
 
-def GetDetailedHelpForSetIamPolicy(collection, example_id='',
-                                   example_see_more='', additional_flags='',
+def GetDetailedHelpForSetIamPolicy(collection,
+                                   example_id='',
+                                   example_see_more='',
+                                   additional_flags='',
                                    use_an=False):
   """Returns a detailed_help for a set-iam-policy command.
 
@@ -925,11 +927,12 @@ def GetDetailedHelpForSetIamPolicy(collection, example_id='',
     example_id: Collection identifier to display in a sample command
         (ex: "my-project", '1234')
     example_see_more: Optional "See ... for details" message. If not specified,
-        includes a default reference to IAM managing-policies documentation
+      includes a default reference to IAM managing-policies documentation
     additional_flags: str, additional flags to include in the example command
-        (after the command name and before the ID of the resource).
+      (after the command name and before the ID of the resource).
      use_an: If True, uses "an" instead of "a" for the article preceding uses of
-         the collection.
+       the collection.
+
   Returns:
     a dict with boilerplate help text for the set-iam-policy command
   """
@@ -976,10 +979,10 @@ def GetDetailedHelpForAddIamPolicyBinding(collection,
     example_id: Collection identifier to display in a sample command
         (ex: "my-project", '1234')
     role: The sample role to use in the documentation. The default of
-        'roles/editor' is usually sufficient, but if your command group's
-        users would more likely use a different role, you can override it here.
+      'roles/editor' is usually sufficient, but if your command group's users
+      would more likely use a different role, you can override it here.
     use_an: If True, uses "an" instead of "a" for the article preceding uses of
-         the collection.
+      the collection.
     condition: If True, add help text for condition.
 
   Returns:
@@ -1037,11 +1040,12 @@ def GetDetailedHelpForRemoveIamPolicyBinding(collection,
     example_id: Collection identifier to display in a sample command
         (ex: "my-project", '1234')
     role: The sample role to use in the documentation. The default of
-        'roles/editor' is usually sufficient, but if your command group's
-        users would more likely use a different role, you can override it here.
+      'roles/editor' is usually sufficient, but if your command group's users
+      would more likely use a different role, you can override it here.
     use_an: If True, uses "an" instead of "a" for the article preceding uses of
-         the collection.
+      the collection.
     condition: If True, add help text for condition.
+
   Returns:
     a dict with boilerplate help text for the remove-iam-policy-binding command
   """
@@ -1093,7 +1097,7 @@ def GetHintForServiceAccountResource(action='act on'):
 
   Args:
     action: the action to take on the service account resource (with necessary
-        prepositions), such as 'add iam policy bindings to'.
+      prepositions), such as 'add iam policy bindings to'.
   """
 
   return ('When managing IAM roles, you can treat a service account either as '
@@ -1112,7 +1116,7 @@ def ManagedByFromString(managed_by):
 
   Args:
     managed_by: A string representation of a MANAGED_BY. Can be one of *user*,
-    *system* or *any*.
+      *system* or *any*.
 
   Returns:
     A KeyTypeValueValuesEnum (MANAGED_BY) value.
@@ -1132,7 +1136,7 @@ def KeyTypeFromString(key_str):
 
   Args:
     key_str: A string representation of a KeyType. Can be either *p12* or
-    *json*.
+      *json*.
 
   Returns:
     A PrivateKeyTypeValueValuesEnum value.
@@ -1238,7 +1242,7 @@ def PublicKeyTypeFromString(key_str):
 
   Args:
     key_str: A string representation of a PublicKeyType. Can be either *pem* or
-    *raw*.
+      *raw*.
 
   Returns:
     A PublicKeyTypeValueValuesEnum value.
@@ -1253,7 +1257,7 @@ def StageTypeFromString(stage_str):
 
   Args:
     stage_str: A string representation of a StageType. Can be *alpha* or *beta*
-    or *ga* or *deprecated* or *disabled*.
+      or *ga* or *deprecated* or *disabled*.
 
   Returns:
     A StageValueValuesEnum value.
@@ -1278,8 +1282,8 @@ def VerifyParent(organization, project, attribute='custom roles'):
   if organization is None and project is None:
     raise gcloud_exceptions.RequiredArgumentException(
         '--organization or --project',
-        'Should specify the project or organization name for {0}.'
-        .format(attribute))
+        'Should specify the project or organization name for {0}.'.format(
+            attribute))
   if organization and project:
     raise gcloud_exceptions.ConflictingArgumentsException(
         'organization', 'project')
@@ -1346,9 +1350,9 @@ def ServiceAccountsUriFunc(resource):
     URL to the service account
   """
 
-  ref = resources.REGISTRY.Parse(resource.uniqueId,
-                                 {'projectsId': resource.projectId},
-                                 collection=SERVICE_ACCOUNTS_COLLECTION)
+  ref = resources.REGISTRY.Parse(
+      resource.uniqueId, {'projectsId': resource.projectId},
+      collection=SERVICE_ACCOUNTS_COLLECTION)
   return ref.SelfLink()
 
 
@@ -1357,22 +1361,23 @@ def AddServiceAccountNameArg(parser, action='to act on'):
 
   Args:
     parser: An argparse.ArgumentParser-like object to which we add the args.
-    action: Action to display in the help message. Should be something like
-      'to act on' or a relative phrase like 'whose policy to get'.
+    action: Action to display in the help message. Should be something like 'to
+      act on' or a relative phrase like 'whose policy to get'.
 
   Raises:
     ArgumentError if one of the arguments is already defined in the parser.
   """
 
-  parser.add_argument('service_account',
-                      metavar='SERVICE_ACCOUNT',
-                      type=GetIamAccountFormatValidator(),
-                      completer=completers.IamServiceAccountCompleter,
-                      help=('The service account {}. The account should be '
-                            'formatted either as a numeric service account ID '
-                            'or as an email, like this: '
-                            '123456789876543212345 or '
-                            'my-iam-account@somedomain.com.'.format(action)))
+  parser.add_argument(
+      'service_account',
+      metavar='SERVICE_ACCOUNT',
+      type=GetIamAccountFormatValidator(),
+      completer=completers.IamServiceAccountCompleter,
+      help=('The service account {}. The account should be '
+            'formatted either as a numeric service account ID '
+            'or as an email, like this: '
+            '123456789876543212345 or '
+            'my-iam-account@somedomain.com.'.format(action)))
 
 
 def LogSetIamPolicy(name, kind):

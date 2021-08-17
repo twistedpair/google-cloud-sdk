@@ -39,7 +39,7 @@ class BadMatrixError(TestingError):
 class RestrictedServiceError(TestingError):
   """RestrictedServiceError is for bad service request errors.
 
-  This is most likely due to whitelisted API features which are hidden behind a
+  This is most likely due to allowlisted API features which are hidden behind a
   visibility label.
   """
 

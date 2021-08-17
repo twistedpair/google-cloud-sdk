@@ -157,7 +157,8 @@ class RequestWrapper(six.with_metaclass(abc.ABCMeta, object)):
   def WrapWithDefaults(self,
                        http_client,
                        response_encoding=None,
-                       streaming_response_body=False):
+                       streaming_response_body=False,
+                       redact_request_body_reason=None):
     """Wraps request with user-agent, and trace reporting.
 
     Args:
@@ -165,6 +166,8 @@ class RequestWrapper(six.with_metaclass(abc.ABCMeta, object)):
       response_encoding: str, the encoding to use to decode the response.
       streaming_response_body: bool, True indicates that the response body will
           be a streaming body.
+      redact_request_body_reason: str, the reason why the request body must be
+          redacted if --log-http is used. If None, the body is not redacted.
 
     Returns:
       http, The same http object but with the request method wrapped.
@@ -195,9 +198,14 @@ class RequestWrapper(six.with_metaclass(abc.ABCMeta, object)):
     # Do this one last so that it sees the effects of the other modifiers.
     if properties.VALUES.core.log_http.GetBool():
       redact_token = properties.VALUES.core.log_http_redact_token.GetBool()
+      show_request_body = (
+          properties.VALUES.core.log_http_show_request_body.GetBool())
       handlers.append(
           Handler(
-              LogRequest(redact_token), LogResponse(streaming_response_body)))
+              LogRequest(redact_token,
+                         redact_request_body_reason if not show_request_body
+                         else None),
+              LogResponse(streaming_response_body)))
 
     self.WrapRequest(http_client, handlers, response_encoding=response_encoding)
     return http_client
@@ -405,11 +413,13 @@ def AddQueryParam(param, value):
   return _AddQueryParam
 
 
-def LogRequest(redact_token=True):
+def LogRequest(redact_token=True, redact_request_body_reason=None):
   """Logs the contents of the http request.
 
   Args:
     redact_token: bool, True to redact auth tokens.
+    redact_request_body_reason: str, the reason why the request body must be
+        redacted if --log-http is used. If None, the body is not redacted.
 
   Returns:
     A function that can be used in a Handler.request.
@@ -434,6 +444,8 @@ def LogRequest(redact_token=True):
       redact_resp_body_reason = (
           'Contains oauth token. Set log_http_redact_token property to false '
           'to print the body of this response.')
+    elif redact_request_body_reason is not None:
+      redact_req_body_reason = redact_request_body_reason
 
     log.status.Print('=======================')
     log.status.Print('==== request start ====')

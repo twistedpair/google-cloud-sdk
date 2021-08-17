@@ -166,8 +166,18 @@ def AddMaxPodsPerNode(parser):
       '--max-pods-per-node', type=int, help='Maximum number of pods per node.')
 
 
+def AddAzureAvailabilityZone(parser):
+  parser.add_argument(
+      '--azure-availability-zone',
+      help='Azure availability zone where the node pool will be created.')
+
+
 def GetMaxPodsPerNode(args):
   return args.max_pods_per_node
+
+
+def GetAzureAvailabilityZone(args):
+  return args.azure_availability_zone
 
 
 def AddVMSize(parser):

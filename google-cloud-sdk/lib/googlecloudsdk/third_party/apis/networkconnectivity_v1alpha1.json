@@ -14,7 +14,7 @@
     "x16": "http://www.google.com/images/icons/product/search-16.gif",
     "x32": "http://www.google.com/images/icons/product/search-32.gif"
    },
-  "documentationLink": "https://cloud.google.com/network-connectivity/docs",
+  "documentationLink": "https://cloud.google.com/network-connectivity/docs/reference/networkconnectivity/rest",
   "protocol": "rest",
   "rootUrl": "https://networkconnectivity.googleapis.com/",
   "mtlsRootUrl": "https://networkconnectivity.mtls.googleapis.com/",

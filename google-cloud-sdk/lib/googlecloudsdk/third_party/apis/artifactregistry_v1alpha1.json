@@ -104,10 +104,10 @@
     "oauth2": {
       "scopes": {
         "https://www.googleapis.com/auth/cloud-platform": {
-          "description": "See, edit, configure, and delete your Google Cloud Platform data"
+          "description": "See, edit, configure, and delete your Google Cloud data and see the email address for your Google Account."
         },
         "https://www.googleapis.com/auth/cloud-platform.read-only": {
-          "description": "View your data across Google Cloud Platform services"
+          "description": "View your data across Google Cloud services and see the email address of your Google Account"
         }
       }
     }
@@ -242,35 +242,6 @@
               "description": "Properties of the object. Contains field @type with type URL."
             }
           }
-        }
-      }
-    },
-    "GoogleDevtoolsArtifactregistryV1alpha1ImportArtifactsRequest": {
-      "id": "GoogleDevtoolsArtifactregistryV1alpha1ImportArtifactsRequest",
-      "description": "The request to import new artifacts.",
-      "type": "object",
-      "properties": {
-        "gcsSource": {
-          "description": "Google Cloud Storage location where input content is located.",
-          "$ref": "GoogleDevtoolsArtifactregistryV1alpha1GcsSource"
-        }
-      }
-    },
-    "GoogleDevtoolsArtifactregistryV1alpha1GcsSource": {
-      "id": "GoogleDevtoolsArtifactregistryV1alpha1GcsSource",
-      "description": "Google Cloud Storage location where the artifacts currently reside.",
-      "type": "object",
-      "properties": {
-        "uris": {
-          "description": "Cloud Storage paths URI (e.g., gs:\/\/my_bucket\/\/my_object).",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "useWildcards": {
-          "description": "Supports URI wildcards for matching multiple objects from a single URI.",
-          "type": "boolean"
         }
       }
     },
@@ -492,67 +463,6 @@
         "gcsSource": {
           "description": "Google Cloud Storage location requested.",
           "$ref": "GoogleDevtoolsArtifactregistryV1alpha1ImportAptArtifactsGcsSource"
-        },
-        "error": {
-          "description": "The detailed error status.",
-          "$ref": "Status"
-        }
-      }
-    },
-    "GoogleDevtoolsArtifactregistryV1alpha1ImportArtifactsResponse": {
-      "id": "GoogleDevtoolsArtifactregistryV1alpha1ImportArtifactsResponse",
-      "description": "The response message from importing artifacts.",
-      "type": "object",
-      "properties": {
-        "packages": {
-          "description": "The packages updated.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleDevtoolsArtifactregistryV1alpha1Package"
-          }
-        },
-        "errors": {
-          "description": "Detailed error info for packages that were not imported.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleDevtoolsArtifactregistryV1alpha1ErrorInfo"
-          }
-        }
-      }
-    },
-    "GoogleDevtoolsArtifactregistryV1alpha1Package": {
-      "id": "GoogleDevtoolsArtifactregistryV1alpha1Package",
-      "description": "Packages are named collections of versions.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "The name of the package, for example: \"projects\/p1\/locations\/us-central1\/repositories\/repo1\/packages\/pkg1\". If the package ID part contains slashes, the slashes are escaped.",
-          "type": "string"
-        },
-        "displayName": {
-          "description": "The display name of the package.",
-          "type": "string"
-        },
-        "createTime": {
-          "description": "The time when the package was created.",
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "updateTime": {
-          "description": "The time when the package was last updated. This includes publishing a new version of the package.",
-          "type": "string",
-          "format": "google-datetime"
-        }
-      }
-    },
-    "GoogleDevtoolsArtifactregistryV1alpha1ErrorInfo": {
-      "id": "GoogleDevtoolsArtifactregistryV1alpha1ErrorInfo",
-      "description": "Error information explaining why a package was not imported.",
-      "type": "object",
-      "properties": {
-        "gcsSource": {
-          "description": "Google Cloud Storage location requested.",
-          "$ref": "GoogleDevtoolsArtifactregistryV1alpha1GcsSource"
         },
         "error": {
           "description": "The detailed error status.",
@@ -1268,37 +1178,6 @@
               }
             },
             "repositories": {
-              "methods": {
-                "import": {
-                  "id": "artifactregistry.projects.locations.repositories.import",
-                  "path": "v1alpha1/{+parent}:import",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}:import",
-                  "httpMethod": "POST",
-                  "parameters": {
-                    "parent": {
-                      "description": "The name of the parent resource where the artifacts will be imported.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/repositories\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "parent"
-                  ],
-                  "request": {
-                    "$ref": "GoogleDevtoolsArtifactregistryV1alpha1ImportArtifactsRequest"
-                  },
-                  "response": {
-                    "$ref": "Operation"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Imports artifacts. The returned Operation will complete once the resources are imported. Package, Version, and File resources are created based on the imported artifacts. Imported artifacts that conflict with existing resources are ignored."
-                }
-              }
-              ,
               "resources": {
                 "aptArtifacts": {
                   "methods": {

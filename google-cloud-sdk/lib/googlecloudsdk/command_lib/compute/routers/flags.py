@@ -183,6 +183,7 @@ def AddBgpPeerArgs(parser,
                    for_add_bgp_peer=False,
                    support_bfd=False,
                    support_enable_ipv6=False,
+                   support_havpn_ipv6=False,
                    is_update=False):
   """Adds common arguments for managing BGP peers."""
 
@@ -255,23 +256,23 @@ def AddBgpPeerArgs(parser,
         '--bfd-min-transmit-interval',
         type=arg_parsers.Duration(
             default_unit='ms',
-            lower_bound='100ms',
+            lower_bound='1000ms',
             upper_bound='30000ms',
             parsed_unit='ms'),
         hidden=True,
         help='The minimum transmit interval between BFD control packets. The '
-        'default is 300 milliseconds. See $ gcloud topic datetimes for '
+        'default is 1000 milliseconds. See $ gcloud topic datetimes for '
         'information on duration formats.')
     bfd_group.add_argument(
         '--bfd-min-receive-interval',
         type=arg_parsers.Duration(
             default_unit='ms',
-            lower_bound='100ms',
+            lower_bound='1000ms',
             upper_bound='30000ms',
             parsed_unit='ms'),
         hidden=True,
         help='The minimum receive interval between BFD control packets. The '
-        'default is 300 milliseconds. See $ gcloud topic datetimes for '
+        'default is 1000 milliseconds. See $ gcloud topic datetimes for '
         'information on duration formats.')
     bfd_group.add_argument(
         '--bfd-multiplier',
@@ -303,6 +304,23 @@ def AddBgpPeerArgs(parser,
         '--enable-ipv6',
         action=arg_parsers.StoreTrueFalseAction,
         help=enable_ipv6_display_help)
+
+  if support_havpn_ipv6:
+    parser.add_argument(
+        '--ipv6-nexthop-address',
+        type=utils.IPV6Argument,
+        help='The IPv6 next hop address of the Cloud Router interface '
+        'for this BGP peer. Must be a Google owned global unicast IPv6 '
+        'address belonging to the range 2600:2d00:0:2:0:0:0:0/64 in HA0 or '
+        '2600:2d00:0:3:0:0:0:0/64 in HA1 and must belong to same subnet as '
+        'the interface address of the peer router.')
+
+    parser.add_argument(
+        '--peer-ipv6-nexthop-address',
+        type=utils.IPV6Argument,
+        help='The IPv6 next hop address of the peer router. Must be a '
+        'Goolge owned global unicast IPv6 address belonging to the range '
+        '2600:2d00:0:2:0:0:0:0/64 in HA0 or 2600:2d00:0:3:0:0:0:0/64 in HA1.')
 
 
 def AddUpdateCustomAdvertisementArgs(parser, resource_str):

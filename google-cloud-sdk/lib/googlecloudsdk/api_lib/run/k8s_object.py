@@ -126,7 +126,7 @@ class KubernetesObject(object):
 
   READY_CONDITION = 'Ready'
   # Message fields to exclude from instantiation of this object.
-  FIELD_BLACKLIST = []
+  EXCLUDED_FIELDS = []
 
   @classmethod
   def Kind(cls, kind=None):
@@ -190,7 +190,7 @@ class KubernetesObject(object):
     api_version = cls.ApiVersion(getattr(client, '_VERSION'), api_category)
     messages_mod = client.MESSAGES_MODULE
     kind = cls.Kind(kind)
-    ret = InitializedInstance(getattr(messages_mod, kind), cls.FIELD_BLACKLIST)
+    ret = InitializedInstance(getattr(messages_mod, kind), cls.EXCLUDED_FIELDS)
     try:
       ret.kind = kind
       ret.apiVersion = api_version

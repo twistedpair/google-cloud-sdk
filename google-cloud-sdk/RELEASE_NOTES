@@ -5,6 +5,89 @@ Copyright 2014-2021 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 353.0.0 (2021-08-17)
+
+### Breaking Changes
+
+*   **(Compute Engine)** Update `gcloud compute instance-groups managed create` to throw an error when creating a stateful regional managed instance group, if `--instance-redistribution-type=NONE` is not specified.
+
+
+### AI
+
+* Added more available regions to `gcloud ai hp-tuning-jobs`.
+
+### BigQuery
+
+* Added `autoscale_preview` as a new api_version for autoscaler.
+* Added support for creating an external dataset.
+* Minor bug fixes.
+
+### Cloud Asset Inventory
+
+* Added `--relationship-type` flag to the following commands:
+   * `gcloud asset list`
+   * `gcloud asset feed create`
+   * `gcloud asset feed update`
+* Promoted `--relationship-type` flag to GA:
+   * `gcloud asset export`
+* Added new content type RELATIONSHIP to:
+   * `gcloud asset get-history`
+
+### Cloud Build
+
+* Fixed bug breaking `gcloud beta builds triggers` commands.
+
+### Cloud DNS
+
+* Update output format for `gcloud dns record-sets`.
+
+### Cloud Functions
+
+*   Promoted `--min-instances` and `--clear-min-instances` flags of `gcloud functions` to beta.
+
+### Cloud Logging
+
+* Updated `gcloud logging buckets create`, `gcloud logging buckets list`, and `gcloud logging buckets update` to support restricted fields.
+
+### Cloud Pub/Sub
+
+* Renamed `--zone` flag as `--location`. Deprecated `zone` variants.
+* Added `gcloud pubsub lite-subscriptions seek` which initiates a seek operation for a Pub/Sub Lite subscription.
+* Added `gcloud pubsub lite-operations` command group which allows describing and listing Pub/Sub Lite long-running operations.
+
+### Cloud Services
+
+* Promoted `gcloud services api-keys describe` to GA.
+
+### Compute Engine
+
+* Added `targetService` to the output of `gcloud compute service-attachments` commands.
+
+### Database Migration
+
+* Fixed autocomplete issues in database migration commands.
+* Added "REGION" column in the output of `gcloud database-migration connection-profiles list` and `gcloud database-migration migration-jobs list`.
+* Added separate fields to display both the id and display name.
+  * Added "CONNECTION_PROFILE_ID" in the output of `gcloud database-migration connection-profiles list`.
+  * Added "MIGRATION_JOB_ID" and renamed "NAME" to "DISPLAY_NAME" in the output of `gcloud database-migration migration-jobs list`.
+* Some changes in `gcloud connection profile list`:
+  * Fixed the value presented in ENGINE field to always display the DB engine.
+  * Added a separate field for (cloud) PROVIDER to be distinguished from ENGINE.
+
+### Kubernetes Engine
+
+* Added `--enable-gvnic` flag of `gcloud container clusters create`, `gcloud container nodepools create` and `gcloud container nodepools update` to alpha, beta, GA.
+* Remove `--enable-gvnic` flag of `gcloud container clusters update` in alpha, beta.
+* Promoted `--create-pod-ipv4-range` and `--pod-ipv4-range` flags of `gcloud container node-pools create` for configuring pod ranges for node pools to GA.
+* Added `--logging` and `--monitoring` flags to
+  `gcloud container clusters create`, `gcloud container clusters update`, and
+  `gcloud container clusters create-auto` for users to configure the components
+  that should have logging and/or monitoring turned on.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 352.0.0 (2021-08-10)
 
 ### Access Approval

@@ -75,6 +75,19 @@ class BaremetalsolutionProjectsLocationsInstancesListRequest(_messages.Message):
   parent = _messages.StringField(5, required=True)
 
 
+class BaremetalsolutionProjectsLocationsInstancesResetRequest(_messages.Message):
+  r"""A BaremetalsolutionProjectsLocationsInstancesResetRequest object.
+
+  Fields:
+    name: Required. Name of the resource.
+    resetInstanceRequest: A ResetInstanceRequest resource to be passed as the
+      request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  resetInstanceRequest = _messages.MessageField('ResetInstanceRequest', 2)
+
+
 class BaremetalsolutionProjectsLocationsInstancesSetIamPolicyRequest(_messages.Message):
   r"""A BaremetalsolutionProjectsLocationsInstancesSetIamPolicyRequest object.
 
@@ -827,6 +840,10 @@ class Policy(_messages.Message):
   bindings = _messages.MessageField('Binding', 1, repeated=True)
   etag = _messages.BytesField(2)
   version = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
+class ResetInstanceRequest(_messages.Message):
+  r"""Message for resetting an Instance."""
 
 
 class SetIamPolicyRequest(_messages.Message):

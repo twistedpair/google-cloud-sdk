@@ -18,6 +18,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.util.args import map_util
 from googlecloudsdk.core import exceptions
 import six
@@ -200,7 +201,6 @@ class CommonFlags(FlagDefs):
         'service_config',
         metavar='SERVICE_CONFIG',
         nargs='?',
-        type=arg_parsers.YAMLFileContents(),
         help=(
             'service.yaml filename override. Defaults to the first file '
             'matching ```*service.dev.yaml``` then ```*service.yaml```, if any '
@@ -231,7 +231,13 @@ class CommonFlags(FlagDefs):
   def BuildersGroup(self):
     return self._GetGroup(BuilderFlags)
 
-  def AddBetaFlags(self):
+  def AddAlphaAndBetaFlags(self, release_track):
+    self._AddBetaFlags()
+
+    if release_track == base.ReleaseTrack.ALPHA:
+      self._AddAlphaFlags()
+
+  def _AddBetaFlags(self):
     """Set up flags that are for alpha and beta tracks."""
     self.BuildersGroup().AddDockerfile()
     self.AddSource()
@@ -240,7 +246,7 @@ class CommonFlags(FlagDefs):
     self.CredentialsGroup().AddApplicationDefaultCredential()
     self.AddReadinessProbe()
 
-  def AddAlphaFlags(self):
+  def _AddAlphaFlags(self):
     """Set up flags that are for alpha track only."""
     self.AddServiceYamlPositionalArg()
     self.AddCloudsqlInstances()

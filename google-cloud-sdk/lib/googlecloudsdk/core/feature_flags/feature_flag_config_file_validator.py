@@ -25,6 +25,7 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core import yaml_validator
 from googlecloudsdk.core.feature_flags import parse
+from googlecloudsdk.core.util import files
 
 SCHEMA_PATH = (
     os.path.join(os.path.dirname(__file__), 'feature_flags_config_schema.yaml'))
@@ -242,9 +243,11 @@ class Validator(object):
     If the values are not of the same type, this method appends
     InconsistentValuesError to list_of_errors.
     """
+
+    config_file = files.ReadFileContents(self.config_path)
     for section_property in self.parsed_yaml:
       values_list = parse.FeatureFlagsConfig(
-          self.config_path).properties[section_property].values
+          config_file).properties[section_property].values
       first_value_type = type(values_list[0])
       for value in values_list:
         if not isinstance(value, first_value_type):
@@ -261,9 +264,10 @@ class Validator(object):
     property's validator. If the values dont satisfy the property's validator,
     this method appends InvalidValueError to list_of_errors.
     """
+    config_file = files.ReadFileContents(self.config_path)
     for section_property in self.parsed_yaml:
       values_list = parse.FeatureFlagsConfig(
-          self.config_path).properties[section_property].values
+          config_file).properties[section_property].values
       section_name, property_name = section_property.split('/')
       section_instance = getattr(properties.VALUES, section_name)
       property_instance = getattr(section_instance, property_name)

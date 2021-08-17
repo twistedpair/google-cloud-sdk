@@ -31,7 +31,7 @@ from googlecloudsdk.command_lib.storage.resources import gcs_resource_reference
 # Protorpc defaults list values to an empty list and won't allow us to set the
 # value to None like other configuration fields, so there is no way to
 # distinguish the default value from when we actually want to remove the CORS
-# configuration. To work around this, we create a dummy CORS entry that
+# configuration. To work around this, we create a fake CORS entry that
 # signifies that we should nullify the CORS configuration.
 # A value of [] means don't modify the CORS configuration.
 # A value of REMOVE_CORS_CONFIG means remove the CORS configuration.

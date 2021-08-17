@@ -550,6 +550,33 @@ class SddcV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GenerateSupportBundle(self, request, global_params=None):
+      r"""Consumer API (private) to generate support bundles of VMware stack.
+
+      Args:
+        request: (SddcProjectsLocationsClusterGroupsGenerateSupportBundleRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('GenerateSupportBundle')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GenerateSupportBundle.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/clusterGroups/{clusterGroupsId}:generateSupportBundle',
+        http_method='POST',
+        method_id='sddc.projects.locations.clusterGroups.generateSupportBundle',
+        ordered_params=['clusterGroup'],
+        path_params=['clusterGroup'],
+        query_params=[],
+        relative_path='v1alpha1/{+clusterGroup}:generateSupportBundle',
+        request_field='generateSupportBundleRequest',
+        request_type_name='SddcProjectsLocationsClusterGroupsGenerateSupportBundleRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets details of a single `ClusterGroup`.
 

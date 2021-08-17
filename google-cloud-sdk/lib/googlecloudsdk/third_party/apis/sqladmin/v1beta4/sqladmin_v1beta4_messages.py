@@ -1487,7 +1487,8 @@ class IpConfiguration(_messages.Message):
       set, the instance ip will be created in the allocated range. The range
       name must comply with [RFC 1035](https://tools.ietf.org/html/rfc1035).
       Specifically, the name must be 1-63 characters long and match the
-      regular expression [a-z]([-a-z0-9]*[a-z0-9])?. Reserved for future use.
+      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?.` Reserved for future
+      use.
     authorizedNetworks: The list of external networks that are allowed to
       connect to the instance using the IP. In 'CIDR' notation, also known as
       'slash' notation (for example: *192.168.100.0/24*).
@@ -2598,6 +2599,20 @@ class SqlInstancesImportRequest(_messages.Message):
   instance = _messages.StringField(1, required=True)
   instancesImportRequest = _messages.MessageField('InstancesImportRequest', 2)
   project = _messages.StringField(3, required=True)
+
+
+class SqlInstancesInsertRequest(_messages.Message):
+  r"""A SqlInstancesInsertRequest object.
+
+  Fields:
+    databaseInstance: A DatabaseInstance resource to be passed as the request
+      body.
+    project: Project ID of the project to which the newly created Cloud SQL
+      instances should belong.
+  """
+
+  databaseInstance = _messages.MessageField('DatabaseInstance', 1)
+  project = _messages.StringField(2, required=True)
 
 
 class SqlInstancesListRequest(_messages.Message):

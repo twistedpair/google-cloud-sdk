@@ -44,3 +44,44 @@ def SetVPNClusterPath(ref, args, request):
       clustersId=args.cluster)
   request.vpnConnection.cluster = cluster.RelativeName()
   return request
+
+
+class DescribeVPNTableView:
+  """View model for VPN connections describe."""
+
+  def __init__(self, name, create_time, cluster, vpc_network):
+    self.name = name
+    self.create_time = create_time
+    self.cluster = cluster
+    self.vpc_network = vpc_network
+
+
+def CreateDescribeVPNTableViewResponseHook(response, args):
+  """Create DescribeVPNTableView from GetVpnConnection response.
+
+  Args:
+    response: Response from GetVpnConnection
+    args: Args from GetVpnConnection
+
+  Returns:
+    DescribeVPNTableView
+  """
+  del args  # args not used
+
+  name = response.name
+  create_time = response.createTime
+
+  cluster = {}
+  items = response.cluster.split('/')
+  cluster['project'] = items[1]
+  cluster['location'] = items[3]
+  cluster['ID'] = items[5]
+
+  vpc_network = {}
+  items = response.vpc.split('/')
+  vpc_network['project'] = items[1]
+  vpc_network['region'] = items[3]
+  vpc_network['ID'] = items[5]
+  return DescribeVPNTableView(name, create_time, cluster, vpc_network)
+
+

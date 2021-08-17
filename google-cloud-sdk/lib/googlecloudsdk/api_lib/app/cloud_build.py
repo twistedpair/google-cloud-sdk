@@ -40,7 +40,7 @@ from six.moves import filter  # pylint: disable=redefined-builtin
 
 # Paths that shouldn't be ignored client-side.
 # Behavioral parity with github.com/docker/docker-py.
-BLACKLISTED_DOCKERIGNORE_PATHS = ['Dockerfile', '.dockerignore']
+BLOCKLISTED_DOCKERIGNORE_PATHS = ['Dockerfile', '.dockerignore']
 
 
 def _CreateTar(upload_dir, gen_files, paths, gz):
@@ -91,7 +91,7 @@ def _GetDockerignoreExclusions(upload_dir, gen_files):
     # Read the exclusions from the dockerignore, filtering out blank lines.
     exclude = set(filter(bool, ignore_contents.splitlines()))
     # Remove paths that shouldn't be excluded on the client.
-    exclude -= set(BLACKLISTED_DOCKERIGNORE_PATHS)
+    exclude -= set(BLOCKLISTED_DOCKERIGNORE_PATHS)
   return exclude
 
 

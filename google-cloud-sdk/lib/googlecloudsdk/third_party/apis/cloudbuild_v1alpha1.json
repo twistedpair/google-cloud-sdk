@@ -362,6 +362,7 @@
           "type": "string",
           "enumDescriptions": [
             "Status of the build is unknown.",
+            "Build has been created and is pending execution and queuing. It has not been queued.",
             "Build or step is queued; work has not yet begun.",
             "Build or step is being executed.",
             "Build or step finished successfully.",
@@ -373,6 +374,7 @@
           ],
           "enum": [
             "STATUS_UNKNOWN",
+            "PENDING",
             "QUEUED",
             "WORKING",
             "SUCCESS",
@@ -494,6 +496,11 @@
           "additionalProperties": {
             "$ref": "TimeSpan"
           }
+        },
+        "approval": {
+          "description": "Output only. Describes this build's approval configuration, status, and result.",
+          "readOnly": true,
+          "$ref": "BuildApproval"
         },
         "serviceAccount": {
           "description": "IAM service account whose credentials will be used at build runtime. Must be of the format `projects\/{PROJECT_ID}\/serviceAccounts\/{ACCOUNT}`. ACCOUNT can be email address or uniqueId of the service account. ",
@@ -696,6 +703,7 @@
           "type": "string",
           "enumDescriptions": [
             "Status of the build is unknown.",
+            "Build has been created and is pending execution and queuing. It has not been queued.",
             "Build or step is queued; work has not yet begun.",
             "Build or step is being executed.",
             "Build or step finished successfully.",
@@ -707,6 +715,7 @@
           ],
           "enum": [
             "STATUS_UNKNOWN",
+            "PENDING",
             "QUEUED",
             "WORKING",
             "SUCCESS",
@@ -1090,6 +1099,93 @@
             "type": "string",
             "format": "byte"
           }
+        }
+      }
+    },
+    "BuildApproval": {
+      "id": "BuildApproval",
+      "description": "BuildApproval describes a build's approval configuration, state, and result.",
+      "type": "object",
+      "properties": {
+        "state": {
+          "description": "Output only. The state of this build's approval.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Default enum type. This should not be used.",
+            "Build approval is pending.",
+            "Build approval has been approved.",
+            "Build approval has been rejected.",
+            "Build was cancelled while it was still pending approval."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "PENDING",
+            "APPROVED",
+            "REJECTED",
+            "CANCELLED"
+          ]
+        },
+        "config": {
+          "description": "Output only. Configuration for manual approval of this build.",
+          "readOnly": true,
+          "$ref": "ApprovalConfig"
+        },
+        "result": {
+          "description": "Output only. Result of manual approval for this Build.",
+          "readOnly": true,
+          "$ref": "ApprovalResult"
+        }
+      }
+    },
+    "ApprovalConfig": {
+      "id": "ApprovalConfig",
+      "description": "ApprovalConfig describes configuration for manual approval of a build.",
+      "type": "object",
+      "properties": {
+        "approvalRequired": {
+          "description": "Whether or not approval is needed. If this is set on a build, it will become pending when created, and will need to be explicitly approved to start.",
+          "type": "boolean"
+        }
+      }
+    },
+    "ApprovalResult": {
+      "id": "ApprovalResult",
+      "description": "ApprovalResult describes the decision and associated metadata of a manual approval of a build.",
+      "type": "object",
+      "properties": {
+        "approverAccount": {
+          "description": "Output only. Email of the user that called the ApproveBuild API to approve or reject a build at the time that the API was called (the user's actual email that is tied to their GAIA ID may have changed). This field is not stored, rather, it is calculated on the fly using approver_id.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "approvalTime": {
+          "description": "Output only. The time when the approval decision was made.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "decision": {
+          "description": "Required. The decision of this manual approval.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default enum type. This should not be used.",
+            "Build is approved.",
+            "Build is rejected."
+          ],
+          "enum": [
+            "DECISION_UNSPECIFIED",
+            "APPROVED",
+            "REJECTED"
+          ]
+        },
+        "comment": {
+          "description": "Optional. An optional comment for this manual approval result.",
+          "type": "string"
+        },
+        "url": {
+          "description": "Optional. An optional URL tied to this manual approval result. This field is essentially the same as comment, except that it will be rendered by the UI differently. An example use case is a link to an external job that approved this Build.",
+          "type": "string"
         }
       }
     },

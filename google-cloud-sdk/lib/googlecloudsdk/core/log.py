@@ -704,8 +704,12 @@ class _LogManager(object):
       file_handler = logging.FileHandler(
           log_file, encoding=LOG_FILE_ENCODING)
     except (OSError, IOError, files.Error) as exp:
-      warning('Could not setup log file in {0}, ({1}: {2})'
-              .format(logs_dir, type(exp).__name__, exp))
+      warning('Could not setup log file in {0}, ({1}: {2}.\n'
+              'The configuration directory may not be writable. '
+              'To learn more, see '
+              'https://cloud.google.com/sdk/docs/configurations#'
+              'creating_a_configuration'.format(
+                  logs_dir, type(exp).__name__, exp))
       return
 
     self.current_log_file = log_file

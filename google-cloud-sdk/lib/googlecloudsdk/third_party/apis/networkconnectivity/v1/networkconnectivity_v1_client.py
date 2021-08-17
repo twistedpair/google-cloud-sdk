@@ -503,7 +503,7 @@ class NetworkconnectivityV1(base_api.BaseApiClient):
           }
 
     def Activate(self, request, global_params=None):
-      r"""Activates the specified spoke. Activating reconnects the Google Cloud network with the non-Google-Cloud network.
+      r"""Activates the specified spoke. By activating a spoke, you permit connectivity through the spoke's linked resources to the Google Cloud network.
 
       Args:
         request: (NetworkconnectivityProjectsLocationsSpokesActivateRequest) input message
@@ -557,7 +557,7 @@ class NetworkconnectivityV1(base_api.BaseApiClient):
     )
 
     def Deactivate(self, request, global_params=None):
-      r"""Deactivates the specified spoke. Deactivating keeps the spoke information for future re-activation, but disconnects the Google Cloud network from non-Google-Cloud network.
+      r"""Deactivates the specified spoke. A deactivated spoke can't be used to connect to the Google Cloud network. When you deactivate a spoke, Network Connectivity Center retains details about the spoke so that you can reactivate it later.
 
       Args:
         request: (NetworkconnectivityProjectsLocationsSpokesDeactivateRequest) input message

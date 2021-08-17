@@ -41,6 +41,30 @@ workload_identity_pool:
       Whether the pool is disabled. You cannot use a disabled pool to exchange tokens, or use
       existing tokens to access resources. If the pool is re-enabled, existing tokens grant access
       again.
+  session_duration:
+    api_field: workloadIdentityPool.sessionDuration
+    arg_name: session-duration
+    type: googlecloudsdk.core.util.times:ParseDuration
+    processor: googlecloudsdk.core.util.times:FormatDurationForJson
+    help_text: |-
+      Overrides the lifespan of access tokens issued issued for identities in this pool. If not set,
+      the lifespan of issued access tokens is computed based on the type of identity provider:
+
+      - For AWS, the default access token lifespan is equal to 15
+        minutes.
+      - For OIDC providers, including Microsoft Azure, the default access token lifespan is equal to
+        the remaining lifespan of the exchanged OIDC ID token, with a maximum lifespan
+        of 1 hour.
+      - For SAML providers, the lifetime of the token is the minimum of session_duration
+        and the SessionNotOnOrAfter claim in the SAML assertion. If
+        session_duration is not set and the SAML assertion does not contain a
+        SessionNotOnOrAfter claim, it defaults to 1 hour.
+
+        If set, session duration must be between 2 minutes and 12 hours.
+        Organization administrators can further reduce the maximum
+        session_duration value using the iam-workloadIdentitySessionDuration
+        Resource Setting.
+
 workload_identity_pool_provider:
   display_name:
     api_field: workloadIdentityPoolProvider.displayName
@@ -229,6 +253,14 @@ workload_identity_pool_provider:
       //iam.googleapis.com/projects/<project-number>/locations/<location>/workloadIdentityPools/<pool-id>/providers/<provider-id>
       https://iam.googleapis.com/projects/<project-number>/locations/<location>/workloadIdentityPools/<pool-id>/providers/<provider-id>
       ```
+  saml_idp_metadata_path:
+    api_field: workloadIdentityPoolProvider.saml.idpMetadataXml
+    type: "googlecloudsdk.calliope.arg_parsers:FileContents:"
+    arg_name: idp-metadata-path
+    help_text: |-
+      XML file with configuration metadata for the SAML identity provider. The metadata file must
+      follow the
+      [SAML 2.0 metadata specification](https://www.oasis-open.org/committees/download.php/35391/sstc-saml-metadata-errata-2.0-wd-04-diff.pdf).
 
 workforce_pool:
   parent:

@@ -67,7 +67,7 @@ def ListFindingsSecurityMarksReqHook(ref, args, req):
   _ValidateMutexOnFindingAndSourceAndOrganization(args)
   finding_name = _GetFindingNameForParent(args)
   req.parent = GetSourceParentFromResourceName(finding_name)
-  req.filter = "name=\"" + finding_name + "\""
+  req.filter = "name : \"" + _GetFindingIdFromName(finding_name) + "\""
   return req
 
 

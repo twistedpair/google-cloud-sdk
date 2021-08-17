@@ -51,7 +51,6 @@ INSTANCES_LIST_FORMAT_ALPHA_BETA = """\
       createTime.date()
     )"""
 
-
 FILE_SHARE_ARG_SPEC = {
     'name':
         str,
@@ -62,7 +61,6 @@ FILE_SHARE_ARG_SPEC = {
     'nfs-export-options':
         list
 }
-
 
 FILE_TIER_TO_TYPE = {
     'TIER_UNSPECIFIED': 'BASIC',
@@ -78,10 +76,8 @@ FILE_TIER_TO_TYPE = {
 def AddAsyncFlag(parser):
   help_text = """Return immediately, without waiting for the operation
   in progress to complete."""
-  concepts.ResourceParameterAttributeConfig(name='async',
-                                            help_text=help_text)
-  base.ASYNC_FLAG.AddToParser(
-      parser)
+  concepts.ResourceParameterAttributeConfig(name='async', help_text=help_text)
+  base.ASYNC_FLAG.AddToParser(parser)
 
 
 def GetTierType(instance_tier):
@@ -114,6 +110,7 @@ def GetTierArg(messages, api_version):
   Args:
     messages: The messages module.
     api_version: filestore_client api version.
+
   Returns:
     the choice arg.
   """
@@ -182,15 +179,24 @@ def AddNetworkArg(parser, api_version):
         Network configuration for a Cloud Filestore instance. Specifying
         `reserved-ip-range` and `connect-mode` is optional.
         *name*::: The name of the Google Compute Engine
-        [VPC network](/compute/docs/networks-and-firewalls#networks) to which the
-        instance is connected.
-        *reserved-ip-range*::: A CIDR block in one of the internal IP address ranges (https://www.arin.net/knowledge/address_filters.html) that identifies the range of IP addresses reserved for this instance. Basic instances must use a /29 block and High Scale instances must use a /23 block.
-        For example, 10.0.0.0/29 for BASIC tier or 192.168.0.0/23 for HIGH_SCALE_SSD tier.
-        The range you specify can't overlap with either existing subnets or
-        assigned IP address ranges for other Cloud Filestore instances in the selected VPC network.
-        We recommend that you skip this field to allow Cloud Filestore to automatically find a free IP address range and assign it to the instance.
-        *connect-mode*::: Network connection mode used by instances. CONNECT_MODE must be one of:
-        DIRECT_PEERING or PRIVATE_SERVICE_ACCESS.
+        [VPC network](/compute/docs/networks-and-firewalls#networks) to which
+        the instance is connected.
+        *reserved-ip-range*::: The `reserved-ip-range` can have one of the
+        following two types of values: a CIDR range value when using
+        DIRECT_PEERING connect mode or an allocated IP address range
+        (https://cloud.google.com/compute/docs/ip-addresses/reserve-static-internal-ip-address)
+        when using PRIVATE_SERVICE_ACCESS connect mode. When the name of an
+        allocated IP address range is specified, it must be one of the ranges
+        associated with the private service access connection. When specified as
+        a direct CIDR value, it must be a /29 CIDR block for Basic tier or a /24
+        CIDR block for High Scale or Enterprise tier in one of the internal IP
+        address ranges (https://www.arin.net/knowledge/address_filters.html)
+        that identifies the range of IP addresses reserved for this instance.
+        For example, 10.0.0.0/29 or 192.168.0.0/24. The range you specify can't
+        overlap with either existing subnets or assigned IP address ranges for
+        other Cloud Filestore instances in the selected VPC network.
+        *connect-mode*::: Network connection mode used by instances.
+        CONNECT_MODE must be one of: DIRECT_PEERING or PRIVATE_SERVICE_ACCESS.
     """
   else:
     network_arg_spec = {

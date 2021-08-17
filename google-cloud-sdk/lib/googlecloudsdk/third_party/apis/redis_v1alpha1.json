@@ -224,7 +224,7 @@
     },
     "Instance": {
       "id": "Instance",
-      "description": "A Google Cloud Redis instance. next id = 40",
+      "description": "A Google Cloud Redis instance. next id = 41",
       "type": "object",
       "properties": {
         "name": {
@@ -393,6 +393,29 @@
           "description": "Output only. Published maintenance schedule.",
           "readOnly": true,
           "$ref": "MaintenanceSchedule"
+        },
+        "replicaCount": {
+          "description": "Optional. The number of replica nodes. Valid range for standard tier is [1-5] and defaults to 1. Valid value for basic tier is 0 and defaults to 0.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "readReplicasMode": {
+          "description": "Optional. Read replica mode.",
+          "type": "string",
+          "enumDescriptions": [
+            "If not set, redis backend would pick the mode based on other fields in the request.",
+            "If disabled, read endpoint will not be provided and the instance cannot scale up or down the number of replicas.",
+            "If enabled, read endpoint will be provided and the instance can scale up and down the number of replicas."
+          ],
+          "enum": [
+            "READ_REPLICAS_MODE_UNSPECIFIED",
+            "READ_REPLICAS_DISABLED",
+            "READ_REPLICAS_ENABLED"
+          ]
+        },
+        "customerManagedKey": {
+          "description": "The KMS key reference that the customer provides when trying to create the instance.",
+          "type": "string"
         }
       }
     },

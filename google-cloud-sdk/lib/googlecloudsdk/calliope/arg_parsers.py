@@ -935,7 +935,6 @@ class ArgList(ArgType):
               'dictionary flag values with special characters.')
       arg_list = _TokenizeQuotedList(arg_value, delim=delim)
 
-    # TODO(b/35944028): These exceptions won't present well to the user.
     if len(arg_list) < self.min_length:
       raise ArgumentTypeError('not enough args')
     if self.max_length is not None and len(arg_list) > self.max_length:

@@ -400,11 +400,11 @@ class HTMLRenderer(renderer.Renderer):
                         '{definition}</span></dt>\n<dd>\n'.format(
                             document_id=self.GetDocumentID(definition),
                             definition=definition))
-      elif self._level > 1 and 'dt' in self._pop[self._level - 1]:
+      elif self._level > 1 and 'dt' in self._pop[self._level]:
         self._out.write('<dd>\n')
       else:
         self._out.write('<dt><span class="normalfont">\n')
-        self._pop[self._level] = '</dt>\n</dl>\n'
+        self._pop[self._level] = '</span></dt>\n</dl>\n'
     else:  # definition is None
       # Bullet list item.
       if self._level < level:

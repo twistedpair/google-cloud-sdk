@@ -31,6 +31,7 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core.util import files
 
 import six
 
@@ -246,6 +247,19 @@ def PromptForTransferLockState(api_version, transfer_lock=None):
   return ParseTransferLockState(api_version, options[index])
 
 
+def PromptForAuthCode():
+  """Prompts the user to enter the auth code."""
+  message = ('Please provide the authorization code from the domain\'s current '
+             'registrar to transfer the domain.')
+
+  log.status.Print(message)
+  auth_code = console_io.PromptPassword(
+      prompt='Authorization code:  ',
+      error_message=' Authorization code must not be empty.',
+      validation_callable=ValidateNonEmpty)
+  return auth_code
+
+
 def TransformMoneyType(r):
   if r is None:
     return None
@@ -355,3 +369,20 @@ def WaitForOperation(api_version, response, asynchronous):
     response = operations_client.WaitForOperation(
         operation_ref, message.format(operation_ref.Name()))
   return response
+
+
+def ReadFileContents(path):
+  """Reads the text contents from the given path.
+
+  Args:
+    path: str, The file path to read.
+
+  Raises:
+    Error: If the file cannot be read.
+
+  Returns:
+    str, The text string read from the file.
+  """
+  if not path:
+    return None
+  return files.ReadFileContents(path)

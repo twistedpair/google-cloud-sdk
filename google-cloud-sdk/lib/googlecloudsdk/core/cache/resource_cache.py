@@ -533,13 +533,6 @@ class ResourceCache(PERSISTENT_CACHE_IMPLEMENTATION.Cache):
     return os.path.join(*path)
 
 
-def DeleteDeprecatedCache():
-  """Silently deletes the deprecated resource completion cache if it exists."""
-  cache_dir = config.Paths().completion_cache_dir
-  if os.path.isdir(cache_dir):
-    files.RmTree(cache_dir)
-
-
 def Delete(name=None):
   """Deletes the current persistent resource cache however it's implemented."""
   if not name:

@@ -29,9 +29,6 @@ properties:
     description: Unknown API fields that cannot be imported.
     items:
       type: string
-  authentication:
-    description: '[Deprecated] Use serverTlsPolicy and clientTlsPolicy instead.'
-    type: string
   authorizationPolicy:
     description: |-
       This field specifies the URL of AuthorizationPolicy resource that applies

@@ -110,7 +110,7 @@ class _AddressPatches(object):
     # A replacement for ssl.match_hostname(cert, hostname)
     # Since we'll be connecting with hostname as bare IP address, the goal is
     # to treat that as if it were the hostname `kubernetes.default`, which
-    # is what the GKE master asserts it is.
+    # is what the GKE control plane asserts it is.
     with self._lock:
       assert self._ip_to_host is not None
       if hostname in self._ip_to_host:
@@ -123,9 +123,9 @@ _AddressPatches.Initialize()
 def MonkeypatchAddressChecking(hostname, ip):
   """Manipulate SSL address checking so we can talk to GKE.
 
-  GKE provides an IP address for talking to the k8s master, and a
-  ca_certs that signs the tls certificate the master provides. Unfortunately,
-  that tls certificate is for `kubernetes`, `kubernetes.default`,
+  GKE provides an IP address for talking to the k8s control plane, and a
+  ca_certs that signs the tls certificate the control plane provides.
+  Unfortunately, that tls certificate is for `kubernetes`, `kubernetes.default`,
   `kubernetes.default.svc`, or `kubernetes.default.svc.cluster.local`.
 
   In Python 3, we do this by patching ssl.match_hostname to allow the
@@ -181,9 +181,9 @@ def ClusterConnectionInfo(cluster_ref):
     cluster_ref: reference to the cluster to connect to.
   Yields:
     A tuple of (endpoint, ca_certs), where endpoint is the ip address
-    of the GKE master, and ca_certs is the absolute path of a temporary file
-    (lasting the life of the python process) holding the ca_certs to connect to
-    the GKE cluster.
+    of the GKE control plane, and ca_certs is the absolute path of a temporary
+    file (lasting the life of the python process) holding the ca_certs to
+    connect to the GKE cluster.
   Raises:
     NoCaCertError: if the cluster is missing certificate authority data.
   """

@@ -167,7 +167,7 @@ class CloudBuildClientWithFiltering(cb_logs.CloudBuildClient):
   """Subclass of CloudBuildClient that allows filtering."""
 
   def StreamWithFilter(self, build_ref, backoff, output_filter=None):
-    """Stream the logs for a build using whitelist filter.
+    """Stream the logs for a build using allowlist filter.
 
     Args:
       build_ref: Build reference, The build whose logs shall be streamed.

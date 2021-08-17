@@ -1806,6 +1806,21 @@ class ListLocationsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class ListModulesResponse(_messages.Message):
+  r"""Response message for ModulesService.ListModules.
+
+  Fields:
+    modules: The list of modules.
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+    unreachable: Locations that could not be reached.
+  """
+
+  modules = _messages.MessageField('Module', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
 class ListOperationsResponse(_messages.Message):
   r"""The response message for Operations.ListOperations.
 
@@ -2887,6 +2902,86 @@ class MediaassetProjectsLocationsListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
 
 
+class MediaassetProjectsLocationsModulesCreateRequest(_messages.Message):
+  r"""A MediaassetProjectsLocationsModulesCreateRequest object.
+
+  Fields:
+    module: A Module resource to be passed as the request body.
+    moduleId: The ID of the module resource to be created.
+    parent: Required. The parent resource name, in the following form:
+      `projects/{project}/locations/{location}`.
+  """
+
+  module = _messages.MessageField('Module', 1)
+  moduleId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class MediaassetProjectsLocationsModulesDeleteRequest(_messages.Message):
+  r"""A MediaassetProjectsLocationsModulesDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the module to delete, in the following form:
+      `projects/{project}/locations/{location}/modules/{module}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class MediaassetProjectsLocationsModulesGetRequest(_messages.Message):
+  r"""A MediaassetProjectsLocationsModulesGetRequest object.
+
+  Fields:
+    name: Required. The name of the module to retrieve, in the following form:
+      `projects/{project}/locations/{location}/modules/{module}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class MediaassetProjectsLocationsModulesListRequest(_messages.Message):
+  r"""A MediaassetProjectsLocationsModulesListRequest object.
+
+  Fields:
+    filter: The filter to apply to list results.
+    orderBy: Specifies the ordering of results following syntax at
+      https://cloud.google.com/apis/design/design_patterns#sorting_order.
+    pageSize: The maximum number of items to return. If unspecified, server
+      will pick an appropriate default. Server may return fewer items than
+      requested. A caller should only rely on response's next_page_token to
+      determine if there are more realms left to be queried.
+    pageToken: The next_page_token value returned from a previous List
+      request, if any.
+    parent: Required. The parent resource name, in the following form:
+      `projects/{project}/locations/{location}`.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class MediaassetProjectsLocationsModulesPatchRequest(_messages.Message):
+  r"""A MediaassetProjectsLocationsModulesPatchRequest object.
+
+  Fields:
+    module: A Module resource to be passed as the request body.
+    name: The resource name of the module, in the following form:
+      `projects/{project}/locations/{location}/module/{module}`.
+    updateMask: Field mask is used to specify the fields to be overwritten in
+      the Module resource by the update. The fields specified in the
+      update_mask are relative to the resource, not the full request. A field
+      will be overwritten if it is in the mask. If the user does not provide a
+      mask then all fields will be overwritten.
+  """
+
+  module = _messages.MessageField('Module', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
 class MediaassetProjectsLocationsOperationsCancelRequest(_messages.Message):
   r"""A MediaassetProjectsLocationsOperationsCancelRequest object.
 
@@ -3140,6 +3235,50 @@ class MetadataInfo(_messages.Message):
 
   owner = _messages.StringField(1)
   updateTime = _messages.StringField(2)
+
+
+class Module(_messages.Message):
+  r"""A module specifies the data types used in assets.
+
+  Messages:
+    SchemaValue: The Open API schema that defines this module.
+
+  Fields:
+    createTime: Output only. The creation time of the module.
+    name: The resource name of the module, in the following form:
+      `projects/{project}/locations/{location}/module/{module}`.
+    schema: The Open API schema that defines this module.
+    updateTime: Output only. The last-modified time of the module.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class SchemaValue(_messages.Message):
+    r"""The Open API schema that defines this module.
+
+    Messages:
+      AdditionalProperty: An additional property for a SchemaValue object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a SchemaValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  name = _messages.StringField(2)
+  schema = _messages.MessageField('SchemaValue', 3)
+  updateTime = _messages.StringField(4)
 
 
 class NotificationConfig(_messages.Message):

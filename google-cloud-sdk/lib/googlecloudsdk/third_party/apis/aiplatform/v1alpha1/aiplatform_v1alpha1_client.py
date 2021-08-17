@@ -3824,7 +3824,7 @@ class AiplatformV1alpha1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.metadataStores.artifacts.patch',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['allowMissing', 'updateMask'],
+        query_params=['allowMissing'],
         relative_path='v1alpha1/{+name}',
         request_field='googleCloudAiplatformV1alpha1Artifact',
         request_type_name='AiplatformProjectsLocationsMetadataStoresArtifactsPatchRequest',
@@ -3996,7 +3996,7 @@ class AiplatformV1alpha1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.metadataStores.contexts.patch',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['allowMissing', 'updateMask'],
+        query_params=['allowMissing'],
         relative_path='v1alpha1/{+name}',
         request_field='googleCloudAiplatformV1alpha1Context',
         request_type_name='AiplatformProjectsLocationsMetadataStoresContextsPatchRequest',
@@ -4168,7 +4168,7 @@ class AiplatformV1alpha1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.metadataStores.executions.patch',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['allowMissing', 'updateMask'],
+        query_params=['allowMissing'],
         relative_path='v1alpha1/{+name}',
         request_field='googleCloudAiplatformV1alpha1Execution',
         request_type_name='AiplatformProjectsLocationsMetadataStoresExecutionsPatchRequest',
@@ -4241,7 +4241,7 @@ class AiplatformV1alpha1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single MetadataStore.
+      r"""Deletes a single MetadataStore and all its child resources (i.e. all Artifacts, Executions, Contexts).
 
       Args:
         request: (AiplatformProjectsLocationsMetadataStoresDeleteRequest) input message
@@ -7741,7 +7741,7 @@ class AiplatformV1alpha1(base_api.BaseApiClient):
       r"""Write time series data points into multiple TensorboardTimeSeries under a TensorboardRun. If any data fail to be ingested, an error will be returned.
 
       Args:
-        request: (AiplatformProjectsLocationsTensorboardsExperimentsRunsWriteRequest) input message
+        request: (GoogleCloudAiplatformV1alpha1WriteTensorboardRunDataRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (GoogleCloudAiplatformV1alpha1WriteTensorboardRunDataResponse) The response message.
@@ -7758,8 +7758,8 @@ class AiplatformV1alpha1(base_api.BaseApiClient):
         path_params=['tensorboardRun'],
         query_params=[],
         relative_path='v1alpha1/{+tensorboardRun}:write',
-        request_field='googleCloudAiplatformV1alpha1WriteTensorboardRunDataRequest',
-        request_type_name='AiplatformProjectsLocationsTensorboardsExperimentsRunsWriteRequest',
+        request_field='<request>',
+        request_type_name='GoogleCloudAiplatformV1alpha1WriteTensorboardRunDataRequest',
         response_type_name='GoogleCloudAiplatformV1alpha1WriteTensorboardRunDataResponse',
         supports_download=False,
     )
@@ -7906,6 +7906,33 @@ class AiplatformV1alpha1(base_api.BaseApiClient):
         request_field='googleCloudAiplatformV1alpha1TensorboardExperiment',
         request_type_name='AiplatformProjectsLocationsTensorboardsExperimentsPatchRequest',
         response_type_name='GoogleCloudAiplatformV1alpha1TensorboardExperiment',
+        supports_download=False,
+    )
+
+    def Write(self, request, global_params=None):
+      r"""Write time series data points of multiple TensorboardTimeSeries in multiple TensorboardRun's. If any data fail to be ingested, an error will be returned.
+
+      Args:
+        request: (AiplatformProjectsLocationsTensorboardsExperimentsWriteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1alpha1WriteTensorboardExperimentDataResponse) The response message.
+      """
+      config = self.GetMethodConfig('Write')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Write.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}:write',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.tensorboards.experiments.write',
+        ordered_params=['tensorboardExperiment'],
+        path_params=['tensorboardExperiment'],
+        query_params=[],
+        relative_path='v1alpha1/{+tensorboardExperiment}:write',
+        request_field='googleCloudAiplatformV1alpha1WriteTensorboardExperimentDataRequest',
+        request_type_name='AiplatformProjectsLocationsTensorboardsExperimentsWriteRequest',
+        response_type_name='GoogleCloudAiplatformV1alpha1WriteTensorboardExperimentDataResponse',
         supports_download=False,
     )
 

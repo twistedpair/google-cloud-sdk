@@ -969,6 +969,24 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
+class GenerateSupportBundleRequest(_messages.Message):
+  r"""Request message for SoftwareDefinedDataCenterCLH.GenerateSupportBundle.
+
+  Fields:
+    allEsxiNodes: Required. If True, generate the support bundle of all ESXi
+      nodes.
+    esxiNodeNames: Optional. If all_esxi_nodes is not true, generate the
+      support bundle of specified ESXi nodes.
+    nsxt: Required. If True, generate the support bundle of NSX-T.
+    vcenter: Required. If True, generate the support bundle of vCenter.
+  """
+
+  allEsxiNodes = _messages.BooleanField(1)
+  esxiNodeNames = _messages.StringField(2, repeated=True)
+  nsxt = _messages.BooleanField(3)
+  vcenter = _messages.BooleanField(4)
+
+
 class GoogleLongrunningCancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
@@ -2758,6 +2776,21 @@ class SddcProjectsLocationsClusterGroupsDeleteRequest(_messages.Message):
 
   name = _messages.StringField(1, required=True)
   requestId = _messages.StringField(2)
+
+
+class SddcProjectsLocationsClusterGroupsGenerateSupportBundleRequest(_messages.Message):
+  r"""A SddcProjectsLocationsClusterGroupsGenerateSupportBundleRequest object.
+
+  Fields:
+    clusterGroup: Required. The resource name of the cluster group. For
+      example, Format: `projects/{PROJECT-NUMBER}/locations/us-
+      central1/clusterGroups/{MY_GROUP}`
+    generateSupportBundleRequest: A GenerateSupportBundleRequest resource to
+      be passed as the request body.
+  """
+
+  clusterGroup = _messages.StringField(1, required=True)
+  generateSupportBundleRequest = _messages.MessageField('GenerateSupportBundleRequest', 2)
 
 
 class SddcProjectsLocationsClusterGroupsGetIamPolicyRequest(_messages.Message):

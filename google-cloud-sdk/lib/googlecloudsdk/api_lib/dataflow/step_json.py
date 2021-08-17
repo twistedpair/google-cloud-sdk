@@ -29,7 +29,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import six
-_BLACKLISTED_PROPERTIES = set(['serialized_fn'])
+_EXCLUDED_PROPERTIES = set(['serialized_fn'])
 
 _VALUE_RETRIEVERS = {
     'http://schema.org/Boolean': lambda value: value.boolean_value,
@@ -48,7 +48,7 @@ def _ExtractStep(step_msg):
   properties = {}
   if step_msg.properties:
     for prop in step_msg.properties.additionalProperties:
-      if prop.key not in _BLACKLISTED_PROPERTIES:
+      if prop.key not in _EXCLUDED_PROPERTIES:
         properties[prop.key] = _ExtractValue(prop.value)
 
   return {

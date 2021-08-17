@@ -2449,10 +2449,6 @@
           "items": {
             "$ref": "TcpRouteRouteDestination"
           }
-        },
-        "faultInjectionPolicy": {
-          "description": "Optional. The specification for fault injection introduced into traffic to test the resiliency of clients to backend service failure. As part of fault injection, when clients send requests to a backend service, delays can be introduced on a percentage of requests before sending those requests to the backend service. idleTimeout and maxDownstreamConnectionDuration will be ignored by clients that are configured with a faultInjectionPolicy.",
-          "$ref": "TcpRouteFaultInjectionPolicy"
         }
       }
     },
@@ -2469,66 +2465,6 @@
           "description": "Optional. Specifies the proportion of requests forwareded to the backend referenced by the service_name field. This is computed as: weight\/Sum(weights in destinations) Weights in all destinations should sum up to 100.",
           "type": "integer",
           "format": "int32"
-        }
-      }
-    },
-    "TcpRouteFaultInjectionPolicy": {
-      "id": "TcpRouteFaultInjectionPolicy",
-      "description": "Configuration for fault injection.",
-      "type": "object",
-      "properties": {
-        "delay": {
-          "description": "Optional. The specification for how client requests are delayed as part of fault injection, before being sent to a destination.",
-          "$ref": "TcpRouteFaultInjectionPolicyDelay"
-        },
-        "ratelimit": {
-          "description": "Optional. The specification for how client requests are rate limited as part of fault injection, before being sent to a destination.",
-          "$ref": "TcpRouteFaultInjectionPolicyRateLimit"
-        }
-      }
-    },
-    "TcpRouteFaultInjectionPolicyDelay": {
-      "id": "TcpRouteFaultInjectionPolicyDelay",
-      "description": "The specification for how client requests are delayed as part of fault injection, before being sent to a destination.",
-      "type": "object",
-      "properties": {
-        "fixedDelay": {
-          "description": "Required. Specified fixed delay. At least one fixed_delay is required.",
-          "type": "string",
-          "format": "google-duration"
-        },
-        "percentage": {
-          "description": "Optional. The percentage of traffic (connections\/operations\/requests) on which delay will be introduced as part of fault injection. The value must be between 0 and 100 inclusive.",
-          "type": "integer",
-          "format": "int32"
-        }
-      }
-    },
-    "TcpRouteFaultInjectionPolicyRateLimit": {
-      "id": "TcpRouteFaultInjectionPolicyRateLimit",
-      "description": "The specification for how client requests are rate limited as part of fault injection, before being sent to a destination.",
-      "type": "object",
-      "properties": {
-        "fixedLimit": {
-          "description": "Optional. Describes a fixed\/constant rate limit.",
-          "$ref": "TcpRouteFaultInjectionPolicyRateLimitFixedLimit"
-        },
-        "percentage": {
-          "description": "Optional. The percentage of operations\/connections\/requests on which the rate limit will be injected. The value must be between 0 and 100 inclusive.",
-          "type": "integer",
-          "format": "int32"
-        }
-      }
-    },
-    "TcpRouteFaultInjectionPolicyRateLimitFixedLimit": {
-      "id": "TcpRouteFaultInjectionPolicyRateLimitFixedLimit",
-      "description": "Describes a fixed\/constant rate limit.",
-      "type": "object",
-      "properties": {
-        "limitKbps": {
-          "description": "Required. The limit supplied in KiB\/s.",
-          "type": "string",
-          "format": "int64"
         }
       }
     },

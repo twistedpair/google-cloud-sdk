@@ -77,8 +77,7 @@ class CoreRuntimeLoader(object):
     self._allowed_runtime_names = allowed_runtime_names
 
   # These need to be named this way because they're constants in the
-  # non-externalized implementation.  TODO(b/25117700) change the names once
-  # the old implementation go away.
+  # non-externalized implementation.
   # pylint:disable=invalid-name
   @property
   def ALLOWED_RUNTIME_NAMES(self):

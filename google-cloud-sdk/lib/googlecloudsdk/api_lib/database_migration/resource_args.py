@@ -12,7 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Shared resource flags for Database Migration Service commands."""
 
 from __future__ import absolute_import
@@ -26,24 +25,17 @@ from googlecloudsdk.command_lib.util.concepts import presentation_specs
 
 def ConnectionProfileAttributeConfig(name='connection_profile'):
   return concepts.ResourceParameterAttributeConfig(
-      name=name,
-      help_text='The connection profile of the {resource}.',
-      completion_request_params={'fieldMask': 'name'},
-      completion_id_field='id')
+      name=name, help_text='The connection profile of the {resource}.')
 
 
 def MigrationJobAttributeConfig(name='migration_job'):
   return concepts.ResourceParameterAttributeConfig(
-      name=name,
-      help_text='The migration job of the {resource}.',
-      completion_request_params={'fieldMask': 'name'},
-      completion_id_field='id')
+      name=name, help_text='The migration job of the {resource}.')
 
 
 def RegionAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='region',
-      help_text='The Cloud region for the {resource}.')
+      name='region', help_text='The Cloud region for the {resource}.')
 
 
 def GetRegionResourceSpec(resource_name='region'):
@@ -107,20 +99,19 @@ def AddCloudSqlConnectionProfileResouceArgs(parser, verb):
           'connection_profile',
           GetConnectionProfileResourceSpec(),
           'The connection profile {}.'.format(verb),
-          required=True
-      ),
+          required=True),
       presentation_specs.ResourcePresentationSpec(
           '--source-id',
           GetConnectionProfileResourceSpec(),
           'Database Migration Service source connection profile ID.',
           required=True,
-          flag_name_overrides={'region': ''}
-      ),
+          flag_name_overrides={'region': ''}),
   ]
   concept_parsers.ConceptParser(
       resource_specs,
-      command_level_fallthroughs={'--source-id.region': ['--region']}
-  ).AddToParser(parser)
+      command_level_fallthroughs={
+          '--source-id.region': ['--region']
+      }).AddToParser(parser)
 
 
 def AddMigrationJobResourceArgs(parser, verb, required=False):
@@ -136,22 +127,19 @@ def AddMigrationJobResourceArgs(parser, verb, required=False):
           'migration_job',
           GetMigrationJobResourceSpec(),
           'The migration job {}.'.format(verb),
-          required=True
-      ),
+          required=True),
       presentation_specs.ResourcePresentationSpec(
           '--source',
           GetConnectionProfileResourceSpec(),
           'Resource ID of the source connection profile.',
           required=required,
-          flag_name_overrides={'region': ''}
-      ),
+          flag_name_overrides={'region': ''}),
       presentation_specs.ResourcePresentationSpec(
           '--destination',
           GetConnectionProfileResourceSpec(),
           'Resource ID of the destination connection profile.',
           required=required,
-          flag_name_overrides={'region': ''}
-      )
+          flag_name_overrides={'region': ''})
   ]
   concept_parsers.ConceptParser(
       resource_specs,

@@ -575,6 +575,86 @@
         }
       }
     },
+    "Preview": {
+      "id": "Preview",
+      "description": "Preview message contains preview results.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. Resource name of the preview. Format: `projects\/{project}\/locations\/{location}\/previews\/{preview}`",
+          "readOnly": true,
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. Time the preview was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "applyInput": {
+          "description": "Input parameters for preview of apply operation.",
+          "$ref": "ApplyInput"
+        },
+        "deleteInput": {
+          "description": "Input parameters for preview of delete operation.",
+          "$ref": "DeleteInput"
+        },
+        "previewResults": {
+          "description": "Output only. Locations of outputs from preview operation.",
+          "readOnly": true,
+          "$ref": "PreviewResults"
+        }
+      }
+    },
+    "ApplyInput": {
+      "id": "ApplyInput",
+      "description": "Input parameters for preview of apply operation.",
+      "type": "object",
+      "properties": {
+        "blueprint": {
+          "description": "Required. Blueprint to preview.",
+          "$ref": "Blueprint"
+        },
+        "deployment": {
+          "description": "Deployment to dry-run modification to during preview. For preview of new deployment this could be left empty. For preview modifications to existing deployment this must match an existing deployment, otherwise this will be considered as a new deployment. Format: `projects\/{project}\/locations\/{location}\/deployments\/{deployment}`",
+          "type": "string"
+        }
+      }
+    },
+    "DeleteInput": {
+      "id": "DeleteInput",
+      "description": "Input parameters for preview of delete operation.",
+      "type": "object",
+      "properties": {
+        "deployment": {
+          "description": "Required. Name of existing deployment to preview its deletion. Format: `projects\/{project}\/locations\/{location}\/deployments\/{deployment}`",
+          "type": "string"
+        }
+      }
+    },
+    "PreviewResults": {
+      "id": "PreviewResults",
+      "description": "Locations of outputs from config preview.",
+      "type": "object",
+      "properties": {
+        "content": {
+          "description": "Location of generated preview data in Google Cloud Storage. Format: `gs:\/\/{bucket}\/{object}`",
+          "type": "string"
+        },
+        "logs": {
+          "description": "Location of logs in Google Cloud Storage. Format: `gs:\/\/{bucket}\/{object}`",
+          "type": "string"
+        },
+        "artifacts": {
+          "description": "Location of kpt artifacts in Google Cloud Storage. Format: `gs:\/\/{bucket}\/{object}`",
+          "type": "string"
+        },
+        "build": {
+          "description": "Name of the corresponding Cloud Build run. Format: `projects\/{project}\/locations\/{location}\/builds\/{build}` See https:\/\/cloud.google.com\/build\/docs\/api\/reference\/rest\/v1\/projects.builds\/get#query-parameters for how to get build details.",
+          "type": "string"
+        }
+      }
+    },
     "ListLocationsResponse": {
       "id": "ListLocationsResponse",
       "description": "The response message for Locations.ListLocations.",
@@ -1421,6 +1501,43 @@
                       "description": "Gets details of a single Deployment."
                     }
                   }
+                }
+              }
+            },
+            "previews": {
+              "methods": {
+                "create": {
+                  "id": "config.projects.locations.previews.create",
+                  "path": "v1alpha1/{+parent}/previews",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/previews",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent in whose context the Preview is created. The parent value is in the format: 'projects\/{project_id}\/locations\/{location}'.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "Preview"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a new Preview in a given project and location."
                 }
               }
             }

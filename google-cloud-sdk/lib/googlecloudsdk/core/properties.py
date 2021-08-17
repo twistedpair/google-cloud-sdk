@@ -30,12 +30,12 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core.configurations import named_configs
 from googlecloudsdk.core.configurations import properties_file as prop_files_lib
 from googlecloudsdk.core.docker import constants as const_lib
+from googlecloudsdk.core.feature_flags import parse as feature_flags_parse
 from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import http_proxy_types
 from googlecloudsdk.core.util import scaled_integer
 from googlecloudsdk.core.util import times
-
 import six
 
 # Try to parse the command line flags at import time to see if someone provided
@@ -96,6 +96,9 @@ _VALID_ENDPOINT_OVERRIDE_REGEX = re.compile(
 _PUBSUB_NOTICE_URL = (
     'https://cloud.google.com/functions/docs/writing/background#event_parameter'
 )
+
+# TODO(b/195728382) Change the _FEATURE_FLAG_YAML_URL constant to correct URL
+_FEATURE_FLAG_YAML_URL = 'http://www.gstatic.com/cloudsdk/test_push.yaml'
 
 
 def Stringize(value):
@@ -689,7 +692,8 @@ class _Section(object):
            validator=None,
            choices=None,
            completer=None,
-           default_flag=None):
+           default_flag=None,
+           is_feature_flag=None):
     prop = _Property(
         section=self.__name,
         name=name,
@@ -701,7 +705,8 @@ class _Section(object):
         validator=validator,
         choices=choices,
         completer=completer,
-        default_flag=default_flag)
+        default_flag=default_flag,
+        is_feature_flag=is_feature_flag)
     self.__properties[name] = prop
     return prop
 
@@ -1403,6 +1408,16 @@ class _SectionCore(_Section):
         help_text='If true, this prevents log_http from printing access tokens.'
         ' This property does not have effect unless log_http is true.',
         default=True,
+        hidden=True)
+    self.log_http_show_request_body = self._AddBool(
+        'log_http_show_request_body',
+        help_text='If true, this allows log_http to print the request body'
+        ' for debugging purposes on requests with the'
+        ' "redact_request_body_reason" parameter set on '
+        ' core.credentials.transports.GetApitoolsTransports.'
+        ' Note: this property does not have any effect unless'
+        ' log_http is true.',
+        default=False,
         hidden=True)
     self.log_http_streaming_body = self._AddBool(
         'log_http_streaming_body',
@@ -2853,6 +2868,9 @@ class _Property(object):
       was invalid.
     choices: [str], The allowable values for this property.  This is included in
       the help text and used in tab completion.
+    is_feature_flag: bool, True to enable feature flags. False to disable
+      feature bool, if True, this property is a feature flag property. See
+      go/cloud-sdk-feature-flags for more information.
   """
 
   def __init__(self,
@@ -2866,7 +2884,8 @@ class _Property(object):
                validator=None,
                choices=None,
                completer=None,
-               default_flag=None):
+               default_flag=None,
+               is_feature_flag=None):
     self.__section = section
     self.__name = name
     self.__help_text = help_text
@@ -2878,6 +2897,7 @@ class _Property(object):
     self.__choices = choices
     self.__completer = completer
     self.__default_flag = default_flag
+    self.__is_feature_flag = is_feature_flag
 
   @property
   def section(self):
@@ -2918,6 +2938,10 @@ class _Property(object):
   @property
   def default_flag(self):
     return self.__default_flag
+
+  @property
+  def is_feature_flag(self):
+    return self.__is_feature_flag
 
   def __hash__(self):
     return hash(self.section) + hash(self.name)
@@ -3281,6 +3305,34 @@ def _GetProperty(prop, properties_file, required):
   return None
 
 
+def FetchYaml(url):
+  # pylint: disable=g-import-not-at-top
+  from googlecloudsdk.core import requests
+  yaml_request = requests.GetSession()
+  yaml_data = yaml_request.get(url)
+
+  return yaml_data.text
+
+_feature_flag_config = None
+
+
+def GetValueFromFeatureFlag(prop):
+  """Gets the property value from the Feature Flags yaml.
+
+  Args:
+    prop: The property to get
+
+  Returns:
+    str, the value of the property, or None if it is not set.
+  """
+  global _feature_flag_config
+  if not _feature_flag_config:
+    _feature_flag_config = feature_flags_parse.FeatureFlagsConfig(
+        FetchYaml(_FEATURE_FLAG_YAML_URL))
+
+  return _feature_flag_config.Get(prop)
+
+
 def _GetPropertyWithoutDefault(prop, properties_file):
   """Gets the given property without using a default.
 
@@ -3307,6 +3359,9 @@ def _GetPropertyWithoutDefault(prop, properties_file):
     value = callback()
     if value is not None:
       return Stringize(value)
+  # Feature Flag callback
+  if prop.is_feature_flag:
+    return GetValueFromFeatureFlag(prop)
 
   return None
 

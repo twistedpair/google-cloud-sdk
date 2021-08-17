@@ -56,7 +56,6 @@ class ConceptManager(object):
     Args:
       concept: base.Concept, an instantiated concept.
     """
-    # TODO(b/111358110): Handle command-level fallthroughs to other concepts.
     self.concepts.append(concept)
 
   def AddToParser(self, parser):

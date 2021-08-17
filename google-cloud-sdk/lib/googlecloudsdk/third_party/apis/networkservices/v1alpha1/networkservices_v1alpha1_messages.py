@@ -4848,78 +4848,15 @@ class TcpRoute(_messages.Message):
   updateTime = _messages.StringField(5)
 
 
-class TcpRouteFaultInjectionPolicy(_messages.Message):
-  r"""Configuration for fault injection.
-
-  Fields:
-    delay: Optional. The specification for how client requests are delayed as
-      part of fault injection, before being sent to a destination.
-    ratelimit: Optional. The specification for how client requests are rate
-      limited as part of fault injection, before being sent to a destination.
-  """
-
-  delay = _messages.MessageField('TcpRouteFaultInjectionPolicyDelay', 1)
-  ratelimit = _messages.MessageField('TcpRouteFaultInjectionPolicyRateLimit', 2)
-
-
-class TcpRouteFaultInjectionPolicyDelay(_messages.Message):
-  r"""The specification for how client requests are delayed as part of fault
-  injection, before being sent to a destination.
-
-  Fields:
-    fixedDelay: Required. Specified fixed delay. At least one fixed_delay is
-      required.
-    percentage: Optional. The percentage of traffic
-      (connections/operations/requests) on which delay will be introduced as
-      part of fault injection. The value must be between 0 and 100 inclusive.
-  """
-
-  fixedDelay = _messages.StringField(1)
-  percentage = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-
-
-class TcpRouteFaultInjectionPolicyRateLimit(_messages.Message):
-  r"""The specification for how client requests are rate limited as part of
-  fault injection, before being sent to a destination.
-
-  Fields:
-    fixedLimit: Optional. Describes a fixed/constant rate limit.
-    percentage: Optional. The percentage of operations/connections/requests on
-      which the rate limit will be injected. The value must be between 0 and
-      100 inclusive.
-  """
-
-  fixedLimit = _messages.MessageField('TcpRouteFaultInjectionPolicyRateLimitFixedLimit', 1)
-  percentage = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-
-
-class TcpRouteFaultInjectionPolicyRateLimitFixedLimit(_messages.Message):
-  r"""Describes a fixed/constant rate limit.
-
-  Fields:
-    limitKbps: Required. The limit supplied in KiB/s.
-  """
-
-  limitKbps = _messages.IntegerField(1)
-
-
 class TcpRouteRouteAction(_messages.Message):
   r"""The specifications for routing traffic and applying associated policies.
 
   Fields:
     destinations: Required. The destination services to which traffic should
       be forwarded. At least one destination service is required.
-    faultInjectionPolicy: Optional. The specification for fault injection
-      introduced into traffic to test the resiliency of clients to backend
-      service failure. As part of fault injection, when clients send requests
-      to a backend service, delays can be introduced on a percentage of
-      requests before sending those requests to the backend service.
-      idleTimeout and maxDownstreamConnectionDuration will be ignored by
-      clients that are configured with a faultInjectionPolicy.
   """
 
   destinations = _messages.MessageField('TcpRouteRouteDestination', 1, repeated=True)
-  faultInjectionPolicy = _messages.MessageField('TcpRouteFaultInjectionPolicy', 2)
 
 
 class TcpRouteRouteDestination(_messages.Message):

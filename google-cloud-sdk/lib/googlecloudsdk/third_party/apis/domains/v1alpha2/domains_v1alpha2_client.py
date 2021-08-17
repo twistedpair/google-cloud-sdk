@@ -469,6 +469,33 @@ class DomainsV1alpha2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def RetrieveTransferParameters(self, request, global_params=None):
+      r"""Gets parameters needed to transfer a domain name from another registrar to Cloud Domains. For domains already managed by [Google Domains](https://domains.google/), use `ImportDomain` instead. Use the returned values to call `TransferDomain`.
+
+      Args:
+        request: (DomainsProjectsLocationsRegistrationsRetrieveTransferParametersRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (RetrieveTransferParametersResponse) The response message.
+      """
+      config = self.GetMethodConfig('RetrieveTransferParameters')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RetrieveTransferParameters.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/registrations:retrieveTransferParameters',
+        http_method='GET',
+        method_id='domains.projects.locations.registrations.retrieveTransferParameters',
+        ordered_params=['location'],
+        path_params=['location'],
+        query_params=['domainName'],
+        relative_path='v1alpha2/{+location}/registrations:retrieveTransferParameters',
+        request_field='',
+        request_type_name='DomainsProjectsLocationsRegistrationsRetrieveTransferParametersRequest',
+        response_type_name='RetrieveTransferParametersResponse',
+        supports_download=False,
+    )
+
     def SearchDomains(self, request, global_params=None):
       r"""Searches for available domain names similar to the provided query. Availability results from this method are approximate; call `RetrieveRegisterParameters` on a domain before registering to confirm availability.
 
@@ -547,6 +574,33 @@ class DomainsV1alpha2(base_api.BaseApiClient):
         request_field='testIamPermissionsRequest',
         request_type_name='DomainsProjectsLocationsRegistrationsTestIamPermissionsRequest',
         response_type_name='TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
+    def Transfer(self, request, global_params=None):
+      r"""Transfers a domain name from another registrar to Cloud Domains. For domains already managed by [Google Domains](https://domains.google/), use `ImportDomain` instead. Before calling this method, go to the domain's current registrar to unlock the domain for transfer and retrieve the domain's transfer authorization code. Then call `RetrieveTransferParameters` to confirm that the domain is unlocked and to get values needed to build a call to this method. A successful call creates a `Registration` resource in state `TRANSFER_PENDING`. To complete the transfer, the registrant must approve the transfer through an email sent by the current registrar. A few minutes after transfer approval, the resource transitions to state `ACTIVE`, indicating that the transfer was successful. If the transfer is rejected or the request expires without being approved, the resource can end up in state `TRANSFER_FAILED`. If transfer fails, you can safely delete the resource and retry the transfer.
+
+      Args:
+        request: (DomainsProjectsLocationsRegistrationsTransferRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Transfer')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Transfer.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/registrations:transfer',
+        http_method='POST',
+        method_id='domains.projects.locations.registrations.transfer',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1alpha2/{+parent}/registrations:transfer',
+        request_field='transferDomainRequest',
+        request_type_name='DomainsProjectsLocationsRegistrationsTransferRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

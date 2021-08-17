@@ -90,7 +90,8 @@ class ModelsClient(object):
                container_env_vars=None,
                container_ports=None,
                container_predict_route=None,
-               container_health_route=None):
+               container_health_route=None,
+               explanation_spec=None):
     """Constructs, sends an UploadModel request and returns the LRO to be done."""
     container_spec = self.messages.GoogleCloudAiplatformV1ModelContainerSpec(
         healthRoute=container_health_route,
@@ -115,7 +116,8 @@ class ModelsClient(object):
         artifactUri=artifact_uri,
         containerSpec=container_spec,
         description=description,
-        displayName=display_name)
+        displayName=display_name,
+        explanationSpec=explanation_spec)
 
     return self._service.Upload(
         self.messages.AiplatformProjectsLocationsModelsUploadRequest(

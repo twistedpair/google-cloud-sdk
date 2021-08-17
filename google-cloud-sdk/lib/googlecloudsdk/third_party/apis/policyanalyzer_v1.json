@@ -160,12 +160,12 @@
       "type": "object",
       "properties": {
         "startTime": {
-          "description": "The observation start time.",
+          "description": "The observation start time. The time in this timestamp is always `07:00:00Z`.",
           "type": "string",
           "format": "google-datetime"
         },
         "endTime": {
-          "description": "The observation end time.",
+          "description": "The observation end time. The time in this timestamp is always `07:00:00Z`.",
           "type": "string",
           "format": "google-datetime"
         }
@@ -188,14 +188,14 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The container resource on which to execute the request. Acceptable formats: `projects\/[PROJECT_ID|PROJECT_NUMBER]\/locations\/[LOCATION]\/activityTypes\/[ACTIVITY_TYPE]` LOCATION here refers to GCP Locations: https:\/\/cloud.google.com\/about\/locations\/",
+                          "description": "Required. The container resource on which to execute the request. Acceptable formats: `projects\/[PROJECT_ID|PROJECT_NUMBER]\/locations\/[LOCATION]\/activityTypes\/[ACTIVITY_TYPE]` LOCATION here refers to Google Cloud Locations: https:\/\/cloud.google.com\/about\/locations\/",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/activityTypes\/[^\/]+$",
                           "location": "path",
                           "required": true,
                           "type": "string"
                         },
                         "filter": {
-                          "description": "Optional. Optional filter expression to restrict the activities returned. Supported filters are: - service_account_last_authn.full_resource_name {=} - service_account_key_last_authn.full_resource_name {=} ",
+                          "description": "Optional. Filter expression to restrict the activities returned. Supported filters are: - service_account_last_authn.full_resource_name {=} [STRING] - service_account_key_last_authn.full_resource_name {=} [STRING]",
                           "location": "query",
                           "type": "string"
                         },
@@ -220,7 +220,7 @@
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
-                      "description": "Queries policy activities on GCP resources."
+                      "description": "Queries policy activities on Google Cloud resources."
                     }
                   }
                 }

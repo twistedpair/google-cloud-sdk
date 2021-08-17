@@ -20,21 +20,51 @@ from __future__ import unicode_literals
 
 import re
 
+from googlecloudsdk.command_lib.scc.hooks import CleanUpUserInput
 from googlecloudsdk.command_lib.scc.hooks import InvalidSCCInputError
 
 
 def CreateMuteConfigReqHook(ref, args, req):
-  """Generate a mute config."""
+  """Generates a mute config."""
   del ref
   req.parent = _ValidateAndGetParent(args)
   args.filter = ""
   return req
 
 
+def DeleteMuteConfigReqHook(ref, args, req):
+  """Deletes a mute config."""
+  del ref
+  parent = _ValidateAndGetParent(args)
+  mute_config_id = _ValidateAndGetMuteConfigId(args)
+  req.name = parent + "/muteConfigs/" + mute_config_id
+  return req
+
+
+def GetMuteConfigReqHook(ref, args, req):
+  """Gets a mute config."""
+  del ref
+  parent = _ValidateAndGetParent(args)
+  mute_config_id = _ValidateAndGetMuteConfigId(args)
+  req.name = parent + "/muteConfigs/" + mute_config_id
+  return req
+
+
 def ListMuteConfigsReqHook(ref, args, req):
-  """Generate a mute config."""
+  """Lists mute configs."""
   del ref
   req.parent = _ValidateAndGetParent(args)
+  return req
+
+
+def UpdateMuteConfigReqHook(ref, args, req):
+  """Updates a mute config."""
+  del ref
+  parent = _ValidateAndGetParent(args)
+  mute_config_id = _ValidateAndGetMuteConfigId(args)
+  req.name = parent + "/muteConfigs/" + mute_config_id
+  req.updateMask = CleanUpUserInput(req.updateMask)
+  args.filter = ""
   return req
 
 
@@ -80,3 +110,14 @@ def _ValidateAndGetParent(args):
         return args.project
     else:
       return "projects/" + args.project
+
+
+def _ValidateAndGetMuteConfigId(args):
+  """Validate muteConfigId."""
+  mute_config_id = args.muteConfigId
+  pattern = re.compile("^[0-9]{1,20}$")
+  if not pattern.match(mute_config_id):
+    raise InvalidSCCInputError(
+        "Mute config id does not match the pattern '^[0-9]{1,20}$'.")
+  else:
+    return mute_config_id

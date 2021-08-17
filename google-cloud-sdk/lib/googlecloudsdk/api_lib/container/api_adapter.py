@@ -561,7 +561,7 @@ class CreateClusterOptions(object):
       reservation=None,
       autoprovisioning_min_cpu_platform=None,
       enable_master_global_access=None,
-      enable_gvnic=None,
+      gvnic=None,
       enable_master_metrics=None,
       master_logs=None,
       release_channel=None,
@@ -709,7 +709,7 @@ class CreateClusterOptions(object):
     self.reservation = reservation
     self.autoprovisioning_min_cpu_platform = autoprovisioning_min_cpu_platform
     self.enable_master_global_access = enable_master_global_access
-    self.enable_gvnic = enable_gvnic
+    self.gvnic = gvnic
     self.enable_master_metrics = enable_master_metrics
     self.master_logs = master_logs
     self.release_channel = release_channel
@@ -812,7 +812,6 @@ class UpdateClusterOptions(object):
                tpu_ipv4_cidr=None,
                enable_master_global_access=None,
                enable_tpu_service_networking=None,
-               enable_gvnic=None,
                notification_config=None,
                private_ipv6_google_access_type=None,
                kubernetes_objects_changes_target=None,
@@ -902,7 +901,6 @@ class UpdateClusterOptions(object):
     self.tpu_ipv4_cidr = tpu_ipv4_cidr
     self.enable_tpu_service_networking = enable_tpu_service_networking
     self.enable_master_global_access = enable_master_global_access
-    self.enable_gvnic = enable_gvnic
     self.notification_config = notification_config
     self.private_ipv6_google_access_type = private_ipv6_google_access_type
     self.kubernetes_objects_changes_target = kubernetes_objects_changes_target
@@ -984,6 +982,7 @@ class CreateNodePoolOptions(object):
                node_group=None,
                enable_gcfs=None,
                enable_image_streaming=None,
+               gvnic=None,
                pod_ipv4_range=None,
                create_pod_ipv4_range=None,
                enable_private_nodes=None,
@@ -1032,6 +1031,7 @@ class CreateNodePoolOptions(object):
     self.node_group = node_group
     self.enable_gcfs = enable_gcfs
     self.enable_image_streaming = enable_image_streaming
+    self.gvnic = gvnic
     self.pod_ipv4_range = pod_ipv4_range
     self.create_pod_ipv4_range = create_pod_ipv4_range
     self.enable_private_nodes = enable_private_nodes
@@ -1059,6 +1059,7 @@ class UpdateNodePoolOptions(object):
                tags=None,
                enable_private_nodes=None,
                enable_gcfs=None,
+               gvnic=None,
                enable_image_streaming=None):
     self.enable_autorepair = enable_autorepair
     self.enable_autoupgrade = enable_autoupgrade
@@ -1077,6 +1078,7 @@ class UpdateNodePoolOptions(object):
     self.tags = tags
     self.enable_private_nodes = enable_private_nodes
     self.enable_gcfs = enable_gcfs
+    self.gvnic = gvnic
     self.enable_image_streaming = enable_image_streaming
 
   def IsAutoscalingUpdate(self):
@@ -1097,7 +1099,7 @@ class UpdateNodePoolOptions(object):
             self.system_config_from_file is not None or
             self.node_labels is not None or self.node_taints is not None or
             self.tags is not None or self.enable_private_nodes is not None or
-            self.enable_gcfs is not None or
+            self.enable_gcfs is not None or self.gvnic is not None or
             self.enable_image_streaming is not None)
 
 
@@ -1497,9 +1499,6 @@ class APIAdapter(object):
           keyName=options.database_encryption_key,
           state=self.messages.DatabaseEncryption.StateValueValuesEnum.ENCRYPTED)
 
-    if options.enable_gvnic:
-      cluster.enableGvnic = options.enable_gvnic
-
     if options.boot_disk_kms_key:
       for pool in cluster.nodePools:
         pool.config.bootDiskKmsKey = options.boot_disk_kms_key
@@ -1604,6 +1603,10 @@ class APIAdapter(object):
     if options.threads_per_core:
       node_config.advancedMachineFeatures = self.messages.AdvancedMachineFeatures(
           threadsPerCore=options.threads_per_core)
+
+    if options.gvnic is not None:
+      gvnic = self.messages.VirtualNIC(enabled=options.gvnic)
+      node_config.gvnic = gvnic
 
     return node_config
 
@@ -2349,9 +2352,6 @@ class APIAdapter(object):
       update = self.messages.ClusterUpdate(
           desiredTpuConfig=_GetTpuConfigForClusterUpdate(
               options, self.messages))
-    if options.enable_gvnic is not None:
-      update = self.messages.ClusterUpdate(
-          desiredEnableGvnic=options.enable_gvnic)
 
     if options.release_channel is not None:
       update = self.messages.ClusterUpdate(
@@ -2814,6 +2814,10 @@ class APIAdapter(object):
           enabled=options.enable_image_streaming)
       node_config.gcfsConfig = gcfs_config
 
+    if options.gvnic is not None:
+      gvnic = self.messages.VirtualNIC(enabled=options.gvnic)
+      node_config.gvnic = gvnic
+
     self._AddWorkloadMetadataToNodeConfig(node_config, options, self.messages)
     _AddLinuxNodeConfigToNodeConfig(node_config, options, self.messages)
     _AddShieldedInstanceConfigToNodeConfig(node_config, options, self.messages)
@@ -2851,13 +2855,16 @@ class APIAdapter(object):
                                     options.system_config_from_file,
                                     self.messages)
 
+    if options.enable_autoprovisioning is not None:
+      pool.autoscaling.autoprovisioned = options.enable_autoprovisioning
+
+    pool.networkConfig = self._GetNetworkConfig(options)
+
     return pool
 
   def CreateNodePool(self, node_pool_ref, options):
     """CreateNodePool creates a node pool and returns the operation."""
     pool = self.CreateNodePoolCommon(node_pool_ref, options)
-    if options.enable_autoprovisioning is not None:
-      pool.autoscaling.autoprovisioned = options.enable_autoprovisioning
     req = self.messages.CreateNodePoolRequest(
         nodePool=pool,
         parent=ProjectLocationCluster(node_pool_ref.projectId,
@@ -3024,6 +3031,9 @@ class APIAdapter(object):
     elif options.enable_gcfs is not None:
       gcfs_config = self.messages.GcfsConfig(enabled=options.enable_gcfs)
       update_request.gcfsConfig = gcfs_config
+    elif options.gvnic is not None:
+      gvnic = self.messages.VirtualNIC(enabled=options.gvnic)
+      update_request.gvnic = gvnic
     elif options.enable_image_streaming is not None:
       gcfs_config = self.messages.GcfsConfig(
           enabled=options.enable_image_streaming)
@@ -3619,9 +3629,6 @@ class V1Beta1Adapter(V1Adapter):
 
   def CreateNodePool(self, node_pool_ref, options):
     pool = self.CreateNodePoolCommon(node_pool_ref, options)
-    if options.enable_autoprovisioning is not None:
-      pool.autoscaling.autoprovisioned = options.enable_autoprovisioning
-    pool.networkConfig = self._GetNetworkConfig(options)
     req = self.messages.CreateNodePoolRequest(
         nodePool=pool,
         parent=ProjectLocationCluster(node_pool_ref.projectId,
@@ -4267,9 +4274,6 @@ class V1Alpha1Adapter(V1Beta1Adapter):
 
   def CreateNodePool(self, node_pool_ref, options):
     pool = self.CreateNodePoolCommon(node_pool_ref, options)
-    if options.enable_autoprovisioning is not None:
-      pool.autoscaling.autoprovisioned = options.enable_autoprovisioning
-    pool.networkConfig = self._GetNetworkConfig(options)
     req = self.messages.CreateNodePoolRequest(
         nodePool=pool,
         parent=ProjectLocationCluster(node_pool_ref.projectId,

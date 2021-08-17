@@ -122,7 +122,7 @@ class SourceCustomResourceDefinition(k8s_object.KubernetesObject):
   API_CATEGORY = 'apiextensions.k8s.io'
   KIND = 'CustomResourceDefinition'
   READY_CONDITION = None  # The status field is not currently used on CRDs
-  FIELD_BLACKLIST = ['openAPIV3Schema']
+  EXCLUDED_FIELDS = ['openAPIV3Schema']
   # These fields should not be exposed to the user as regular parameters to be
   # set either because we'll provide another way to specify them, because
   # we'll set them ourselves, or because they're not meant to be set.

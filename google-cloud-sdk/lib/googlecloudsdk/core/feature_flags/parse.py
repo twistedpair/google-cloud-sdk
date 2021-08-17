@@ -18,6 +18,9 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import hashlib
+
+from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import yaml
 
@@ -54,11 +57,24 @@ class FeatureFlagsConfig:
 
   def Get(self, prop):
     """Returns the value for the given property."""
-    # TODO(b/192472080): return value based on probability.
     try:
-      return self.properties[prop].values[0]
+      return self.RandomValue(prop)
     except KeyError as err:
       raise UnknownPropertyError(err)
+
+  def RandomValue(self, prop):
+    """Returns random value in the given property."""
+    total_weight = sum(self.properties[prop].weights)
+    prop_client_id = prop + config.GetCID()
+    project_hash = int(
+        hashlib.sha256(prop_client_id.encode('utf-8')).hexdigest(),
+        16) % total_weight
+    list_of_weights = self.properties[prop].weights
+    sum_of_weights = 0
+    for i in range(len(list_of_weights)):
+      sum_of_weights += list_of_weights[i]
+      if project_hash < sum_of_weights:
+        return self.properties[prop].values[i]
 
 
 def _ParseFeatureFlagsConfig(path):
@@ -71,7 +87,7 @@ def _ParseFeatureFlagsConfig(path):
    property_dict: A dictionary of Property objects.
   """
   property_dict = {}
-  yaml_dict = yaml.load_path(path)
+  yaml_dict = yaml.load(path)
   for prop in yaml_dict:
     yaml_prop = yaml_dict[prop]
     property_dict[prop] = Property(yaml_prop)

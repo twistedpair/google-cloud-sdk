@@ -64,7 +64,7 @@ class User(object):
   not be used.
   """
 
-  # For more information, go to http://g3doc/apphosting/g3doc/wiki-grandfathered/unified_theory_of_users.md
+  # For more information, go to http://g3doc/apphosting/g3doc/wiki-carryover/unified_theory_of_users.md
 
   # If any new properties are added to the object, also add them as class
   # properties here for backwards compat with pickled instances.

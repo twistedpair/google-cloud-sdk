@@ -1119,7 +1119,6 @@ class CommandBuilder(object):
         get_method, [], self.spec.arguments.resource,
         get_method.resource_argument_collection)
 
-    # TODO(b/111069150): Add error handling when get fails.
     return get_method.Call(get_arg_generator.CreateRequest(args))
 
   def _HandleAsync(self, args, resource_ref, operation,
