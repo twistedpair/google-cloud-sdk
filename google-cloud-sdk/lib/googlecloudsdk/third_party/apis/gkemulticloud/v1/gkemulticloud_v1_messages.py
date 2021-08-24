@@ -189,6 +189,21 @@ class GkemulticloudProjectsLocationsAwsClustersDeleteRequest(_messages.Message):
   validateOnly = _messages.BooleanField(4)
 
 
+class GkemulticloudProjectsLocationsAwsClustersGenerateAwsAccessTokenRequest(_messages.Message):
+  r"""A GkemulticloudProjectsLocationsAwsClustersGenerateAwsAccessTokenRequest
+  object.
+
+  Fields:
+    awsCluster: Required. The name of the AwsCluster resource to authenticate
+      to. `AwsCluster` names are formatted as
+      `projects//locations//awsClusters/`. See [Resource
+      Names](https://cloud.google.com/apis/design/resource_names) for more
+      details on Google Cloud resource names.
+  """
+
+  awsCluster = _messages.StringField(1, required=True)
+
+
 class GkemulticloudProjectsLocationsAwsClustersGetAwsClusterAdminKubeconfigRequest(_messages.Message):
   r"""A
   GkemulticloudProjectsLocationsAwsClustersGetAwsClusterAdminKubeconfigRequest
@@ -541,6 +556,22 @@ class GkemulticloudProjectsLocationsAzureClustersDeleteRequest(_messages.Message
   validateOnly = _messages.BooleanField(4)
 
 
+class GkemulticloudProjectsLocationsAzureClustersGenerateAzureAccessTokenRequest(_messages.Message):
+  r"""A
+  GkemulticloudProjectsLocationsAzureClustersGenerateAzureAccessTokenRequest
+  object.
+
+  Fields:
+    azureCluster: Required. The name of the AzureCluster resource to
+      authenticate to. `AzureCluster` names are formatted as
+      `projects//locations//AzureClusters/`. See [Resource
+      Names](https://cloud.google.com/apis/design/resource_names) for more
+      details on Google Cloud resource names.
+  """
+
+  azureCluster = _messages.StringField(1, required=True)
+
+
 class GkemulticloudProjectsLocationsAzureClustersGetAzureClusterAdminKubeconfigRequest(_messages.Message):
   r"""A GkemulticloudProjectsLocationsAzureClustersGetAzureClusterAdminKubecon
   figRequest object.
@@ -761,6 +792,8 @@ class GoogleCloudGkemulticloudV1AwsCluster(_messages.Message):
       Cloud region supports a subset of nearby AWS regions. You can call
       GetAwsServerConfig to list all supported AWS regions within a given
       Google Cloud region.
+    clusterCaCertificate: Output only. PEM encoded x509 certificate of the
+      cluster root of trust.
     controlPlane: Required. Configuration related to the cluster control
       plane.
     createTime: Output only. The time at which this cluster was created.
@@ -843,18 +876,19 @@ class GoogleCloudGkemulticloudV1AwsCluster(_messages.Message):
   annotations = _messages.MessageField('AnnotationsValue', 1)
   authorization = _messages.MessageField('GoogleCloudGkemulticloudV1AwsAuthorization', 2)
   awsRegion = _messages.StringField(3)
-  controlPlane = _messages.MessageField('GoogleCloudGkemulticloudV1AwsControlPlane', 4)
-  createTime = _messages.StringField(5)
-  description = _messages.StringField(6)
-  endpoint = _messages.StringField(7)
-  etag = _messages.StringField(8)
-  name = _messages.StringField(9)
-  networking = _messages.MessageField('GoogleCloudGkemulticloudV1AwsClusterNetworking', 10)
-  reconciling = _messages.BooleanField(11)
-  state = _messages.EnumField('StateValueValuesEnum', 12)
-  uid = _messages.StringField(13)
-  updateTime = _messages.StringField(14)
-  workloadIdentityConfig = _messages.MessageField('GoogleCloudGkemulticloudV1WorkloadIdentityConfig', 15)
+  clusterCaCertificate = _messages.StringField(4)
+  controlPlane = _messages.MessageField('GoogleCloudGkemulticloudV1AwsControlPlane', 5)
+  createTime = _messages.StringField(6)
+  description = _messages.StringField(7)
+  endpoint = _messages.StringField(8)
+  etag = _messages.StringField(9)
+  name = _messages.StringField(10)
+  networking = _messages.MessageField('GoogleCloudGkemulticloudV1AwsClusterNetworking', 11)
+  reconciling = _messages.BooleanField(12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
+  uid = _messages.StringField(14)
+  updateTime = _messages.StringField(15)
+  workloadIdentityConfig = _messages.MessageField('GoogleCloudGkemulticloudV1WorkloadIdentityConfig', 16)
 
 
 class GoogleCloudGkemulticloudV1AwsClusterNetworking(_messages.Message):
@@ -916,6 +950,7 @@ class GoogleCloudGkemulticloudV1AwsControlPlane(_messages.Message):
       all of the cluster's etcd state. Volumes will be provisioned in the
       availability zone associated with the corresponding subnet. When
       unspecified, it defaults to 8 GiB with the GP2 volume type.
+    proxyConfig: Optional. Proxy configuration for outbound HTTP(S) traffic.
     rootVolume: Optional. Configuration related to the root volume provisioned
       for each control plane replica. Volumes will be provisioned in the
       availability zone associated with the corresponding subnet. When
@@ -971,12 +1006,13 @@ class GoogleCloudGkemulticloudV1AwsControlPlane(_messages.Message):
   iamInstanceProfile = _messages.StringField(3)
   instanceType = _messages.StringField(4)
   mainVolume = _messages.MessageField('GoogleCloudGkemulticloudV1AwsVolumeTemplate', 5)
-  rootVolume = _messages.MessageField('GoogleCloudGkemulticloudV1AwsVolumeTemplate', 6)
-  securityGroupIds = _messages.StringField(7, repeated=True)
-  sshConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AwsSshConfig', 8)
-  subnetIds = _messages.StringField(9, repeated=True)
-  tags = _messages.MessageField('TagsValue', 10)
-  version = _messages.StringField(11)
+  proxyConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AwsProxyConfig', 6)
+  rootVolume = _messages.MessageField('GoogleCloudGkemulticloudV1AwsVolumeTemplate', 7)
+  securityGroupIds = _messages.StringField(8, repeated=True)
+  sshConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AwsSshConfig', 9)
+  subnetIds = _messages.StringField(10, repeated=True)
+  tags = _messages.MessageField('TagsValue', 11)
+  version = _messages.StringField(12)
 
 
 class GoogleCloudGkemulticloudV1AwsDatabaseEncryption(_messages.Message):
@@ -1031,6 +1067,7 @@ class GoogleCloudGkemulticloudV1AwsNodeConfig(_messages.Message):
     labels: Optional. The initial labels assigned to nodes of this node pool.
       An object containing a list of "key": value pairs. Example: { "name":
       "wrench", "mass": "1.3kg", "count": "3" }.
+    proxyConfig: Optional. Proxy configuration for outbound HTTP(S) traffic.
     rootVolume: Optional. Template for the root volume provisioned for node
       pool nodes. Volumes will be provisioned in the availability zone
       assigned to the node pool subnet. When unspecified, it defaults to 32
@@ -1102,11 +1139,12 @@ class GoogleCloudGkemulticloudV1AwsNodeConfig(_messages.Message):
   iamInstanceProfile = _messages.StringField(1)
   instanceType = _messages.StringField(2)
   labels = _messages.MessageField('LabelsValue', 3)
-  rootVolume = _messages.MessageField('GoogleCloudGkemulticloudV1AwsVolumeTemplate', 4)
-  securityGroupIds = _messages.StringField(5, repeated=True)
-  sshConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AwsSshConfig', 6)
-  tags = _messages.MessageField('TagsValue', 7)
-  taints = _messages.MessageField('GoogleCloudGkemulticloudV1NodeTaint', 8, repeated=True)
+  proxyConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AwsProxyConfig', 4)
+  rootVolume = _messages.MessageField('GoogleCloudGkemulticloudV1AwsVolumeTemplate', 5)
+  securityGroupIds = _messages.StringField(6, repeated=True)
+  sshConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AwsSshConfig', 7)
+  tags = _messages.MessageField('TagsValue', 8)
+  taints = _messages.MessageField('GoogleCloudGkemulticloudV1NodeTaint', 9, repeated=True)
 
 
 class GoogleCloudGkemulticloudV1AwsNodePool(_messages.Message):
@@ -1264,6 +1302,20 @@ class GoogleCloudGkemulticloudV1AwsOpenIdConfig(_messages.Message):
   jwks_uri = _messages.StringField(5)
   response_types_supported = _messages.StringField(6, repeated=True)
   subject_types_supported = _messages.StringField(7, repeated=True)
+
+
+class GoogleCloudGkemulticloudV1AwsProxyConfig(_messages.Message):
+  r"""Details of a proxy config stored in AWS Secret Manager.
+
+  Fields:
+    secretArn: The ARN of the AWS Secret Manager secret that contains the
+      HTTP(S) proxy configuration.
+    secretVersion: The version string of the AWS Secret Manager secret that
+      contains the HTTP(S) proxy configuration.
+  """
+
+  secretArn = _messages.StringField(1)
+  secretVersion = _messages.StringField(2)
 
 
 class GoogleCloudGkemulticloudV1AwsServerConfig(_messages.Message):
@@ -1426,6 +1478,8 @@ class GoogleCloudGkemulticloudV1AzureCluster(_messages.Message):
       Google Cloud region supports a subset of nearby Azure regions. You can
       call GetAzureServerConfig to list all supported Azure regions within a
       given Google Cloud region.
+    clusterCaCertificate: Output only. PEM encoded x509 certificate of the
+      cluster root of trust.
     controlPlane: Required. Configuration related to the cluster control
       plane.
     createTime: Output only. The time at which this cluster was created.
@@ -1512,19 +1566,20 @@ class GoogleCloudGkemulticloudV1AzureCluster(_messages.Message):
   authorization = _messages.MessageField('GoogleCloudGkemulticloudV1AzureAuthorization', 2)
   azureClient = _messages.StringField(3)
   azureRegion = _messages.StringField(4)
-  controlPlane = _messages.MessageField('GoogleCloudGkemulticloudV1AzureControlPlane', 5)
-  createTime = _messages.StringField(6)
-  description = _messages.StringField(7)
-  endpoint = _messages.StringField(8)
-  etag = _messages.StringField(9)
-  name = _messages.StringField(10)
-  networking = _messages.MessageField('GoogleCloudGkemulticloudV1AzureClusterNetworking', 11)
-  reconciling = _messages.BooleanField(12)
-  resourceGroupId = _messages.StringField(13)
-  state = _messages.EnumField('StateValueValuesEnum', 14)
-  uid = _messages.StringField(15)
-  updateTime = _messages.StringField(16)
-  workloadIdentityConfig = _messages.MessageField('GoogleCloudGkemulticloudV1WorkloadIdentityConfig', 17)
+  clusterCaCertificate = _messages.StringField(5)
+  controlPlane = _messages.MessageField('GoogleCloudGkemulticloudV1AzureControlPlane', 6)
+  createTime = _messages.StringField(7)
+  description = _messages.StringField(8)
+  endpoint = _messages.StringField(9)
+  etag = _messages.StringField(10)
+  name = _messages.StringField(11)
+  networking = _messages.MessageField('GoogleCloudGkemulticloudV1AzureClusterNetworking', 12)
+  reconciling = _messages.BooleanField(13)
+  resourceGroupId = _messages.StringField(14)
+  state = _messages.EnumField('StateValueValuesEnum', 15)
+  uid = _messages.StringField(16)
+  updateTime = _messages.StringField(17)
+  workloadIdentityConfig = _messages.MessageField('GoogleCloudGkemulticloudV1WorkloadIdentityConfig', 18)
 
 
 class GoogleCloudGkemulticloudV1AzureClusterNetworking(_messages.Message):
@@ -1967,6 +2022,30 @@ class GoogleCloudGkemulticloudV1AzureSshConfig(_messages.Message):
   """
 
   authorizedKey = _messages.StringField(1)
+
+
+class GoogleCloudGkemulticloudV1GenerateAwsAccessTokenResponse(_messages.Message):
+  r"""Response message for `AwsClusters.GenerateAwsAccessToken` method.
+
+  Fields:
+    accessToken: Output only. Access token to authenticate to k8s api-server.
+    expirationTime: Output only. Timestamp at which the token will expire.
+  """
+
+  accessToken = _messages.StringField(1)
+  expirationTime = _messages.StringField(2)
+
+
+class GoogleCloudGkemulticloudV1GenerateAzureAccessTokenResponse(_messages.Message):
+  r"""Response message for `AzureClusters.GenerateAzureAccessToken` method.
+
+  Fields:
+    accessToken: Output only. Access token to authenticate to k8s api-server.
+    expirationTime: Output only. Timestamp at which the token will expire.
+  """
+
+  accessToken = _messages.StringField(1)
+  expirationTime = _messages.StringField(2)
 
 
 class GoogleCloudGkemulticloudV1GetAwsClusterAdminKubeconfigResponse(_messages.Message):

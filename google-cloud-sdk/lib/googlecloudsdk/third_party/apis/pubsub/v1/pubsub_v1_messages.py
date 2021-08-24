@@ -402,7 +402,7 @@ class Policy(_messages.Message):
   roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
   role: roles/resourcemanager.organizationViewer condition: title: expirable
   access description: Does not grant access after Sep 2020 expression:
-  request.time < timestamp('2020-10-01T00:00:00.000Z') - etag: BwWWja0YfJA= -
+  request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA=
   version: 3 For a description of IAM and its features, see the [IAM
   documentation](https://cloud.google.com/iam/docs/).
 
@@ -593,21 +593,21 @@ class PubsubProjectsSchemasGetRequest(_messages.Message):
 
   Enums:
     ViewValueValuesEnum: The set of fields to return in the response. If not
-      set, returns a Schema with `name` and `type`, but not `definition`. Set
-      to `FULL` to retrieve all fields.
+      set, returns a Schema with all fields filled out. Set to `BASIC` to omit
+      the `definition`.
 
   Fields:
     name: Required. The name of the schema to get. Format is
       `projects/{project}/schemas/{schema}`.
     view: The set of fields to return in the response. If not set, returns a
-      Schema with `name` and `type`, but not `definition`. Set to `FULL` to
-      retrieve all fields.
+      Schema with all fields filled out. Set to `BASIC` to omit the
+      `definition`.
   """
 
   class ViewValueValuesEnum(_messages.Enum):
     r"""The set of fields to return in the response. If not set, returns a
-    Schema with `name` and `type`, but not `definition`. Set to `FULL` to
-    retrieve all fields.
+    Schema with all fields filled out. Set to `BASIC` to omit the
+    `definition`.
 
     Values:
       SCHEMA_VIEW_UNSPECIFIED: The default / unset value. The API will default

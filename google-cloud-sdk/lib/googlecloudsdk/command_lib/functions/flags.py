@@ -54,6 +54,20 @@ SECURITY_LEVEL_MAPPING = {
     'SECURE_OPTIONAL': 'secure-optional',
 }
 
+_KMS_KEY_NAME_PATTERN = (
+    r'^projects/[^/]+/locations/[^/]+/keyRings/[a-zA-Z0-9_-]+'
+    '/cryptoKeys/[a-zA-Z0-9_-]+$')
+_KMS_KEY_NAME_ERROR = (
+    'KMS key name should match projects/{project}/locations/{location}'
+    '/keyRings/{keyring}/cryptoKeys/{cryptokey} and only contain characters '
+    'from the valid character set for a KMS key.')
+_DOCKER_REPOSITORY_NAME_PATTERN = (
+    r'^projects/[^/]+/locations/[^/]+/repositories/[a-z]([a-z0-9-]*[a-z0-9])?$')
+_DOCKER_REPOSITORY_NAME_ERROR = (
+    'Docker repository name should match projects/{project}'
+    '/locations/{location}/repositories/{repository} and only contain '
+    'characters from the valid character set for a repository.')
+
 
 def AddMinLogLevelFlag(parser):
   min_log_arg = base.ChoiceArgument(
@@ -88,8 +102,7 @@ def AddSecurityLevelFlag(parser):
       choices=[x.lower() for x in SECURITY_LEVEL],
       help_str='Security level controls whether a function\'s URL supports '
       'HTTPS only or both HTTP and HTTPS. By default, `secure-optional` will'
-      ' be used, meaning both HTTP and HTTPS are supported.'
-  )
+      ' be used, meaning both HTTP and HTTPS are supported.')
   security_level_arg.AddToParser(parser)
 
 
@@ -424,17 +437,25 @@ def AddMinInstancesFlag(parser):
       """)
 
 
-def AddTriggerFlagGroup(parser):
-  """Add arguments specyfying functions trigger to the parser."""
-  # You can also use --trigger-provider but it is hidden argument so not
-  # mentioning it for now.
+def AddTriggerFlagGroup(parser, track=None):
+  """Add arguments specifying functions trigger to the parser.
+
+  Args:
+    parser: the argparse parser for the command.
+    track: base.ReleaseTrack, calliope release track.
+  """
+  trigger_flags = ['--trigger-topic', '--trigger-bucket', '--trigger-http']
+  if track is base.ReleaseTrack.ALPHA:
+    trigger_flags.append('--trigger-event-filters')
+  formatted_trigger_flags = ', '.join(['`{}`'.format(f) for f in trigger_flags])
+
   trigger_group = parser.add_mutually_exclusive_group(
-      help=(
-          ' If you don\'t specify a trigger when deploying an update to an '
-          'existing function it will keep its current trigger. You must specify'
-          ' `--trigger-topic`, `--trigger-bucket`, `--trigger-http` or '
-          '(`--trigger-event` AND `--trigger-resource`) when deploying a '
-          'new function.'))
+      help=('If you don\'t specify a trigger when deploying an update to an '
+            'existing function it will keep its current trigger. '
+            'You must specify {formatted_trigger_flags} or '
+            '(`--trigger-event` AND `--trigger-resource`) when deploying a '
+            'new function.'.format(
+                formatted_trigger_flags=formatted_trigger_flags)))
   trigger_group.add_argument(
       '--trigger-topic',
       help=('Name of Pub/Sub topic. Every message published in this topic '
@@ -457,6 +478,18 @@ def AddTriggerFlagGroup(parser):
       the `describe` command. Any HTTP request (of a supported type) to the
       endpoint will trigger function execution. Supported HTTP request
       types are: POST, PUT, GET, DELETE, and OPTIONS.""")
+  if track is base.ReleaseTrack.ALPHA:
+    trigger_group.add_argument(
+        '--trigger-event-filters',
+        type=arg_parsers.ArgDict(),
+        action=arg_parsers.UpdateAction,
+        metavar='ATTRIBUTE=VALUE',
+        help=(
+            'The Eventarc matching criteria for the trigger. The criteria can '
+            'be specified either as a single comma-separated argument or as '
+            'multiple arguments. This is only relevant when `--v2` is provided.'
+        ),
+    )
 
   trigger_provider_spec_group = trigger_group.add_argument_group()
   # check later as type of applicable input depends on options above
@@ -517,20 +550,6 @@ def AddTriggerLocationFlag(parser):
             'region where the relevant events originate. This is only '
             'relevant when `--v2` is provided.'),
       completer=LocationsCompleter,
-  )
-
-
-def AddTriggerEventFiltersFlag(parser):
-  """Add flag for specifying trigger event filters to the parser."""
-  parser.add_argument(
-      '--trigger-event-filters',
-      type=arg_parsers.ArgDict(),
-      action=arg_parsers.UpdateAction,
-      metavar='FILTERS',
-      help=(
-          'The Eventarc matching criteria for the trigger. The criteria can '
-          'be specified either as a single comma-separated argument or as '
-          'multiple arguments. This is only relevant when `--v2` is provided.'),
   )
 
 
@@ -662,3 +681,59 @@ def AddSignatureTypeFlag(parser):
                 'the new CloudEvent format. This is only relevant when `--v2` '
                 'is provided.'),
   ).AddToParser(parser)
+
+
+# Flags for CMEK
+def AddKMSKeyFlags(parser):
+  """Adds flags for configuring the CMEK key."""
+  kmskey_group = parser.add_group(mutex=True)
+  kmskey_group.add_argument(
+      '--kms-key',
+      type=arg_parsers.RegexpValidator(_KMS_KEY_NAME_PATTERN,
+                                       _KMS_KEY_NAME_ERROR),
+      help="""\
+        Sets the user managed KMS crypto key used to encrypt the Cloud Function
+        and its resources.
+
+        The KMS crypto key name should match the pattern
+        `projects/${PROJECT}/locations/${LOCATION}/keyRings/${KEYRING}/cryptoKeys/${CRYPTOKEY}`
+        where ${PROJECT} is the project, ${LOCATION} is the location of the key
+        ring, and ${KEYRING} is the key ring that contains the ${CRYPTOKEY}
+        crypto key.
+
+        If this flag is set, then a Docker repository created in Artifact
+        Registry must be specified using the `--docker-repository` flag and the
+        repository must be encrypted using the `same` KMS key.
+      """)
+  kmskey_group.add_argument(
+      '--clear-kms-key',
+      action='store_true',
+      help="""\
+        Clears the KMS crypto key used to encrypt the function.
+      """)
+
+
+def AddDockerRepositoryFlags(parser):
+  """Adds flags for configuring the Docker repository for Cloud Function."""
+  kmskey_group = parser.add_group(mutex=True)
+  kmskey_group.add_argument(
+      '--docker-repository',
+      type=arg_parsers.RegexpValidator(_DOCKER_REPOSITORY_NAME_PATTERN,
+                                       _DOCKER_REPOSITORY_NAME_ERROR),
+      help="""\
+        Sets the Docker repository to be used for storing the Cloud Function's
+        Docker images while the function is being deployed. `DOCKER_REPOSITORY`
+        must be an Artifact Registry Docker repository present in the `same`
+        project and location as the Cloud Function.
+
+        The repository name should match the pattern
+        `projects/${PROJECT}/locations/${LOCATION}/repositories/${REPOSITORY}`
+        where ${PROJECT} is the project, ${LOCATION} is the location of the
+        repository and ${REPOSITORY} is a valid repository ID.
+      """)
+  kmskey_group.add_argument(
+      '--clear-docker-repository',
+      action='store_true',
+      help="""\
+        Clears the Docker repository configuration of the function.
+      """)

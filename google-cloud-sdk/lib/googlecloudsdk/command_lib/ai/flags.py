@@ -917,13 +917,14 @@ def GetPredictInstanceSchemaArg(required=False):
       required=required)
 
 
-def GetAnalysisInstanceSchemaArg(required=False):
+def GetAnalysisInstanceSchemaArg(required=False, hidden=False):
   return base.Argument(
       '--analysis-instance-schema',
       help="""
       YAML schema file uri(Google Cloud Storage) describing the format of a
       single instance that you want Tensorflow Data Validation (TFDV) to analyze.
       """,
+      hidden=hidden,
       required=required)
 
 

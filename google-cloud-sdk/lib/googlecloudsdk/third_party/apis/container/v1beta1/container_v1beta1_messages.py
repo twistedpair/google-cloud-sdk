@@ -49,6 +49,8 @@ class AddonsConfig(_messages.Message):
       cluster nodes
     gcePersistentDiskCsiDriverConfig: Configuration for the Compute Engine
       Persistent Disk CSI driver.
+    gcpFilestoreCsiDriverConfig: Configuration for the GCP Filestore CSI
+      driver.
     gkeBackupAgentConfig: Configuration for the Backup for GKE agent addon.
     horizontalPodAutoscaling: Configuration for the horizontal pod autoscaling
       feature, which increases or decreases the number of replica pods a
@@ -75,13 +77,14 @@ class AddonsConfig(_messages.Message):
   configConnectorConfig = _messages.MessageField('ConfigConnectorConfig', 2)
   dnsCacheConfig = _messages.MessageField('DnsCacheConfig', 3)
   gcePersistentDiskCsiDriverConfig = _messages.MessageField('GcePersistentDiskCsiDriverConfig', 4)
-  gkeBackupAgentConfig = _messages.MessageField('GkeBackupAgentConfig', 5)
-  horizontalPodAutoscaling = _messages.MessageField('HorizontalPodAutoscaling', 6)
-  httpLoadBalancing = _messages.MessageField('HttpLoadBalancing', 7)
-  istioConfig = _messages.MessageField('IstioConfig', 8)
-  kalmConfig = _messages.MessageField('KalmConfig', 9)
-  kubernetesDashboard = _messages.MessageField('KubernetesDashboard', 10)
-  networkPolicyConfig = _messages.MessageField('NetworkPolicyConfig', 11)
+  gcpFilestoreCsiDriverConfig = _messages.MessageField('GcpFilestoreCsiDriverConfig', 5)
+  gkeBackupAgentConfig = _messages.MessageField('GkeBackupAgentConfig', 6)
+  horizontalPodAutoscaling = _messages.MessageField('HorizontalPodAutoscaling', 7)
+  httpLoadBalancing = _messages.MessageField('HttpLoadBalancing', 8)
+  istioConfig = _messages.MessageField('IstioConfig', 9)
+  kalmConfig = _messages.MessageField('KalmConfig', 10)
+  kubernetesDashboard = _messages.MessageField('KubernetesDashboard', 11)
+  networkPolicyConfig = _messages.MessageField('NetworkPolicyConfig', 12)
 
 
 class AdvancedMachineFeatures(_messages.Message):
@@ -1808,6 +1811,16 @@ class GcfsConfig(_messages.Message):
   enabled = _messages.BooleanField(1)
 
 
+class GcpFilestoreCsiDriverConfig(_messages.Message):
+  r"""Configuration for the GCP Filestore CSI driver.
+
+  Fields:
+    enabled: Whether the GCP Filestore CSI driver is enabled for this cluster.
+  """
+
+  enabled = _messages.BooleanField(1)
+
+
 class GetJSONWebKeysResponse(_messages.Message):
   r"""GetJSONWebKeysResponse is a valid JSON Web Key Set as specififed in rfc
   7517
@@ -2759,12 +2772,11 @@ class NodeConfig(_messages.Message):
       ensure-gke-docker" - "gci-metrics-enabled" - "gci-update-strategy" -
       "instance-template" - "kube-env" - "startup-script" - "user-data" -
       "disable-address-manager" - "windows-startup-script-ps1" - "common-psm1"
-      - "k8s-node-setup-psm1" - "install-ssh-psm1" - "user-profile-psm1" The
-      following keys are reserved for Windows nodes: - "serial-port-logging-
-      enable" Values are free-form strings, and only have meaning as
-      interpreted by the image running in the instance. The only restriction
-      placed on them is that each value's size must be less than or equal to
-      32 KB. The total size of all keys and values must be less than 512 KB.
+      - "k8s-node-setup-psm1" - "install-ssh-psm1" - "user-profile-psm1"
+      Values are free-form strings, and only have meaning as interpreted by
+      the image running in the instance. The only restriction placed on them
+      is that each value's size must be less than or equal to 32 KB. The total
+      size of all keys and values must be less than 512 KB.
 
   Fields:
     accelerators: A list of hardware accelerators to be attached to each node.
@@ -2817,12 +2829,11 @@ class NodeConfig(_messages.Message):
       ensure-gke-docker" - "gci-metrics-enabled" - "gci-update-strategy" -
       "instance-template" - "kube-env" - "startup-script" - "user-data" -
       "disable-address-manager" - "windows-startup-script-ps1" - "common-psm1"
-      - "k8s-node-setup-psm1" - "install-ssh-psm1" - "user-profile-psm1" The
-      following keys are reserved for Windows nodes: - "serial-port-logging-
-      enable" Values are free-form strings, and only have meaning as
-      interpreted by the image running in the instance. The only restriction
-      placed on them is that each value's size must be less than or equal to
-      32 KB. The total size of all keys and values must be less than 512 KB.
+      - "k8s-node-setup-psm1" - "install-ssh-psm1" - "user-profile-psm1"
+      Values are free-form strings, and only have meaning as interpreted by
+      the image running in the instance. The only restriction placed on them
+      is that each value's size must be less than or equal to 32 KB. The total
+      size of all keys and values must be less than 512 KB.
     minCpuPlatform: Minimum CPU platform to be used by this instance. The
       instance may be scheduled on the specified or newer CPU platform.
       Applicable values are the friendly names of CPU platforms, such as
@@ -2913,12 +2924,11 @@ class NodeConfig(_messages.Message):
     "gci-metrics-enabled" - "gci-update-strategy" - "instance-template" -
     "kube-env" - "startup-script" - "user-data" - "disable-address-manager" -
     "windows-startup-script-ps1" - "common-psm1" - "k8s-node-setup-psm1" -
-    "install-ssh-psm1" - "user-profile-psm1" The following keys are reserved
-    for Windows nodes: - "serial-port-logging-enable" Values are free-form
-    strings, and only have meaning as interpreted by the image running in the
-    instance. The only restriction placed on them is that each value's size
-    must be less than or equal to 32 KB. The total size of all keys and values
-    must be less than 512 KB.
+    "install-ssh-psm1" - "user-profile-psm1" Values are free-form strings, and
+    only have meaning as interpreted by the image running in the instance. The
+    only restriction placed on them is that each value's size must be less
+    than or equal to 32 KB. The total size of all keys and values must be less
+    than 512 KB.
 
     Messages:
       AdditionalProperty: An additional property for a MetadataValue object.

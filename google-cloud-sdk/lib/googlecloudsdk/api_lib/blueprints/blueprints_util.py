@@ -30,6 +30,9 @@ from googlecloudsdk.core.console import progress_tracker
 _API_NAME = 'config'
 _ALPHA_API_VERSION = 'v1alpha1'
 
+# The maximum amount of time to wait in between polling long-running operations.
+_WAIT_CEILING_MS = 10 * 1000
+
 RELEASE_TRACK_TO_API_VERSION = {
     base.ReleaseTrack.ALPHA: 'v1alpha1',
 }
@@ -178,7 +181,11 @@ def WaitForDeleteDeploymentOperation(operation):
   poller = waiter.CloudOperationPollerNoResources(
       client.projects_locations_operations)
 
-  return waiter.WaitFor(poller, operation_ref, 'Deleting the deployment')
+  return waiter.WaitFor(
+      poller,
+      operation_ref,
+      'Deleting the deployment',
+      wait_ceiling_ms=_WAIT_CEILING_MS)
 
 
 def WaitForApplyDeploymentOperation(operation, progress_message):
@@ -281,7 +288,10 @@ def WaitForApplyDeploymentLROWithStagedTracker(poller, operation_ref, message):
             tracker.CompleteStage(ordered_stages[i])
 
     operation = waiter.PollUntilDone(
-        poller, operation_ref, status_update=_StatusUpdate)
+        poller,
+        operation_ref,
+        status_update=_StatusUpdate,
+        wait_ceiling_ms=_WAIT_CEILING_MS)
     result = poller.GetResult(operation)
 
     if result is not None and result.state == state_enum.ACTIVE:

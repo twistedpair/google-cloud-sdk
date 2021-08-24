@@ -248,7 +248,8 @@ def CreateSchedulingMessage(messages,
                             location_hint=None,
                             maintenance_freeze_duration=None,
                             maintenance_interval=None,
-                            provisioning_model=None):
+                            provisioning_model=None,
+                            host_error_timeout_seconds=None):
   """Create scheduling message for VM."""
   # Note: We always specify automaticRestart=False for preemptible VMs. This
   # makes sense, since no-restart-on-failure is defined as "store-true", and
@@ -289,6 +290,9 @@ def CreateSchedulingMessage(messages,
   if maintenance_interval:
     scheduling.maintenanceInterval = messages.\
       Scheduling.MaintenanceIntervalValueValuesEnum(maintenance_interval)
+
+  if host_error_timeout_seconds:
+    scheduling.hostErrorTimeoutSeconds = host_error_timeout_seconds
   return scheduling
 
 
@@ -485,7 +489,8 @@ def GetScheduling(args,
                   support_min_node_cpu=True,
                   support_location_hint=False,
                   support_node_project=False,
-                  support_provisioning_model=False):
+                  support_provisioning_model=False,
+                  support_host_error_timeout_seconds=False):
   """Generate a Scheduling Message or None based on specified args."""
   node_affinities = None
   if support_node_affinity:
@@ -514,6 +519,11 @@ def GetScheduling(args,
       args.IsSpecified('provisioning_model')):
     provisioning_model = args.provisioning_model
 
+  host_error_timeout_seconds = None
+  if support_host_error_timeout_seconds and hasattr(
+      args, 'host_error_timeout_seconds'):
+    host_error_timeout_seconds = args.host_error_timeout_seconds
+
   return CreateSchedulingMessage(
       messages=client.messages,
       maintenance_policy=args.maintenance_policy,
@@ -524,7 +534,8 @@ def GetScheduling(args,
       location_hint=location_hint,
       maintenance_freeze_duration=freeze_duration,
       maintenance_interval=maintenance_interval,
-      provisioning_model=provisioning_model)
+      provisioning_model=provisioning_model,
+      host_error_timeout_seconds=host_error_timeout_seconds)
 
 
 def GetServiceAccounts(args, client, skip_defaults):

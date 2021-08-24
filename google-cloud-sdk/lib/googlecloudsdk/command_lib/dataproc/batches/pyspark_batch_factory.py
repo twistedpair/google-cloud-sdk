@@ -64,8 +64,14 @@ class PySparkBatchFactory(object):
     if args.python_files:
       dependencies['pythonFileUris'] = args.python_files
 
+    if args.py_files:
+      dependencies['pythonFileUris'] = args.py_files
+
     if args.jar_files:
       dependencies['jarFileUris'] = args.jar_files
+
+    if args.jars:
+      dependencies['jarFileUris'] = args.jars
 
     if args.files:
       dependencies['fileUris'] = args.files
@@ -74,9 +80,10 @@ class PySparkBatchFactory(object):
       dependencies['archiveUris'] = args.archives
 
     if local_file_uploader.HasLocalFiles(dependencies):
-      if not args.bucket:
-        raise AttributeError('--bucket was not specified.')
-      dependencies = local_file_uploader.Upload(args.bucket, dependencies)
+      bucket = args.deps_bucket if args.deps_bucket is not None else args.bucket
+      if not bucket:
+        raise AttributeError('--deps-bucket was not specified.')
+      dependencies = local_file_uploader.Upload(bucket, dependencies)
 
     # Move mainPythonFileUri out of the list.
     dependencies['mainPythonFileUri'] = dependencies['mainPythonFileUri'][0]

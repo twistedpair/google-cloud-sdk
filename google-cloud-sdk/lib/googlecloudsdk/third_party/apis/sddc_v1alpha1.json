@@ -393,30 +393,6 @@
         }
       }
     },
-    "AddNodesRequest": {
-      "id": "AddNodesRequest",
-      "description": "Request for adding nodes to the given cluster until the target count is reached.",
-      "type": "object",
-      "properties": {
-        "nodeCount": {
-          "description": "Required. Number of desired bare metal nodes in this cluster.",
-          "type": "integer",
-          "format": "int32"
-        }
-      }
-    },
-    "RemoveNodesRequest": {
-      "id": "RemoveNodesRequest",
-      "description": "Request to remove nodes from the given cluster until the target count is reached.",
-      "type": "object",
-      "properties": {
-        "nodeCount": {
-          "description": "Required. Number of desired bare metal nodes in this cluster.",
-          "type": "integer",
-          "format": "int32"
-        }
-      }
-    },
     "ListIpAddressesResponse": {
       "id": "ListIpAddressesResponse",
       "description": "The response of listing `IpAddress` objects in a given `ClusterGroup`.",
@@ -554,245 +530,6 @@
         }
       }
     },
-    "ListPrivateCloudBackupsResponse": {
-      "id": "ListPrivateCloudBackupsResponse",
-      "description": "Response containing a list of private cloud backups.",
-      "type": "object",
-      "properties": {
-        "privateCloudBackups": {
-          "description": "A list of SDDC private cloud backup resources",
-          "type": "array",
-          "items": {
-            "$ref": "PrivateCloudBackup"
-          }
-        },
-        "nextPageToken": {
-          "description": "A token, which can be send as `page_token` to retrieve the next page. If you omit this field, there are no subsequent pages.",
-          "type": "string"
-        },
-        "unreachable": {
-          "description": "List of locations that could not be reached.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "PrivateCloudBackup": {
-      "id": "PrivateCloudBackup",
-      "description": "Backup resource of the private cloud.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "Output only. The resource name of this `PrivateCloudBackup`. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names For example, projects\/ PROJECT-NUMBER\/locations\/us-central1\/clusterGroupBackups\/MY-BACKUP",
-          "readOnly": true,
-          "type": "string"
-        },
-        "labels": {
-          "description": "Labels are a way to attach lightweight metadata to resources for filtering and querying resource data. No more than 64 user labels can be associated with each resource. Label keys and values can be no longer than 63 characters, can only contain lowercase letters, numeric characters, underscores and dashes, where label keys must start with a letter and international characters are allowed. The empty string is a valid value. Labels are set on creation and updated like any other field. To add a new label, you must provide all of the existing labels along with the new label. **If you only provide a map with the new label, all of the old labels are removed.**",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        },
-        "createTime": {
-          "description": "Output only. Creation time of the resource.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "updateTime": {
-          "description": "Output only. Update time of the resource.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "privateCloudId": {
-          "description": "Identity of the private cloud of which this resource is a backup.",
-          "type": "string"
-        }
-      }
-    },
-    "ListPrivateCloudsResponse": {
-      "id": "ListPrivateCloudsResponse",
-      "description": "A response with a list of zero or more private clouds in a region.",
-      "type": "object",
-      "properties": {
-        "privateClouds": {
-          "description": "A list of private clouds.",
-          "type": "array",
-          "items": {
-            "$ref": "PrivateCloud"
-          }
-        },
-        "nextPageToken": {
-          "description": "A token that you can be send as `page_token` to retrieve the next page. If you omit this field, there are no subsequent pages.",
-          "type": "string"
-        },
-        "unreachable": {
-          "description": "List of locations that could not be reached.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "PrivateCloud": {
-      "id": "PrivateCloud",
-      "description": "A private cloud resource. `PrivateCloud` is a regional resource.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "Output only. The resource name of this `PrivateCloud`. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example, projects\/ PROJECT-NUMBER\/locations\/us-central1\/privateClouds\/MY-CLOUD",
-          "readOnly": true,
-          "type": "string"
-        },
-        "labels": {
-          "description": "You can use labels to attach lightweight metadata to resources for filtering and querying resource data. You can associate at most 64 user labels with each resource. Label keys and values may contain at most 63 characters and may only contain lowercase letters, numeric characters, underscores, and dashes. Label keys must start with a letter, and international characters are allowed. The empty string is a valid label. Labels are set on creation and updated like any other field. To add a new label, you must provide all of the existing labels along with the new label. **If you only provide a map with the new label, all of the old labels are removed.**",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        },
-        "description": {
-          "description": "The description of this resource.",
-          "type": "string"
-        },
-        "networkConfig": {
-          "description": "`NetworkConfig` passed in the param.",
-          "$ref": "NetworkConfig"
-        },
-        "createTime": {
-          "description": "Output only. Creation time of the resource.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "updateTime": {
-          "description": "Output only. Update time of the resource.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "state": {
-          "description": "State of the resource.",
-          "type": "string",
-          "enumDescriptions": [
-            "The default value. This value should never be used.",
-            "The private cloud is ready.",
-            "The private cloud is being created.",
-            "The private cloud is being deleted.",
-            "The private cloud is being updated.",
-            "The private cloud has experienced an issue and might be unusable."
-          ],
-          "enum": [
-            "STATE_UNSPECIFIED",
-            "ACTIVE",
-            "CREATING",
-            "DELETING",
-            "UPDATING",
-            "FAILED"
-          ]
-        },
-        "vcenter": {
-          "description": "Output only. vCenter information.",
-          "readOnly": true,
-          "$ref": "Vcenter"
-        },
-        "nsx": {
-          "description": "Output only. Nsx information.",
-          "readOnly": true,
-          "$ref": "Nsx"
-        }
-      }
-    },
-    "NetworkConfig": {
-      "id": "NetworkConfig",
-      "description": "Network configuration in the consumer project with which peering is done.",
-      "type": "object",
-      "properties": {
-        "network": {
-          "description": "Name of the network in the consumer project with which the tenant project will be peered. In the case of shared VPC where the network lives inside another project, provide the network in the following form: \/project\/ HOST-PROJECT-NUMBER\/global\/networks\/NETWORK",
-          "type": "string"
-        },
-        "externalIpAccess": {
-          "description": "Controls whether vCenter and NSX can be accessed via the internet. - FQDNs resolve to the allocated external IPs for private cloud domain but map to the internal IP within consumer subnets. - NAT is set up on NSX for external IP ingress traffic. - Users must manually configure NSX firewall rules to allow HTTPS traffic.",
-          "type": "boolean"
-        },
-        "managementCidr": {
-          "description": "Management CIDR range used by VMware management applicances.",
-          "type": "string"
-        },
-        "workloadCidr": {
-          "description": "Workload CIDR range used by VMware workload VMs.",
-          "type": "string"
-        }
-      }
-    },
-    "Vcenter": {
-      "id": "Vcenter",
-      "description": "vCenter description of a cluster group",
-      "type": "object",
-      "properties": {
-        "clientUrl": {
-          "description": "vCenter client URL.",
-          "type": "string"
-        },
-        "serverExplorerUrl": {
-          "description": "vCenter server explorer URL.",
-          "type": "string"
-        },
-        "initialUsername": {
-          "description": "vCenter initial username.",
-          "type": "string"
-        },
-        "initialPassword": {
-          "description": "vCenter initial password.",
-          "type": "string"
-        },
-        "internalIp": {
-          "description": "vCenter internal address.",
-          "type": "string"
-        },
-        "externalIp": {
-          "description": "vCenter external address when access is enabled.",
-          "type": "string"
-        }
-      }
-    },
-    "Nsx": {
-      "id": "Nsx",
-      "description": "NSX description of a cluster group",
-      "type": "object",
-      "properties": {
-        "clientUrl": {
-          "description": "NSX client URL.",
-          "type": "string"
-        },
-        "serverExplorerUrl": {
-          "description": "NSX server explorer URL.",
-          "type": "string"
-        },
-        "initialUsername": {
-          "description": "NSX initial username.",
-          "type": "string"
-        },
-        "initialPassword": {
-          "description": "NSX initial password.",
-          "type": "string"
-        },
-        "internalIp": {
-          "description": "NSX internal address.",
-          "type": "string"
-        },
-        "externalIp": {
-          "description": "NSX external address when access is enabled.",
-          "type": "string"
-        }
-      }
-    },
     "ListClusterGroupsResponse": {
       "id": "ListClusterGroupsResponse",
       "type": "object",
@@ -891,6 +628,115 @@
         }
       }
     },
+    "NetworkConfig": {
+      "id": "NetworkConfig",
+      "description": "Network configuration in the consumer project with which peering is done.",
+      "type": "object",
+      "properties": {
+        "network": {
+          "description": "Name of the network in the consumer project with which the tenant project will be peered. In the case of shared VPC where the network lives inside another project, provide the network in the following form: \/project\/ HOST-PROJECT-NUMBER\/global\/networks\/NETWORK",
+          "type": "string"
+        },
+        "externalIpAccess": {
+          "description": "Controls whether vCenter and NSX can be accessed via the internet. - FQDNs resolve to the allocated external IPs for private cloud domain but map to the internal IP within consumer subnets. - NAT is set up on NSX for external IP ingress traffic. - Users must manually configure NSX firewall rules to allow HTTPS traffic.",
+          "type": "boolean"
+        },
+        "managementCidr": {
+          "description": "Management CIDR range used by VMware management applicances.",
+          "type": "string"
+        },
+        "workloadCidr": {
+          "description": "Workload CIDR range used by VMware workload VMs.",
+          "type": "string"
+        }
+      }
+    },
+    "Vcenter": {
+      "id": "Vcenter",
+      "description": "vCenter description of a cluster group",
+      "type": "object",
+      "properties": {
+        "clientUrl": {
+          "description": "vCenter client URL.",
+          "type": "string"
+        },
+        "serverExplorerUrl": {
+          "description": "vCenter server explorer URL.",
+          "type": "string"
+        },
+        "initialUsername": {
+          "description": "vCenter initial username.",
+          "type": "string"
+        },
+        "initialPassword": {
+          "description": "vCenter initial password.",
+          "type": "string"
+        },
+        "internalIp": {
+          "description": "vCenter internal address.",
+          "type": "string"
+        },
+        "externalIp": {
+          "description": "vCenter external address when access is enabled.",
+          "type": "string"
+        }
+      }
+    },
+    "Nsx": {
+      "id": "Nsx",
+      "description": "NSX description of a cluster group",
+      "type": "object",
+      "properties": {
+        "clientUrl": {
+          "description": "NSX client URL.",
+          "type": "string"
+        },
+        "serverExplorerUrl": {
+          "description": "NSX server explorer URL.",
+          "type": "string"
+        },
+        "initialUsername": {
+          "description": "NSX initial username.",
+          "type": "string"
+        },
+        "initialPassword": {
+          "description": "NSX initial password.",
+          "type": "string"
+        },
+        "internalIp": {
+          "description": "NSX internal address.",
+          "type": "string"
+        },
+        "externalIp": {
+          "description": "NSX external address when access is enabled.",
+          "type": "string"
+        }
+      }
+    },
+    "AddNodesRequest": {
+      "id": "AddNodesRequest",
+      "description": "Request for adding nodes to the given cluster until the target count is reached.",
+      "type": "object",
+      "properties": {
+        "nodeCount": {
+          "description": "Required. Number of desired bare metal nodes in this cluster.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "RemoveNodesRequest": {
+      "id": "RemoveNodesRequest",
+      "description": "Request to remove nodes from the given cluster until the target count is reached.",
+      "type": "object",
+      "properties": {
+        "nodeCount": {
+          "description": "Required. Number of desired bare metal nodes in this cluster.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
     "ResetCloudAdminCredentialsRequest": {
       "id": "ResetCloudAdminCredentialsRequest",
       "description": "Request to reset vCenter or NSX **CloudAdmin** accounts.",
@@ -950,7 +796,7 @@
     },
     "Policy": {
       "id": "Policy",
-      "description": "An Identity and Access Management (IAM) policy, which specifies access controls for Google Cloud resources. A `Policy` is a collection of `bindings`. A `binding` binds one or more `members` to a single `role`. Members can be user accounts, service accounts, Google groups, and domains (such as G Suite). A `role` is a named list of permissions; each `role` can be an IAM predefined role or a user-created custom role. For some types of Google Cloud resources, a `binding` can also specify a `condition`, which is a logical expression that allows access to a resource only if the expression evaluates to `true`. A condition can add constraints based on attributes of the request, the resource, or both. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies). **JSON example:** { \"bindings\": [ { \"role\": \"roles\/resourcemanager.organizationAdmin\", \"members\": [ \"user:mike@example.com\", \"group:admins@example.com\", \"domain:google.com\", \"serviceAccount:my-project-id@appspot.gserviceaccount.com\" ] }, { \"role\": \"roles\/resourcemanager.organizationViewer\", \"members\": [ \"user:eve@example.com\" ], \"condition\": { \"title\": \"expirable access\", \"description\": \"Does not grant access after Sep 2020\", \"expression\": \"request.time < timestamp('2020-10-01T00:00:00.000Z')\", } } ], \"etag\": \"BwWWja0YfJA=\", \"version\": 3 } **YAML example:** bindings: - members: - user:mike@example.com - group:admins@example.com - domain:google.com - serviceAccount:my-project-id@appspot.gserviceaccount.com role: roles\/resourcemanager.organizationAdmin - members: - user:eve@example.com role: roles\/resourcemanager.organizationViewer condition: title: expirable access description: Does not grant access after Sep 2020 expression: request.time < timestamp('2020-10-01T00:00:00.000Z') - etag: BwWWja0YfJA= - version: 3 For a description of IAM and its features, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/docs\/).",
+      "description": "An Identity and Access Management (IAM) policy, which specifies access controls for Google Cloud resources. A `Policy` is a collection of `bindings`. A `binding` binds one or more `members` to a single `role`. Members can be user accounts, service accounts, Google groups, and domains (such as G Suite). A `role` is a named list of permissions; each `role` can be an IAM predefined role or a user-created custom role. For some types of Google Cloud resources, a `binding` can also specify a `condition`, which is a logical expression that allows access to a resource only if the expression evaluates to `true`. A condition can add constraints based on attributes of the request, the resource, or both. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies). **JSON example:** { \"bindings\": [ { \"role\": \"roles\/resourcemanager.organizationAdmin\", \"members\": [ \"user:mike@example.com\", \"group:admins@example.com\", \"domain:google.com\", \"serviceAccount:my-project-id@appspot.gserviceaccount.com\" ] }, { \"role\": \"roles\/resourcemanager.organizationViewer\", \"members\": [ \"user:eve@example.com\" ], \"condition\": { \"title\": \"expirable access\", \"description\": \"Does not grant access after Sep 2020\", \"expression\": \"request.time < timestamp('2020-10-01T00:00:00.000Z')\", } } ], \"etag\": \"BwWWja0YfJA=\", \"version\": 3 } **YAML example:** bindings: - members: - user:mike@example.com - group:admins@example.com - domain:google.com - serviceAccount:my-project-id@appspot.gserviceaccount.com role: roles\/resourcemanager.organizationAdmin - members: - user:eve@example.com role: roles\/resourcemanager.organizationViewer condition: title: expirable access description: Does not grant access after Sep 2020 expression: request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA= version: 3 For a description of IAM and its features, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/docs\/).",
       "type": "object",
       "properties": {
         "version": {
@@ -2516,660 +2362,6 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Deletes a `ClusterGroupBackup`."
-                }
-              }
-            },
-            "privateCloudBackups": {
-              "methods": {
-                "list": {
-                  "id": "sddc.projects.locations.privateCloudBackups.list",
-                  "path": "v1alpha1/{+parent}/privateCloudBackups",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/privateCloudBackups",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "parent": {
-                      "description": "Required. The location and project which will be queried for data centers. For example, projects\/PROJECT-NUMBER\/locations\/us-central1",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "pageSize": {
-                      "description": "The maximum number of `PrivateCloudBackup' objects to return. The service may return fewer than this value. The default is 500.",
-                      "location": "query",
-                      "type": "integer",
-                      "format": "int32"
-                    },
-                    "pageToken": {
-                      "description": "A page token, received from a previous `ListPrivateCloudBackupsRequest` call. Provide this to retrieve the subsequent page. When paginating, you must provide exactly the same parameters to `ListPrivateCloudBackupsRequest` as you provided to the page token request.",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "filter": {
-                      "description": "List filter.",
-                      "location": "query",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "parent"
-                  ],
-                  "response": {
-                    "$ref": "ListPrivateCloudBackupsResponse"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Lists `PrivateCloudBackup` objects in a given project and location (region)."
-                },
-                "get": {
-                  "id": "sddc.projects.locations.privateCloudBackups.get",
-                  "path": "v1alpha1/{+name}",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/privateCloudBackups/{privateCloudBackupsId}",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "name": {
-                      "description": "Required. The resource name of the PrivateCloudBackup to retrieve. Resource names are schemeless URI's that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example, projects\/ PROJECT-NUMBER\/locations\/us-central1\/clusterGroupBackups\/MY-BACKUP",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateCloudBackups\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "response": {
-                    "$ref": "PrivateCloudBackup"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Gets details of a single `PrivateCloudBackup`."
-                },
-                "create": {
-                  "id": "sddc.projects.locations.privateCloudBackups.create",
-                  "path": "v1alpha1/{+parent}/privateCloudBackups",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/privateCloudBackups",
-                  "httpMethod": "POST",
-                  "parameters": {
-                    "parent": {
-                      "description": "Required. The location (region) and project where the new `PrivateCloudBackup` will be created. For example, projects\/PROJECT-NUMBER \/locations\/us-central1",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "privateCloudBackupId": {
-                      "description": "Required. The user-provided id of the `PrivateCloudBackup` to be created. This ID must be unique among `PrivateCloudBackup` objects within the parent and becomes the final token in the name URI.",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "requestId": {
-                      "description": "UUID of this invocation for idempotent operation.",
-                      "location": "query",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "parent"
-                  ],
-                  "request": {
-                    "$ref": "PrivateCloudBackup"
-                  },
-                  "response": {
-                    "$ref": "GoogleLongrunningOperation"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Creates a new `PrivateCloudBackup` in a given project and location (region). The creation is asynchronous. You can check the returned operation to track its progress. When the operation successfully completes, the `PrivateCloudBackup` has a **READY** status and is fully functional. A completed `longrunning.Operation` contains the new `PrivateCloudBackup` object in the response field. The returned operation is automatically deleted after a few hours, so there is no need to call `operations.delete`."
-                },
-                "delete": {
-                  "id": "sddc.projects.locations.privateCloudBackups.delete",
-                  "path": "v1alpha1/{+name}",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/privateCloudBackups/{privateCloudBackupsId}",
-                  "httpMethod": "DELETE",
-                  "parameters": {
-                    "name": {
-                      "description": "Required. The resource name of the `PrivateCloudBackup` to be deleted.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateCloudBackups\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "requestId": {
-                      "description": "UUID of this invocation for idempotent operation.",
-                      "location": "query",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "response": {
-                    "$ref": "GoogleLongrunningOperation"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Deletes a `PrivateCloudBackup`."
-                }
-              }
-            },
-            "privateClouds": {
-              "methods": {
-                "list": {
-                  "id": "sddc.projects.locations.privateClouds.list",
-                  "path": "v1alpha1/{+parent}/privateClouds",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/privateClouds",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "parent": {
-                      "description": "Required. The location and project which will be queried for data centers. For example, projects\/PROJECT-NUMBER\/locations\/us-central1",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "pageSize": {
-                      "description": "The maximum number of private clouds to return. The service may return fewer private clouds.",
-                      "location": "query",
-                      "type": "integer",
-                      "format": "int32"
-                    },
-                    "pageToken": {
-                      "description": "A page token, received from a previous `ListPrivateCloudsRequest` call. Provide this to retrieve the subsequent page. When paginating, you must provide exactly the same parameters to `ListPrivateCloudsRequest` as you provided to the page token request.",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "filter": {
-                      "description": "List filter.",
-                      "location": "query",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "parent"
-                  ],
-                  "response": {
-                    "$ref": "ListPrivateCloudsResponse"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Lists `PrivateCloud` objects in a given project and location (region)."
-                },
-                "get": {
-                  "id": "sddc.projects.locations.privateClouds.get",
-                  "path": "v1alpha1/{+name}",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "name": {
-                      "description": "Required. The resource name of the `PrivateCloud` to retrieve. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example, projects\/ PROJECT-NUMBER\/locations\/us-central1\/privateClouds\/MY_CLOUD",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "response": {
-                    "$ref": "PrivateCloud"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Gets details of a single `PrivateCloud`."
-                },
-                "create": {
-                  "id": "sddc.projects.locations.privateClouds.create",
-                  "path": "v1alpha1/{+parent}/privateClouds",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/privateClouds",
-                  "httpMethod": "POST",
-                  "parameters": {
-                    "parent": {
-                      "description": "Required. The location (region) and project where the new `PrivateCloud` is created. For example, projects\/PROJECT-NUMBER\/locations\/us-central1",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "privateCloudId": {
-                      "description": "Required. The user-provided ID of the `PrivateCloud` to create. This ID must be unique among `PrivateClouds` within the parent and becomes the final token in the name URI.",
-                      "location": "query",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "parent"
-                  ],
-                  "request": {
-                    "$ref": "PrivateCloud"
-                  },
-                  "response": {
-                    "$ref": "GoogleLongrunningOperation"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Creates a new `PrivateCloud` in a given project and location (region). The creation is asynchronous. You can check the returned operation to track its progress. When the operation successfully completes, the new `PrivateCloud` is fully functional. The returned operation is automatically deleted after a few hours, so there is no need to call `DeleteOperation`."
-                },
-                "patch": {
-                  "id": "sddc.projects.locations.privateClouds.patch",
-                  "path": "v1alpha1/{+name}",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}",
-                  "httpMethod": "PATCH",
-                  "parameters": {
-                    "name": {
-                      "description": "Output only. The resource name of this `PrivateCloud`. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example, projects\/ PROJECT-NUMBER\/locations\/us-central1\/privateClouds\/MY-CLOUD",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "updateMask": {
-                      "description": "Mask of fields to update. You must provide at least one path in this field. The elements of the repeated paths field may only include the following fields: \"description\" \"labels\" \"network_config.external_ip_access\"",
-                      "location": "query",
-                      "type": "string",
-                      "format": "google-fieldmask"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "request": {
-                    "$ref": "PrivateCloud"
-                  },
-                  "response": {
-                    "$ref": "GoogleLongrunningOperation"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Updates the description, labels, and `NetworkConfig` of a specific `PrivateCloud`."
-                },
-                "delete": {
-                  "id": "sddc.projects.locations.privateClouds.delete",
-                  "path": "v1alpha1/{+name}",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}",
-                  "httpMethod": "DELETE",
-                  "parameters": {
-                    "name": {
-                      "description": "Required. The resource name of the `PrivateCloud` to be deleted.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "response": {
-                    "$ref": "GoogleLongrunningOperation"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Deletes a `PrivateCloud`."
-                }
-              }
-              ,
-              "resources": {
-                "clusters": {
-                  "methods": {
-                    "list": {
-                      "id": "sddc.projects.locations.privateClouds.clusters.list",
-                      "path": "v1alpha1/{+parent}/clusters",
-                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/clusters",
-                      "httpMethod": "GET",
-                      "parameters": {
-                        "parent": {
-                          "description": "Required. The project, location, and cluster group that is queried for clusters. For example, projects\/PROJECT-NUMBER \/locations\/us-central1\/clusterGroups\/MY_GROUP",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "pageSize": {
-                          "description": "The maximum number of clusters to return. The service might return fewer clusters.",
-                          "location": "query",
-                          "type": "integer",
-                          "format": "int32"
-                        },
-                        "pageToken": {
-                          "description": "A page token received from a previous `ListClustersRequest`. Provide this to retrieve the subsequent page. When paginating, you must provide exactly the same parameters to `ListClustersRequest` as you provided to the page token request.",
-                          "location": "query",
-                          "type": "string"
-                        },
-                        "filter": {
-                          "description": "List filter.",
-                          "location": "query",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "parent"
-                      ],
-                      "response": {
-                        "$ref": "ListClustersResponse"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Lists `Clusters` in a given private cloud. "
-                    },
-                    "get": {
-                      "id": "sddc.projects.locations.privateClouds.clusters.get",
-                      "path": "v1alpha1/{+name}",
-                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/clusters/{clustersId}",
-                      "httpMethod": "GET",
-                      "parameters": {
-                        "name": {
-                          "description": "Required. The resource name of the Cluster to retrieve. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example, projects\/ PROJECT-NUMBER\/locations\/us-central1\/clusterGroups\/MY_GROUP\/clusters\/ MY_CLUSTER",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+\/clusters\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "response": {
-                        "$ref": "Cluster"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Gets details of a single cluster."
-                    },
-                    "create": {
-                      "id": "sddc.projects.locations.privateClouds.clusters.create",
-                      "path": "v1alpha1/{+parent}/clusters",
-                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/clusters",
-                      "httpMethod": "POST",
-                      "parameters": {
-                        "parent": {
-                          "description": "Required. The `ClusterGroup` in where the new Cluster will be created. For example, projects\/PROJECT-NUMBER\/locations\/us-central1\/clusterGroups\/ MY_GROUP",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "clusterId": {
-                          "description": "Required. The user-provided ID of the `Cluster` to create. This ID must be unique among `Clusters` within the parent and becomes the final token in the name URI.",
-                          "location": "query",
-                          "type": "string"
-                        },
-                        "managementCluster": {
-                          "description": "Required. Deprecated. Use the management property in the `Cluster` resource. Whether the cluster is the management cluster.",
-                          "location": "query",
-                          "type": "boolean"
-                        }
-                      },
-                      "parameterOrder": [
-                        "parent"
-                      ],
-                      "request": {
-                        "$ref": "Cluster"
-                      },
-                      "response": {
-                        "$ref": "GoogleLongrunningOperation"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Creates a new cluster in a given private cloud. "
-                    },
-                    "patch": {
-                      "id": "sddc.projects.locations.privateClouds.clusters.patch",
-                      "path": "v1alpha1/{+name}",
-                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/clusters/{clustersId}",
-                      "httpMethod": "PATCH",
-                      "parameters": {
-                        "name": {
-                          "description": "Output only. The resource name of this `Cluster`. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example, projects\/ PROJECT-NUMBER\/locations\/REGION\/clusterGroups\/MY-GROUP\/clusters\/MY-CLUSTER",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+\/clusters\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "updateMask": {
-                          "description": "Mask of fields to update. You must provide at least one path in this field. The elements of the repeated paths field may only include these fields: \"labels\"",
-                          "location": "query",
-                          "type": "string",
-                          "format": "google-fieldmask"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "request": {
-                        "$ref": "Cluster"
-                      },
-                      "response": {
-                        "$ref": "GoogleLongrunningOperation"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Updates labels of a specific cluster."
-                    },
-                    "delete": {
-                      "id": "sddc.projects.locations.privateClouds.clusters.delete",
-                      "path": "v1alpha1/{+name}",
-                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/clusters/{clustersId}",
-                      "httpMethod": "DELETE",
-                      "parameters": {
-                        "name": {
-                          "description": "Required. The resource name of the `Cluster` to delete.",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+\/clusters\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "response": {
-                        "$ref": "GoogleLongrunningOperation"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Deletes a cluster."
-                    },
-                    "addNodes": {
-                      "id": "sddc.projects.locations.privateClouds.clusters.addNodes",
-                      "path": "v1alpha1/{+cluster}:addNodes",
-                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/clusters/{clustersId}:addNodes",
-                      "httpMethod": "POST",
-                      "parameters": {
-                        "cluster": {
-                          "description": "Required. The resource name of the `Cluster` to perform add nodes. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example, projects\/ PROJECT-NUMBER\/locations\/us-central1\/clusterGroups\/MY_GROUP\/clusters\/ MY_CLUSTER",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+\/clusters\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "cluster"
-                      ],
-                      "request": {
-                        "$ref": "AddNodesRequest"
-                      },
-                      "response": {
-                        "$ref": "GoogleLongrunningOperation"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Add bare metal nodes to a cluster."
-                    },
-                    "removeNodes": {
-                      "id": "sddc.projects.locations.privateClouds.clusters.removeNodes",
-                      "path": "v1alpha1/{+cluster}:removeNodes",
-                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/clusters/{clustersId}:removeNodes",
-                      "httpMethod": "POST",
-                      "parameters": {
-                        "cluster": {
-                          "description": "Required. The resource name of the `Cluster` to perform remove nodes. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example, projects\/ PROJECT-NUMBER\/locations\/us-central1\/clusterGroups\/MY_GROUP\/clusters\/ MY_CLUSTER",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+\/clusters\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "cluster"
-                      ],
-                      "request": {
-                        "$ref": "RemoveNodesRequest"
-                      },
-                      "response": {
-                        "$ref": "GoogleLongrunningOperation"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Remove bare metal nodes from a cluster."
-                    }
-                  }
-                },
-                "ipAddresses": {
-                  "methods": {
-                    "list": {
-                      "id": "sddc.projects.locations.privateClouds.ipAddresses.list",
-                      "path": "v1alpha1/{+parent}/ipAddresses",
-                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/ipAddresses",
-                      "httpMethod": "GET",
-                      "parameters": {
-                        "parent": {
-                          "description": "Required. The parent ClusterGroup or PrivateCloud of which the IpAddresses belong to. For example: projects\/PROJECT-NUMBER \/locations\/us-central1\/clusterGroups\/MY-GROUP",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "pageSize": {
-                          "description": "The maximum number of `IpAddress` objects to return. The service may return fewer than this value.",
-                          "location": "query",
-                          "type": "integer",
-                          "format": "int32"
-                        },
-                        "pageToken": {
-                          "description": "A page token, received from a previous `ListIpAddressesRequest` call. Provide this to retrieve the subsequent page. When paginating, you must provide exactly the same parameters to `ListIpAddressesRequest` as you provided to the page token request",
-                          "location": "query",
-                          "type": "string"
-                        },
-                        "filter": {
-                          "description": "List filter.",
-                          "location": "query",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "parent"
-                      ],
-                      "response": {
-                        "$ref": "ListIpAddressesResponse"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Lists `IpAddress` objects in a given `PrivateCloud`."
-                    },
-                    "get": {
-                      "id": "sddc.projects.locations.privateClouds.ipAddresses.get",
-                      "path": "v1alpha1/{+name}",
-                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/ipAddresses/{ipAddressesId}",
-                      "httpMethod": "GET",
-                      "parameters": {
-                        "name": {
-                          "description": "Required. The resource name of the `IpAddress` to retrieve. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example, projects\/ PROJECT-NUMBER\/locations\/us-central1\/clusterGroups\/MY_GROUP\/ipAddresses\/ MY_IP",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+\/ipAddresses\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "response": {
-                        "$ref": "IpAddress"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Gets the details of a single `IpAddress`."
-                    },
-                    "create": {
-                      "id": "sddc.projects.locations.privateClouds.ipAddresses.create",
-                      "path": "v1alpha1/{+parent}/ipAddresses",
-                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/ipAddresses",
-                      "httpMethod": "POST",
-                      "parameters": {
-                        "parent": {
-                          "description": "Required. The ClusterGroup or private cloud in which the `IpAddress` will be created. For example, projects\/PROJECT-NUMBER \/locations\/us-central1\/clusterGroups\/MY-GROUP",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "ipAddressId": {
-                          "description": "Required. The user-provided ID of the `IpAddress` to create. This ID must be unique among `IpAddress` within the parent and becomes the final token in the name URI.",
-                          "location": "query",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "parent"
-                      ],
-                      "request": {
-                        "$ref": "IpAddress"
-                      },
-                      "response": {
-                        "$ref": "GoogleLongrunningOperation"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Creates a new `IpAddress` in a given `PrivateCloud`. The creation is asynchronous. You can check the returned operation to track its progress. When the operation successfully completes, the cluster has a a **READY** status and is fully functional. The returned operation is automatically deleted after a few hours, so there is no need to call `operations.delete`."
-                    },
-                    "delete": {
-                      "id": "sddc.projects.locations.privateClouds.ipAddresses.delete",
-                      "path": "v1alpha1/{+name}",
-                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/ipAddresses/{ipAddressesId}",
-                      "httpMethod": "DELETE",
-                      "parameters": {
-                        "name": {
-                          "description": "Required. The resource name of the `ClusterGroupBackup` to be deleted.",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+\/ipAddresses\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "response": {
-                        "$ref": "GoogleLongrunningOperation"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Deletes an `IpAddress` in a given `PrivateCloud`."
-                    }
-                  }
                 }
               }
             },

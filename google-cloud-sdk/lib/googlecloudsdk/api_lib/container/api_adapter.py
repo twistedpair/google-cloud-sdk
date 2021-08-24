@@ -2831,11 +2831,16 @@ class APIAdapter(object):
         version=options.node_version,
         management=self._GetNodeManagement(options))
 
+    if options.enable_autoscaling or options.enable_autoprovisioning:
+      pool.autoscaling = self.messages.NodePoolAutoscaling()
+
     if options.enable_autoscaling:
-      pool.autoscaling = self.messages.NodePoolAutoscaling(
-          enabled=options.enable_autoscaling,
-          minNodeCount=options.min_nodes,
-          maxNodeCount=options.max_nodes)
+      pool.autoscaling.enabled = options.enable_autoscaling
+      pool.autoscaling.minNodeCount = options.min_nodes
+      pool.autoscaling.maxNodeCount = options.max_nodes
+
+    if options.enable_autoprovisioning:
+      pool.autoscaling.autoprovisioned = options.enable_autoprovisioning
 
     if options.max_pods_per_node is not None:
       pool.maxPodsConstraint = self.messages.MaxPodsConstraint(
@@ -2854,9 +2859,6 @@ class APIAdapter(object):
       util.LoadSystemConfigFromYAML(node_config,
                                     options.system_config_from_file,
                                     self.messages)
-
-    if options.enable_autoprovisioning is not None:
-      pool.autoscaling.autoprovisioned = options.enable_autoprovisioning
 
     pool.networkConfig = self._GetNetworkConfig(options)
 

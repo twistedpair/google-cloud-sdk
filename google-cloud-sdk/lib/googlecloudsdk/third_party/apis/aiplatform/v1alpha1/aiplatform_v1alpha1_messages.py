@@ -1071,6 +1071,22 @@ class AiplatformProjectsLocationsEndpointsPredictRequest(_messages.Message):
   googleCloudAiplatformV1alpha1PredictRequest = _messages.MessageField('GoogleCloudAiplatformV1alpha1PredictRequest', 2)
 
 
+class AiplatformProjectsLocationsEndpointsRawPredictRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsEndpointsRawPredictRequest object.
+
+  Fields:
+    endpoint: Required. The name of the Endpoint requested to serve the
+      prediction. Format:
+      `projects/{project}/locations/{location}/endpoints/{endpoint}`
+    googleCloudAiplatformV1alpha1RawPredictRequest: A
+      GoogleCloudAiplatformV1alpha1RawPredictRequest resource to be passed as
+      the request body.
+  """
+
+  endpoint = _messages.StringField(1, required=True)
+  googleCloudAiplatformV1alpha1RawPredictRequest = _messages.MessageField('GoogleCloudAiplatformV1alpha1RawPredictRequest', 2)
+
+
 class AiplatformProjectsLocationsEndpointsUndeployModelRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsEndpointsUndeployModelRequest object.
 
@@ -1917,11 +1933,14 @@ class AiplatformProjectsLocationsMetadataStoresArtifactsPatchRequest(_messages.M
       GoogleCloudAiplatformV1alpha1Artifact resource to be passed as the
       request body.
     name: Output only. The resource name of the Artifact.
+    updateMask: Required. A FieldMask indicating which fields should be
+      updated. Functionality of this field is not yet supported.
   """
 
   allowMissing = _messages.BooleanField(1)
   googleCloudAiplatformV1alpha1Artifact = _messages.MessageField('GoogleCloudAiplatformV1alpha1Artifact', 2)
   name = _messages.StringField(3, required=True)
+  updateMask = _messages.StringField(4)
 
 
 class AiplatformProjectsLocationsMetadataStoresContextsAddContextArtifactsAndExecutionsRequest(_messages.Message):
@@ -2045,11 +2064,14 @@ class AiplatformProjectsLocationsMetadataStoresContextsPatchRequest(_messages.Me
       GoogleCloudAiplatformV1alpha1Context resource to be passed as the
       request body.
     name: Output only. The resource name of the Context.
+    updateMask: Required. A FieldMask indicating which fields should be
+      updated. Functionality of this field is not yet supported.
   """
 
   allowMissing = _messages.BooleanField(1)
   googleCloudAiplatformV1alpha1Context = _messages.MessageField('GoogleCloudAiplatformV1alpha1Context', 2)
   name = _messages.StringField(3, required=True)
+  updateMask = _messages.StringField(4)
 
 
 class AiplatformProjectsLocationsMetadataStoresContextsQueryContextLineageSubgraphRequest(_messages.Message):
@@ -2214,11 +2236,14 @@ class AiplatformProjectsLocationsMetadataStoresExecutionsPatchRequest(_messages.
       GoogleCloudAiplatformV1alpha1Execution resource to be passed as the
       request body.
     name: Output only. The resource name of the Execution.
+    updateMask: Required. A FieldMask indicating which fields should be
+      updated. Functionality of this field is not yet supported.
   """
 
   allowMissing = _messages.BooleanField(1)
   googleCloudAiplatformV1alpha1Execution = _messages.MessageField('GoogleCloudAiplatformV1alpha1Execution', 2)
   name = _messages.StringField(3, required=True)
+  updateMask = _messages.StringField(4)
 
 
 class AiplatformProjectsLocationsMetadataStoresExecutionsQueryExecutionInputsAndOutputsRequest(_messages.Message):
@@ -4428,6 +4453,67 @@ class AiplatformProjectsLocationsTrainingPipelinesOperationsWaitRequest(_message
 
   name = _messages.StringField(1, required=True)
   timeout = _messages.StringField(2)
+
+
+class GoogleApiHttpBody(_messages.Message):
+  r"""Message that represents an arbitrary HTTP body. It should only be used
+  for payload formats that can't be represented as JSON, such as raw binary or
+  an HTML page. This message can be used both in streaming and non-streaming
+  API methods in the request as well as the response. It can be used as a top-
+  level request field, which is convenient if one wants to extract parameters
+  from either the URL or HTTP template into the request fields and also want
+  access to the raw HTTP body. Example: message GetResourceRequest { // A
+  unique request id. string request_id = 1; // The raw HTTP body is bound to
+  this field. google.api.HttpBody http_body = 2; } service ResourceService {
+  rpc GetResource(GetResourceRequest) returns (google.api.HttpBody); rpc
+  UpdateResource(google.api.HttpBody) returns (google.protobuf.Empty); }
+  Example with streaming methods: service CaldavService { rpc
+  GetCalendar(stream google.api.HttpBody) returns (stream
+  google.api.HttpBody); rpc UpdateCalendar(stream google.api.HttpBody) returns
+  (stream google.api.HttpBody); } Use of this type only changes how the
+  request and response bodies are handled, all other features will continue to
+  work unchanged.
+
+  Messages:
+    ExtensionsValueListEntry: A ExtensionsValueListEntry object.
+
+  Fields:
+    contentType: The HTTP Content-Type header value specifying the content
+      type of the body.
+    data: The HTTP request/response body as raw binary.
+    extensions: Application specific response metadata. Must be set in the
+      first response for streaming APIs.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ExtensionsValueListEntry(_messages.Message):
+    r"""A ExtensionsValueListEntry object.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        ExtensionsValueListEntry object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ExtensionsValueListEntry object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  contentType = _messages.StringField(1)
+  data = _messages.BytesField(2)
+  extensions = _messages.MessageField('ExtensionsValueListEntry', 3, repeated=True)
 
 
 class GoogleCloudAiplatformInternalAnnotationSpecStats(_messages.Message):
@@ -13871,9 +13957,10 @@ class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionExportEvaluatedDataItems
 
   Fields:
     destinationBigqueryUri: URI of desired destination BigQuery table.
-      Expected format: bq://:: If not specified, then results are exported to
-      the following auto-created BigQuery table:
-      :export_evaluated_examples__.evaluated_examples
+      Expected format: `bq://{project_id}:{dataset_id}:{table}` If not
+      specified, then results are exported to the following auto-created
+      BigQuery table: `{project_id}:export_evaluated_examples_{model_name}_{yy
+      yy_MM_dd'T'HH_mm_ss_SSS'Z'}.evaluated_examples`
     overrideExistingTable: If true and an export destination is specified,
       then the contents of the destination are overwritten. Otherwise, if the
       export destination already exists, then the export operation fails.
@@ -14132,8 +14219,12 @@ class GoogleCloudAiplatformV1StudySpec(_messages.Message):
 
   Fields:
     algorithm: The search algorithm specified for the Study.
+    decayCurveStoppingSpec: The automated early stopping spec using decay
+      curve rule.
     measurementSelectionType: Describe which measurement selection type will
       be used
+    medianAutomatedStoppingSpec: The automated early stopping spec using
+      median rule.
     metrics: Required. Metric specs for the Study.
     observationNoise: The observation noise level of the study. Currently only
       supported by the Vizier service. Not supported by HyperparamterTuningJob
@@ -14189,10 +14280,45 @@ class GoogleCloudAiplatformV1StudySpec(_messages.Message):
     HIGH = 2
 
   algorithm = _messages.EnumField('AlgorithmValueValuesEnum', 1)
-  measurementSelectionType = _messages.EnumField('MeasurementSelectionTypeValueValuesEnum', 2)
-  metrics = _messages.MessageField('GoogleCloudAiplatformV1StudySpecMetricSpec', 3, repeated=True)
-  observationNoise = _messages.EnumField('ObservationNoiseValueValuesEnum', 4)
-  parameters = _messages.MessageField('GoogleCloudAiplatformV1StudySpecParameterSpec', 5, repeated=True)
+  decayCurveStoppingSpec = _messages.MessageField('GoogleCloudAiplatformV1StudySpecDecayCurveAutomatedStoppingSpec', 2)
+  measurementSelectionType = _messages.EnumField('MeasurementSelectionTypeValueValuesEnum', 3)
+  medianAutomatedStoppingSpec = _messages.MessageField('GoogleCloudAiplatformV1StudySpecMedianAutomatedStoppingSpec', 4)
+  metrics = _messages.MessageField('GoogleCloudAiplatformV1StudySpecMetricSpec', 5, repeated=True)
+  observationNoise = _messages.EnumField('ObservationNoiseValueValuesEnum', 6)
+  parameters = _messages.MessageField('GoogleCloudAiplatformV1StudySpecParameterSpec', 7, repeated=True)
+
+
+class GoogleCloudAiplatformV1StudySpecDecayCurveAutomatedStoppingSpec(_messages.Message):
+  r"""The decay curve automated stopping rule builds a Gaussian Process
+  Regressor to predict the final objective value of a Trial based on the
+  already completed Trials and the intermediate measurements of the current
+  Trial. Early stopping is requested for the current Trial if there is very
+  low probability to exceed the optimal value found so far.
+
+  Fields:
+    useElapsedDuration: True if Measurement.elapsed_duration is used as the
+      x-axis of each Trials Decay Curve. Otherwise, Measurement.step_count
+      will be used as the x-axis.
+  """
+
+  useElapsedDuration = _messages.BooleanField(1)
+
+
+class GoogleCloudAiplatformV1StudySpecMedianAutomatedStoppingSpec(_messages.Message):
+  r"""The median automated stopping rule stops a pending Trial if the Trial's
+  best objective_value is strictly below the median 'performance' of all
+  completed Trials reported up to the Trial's last measurement. Currently,
+  'performance' refers to the running average of the objective values reported
+  by the Trial in each measurement.
+
+  Fields:
+    useElapsedDuration: True if median automated stopping rule applies on
+      Measurement.elapsed_duration. It means that elapsed_duration field of
+      latest measurement of current Trial is used to compute median objective
+      value for each completed Trials.
+  """
+
+  useElapsedDuration = _messages.BooleanField(1)
 
 
 class GoogleCloudAiplatformV1StudySpecMetricSpec(_messages.Message):
@@ -20602,6 +20728,22 @@ class GoogleCloudAiplatformV1alpha1PythonPackageSpec(_messages.Message):
   executorImageUri = _messages.StringField(2)
   packageUris = _messages.StringField(3, repeated=True)
   pythonModule = _messages.StringField(4)
+
+
+class GoogleCloudAiplatformV1alpha1RawPredictRequest(_messages.Message):
+  r"""Request message for PredictionService.RawPredict.
+
+  Fields:
+    httpBody: The prediction input that supports HTTP headers and arbitrary
+      data payload. A DeployedModel may have an upper limit on the number of
+      instances it supports per request, and when it is exceeded the
+      prediction call errors in case of AutoML Models, or, in case of customer
+      created Models, the behaviour is as documented by that Model. The schema
+      of any single instance may be specified via Endpoint's DeployedModels'
+      Model's PredictSchemata's instance_schema_uri.
+  """
+
+  httpBody = _messages.MessageField('GoogleApiHttpBody', 1)
 
 
 class GoogleCloudAiplatformV1alpha1ReadFeatureValuesRequest(_messages.Message):
@@ -27206,9 +27348,10 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionExportEvaluatedData
 
   Fields:
     destinationBigqueryUri: URI of desired destination BigQuery table.
-      Expected format: bq://:: If not specified, then results are exported to
-      the following auto-created BigQuery table:
-      :export_evaluated_examples__.evaluated_examples
+      Expected format: `bq://{project_id}:{dataset_id}:{table}` If not
+      specified, then results are exported to the following auto-created
+      BigQuery table: `{project_id}:export_evaluated_examples_{model_name}_{yy
+      yy_MM_dd'T'HH_mm_ss_SSS'Z'}.evaluated_examples`
     overrideExistingTable: If true and an export destination is specified,
       then the contents of the destination are overwritten. Otherwise, if the
       export destination already exists, then the export operation fails.

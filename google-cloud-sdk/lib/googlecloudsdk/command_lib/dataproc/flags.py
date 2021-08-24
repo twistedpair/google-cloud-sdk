@@ -62,8 +62,7 @@ def AddProjectsLocationsResourceArg(parser, api_version):
       resource_name='region',
       disable_auto_completers=True,
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
-      locationsId=_RegionAttributeConfig()
-  )
+      locationsId=_RegionAttributeConfig())
 
   concept_parsers.ConceptParser.ForResource(
       '--region',
@@ -154,9 +153,7 @@ def AddJvmMainMutex(parser):
             'or specified in `jar_files`.'))
 
   main_group.add_argument(
-      '--jar',
-      dest='main_jar',
-      help='URI of the main jar file.')
+      '--jar', dest='main_jar', help='URI of the main jar file.')
 
 
 def AddMainSqlScript(parser):
@@ -166,8 +163,21 @@ def AddMainSqlScript(parser):
 
 
 def AddSqlScriptVariables(parser):
-  parser.add_argument(
+  """Add --params flag."""
+  sql_script_variables = parser.add_mutually_exclusive_group()
+  sql_script_variables.add_argument(
       '--script-variables',
+      type=arg_parsers.ArgDict(),
+      metavar='NAME=VALUE',
+      action=actions.DeprecationAction(
+          '--script-variables',
+          warn=('The `--script-variables` flag is deprecated. '
+                'Use the `--vars` flag instead.')),
+      hidden=True,
+      help=('Mapping of query variable names to values (equivalent to the '
+            'Spark SQL command: SET name="value";).'))
+  sql_script_variables.add_argument(
+      '--vars',
       type=arg_parsers.ArgDict(),
       metavar='NAME=VALUE',
       help=('Mapping of query variable names to values (equivalent to the '
@@ -175,8 +185,22 @@ def AddSqlScriptVariables(parser):
 
 
 def AddJarFiles(parser):
-  parser.add_argument(
+  """Add --jars flag."""
+  jar_files = parser.add_mutually_exclusive_group()
+  jar_files.add_argument(
       '--jar-files',
+      type=arg_parsers.ArgList(),
+      metavar='JAR',
+      default=[],
+      action=actions.DeprecationAction(
+          '--jar-files',
+          warn=('The `--jar-files` flag is deprecated. '
+                'Use the `--jars` flag instead.')),
+      hidden=True,
+      help=('Comma-separated list of jar files to be provided to the '
+            'classpaths.'))
+  jar_files.add_argument(
+      '--jars',
       type=arg_parsers.ArgList(),
       metavar='JAR',
       default=[],
@@ -185,14 +209,30 @@ def AddJarFiles(parser):
 
 
 def AddMainRFile(parser):
-  parser.add_argument('MAIN_R_FILE',
-                      help=('URI of the main R file to use as the driver. '
-                            'Must be a ``.R\'\' or ``.r\'\' file.'))
+  parser.add_argument(
+      'MAIN_R_FILE',
+      help=('URI of the main R file to use as the driver. '
+            'Must be a ``.R\'\' or ``.r\'\' file.'))
 
 
 def AddPythonFiles(parser):
-  parser.add_argument(
+  """Add --py-files flag."""
+  py_files = parser.add_mutually_exclusive_group()
+  py_files.add_argument(
       '--python-files',
+      type=arg_parsers.ArgList(),
+      metavar='PY',
+      default=[],
+      action=actions.DeprecationAction(
+          '--python-files',
+          warn=('The `--python-files` flag is deprecated. '
+                'Use the `--py-files` flag instead.')),
+      hidden=True,
+      help=('Comma-separated list of Python scripts to be passed to the '
+            'PySpark framework. Supported file types: ``.py\'\', ``.egg\'\' '
+            'and ``.zip.\'\''))
+  py_files.add_argument(
+      '--py-files',
       type=arg_parsers.ArgList(),
       metavar='PY',
       default=[],
@@ -231,10 +271,21 @@ def AddArgs(parser):
 
 
 def AddBucket(parser):
-  """A Cloud Storage bucket to upload workload dependencies."""
-  parser.add_argument(
+  """Cloud Storage bucket to upload workload dependencies."""
+  bucket_group = parser.add_mutually_exclusive_group()
+  bucket_group.add_argument(
       '--bucket',
-      help=('A Cloud Storage bucket to upload workload dependencies.'))
+      action=actions.DeprecationAction(
+          '--bucket',
+          warn=('The `--bucket1 flag is deprecated. '
+                'Use the `--deps-bucket` flag instead.')),
+      hidden=True,
+      help=('A Cloud Storage bucket to upload workload '
+            'dependencies.'))
+  bucket_group.add_argument(
+      '--deps-bucket',
+      help=('A Cloud Storage bucket to upload workload '
+            'dependencies.'))
 
 
 def JobConfig():

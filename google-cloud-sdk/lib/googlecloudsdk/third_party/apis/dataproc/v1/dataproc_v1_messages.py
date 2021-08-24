@@ -378,8 +378,8 @@ class CancelJobRequest(_messages.Message):
 
 
 class Cluster(_messages.Message):
-  r"""Describes the identifying information, config, and status of a cluster
-  of Compute Engine instances.
+  r"""Describes the identifying information, config, and status of a Dataproc
+  cluster
 
   Messages:
     LabelsValue: Optional. The labels to associate with this cluster. Label
@@ -394,8 +394,9 @@ class Cluster(_messages.Message):
       must be unique. Names of deleted clusters can be reused.
     clusterUuid: Output only. A cluster UUID (Unique Universal Identifier).
       Dataproc generates this value when it creates the cluster.
-    config: Required. The cluster config. Note that Dataproc may set default
-      values, and values may change when clusters are updated.
+    config: Optional. The cluster config for a cluster of Compute Engine
+      Instances. Note that Dataproc may set default values, and values may
+      change when clusters are updated.
     labels: Optional. The labels to associate with this cluster. Label keys
       must contain 1 to 63 characters, and must conform to RFC 1035
       (https://www.ietf.org/rfc/rfc1035.txt). Label values may be empty, but,
@@ -409,6 +410,14 @@ class Cluster(_messages.Message):
       belongs to.
     status: Output only. Cluster status.
     statusHistory: Output only. The previous cluster status.
+    virtualClusterConfig: Optional. The virtual cluster config, used when
+      creating a Dataproc cluster that does not directly control the
+      underlying compute resources, for example, when creating a Dataproc-on-
+      GKE cluster
+      (https://cloud.google.com/dataproc/docs/concepts/jobs/dataproc-
+      gke#create-a-dataproc-on-gke-cluster). Note that Dataproc may set
+      default values, and values may change when clusters are updated. Exactly
+      one of config or virtualClusterConfig must be specified.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -448,6 +457,7 @@ class Cluster(_messages.Message):
   projectId = _messages.StringField(6)
   status = _messages.MessageField('ClusterStatus', 7)
   statusHistory = _messages.MessageField('ClusterStatus', 8, repeated=True)
+  virtualClusterConfig = _messages.MessageField('VirtualClusterConfig', 9)
 
 
 class ClusterConfig(_messages.Message):
@@ -462,10 +472,10 @@ class ClusterConfig(_messages.Message):
       location (US, ASIA, or EU) for your cluster's staging bucket according
       to the Compute Engine zone where your cluster is deployed, and then
       create and manage this project-level, per-location bucket (see Dataproc
-      staging bucket
+      staging and temp buckets
       (https://cloud.google.com/dataproc/docs/concepts/configuring-
       clusters/staging-bucket)). This field requires a Cloud Storage bucket
-      name, not a URI to a Cloud Storage bucket.
+      name, not a gs://... URI to a Cloud Storage bucket.
     encryptionConfig: Optional. Encryption settings for the cluster.
     endpointConfig: Optional. Port/endpoint configuration for this cluster
     gceClusterConfig: Optional. The shared Compute Engine config settings for
@@ -484,14 +494,13 @@ class ClusterConfig(_messages.Message):
       [[ "${ROLE}" == 'Master' ]]; then ... master specific actions ... else
       ... worker specific actions ... fi
     lifecycleConfig: Optional. Lifecycle setting for the cluster.
-    masterConfig: Optional. The Compute Engine config settings for the master
-      instance in a cluster.
+    masterConfig: Optional. The Compute Engine config settings for the
+      cluster's master instance.
     metastoreConfig: Optional. Metastore configuration.
-    secondaryWorkerConfig: Optional. The Compute Engine config settings for
-      additional worker instances in a cluster.
+    secondaryWorkerConfig: Optional. The Compute Engine config settings for a
+      cluster's secondary worker instances
     securityConfig: Optional. Security settings for the cluster.
-    softwareConfig: Optional. The config settings for software inside the
-      cluster.
+    softwareConfig: Optional. The config settings for cluster software.
     tempBucket: Optional. A Cloud Storage bucket used to store ephemeral
       cluster and jobs data, such as Spark and MapReduce history files. If you
       do not specify a temp bucket, Dataproc will determine a Cloud Storage
@@ -499,10 +508,12 @@ class ClusterConfig(_messages.Message):
       the Compute Engine zone where your cluster is deployed, and then create
       and manage this project-level, per-location bucket. The default bucket
       has a TTL of 90 days, but you can use any TTL (or none) if you specify a
-      bucket. This field requires a Cloud Storage bucket name, not a URI to a
-      Cloud Storage bucket.
-    workerConfig: Optional. The Compute Engine config settings for worker
-      instances in a cluster.
+      bucket (see Dataproc staging and temp buckets
+      (https://cloud.google.com/dataproc/docs/concepts/configuring-
+      clusters/staging-bucket)). This field requires a Cloud Storage bucket
+      name, not a gs://... URI to a Cloud Storage bucket.
+    workerConfig: Optional. The Compute Engine config settings for the
+      cluster's worker instances.
   """
 
   autoscalingConfig = _messages.MessageField('AutoscalingConfig', 1)
@@ -2523,13 +2534,143 @@ class GetPolicyOptions(_messages.Message):
 
 
 class GkeClusterConfig(_messages.Message):
-  r"""The GKE config for this cluster.
+  r"""The cluster's GKE config.
 
   Fields:
+    gkeClusterTarget: Optional. A target GKE cluster to deploy to. It must be
+      in the same project and region as the Dataproc cluster (the GKE cluster
+      can be zonal or regional). Format:
+      'projects/{project}/locations/{location}/clusters/{cluster_id}'
     namespacedGkeDeploymentTarget: Optional. A target for the deployment.
+    nodePoolTarget: Optional. GKE NodePools where workloads will be scheduled.
+      At least one node pool must be assigned the 'default' role. Each role
+      can be given to only a single NodePoolTarget. All NodePools must have
+      the same location settings. If a nodePoolTarget is not specified,
+      Dataproc constructs a default nodePoolTarget.
   """
 
-  namespacedGkeDeploymentTarget = _messages.MessageField('NamespacedGkeDeploymentTarget', 1)
+  gkeClusterTarget = _messages.StringField(1)
+  namespacedGkeDeploymentTarget = _messages.MessageField('NamespacedGkeDeploymentTarget', 2)
+  nodePoolTarget = _messages.MessageField('GkeNodePoolTarget', 3, repeated=True)
+
+
+class GkeNodeConfig(_messages.Message):
+  r"""Parameters that describe cluster nodes.
+
+  Fields:
+    accelerators: Optional. A list of hardware accelerators
+      (https://cloud.google.com/compute/docs/gpus) to attach to each node.
+    localSsdCount: Optional. The number of local SSD disks to attach to the
+      node, which is limited by the maximum number of disks allowable per zone
+      (see Adding Local SSDs
+      (https://cloud.google.com/compute/docs/disks/local-ssd)).
+    machineType: Optional. The name of a Compute Engine machine type
+      (https://cloud.google.com/compute/docs/machine-types).
+    minCpuPlatform: Optional. Minimum CPU platform
+      (https://cloud.google.com/compute/docs/instances/specify-min-cpu-
+      platform) to be used by this instance. The instance may be scheduled on
+      the specified or a newer CPU platform. Specify the friendly names of CPU
+      platforms, such as "Intel Haswell"` or Intel Sandy Bridge".
+    preemptible: Optional. Whether the nodes are created as preemptible VM
+      instances (https://cloud.google.com/compute/docs/instances/preemptible).
+  """
+
+  accelerators = _messages.MessageField('GkeNodePoolAcceleratorConfig', 1, repeated=True)
+  localSsdCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  machineType = _messages.StringField(3)
+  minCpuPlatform = _messages.StringField(4)
+  preemptible = _messages.BooleanField(5)
+
+
+class GkeNodePoolAcceleratorConfig(_messages.Message):
+  r"""A GkeNodeConfigAcceleratorConfig represents a Hardware Accelerator
+  request for a NodePool.
+
+  Fields:
+    acceleratorCount: The number of accelerator cards exposed to an instance.
+    acceleratorType: The accelerator type resource namename (see GPUs on
+      Compute Engine).
+  """
+
+  acceleratorCount = _messages.IntegerField(1)
+  acceleratorType = _messages.StringField(2)
+
+
+class GkeNodePoolAutoscalingConfig(_messages.Message):
+  r"""GkeNodePoolAutoscaling contains information the cluster autoscaler needs
+  to adjust the size of the node pool to the current cluster usage.
+
+  Fields:
+    maxNodeCount: The maximum number of nodes in the NodePool. Must be >=
+      min_node_count. Note: Quota must be sufficient to scale up the cluster.
+    minNodeCount: The minimum number of nodes in the NodePool. Must be >= 0
+      and <= max_node_count.
+  """
+
+  maxNodeCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  minNodeCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class GkeNodePoolConfig(_messages.Message):
+  r"""The configuration of a GKE NodePool used by a Dataproc-on-GKE cluster
+  (https://cloud.google.com/dataproc/docs/concepts/jobs/dataproc-gke#create-a-
+  dataproc-on-gke-cluster).
+
+  Fields:
+    autoscaling: Optional. The autoscaler configuration for this NodePool. The
+      autoscaler is enabled only when a valid configuration is present.
+    config: Optional. The node pool configuration.
+    locations: Optional. The list of Compute Engine zones
+      (https://cloud.google.com/compute/docs/zones#available) where NodePool's
+      nodes will be located.Note: Currently, only one zone may be specified.If
+      a location is not specified during NodePool creation, Dataproc will
+      choose a location.
+  """
+
+  autoscaling = _messages.MessageField('GkeNodePoolAutoscalingConfig', 1)
+  config = _messages.MessageField('GkeNodeConfig', 2)
+  locations = _messages.StringField(3, repeated=True)
+
+
+class GkeNodePoolTarget(_messages.Message):
+  r"""GKE NodePools that Dataproc workloads run on.
+
+  Enums:
+    RolesValueListEntryValuesEnum:
+
+  Fields:
+    nodePool: Required. The target GKE NodePool. Format: 'projects/{project}/l
+      ocations/{location}/clusters/{cluster}/nodePools/{node_pool}'
+    nodePoolConfig: Optional. The configuration for the GKE NodePool.If
+      specified, Dataproc attempts to create a NodePool with the specified
+      shape. If one with the same name already exists, it is verified against
+      all specified fields. If a field differs, the virtual cluster creation
+      will fail.If omitted, any NodePool with the specified name is used. If a
+      NodePool with the specified name does not exist, Dataproc create a
+      NodePool with default values.
+    roles: Required. The types of role for a GKE NodePool
+  """
+
+  class RolesValueListEntryValuesEnum(_messages.Enum):
+    r"""RolesValueListEntryValuesEnum enum type.
+
+    Values:
+      ROLE_UNSPECIFIED: Role is unspecified.
+      DEFAULT: Any roles that are not directly assigned to a NodePool run on
+        the default role's NodePool.
+      CONTROLLER: Run controllers and webhooks.
+      SPARK_DRIVER: Run spark driver.
+      SPARK_EXECUTOR: Run spark executors.
+    """
+    ROLE_UNSPECIFIED = 0
+    DEFAULT = 1
+    CONTROLLER = 2
+    SPARK_DRIVER = 3
+    SPARK_EXECUTOR = 4
+
+  nodePool = _messages.StringField(1)
+  nodePoolConfig = _messages.MessageField('GkeNodePoolConfig', 2)
+  roles = _messages.EnumField('RolesValueListEntryValuesEnum', 3, repeated=True)
 
 
 class HadoopJob(_messages.Message):
@@ -3289,6 +3430,23 @@ class KerberosConfig(_messages.Message):
   truststoreUri = _messages.StringField(15)
 
 
+class KubernetesClusterConfig(_messages.Message):
+  r"""The configuration for running the Dataproc cluster on Kubernetes.
+
+  Fields:
+    gkeClusterConfig: Required. The configuration for running the Dataproc
+      cluster on GKE.
+    kubernetesNamespace: Optional. A namespace within the Kubernetes cluster
+      to deploy into. If this namespace does not exist, it is created. If it
+      exists, Dataproc verifies that another Dataproc VirtualCluster is not
+      installed into it. If not specified, the name of the Dataproc Cluster is
+      used.
+  """
+
+  gkeClusterConfig = _messages.MessageField('GkeClusterConfig', 1)
+  kubernetesNamespace = _messages.StringField(2)
+
+
 class LifecycleConfig(_messages.Message):
   r"""Specifies the cluster auto-delete schedule configuration.
 
@@ -3950,7 +4108,7 @@ class Policy(_messages.Message):
   roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
   role: roles/resourcemanager.organizationViewer condition: title: expirable
   access description: Does not grant access after Sep 2020 expression:
-  request.time < timestamp('2020-10-01T00:00:00.000Z') - etag: BwWWja0YfJA= -
+  request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA=
   version: 3 For a description of IAM and its features, see the IAM
   documentation (https://cloud.google.com/iam/docs/).
 
@@ -5106,6 +5264,47 @@ class ValueValidation(_messages.Message):
   """
 
   values = _messages.StringField(1, repeated=True)
+
+
+class VirtualClusterConfig(_messages.Message):
+  r"""Dataproc cluster config for a cluster that does not directly control the
+  underlying compute resources, such as a Dataproc-on-GKE cluster
+  (https://cloud.google.com/dataproc/docs/concepts/jobs/dataproc-gke#create-a-
+  dataproc-on-gke-cluster).
+
+  Fields:
+    kubernetesClusterConfig: Required. The configuration for running the
+      Dataproc cluster on Kubernetes.
+    securityConfig: Optional. Cluster security settings.
+    softwareConfig: Optional. The config settings for cluster software.
+    stagingBucket: Optional. A Storage bucket used to stage job dependencies,
+      config files, and job driver console output. If you do not specify a
+      staging bucket, Cloud Dataproc will determine a Cloud Storage location
+      (US, ASIA, or EU) for your cluster's staging bucket according to the
+      Compute Engine zone where your cluster is deployed, and then create and
+      manage this project-level, per-location bucket (see Dataproc staging and
+      temp buckets
+      (https://cloud.google.com/dataproc/docs/concepts/configuring-
+      clusters/staging-bucket)). This field requires a Cloud Storage bucket
+      name, not a gs://... URI to a Cloud Storage bucket.
+    tempBucket: Optional. A Cloud Storage bucket used to store ephemeral
+      cluster and jobs data, such as Spark and MapReduce history files. If you
+      do not specify a temp bucket, Dataproc will determine a Cloud Storage
+      location (US, ASIA, or EU) for your cluster's temp bucket according to
+      the Compute Engine zone where your cluster is deployed, and then create
+      and manage this project-level, per-location bucket. The default bucket
+      has a TTL of 90 days, but you can use any TTL (or none) if you specify a
+      bucket (see Dataproc staging and temp buckets
+      (https://cloud.google.com/dataproc/docs/concepts/configuring-
+      clusters/staging-bucket)). This field requires a Cloud Storage bucket
+      name, not a gs://... URI to a Cloud Storage bucket.
+  """
+
+  kubernetesClusterConfig = _messages.MessageField('KubernetesClusterConfig', 1)
+  securityConfig = _messages.MessageField('SecurityConfig', 2)
+  softwareConfig = _messages.MessageField('SoftwareConfig', 3)
+  stagingBucket = _messages.StringField(4)
+  tempBucket = _messages.StringField(5)
 
 
 class WorkflowGraph(_messages.Message):

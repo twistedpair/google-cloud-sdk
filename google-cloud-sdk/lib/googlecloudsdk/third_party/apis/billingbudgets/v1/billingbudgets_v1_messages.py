@@ -105,7 +105,7 @@ class GoogleCloudBillingBudgetsV1Budget(_messages.Message):
     displayName: User data for display name in UI. The name must be less than
       or equal to 60 characters.
     etag: Optional. Etag to validate that the object is unchanged for a read-
-      modify-write operation. An empty etag will cause an update to overwrite
+      modify-write operation. An empty etag causes an update to overwrite
       other changes.
     name: Output only. Resource name of the budget. The resource name implies
       the scope of a budget. Values are of the form
@@ -166,9 +166,9 @@ class GoogleCloudBillingBudgetsV1Filter(_messages.Message):
   Enums:
     CalendarPeriodValueValuesEnum: Optional. Specifies to track usage for
       recurring calendar period. For example, assume that
-      CalendarPeriod.QUARTER is set. The budget will track usage from April 1
-      to June 30, when the current calendar month is April, May, June. After
-      that, it will track usage from July 1 to September 30 when the current
+      CalendarPeriod.QUARTER is set. The budget tracks usage from April 1 to
+      June 30, when the current calendar month is April, May, June. After
+      that, it tracks usage from July 1 to September 30 when the current
       calendar month is July, August, September, so on.
     CreditTypesTreatmentValueValuesEnum: Optional. If not set, default
       behavior is `INCLUDE_ALL_CREDITS`.
@@ -176,17 +176,18 @@ class GoogleCloudBillingBudgetsV1Filter(_messages.Message):
   Messages:
     LabelsValue: Optional. A single label and value pair specifying that usage
       from only this set of labeled resources should be included in the
-      budget. Currently, multiple entries or multiple values per entry are not
-      allowed. If omitted, the report will include all labeled and unlabeled
-      usage.
+      budget. If omitted, the report includes all labeled and unlabeled usage.
+      An object containing a single `"key": value` pair. Example: `{ "name":
+      "wrench" }`. _Currently, multiple entries or multiple values per entry
+      are not allowed._
 
   Fields:
     calendarPeriod: Optional. Specifies to track usage for recurring calendar
       period. For example, assume that CalendarPeriod.QUARTER is set. The
-      budget will track usage from April 1 to June 30, when the current
-      calendar month is April, May, June. After that, it will track usage from
-      July 1 to September 30 when the current calendar month is July, August,
-      September, so on.
+      budget tracks usage from April 1 to June 30, when the current calendar
+      month is April, May, June. After that, it tracks usage from July 1 to
+      September 30 when the current calendar month is July, August, September,
+      so on.
     creditTypes: Optional. If Filter.credit_types_treatment is
       INCLUDE_SPECIFIED_CREDITS, this is a list of credit types to be
       subtracted from gross cost to determine the spend for threshold
@@ -200,34 +201,35 @@ class GoogleCloudBillingBudgetsV1Filter(_messages.Message):
       (required) to any end date (optional). This time period is static, it
       does not recur.
     labels: Optional. A single label and value pair specifying that usage from
-      only this set of labeled resources should be included in the budget.
-      Currently, multiple entries or multiple values per entry are not
-      allowed. If omitted, the report will include all labeled and unlabeled
-      usage.
+      only this set of labeled resources should be included in the budget. If
+      omitted, the report includes all labeled and unlabeled usage. An object
+      containing a single `"key": value` pair. Example: `{ "name": "wrench"
+      }`. _Currently, multiple entries or multiple values per entry are not
+      allowed._
     projects: Optional. A set of projects of the form `projects/{project}`,
       specifying that usage from only this set of projects should be included
-      in the budget. If omitted, the report will include all usage for the
-      billing account, regardless of which project the usage occurred on. Only
-      zero or one project can be specified currently.
+      in the budget. If omitted, the report includes all usage for the billing
+      account, regardless of which project the usage occurred on. Only zero or
+      one project can be specified currently.
     services: Optional. A set of services of the form `services/{service_id}`,
       specifying that usage from only this set of services should be included
-      in the budget. If omitted, the report will include usage for all the
+      in the budget. If omitted, the report includes usage for all the
       services. The service names are available through the Catalog API:
       https://cloud.google.com/billing/v1/how-tos/catalog-api.
     subaccounts: Optional. A set of subaccounts of the form
       `billingAccounts/{account_id}`, specifying that usage from only this set
       of subaccounts should be included in the budget. If a subaccount is set
-      to the name of the parent account, usage from the parent account will be
-      included. If the field is omitted, the report will include usage from
-      the parent account and all subaccounts, if they exist.
+      to the name of the parent account, usage from the parent account is
+      included. If the field is omitted, the report includes usage from the
+      parent account and all subaccounts, if they exist.
   """
 
   class CalendarPeriodValueValuesEnum(_messages.Enum):
     r"""Optional. Specifies to track usage for recurring calendar period. For
-    example, assume that CalendarPeriod.QUARTER is set. The budget will track
+    example, assume that CalendarPeriod.QUARTER is set. The budget tracks
     usage from April 1 to June 30, when the current calendar month is April,
-    May, June. After that, it will track usage from July 1 to September 30
-    when the current calendar month is July, August, September, so on.
+    May, June. After that, it tracks usage from July 1 to September 30 when
+    the current calendar month is July, August, September, so on.
 
     Values:
       CALENDAR_PERIOD_UNSPECIFIED: <no description>
@@ -265,9 +267,11 @@ class GoogleCloudBillingBudgetsV1Filter(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     r"""Optional. A single label and value pair specifying that usage from
-    only this set of labeled resources should be included in the budget.
-    Currently, multiple entries or multiple values per entry are not allowed.
-    If omitted, the report will include all labeled and unlabeled usage.
+    only this set of labeled resources should be included in the budget. If
+    omitted, the report includes all labeled and unlabeled usage. An object
+    containing a single `"key": value` pair. Example: `{ "name": "wrench" }`.
+    _Currently, multiple entries or multiple values per entry are not
+    allowed._
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -302,10 +306,8 @@ class GoogleCloudBillingBudgetsV1Filter(_messages.Message):
 class GoogleCloudBillingBudgetsV1LastPeriodAmount(_messages.Message):
   r"""Describes a budget amount targeted to the last Filter.calendar_period
   spend. At this time, the amount is automatically 100% of the last calendar
-  period's spend; that is, there are no other options yet. Future
-  configuration options will be described here (for example, configuring a
-  percentage of last period's spend). LastPeriodAmount cannot be set for a
-  budget configured with a Filter.custom_period.
+  period's spend; that is, there are no other options yet. LastPeriodAmount
+  cannot be set for a budget configured with a Filter.custom_period.
   """
 
 
@@ -333,23 +335,47 @@ class GoogleCloudBillingBudgetsV1NotificationsRule(_messages.Message):
       notifications sent when a threshold is exceeded. Default notifications
       are sent to those with Billing Account Administrator and Billing Account
       User IAM roles for the target account.
-    monitoringNotificationChannels: Optional. Targets to send notifications to
-      when a threshold is exceeded. This is in addition to default recipients
-      who have billing account IAM roles. The value is the full REST resource
-      name of a monitoring notification channel with the form
+    monitoringNotificationChannels: Optional. Email targets to send
+      notifications to when a threshold is exceeded. This is in addition to
+      the `DefaultIamRecipients` who receive alert emails based on their
+      billing account IAM role. The value is the full REST resource name of a
+      Cloud Monitoring email notification channel with the form
       `projects/{project_id}/notificationChannels/{channel_id}`. A maximum of
-      5 channels are allowed. See https://cloud.google.com/billing/docs/how-
-      to/budgets-notification-recipients for more details.
-    pubsubTopic: Optional. The name of the Pub/Sub topic where budget related
-      messages will be published, in the form
-      `projects/{project_id}/topics/{topic_id}`. Updates are sent at regular
-      intervals to the topic. The topic needs to be created before the budget
-      is created; see https://cloud.google.com/billing/docs/how-
-      to/budgets#manage-notifications for more details. Caller is expected to
-      have `pubsub.topics.setIamPolicy` permission on the topic when it's set
-      for a budget, otherwise, the API call will fail with PERMISSION_DENIED.
-      See https://cloud.google.com/billing/docs/how-to/budgets-programmatic-
-      notifications for more details on Pub/Sub roles and permissions.
+      5 email notifications are allowed. To customize budget alert email
+      recipients with monitoring notification channels, you _must create the
+      monitoring notification channels before you link them to a budget_. For
+      guidance on setting up notification channels to use with budgets, see
+      [Customize budget alert email
+      recipients](https://cloud.google.com/billing/docs/how-to/budgets-
+      notification-recipients). For Cloud Billing budget alerts, you _must use
+      email notification channels_. The other types of notification channels
+      are _not_ supported, such as Slack, SMS, or PagerDuty. If you want to
+      [send budget notifications to
+      Slack](https://cloud.google.com/billing/docs/how-
+      to/notify#send_notifications_to_slack), use a pubsubTopic and configure
+      [programmatic notifications](https://cloud.google.com/billing/docs/how-
+      to/budgets-programmatic-notifications).
+    pubsubTopic: Optional. The name of the Pub/Sub topic where budget-related
+      messages are published, in the form
+      `projects/{project_id}/topics/{topic_id}`. Updates are sent to the topic
+      at regular intervals; the timing of the updates is not dependent on the
+      [threshold rules](#thresholdrule) you've set. Note that if you want your
+      [Pub/Sub JSON object](https://cloud.google.com/billing/docs/how-
+      to/budgets-programmatic-notifications#notification_format) to contain
+      data for `alertThresholdExceeded`, you need at least one [alert
+      threshold rule](#thresholdrule). When you set threshold rules, you must
+      also enable at least one of the email notification options, either using
+      the default IAM recipients or Cloud Monitoring email notification
+      channels. To use Pub/Sub topics with budgets, you must do the following:
+      1. Create the Pub/Sub topic before connecting it to your budget. For
+      guidance, see [Manage programmatic budget alert
+      notifications](https://cloud.google.com/billing/docs/how-to/budgets-
+      programmatic-notifications). 2. Grant the API caller the
+      `pubsub.topics.setIamPolicy` permission on the Pub/Sub topic. If not
+      set, the API call fails with PERMISSION_DENIED. For additional details
+      on Pub/Sub roles and permissions, see [Permissions required for this
+      task](https://cloud.google.com/billing/docs/how-to/budgets-programmatic-
+      notifications#permissions_required_for_this_task).
     schemaVersion: Optional. Required when NotificationsRule.pubsub_topic is
       set. The schema version of the notification sent to
       NotificationsRule.pubsub_topic. Only "1.0" is accepted. It represents

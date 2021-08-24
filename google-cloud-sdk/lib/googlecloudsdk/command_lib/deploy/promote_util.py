@@ -18,7 +18,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from googlecloudsdk.api_lib.clouddeploy import release
 from googlecloudsdk.command_lib.deploy import exceptions
 from googlecloudsdk.command_lib.deploy import release_util
 from googlecloudsdk.command_lib.deploy import rollout_util
@@ -34,16 +33,21 @@ _LAST_TARGET_IN_SEQUENCE = (
 def Promote(release_ref,
             release_obj,
             to_target,
+            is_create,
             rollout_id=None,
             annotations=None,
             labels=None):
-  """Calls promote API and waits for the operation to finish.
+  """Creates a rollout for the given release in the destination target.
+
+  If to_target is not specified, this computes the destination target base on
+  the promotion sequence.
 
   Args:
     release_ref: protorpc.messages.Message, release resource object.
     release_obj: apitools.base.protorpclite.messages.Message, release message
       object.
     to_target: str, the target to promote the release to.
+    is_create: bool, if creates a rollout during release creation.
     rollout_id: str, ID to assign to the generated rollout.
     annotations: dict[str,str], a dict of annotation (key,value) pairs that
       allow clients to store small amounts of arbitrary data in cloud deploy
@@ -51,23 +55,25 @@ def Promote(release_ref,
     labels: dict[str,str], a dict of label (key,value) pairs that can be used to
       select cloud deploy resources and to find collections of cloud deploy
       resources that satisfy certain conditions.
+
+  Raises:
+    googlecloudsdk.command_lib.deploy.exceptions.RolloutIdExhausted
+    googlecloudsdk.command_lib.deploy.exceptions.ReleaseInactiveError
   """
-  resp = release.ReleaseClient().Promote(release_ref, to_target, rollout_id,
-                                         annotations, labels)
-  if resp:
-    target_id = target_util.TargetId(resp.target)
-    output = 'Created Cloud Deploy rollout {} in target {}. '.format(
-        rollout_util.RolloutId(resp.rolloutResource), target_id)
+  dest_target = to_target
+  if not dest_target:
+    dest_target = GetToTargetID(release_obj, is_create)
 
-    # Check if it requires approval.
-    target_obj = release_util.GetSnappedTarget(release_obj, target_id)
-    if target_obj and target_obj.requireApproval:
-      output += 'The rollout is pending approval.'
+  rollout_util.CreateRollout(release_ref, dest_target, rollout_id, annotations,
+                             labels)
 
-    log.status.Print(output)
+  # Check if it requires approval.
+  target_obj = release_util.GetSnappedTarget(release_obj, dest_target)
+  if target_obj and target_obj.requireApproval:
+    log.status.Print('The rollout is pending approval.')
 
 
-def GetToTargetID(release_obj):
+def GetToTargetID(release_obj, is_create):
   """Get the to_target parameter for promote API.
 
   This checks the promotion sequence to get the next stage to promote the
@@ -75,13 +81,19 @@ def GetToTargetID(release_obj):
 
   Args:
     release_obj: apitools.base.protorpclite.messages.Message, release message.
+    is_create: bool, if getting the target for release creation.
 
   Returns:
     the target ID.
+
+  Raises:
+    NoSnappedTargetsError: if no target snapshots in the release.
+    ReleaseInactiveError: if this is not called during release creation and the
+    specified release has no rollouts.
   """
 
   if not release_obj.targetSnapshots:
-    raise exceptions.NoSnappedTargets(release_obj.name)
+    raise exceptions.NoSnappedTargetsError(release_obj.name)
   # Use release short name to avoid the issue by mixed use of
   # the project number and id.
   release_ref = resources.REGISTRY.ParseRelativeName(
@@ -121,7 +133,7 @@ def GetToTargetID(release_obj):
 
   # This means the release is not deployed to any target,
   # to_target flag is required in this case.
-  if to_target == release_obj.targetSnapshots[0].name:
+  if to_target == release_obj.targetSnapshots[0].name and not is_create:
     raise exceptions.ReleaseInactiveError()
 
   return target_util.TargetId(to_target)

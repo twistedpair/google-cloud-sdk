@@ -520,7 +520,8 @@ def Build(messages,
           build_config,
           hide_logs=False,
           build_region=cloudbuild_util.DEFAULT_REGION,
-          support_gcl=False):
+          support_gcl=False,
+          suppress_logs=False):
   """Starts the build."""
   log.debug('submitting build: ' + repr(build_config))
   client = cloudbuild_util.GetClientInstance()
@@ -571,11 +572,12 @@ def Build(messages,
   mash_handler = execution.MashHandler(
       execution.GetCancelBuildHandler(client, messages, build_ref))
 
+  out = log.out if not suppress_logs else None
   # Otherwise, logs are streamed from the chosen logging service
   # (defaulted to GCS).
   with execution_utils.CtrlCSection(mash_handler):
     build = cb_logs.CloudBuildClient(client, messages,
-                                     support_gcl).Stream(build_ref)
+                                     support_gcl).Stream(build_ref, out)
 
   if build.status == messages.Build.StatusValueValuesEnum.TIMEOUT:
     log.status.Print(

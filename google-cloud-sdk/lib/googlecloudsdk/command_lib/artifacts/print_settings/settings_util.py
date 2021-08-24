@@ -343,7 +343,7 @@ def GetPythonSettingsSnippet(args):
   """
   messages = ar_requests.GetMessages()
   location, repo_path = _GetLocationAndRepoPath(
-      args, messages.Repository.FormatValueValuesEnum.PYPI)
+      args, messages.Repository.FormatValueValuesEnum.PYTHON)
   repo = _GetRequiredRepoValue(args)
   data = {"location": location, "repo_path": repo_path, "repo": repo}
 

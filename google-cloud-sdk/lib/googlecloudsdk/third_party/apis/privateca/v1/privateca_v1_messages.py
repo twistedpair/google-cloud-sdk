@@ -436,9 +436,9 @@ class CertificateAuthority(_messages.Message):
       CertificateAuthority, this key is also used to sign the self-signed CA
       certificate. Otherwise, it is used to sign a CSR.
     labels: Optional. Labels with user-defined metadata.
-    lifetime: Required. The desired lifetime of the CA certificate. Used to
-      create the "not_before_time" and "not_after_time" fields inside an X.509
-      certificate.
+    lifetime: Required. Immutable. The desired lifetime of the CA certificate.
+      Used to create the "not_before_time" and "not_after_time" fields inside
+      an X.509 certificate.
     name: Output only. The resource name for this CertificateAuthority in the
       format `projects/*/locations/*/caPools/*/certificateAuthorities/*`.
     pemCaCertificates: Output only. This CertificateAuthority's certificate
@@ -1581,7 +1581,7 @@ class Policy(_messages.Message):
   roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
   role: roles/resourcemanager.organizationViewer condition: title: expirable
   access description: Does not grant access after Sep 2020 expression:
-  request.time < timestamp('2020-10-01T00:00:00.000Z') - etag: BwWWja0YfJA= -
+  request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA=
   version: 3 For a description of IAM and its features, see the [IAM
   documentation](https://cloud.google.com/iam/docs/).
 

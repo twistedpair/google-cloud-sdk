@@ -104,10 +104,10 @@
     "oauth2": {
       "scopes": {
         "https://www.googleapis.com/auth/cloud-platform": {
-          "description": "See, edit, configure, and delete your Google Cloud Platform data"
+          "description": "See, edit, configure, and delete your Google Cloud data and see the email address for your Google Account."
         },
         "https://www.googleapis.com/auth/cloud-platform.read-only": {
-          "description": "View your data across Google Cloud Platform services"
+          "description": "View your data across Google Cloud services and see the email address of your Google Account"
         },
         "https://www.googleapis.com/auth/logging.admin": {
           "description": "Administrate log data for your projects"
@@ -600,8 +600,7 @@
           "type": "string"
         },
         "schema": {
-          "description": "Output only. Describes the schema of the logs stored in the bucket that are accessible via this view.This field is only populated for views in analytics-enabled buckets.",
-          "readOnly": true,
+          "description": "Describes the schema of the logs stored in the bucket that are accessible via this view.This field is only populated for views in analytics-enabled buckets.",
           "$ref": "TableSchema"
         }
       }
@@ -5413,6 +5412,12 @@
           "response": {
             "$ref": "QueryResults"
           },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform",
+            "https://www.googleapis.com/auth/cloud-platform.read-only",
+            "https://www.googleapis.com/auth/logging.admin",
+            "https://www.googleapis.com/auth/logging.read"
+          ],
           "description": "Runs a SQL query synchronously and returns query results if the query completes within a specified timeout. The results from a previous query can also be fetched by specifying a result reference."
         },
         "copy": {

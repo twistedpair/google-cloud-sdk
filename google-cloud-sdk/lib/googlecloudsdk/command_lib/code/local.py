@@ -26,8 +26,9 @@ import os
 import os.path
 import re
 
+from apitools.base.py import encoding_helper
 from apitools.base.py import exceptions as apitools_exceptions
-from googlecloudsdk.api_lib.app import yaml_parsing
+from googlecloudsdk.api_lib.run import container_resource
 from googlecloudsdk.api_lib.run import service as k8s_service
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import messages as messages_util
@@ -35,6 +36,7 @@ from googlecloudsdk.command_lib.auth import auth_util
 from googlecloudsdk.command_lib.code import secrets
 from googlecloudsdk.command_lib.code import yaml_helper
 from googlecloudsdk.command_lib.iam import iam_util
+from googlecloudsdk.command_lib.run import secrets_mapping
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
@@ -177,6 +179,41 @@ def _IsGcpBaseBuilder(builder):
   return builder == 'gcr.io/buildpack/builder:v1'
 
 
+class _SecretPath(DataObject):
+  """Configuration for a single secret version.
+
+    Attributes:
+      key: The secret version to mount.
+      path: The file path to mount it on.
+  """
+
+  NAMES = ('key', 'path')
+
+
+class _SecretVolume(DataObject):
+  """Configuration for a single volume that mounts secret versions.
+
+    Attributes:
+      name: (str) The name of the volume to be referenced in the k8s resource.
+      mount_path: (str) The filesystem location where the volume is mounted.
+      secret_name: (str) The secret manager reference.
+      items: (List[SecretPath]) The list of keys and paths for the secret.
+  """
+  NAMES = ('name', 'mount_path', 'secret_name', 'items')
+
+  @classmethod
+  def FromParsedYaml(cls, mount, volume_secret):
+    """Make a _SecretVolume based on the volumeMount and secret from the yaml."""
+    items = []
+    for item in volume_secret.items:
+      items.append(_SecretPath(key=item.key, path=item.path))
+    return cls(
+        name=mount.name,
+        mount_path=mount.mountPath,
+        secret_name=volume_secret.secretName,
+        items=items)
+
+
 class Settings(DataObject):
   """Settings for local development environments.
 
@@ -192,6 +229,7 @@ class Settings(DataObject):
       env_vars: Container environment variables.
       env_vars_secrets: Container environment variables where the values come
         from Secret Manager.
+      volumes_secrets: Volumes where the values come from secret manager.
       cloudsql_instances: Cloud SQL instances.
       memory: Memory limit.
       cpu: CPU limit.
@@ -201,9 +239,9 @@ class Settings(DataObject):
   """
 
   NAMES = ('service_name', 'image', 'credential', 'context', 'builder',
-           'local_port', 'env_vars', 'env_vars_secrets', 'cloudsql_instances',
-           'memory', 'cpu', 'namespace', 'readiness_probe',
-           'allow_secret_manager')
+           'local_port', 'env_vars', 'env_vars_secrets', 'volumes_secrets',
+           'cloudsql_instances', 'memory', 'cpu', 'namespace',
+           'readiness_probe', 'allow_secret_manager')
 
   @classmethod
   def Defaults(cls):
@@ -224,6 +262,7 @@ class Settings(DataObject):
         service_name=service_name,
         env_vars={},
         env_vars_secrets={},
+        volumes_secrets=[],
         allow_secret_manager=None,
     )
 
@@ -243,6 +282,13 @@ class Settings(DataObject):
     except ValueError:
       raise exceptions.Error('knative Service must have exactly one container.')
 
+    # Aliased secrets from other projects are currently not supported
+    # so check for the label and fail if that's the case
+    # TODO(b/187972361): support secrets from other projects.
+    for label in knative_service.annotations:
+      if label == container_resource.SECRETS_ANNOTATION:
+        raise exceptions.Error('Referencing secrets from other projects is '
+                               'not currently supported by local dev.')
     new_env_vars = {}
     new_env_vars_secrets = {}
     for var in container.env:
@@ -269,6 +315,22 @@ class Settings(DataObject):
       replacements['image'] = image_name
 
     replacements.update(self._ResourceRequests(container))
+
+    all_vols = {}
+    for vol in knative_service.spec.template.spec.volumes:
+      if vol.secret:
+        all_vols[vol.name] = vol.secret
+      else:
+        raise exceptions.Error('Could not process volume "{}". Only volumes '
+                               'from secrets are supported.'.format(vol.name))
+    referenced_vols = []
+    for vol in container.volumeMounts:
+      if vol.name not in all_vols:
+        raise exceptions.Error('Container referenced volume "{}" which was not '
+                               'found.'.format(vol.name))
+      referenced_vols.append(
+          _SecretVolume.FromParsedYaml(vol, all_vols[vol.name]))
+    replacements['volumes_secrets'] = referenced_vols
 
     return self.replace(**replacements)
 
@@ -315,9 +377,6 @@ class Settings(DataObject):
     else:
       if args.IsKnownAndSpecified('builder'):
         replacements['builder'] = _BuilderFromArg(args.builder)
-      elif args.IsKnownAndSpecified('appengine'):
-        context = replacements.get('context', self.context)
-        replacements['builder'] = _GaeBuilder(context)
       elif args.IsKnownAndSpecified('dockerfile'):
         replacements['builder'] = DockerfileBuilder(dockerfile=args.dockerfile)
     if getattr(args, 'env_vars', None):
@@ -433,15 +492,6 @@ def _BuilderFromArg(builder_arg):
       builder=builder_arg,
       trust=is_gcp_base_builder,
       devmode=is_gcp_base_builder)
-
-
-def _GaeBuilder(context):
-  rel_path_to_app_yaml = os.path.relpath(os.path.join(context, 'app.yaml'))
-  # Undo __future__.unicode_literals so we get a str in py2:
-  app_yaml_str = six.ensure_str(rel_path_to_app_yaml)
-  service_config = yaml_parsing.ServiceYamlInfo.FromFile(app_yaml_str)
-  builder = _GaeBuilderPackagePath(service_config.parsed.runtime)
-  return BuildpackBuilder(builder=builder, trust=True, devmode=False)
 
 
 _POD_TEMPLATE = """
@@ -963,12 +1013,27 @@ class SecretsNotAllowedError(exceptions.Error):
 class SecretsGenerator(KubeConfigGenerator):
   """Generate kubernetes secrets for referenced secrets."""
 
-  def __init__(self, referenced_secrets, namespace, allow_secret_manager=None):
+  def __init__(self,
+               service_name,
+               env_secrets,
+               secret_volumes,
+               namespace,
+               allow_secret_manager=None):
     self.project_name = properties.VALUES.core.project.Get()
-
+    self.service_name = service_name
+    self.secret_volumes = secret_volumes
     self.secret_map = collections.defaultdict(list)
-    for _, secret in referenced_secrets.items():
+    for _, secret in env_secrets.items():
       self.secret_map[secret['name']].append(secret['key'])
+
+    for secret in secret_volumes:
+      if not secret.items:
+        # This is currently unsupported for secrets pulled from secret manager.
+        self.secret_map[secret.secret_name].append(
+            secrets_mapping.SpecialVersion.MOUNT_ALL)
+      else:
+        for item in secret.items:
+          self.secret_map[secret.secret_name].append(item.key)
     self.namespace = namespace
     self.allow_secret_manager = allow_secret_manager
 
@@ -997,6 +1062,30 @@ class SecretsGenerator(KubeConfigGenerator):
           'allow secret manager with --allow-secret-manager to proceed.')
     return secrets.BuildSecrets(self.project_name, self.secret_map,
                                 self.namespace)
+
+  def ModifyDeployment(self, deployment):
+    # There's only one deployment for now, but let's make sure it's the right
+    # one in case there's more later
+    if deployment['metadata']['name'] != self.service_name:
+      return
+    # If there's no volumes, don't do anything
+    if not self.secret_volumes:
+      return
+    volumes = yaml_helper.GetOrCreate(deployment,
+                                      ('spec', 'template', 'spec', 'volumes'),
+                                      list)
+    for volume in self.secret_volumes:
+      _AddSecretVolumeByName(volumes, volume.secret_name, volume.name,
+                             volume.items)
+
+  def ModifyContainer(self, container):
+    if container['name'] != '{}-container'.format(self.service_name):
+      return
+    if not self.secret_volumes:
+      return
+    mounts = yaml_helper.GetOrCreate(container, ('volumeMounts',), list)
+    for volume in self.secret_volumes:
+      _AddVolumeMount(mounts, volume.name, volume.mount_path)
 
 
 _CLOUD_SQL_PROXY_VERSION = '1.16'
@@ -1092,30 +1181,33 @@ def LocalDevelopmentSecretSpec(key):
   return yaml_config
 
 
-_SECRET_VOLUME_TEMPLATE = """
-name: {secret_name}
-secret:
-  secretName: {secret_name}
-"""
-
-
 def _AddSecretVolume(volumes, secret_name):
+  _AddSecretVolumeByName(
+      volumes, secret_name=secret_name, volume_name=secret_name)
+
+
+def _AddSecretVolumeByName(volumes, secret_name, volume_name, items=None):
   """Add a secret volume to a list of volumes.
 
   Args:
     volumes: (list[dict]) List of volume specifications.
     secret_name: (str) Name of the secret.
+    volume_name: (str) Name of the volume to add.
+    items: (list[_SecretPath]) Optional list of SecretPaths to map on the
+      filesystem.
   """
-  if secret_name not in (volume['name'] for volume in volumes):
-    volumes.append(
-        yaml.load(_SECRET_VOLUME_TEMPLATE.format(secret_name=secret_name)))
-
-
-_SECRET_MOUNT_TEMPLATE = """
-name: {secret_name}
-mountPath: "/etc/{secret_path}"
-readOnly: true
-"""
+  if any(volume['name'] == volume_name for volume in volumes):
+    return
+  items_lst = [
+      RUN_MESSAGES_MODULE.KeyToPath(key=secpath.key, path=secpath.path)
+      for secpath in (items or [])
+  ]
+  volumes.append(
+      encoding_helper.MessageToDict(
+          RUN_MESSAGES_MODULE.Volume(
+              name=volume_name,
+              secret=RUN_MESSAGES_MODULE.SecretVolumeSource(
+                  secretName=secret_name, items=items_lst))))
 
 
 def _AddSecretVolumeMount(mounts, secret_name):
@@ -1125,10 +1217,18 @@ def _AddSecretVolumeMount(mounts, secret_name):
     mounts: (list[dict]) List of volume mount dictionaries.
     secret_name: (str) Name of the secret.
   """
-  if secret_name not in (mount['name'] for mount in mounts):
-    yaml_text = _SECRET_MOUNT_TEMPLATE.format(
-        secret_name=secret_name, secret_path=secret_name.replace('-', '_'))
-    mounts.append(yaml.load(yaml_text))
+  _AddVolumeMount(
+      mounts,
+      mount_name=secret_name,
+      mount_path='/etc/' + secret_name.replace('-', '_'))
+
+
+def _AddVolumeMount(mounts, mount_name, mount_path):
+  if any(mount_name == mount['name'] for mount in mounts):
+    return
+  mount = RUN_MESSAGES_MODULE.VolumeMount(
+      name=mount_name, mountPath=mount_path, readOnly=True)
+  mounts.append(encoding_helper.MessageToDict(mount))
 
 
 def _AddSecretEnvVar(envs, path):

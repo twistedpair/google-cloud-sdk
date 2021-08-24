@@ -1596,12 +1596,12 @@ class TCPSocketAction(_messages.Message):
 
 
 class Volume(_messages.Message):
-  r"""Not supported by Cloud Run Volume represents a named volume in a
-  container.
+  r"""Volume represents a named volume in a container.
 
   Fields:
     configMap: A ConfigMapVolumeSource attribute.
-    name: Volume's name.
+    name: Volume's name. In Cloud Run Fully Managed, the name 'cloudsql' is
+      reserved.
     secret: A SecretVolumeSource attribute.
   """
 
@@ -1611,13 +1611,13 @@ class Volume(_messages.Message):
 
 
 class VolumeMount(_messages.Message):
-  r"""Not supported by Cloud Run VolumeMount describes a mounting of a Volume
-  within a container.
+  r"""VolumeMount describes a mounting of a Volume within a container.
 
   Fields:
     mountPath: Path within the container at which the volume should be
       mounted. Must not contain ':'.
-    name: This must match the Name of a Volume.
+    name: The name of the volume. There must be a corresponding Volume with
+      the same name.
     readOnly: (Optional) Only true is accepted. Defaults to true.
     subPath: (Optional) Path within the volume from which the container's
       volume should be mounted. Defaults to "" (volume's root).

@@ -432,7 +432,7 @@ class InternalRange(_messages.Message):
   Used to represent a private address range along with behavioral
   characterstics of that range (it's usage and peering behavior). Networking
   resources can link to this range if they are created as belonging to it.
-  Next id: 12
+  Next id: 13
 
   Enums:
     PeeringValueValuesEnum: The type of peering set for this InternalRange.
@@ -468,6 +468,12 @@ class InternalRange(_messages.Message):
       non-rfc-1918 address spaces used in the VPC.
     updateTime: Time when the InternalRange was updated.
     usage: The type of usage set for this InternalRange.
+    users: Output only. The list of resources that refer to this internal
+      range. Resources that use the InternalRange for their range allocation
+      are referred to as users of the range. Other resources mark themselves
+      as users while doing so by creating a reference to this InternalRange.
+      Having a user, based on this reference, prevents deletion of the
+      InternalRange referred to. Can be empty.
   """
 
   class PeeringValueValuesEnum(_messages.Enum):
@@ -555,6 +561,7 @@ class InternalRange(_messages.Message):
   targetCidrRange = _messages.StringField(9, repeated=True)
   updateTime = _messages.StringField(10)
   usage = _messages.EnumField('UsageValueValuesEnum', 11)
+  users = _messages.StringField(12, repeated=True)
 
 
 class ListHubsResponse(_messages.Message):
@@ -1321,7 +1328,7 @@ class Policy(_messages.Message):
   roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
   role: roles/resourcemanager.organizationViewer condition: title: expirable
   access description: Does not grant access after Sep 2020 expression:
-  request.time < timestamp('2020-10-01T00:00:00.000Z') - etag: BwWWja0YfJA= -
+  request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA=
   version: 3 For a description of IAM and its features, see the [IAM
   documentation](https://cloud.google.com/iam/docs/).
 

@@ -1015,7 +1015,8 @@ def CreateCluster(dataproc,
                   cluster,
                   is_async,
                   timeout,
-                  enable_create_on_gke=False):
+                  enable_create_on_gke=False,
+                  action_on_failed_primary_workers=None):
   """Create a cluster.
 
   Args:
@@ -1025,17 +1026,21 @@ def CreateCluster(dataproc,
     is_async: Whether to wait for the operation to complete
     timeout: Timeout used when waiting for the operation to complete
     enable_create_on_gke: Whether to enable creation of GKE-based clusters
+    action_on_failed_primary_workers: Action to be performed when primary
+      workers fail during cluster creation. Should be None for dataproc of
+      v1beta2 version
 
   Returns:
     Created cluster, or None if async
   """
   # Get project id and region.
   request_id = util.GetUniqueId()
-  request = dataproc.messages.DataprocProjectsRegionsClustersCreateRequest(
+  request = dataproc.GetCreateClusterRequest(
       cluster=cluster,
-      projectId=cluster_ref.projectId,
+      project_id=cluster_ref.projectId,
       region=cluster_ref.region,
-      requestId=request_id)
+      request_id=request_id,
+      action_on_failed_primary_workers=action_on_failed_primary_workers)
   operation = dataproc.client.projects_regions_clusters.Create(request)
 
   if is_async:

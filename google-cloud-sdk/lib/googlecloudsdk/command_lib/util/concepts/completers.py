@@ -226,9 +226,24 @@ class ResourceArgumentCompleter(completers.ResourceCompleter):
         resource_info, parsed_args, argument, updaters=updaters,
         collection=self.collection)
 
+  def ValidateAttributeSources(self, aggregations):
+    """Validates that parent attributes values exitst before making request."""
+    parameters_needing_resolution = set([p.name for p in self.parameters[:-1]])
+    resolved_parameters = set([a.name for a in aggregations])
+    # attributes can also be resolved by completers
+    for attribute in self.resource_spec.attributes:
+      if CompleterForAttribute(self.resource_spec, attribute.name):
+        resolved_parameters.add(
+            self.resource_spec.attribute_to_params_map[attribute.name])
+    return parameters_needing_resolution.issubset(resolved_parameters)
+
   def Update(self, parameter_info, aggregations):
     if self.method is None:
       return None
+
+    if not self.ValidateAttributeSources(aggregations):
+      return None
+
     log.info(
         'Cache query parameters={} aggregations={}'
         'resource info={}'.format(
@@ -568,4 +583,3 @@ def CompleterForAttribute(resource_spec, attribute_name):
     return None
 
   return Completer
-

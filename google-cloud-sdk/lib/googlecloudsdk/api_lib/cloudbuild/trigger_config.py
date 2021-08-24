@@ -78,8 +78,7 @@ def AddTriggerArgs(parser):
       required=False)
   flag_config.add_argument('--require-approval',
                            help='Require manual approval for triggered builds.',
-                           action='store_true',
-                           hidden=True)
+                           action='store_true')
 
   return flag_config
 

@@ -33,11 +33,11 @@ from googlecloudsdk.api_lib.run import global_methods
 from googlecloudsdk.api_lib.storage import storage_api
 from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.command_lib.functions import flags
+from googlecloudsdk.command_lib.functions import labels_util
 from googlecloudsdk.command_lib.run import connection_context
 from googlecloudsdk.command_lib.run import serverless_operations
 from googlecloudsdk.command_lib.util import gcloudignore
 from googlecloudsdk.command_lib.util.apis import arg_utils
-from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.command_lib.util.args import map_util
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
@@ -104,11 +104,10 @@ _UNSUPPORTED_V2_FLAGS = [
     ('update_secrets', '--update-secrets'),
     ('remove_secrets', '--remove-secrets'),
     ('clear_secrets', '--clear-secrets'),
-    # TODO(b/184877044): Add support when Eventarc gets GCS support
-    ('trigger_bucket', '--trigger-bucket'),
 ]
 _UNSUPPORTED_V2_FLAG_ERROR = '`%s` is not yet supported in Cloud Functions V2.'
 
+_EVENT_TYPE_STORAGE_OBJECT_FINALIZED = 'google.cloud.storage.object.v1.finalized'
 _EVENT_TYPE_PUBSUB_MESSAGE_PUBLISHED = 'google.cloud.pubsub.topic.v1.messagePublished'
 
 _CLOUD_RUN_SERVICE_COLLECTION_K8S = 'run.namespaces.services'
@@ -118,10 +117,13 @@ _DEFAULT_IGNORE_FILE = gcloudignore.DEFAULT_IGNORE_FILE + '\nnode_modules\n'
 
 _ZIP_MIME_TYPE = 'application/zip'
 
+_DEPLOYMENT_TOOL_LABEL = 'deployment-tool'
+_DEPLOYMENT_TOOL_VALUE = 'cli-gcloud'
+
 
 def _IsHttpTriggered(args):
-  return args.IsSpecified('trigger_http') or not (args.trigger_topic or
-                                                  args.trigger_event_filters)
+  return args.IsSpecified('trigger_http') or not (
+      args.trigger_topic or args.trigger_bucket or args.trigger_event_filters)
 
 
 def _GcloudIgnoreCreationPredicate(directory):
@@ -392,6 +394,7 @@ def _GetEventTrigger(args, messages):
   if _IsHttpTriggered(args):
     return None, frozenset()
 
+  event_filters = []
   event_type = None
   pubsub_topic = None
 
@@ -399,20 +402,27 @@ def _GetEventTrigger(args, messages):
     event_type = _EVENT_TYPE_PUBSUB_MESSAGE_PUBLISHED
     pubsub_topic = 'projects/{}/topics/{}'.format(
         properties.VALUES.core.project.GetOrFail(), args.trigger_topic)
+  elif args.trigger_bucket:
+    bucket = args.trigger_bucket[5:].rstrip('/')  # strip 'gs://' and final '/'
+    event_type = _EVENT_TYPE_STORAGE_OBJECT_FINALIZED
+    event_filters = [messages.EventFilter(attribute='bucket', value=bucket)]
+  elif args.trigger_event_filters:
+    event_type = args.trigger_event_filters.get('type')
+    event_filters = [
+        messages.EventFilter(attribute=attr, value=val)
+        for attr, val in args.trigger_event_filters.items()
+        if attr != 'type'
+    ]
+  else:
+    # Not expected given the implementation of _IsHttpTriggered
+    raise NotImplementedError('unknown trigger type')
 
   event_trigger = messages.EventTrigger(
+      eventFilters=event_filters,
       eventType=event_type,
       pubsubTopic=pubsub_topic,
       serviceAccountEmail=args.trigger_service_account or args.service_account,
       triggerRegion=args.trigger_location)
-
-  if args.trigger_event_filters:
-    for attribute, value in args.trigger_event_filters.items():
-      if attribute == 'type':
-        event_trigger.eventType = value
-      else:
-        event_trigger.eventFilters.append(
-            messages.EventFilter(attribute=attribute, value=value))
 
   return event_trigger, frozenset(['event_trigger'])
 
@@ -422,7 +432,8 @@ def _GetSignatureType(args, event_trigger):
 
   Args:
     args: argparse.Namespace, arguments that this command was invoked with
-    event_trigger: one
+    event_trigger: cloudfunctions_v2alpha_messages.EventTrigger, used to request
+      events sent from another service
 
   Returns:
     signature_type: str, the desired functions signature type
@@ -621,7 +632,8 @@ def _GetLabels(args, messages, existing_function):
     labels: Function.LabelsValue, functions labels metadata
     updated_fields_set: frozenset[str], list of update mask fields
   """
-  labels_diff = labels_util.Diff.FromUpdateArgs(args)
+  labels_diff = labels_util.Diff.FromUpdateArgs(
+      args, required_labels={_DEPLOYMENT_TOOL_LABEL: _DEPLOYMENT_TOOL_VALUE})
   labels_update = labels_diff.Apply(
       messages.Function.LabelsValue,
       existing_function.labels if existing_function else None)

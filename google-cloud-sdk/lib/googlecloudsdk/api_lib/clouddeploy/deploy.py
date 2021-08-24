@@ -55,9 +55,7 @@ class DeployClient(object):
     # Create delivery pipeline first.
     # In case user has both types of pipeline definition in the same
     # config file.
-    pipelines = resource_dict[
-        manifest_util.DELIVERY_PIPELINE_KIND_BETA1] + resource_dict[
-            manifest_util.DELIVERY_PIPELINE_KIND_V1BETA1]
+    pipelines = resource_dict[manifest_util.DELIVERY_PIPELINE_KIND_V1BETA1]
     if pipelines:
       operation_dict = {}
       for resource in pipelines:
@@ -65,8 +63,7 @@ class DeployClient(object):
       self.operation_client.CheckOperationStatus(operation_dict, msg_template)
     # In case user has both types of target definition in the same
     # config file.
-    targets = resource_dict[manifest_util.TARGET_KIND_BETA1] + resource_dict[
-        manifest_util.TARGET_KIND_V1BETA1]
+    targets = resource_dict[manifest_util.TARGET_KIND_V1BETA1]
     if targets:
       operation_dict = {}
       for resource in targets:
@@ -89,16 +86,13 @@ class DeployClient(object):
                                                     region)
     msg_template = 'Deleted Cloud Deploy resource: {}.'
     # Delete targets first.
-    targets = resource_dict[manifest_util.TARGET_KIND_BETA1] + resource_dict[
-        manifest_util.TARGET_KIND_V1BETA1]
+    targets = resource_dict[manifest_util.TARGET_KIND_V1BETA1]
     if targets:
       operation_dict = {}
       for resource in targets:
         operation_dict[resource.name] = target_util.DeleteTarget(resource.name)
       self.operation_client.CheckOperationStatus(operation_dict, msg_template)
-    pipelines = resource_dict[
-        manifest_util.DELIVERY_PIPELINE_KIND_BETA1] + resource_dict[
-            manifest_util.DELIVERY_PIPELINE_KIND_V1BETA1]
+    pipelines = resource_dict[manifest_util.DELIVERY_PIPELINE_KIND_V1BETA1]
     if pipelines:
       operation_dict = {}
       for resource in pipelines:

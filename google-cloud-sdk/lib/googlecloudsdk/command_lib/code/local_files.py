@@ -64,7 +64,9 @@ class LocalRuntimeFiles(object):
             self._settings.env_vars, self._settings.env_vars_secrets,
             self._settings.memory, self._settings.cpu, cpu_request,
             self._settings.readiness_probe),
-        local.SecretsGenerator(self._settings.env_vars_secrets,
+        local.SecretsGenerator(self._settings.service_name,
+                               self._settings.env_vars_secrets,
+                               self._settings.volumes_secrets,
                                self._settings.namespace,
                                self._settings.allow_secret_manager)
     ]

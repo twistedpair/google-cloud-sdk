@@ -130,6 +130,12 @@ class FilestoreClient(object):
         name=snapshot_ref.RelativeName())
     return self.client.projects_locations_snapshots.Get(request)
 
+  def GetInstanceSnapshot(self, snapshot_ref):
+    """Get Cloud Filestore snapshot information."""
+    request = self.messages.FileProjectsLocationsInstancesSnapshotsGetRequest(
+        name=snapshot_ref.RelativeName())
+    return self.client.projects_locations_instances_snapshots.Get(request)
+
   def GetBackup(self, backup_ref):
     """Get Cloud Filestore backup information."""
     request = self.messages.FileProjectsLocationsBackupsGetRequest(

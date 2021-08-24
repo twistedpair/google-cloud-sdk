@@ -452,10 +452,11 @@ def _ParseRateLimitsArgs(args, queue_type, messages, is_update):
         maxBurstSize=max_burst_size)
 
 
-def _ParseStackdriverLoggingConfigArgs(args, unused_queue_type, messages,
+def _ParseStackdriverLoggingConfigArgs(args, queue_type, messages,
                                        is_update):
   """Parses the attributes of 'args' for Queue.stackdriverLoggingConfig."""
-  if _AnyArgsSpecified(args, ['log_sampling_ratio'], clear_args=is_update):
+  if (queue_type != constants.PULL_QUEUE and
+      _AnyArgsSpecified(args, ['log_sampling_ratio'], clear_args=is_update)):
     return messages.StackdriverLoggingConfig(
         samplingRatio=args.log_sampling_ratio)
 

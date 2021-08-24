@@ -719,9 +719,9 @@ class Address(_messages.Message):
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
-      regular expression [a-z]([-a-z0-9]*[a-z0-9])?. The first character must
-      be a lowercase letter, and all following characters (except for the last
-      character) must be a dash, lowercase letter, or digit. The last
+      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?`. The first character
+      must be a lowercase letter, and all following characters (except for the
+      last character) must be a dash, lowercase letter, or digit. The last
       character must be a lowercase letter or digit.
     network: The URL of the network in which to reserve the address. This
       field can only be used with INTERNAL type with the VPC_PEERING purpose.
@@ -1531,7 +1531,7 @@ class AllocationSpecificSKUAllocationReservedInstanceProperties(_messages.Messag
 
 class AllocationSpecificSKUReservation(_messages.Message):
   r"""This reservation type allows to pre allocate specific instance
-  configuration.
+  configuration. Next ID: 5
 
   Fields:
     count: Specifies the number of resources that are allocated.
@@ -1616,6 +1616,13 @@ class AttachedDisk(_messages.Message):
     kind: [Output Only] Type of the resource. Always compute#attachedDisk for
       attached disks.
     licenses: [Output Only] Any valid publicly visible licenses.
+    locked: [Output Only] Whether to indicate the attached disk is locked. The
+      locked disk is not allowed to be detached from the instance, or to be
+      used as the source of the snapshot creation, and the image creation. The
+      instance with at least one locked attached disk is not allow to be used
+      as source of machine image creation, instant snapshot creation, and not
+      allowed to be deleted with --keep-disk parameter set to true for locked
+      disks.
     mode: The mode in which to attach this disk, either READ_WRITE or
       READ_ONLY. If not specified, the default is to attach the disk in
       READ_WRITE mode.
@@ -1707,12 +1714,13 @@ class AttachedDisk(_messages.Message):
   interface = _messages.EnumField('InterfaceValueValuesEnum', 10)
   kind = _messages.StringField(11, default='compute#attachedDisk')
   licenses = _messages.StringField(12, repeated=True)
-  mode = _messages.EnumField('ModeValueValuesEnum', 13)
-  savedState = _messages.EnumField('SavedStateValueValuesEnum', 14)
-  shieldedInstanceInitialState = _messages.MessageField('InitialStateConfig', 15)
-  source = _messages.StringField(16)
-  type = _messages.EnumField('TypeValueValuesEnum', 17)
-  userLicenses = _messages.StringField(18, repeated=True)
+  locked = _messages.BooleanField(13)
+  mode = _messages.EnumField('ModeValueValuesEnum', 14)
+  savedState = _messages.EnumField('SavedStateValueValuesEnum', 15)
+  shieldedInstanceInitialState = _messages.MessageField('InitialStateConfig', 16)
+  source = _messages.StringField(17)
+  type = _messages.EnumField('TypeValueValuesEnum', 18)
+  userLicenses = _messages.StringField(19, repeated=True)
 
 
 class AttachedDiskInitializeParams(_messages.Message):
@@ -1723,8 +1731,9 @@ class AttachedDiskInitializeParams(_messages.Message):
   other, but not both.
 
   Enums:
-    InterfaceValueValuesEnum: Specifies the disk interface to use for
-      attaching this disk, which is either SCSI or NVME. The default is SCSI.
+    InterfaceValueValuesEnum: [Deprecated] Specifies the disk interface to use
+      for attaching this disk, which is either SCSI or NVME. The default is
+      SCSI.
     OnUpdateActionValueValuesEnum: Specifies which action to take on instance
       update with this disk. Default is to use the existing disk.
 
@@ -1760,8 +1769,8 @@ class AttachedDiskInitializeParams(_messages.Message):
       operating system features to see a list of available options. Guest OS
       features are applied by merging initializeParams.guestOsFeatures and
       disks.guestOsFeatures
-    interface: Specifies the disk interface to use for attaching this disk,
-      which is either SCSI or NVME. The default is SCSI.
+    interface: [Deprecated] Specifies the disk interface to use for attaching
+      this disk, which is either SCSI or NVME. The default is SCSI.
     labels: Labels to apply to this disk. These can be later modified by the
       disks.setLabels method. This field is only applicable for persistent
       disks.
@@ -1813,8 +1822,8 @@ class AttachedDiskInitializeParams(_messages.Message):
   """
 
   class InterfaceValueValuesEnum(_messages.Enum):
-    r"""Specifies the disk interface to use for attaching this disk, which is
-    either SCSI or NVME. The default is SCSI.
+    r"""[Deprecated] Specifies the disk interface to use for attaching this
+    disk, which is either SCSI or NVME. The default is SCSI.
 
     Values:
       NVME: <no description>
@@ -3946,6 +3955,9 @@ class BackendService(_messages.Message):
     selfLink: [Output Only] Server-defined URL for the resource.
     selfLinkWithId: [Output Only] Server-defined URL for this resource with
       the resource id.
+    serviceBindings: URLs of networkservices.ServiceBinding resources. Can
+      only be set if load balancing scheme is INTERNAL_SELF_MANAGED. If set,
+      lists of backends and health checks must be both empty.
     serviceLbPolicy: URL to networkservices.ServiceLbPolicy resource. Can only
       be set if load balancing scheme is EXTERNAL, INTERNAL_MANAGED or
       INTERNAL_SELF_MANAGED. If used with a backend service, must reference a
@@ -4167,10 +4179,11 @@ class BackendService(_messages.Message):
   securitySettings = _messages.MessageField('SecuritySettings', 33)
   selfLink = _messages.StringField(34)
   selfLinkWithId = _messages.StringField(35)
-  serviceLbPolicy = _messages.StringField(36)
-  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 37)
-  subsetting = _messages.MessageField('Subsetting', 38)
-  timeoutSec = _messages.IntegerField(39, variant=_messages.Variant.INT32)
+  serviceBindings = _messages.StringField(36, repeated=True)
+  serviceLbPolicy = _messages.StringField(37)
+  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 38)
+  subsetting = _messages.MessageField('Subsetting', 39)
+  timeoutSec = _messages.IntegerField(40, variant=_messages.Variant.INT32)
 
 
 class BackendServiceAggregatedList(_messages.Message):
@@ -29021,8 +29034,9 @@ class Disk(_messages.Message):
   information, read Regional resources.
 
   Enums:
-    InterfaceValueValuesEnum: Specifies the disk interface to use for
-      attaching this disk, which is either SCSI or NVME. The default is SCSI.
+    InterfaceValueValuesEnum: [Deprecated] Specifies the disk interface to use
+      for attaching this disk, which is either SCSI or NVME. The default is
+      SCSI.
     StatusValueValuesEnum: [Output Only] The status of disk creation. -
       CREATING: Disk is provisioning. - RESTORING: Source data is being copied
       into the disk. - FAILED: Disk creation failed. - READY: Disk is ready
@@ -29040,14 +29054,21 @@ class Disk(_messages.Message):
     description: An optional description of this resource. Provide this
       property when you create the resource.
     diskEncryptionKey: Encrypts the disk using a customer-supplied encryption
-      key. After you encrypt a disk with a customer-supplied key, you must
-      provide the same key if you use the disk later (e.g. to create a disk
-      snapshot, to create a disk image, to create a machine image, or to
-      attach the disk to a virtual machine). Customer-supplied encryption keys
-      do not protect access to metadata of the disk. If you do not provide an
-      encryption key when creating the disk, then the disk will be encrypted
-      using an automatically generated key and you do not need to provide a
-      key to use the disk later.
+      key or a customer-managed encryption key. Encryption keys do not protect
+      access to metadata of the disk. After you encrypt a disk with a
+      customer-supplied key, you must provide the same key if you use the disk
+      later. For example, to create a disk snapshot, to create a disk image,
+      to create a machine image, or to attach the disk to a virtual machine.
+      After you encrypt a disk with a customer-managed key, the
+      diskEncryptionKey.kmsKeyName is set to a key *version* name once the
+      disk is created. The disk is encrypted with this version of the key. In
+      the response, diskEncryptionKey.kmsKeyName appears in the following
+      format: "diskEncryptionKey.kmsKeyName":
+      "projects/kms_project_id/locations/region/keyRings/
+      key_region/cryptoKeys/key /cryptoKeysVersions/version If you do not
+      provide an encryption key when creating the disk, then the disk is
+      encrypted using an automatically generated key and you don't need to
+      provide a key to use the disk later.
     eraseWindowsVssSignature: Specifies whether the disk restored from a
       source snapshot should erase Windows specific VSS signature.
     guestOsFeatures: A list of features to enable on the guest operating
@@ -29055,8 +29076,8 @@ class Disk(_messages.Message):
       operating system features to see a list of available options.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
-    interface: Specifies the disk interface to use for attaching this disk,
-      which is either SCSI or NVME. The default is SCSI.
+    interface: [Deprecated] Specifies the disk interface to use for attaching
+      this disk, which is either SCSI or NVME. The default is SCSI.
     kind: [Output Only] Type of the resource. Always compute#disk for disks.
     labelFingerprint: A fingerprint for the labels being applied to this disk,
       which is essentially a hash of the labels set used for optimistic
@@ -29077,6 +29098,18 @@ class Disk(_messages.Message):
     locationHint: An opaque location hint used to place the disk close to
       other resources. This field is for use by internal tools that use the
       public API.
+    locked: [Output Only] The field indicates if the disk is created from a
+      locked source image. Attachment of a disk created from a locked source
+      image will cause the following operations to become irreversibly
+      prohibited: - R/W or R/O disk attachment to any other instance - Disk
+      detachment. And the disk can only be deleted when the instance is
+      deleted - Creation of images or snapshots - Disk cloning Furthermore,
+      the instance with at least one disk with locked flag set to true will be
+      prohibited from performing the operations below: - Further attachment of
+      secondary disks. - Detachment of any disks - Create machine images -
+      Create instance template - Delete the instance with --keep-disk
+      parameter set to true for locked disks - Attach a locked disk with
+      --auto-delete parameter set to false
     multiWriter: Indicates whether or not the disk can be read/write attached
       to more than one instance.
     name: Name of the resource. Provided by the client when the resource is
@@ -29224,8 +29257,8 @@ class Disk(_messages.Message):
   """
 
   class InterfaceValueValuesEnum(_messages.Enum):
-    r"""Specifies the disk interface to use for attaching this disk, which is
-    either SCSI or NVME. The default is SCSI.
+    r"""[Deprecated] Specifies the disk interface to use for attaching this
+    disk, which is either SCSI or NVME. The default is SCSI.
 
     Values:
       NVME: <no description>
@@ -29305,37 +29338,38 @@ class Disk(_messages.Message):
   licenseCodes = _messages.IntegerField(13, repeated=True)
   licenses = _messages.StringField(14, repeated=True)
   locationHint = _messages.StringField(15)
-  multiWriter = _messages.BooleanField(16)
-  name = _messages.StringField(17)
-  options = _messages.StringField(18)
-  physicalBlockSizeBytes = _messages.IntegerField(19)
-  provisionedIops = _messages.IntegerField(20)
-  region = _messages.StringField(21)
-  replicaZones = _messages.StringField(22, repeated=True)
-  resourcePolicies = _messages.StringField(23, repeated=True)
-  satisfiesPzs = _messages.BooleanField(24)
-  selfLink = _messages.StringField(25)
-  selfLinkWithId = _messages.StringField(26)
-  sizeGb = _messages.IntegerField(27)
-  sourceDisk = _messages.StringField(28)
-  sourceDiskId = _messages.StringField(29)
-  sourceImage = _messages.StringField(30)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 31)
-  sourceImageId = _messages.StringField(32)
-  sourceInPlaceSnapshot = _messages.StringField(33)
-  sourceInPlaceSnapshotId = _messages.StringField(34)
-  sourceInstantSnapshot = _messages.StringField(35)
-  sourceInstantSnapshotId = _messages.StringField(36)
-  sourceSnapshot = _messages.StringField(37)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 38)
-  sourceSnapshotId = _messages.StringField(39)
-  sourceStorageObject = _messages.StringField(40)
-  status = _messages.EnumField('StatusValueValuesEnum', 41)
-  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 42)
-  type = _messages.StringField(43)
-  userLicenses = _messages.StringField(44, repeated=True)
-  users = _messages.StringField(45, repeated=True)
-  zone = _messages.StringField(46)
+  locked = _messages.BooleanField(16)
+  multiWriter = _messages.BooleanField(17)
+  name = _messages.StringField(18)
+  options = _messages.StringField(19)
+  physicalBlockSizeBytes = _messages.IntegerField(20)
+  provisionedIops = _messages.IntegerField(21)
+  region = _messages.StringField(22)
+  replicaZones = _messages.StringField(23, repeated=True)
+  resourcePolicies = _messages.StringField(24, repeated=True)
+  satisfiesPzs = _messages.BooleanField(25)
+  selfLink = _messages.StringField(26)
+  selfLinkWithId = _messages.StringField(27)
+  sizeGb = _messages.IntegerField(28)
+  sourceDisk = _messages.StringField(29)
+  sourceDiskId = _messages.StringField(30)
+  sourceImage = _messages.StringField(31)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 32)
+  sourceImageId = _messages.StringField(33)
+  sourceInPlaceSnapshot = _messages.StringField(34)
+  sourceInPlaceSnapshotId = _messages.StringField(35)
+  sourceInstantSnapshot = _messages.StringField(36)
+  sourceInstantSnapshotId = _messages.StringField(37)
+  sourceSnapshot = _messages.StringField(38)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 39)
+  sourceSnapshotId = _messages.StringField(40)
+  sourceStorageObject = _messages.StringField(41)
+  status = _messages.EnumField('StatusValueValuesEnum', 42)
+  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 43)
+  type = _messages.StringField(44)
+  userLicenses = _messages.StringField(45, repeated=True)
+  users = _messages.StringField(46, repeated=True)
+  zone = _messages.StringField(47)
 
 
 class DiskAggregatedList(_messages.Message):
@@ -52189,7 +52223,7 @@ class Policy(_messages.Message):
   roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
   role: roles/resourcemanager.organizationViewer condition: title: expirable
   access description: Does not grant access after Sep 2020 expression:
-  request.time < timestamp('2020-10-01T00:00:00.000Z') - etag: BwWWja0YfJA= -
+  request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA=
   version: 3 For a description of IAM and its features, see the [IAM
   documentation](https://cloud.google.com/iam/docs/).
 
@@ -63595,17 +63629,21 @@ class Subnetwork(_messages.Message):
       logs for long-lasting connections. Default is an interval of 5 seconds
       per connection. Valid values: INTERVAL_5_SEC, INTERVAL_30_SEC,
       INTERVAL_1_MIN, INTERVAL_5_MIN, INTERVAL_10_MIN, INTERVAL_15_MIN.
-    allowSubnetCidrRoutesOverlap: Whether this subnetwork can conflict with
-      static routes. Setting this to true allows this subnetwork's primary and
-      secondary ranges to conflict with routes that have already been
-      configured on the corresponding network. Static routes will take
-      precedence over the subnetwork route if the route prefix length is at
-      least as large as the subnetwork prefix length. Also, packets destined
-      to IPs within subnetwork may contain private/sensitive data and are
-      prevented from leaving the virtual network. Setting this field to true
-      will disable this feature. The default value is false and applies to all
-      existing subnetworks and automatically created subnetworks. This field
-      cannot be set to true at resource creation time.
+    allowSubnetCidrRoutesOverlap: Whether this subnetwork's ranges can
+      conflict with existing static routes. Setting this to true allows this
+      subnetwork's primary and secondary ranges to overlap with (and contain)
+      static routes that have already been configured on the corresponding
+      network. For example if a static route has range 10.1.0.0/16, a subnet
+      range 10.0.0.0/8 could only be created if allow_conflicting_routes=true.
+      Overlapping is only allowed on subnetwork operations; routes whose
+      ranges conflict with this subnetwork's ranges won't be allowed unless
+      route.allow_conflicting_subnetworks is set to true. Typically packets
+      destined to IPs within the subnetwork (which may contain
+      private/sensitive data) are prevented from leaving the virtual network.
+      Setting this field to true will disable this feature. The default value
+      is false and applies to all existing subnetworks and automatically
+      created subnetworks. This field cannot be set to true at resource
+      creation time.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
@@ -63754,8 +63792,10 @@ class Subnetwork(_messages.Message):
     subnet cannot enable direct path.
 
     Values:
-      EXTERNAL: VMs in this subnet can have external IPv6.
-      INTERNAL: VMs in this subnet can have internal IPv6.
+      EXTERNAL: VMs on this subnet will be assigned IPv6 addresses that are
+        accesible via the Internet, as well as the VPC network.
+      INTERNAL: VMs on this subnet will be assigned IPv6 addresses that are
+        only accessible over the VPC network.
       UNSPECIFIED_IPV6_ACCESS_TYPE: IPv6 access type not set. Means this
         subnet hasn't been turned on IPv6 yet.
     """
@@ -64534,14 +64574,14 @@ class Subsetting(_messages.Message):
     Values:
       CONSISTENT_HASH_SUBSETTING: Subsetting based on consistent hashing. For
         Traffic Director, the number of backends per backend group (the subset
-        size) is adjusted based on the `subset_size` parameter. For Internal
-        HTTP(S) load balancing, the number of backends per backend group (the
-        subset size) is dynamically adjusted in two cases: - As the number of
-        proxy instances participating in Internal HTTP(S) load balancing
-        increases, the subset size decreases. - When the total number of
-        backends in a network exceeds the capacity of a single proxy instance,
-        subset sizes are reduced automatically for each service that has
-        backend subsetting enabled.
+        size) is based on the `subset_size` parameter. For Internal HTTP(S)
+        load balancing, the number of backends per backend group (the subset
+        size) is dynamically adjusted in two cases: - As the number of proxy
+        instances participating in Internal HTTP(S) load balancing increases,
+        the subset size decreases. - When the total number of backends in a
+        network exceeds the capacity of a single proxy instance, subset sizes
+        are reduced automatically for each service that has backend subsetting
+        enabled.
       NONE: No Subsetting. Clients may open connections and send traffic to
         all backends of this backend service. This can lead to performance
         issues if there is substantial imbalance in the count of clients and

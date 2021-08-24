@@ -51,6 +51,12 @@ def TranslatePlanArg(messages, plan_arg):
   return _GetFlagToPlanMap(messages)[plan_arg]
 
 
+def TranslateAutoRenewArg(args):
+  if args.IsSpecified('auto_renew'):
+    return args.auto_renew
+  return False
+
+
 def TranslateResourcesArg(messages, resources_arg):
   return [
       messages.ResourceCommitment(
@@ -104,12 +110,25 @@ def AddCreateFlags(parser, support_share_setting=False):
   AddResourcesArgGroup(parser)
 
 
+def AddUpdateFlags(parser):
+  """Add general arguments for `commitments update` flag."""
+  AddAutoRenew(parser)
+
+
 def AddPlan(parser):
   return parser.add_argument(
       '--plan',
       required=True,
       choices=VALID_PLANS,
       help='Duration of the commitment.')
+
+
+def AddAutoRenew(parser):
+  return parser.add_argument(
+      '--auto-renew',
+      action='store_true',
+      default=False,
+      help='Enable auto renewal for the commitment.')
 
 
 def AddLicenceBasedFlags(parser):

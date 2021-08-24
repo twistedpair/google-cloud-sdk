@@ -329,6 +329,8 @@ class ConnectSettings(_messages.Message):
       **SQLSERVER_2017_EXPRESS**, or **SQLSERVER_2017_WEB**.
     ipAddresses: The assigned IP addresses for the instance.
     kind: This is always `sql#connectSettings`.
+    region: The cloud region for the instance. e.g. **us-central1**, **europe-
+      west1**. The region cannot be changed after instance creation.
     serverCaCert: SSL configuration.
   """
 
@@ -408,7 +410,8 @@ class ConnectSettings(_messages.Message):
   databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 2)
   ipAddresses = _messages.MessageField('IpMapping', 3, repeated=True)
   kind = _messages.StringField(4)
-  serverCaCert = _messages.MessageField('SslCert', 5)
+  region = _messages.StringField(5)
+  serverCaCert = _messages.MessageField('SslCert', 6)
 
 
 class Database(_messages.Message):
@@ -1667,7 +1670,13 @@ class MySqlReplicaConfiguration(_messages.Message):
 
 
 class MySqlSyncConfig(_messages.Message):
-  r"""MySQL-specific external server sync settings."""
+  r"""MySQL-specific external server sync settings.
+
+  Fields:
+    initialSyncFlags: Flags to use for the initial dump.
+  """
+
+  initialSyncFlags = _messages.MessageField('SyncFlags', 1, repeated=True)
 
 
 class OnPremisesConfiguration(_messages.Message):
@@ -3316,6 +3325,20 @@ class StandardQueryParameters(_messages.Message):
   trace = _messages.StringField(10)
   uploadType = _messages.StringField(11)
   upload_protocol = _messages.StringField(12)
+
+
+class SyncFlags(_messages.Message):
+  r"""Initial sync flags for certain Cloud SQL APIs. Currently used for the
+  MySQL external server initial dump.
+
+  Fields:
+    name: The name of the flag.
+    value: The value of the flag. This field must be omitted if the flag
+      doesn't take a value.
+  """
+
+  name = _messages.StringField(1)
+  value = _messages.StringField(2)
 
 
 class Tier(_messages.Message):

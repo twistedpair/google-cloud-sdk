@@ -2258,7 +2258,7 @@ class Policy(_messages.Message):
   roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
   role: roles/resourcemanager.organizationViewer condition: title: expirable
   access description: Does not grant access after Sep 2020 expression:
-  request.time < timestamp('2020-10-01T00:00:00.000Z') - etag: BwWWja0YfJA= -
+  request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA=
   version: 3 For a description of IAM and its features, see the [IAM
   documentation](https://cloud.google.com/iam/docs/).
 
@@ -4502,6 +4502,13 @@ class Type(_messages.Message):
 
   Enums:
     CodeValueValuesEnum: Required. The TypeCode for this type.
+    TypeAnnotationValueValuesEnum: The TypeAnnotationCode that disambiguates
+      SQL type that Spanner will use to represent values of this type during
+      query processing. This is necessary for some type codes because a single
+      TypeCode can be mapped to different SQL types depending on the SQL
+      dialect. type_annotation typically is not needed to process the content
+      of a value (it doesn't affect serialization) and clients can ignore it
+      on the read path.
 
   Fields:
     arrayElementType: If code == ARRAY, then `array_element_type` is the type
@@ -4509,6 +4516,13 @@ class Type(_messages.Message):
     code: Required. The TypeCode for this type.
     structType: If code == STRUCT, then `struct_type` provides type
       information for the struct's fields.
+    typeAnnotation: The TypeAnnotationCode that disambiguates SQL type that
+      Spanner will use to represent values of this type during query
+      processing. This is necessary for some type codes because a single
+      TypeCode can be mapped to different SQL types depending on the SQL
+      dialect. type_annotation typically is not needed to process the content
+      of a value (it doesn't affect serialization) and clients can ignore it
+      on the read path.
   """
 
   class CodeValueValuesEnum(_messages.Enum):
@@ -4560,9 +4574,34 @@ class Type(_messages.Message):
     NUMERIC = 10
     JSON = 11
 
+  class TypeAnnotationValueValuesEnum(_messages.Enum):
+    r"""The TypeAnnotationCode that disambiguates SQL type that Spanner will
+    use to represent values of this type during query processing. This is
+    necessary for some type codes because a single TypeCode can be mapped to
+    different SQL types depending on the SQL dialect. type_annotation
+    typically is not needed to process the content of a value (it doesn't
+    affect serialization) and clients can ignore it on the read path.
+
+    Values:
+      TYPE_ANNOTATION_CODE_UNSPECIFIED: Not specified.
+      INT32: 32-bit signed integer type. This annotation can be used by a
+        client interacting with PostgreSQL-enabled Spanner database to specify
+        that a value should be treated using the semantics of the INTEGER
+        type.
+      PG_NUMERIC: PostgreSQL compatible NUMERIC type. This annotation needs to
+        be applied to Type instances having NUMERIC type code to specify that
+        values of this type should be treated as PostgreSQL NUMERIC values.
+        Currently this annotation is always needed for NUMERIC when a client
+        interacts with PostgreSQL-enabled Spanner databases.
+    """
+    TYPE_ANNOTATION_CODE_UNSPECIFIED = 0
+    INT32 = 1
+    PG_NUMERIC = 2
+
   arrayElementType = _messages.MessageField('Type', 1)
   code = _messages.EnumField('CodeValueValuesEnum', 2)
   structType = _messages.MessageField('StructType', 3)
+  typeAnnotation = _messages.EnumField('TypeAnnotationValueValuesEnum', 4)
 
 
 class UpdateDatabaseDdlMetadata(_messages.Message):

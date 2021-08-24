@@ -159,6 +159,235 @@ class ContainerThreatDetectionSettings(_messages.Message):
   updateTime = _messages.StringField(5)
 
 
+class Cve(_messages.Message):
+  r"""CVE stands for Common Vulnerabilities and Exposures. More information:
+  https://cve.mitre.org
+
+  Fields:
+    cvssv3: Describe Common Vulnerability Scoring System specified at
+      https://www.first.org/cvss/v3.1/specification-document
+    id: The unique identifier for the vulnerability. e.g. CVE-2021-34527
+    references: Additional information about the CVE. e.g.
+      https://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2021-34527
+  """
+
+  cvssv3 = _messages.MessageField('Cvssv3', 1)
+  id = _messages.StringField(2)
+  references = _messages.MessageField('Reference', 3, repeated=True)
+
+
+class Cvssv3(_messages.Message):
+  r"""Common Vulnerability Scoring System version 3.
+
+  Enums:
+    AttackComplexityValueValuesEnum: This metric describes the conditions
+      beyond the attacker's control that must exist in order to exploit the
+      vulnerability.
+    AttackVectorValueValuesEnum: Base Metrics Represents the intrinsic
+      characteristics of a vulnerability that are constant over time and
+      across user environments. This metric reflects the context by which
+      vulnerability exploitation is possible.
+    AvailabilityImpactValueValuesEnum: This metric measures the impact to the
+      availability of the impacted component resulting from a successfully
+      exploited vulnerability.
+    ConfidentialityImpactValueValuesEnum: This metric measures the impact to
+      the confidentiality of the information resources managed by a software
+      component due to a successfully exploited vulnerability.
+    IntegrityImpactValueValuesEnum: This metric measures the impact to
+      integrity of a successfully exploited vulnerability.
+    PrivilegesRequiredValueValuesEnum: This metric describes the level of
+      privileges an attacker must possess before successfully exploiting the
+      vulnerability.
+    ScopeValueValuesEnum: The Scope metric captures whether a vulnerability in
+      one vulnerable component impacts resources in components beyond its
+      security scope.
+    UserInteractionValueValuesEnum: This metric captures the requirement for a
+      human user, other than the attacker, to participate in the successful
+      compromise of the vulnerable component.
+
+  Fields:
+    attackComplexity: This metric describes the conditions beyond the
+      attacker's control that must exist in order to exploit the
+      vulnerability.
+    attackVector: Base Metrics Represents the intrinsic characteristics of a
+      vulnerability that are constant over time and across user environments.
+      This metric reflects the context by which vulnerability exploitation is
+      possible.
+    availabilityImpact: This metric measures the impact to the availability of
+      the impacted component resulting from a successfully exploited
+      vulnerability.
+    baseScore: The base score is a function of the base metric scores.
+    confidentialityImpact: This metric measures the impact to the
+      confidentiality of the information resources managed by a software
+      component due to a successfully exploited vulnerability.
+    integrityImpact: This metric measures the impact to integrity of a
+      successfully exploited vulnerability.
+    privilegesRequired: This metric describes the level of privileges an
+      attacker must possess before successfully exploiting the vulnerability.
+    scope: The Scope metric captures whether a vulnerability in one vulnerable
+      component impacts resources in components beyond its security scope.
+    userInteraction: This metric captures the requirement for a human user,
+      other than the attacker, to participate in the successful compromise of
+      the vulnerable component.
+  """
+
+  class AttackComplexityValueValuesEnum(_messages.Enum):
+    r"""This metric describes the conditions beyond the attacker's control
+    that must exist in order to exploit the vulnerability.
+
+    Values:
+      ATTACK_COMPLEXITY_UNSPECIFIED: Invalid value.
+      ATTACK_COMPLEXITY_LOW: Specialized access conditions or extenuating
+        circumstances do not exist. An attacker can expect repeatable success
+        when attacking the vulnerable component.
+      ATTACK_COMPLEXITY_HIGH: A successful attack depends on conditions beyond
+        the attacker's control. That is, a successful attack cannot be
+        accomplished at will, but requires the attacker to invest in some
+        measurable amount of effort in preparation or execution against the
+        vulnerable component before a successful attack can be expected.
+    """
+    ATTACK_COMPLEXITY_UNSPECIFIED = 0
+    ATTACK_COMPLEXITY_LOW = 1
+    ATTACK_COMPLEXITY_HIGH = 2
+
+  class AttackVectorValueValuesEnum(_messages.Enum):
+    r"""Base Metrics Represents the intrinsic characteristics of a
+    vulnerability that are constant over time and across user environments.
+    This metric reflects the context by which vulnerability exploitation is
+    possible.
+
+    Values:
+      ATTACK_VECTOR_UNSPECIFIED: Invalid value.
+      ATTACK_VECTOR_NETWORK: The vulnerable component is bound to the network
+        stack and the set of possible attackers extends beyond the other
+        options listed below, up to and including the entire Internet.
+      ATTACK_VECTOR_ADJACENT: The vulnerable component is bound to the network
+        stack, but the attack is limited at the protocol level to a logically
+        adjacent topology.
+      ATTACK_VECTOR_LOCAL: The vulnerable component is not bound to the
+        network stack and the attacker's path is via read/write/execute
+        capabilities.
+      ATTACK_VECTOR_PHYSICAL: The attack requires the attacker to physically
+        touch or manipulate the vulnerable component.
+    """
+    ATTACK_VECTOR_UNSPECIFIED = 0
+    ATTACK_VECTOR_NETWORK = 1
+    ATTACK_VECTOR_ADJACENT = 2
+    ATTACK_VECTOR_LOCAL = 3
+    ATTACK_VECTOR_PHYSICAL = 4
+
+  class AvailabilityImpactValueValuesEnum(_messages.Enum):
+    r"""This metric measures the impact to the availability of the impacted
+    component resulting from a successfully exploited vulnerability.
+
+    Values:
+      IMPACT_UNSPECIFIED: Invalid value.
+      IMPACT_HIGH: High impact.
+      IMPACT_LOW: Low impact.
+      IMPACT_NONE: No impact.
+    """
+    IMPACT_UNSPECIFIED = 0
+    IMPACT_HIGH = 1
+    IMPACT_LOW = 2
+    IMPACT_NONE = 3
+
+  class ConfidentialityImpactValueValuesEnum(_messages.Enum):
+    r"""This metric measures the impact to the confidentiality of the
+    information resources managed by a software component due to a
+    successfully exploited vulnerability.
+
+    Values:
+      IMPACT_UNSPECIFIED: Invalid value.
+      IMPACT_HIGH: High impact.
+      IMPACT_LOW: Low impact.
+      IMPACT_NONE: No impact.
+    """
+    IMPACT_UNSPECIFIED = 0
+    IMPACT_HIGH = 1
+    IMPACT_LOW = 2
+    IMPACT_NONE = 3
+
+  class IntegrityImpactValueValuesEnum(_messages.Enum):
+    r"""This metric measures the impact to integrity of a successfully
+    exploited vulnerability.
+
+    Values:
+      IMPACT_UNSPECIFIED: Invalid value.
+      IMPACT_HIGH: High impact.
+      IMPACT_LOW: Low impact.
+      IMPACT_NONE: No impact.
+    """
+    IMPACT_UNSPECIFIED = 0
+    IMPACT_HIGH = 1
+    IMPACT_LOW = 2
+    IMPACT_NONE = 3
+
+  class PrivilegesRequiredValueValuesEnum(_messages.Enum):
+    r"""This metric describes the level of privileges an attacker must possess
+    before successfully exploiting the vulnerability.
+
+    Values:
+      PRIVILEGES_REQUIRED_UNSPECIFIED: Invalid value.
+      PRIVILEGES_REQUIRED_NONE: The attacker is unauthorized prior to attack,
+        and therefore does not require any access to settings or files of the
+        vulnerable system to carry out an attack.
+      PRIVILEGES_REQUIRED_LOW: The attacker requires privileges that provide
+        basic user capabilities that could normally affect only settings and
+        files owned by a user. Alternatively, an attacker with Low privileges
+        has the ability to access only non-sensitive resources.
+      PRIVILEGES_REQUIRED_HIGH: The attacker requires privileges that provide
+        significant (e.g., administrative) control over the vulnerable
+        component allowing access to component-wide settings and files.
+    """
+    PRIVILEGES_REQUIRED_UNSPECIFIED = 0
+    PRIVILEGES_REQUIRED_NONE = 1
+    PRIVILEGES_REQUIRED_LOW = 2
+    PRIVILEGES_REQUIRED_HIGH = 3
+
+  class ScopeValueValuesEnum(_messages.Enum):
+    r"""The Scope metric captures whether a vulnerability in one vulnerable
+    component impacts resources in components beyond its security scope.
+
+    Values:
+      SCOPE_UNSPECIFIED: Invalid value.
+      SCOPE_UNCHANGED: An exploited vulnerability can only affect resources
+        managed by the same security authority.
+      SCOPE_CHANGED: An exploited vulnerability can affect resources beyond
+        the security scope managed by the security authority of the vulnerable
+        component.
+    """
+    SCOPE_UNSPECIFIED = 0
+    SCOPE_UNCHANGED = 1
+    SCOPE_CHANGED = 2
+
+  class UserInteractionValueValuesEnum(_messages.Enum):
+    r"""This metric captures the requirement for a human user, other than the
+    attacker, to participate in the successful compromise of the vulnerable
+    component.
+
+    Values:
+      USER_INTERACTION_UNSPECIFIED: Invalid value.
+      USER_INTERACTION_NONE: The vulnerable system can be exploited without
+        interaction from any user.
+      USER_INTERACTION_REQUIRED: Successful exploitation of this vulnerability
+        requires a user to take some action before the vulnerability can be
+        exploited.
+    """
+    USER_INTERACTION_UNSPECIFIED = 0
+    USER_INTERACTION_NONE = 1
+    USER_INTERACTION_REQUIRED = 2
+
+  attackComplexity = _messages.EnumField('AttackComplexityValueValuesEnum', 1)
+  attackVector = _messages.EnumField('AttackVectorValueValuesEnum', 2)
+  availabilityImpact = _messages.EnumField('AvailabilityImpactValueValuesEnum', 3)
+  baseScore = _messages.FloatField(4)
+  confidentialityImpact = _messages.EnumField('ConfidentialityImpactValueValuesEnum', 5)
+  integrityImpact = _messages.EnumField('IntegrityImpactValueValuesEnum', 6)
+  privilegesRequired = _messages.EnumField('PrivilegesRequiredValueValuesEnum', 7)
+  scope = _messages.EnumField('ScopeValueValuesEnum', 8)
+  userInteraction = _messages.EnumField('UserInteractionValueValuesEnum', 9)
+
+
 class Details(_messages.Message):
   r"""Details of a subscription.
 
@@ -341,6 +570,9 @@ class Finding(_messages.Message):
       start with a letter and contain alphanumeric characters or underscores
       only.
     state: The state of the finding.
+    vulnerability: Represents vulnerability specific fields like cve, cvss
+      scores etc. CVE stands for Common Vulnerabilities and Exposures
+      (https://cve.mitre.org/about/)
   """
 
   class FindingClassValueValuesEnum(_messages.Enum):
@@ -467,6 +699,7 @@ class Finding(_messages.Message):
   severity = _messages.EnumField('SeverityValueValuesEnum', 12)
   sourceProperties = _messages.MessageField('SourcePropertiesValue', 13)
   state = _messages.EnumField('StateValueValuesEnum', 14)
+  vulnerability = _messages.MessageField('Vulnerability', 15)
 
 
 class Folder(_messages.Message):
@@ -513,6 +746,7 @@ class GoogleCloudSecuritycenterV1Resource(_messages.Message):
     project: The full resource name of project that the resource belongs to.
     projectDisplayName: The human readable name of project that the resource
       belongs to.
+    type: The full resource type of the resource.
   """
 
   folders = _messages.MessageField('Folder', 1, repeated=True)
@@ -521,6 +755,7 @@ class GoogleCloudSecuritycenterV1Resource(_messages.Message):
   parentDisplayName = _messages.StringField(4)
   project = _messages.StringField(5)
   projectDisplayName = _messages.StringField(6)
+  type = _messages.StringField(7)
 
 
 class GoogleCloudSecuritycenterV1RunAssetDiscoveryResponse(_messages.Message):
@@ -896,6 +1131,19 @@ class Indicator(_messages.Message):
 
   domains = _messages.StringField(1, repeated=True)
   ipAddresses = _messages.StringField(2, repeated=True)
+
+
+class Reference(_messages.Message):
+  r"""Additional Links
+
+  Fields:
+    source: Source of the reference e.g. NVD
+    uri: Uri for the mentioned source e.g. https://cve.mitre.org/cgi-
+      bin/cvename.cgi?name=CVE-2021-34527.
+  """
+
+  source = _messages.StringField(1)
+  uri = _messages.StringField(2)
 
 
 class SecurityCenterSettings(_messages.Message):
@@ -1829,6 +2077,17 @@ class Subscription(_messages.Message):
   details = _messages.MessageField('Details', 1)
   name = _messages.StringField(2)
   tier = _messages.EnumField('TierValueValuesEnum', 3)
+
+
+class Vulnerability(_messages.Message):
+  r"""Refers to common vulnerability fields e.g. cve, cvss, cwe etc.
+
+  Fields:
+    cve: CVE stands for Common Vulnerabilities and Exposures
+      (https://cve.mitre.org/about/)
+  """
+
+  cve = _messages.MessageField('Cve', 1)
 
 
 class WebSecurityScannerSettings(_messages.Message):

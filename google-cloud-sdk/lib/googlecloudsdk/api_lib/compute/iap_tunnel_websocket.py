@@ -31,7 +31,9 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core import transport
 from googlecloudsdk.core.util import retry
 import six
+from six.moves import queue
 
+MAX_WEBSOCKET_SEND_WAIT_TIME_SEC = 2
 MAX_WEBSOCKET_OPEN_WAIT_TIME_SEC = 60
 MAX_RECONNECT_SLEEP_TIME_MS = 20 * 1000  # 20 seconds
 MAX_RECONNECT_WAIT_TIME_MS = 15 * 60 * 1000  # 15 minutes
@@ -45,6 +47,10 @@ class ConnectionCreationError(exceptions.Error):
 
 
 class ConnectionReconnectTimeout(exceptions.Error):
+  pass
+
+
+class StoppingError(exceptions.Error):
   pass
 
 
@@ -103,8 +109,11 @@ class IapTunnelWebSocket(object):
     self._total_bytes_confirmed = 0
     self._total_bytes_received = 0
     self._total_bytes_received_and_acked = 0
-    self._unsent_data = collections.deque()
+    self._unsent_data = queue.Queue(maxsize=MAX_UNSENT_QUEUE_LENGTH)
     self._unconfirmed_data = collections.deque()
+    # This queue is used to store data that was sent but didn't get acked by
+    # the server. We will use it to resend the data.
+    self._data_to_resend = queue.Queue()
 
   def __del__(self):
     if self._websocket_helper:
@@ -113,6 +122,9 @@ class IapTunnelWebSocket(object):
   def Close(self):
     """Close down local connection and WebSocket connection."""
     self._stopping = True
+    # We unblock the send thread by putting a connectionAborted error in the
+    # queue.
+    self._unsent_data.put(StoppingError)
     try:
       self._close_handler_callback()
     except:  # pylint: disable=bare-except
@@ -154,11 +166,11 @@ class IapTunnelWebSocket(object):
   def LocalEOF(self):
     """Indicate that the local input gave an EOF.
 
-    Send must not be called after this.
+    This should always be called after finishing sending data, as to stop the
+    sending thread.
     """
-    self._input_eof = True
-    if not self._unsent_data:
-      self._sent_all.set()
+
+    self._unsent_data.put(EOFError)
 
   def WaitForAllSent(self):
     """Wait until all local data has been sent on the websocket.
@@ -194,7 +206,7 @@ class IapTunnelWebSocket(object):
       self._StopConnectionAsync()
 
   def _EnqueueBytesWithWaitForReconnect(self, bytes_to_send):
-    """Add bytes to the queue; sleep waiting for reconnect if queue is full.
+    """Add bytes to the queue; block waiting for reconnect if queue is full.
 
     Args:
       bytes_to_send: The local bytes to send over the websocket. At most
@@ -206,14 +218,23 @@ class IapTunnelWebSocket(object):
       ConnectionCreationError: If the connection was closed and no more
         reconnect retries will be performed.
     """
+
     end_time = time.time() + MAX_RECONNECT_WAIT_TIME_MS / 1000.0
     while time.time() < end_time and not self._stopping:
-      if len(self._unsent_data) < MAX_UNSENT_QUEUE_LENGTH:
-        self._unsent_data.append(bytes_to_send)
+      try:
+        # Blocks for a few seconds, to avoid empty loops. The only reason the
+        # timeout is short, is so we notice when the socket was closed. A longer
+        # timeout may make us miss that.
+        self._unsent_data.put(bytes_to_send, timeout=
+                              MAX_WEBSOCKET_SEND_WAIT_TIME_SEC)
+
         log.debug('ENQUEUED data_len [%d] bytes_to_send[:20] [%r]',
                   len(bytes_to_send), bytes_to_send[:20])
         return
-      time.sleep(0.01)
+      except queue.Full:
+        # Throws Full if timeout was reached
+        pass
+    # If we got here it means we either closed the socket, or couldn't reconnect
     if self._stopping:
       raise ConnectionCreationError('Unexpected error while reconnecting.'
                                     ' Check logs for more details.')
@@ -261,16 +282,24 @@ class IapTunnelWebSocket(object):
         self._websocket_helper.Send(ack_data)
         self._total_bytes_received_and_acked = bytes_received
       except helper.WebSocketConnectionClosed:
-        pass
+        # We throw here so the caller can reconnect
+        raise
       except EnvironmentError as e:
         log.info('Unable to send WebSocket ack [%s]', six.text_type(e))
       except:  # pylint: disable=bare-except
         if not self._IsClosed():
           log.info('Error while attempting to ack [%d] bytes', bytes_received,
                    exc_info=True)
+        else:
+          raise
 
   def _SendDataAndReconnectWebSocket(self):
     """Main function for send_and_reconnect_thread."""
+    def SendData():
+      if not self._stopping:
+        self._SendQueuedData()
+        self._SendAck()
+
     def Reconnect():
       if not self._stopping:
         self._StartNewWebSocket()
@@ -278,25 +307,43 @@ class IapTunnelWebSocket(object):
 
     try:
       while not self._stopping:
-        if self._IsClosed():
+        try:
+          SendData()
+        except Exception as e:  # pylint: disable=broad-except
+          log.debug('Error while sending data, trying to reconnect [%s]',
+                    six.text_type(e))
           self._AttemptReconnect(Reconnect)
-
-        elif self._HasConnected():
-          self._SendQueuedData()
-          if not self._IsClosed():
-            self._SendAck()
-
-        if not self._stopping:
-          time.sleep(0.01)
-    except:  # pylint: disable=bare-except
-      log.debug('Error from WebSocket while sending data.', exc_info=True)
-    self.Close()
+    finally:
+      self.Close()
 
   def _SendQueuedData(self):
     """Send data that is sitting in the unsent data queue."""
-    while self._unsent_data and not self._stopping:
-      try:
-        send_data = utils.CreateSubprotocolDataFrame(self._unsent_data[0])
+    try:
+      while not self._stopping:
+        # This is a blocking call in case the queue is empty. The timeout is
+        # there so we can unblock and send acks if no message arrive after a few
+        # seconds
+        try:
+          if not self._data_to_resend.empty():
+            data = self._data_to_resend.get()
+          else:
+            data = self._unsent_data.get(timeout=
+                                         MAX_WEBSOCKET_SEND_WAIT_TIME_SEC)
+        except queue.Empty:
+          # Throws empty if timeout reached
+          if self._IsClosed():
+            raise helper.WebSocketConnectionClosed
+          break
+
+        # When EOF is reached, EOF error will be put in the queue.
+        # When close is called. ConnectionAborted error is put in the queue.
+        if data is EOFError or data is StoppingError:
+          # Now we tell the thread to quit as there's no more data to send.
+          self._stopping = True
+          if data is EOFError:
+            self._input_eof = True
+          break
+
         # We need to append to _unconfirmed_data before calling Send(), because
         # otherwise we could receive the ack for the sent data before we do the
         # append, which we would interpret as an invalid ack. This does mean
@@ -306,21 +353,17 @@ class IapTunnelWebSocket(object):
         # the ack was received after the data was sent (so no data or control
         # flow corruption), and we don't have a goal of giving an error every
         # time the server misbehaves.
-        self._unconfirmed_data.append(self._unsent_data.popleft())
+        # It's also important in case we take the data out of the unset data
+        # queue but we can't send it up because the connection was closed. By
+        # adding it to unconfirmed, we will resend it later.
+        self._unconfirmed_data.append(data)
+
+        send_data = utils.CreateSubprotocolDataFrame(data)
         self._websocket_helper.Send(send_data)
-      except helper.WebSocketConnectionClosed:
-        break
-      except EnvironmentError as e:
-        log.info('Unable to send WebSocket data [%s]', six.text_type(e))
-        break
-      except:  # pylint: disable=bare-except
-        log.info('Error while attempting to send [%d] bytes', len(send_data),
-                 exc_info=True)
-        break
-    # We need to check _input_eof before _unsent_data to avoid a race
-    # condition with setting _input_eof simultaneously with this check.
-    if self._input_eof and not self._unsent_data:
-      self._sent_all.set()
+    finally:
+      if (self._input_eof and self._data_to_resend.empty() and
+          self._unsent_data.empty()):
+        self._sent_all.set()
 
   def _StopConnectionAsync(self):
     self._stopping = True
@@ -397,6 +440,12 @@ class IapTunnelWebSocket(object):
           'Discarding [%d] extra bytes after processing CONNECT_SUCCESS_SID',
           len(bytes_left))
 
+  def _AddUnconfirmedDataBackToTheQueue(self):
+    # This data will be sent first
+    for data in self._unconfirmed_data:
+      self._data_to_resend.put(data)
+    self._unconfirmed_data = collections.deque()
+
   def _HandleSubprotocolReconnectSuccessAck(self, binary_data):
     """Handle Subprotocol RECONNECT_SUCCESS_ACK Frame."""
     if self._HasConnected():
@@ -411,8 +460,7 @@ class IapTunnelWebSocket(object):
     log.info(
         'Reconnecting: confirming [%d] bytes and resending [%d] messages.',
         bytes_being_confirmed, len(self._unconfirmed_data))
-    self._unsent_data.extendleft(reversed(self._unconfirmed_data))
-    self._unconfirmed_data = collections.deque()
+    self._AddUnconfirmedDataBackToTheQueue()
     self._connect_msg_received = True
     if bytes_left:
       log.debug(

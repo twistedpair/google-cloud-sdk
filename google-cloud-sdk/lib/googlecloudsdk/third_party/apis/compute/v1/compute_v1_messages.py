@@ -687,9 +687,9 @@ class Address(_messages.Message):
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
-      regular expression [a-z]([-a-z0-9]*[a-z0-9])?. The first character must
-      be a lowercase letter, and all following characters (except for the last
-      character) must be a dash, lowercase letter, or digit. The last
+      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?`. The first character
+      must be a lowercase letter, and all following characters (except for the
+      last character) must be a dash, lowercase letter, or digit. The last
       character must be a lowercase letter or digit.
     network: The URL of the network in which to reserve the address. This
       field can only be used with INTERNAL type with the VPC_PEERING purpose.
@@ -1423,7 +1423,7 @@ class AllocationSpecificSKUAllocationReservedInstanceProperties(_messages.Messag
 
 class AllocationSpecificSKUReservation(_messages.Message):
   r"""This reservation type allows to pre allocate specific instance
-  configuration.
+  configuration. Next ID: 5
 
   Fields:
     count: Specifies the number of resources that are allocated.
@@ -23108,14 +23108,21 @@ class Disk(_messages.Message):
     description: An optional description of this resource. Provide this
       property when you create the resource.
     diskEncryptionKey: Encrypts the disk using a customer-supplied encryption
-      key. After you encrypt a disk with a customer-supplied key, you must
-      provide the same key if you use the disk later (e.g. to create a disk
-      snapshot, to create a disk image, to create a machine image, or to
-      attach the disk to a virtual machine). Customer-supplied encryption keys
-      do not protect access to metadata of the disk. If you do not provide an
-      encryption key when creating the disk, then the disk will be encrypted
-      using an automatically generated key and you do not need to provide a
-      key to use the disk later.
+      key or a customer-managed encryption key. Encryption keys do not protect
+      access to metadata of the disk. After you encrypt a disk with a
+      customer-supplied key, you must provide the same key if you use the disk
+      later. For example, to create a disk snapshot, to create a disk image,
+      to create a machine image, or to attach the disk to a virtual machine.
+      After you encrypt a disk with a customer-managed key, the
+      diskEncryptionKey.kmsKeyName is set to a key *version* name once the
+      disk is created. The disk is encrypted with this version of the key. In
+      the response, diskEncryptionKey.kmsKeyName appears in the following
+      format: "diskEncryptionKey.kmsKeyName":
+      "projects/kms_project_id/locations/region/keyRings/
+      key_region/cryptoKeys/key /cryptoKeysVersions/version If you do not
+      provide an encryption key when creating the disk, then the disk is
+      encrypted using an automatically generated key and you don't need to
+      provide a key to use the disk later.
     guestOsFeatures: A list of features to enable on the guest operating
       system. Applicable only for bootable images. Read Enabling guest
       operating system features to see a list of available options.
@@ -41771,7 +41778,7 @@ class Policy(_messages.Message):
   roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
   role: roles/resourcemanager.organizationViewer condition: title: expirable
   access description: Does not grant access after Sep 2020 expression:
-  request.time < timestamp('2020-10-01T00:00:00.000Z') - etag: BwWWja0YfJA= -
+  request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA=
   version: 3 For a description of IAM and its features, see the [IAM
   documentation](https://cloud.google.com/iam/docs/).
 
@@ -50863,7 +50870,8 @@ class Subnetwork(_messages.Message):
     subnet cannot enable direct path.
 
     Values:
-      EXTERNAL: VMs in this subnet can have external IPv6.
+      EXTERNAL: VMs on this subnet will be assigned IPv6 addresses that are
+        accesible via the Internet, as well as the VPC network.
       UNSPECIFIED_IPV6_ACCESS_TYPE: IPv6 access type not set. Means this
         subnet hasn't been turned on IPv6 yet.
     """

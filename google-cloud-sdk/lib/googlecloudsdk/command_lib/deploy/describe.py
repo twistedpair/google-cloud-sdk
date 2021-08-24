@@ -19,8 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from apitools.base.py import exceptions as apitools_exceptions
-
-from googlecloudsdk.api_lib.clouddeploy import rollout
+from googlecloudsdk.command_lib.deploy import rollout_util
 from googlecloudsdk.command_lib.deploy import target_util
 from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
@@ -50,17 +49,13 @@ def DescribeTarget(target_ref, pipeline_id):
     A dictionary of <section name:output>.
 
   """
-  target_dict = target_ref.AsDict()
-  final_ref, deploy_target = target_util.GetTargetReferenceInUnknownCollection(
-      target_ref.Name(), target_dict['projectsId'], target_dict['locationsId'],
-      pipeline_id)
-
-  output = {'Target': deploy_target}
+  target_obj = target_util.GetTarget(target_ref)
+  output = {'Target': target_obj}
   releases, current_rollout = target_util.GetReleasesAndCurrentRollout(
-      final_ref, pipeline_id)
+      target_ref, pipeline_id)
   output = SetCurrentReleaseAndRollout(current_rollout, output)
-  if deploy_target.requireApproval:
-    output = ListPendingApprovals(releases, final_ref, output)
+  if target_obj.requireApproval:
+    output = ListPendingApprovals(releases, target_ref, output)
 
   return output
 
@@ -102,13 +97,9 @@ def ListPendingApprovals(releases, target_ref, output):
   """
   if releases:
     try:
-      pending_approvals = rollout.RolloutClient().ListPendingRollouts(
-          releases, target_ref)
+      pending_approvals = rollout_util.ListPendingRollouts(releases, target_ref)
       if pending_approvals:
-        rollouts = {}
-        for ro in pending_approvals:
-          rollouts[ro.name] = ro.description
-        output['Pending Approvals'] = rollouts
+        output['Pending Approvals'] = [ro.name for ro in pending_approvals]
     except apitools_exceptions.HttpError as error:
       log.debug('Failed to list pending approvals: ' + error.content)
 

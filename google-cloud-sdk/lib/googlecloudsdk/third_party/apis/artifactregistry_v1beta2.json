@@ -451,7 +451,7 @@
           "description": "The files returned.",
           "type": "array",
           "items": {
-            "$ref": "File"
+            "$ref": "GoogleDevtoolsArtifactregistryV1beta2File"
           }
         },
         "nextPageToken": {
@@ -460,8 +460,8 @@
         }
       }
     },
-    "File": {
-      "id": "File",
+    "GoogleDevtoolsArtifactregistryV1beta2File": {
+      "id": "GoogleDevtoolsArtifactregistryV1beta2File",
       "description": "Files store content that is potentially associated with Packages or Versions.",
       "type": "object",
       "properties": {
@@ -1874,7 +1874,7 @@
                         "name"
                       ],
                       "response": {
-                        "$ref": "File"
+                        "$ref": "GoogleDevtoolsArtifactregistryV1beta2File"
                       },
                       "scopes": [
                         "https://www.googleapis.com/auth/cloud-platform",

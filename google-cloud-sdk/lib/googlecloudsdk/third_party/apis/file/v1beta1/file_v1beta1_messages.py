@@ -322,11 +322,15 @@ class FileProjectsLocationsInstancesDeleteRequest(_messages.Message):
   r"""A FileProjectsLocationsInstancesDeleteRequest object.
 
   Fields:
+    force: If set to true, any snapshots of the instance will also be deleted.
+      (Otherwise, the request will only work if the instance has no
+      snapshots.)
     name: Required. The instance resource name, in the format
       `projects/{project_id}/locations/{location}/instances/{instance_id}`
   """
 
-  name = _messages.StringField(1, required=True)
+  force = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
 
 
 class FileProjectsLocationsInstancesGetRequest(_messages.Message):
@@ -919,11 +923,6 @@ class GoogleCloudSaasacceleratorManagementProvidersV1NodeSloMetadata(_messages.M
   per-node metric based on this information.
 
   Fields:
-    exclusions: By default node is eligible if instance is eligible. But
-      individual node might be excluded from SLO by adding entry here. For
-      semantic see SloMetadata.exclusions. If both instance and node level
-      exclusions are present for time period, the node level's reason will be
-      reported by Eligibility Exporter.
     location: The location of the node, if different from instance location.
     nodeId: The id of the node. This should be equal to
       SaasInstanceNode.node_id.
@@ -931,10 +930,9 @@ class GoogleCloudSaasacceleratorManagementProvidersV1NodeSloMetadata(_messages.M
       coming from instance or exclusions for specified SLIs.
   """
 
-  exclusions = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1SloExclusion', 1, repeated=True)
-  location = _messages.StringField(2)
-  nodeId = _messages.StringField(3)
-  perSliEligibility = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1PerSliSloEligibility', 4)
+  location = _messages.StringField(1)
+  nodeId = _messages.StringField(2)
+  perSliEligibility = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1PerSliSloEligibility', 3)
 
 
 class GoogleCloudSaasacceleratorManagementProvidersV1PerSliSloEligibility(_messages.Message):
@@ -1044,49 +1042,11 @@ class GoogleCloudSaasacceleratorManagementProvidersV1SloEligibility(_messages.Me
   reason = _messages.StringField(2)
 
 
-class GoogleCloudSaasacceleratorManagementProvidersV1SloExclusion(_messages.Message):
-  r"""SloExclusion represents an exclusion in SLI calculation applies to all
-  SLOs.
-
-  Fields:
-    duration: Exclusion duration. No restrictions on the possible values. When
-      an ongoing operation is taking longer than initially expected, an
-      existing entry in the exclusion list can be updated by extending the
-      duration. This is supported by the subsystem exporting eligibility data
-      as long as such extension is committed at least 10 minutes before the
-      original exclusion expiration - otherwise it is possible that there will
-      be "gaps" in the exclusion application in the exported timeseries.
-    reason: Human-readable reason for the exclusion. This should be a static
-      string (e.g. "Disruptive update in progress") and should not contain
-      dynamically generated data (e.g. instance name). Can be left empty.
-    sliName: Name of an SLI that this exclusion applies to. Can be left empty,
-      signaling that the instance should be excluded from all SLIs.
-    startTime: Start time of the exclusion. No alignment (e.g. to a full
-      minute) needed.
-  """
-
-  duration = _messages.StringField(1)
-  reason = _messages.StringField(2)
-  sliName = _messages.StringField(3)
-  startTime = _messages.StringField(4)
-
-
 class GoogleCloudSaasacceleratorManagementProvidersV1SloMetadata(_messages.Message):
   r"""SloMetadata contains resources required for proper SLO classification of
   the instance.
 
   Fields:
-    exclusions: List of SLO exclusion windows. When multiple entries in the
-      list match (matching the exclusion time-window against current time
-      point) the exclusion reason used in the first matching entry will be
-      published. It is not needed to include expired exclusion in this list,
-      as only the currently applicable exclusions are taken into account by
-      the eligibility exporting subsystem (the historical state of exclusions
-      will be reflected in the historically produced timeseries regardless of
-      the current state). This field can be used to mark the instance as
-      temporary ineligible for the purpose of SLO calculation. For permanent
-      instance SLO exclusion, use of custom instance eligibility is
-      recommended. See 'eligibility' field below.
     nodes: Optional. List of nodes. Some producers need to use per-node
       metadata to calculate SLO. This field allows such producers to publish
       per-node SLO meta data, which will be consumed by SSA Eligibility
@@ -1098,10 +1058,9 @@ class GoogleCloudSaasacceleratorManagementProvidersV1SloMetadata(_messages.Messa
       Field is mandatory and must not be empty.
   """
 
-  exclusions = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1SloExclusion', 1, repeated=True)
-  nodes = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1NodeSloMetadata', 2, repeated=True)
-  perSliEligibility = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1PerSliSloEligibility', 3)
-  tier = _messages.StringField(4)
+  nodes = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1NodeSloMetadata', 1, repeated=True)
+  perSliEligibility = _messages.MessageField('GoogleCloudSaasacceleratorManagementProvidersV1PerSliSloEligibility', 2)
+  tier = _messages.StringField(3)
 
 
 class Instance(_messages.Message):
@@ -1109,6 +1068,7 @@ class Instance(_messages.Message):
 
   Enums:
     StateValueValuesEnum: Output only. The instance state.
+    SuspensionReasonsValueListEntryValuesEnum:
     TierValueValuesEnum: The service tier of the instance.
 
   Messages:
@@ -1121,6 +1081,7 @@ class Instance(_messages.Message):
       simultaneous updates from overwriting each other.
     fileShares: File system shares on the instance. For this version, only a
       single file share is supported.
+    kmsKeyName: KMS key name used for data encryption.
     labels: Resource labels to represent user provided metadata.
     name: Output only. The resource name of the instance, in the format
       `projects/{project_id}/locations/{location_id}/instances/{instance_id}`.
@@ -1130,6 +1091,8 @@ class Instance(_messages.Message):
     state: Output only. The instance state.
     statusMessage: Output only. Additional information about the instance
       state, if available.
+    suspensionReasons: Output only. field indicates all the reasons the
+      instance is in "SUSPENDED" state.
     tier: The service tier of the instance.
   """
 
@@ -1148,6 +1111,8 @@ class Instance(_messages.Message):
         `Instance` resource.
       RESTORING: The instance is restoring a snapshot or backup to an existing
         file share and may be unusable during this time.
+      SUSPENDED: The instance is suspended. You can get further details from
+        the `suspension_reasons` field of the `Instance` resource.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
@@ -1156,6 +1121,18 @@ class Instance(_messages.Message):
     DELETING = 4
     ERROR = 5
     RESTORING = 6
+    SUSPENDED = 7
+
+  class SuspensionReasonsValueListEntryValuesEnum(_messages.Enum):
+    r"""SuspensionReasonsValueListEntryValuesEnum enum type.
+
+    Values:
+      SUSPENSION_REASON_UNSPECIFIED: Not set.
+      KMS_KEY_ISSUE: The KMS key used by the instance is either revoked or
+        denied access to.
+    """
+    SUSPENSION_REASON_UNSPECIFIED = 0
+    KMS_KEY_ISSUE = 1
 
   class TierValueValuesEnum(_messages.Enum):
     r"""The service tier of the instance.
@@ -1211,13 +1188,15 @@ class Instance(_messages.Message):
   description = _messages.StringField(2)
   etag = _messages.StringField(3)
   fileShares = _messages.MessageField('FileShareConfig', 4, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  networks = _messages.MessageField('NetworkConfig', 7, repeated=True)
-  satisfiesPzs = _messages.BooleanField(8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
-  statusMessage = _messages.StringField(10)
-  tier = _messages.EnumField('TierValueValuesEnum', 11)
+  kmsKeyName = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  networks = _messages.MessageField('NetworkConfig', 8, repeated=True)
+  satisfiesPzs = _messages.BooleanField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  statusMessage = _messages.StringField(11)
+  suspensionReasons = _messages.EnumField('SuspensionReasonsValueListEntryValuesEnum', 12, repeated=True)
+  tier = _messages.EnumField('TierValueValuesEnum', 13)
 
 
 class ListBackupsResponse(_messages.Message):

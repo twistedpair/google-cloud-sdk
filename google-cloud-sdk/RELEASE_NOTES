@@ -5,6 +5,89 @@ Copyright 2014-2021 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 354.0.0 (2021-08-24)
+
+### Breaking Changes
+
+*   **(AI)** Disable `--analysis-instance-schema` flag in `gcloud beta ai model-monitoring-jobs update`.
+
+
+### App Engine
+
+* Updated the Java SDK to version 1.9.91.
+  Please visit the following release notes for details:
+  <https://cloud.google.com/appengine/docs/java/release-notes>.
+
+### Artifact Registry
+
+* Fixed print-settings command for Python repositories.
+
+### Cloud Asset Inventory
+
+* Added `--relationship-type` flag to `gcloud asset get-history` to enable
+  getting relationship history.
+
+### Cloud Bigtable
+
+* Updated cbt_linux_arm name to cbt_linux_aarch64-x.x.x.tar.
+
+### Cloud Build
+
+* Added `--require-approval` flag to the following commands:
+  * `gcloud beta builds triggers create cloud-source-repositories`
+  * `gcloud beta builds triggers create github`
+* Added `require-approval` flag to `gcloud builds triggers create`.
+* Promoted `gcloud builds approve` and `gcloud builds reject` commands to beta.
+* Added the flag `--suppress-logs` to the command `gcloud builds submit`.
+
+### Cloud IAM
+
+* Promoted `gcloud iam service-accounts keys disable|enable` to beta and GA.
+
+### Cloud Run
+
+* Promoted `--source` flag of `gcloud run deploy` to GA. This flag supports deploying from source code through integration with Cloud Build.
+
+### Cloud Storage
+
+* Updated gsutil component to 4.67.
+
+### Compute Engine
+
+* Added `--auto-renew` flag to `gcloud compute commitments create` and `gcloud compute commitments update` for alpha.
+* Added the following flags to `gcloud beta compute instances update`:
+  * `--clear-node-affinities`
+  * `--node-affinity-file`
+  * `--node-group`
+  * `--node`
+* Promoted `gcloud compute instances send-diagnostic-interrupt` to beta and GA.
+* Added `--host-error-timeout-seconds` to specify the timeout in seconds for host error detection to both alpha and beta for:
+    * `gcloud compute instances create`
+    * `gcloud compute instances create-with-container`
+    * `gcloud compute instance-templates create`
+    * `gcloud compute instances bulk create`
+    * `gcloud compute instances set-scheduling`
+    * `gcloud compute instances update-from-file`
+
+### Config Connector
+
+* Updated Google Cloud Config Connector to version 1.58.1.
+  See Config Connector Overview for more details [https://cloud.google.com/config-connector/docs/overview](https://cloud.google.com/config-connector/docs/overview).
+
+### Essential Contacts
+
+* Promoted `gcloud essential-contacts` to GA.
+
+### Managed Active Directory
+
+* Promoted `--enable-audit-logs` flag in `gcloud active-directory domains create`  and `gcloud active-directory domains update` to GA.
+* Promoted `AUDIT_LOGS_ENABLED` parameter to `gcloud active-directory domains list` to GA.
+* Updated `gcloud active-directory domains list` to include value for `auditLogsEnabled` in output.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 353.0.0 (2021-08-17)
 
 ### Breaking Changes

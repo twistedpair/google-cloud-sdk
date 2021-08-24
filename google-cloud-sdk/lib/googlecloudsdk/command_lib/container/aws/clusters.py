@@ -159,6 +159,12 @@ class Client(object):
         name=cluster_ref.RelativeName())
     return self.service.Get(req)
 
+  def GenerateAccessToken(self, cluster_ref):
+    """Get an access token for an AWS cluster."""
+    req = self.messages.GkemulticloudProjectsLocationsAwsClustersGenerateAwsAccessTokenRequest(
+        awsCluster=cluster_ref.RelativeName())
+    return self.service.GenerateAwsAccessToken(req)
+
   def GetKubeconfig(self, cluster_ref):
     """Get kubeconfig of an AWS cluster."""
     req = self.messages.GkemulticloudProjectsLocationsAwsClustersGetAwsClusterAdminKubeconfigRequest(

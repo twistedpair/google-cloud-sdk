@@ -148,6 +148,7 @@ def MakeGetAssetsHistoryHttpRequests(args,
   response = service.BatchGetAssetsHistory(
       messages.CloudassetBatchGetAssetsHistoryRequest(
           assetNames=args.asset_names,
+          relationshipTypes=args.relationship_types,
           contentType=content_type,
           parent=parent,
           readTimeWindow_endTime=end_time,

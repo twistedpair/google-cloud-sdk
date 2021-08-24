@@ -35,11 +35,74 @@ from googlecloudsdk.core import properties
 
 import six
 
+_INVALID_OPTION_FOR_V2_ERROR_MSG = """\
+Cannot specify {opt} with Composer 2.X or greater.
+"""
 
-AIRFLOW_VERSION_TYPE = arg_parsers.RegexpValidator(
+_INVALID_OPTION_FOR_V1_ERROR_MSG = """\
+Cannot specify {opt} with Composer 1.X.
+"""
+
+
+def ValidateComposerVersionExclusiveOptionFactory(composer_v1_option,
+                                                  error_message):
+  """Creates Composer version specific ActionClass decorators."""
+
+  def ValidateComposerVersionExclusiveOptionDecorator(action_class):
+    """Decorates ActionClass to cross-validate argument with Composer version."""
+    original_call = action_class.__call__
+
+    def DecoratedCall(self, parser, namespace, value, option_string=None):
+
+      def IsImageVersionStringComposerV1(image_version):
+        return (image_version.startswith('composer-1.') or
+                image_version.startswith('composer-latest'))
+
+      try:
+        if namespace.image_version and IsImageVersionStringComposerV1(
+            namespace.image_version) != composer_v1_option:
+          raise command_util.InvalidUserInputError(
+              error_message.format(opt=option_string))
+      except AttributeError:
+        # Attribute flag for image version is only conditionally added to the
+        # parser, so it may be missing in the namespace.
+        pass
+      original_call(self, parser, namespace, value, option_string)
+
+    action_class.__call__ = DecoratedCall
+    return action_class
+
+  return ValidateComposerVersionExclusiveOptionDecorator
+
+
+@ValidateComposerVersionExclusiveOptionFactory(True,
+                                               _INVALID_OPTION_FOR_V2_ERROR_MSG)
+class V1ExclusiveAppendAction(argparse._AppendAction):  # pylint: disable=protected-access
+  """AppendActionClass first validating if option can is Composer 1 exclusive."""
+
+
+@ValidateComposerVersionExclusiveOptionFactory(True,
+                                               _INVALID_OPTION_FOR_V2_ERROR_MSG)
+class V1ExclusiveStoreTrueAction(argparse._StoreTrueAction):  # pylint: disable=protected-access
+  """StoreTrueActionClass first validating if option is Composer 1 exclusive."""
+
+
+@ValidateComposerVersionExclusiveOptionFactory(True,
+                                               _INVALID_OPTION_FOR_V2_ERROR_MSG)
+class V1ExclusiveStoreAction(argparse._StoreAction):  # pylint: disable=protected-access
+  """StoreActionClass first validating if option is Composer 1 exclusive."""
+
+
+@ValidateComposerVersionExclusiveOptionFactory(False,
+                                               _INVALID_OPTION_FOR_V1_ERROR_MSG)
+class V2ExclusiveStoreAction(argparse._StoreAction):  # pylint: disable=protected-access
+  """StoreActionClass first validating if option is Composer >=2 exclusive."""
+
+
+_AIRFLOW_VERSION_TYPE = arg_parsers.RegexpValidator(
     r'^(\d+\.\d+(?:\.\d+)?)', 'must be in the form X.Y[.Z].')
 
-IMAGE_VERSION_TYPE = arg_parsers.RegexpValidator(
+_IMAGE_VERSION_TYPE = arg_parsers.RegexpValidator(
     r'^composer-(\d+\.\d+\.\d+(?:-[a-z]+\.\d+)?|latest)-airflow-(\d+\.\d+(?:\.\d+)?)',
     'must be in the form \'composer-A.B.C[-D.E]-airflow-X.Y[.Z]\' or '
     '\'latest\' can be provided in place of the Cloud Composer version '
@@ -172,7 +235,7 @@ ENV_UPGRADE_GROUP_DESCRIPTION = (
 
 UPDATE_AIRFLOW_VERSION_FLAG = base.Argument(
     '--airflow-version',
-    type=AIRFLOW_VERSION_TYPE,
+    type=_AIRFLOW_VERSION_TYPE,
     metavar='AIRFLOW_VERSION',
     help="""\
     Upgrade the environment to a later Airflow version in-place.
@@ -186,7 +249,7 @@ UPDATE_AIRFLOW_VERSION_FLAG = base.Argument(
 
 UPDATE_IMAGE_VERSION_FLAG = base.Argument(
     '--image-version',
-    type=IMAGE_VERSION_TYPE,
+    type=_IMAGE_VERSION_TYPE,
     metavar='IMAGE_VERSION',
     help="""\
     Upgrade the environment to a later version in-place.
@@ -318,11 +381,11 @@ MAX_PODS_PER_NODE = base.Argument(
 
 WEB_SERVER_ALLOW_IP = base.Argument(
     '--web-server-allow-ip',
+    action=V1ExclusiveAppendAction,
     type=arg_parsers.ArgDict(spec={
         'ip_range': str,
         'description': str
     }),
-    action='append',
     help="""\
     Specifies a list of IPv4 or IPv6 ranges that will be allowed to access the
     Airflow web server. By default, all IPs are allowed to access the web
@@ -341,14 +404,14 @@ WEB_SERVER_ALLOW_IP = base.Argument(
 
 WEB_SERVER_DENY_ALL = base.Argument(
     '--web-server-deny-all',
-    action='store_true',
+    action=V1ExclusiveStoreTrueAction,
     help="""\
     Denies all incoming traffic to the Airflow web server.
     """)
 
 WEB_SERVER_ALLOW_ALL = base.Argument(
     '--web-server-allow-all',
-    action='store_true',
+    action=V1ExclusiveStoreTrueAction,
     help="""\
     Allows all IP addresses to access the Airflow web server.
     """)
@@ -359,7 +422,7 @@ UPDATE_WEB_SERVER_ALLOW_IP = base.Argument(
         'ip_range': str,
         'description': str
     }),
-    action='append',
+    action=V1ExclusiveAppendAction,
     help="""\
     Specifies a list of IPv4 or IPv6 ranges that will be allowed to access the
     Airflow web server. By default, all IPs are allowed to access the web
@@ -381,6 +444,7 @@ CLOUD_SQL_MACHINE_TYPE = base.Argument(
 WEB_SERVER_MACHINE_TYPE = base.Argument(
     '--web-server-machine-type',
     type=str,
+    action=V1ExclusiveStoreAction,
     help="""\
     machine type used by the Airflow web server. The list of available machine
     types is available here: https://cloud.google.com/composer/pricing.
@@ -391,6 +455,7 @@ SCHEDULER_CPU = base.Argument(
     hidden=True,
     type=float,
     default=None,
+    action=V2ExclusiveStoreAction,
     help="""\
     CPU allocated to Airflow scheduler.
     """)
@@ -400,6 +465,7 @@ WORKER_CPU = base.Argument(
     hidden=True,
     type=float,
     default=None,
+    action=V2ExclusiveStoreAction,
     help="""\
     CPU allocated to each Airflow worker
     """)
@@ -409,6 +475,7 @@ WEB_SERVER_CPU = base.Argument(
     hidden=True,
     type=float,
     default=None,
+    action=V2ExclusiveStoreAction,
     help="""\
     CPU allocated to each Airflow web server
     """)
@@ -422,6 +489,7 @@ SCHEDULER_MEMORY = base.Argument(
         suggested_binary_size_scales=['MB', 'GB'],
         default_unit='G'),
     default=None,
+    action=V2ExclusiveStoreAction,
     help="""\
     Memory allocated to Airflow scheduler. If units are not provided,
     defaults to GB.
@@ -435,6 +503,7 @@ WORKER_MEMORY = base.Argument(
         upper_bound='512GB',
         suggested_binary_size_scales=['MB', 'GB'],
         default_unit='G'),
+    action=V2ExclusiveStoreAction,
     default=None,
     help="""\
     Memory allocated to Airflow worker. If units are not provided,
@@ -449,6 +518,7 @@ WEB_SERVER_MEMORY = base.Argument(
         upper_bound='512GB',
         suggested_binary_size_scales=['MB', 'GB'],
         default_unit='G'),
+    action=V2ExclusiveStoreAction,
     default=None,
     help="""\
     Memory allocated to Airflow web server. If units are not provided,
@@ -463,6 +533,7 @@ SCHEDULER_STORAGE = base.Argument(
         upper_bound='10GB',
         suggested_binary_size_scales=['MB', 'GB'],
         default_unit='G'),
+    action=V2ExclusiveStoreAction,
     default=None,
     help="""\
     Storage allocated to Airflow scheduler. If units are not provided,
@@ -477,6 +548,7 @@ WORKER_STORAGE = base.Argument(
         upper_bound='10GB',
         suggested_binary_size_scales=['MB', 'GB'],
         default_unit='G'),
+    action=V2ExclusiveStoreAction,
     default=None,
     help="""\
     Storage allocated to Airflow worker. If units are not provided,
@@ -491,6 +563,7 @@ WEB_SERVER_STORAGE = base.Argument(
         upper_bound='10GB',
         suggested_binary_size_scales=['MB', 'GB'],
         default_unit='G'),
+    action=V2ExclusiveStoreAction,
     default=None,
     help="""\
     Storage allocated to Airflow web server. If units are not provided,
@@ -502,6 +575,7 @@ MIN_WORKERS = base.Argument(
     hidden=True,
     type=int,
     default=None,
+    action=V2ExclusiveStoreAction,
     help="""\
     Minimum number of workers in the Environment.
     """)
@@ -509,6 +583,7 @@ MIN_WORKERS = base.Argument(
 MAX_WORKERS = base.Argument(
     '--max-workers',
     hidden=True,
+    action=V2ExclusiveStoreAction,
     type=int,
     default=None,
     help="""\
@@ -748,6 +823,7 @@ COMPOSER_NETWORK_IPV4_CIDR_FLAG = base.Argument(
     default=None,
     type=COMPOSER_NETWORK_IPV4_CIDR_BLOCK_FORMAT_VALIDATOR,
     hidden=True,
+    action=V2ExclusiveStoreAction,
     help="""\
     IPv4 CIDR range to use for the Composer network. This should have
     a size of the netmask between 24 and 29.

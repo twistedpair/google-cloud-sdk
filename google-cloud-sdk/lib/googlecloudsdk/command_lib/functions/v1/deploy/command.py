@@ -173,6 +173,54 @@ def _ApplySecretsArgsToFunction(function, args):
   return updated_fields
 
 
+def _ApplyCMEKArgsToFunction(function_ref, function, args, release_track):
+  """Configures CMEK related fields for the Cloud Function.
+
+  It sets or clears the kms_key_name and docker_repository fields based on the
+  CLI args.
+
+  Args:
+    function_ref: Function resource.
+    function: Cloud function message to be configured.
+    args: All CLI arguments.
+    release_track: gcloud release track.
+
+  Returns:
+    updated_fields: update mask containing the list of fields to be updated.
+
+  Raises:
+    InvalidArgumentException: If the specified KMS key or Docker repository is
+      not compatible with the function.
+    RequiredArgumentException: If Docker repository is not specified when KMS
+      key is configured.
+  """
+  updated_fields = []
+  if release_track == calliope_base.ReleaseTrack.ALPHA:
+    if args.IsSpecified('kms_key') or args.IsSpecified('clear_kms_key'):
+      old_kms_key = function.kmsKeyName
+      function.kmsKeyName = (None if args.clear_kms_key else args.kms_key)
+      if function.kmsKeyName != old_kms_key:
+        if function.kmsKeyName:
+          api_util.ValidateKMSKeyForFunction(function.kmsKeyName, function_ref)
+        updated_fields.append('kmsKeyName')
+    if args.IsSpecified('docker_repository') or args.IsSpecified(
+        'clear_docker_repository'):
+      old_docker_repository = function.dockerRepository
+      function.dockerRepository = (None if args.clear_docker_repository else
+                                   args.docker_repository)
+      if function.dockerRepository != old_docker_repository:
+        if function.dockerRepository:
+          api_util.ValidateDockerRepositoryForFunction(
+              function.dockerRepository, function_ref)
+        updated_fields.append('dockerRepository')
+    if function.kmsKeyName and not function.dockerRepository:
+      raise calliope_exceptions.RequiredArgumentException(
+          '--docker-repository',
+          'A Docker repository must be specified when a KMS key is configured '
+          'for the function.')
+  return updated_fields
+
+
 def _CreateBindPolicyCommand(function_ref):
   template = ('gcloud alpha functions add-iam-policy-binding %s --region=%s '
               '--member=allUsers --role=roles/cloudfunctions.invoker')
@@ -230,6 +278,7 @@ def Run(args, track=None, enable_runtime=True):
 
   # Get an existing function or create a new one.
   function = api_util.GetFunction(function_url)
+
   is_new_function = function is None
   had_vpc_connector = bool(
       function.vpcConnector) if not is_new_function else False
@@ -375,6 +424,10 @@ def Run(args, track=None, enable_runtime=True):
 
   # Applies secrets args to function
   updated_fields.extend(_ApplySecretsArgsToFunction(function, args))
+
+  # Applies CMEK args to function
+  updated_fields.extend(
+      _ApplyCMEKArgsToFunction(function_ref, function, args, track))
 
   if is_new_function:
     if (function.httpsTrigger and not ensure_all_users_invoke and

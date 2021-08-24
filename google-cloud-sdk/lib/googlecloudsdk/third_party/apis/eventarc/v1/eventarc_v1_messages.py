@@ -190,11 +190,16 @@ class Destination(_messages.Message):
       service should be running in the same project of the trigger.
     gke: A GKE service capable of receiving events. The service should be
       running in the same project of the trigger.
+    workflow: Cloud Workflow that is triggered by the events. A new workflow
+      execution will be created in response to an event. The workflow should
+      be deployed in the same project of the trigger. Format:
+      projects/{project}/locations/{location}/workflows/{workflow}
   """
 
   cloudFunction = _messages.StringField(1)
   cloudRun = _messages.MessageField('CloudRun', 2)
   gke = _messages.MessageField('GKE', 3)
+  workflow = _messages.StringField(4)
 
 
 class Empty(_messages.Message):
@@ -1003,7 +1008,7 @@ class Policy(_messages.Message):
   roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
   role: roles/resourcemanager.organizationViewer condition: title: expirable
   access description: Does not grant access after Sep 2020 expression:
-  request.time < timestamp('2020-10-01T00:00:00.000Z') - etag: BwWWja0YfJA= -
+  request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA=
   version: 3 For a description of IAM and its features, see the [IAM
   documentation](https://cloud.google.com/iam/docs/).
 

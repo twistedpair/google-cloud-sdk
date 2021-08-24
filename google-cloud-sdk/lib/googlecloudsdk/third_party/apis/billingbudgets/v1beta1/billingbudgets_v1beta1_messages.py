@@ -221,9 +221,10 @@ class GoogleCloudBillingBudgetsV1beta1Filter(_messages.Message):
   Messages:
     LabelsValue: Optional. A single label and value pair specifying that usage
       from only this set of labeled resources should be included in the
-      budget. Currently, multiple entries or multiple values per entry are not
-      allowed. If omitted, the report will include all labeled and unlabeled
-      usage.
+      budget. If omitted, the report will include all labeled and unlabeled
+      usage. An object containing a single `"key": value` pair. Example: `{
+      "name": "wrench" }`. _Currently, multiple entries or multiple values per
+      entry are not allowed._
 
   Fields:
     calendarPeriod: Optional. Specifies to track usage for recurring calendar
@@ -245,10 +246,11 @@ class GoogleCloudBillingBudgetsV1beta1Filter(_messages.Message):
       (required) to any end date (optional). This time period is static, it
       does not recur.
     labels: Optional. A single label and value pair specifying that usage from
-      only this set of labeled resources should be included in the budget.
-      Currently, multiple entries or multiple values per entry are not
-      allowed. If omitted, the report will include all labeled and unlabeled
-      usage.
+      only this set of labeled resources should be included in the budget. If
+      omitted, the report will include all labeled and unlabeled usage. An
+      object containing a single `"key": value` pair. Example: `{ "name":
+      "wrench" }`. _Currently, multiple entries or multiple values per entry
+      are not allowed._
     projects: Optional. A set of projects of the form `projects/{project}`,
       specifying that usage from only this set of projects should be included
       in the budget. If omitted, the report will include all usage for the
@@ -310,9 +312,11 @@ class GoogleCloudBillingBudgetsV1beta1Filter(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     r"""Optional. A single label and value pair specifying that usage from
-    only this set of labeled resources should be included in the budget.
-    Currently, multiple entries or multiple values per entry are not allowed.
-    If omitted, the report will include all labeled and unlabeled usage.
+    only this set of labeled resources should be included in the budget. If
+    omitted, the report will include all labeled and unlabeled usage. An
+    object containing a single `"key": value` pair. Example: `{ "name":
+    "wrench" }`. _Currently, multiple entries or multiple values per entry are
+    not allowed._
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.

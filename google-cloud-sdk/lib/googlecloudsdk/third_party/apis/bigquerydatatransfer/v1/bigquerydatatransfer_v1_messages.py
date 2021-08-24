@@ -833,10 +833,7 @@ class DataSource(_messages.Message):
       GOOGLE_PLUS_AUTHORIZATION_CODE: Return an authorization code for a given
         Google+ page that can then be exchanged for a refresh token on the
         backend.
-      FIRST_PARTY_OAUTH: Use First Party OAuth based on Loas Owned Clients.
-        First Party OAuth doesn't require a refresh token to get an offline
-        access token. Instead, it uses a client-signed JWT assertion to
-        retrieve an access token.
+      FIRST_PARTY_OAUTH: Use First Party OAuth.
     """
     AUTHORIZATION_TYPE_UNSPECIFIED = 0
     AUTHORIZATION_CODE = 1
@@ -1391,7 +1388,13 @@ class TransferConfig(_messages.Message):
       required. The name is ignored when creating a transfer config.
     nextRunTime: Output only. Next time when data transfer will run.
     notificationPubsubTopic: Pub/Sub topic where notifications will be sent
-      after transfer runs associated with this transfer config finish.
+      after transfer runs associated with this transfer config finish. The
+      format for specifying a pubsub topic is:
+      `projects/{project}/topics/{topic}`
+    ownerInfo: Output only. Information about the user whose credentials are
+      used to transfer data. Populated only for `transferConfigs.get`
+      requests. In case the user information is not available, this field will
+      not be populated.
     params: Parameters specific to each data source. For more information see
       the bq tab in the 'Setting up a data transfer' section for each data
       source. For example the parameters for Cloud Storage transfers are
@@ -1470,12 +1473,13 @@ class TransferConfig(_messages.Message):
   name = _messages.StringField(8)
   nextRunTime = _messages.StringField(9)
   notificationPubsubTopic = _messages.StringField(10)
-  params = _messages.MessageField('ParamsValue', 11)
-  schedule = _messages.StringField(12)
-  scheduleOptions = _messages.MessageField('ScheduleOptions', 13)
-  state = _messages.EnumField('StateValueValuesEnum', 14)
-  updateTime = _messages.StringField(15)
-  userId = _messages.IntegerField(16)
+  ownerInfo = _messages.MessageField('UserInfo', 11)
+  params = _messages.MessageField('ParamsValue', 12)
+  schedule = _messages.StringField(13)
+  scheduleOptions = _messages.MessageField('ScheduleOptions', 14)
+  state = _messages.EnumField('StateValueValuesEnum', 15)
+  updateTime = _messages.StringField(16)
+  userId = _messages.IntegerField(17)
 
 
 class TransferMessage(_messages.Message):
@@ -1535,7 +1539,8 @@ class TransferRun(_messages.Message):
       form `projects/{project_id}/locations/{location}/transferConfigs/{config
       _id}/runs/{run_id}`. The name is ignored when creating a transfer run.
     notificationPubsubTopic: Output only. Pub/Sub topic where a notification
-      will be sent after this transfer run finishes
+      will be sent after this transfer run finishes. The format for specifying
+      a pubsub topic is: `projects/{project}/topics/{topic}`
     params: Output only. Parameters specific to each data source. For more
       information see the bq tab in the 'Setting up a data transfer' section
       for each data source. For example the parameters for Cloud Storage
@@ -1620,6 +1625,16 @@ class TransferRun(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 13)
   updateTime = _messages.StringField(14)
   userId = _messages.IntegerField(15)
+
+
+class UserInfo(_messages.Message):
+  r"""Information about a user.
+
+  Fields:
+    email: E-mail address of the user.
+  """
+
+  email = _messages.StringField(1)
 
 
 encoding.AddCustomJsonFieldMapping(

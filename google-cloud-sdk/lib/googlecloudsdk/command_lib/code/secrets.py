@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 from apitools.base.py import encoding_helper
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.command_lib.code import kubernetes
+from googlecloudsdk.command_lib.run import secrets_mapping
 
 SECRETS_MESSAGE_MODULE = apis.GetMessagesModule('secretmanager', 'v1')
 RUN_MESSAGE_MODULE = apis.GetMessagesModule('run', 'v1')
@@ -38,7 +39,7 @@ def BuildSecrets(project_name, secret_map, namespace, client=None):
 
 
 def _BuildSecret(client, project, secret_name, versions, namespace):
-  if None in versions:
+  if secrets_mapping.SpecialVersion.MOUNT_ALL in versions:
     # TODO(b/187972361): Do we need to load all secret versions for the secret?
     raise ValueError('local development requires you to specify all secret '
                      'versions that you need to use.')

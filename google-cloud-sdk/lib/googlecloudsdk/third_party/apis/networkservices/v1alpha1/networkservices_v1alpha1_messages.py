@@ -4309,7 +4309,7 @@ class Policy(_messages.Message):
   roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
   role: roles/resourcemanager.organizationViewer condition: title: expirable
   access description: Does not grant access after Sep 2020 expression:
-  request.time < timestamp('2020-10-01T00:00:00.000Z') - etag: BwWWja0YfJA= -
+  request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA=
   version: 3 For a description of IAM and its features, see the [IAM
   documentation](https://cloud.google.com/iam/docs/).
 
@@ -4852,11 +4852,15 @@ class TcpRouteRouteAction(_messages.Message):
   r"""The specifications for routing traffic and applying associated policies.
 
   Fields:
-    destinations: Required. The destination services to which traffic should
+    destinations: Optional. The destination services to which traffic should
       be forwarded. At least one destination service is required.
+    originalDestination: Optional. If true, Router will use the destination IP
+      and port of the original connection as the destination of the request.
+      Default is false.
   """
 
   destinations = _messages.MessageField('TcpRouteRouteDestination', 1, repeated=True)
+  originalDestination = _messages.BooleanField(2)
 
 
 class TcpRouteRouteDestination(_messages.Message):
@@ -4880,8 +4884,13 @@ class TcpRouteRouteMatch(_messages.Message):
   field is specified, this rule will unconditionally match traffic.
 
   Fields:
-    address: Optional. Specifies the destination IP Address to match against.
-      If not provided, any IP-address will be matched.
+    address: Required. Must be specified in the CIDR range format. A CIDR
+      range consists of an IP Address and a prefix length to construct the
+      subnet mask. By default, the prefix length is 32 (i.e. matches a single
+      IP address). Only IPV4 addresses are supported. Examples: "10.0.0.1" -
+      matches against this exact IP address. "10.0.0.0/8" - matches against
+      any IP address within the 10.0.0.0 subnet and 255.255.255.0 mask.
+      "0.0.0.0/0" - matches against any IP address'.
     port: Required. Specifies the destination port to match against.
   """
 

@@ -179,8 +179,7 @@ def _SecretsDiffer(project1, secret1, project2, secret2):
     True if the two secrets differ, False otherwise.
   """
   return (secret1 != secret2 or
-          (project1 != project2 and
-           project1.isnumeric() == project2.isnumeric() and
+          (project1 != project2 and project1.isdigit() == project2.isdigit() and
            project1 != _DEFAULT_PROJECT_IDENTIFIER and
            project2 != _DEFAULT_PROJECT_IDENTIFIER))
 

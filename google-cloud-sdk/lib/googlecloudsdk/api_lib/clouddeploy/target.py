@@ -38,19 +38,6 @@ class TargetsClient(object):
     self._less_shared_service = self.client.projects_locations_deliveryPipelines_targets
     self._service = self.client.projects_locations_targets
 
-  def GetLessShared(self, name):
-    """Gets the target object by calling the ProjectsLocationsDeliveryPipelinesTargetsService.Get API.
-
-    Args:
-      name: str, target name.
-
-    Returns:
-      a target object.
-    """
-    request = self.messages.ClouddeployProjectsLocationsDeliveryPipelinesTargetsGetRequest(
-        name=name)
-    return self._less_shared_service.Get(request)
-
   def Get(self, name):
     """Gets the shared target object by calling the ProjectsLocationsTargetsService.Get API.
 
@@ -80,23 +67,6 @@ class TargetsClient(object):
             name=target_obj.name,
             updateMask=TARGET_UPDATE_MASK))
 
-  def PatchLessShared(self, target_obj):
-    """Patches a less shared target resource.
-
-    Args:
-      target_obj: apitools.base.protorpclite.messages.Message, target message.
-
-    Returns:
-      The operation message.
-    """
-    return self._less_shared_service.Patch(
-        self.messages
-        .ClouddeployProjectsLocationsDeliveryPipelinesTargetsPatchRequest(
-            target=target_obj,
-            allowMissing=True,
-            name=target_obj.name,
-            updateMask=TARGET_UPDATE_MASK))
-
   def Delete(self, name):
     """Deletes a target resource.
 
@@ -109,20 +79,6 @@ class TargetsClient(object):
     """
     return self._service.Delete(
         self.messages.ClouddeployProjectsLocationsTargetsDeleteRequest(
-            allowMissing=True, name=name))
-
-  def DeleteLessShared(self, name):
-    """Deletes a target resource.
-
-    Args:
-      name: str, target name.
-
-    Returns:
-      The operation message. It could be none if the resource doesn't exist.
-    """
-    return self._less_shared_service.Delete(
-        self.messages
-        .ClouddeployProjectsLocationsDeliveryPipelinesTargetsDeleteRequest(
             allowMissing=True, name=name))
 
   def List(self, location):
@@ -138,16 +94,3 @@ class TargetsClient(object):
         self.messages.ClouddeployProjectsLocationsTargetsListRequest(
             parent=location))
 
-  def ListLessShared(self, pipeline):
-    """Lists target resources that belong to a delivery pipeline.
-
-    Args:
-      pipeline: str, the full name of the pipeline which owns the targets.
-
-    Returns:
-      Returns a list of targets belongs to the given delivery pipeline.
-    """
-    return self._less_shared_service.List(
-        self.messages
-        .ClouddeployProjectsLocationsDeliveryPipelinesTargetsListRequest(
-            parent=pipeline))

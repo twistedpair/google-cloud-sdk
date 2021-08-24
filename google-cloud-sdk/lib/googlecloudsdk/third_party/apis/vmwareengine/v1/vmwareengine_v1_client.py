@@ -39,12 +39,105 @@ class VmwareengineV1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.projects_locations_networkPolicies = self.ProjectsLocationsNetworkPoliciesService(self)
     self.projects_locations_nodeTypes = self.ProjectsLocationsNodeTypesService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_privateClouds_clusters = self.ProjectsLocationsPrivateCloudsClustersService(self)
+    self.projects_locations_privateClouds_hcxActivationKeys = self.ProjectsLocationsPrivateCloudsHcxActivationKeysService(self)
     self.projects_locations_privateClouds = self.ProjectsLocationsPrivateCloudsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class ProjectsLocationsNetworkPoliciesService(base_api.BaseApiService):
+    """Service class for the projects_locations_networkPolicies resource."""
+
+    _NAME = 'projects_locations_networkPolicies'
+
+    def __init__(self, client):
+      super(VmwareengineV1.ProjectsLocationsNetworkPoliciesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
+
+      Args:
+        request: (VmwareengineProjectsLocationsNetworkPoliciesGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/networkPolicies/{networkPoliciesId}:getIamPolicy',
+        http_method='GET',
+        method_id='vmwareengine.projects.locations.networkPolicies.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1/{+resource}:getIamPolicy',
+        request_field='',
+        request_type_name='VmwareengineProjectsLocationsNetworkPoliciesGetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
+
+      Args:
+        request: (VmwareengineProjectsLocationsNetworkPoliciesSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/networkPolicies/{networkPoliciesId}:setIamPolicy',
+        http_method='POST',
+        method_id='vmwareengine.projects.locations.networkPolicies.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='VmwareengineProjectsLocationsNetworkPoliciesSetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
+
+      Args:
+        request: (VmwareengineProjectsLocationsNetworkPoliciesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/networkPolicies/{networkPoliciesId}:testIamPermissions',
+        http_method='POST',
+        method_id='vmwareengine.projects.locations.networkPolicies.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='VmwareengineProjectsLocationsNetworkPoliciesTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
+        supports_download=False,
+    )
 
   class ProjectsLocationsNodeTypesService(base_api.BaseApiService):
     """Service class for the projects_locations_nodeTypes resource."""
@@ -531,6 +624,97 @@ class VmwareengineV1(base_api.BaseApiClient):
         relative_path='v1/{+resource}:testIamPermissions',
         request_field='testIamPermissionsRequest',
         request_type_name='VmwareengineProjectsLocationsPrivateCloudsClustersTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsPrivateCloudsHcxActivationKeysService(base_api.BaseApiService):
+    """Service class for the projects_locations_privateClouds_hcxActivationKeys resource."""
+
+    _NAME = 'projects_locations_privateClouds_hcxActivationKeys'
+
+    def __init__(self, client):
+      super(VmwareengineV1.ProjectsLocationsPrivateCloudsHcxActivationKeysService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
+
+      Args:
+        request: (VmwareengineProjectsLocationsPrivateCloudsHcxActivationKeysGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/hcxActivationKeys/{hcxActivationKeysId}:getIamPolicy',
+        http_method='GET',
+        method_id='vmwareengine.projects.locations.privateClouds.hcxActivationKeys.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1/{+resource}:getIamPolicy',
+        request_field='',
+        request_type_name='VmwareengineProjectsLocationsPrivateCloudsHcxActivationKeysGetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
+
+      Args:
+        request: (VmwareengineProjectsLocationsPrivateCloudsHcxActivationKeysSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/hcxActivationKeys/{hcxActivationKeysId}:setIamPolicy',
+        http_method='POST',
+        method_id='vmwareengine.projects.locations.privateClouds.hcxActivationKeys.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='VmwareengineProjectsLocationsPrivateCloudsHcxActivationKeysSetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
+
+      Args:
+        request: (VmwareengineProjectsLocationsPrivateCloudsHcxActivationKeysTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/hcxActivationKeys/{hcxActivationKeysId}:testIamPermissions',
+        http_method='POST',
+        method_id='vmwareengine.projects.locations.privateClouds.hcxActivationKeys.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='VmwareengineProjectsLocationsPrivateCloudsHcxActivationKeysTestIamPermissionsRequest',
         response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )

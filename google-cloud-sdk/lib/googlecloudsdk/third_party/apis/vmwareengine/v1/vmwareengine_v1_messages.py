@@ -715,7 +715,7 @@ class Policy(_messages.Message):
   roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
   role: roles/resourcemanager.organizationViewer condition: title: expirable
   access description: Does not grant access after Sep 2020 expression:
-  request.time < timestamp('2020-10-01T00:00:00.000Z') - etag: BwWWja0YfJA= -
+  request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA=
   version: 3 For a description of IAM and its features, see the [IAM
   documentation](https://cloud.google.com/iam/docs/).
 
@@ -1144,6 +1144,60 @@ class VmwareengineProjectsLocationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class VmwareengineProjectsLocationsNetworkPoliciesGetIamPolicyRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsNetworkPoliciesGetIamPolicyRequest
+  object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The policy format version to be
+      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected. Requests for policies with any conditional
+      bindings must specify version 3. Policies without any conditional
+      bindings may specify any valid value or leave the field unset. To learn
+      which resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class VmwareengineProjectsLocationsNetworkPoliciesSetIamPolicyRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsNetworkPoliciesSetIamPolicyRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class VmwareengineProjectsLocationsNetworkPoliciesTestIamPermissionsRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsNetworkPoliciesTestIamPermissionsRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
 class VmwareengineProjectsLocationsNodeTypesGetIamPolicyRequest(_messages.Message):
   r"""A VmwareengineProjectsLocationsNodeTypesGetIamPolicyRequest object.
 
@@ -1564,6 +1618,60 @@ class VmwareengineProjectsLocationsPrivateCloudsGetRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class VmwareengineProjectsLocationsPrivateCloudsHcxActivationKeysGetIamPolicyRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsPrivateCloudsHcxActivationKeysGetIamPolic
+  yRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The policy format version to be
+      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected. Requests for policies with any conditional
+      bindings must specify version 3. Policies without any conditional
+      bindings may specify any valid value or leave the field unset. To learn
+      which resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class VmwareengineProjectsLocationsPrivateCloudsHcxActivationKeysSetIamPolicyRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsPrivateCloudsHcxActivationKeysSetIamPolic
+  yRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class VmwareengineProjectsLocationsPrivateCloudsHcxActivationKeysTestIamPermissionsRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsPrivateCloudsHcxActivationKeysTestIamPerm
+  issionsRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class VmwareengineProjectsLocationsPrivateCloudsListRequest(_messages.Message):

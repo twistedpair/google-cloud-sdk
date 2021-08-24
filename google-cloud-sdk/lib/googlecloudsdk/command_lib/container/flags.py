@@ -960,17 +960,26 @@ Enable sending metrics from master components to Cloud Operations.
   )
 
 
-def AddLoggingFlag(parser):
+def AddLoggingFlag(parser, autopilot=False):
   """Adds a --logging flag to parser."""
+  supported = """`SYSTEM`, `WORKLOAD`"""
+  if not autopilot:
+    supported += """, `NONE`"""
+
   help_text = """\
-Set the components that have logging enabled.
+Set the components that have logging enabled. Valid component values are: """
+  help_text += supported
+  help_text += """\n
+For more information, look at
+https://cloud.google.com/stackdriver/docs/solutions/gke/installing#available-logs
 
 Examples:
 
-  $ {command} --logging=NONE
   $ {command} --logging=SYSTEM
   $ {command} --logging=SYSTEM,WORKLOAD
 """
+  if not autopilot:
+    help_text += """  $ {command} --logging=NONE"""
   parser.add_argument(
       '--logging',
       type=arg_parsers.ArgList(),
@@ -980,16 +989,25 @@ Examples:
   )
 
 
-def AddMonitoringFlag(parser):
+def AddMonitoringFlag(parser, autopilot=False):
   """Adds a --monitoring flag to parser."""
+  supported = """`SYSTEM`"""
+  if not autopilot:
+    supported += """, `NONE`"""
+
   help_text = """\
-Set the components that have monitoring enabled.
+Set the components that have monitoring enabled. Valid component values are: """
+  help_text += supported
+  help_text += """\n
+For more information, look at
+https://cloud.google.com/stackdriver/docs/solutions/gke/installing#available-metrics
 
 Examples:
 
-  $ {command} --monitoring=NONE
   $ {command} --monitoring=SYSTEM
 """
+  if not autopilot:
+    help_text += """  $ {command} --monitoring=NONE"""
   parser.add_argument(
       '--monitoring',
       type=arg_parsers.ArgList(),

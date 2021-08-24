@@ -219,7 +219,7 @@ class ArtifactregistryV1beta2(base_api.BaseApiClient):
         request: (ArtifactregistryProjectsLocationsRepositoriesFilesGetRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (File) The response message.
+        (GoogleDevtoolsArtifactregistryV1beta2File) The response message.
       """
       config = self.GetMethodConfig('Get')
       return self._RunMethod(
@@ -235,7 +235,7 @@ class ArtifactregistryV1beta2(base_api.BaseApiClient):
         relative_path='v1beta2/{+name}',
         request_field='',
         request_type_name='ArtifactregistryProjectsLocationsRepositoriesFilesGetRequest',
-        response_type_name='File',
+        response_type_name='GoogleDevtoolsArtifactregistryV1beta2File',
         supports_download=False,
     )
 

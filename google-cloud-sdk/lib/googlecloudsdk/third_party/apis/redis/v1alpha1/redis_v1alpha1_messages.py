@@ -209,6 +209,12 @@ class Instance(_messages.Message):
       "serviceAccount:". The value may change over time for a given instance
       so should be checked before each import/export operation.
     port: Output only. The port number of the exposed redis endpoint.
+    readEndpoint: Output only. Hostname or IP address of the exposed readonly
+      Redis endpoint. Standard tier only. Targets all healthy replica nodes in
+      instance. Replication is asynchronous and replica nodes will exhibit
+      some lag behind the primary. Write requests must target 'host'.
+    readEndpointPort: Output only. The port number of the exposed readonly
+      redis endpoint. Standard tier only. Write requests should target 'port'.
     readReplicasMode: Optional. Read replica mode.
     redisConfigs: Optional. Redis configuration parameters, according to
       http://redis.io/topics/config. Currently, the only supported parameters
@@ -401,16 +407,18 @@ class Instance(_messages.Message):
   persistenceConfig = _messages.MessageField('PersistenceConfig', 16)
   persistenceIamIdentity = _messages.StringField(17)
   port = _messages.IntegerField(18, variant=_messages.Variant.INT32)
-  readReplicasMode = _messages.EnumField('ReadReplicasModeValueValuesEnum', 19)
-  redisConfigs = _messages.MessageField('RedisConfigsValue', 20)
-  redisVersion = _messages.StringField(21)
-  replicaCount = _messages.IntegerField(22, variant=_messages.Variant.INT32)
-  reservedIpRange = _messages.StringField(23)
-  serverCaCerts = _messages.MessageField('TlsCertificate', 24, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 25)
-  statusMessage = _messages.StringField(26)
-  tier = _messages.EnumField('TierValueValuesEnum', 27)
-  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 28)
+  readEndpoint = _messages.StringField(19)
+  readEndpointPort = _messages.IntegerField(20, variant=_messages.Variant.INT32)
+  readReplicasMode = _messages.EnumField('ReadReplicasModeValueValuesEnum', 21)
+  redisConfigs = _messages.MessageField('RedisConfigsValue', 22)
+  redisVersion = _messages.StringField(23)
+  replicaCount = _messages.IntegerField(24, variant=_messages.Variant.INT32)
+  reservedIpRange = _messages.StringField(25)
+  serverCaCerts = _messages.MessageField('TlsCertificate', 26, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 27)
+  statusMessage = _messages.StringField(28)
+  tier = _messages.EnumField('TierValueValuesEnum', 29)
+  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 30)
 
 
 class InstanceAuthString(_messages.Message):

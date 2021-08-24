@@ -104,7 +104,7 @@
     "oauth2": {
       "scopes": {
         "https://www.googleapis.com/auth/cloud-platform": {
-          "description": "See, edit, configure, and delete your Google Cloud Platform data"
+          "description": "See, edit, configure, and delete your Google Cloud data and see the email address for your Google Account."
         }
       }
     }
@@ -519,7 +519,7 @@
           "type": "string"
         },
         "metadata": {
-          "description": "The metadata key\/value pairs assigned to instances in the cluster. Keys must conform to the regexp `[a-zA-Z0-9-_]+` and be less than 128 bytes in length. These are reflected as part of a URL in the metadata server. Additionally, to avoid ambiguity, keys must not conflict with any other metadata keys for the project or be one of the reserved keys: - \"cluster-location\" - \"cluster-name\" - \"cluster-uid\" - \"configure-sh\" - \"containerd-configure-sh\" - \"enable-os-login\" - \"gci-ensure-gke-docker\" - \"gci-metrics-enabled\" - \"gci-update-strategy\" - \"instance-template\" - \"kube-env\" - \"startup-script\" - \"user-data\" - \"disable-address-manager\" - \"windows-startup-script-ps1\" - \"common-psm1\" - \"k8s-node-setup-psm1\" - \"install-ssh-psm1\" - \"user-profile-psm1\" The following keys are reserved for Windows nodes: - \"serial-port-logging-enable\" Values are free-form strings, and only have meaning as interpreted by the image running in the instance. The only restriction placed on them is that each value's size must be less than or equal to 32 KB. The total size of all keys and values must be less than 512 KB.",
+          "description": "The metadata key\/value pairs assigned to instances in the cluster. Keys must conform to the regexp `[a-zA-Z0-9-_]+` and be less than 128 bytes in length. These are reflected as part of a URL in the metadata server. Additionally, to avoid ambiguity, keys must not conflict with any other metadata keys for the project or be one of the reserved keys: - \"cluster-location\" - \"cluster-name\" - \"cluster-uid\" - \"configure-sh\" - \"containerd-configure-sh\" - \"enable-os-login\" - \"gci-ensure-gke-docker\" - \"gci-metrics-enabled\" - \"gci-update-strategy\" - \"instance-template\" - \"kube-env\" - \"startup-script\" - \"user-data\" - \"disable-address-manager\" - \"windows-startup-script-ps1\" - \"common-psm1\" - \"k8s-node-setup-psm1\" - \"install-ssh-psm1\" - \"user-profile-psm1\" Values are free-form strings, and only have meaning as interpreted by the image running in the instance. The only restriction placed on them is that each value's size must be less than or equal to 32 KB. The total size of all keys and values must be less than 512 KB.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
@@ -632,6 +632,10 @@
         "gvnic": {
           "description": "Enable or disable gvnic on the node pool.",
           "$ref": "VirtualNIC"
+        },
+        "enableStableFleet": {
+          "description": "Guarantees longer maintenance windows on underlying VMs",
+          "type": "boolean"
         }
       }
     },
@@ -1014,6 +1018,10 @@
           "description": "Configuration for the Cloud Build addon.",
           "$ref": "CloudBuildConfig"
         },
+        "gcpFilestoreCsiDriverConfig": {
+          "description": "Configuration for the GCP Filestore CSI driver.",
+          "$ref": "GcpFilestoreCsiDriverConfig"
+        },
         "gkeBackupAgentConfig": {
           "description": "Configuration for the Backup for GKE agent addon.",
           "$ref": "GkeBackupAgentConfig"
@@ -1171,6 +1179,17 @@
       "properties": {
         "enabled": {
           "description": "Whether the Cloud Build addon is enabled for this cluster.",
+          "type": "boolean"
+        }
+      }
+    },
+    "GcpFilestoreCsiDriverConfig": {
+      "id": "GcpFilestoreCsiDriverConfig",
+      "description": "Configuration for the GCP Filestore CSI driver.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Whether the GCP Filestore CSI driver is enabled for this cluster.",
           "type": "boolean"
         }
       }

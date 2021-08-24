@@ -104,7 +104,7 @@
     "oauth2": {
       "scopes": {
         "https://www.googleapis.com/auth/cloud-platform": {
-          "description": "See, edit, configure, and delete your Google Cloud Platform data"
+          "description": "See, edit, configure, and delete your Google Cloud data and see the email address for your Google Account."
         }
       }
     }
@@ -444,7 +444,7 @@
           }
         },
         "effectiveSeverity": {
-          "description": "The distro assigned severity for this vulnerability when it is available, otherwise this is the note provider assigned severity.",
+          "description": "The distro assigned severity for this vulnerability when it is available, otherwise this is the note provider assigned severity. When there are multiple PackageIssues for this vulnerability, they can have different effective severities because some might be provided by the distro while others are provided by the language ecosystem for a language pack. For this reason, it is advised to use the effective severity on the PackageIssue level. In the case where multiple PackageIssues have differing effective severities, this field should be the highest severity for any of the PackageIssues.",
           "type": "string",
           "enumDescriptions": [
             "Unknown.",
@@ -501,6 +501,31 @@
         "fixAvailable": {
           "description": "Output only. Whether a fix is available for this package.",
           "type": "boolean"
+        },
+        "packageType": {
+          "description": "The type of package (e.g. OS, MAVEN, GO).",
+          "type": "string"
+        },
+        "effectiveSeverity": {
+          "description": "Output only. The distro or language system assigned severity for this vulnerability when that is available and note provider assigned severity when it is not available.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Unknown.",
+            "Minimal severity.",
+            "Low severity.",
+            "Medium severity.",
+            "High severity.",
+            "Critical severity."
+          ],
+          "enum": [
+            "SEVERITY_UNSPECIFIED",
+            "MINIMAL",
+            "LOW",
+            "MEDIUM",
+            "HIGH",
+            "CRITICAL"
+          ]
         }
       }
     },

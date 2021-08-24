@@ -457,7 +457,9 @@ class CloudkmsProjectsLocationsKeyRingsCryptoKeysCryptoKeyVersionsImportRequest(
   Fields:
     importCryptoKeyVersionRequest: A ImportCryptoKeyVersionRequest resource to
       be passed as the request body.
-    parent: Required. The name of the CryptoKey to be imported into.
+    parent: Required. The name of the CryptoKey to be imported into. The
+      create permission is only required on this key when creating a new
+      CryptoKeyVersion.
   """
 
   importCryptoKeyVersionRequest = _messages.MessageField('ImportCryptoKeyVersionRequest', 1)
@@ -1097,18 +1099,21 @@ class CryptoKeyVersion(_messages.Message):
       specific to the EXTERNAL protection level.
     generateTime: Output only. The time this CryptoKeyVersion's key material
       was generated.
-    importFailureReason: Output only. The root cause of an import failure.
-      Only present if state is IMPORT_FAILED.
-    importJob: Output only. The name of the ImportJob used to import this
-      CryptoKeyVersion. Only present if the underlying key material was
-      imported.
-    importTime: Output only. The time at which this CryptoKeyVersion's key
+    importFailureReason: Output only. The root cause of the most recent import
+      failure. Only present if state is IMPORT_FAILED.
+    importJob: Output only. The name of the ImportJob used in the most recent
+      import of this CryptoKeyVersion. Only present if the underlying key
       material was imported.
+    importTime: Output only. The time at which this CryptoKeyVersion's key
+      material was most recently imported.
     name: Output only. The resource name for this CryptoKeyVersion in the
       format
       `projects/*/locations/*/keyRings/*/cryptoKeys/*/cryptoKeyVersions/*`.
     protectionLevel: Output only. The ProtectionLevel describing how crypto
       operations are performed with this CryptoKeyVersion.
+    reimportEligible: Output only. Whether or not this key version is eligible
+      for reimport, by being specified as a target in
+      ImportCryptoKeyVersionRequest.crypto_key_version.
     state: The current state of the CryptoKeyVersion.
   """
 
@@ -1195,7 +1200,9 @@ class CryptoKeyVersion(_messages.Message):
       DISABLED: This version may not be used, but the key material is still
         available, and the version can be placed back into the ENABLED state.
       DESTROYED: This version is destroyed, and the key material is no longer
-        stored.
+        stored. This version may only become ENABLED again if this version is
+        reimport_eligible and the original key material is reimported with a
+        call to KeyManagementService.ImportCryptoKeyVersion.
       DESTROY_SCHEDULED: This version is scheduled for destruction, and will
         be destroyed soon. Call RestoreCryptoKeyVersion to put it back into
         the DISABLED state.
@@ -1229,7 +1236,8 @@ class CryptoKeyVersion(_messages.Message):
   importTime = _messages.StringField(10)
   name = _messages.StringField(11)
   protectionLevel = _messages.EnumField('ProtectionLevelValueValuesEnum', 12)
-  state = _messages.EnumField('StateValueValuesEnum', 13)
+  reimportEligible = _messages.BooleanField(13)
+  state = _messages.EnumField('StateValueValuesEnum', 14)
 
 
 class CryptoKeyVersionTemplate(_messages.Message):
@@ -1672,6 +1680,16 @@ class ImportCryptoKeyVersionRequest(_messages.Message):
     algorithm: Required. The algorithm of the key being imported. This does
       not need to match the version_template of the CryptoKey this version
       imports into.
+    cryptoKeyVersion: Optional. The optional name of an existing
+      CryptoKeyVersion to target for an import operation. If this field is not
+      present, a new CryptoKeyVersion containing the supplied key material is
+      created. If this field is present, the supplied key material is imported
+      into the existing CryptoKeyVersion. To import into an existing
+      CryptoKeyVersion, the CryptoKeyVersion must be a child of
+      ImportCryptoKeyVersionRequest.parent, have been previously created via
+      ImportCryptoKeyVersion, and be in DESTROYED or IMPORT_FAILED state. The
+      key material and algorithm must match the previous CryptoKeyVersion
+      exactly if the CryptoKeyVersion has ever contained key material.
     importJob: Required. The name of the ImportJob that was used to wrap this
       key material.
     rsaAesWrappedKey: Wrapped key material produced with
@@ -1743,8 +1761,9 @@ class ImportCryptoKeyVersionRequest(_messages.Message):
     EXTERNAL_SYMMETRIC_ENCRYPTION = 18
 
   algorithm = _messages.EnumField('AlgorithmValueValuesEnum', 1)
-  importJob = _messages.StringField(2)
-  rsaAesWrappedKey = _messages.BytesField(3)
+  cryptoKeyVersion = _messages.StringField(2)
+  importJob = _messages.StringField(3)
+  rsaAesWrappedKey = _messages.BytesField(4)
 
 
 class ImportJob(_messages.Message):
@@ -2294,7 +2313,7 @@ class Policy(_messages.Message):
   roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
   role: roles/resourcemanager.organizationViewer condition: title: expirable
   access description: Does not grant access after Sep 2020 expression:
-  request.time < timestamp('2020-10-01T00:00:00.000Z') - etag: BwWWja0YfJA= -
+  request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA=
   version: 3 For a description of IAM and its features, see the [IAM
   documentation](https://cloud.google.com/iam/docs/).
 

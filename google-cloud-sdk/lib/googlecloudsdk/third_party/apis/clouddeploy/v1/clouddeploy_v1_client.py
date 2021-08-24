@@ -322,7 +322,7 @@ class ClouddeployV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single Target.
+      r"""Deletes a single shared Target.
 
       Args:
         request: (ClouddeployProjectsLocationsDeliveryPipelinesTargetsDeleteRequest) input message
@@ -349,7 +349,7 @@ class ClouddeployV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single Target.
+      r"""Gets details of a single shared Target.
 
       Args:
         request: (ClouddeployProjectsLocationsDeliveryPipelinesTargetsGetRequest) input message
@@ -403,7 +403,7 @@ class ClouddeployV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the parameters of a single Target.
+      r"""Updates the parameters of a shared single Target.
 
       Args:
         request: (ClouddeployProjectsLocationsDeliveryPipelinesTargetsPatchRequest) input message
@@ -811,7 +811,7 @@ class ClouddeployV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single shared Target.
+      r"""Deletes a single Target.
 
       Args:
         request: (ClouddeployProjectsLocationsTargetsDeleteRequest) input message
@@ -838,7 +838,7 @@ class ClouddeployV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single shared Target.
+      r"""Gets details of a single Target.
 
       Args:
         request: (ClouddeployProjectsLocationsTargetsGetRequest) input message
@@ -919,7 +919,7 @@ class ClouddeployV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the parameters of a shared single Target.
+      r"""Updates the parameters of a single Target.
 
       Args:
         request: (ClouddeployProjectsLocationsTargetsPatchRequest) input message

@@ -28,6 +28,7 @@ class ResourceType(enum.Enum):
   TARGET = 'Target'
   RELEASE = 'Release'
   PROMOTE = 'PromoteReleaseRequest'
+  ROLLOUT = 'Rollout'
 
 
 def SetMetadata(messages,

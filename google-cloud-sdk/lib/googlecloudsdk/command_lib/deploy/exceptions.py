@@ -48,11 +48,11 @@ class ReleaseInactiveError(exceptions.Error):
     )
 
 
-class NoSnappedTargets(exceptions.Error):
+class NoSnappedTargetsError(exceptions.Error):
   """Error when a release doesn't contain any snapped target resource."""
 
   def __init__(self, release_name):
-    super(NoSnappedTargets, self).__init__(
+    super(NoSnappedTargetsError, self).__init__(
         'No snapped targets in the release {}.'.format(release_name))
 
 
@@ -60,9 +60,18 @@ class CloudDeployConfigError(exceptions.Error):
   """Error raised for errors in the cloud deploy yaml config."""
 
 
-class TargetNotFound(exceptions.Error):
-  """Error when a give target ID can't be found in either targets or shared targets."""
+class ListRolloutsError(exceptions.Error):
+  """Error when it failed to list the rollouts that belongs to a release."""
 
-  def __init__(self, target_id):
-    super(TargetNotFound,
-          self).__init__('Target {} not found.'.format(target_id))
+  def __init__(self, release_name):
+    super(ListRolloutsError,
+          self).__init__('Failed to list rollouts for {}.'.format(release_name))
+
+
+class RolloutIDExhaustedError(exceptions.Error):
+  """Error when there are too many rollouts for a given release."""
+
+  def __init__(self, release_name):
+    super(RolloutIDExhaustedError, self).__init__(
+        'Rollout name space exhausted in release {}. Use --rollout-id to specify rollout ID.'
+        .format(release_name))

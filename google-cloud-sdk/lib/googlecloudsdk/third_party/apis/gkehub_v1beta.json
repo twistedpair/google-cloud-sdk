@@ -6,7 +6,7 @@
   "canonicalName": "GKE Hub",
   "version": "v1beta",
   "revision": "0",
-  "title": "GKE Hub",
+  "title": "GKE Hub API",
   "description": "",
   "ownerDomain": "google.com",
   "ownerName": "Google",
@@ -359,6 +359,10 @@
         "configmanagement": {
           "description": "Config Management-specific spec.",
           "$ref": "ConfigManagementMembershipSpec"
+        },
+        "identityservice": {
+          "description": "Identity Service-specific spec.",
+          "$ref": "IdentityServiceMembershipSpec"
         }
       }
     },
@@ -509,6 +513,90 @@
         }
       }
     },
+    "IdentityServiceMembershipSpec": {
+      "id": "IdentityServiceMembershipSpec",
+      "description": "**Anthos Identity Service**: Configuration for a single Membership.",
+      "type": "object",
+      "properties": {
+        "authMethods": {
+          "description": "A member may support multiple auth methods.",
+          "type": "array",
+          "items": {
+            "$ref": "IdentityServiceAuthMethod"
+          }
+        }
+      }
+    },
+    "IdentityServiceAuthMethod": {
+      "id": "IdentityServiceAuthMethod",
+      "description": "Configuration of an auth method for a member\/cluster. Only one authentication method (e.g., OIDC and LDAP) can be set per AuthMethod.",
+      "type": "object",
+      "properties": {
+        "oidcConfig": {
+          "description": "OIDC specific configuration.",
+          "$ref": "IdentityServiceOidcConfig"
+        },
+        "name": {
+          "description": "Identifier for auth config.",
+          "type": "string"
+        },
+        "proxy": {
+          "description": "Proxy server address to use for auth method.",
+          "type": "string"
+        }
+      }
+    },
+    "IdentityServiceOidcConfig": {
+      "id": "IdentityServiceOidcConfig",
+      "description": "Configuration for OIDC Auth flow.",
+      "type": "object",
+      "properties": {
+        "clientId": {
+          "description": "ID for OIDC client application.",
+          "type": "string"
+        },
+        "certificateAuthorityData": {
+          "description": "PEM-encoded CA for OIDC provider.",
+          "type": "string"
+        },
+        "issuerUri": {
+          "description": "URI for the OIDC provider. This should point to the level below .well-known\/openid-configuration.",
+          "type": "string"
+        },
+        "kubectlRedirectUri": {
+          "description": "Registered redirect uri to redirect users going through OAuth flow using kubectl plugin.",
+          "type": "string"
+        },
+        "scopes": {
+          "description": "Comma-separated list of identifiers.",
+          "type": "string"
+        },
+        "extraParams": {
+          "description": "Comma-separated list of key-value pairs.",
+          "type": "string"
+        },
+        "userClaim": {
+          "description": "Claim in OIDC ID token that holds username.",
+          "type": "string"
+        },
+        "userPrefix": {
+          "description": "Prefix to prepend to user name.",
+          "type": "string"
+        },
+        "groupsClaim": {
+          "description": "Claim in OIDC ID token that holds group information.",
+          "type": "string"
+        },
+        "groupPrefix": {
+          "description": "Prefix to prepend to group name.",
+          "type": "string"
+        },
+        "deployCloudConsoleProxy": {
+          "description": "Flag to denote if reverse proxy is used to connect to auth provider. This flag should be set to true when provider is not reachable by Google Cloud Console.",
+          "type": "boolean"
+        }
+      }
+    },
     "CommonFeatureState": {
       "id": "CommonFeatureState",
       "description": "CommonFeatureState contains Hub-wide Feature status information.",
@@ -565,6 +653,10 @@
         "configmanagement": {
           "description": "Config Management-specific state.",
           "$ref": "ConfigManagementMembershipState"
+        },
+        "identityservice": {
+          "description": "Identity Service-specific state.",
+          "$ref": "IdentityServiceMembershipState"
         },
         "state": {
           "description": "The high-level state of this Feature for a single membership.",
@@ -1117,6 +1209,39 @@
         }
       }
     },
+    "IdentityServiceMembershipState": {
+      "id": "IdentityServiceMembershipState",
+      "description": "**Anthos Identity Service**: State for a single Membership.",
+      "type": "object",
+      "properties": {
+        "installedVersion": {
+          "description": "Installed AIS version. This is the AIS version installed on this member. The values makes sense iff state is OK.",
+          "type": "string"
+        },
+        "state": {
+          "description": "Deployment state on this member",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified state",
+            "deployment succeeds",
+            "Failure with error."
+          ],
+          "enum": [
+            "DEPLOYMENT_STATE_UNSPECIFIED",
+            "OK",
+            "ERROR"
+          ]
+        },
+        "failureReason": {
+          "description": "The reason of the failure.",
+          "type": "string"
+        },
+        "memberConfig": {
+          "description": "Last reconciled membership configuration",
+          "$ref": "IdentityServiceMembershipSpec"
+        }
+      }
+    },
     "ListLocationsResponse": {
       "id": "ListLocationsResponse",
       "description": "The response message for Locations.ListLocations.",
@@ -1187,7 +1312,7 @@
     },
     "Policy": {
       "id": "Policy",
-      "description": "An Identity and Access Management (IAM) policy, which specifies access controls for Google Cloud resources. A `Policy` is a collection of `bindings`. A `binding` binds one or more `members` to a single `role`. Members can be user accounts, service accounts, Google groups, and domains (such as G Suite). A `role` is a named list of permissions; each `role` can be an IAM predefined role or a user-created custom role. For some types of Google Cloud resources, a `binding` can also specify a `condition`, which is a logical expression that allows access to a resource only if the expression evaluates to `true`. A condition can add constraints based on attributes of the request, the resource, or both. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies). **JSON example:** { \"bindings\": [ { \"role\": \"roles\/resourcemanager.organizationAdmin\", \"members\": [ \"user:mike@example.com\", \"group:admins@example.com\", \"domain:google.com\", \"serviceAccount:my-project-id@appspot.gserviceaccount.com\" ] }, { \"role\": \"roles\/resourcemanager.organizationViewer\", \"members\": [ \"user:eve@example.com\" ], \"condition\": { \"title\": \"expirable access\", \"description\": \"Does not grant access after Sep 2020\", \"expression\": \"request.time < timestamp('2020-10-01T00:00:00.000Z')\", } } ], \"etag\": \"BwWWja0YfJA=\", \"version\": 3 } **YAML example:** bindings: - members: - user:mike@example.com - group:admins@example.com - domain:google.com - serviceAccount:my-project-id@appspot.gserviceaccount.com role: roles\/resourcemanager.organizationAdmin - members: - user:eve@example.com role: roles\/resourcemanager.organizationViewer condition: title: expirable access description: Does not grant access after Sep 2020 expression: request.time < timestamp('2020-10-01T00:00:00.000Z') - etag: BwWWja0YfJA= - version: 3 For a description of IAM and its features, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/docs\/).",
+      "description": "An Identity and Access Management (IAM) policy, which specifies access controls for Google Cloud resources. A `Policy` is a collection of `bindings`. A `binding` binds one or more `members` to a single `role`. Members can be user accounts, service accounts, Google groups, and domains (such as G Suite). A `role` is a named list of permissions; each `role` can be an IAM predefined role or a user-created custom role. For some types of Google Cloud resources, a `binding` can also specify a `condition`, which is a logical expression that allows access to a resource only if the expression evaluates to `true`. A condition can add constraints based on attributes of the request, the resource, or both. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies). **JSON example:** { \"bindings\": [ { \"role\": \"roles\/resourcemanager.organizationAdmin\", \"members\": [ \"user:mike@example.com\", \"group:admins@example.com\", \"domain:google.com\", \"serviceAccount:my-project-id@appspot.gserviceaccount.com\" ] }, { \"role\": \"roles\/resourcemanager.organizationViewer\", \"members\": [ \"user:eve@example.com\" ], \"condition\": { \"title\": \"expirable access\", \"description\": \"Does not grant access after Sep 2020\", \"expression\": \"request.time < timestamp('2020-10-01T00:00:00.000Z')\", } } ], \"etag\": \"BwWWja0YfJA=\", \"version\": 3 } **YAML example:** bindings: - members: - user:mike@example.com - group:admins@example.com - domain:google.com - serviceAccount:my-project-id@appspot.gserviceaccount.com role: roles\/resourcemanager.organizationAdmin - members: - user:eve@example.com role: roles\/resourcemanager.organizationViewer condition: title: expirable access description: Does not grant access after Sep 2020 expression: request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA= version: 3 For a description of IAM and its features, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/docs\/).",
       "type": "object",
       "properties": {
         "version": {

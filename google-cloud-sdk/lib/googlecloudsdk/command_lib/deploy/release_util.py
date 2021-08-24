@@ -270,9 +270,8 @@ def DiffSnappedPipeline(release_ref, release_obj, to_target=None):
       # Checks if the snapped targets have been changed.
       if target_obj.etag != obj.etag:
         resource_changed.append(target_name)
-    except c_exceptions.HttpException as error:
-      log.debug('Failed to get target {}: {}'.format(target_name,
-                                                     error.message))
+    except apitools_exceptions.HttpError as error:
+      log.debug('Failed to get target {}: {}'.format(target_name, error))
       log.status.Print('Unable to get target {}\n'.format(target_name))
       resource_not_found.append(ResourceNameProjectNumberToId(target_name))
 

@@ -20,6 +20,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import collections
+import shlex
 
 
 class CommandStringParser(object):
@@ -55,24 +56,22 @@ class CommandStringParser(object):
       return
 
     metadata = self.command_parser.parse_args(parse_input, raise_error=True)
-
     filtered = metadata.GetSpecifiedArgsDict()
-    prev_stop = 0  # Keeps track of where the previous argument stopped
 
     for key, value in filtered.items():
       tmp_value = getattr(metadata, key, None)
       if isinstance(tmp_value, list):
-        prev_stop = self.parse_list(tmp_value, key, value, prev_stop)
+        self.parse_list(tmp_value, key, value)
 
       elif isinstance(tmp_value, collections.OrderedDict):
-        prev_stop = self.parse_dict(tmp_value, key, prev_stop)
+        self.parse_dict(tmp_value, key, value)
 
       else:
-        prev_stop = self.parse_others(tmp_value, key, value, prev_stop)
+        self.parse_others(tmp_value, key, value)
 
     return self.example_metadata
 
-  def parse_dict(self, dict_arg, key, prev_stop, count=None):
+  def parse_dict(self, dict_arg, key, value, prev_stop=0, count=None):
     """Gets metadata from an example command string for a simple dict-type arg.
 
     It updates the already existing ExampleCommandMetadata object of the example
@@ -82,21 +81,28 @@ class CommandStringParser(object):
       dict_arg: The dictionary-type argument to collect metadata about.
       key: The name of the argument's attribute in the example string's
       namespace.
-      prev_stop: The index in the example string where the last flag stopped.
+      value: The actual input representing the flag/argument in the example
+      string (e.g --zone, --shielded-secure-boot).
+      prev_stop: Optional. The index in the example string the flag was last
+      seen.
       count: Optional. The number of times the flag has been seen in the example
       string.
 
     Returns:
-      The index in the example string where parsing stopped.
+      The index in the example string where parsing stopped if the argument is
+      specified multiple times.
     """
     dict_list = list(dict_arg.items())
     first_pair = dict_list[0]
     last_pair = dict_list[-1]
-    start_index = self.example_string.index(str(first_pair[0]), prev_stop)
+
+    start_search = self.get_start_search(value, prev_stop)
+    start_index = self.example_string.index(str(first_pair[0]), start_search)
+
     next_start = self.example_string.find('--', start_index)
-    if next_start < prev_stop: next_start = len(self.example_string)
+    if next_start < start_search: next_start = len(self.example_string)
     last_value = str(last_pair[1])
-    last_value_start = self.example_string.rfind(last_value, prev_stop,
+    last_value_start = self.example_string.rfind(last_value, start_search,
                                                  next_start)
     stop_index = last_value_start + len(last_value) - 1
 
@@ -107,11 +113,11 @@ class CommandStringParser(object):
     arg_metadata = ArgumentMetadata(key, arg_value, scope,
                                     start_index, stop_index)
     self.example_metadata.add_arg_metadata(arg_metadata)
-    prev_stop = stop_index + 1
 
-    return prev_stop
+    if count:
+      return arg_metadata.stop_index + 1
 
-  def parse_list(self, list_arg, key, value, prev_stop, count=None):
+  def parse_list(self, list_arg, key, value, prev_stop=0, count=None):
     """Gets metadata from an example command string for a list-type argument.
 
     It updates the already existing ExampleCommandMetadata object of the example
@@ -123,28 +129,32 @@ class CommandStringParser(object):
       namespace.
       value: The actual input representing the flag/argument in the example
       string (e.g --zone, --shielded-secure-boot).
-      prev_stop: The index in the example string where the last flag stopped.
+      prev_stop: Optional. The index in the example string the flag was last
+      seen.
       count: Optional. The number of times the flag has been seen in the example
       string.
 
     Returns:
-      The index in the example string where parsing stopped.
+      The index in the example string where parsing stopped if the argument is
+      specified multiple times.
     """
     if isinstance(list_arg[0], collections.OrderedDict):
-      prev_stop = self.parse_nested_list(list_arg, key, value, prev_stop)
+      self.parse_nested_list(list_arg, key, value)
 
     elif isinstance(list_arg[0], list):
-      prev_stop = self.parse_nested_list(list_arg, key, value, prev_stop)
+      self.parse_nested_list(list_arg, key, value)
 
     else:
       # Assumes list elements are either strings or numbers; excludes booleans.
 
-      start_index = self.example_string.index(str(list_arg[0]), prev_stop)
+      start_search = self.get_start_search(value, prev_stop)
+      start_index = self.example_string.index(str(list_arg[0]), start_search)
+
       next_start = self.example_string.find('--', start_index)
-      if next_start < prev_stop or next_start == -1:
+      if next_start < start_search or next_start == -1:
         next_start = len(self.example_string)
       last_value = str(list_arg[-1])
-      last_value_start = self.example_string.rfind(last_value, prev_stop,
+      last_value_start = self.example_string.rfind(last_value, start_search,
                                                    next_start)
       stop_index = last_value_start + len(last_value) -1
       arg_value = self.example_string[start_index:stop_index+1]
@@ -155,11 +165,11 @@ class CommandStringParser(object):
       arg_metadata = ArgumentMetadata(key, arg_value, scope, start_index,
                                       stop_index)
       self.example_metadata.add_arg_metadata(arg_metadata)
-      prev_stop = stop_index + 1
 
-    return prev_stop
+      if count:
+        return arg_metadata.stop_index + 1
 
-  def parse_nested_list(self, list_arg, key, value, prev_stop):
+  def parse_nested_list(self, list_arg, key, value):
     """Gets metadata from an example command string for nested list arguments.
 
     This is a helper function for parse_list().
@@ -173,14 +183,9 @@ class CommandStringParser(object):
       namespace.
       value: The actual input representing the flag/argument in the example
       string (e.g --zone, --shielded-secure-boot).
-      prev_stop: The index in the example string where the last flag stopped.
-
-    Returns:
-      The index in the example string where parsing stopped.
     """
+    flag_count = self.example_string.count(value)
     if isinstance(list_arg[0], collections.OrderedDict):
-      flag_count = self.example_string.count(value)
-
       # Flag specified once in example string and occurs multiple times in
       # namespace implies flag was specified with custom delimiter.
       if flag_count == 1 and len(list_arg) > 1:
@@ -189,14 +194,14 @@ class CommandStringParser(object):
         start = first_dict[0][0]  # first key of first dictionary
         stop = last_dict[-1][1]  # last key of last dictionary
 
-        start_index = self.example_string.index(str(start))
+        start_search = self.get_start_search(value)
+        start_index = self.example_string.index(str(start), start_search)
         next_start = self.example_string.find('--', start_index)
-        if next_start < prev_stop: next_start = len(self.example_string)
-        stop_index = (self.example_string.rfind(str(stop), prev_stop,
+        if next_start < start_search: next_start = len(self.example_string)
+        stop_index = (self.example_string.rfind(str(stop), start_search,
                                                 next_start) +
                       len(str(stop)) - 1)
 
-        prev_stop = stop_index + 1
         arg_value = self.example_string[start_index:stop_index+1]
         arg_metadata = ArgumentMetadata(key, arg_value, key, start_index,
                                         stop_index)
@@ -205,22 +210,19 @@ class CommandStringParser(object):
       # Flag specified multiple times in both example string namespace implies
       # flag's action is append.
       else:
-        count = 1
-        for val in list_arg:
-          prev_stop = self.parse_dict(val, key, prev_stop, count)
-          count += 1
+        prev_stop = 0
+        for i in range(flag_count):
+          val = list_arg[i]
+          prev_stop = self.parse_dict(val, key, value, prev_stop, i+1)
 
     # Nested list(list_arg[0] is a list) implies action is append.
     else:
+      prev_stop = 0
+      for i in range(flag_count):
+        val = list_arg[i]
+        prev_stop = self.parse_list(val, key, value, prev_stop, i+1)
 
-      count = 1
-      for val in list_arg:
-        prev_stop = self.parse_list(val, key, value, prev_stop, count)
-        count += 1
-
-    return prev_stop
-
-  def parse_others(self, other_arg, key, value, prev_stop):
+  def parse_others(self, other_arg, key, value):
     """Gets metadata from an example string for non list-type/dict-type args.
 
     It updates the already existing ExampleCommandMetadata object of the example
@@ -233,30 +235,22 @@ class CommandStringParser(object):
       namespace.
       value: The actual input representing the flag/argument in the example
       string (e.g --zone, --shielded-secure-boot).
-      prev_stop: The index in the example string where the last flag stopped.
 
-    Returns:
-      The index in the example string where parsing stopped.
     """
-    # Editable range includes quotes and excludes booleans.
+    # Editable range excludes quotes and booleans.
 
-    if isinstance(other_arg, bool):
-      prev_stop = self.example_string.index(value, prev_stop) + len(value)
-
-    else:
-      start_index = self.example_string.find(str(other_arg), prev_stop)
+    if not isinstance(other_arg, bool):
+      start_search = self.get_start_search(value)
+      start_index = self.example_string.find(str(other_arg), start_search)
       if start_index == -1:
         #  Enum type
-        other_arg = self.get_enum_value(other_arg, prev_stop)
+        other_arg = self.get_enum_value(other_arg, start_search)
 
-      start_index = self.example_string.index(str(other_arg), prev_stop)
+      start_index = self.example_string.index(str(other_arg), start_search)
       arg_metadata = ArgumentMetadata(key, other_arg, key, start_index,
                                       start_index + len(str(other_arg)) - 1)
 
       self.example_metadata.add_arg_metadata(arg_metadata)
-      prev_stop = arg_metadata.stop_index + 1
-
-    return prev_stop
 
   def get_enum_value(self, enum_value, prev_stop):
     """Gets the input value of an enum argument in the example string.
@@ -270,16 +264,18 @@ class CommandStringParser(object):
     Returns:
      The actual input in the example string representing the argument's value.
     """
-    #  Check for common variations(underscore/hypen; lower/upper)
-    possible_versions = [enum_value.lower(), enum_value.upper(),
-                         enum_value.replace('-', '_'),
-                         enum_value.replace('_', '-')]
     unparsed_string = self.example_string[prev_stop:]
-    for version in possible_versions:
-      if version in unparsed_string:
-        enum_value = version
 
-    if enum_value not in unparsed_string:
+    if isinstance(enum_value, str):
+      #  Check for common variations(underscore/hypen; lower/upper)
+      possible_versions = [enum_value.lower(), enum_value.upper(),
+                           enum_value.replace('-', '_'),
+                           enum_value.replace('_', '-')]
+      for version in possible_versions:
+        if version in unparsed_string:
+          enum_value = version
+
+    if str(enum_value) not in unparsed_string:
       unparsed_string = unparsed_string.strip()
       arg_end = unparsed_string.find(' --')
       # Keep last character if we are at the end of the example.
@@ -291,6 +287,39 @@ class CommandStringParser(object):
       # We'll strip the whitespace so it won't be part of the argument value.
 
     return enum_value
+
+  def get_start_search(self, namespace_name, prev_stop=0):
+    """Gets the position to begin searching for an argument's value.
+
+    This is a helper function for all the parse functions aside from parse().
+
+    Args:
+      namespace_name: The value of the argument in namespace's specified_args
+      dictionary. ('INSTANCE_NAMES:1', '--zone', etc)
+      prev_stop: Optional. For recurring flags, where the flag was last
+      seen.
+
+    Returns:
+      The index in the example string to begin searching.
+    """
+    # Start searching for value from --{flag_name} if it occurs once
+    # or --{flag_name} after the last place the flag was seen if it
+    # occurs multiple times.
+    if prev_stop:
+      start_search = (self.example_string.find(namespace_name, prev_stop) +
+                      len(namespace_name))
+    else:
+      start_search = (self.example_string.find(namespace_name) +
+                      len(namespace_name))
+
+    # For positional arguments in list form, start searching from after the
+    # command name.
+    if start_search == -1:
+      command_name = self.command_node.name.replace('_', '-')
+      command_name_start = self.example_string.find(command_name)
+      start_search = command_name_start + len(command_name)+ 1
+
+    return start_search
 
   def get_parse_args(self, string):
     """Gets a list of arguments in a string.
@@ -304,27 +333,17 @@ class CommandStringParser(object):
       A list of the arguments from the string.
     """
     command_name = self.command_node.name.replace('_', '-')
-    args_list = string.split('--')
-    command_name_start = args_list[0].find(command_name)
+    command_name_start = string.find(command_name)
 
     # Return None if command string is under a different command node.
     if command_name_start == -1:
       return
+
     # calculation includes the space after the command string.
     command_name_stop = command_name_start + len(command_name)+ 1
+    args_list = shlex.split(string[command_name_stop:])
 
-    args = []
-    positional_args = args_list[0][command_name_stop:].strip()
-    if positional_args:
-      args.append(positional_args)
-
-    for i in range(1, len(args_list)):
-      entire_arg = args_list[i].split('=')
-      args.append('--' + entire_arg[0].strip())
-
-      if len(entire_arg) > 1:
-        args.append('='.join(entire_arg[1:]).strip())
-    return args
+    return args_list
 
 
 class ExampleCommandMetadata(object):

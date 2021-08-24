@@ -440,24 +440,14 @@ class GoogleIamV1betaWorkloadIdentityPoolProviderSaml(_messages.Message):
       the following constraints: 1) Must contain an Identity Provider Entity
       ID. 2) Must contain at least one non-expired signing key certificate. 3)
       For each signing key: a) Valid from should be no more than 7 days from
-      now. 4) Upto 3 IdP signing keys are allowed in the metadata xml. When
-      updating the provider's metadata xml, at lease one non-expired signing
-      key must overlap with the existing metadata. This requirement is skipped
-      if there are no non-expired signing keys present in the existing
-      metadata
+      now. b) Valid to should be no more than 10 years in the future. 4) Upto
+      3 IdP signing keys are allowed in the metadata xml. When updating the
+      provider's metadata xml, at lease one non-expired signing key must
+      overlap with the existing metadata. This requirement is skipped if there
+      are no non-expired signing keys present in the existing metadata
   """
 
   idpMetadataXml = _messages.StringField(1)
-
-
-class GoogleIamV2mainPolicyOperationMetadata(_messages.Message):
-  r"""Metadata for long-running Policy operations.
-
-  Fields:
-    createTime: Timestamp when the google.longrunning.Operation was created.
-  """
-
-  createTime = _messages.StringField(1)
 
 
 class GoogleLongrunningOperation(_messages.Message):

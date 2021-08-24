@@ -294,6 +294,10 @@
           "items": {
             "$ref": "Network"
           }
+        },
+        "interactiveSerialConsoleEnabled": {
+          "description": "True if the interactive serial console feature is enabled for the instance, false otherwise. The default value is false.",
+          "type": "boolean"
         }
       }
     },
@@ -350,7 +354,7 @@
           "description": "The storage volume that this Lun is attached to.",
           "type": "string"
         },
-        "shared": {
+        "shareable": {
           "description": "Whether this Lun is allowed to be shared between multiple physical servers.",
           "type": "boolean"
         },
@@ -410,124 +414,18 @@
         }
       }
     },
-    "ResetInstanceRequest": {
-      "id": "ResetInstanceRequest",
-      "description": "Message for resetting an Instance.",
+    "EnableInteractiveSerialConsoleRequest": {
+      "id": "EnableInteractiveSerialConsoleRequest",
+      "description": "Message for enabling the interactive serial console on an instance.",
       "type": "object",
       "properties": {
       }
     },
-    "ListVolumesResponse": {
-      "id": "ListVolumesResponse",
-      "description": "Message for response to listing Volumes.",
+    "DisableInteractiveSerialConsoleRequest": {
+      "id": "DisableInteractiveSerialConsoleRequest",
+      "description": "Message for disabling the interactive serial console on an instance.",
       "type": "object",
       "properties": {
-        "volumes": {
-          "description": "The list of Volume.",
-          "type": "array",
-          "items": {
-            "$ref": "Volume"
-          }
-        },
-        "nextPageToken": {
-          "description": "A token identifying a page of results the server should return.",
-          "type": "string"
-        },
-        "unreachable": {
-          "description": "Locations that could not be reached.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "Volume": {
-      "id": "Volume",
-      "description": "A storage Volume.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "Output only. The resource name of this `Volume`. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. Format: `projects\/{project}\/locations\/{location}\/volumes\/{volume}`",
-          "readOnly": true,
-          "type": "string"
-        },
-        "storageType": {
-          "description": "The storage type of this Volume.",
-          "type": "string",
-          "enumDescriptions": [
-            "The unspecified type.",
-            "This Volume storage type is SSD.",
-            "This Volume storage type is HDD."
-          ],
-          "enum": [
-            "STORAGE_TYPE_UNSPECIFIED",
-            "SSD",
-            "HDD"
-          ]
-        },
-        "state": {
-          "description": "The state of this Volume.",
-          "type": "string",
-          "enumDescriptions": [
-            "The unspecified state.",
-            "The Volume is being created.",
-            "The Volume is ready for consumption.",
-            "The Volume has been requested to be deleted."
-          ],
-          "enum": [
-            "STATE_UNSPECIFIED",
-            "CREATING",
-            "READY",
-            "DELETING"
-          ]
-        },
-        "requestedSizeGib": {
-          "description": "The requested size of this Volume, in GiB.",
-          "type": "string",
-          "format": "int64"
-        },
-        "currentSizeGib": {
-          "description": "The current size of this Volume, in GiB, including space reserved for snapshots. This size may be different than the requested size if the Volume has been configured with auto grow or auto shrink.",
-          "type": "string",
-          "format": "int64"
-        },
-        "autoGrownSizeGib": {
-          "description": "The size, in GiB, that this Volume has expanded as a result of an auto grow policy. In the absence of auto-grow, the value is 0.",
-          "type": "string",
-          "format": "int64"
-        },
-        "remainingSpaceGib": {
-          "description": "The space remaining in the Volume for new LUNs, in GiB, excluding space reserved for snapshots.",
-          "type": "string",
-          "format": "int64"
-        },
-        "snapshotReservationDetail": {
-          "description": "Details about snapshot space reservation and usage on the Volume.",
-          "$ref": "SnapshotReservationDetail"
-        }
-      }
-    },
-    "SnapshotReservationDetail": {
-      "id": "SnapshotReservationDetail",
-      "description": "Details about snapshot space reservation and usage on the Volume.",
-      "type": "object",
-      "properties": {
-        "reservedSpaceGib": {
-          "description": "The space on this Volume reserved for snapshotsk, provided in GiB.",
-          "type": "string",
-          "format": "int64"
-        },
-        "reservedSpaceUsedPercent": {
-          "description": "The percent of reserved snapshot space on this Volume that is actually used by snapshot copies. This may be higher than 100% if snapshot copies are occupying more space than has been reserved on the Volume.",
-          "type": "integer",
-          "format": "int32"
-        },
-        "reservedSpaceRemainingGib": {
-          "description": "The amount, in GiB, of space available in this Volume's reserved snapshot space.",
-          "type": "string",
-          "format": "int64"
-        }
       }
     },
     "ListLocationsResponse": {
@@ -595,7 +493,7 @@
     },
     "Policy": {
       "id": "Policy",
-      "description": "An Identity and Access Management (IAM) policy, which specifies access controls for Google Cloud resources. A `Policy` is a collection of `bindings`. A `binding` binds one or more `members` to a single `role`. Members can be user accounts, service accounts, Google groups, and domains (such as G Suite). A `role` is a named list of permissions; each `role` can be an IAM predefined role or a user-created custom role. For some types of Google Cloud resources, a `binding` can also specify a `condition`, which is a logical expression that allows access to a resource only if the expression evaluates to `true`. A condition can add constraints based on attributes of the request, the resource, or both. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies). **JSON example:** { \"bindings\": [ { \"role\": \"roles\/resourcemanager.organizationAdmin\", \"members\": [ \"user:mike@example.com\", \"group:admins@example.com\", \"domain:google.com\", \"serviceAccount:my-project-id@appspot.gserviceaccount.com\" ] }, { \"role\": \"roles\/resourcemanager.organizationViewer\", \"members\": [ \"user:eve@example.com\" ], \"condition\": { \"title\": \"expirable access\", \"description\": \"Does not grant access after Sep 2020\", \"expression\": \"request.time < timestamp('2020-10-01T00:00:00.000Z')\", } } ], \"etag\": \"BwWWja0YfJA=\", \"version\": 3 } **YAML example:** bindings: - members: - user:mike@example.com - group:admins@example.com - domain:google.com - serviceAccount:my-project-id@appspot.gserviceaccount.com role: roles\/resourcemanager.organizationAdmin - members: - user:eve@example.com role: roles\/resourcemanager.organizationViewer condition: title: expirable access description: Does not grant access after Sep 2020 expression: request.time < timestamp('2020-10-01T00:00:00.000Z') - etag: BwWWja0YfJA= - version: 3 For a description of IAM and its features, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/docs\/).",
+      "description": "An Identity and Access Management (IAM) policy, which specifies access controls for Google Cloud resources. A `Policy` is a collection of `bindings`. A `binding` binds one or more `members` to a single `role`. Members can be user accounts, service accounts, Google groups, and domains (such as G Suite). A `role` is a named list of permissions; each `role` can be an IAM predefined role or a user-created custom role. For some types of Google Cloud resources, a `binding` can also specify a `condition`, which is a logical expression that allows access to a resource only if the expression evaluates to `true`. A condition can add constraints based on attributes of the request, the resource, or both. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies). **JSON example:** { \"bindings\": [ { \"role\": \"roles\/resourcemanager.organizationAdmin\", \"members\": [ \"user:mike@example.com\", \"group:admins@example.com\", \"domain:google.com\", \"serviceAccount:my-project-id@appspot.gserviceaccount.com\" ] }, { \"role\": \"roles\/resourcemanager.organizationViewer\", \"members\": [ \"user:eve@example.com\" ], \"condition\": { \"title\": \"expirable access\", \"description\": \"Does not grant access after Sep 2020\", \"expression\": \"request.time < timestamp('2020-10-01T00:00:00.000Z')\", } } ], \"etag\": \"BwWWja0YfJA=\", \"version\": 3 } **YAML example:** bindings: - members: - user:mike@example.com - group:admins@example.com - domain:google.com - serviceAccount:my-project-id@appspot.gserviceaccount.com role: roles\/resourcemanager.organizationAdmin - members: - user:eve@example.com role: roles\/resourcemanager.organizationViewer condition: title: expirable access description: Does not grant access after Sep 2020 expression: request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA= version: 3 For a description of IAM and its features, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/docs\/).",
       "type": "object",
       "properties": {
         "version": {
@@ -1005,10 +903,10 @@
                   ],
                   "description": "Gets details of a single Instance."
                 },
-                "reset": {
-                  "id": "baremetalsolution.projects.locations.instances.reset",
-                  "path": "v2/{+name}:reset",
-                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:reset",
+                "enableInteractiveSerialConsole": {
+                  "id": "baremetalsolution.projects.locations.instances.enableInteractiveSerialConsole",
+                  "path": "v2/{+name}:enableInteractiveSerialConsole",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:enableInteractiveSerialConsole",
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
@@ -1023,7 +921,7 @@
                     "name"
                   ],
                   "request": {
-                    "$ref": "ResetInstanceRequest"
+                    "$ref": "EnableInteractiveSerialConsoleRequest"
                   },
                   "response": {
                     "$ref": "Operation"
@@ -1031,7 +929,35 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Performs a power reset on an Instance."
+                  "description": "Enable the interactive serial console feature on an instance."
+                },
+                "disableInteractiveSerialConsole": {
+                  "id": "baremetalsolution.projects.locations.instances.disableInteractiveSerialConsole",
+                  "path": "v2/{+name}:disableInteractiveSerialConsole",
+                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:disableInteractiveSerialConsole",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. Name of the resource.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "DisableInteractiveSerialConsoleRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Disable the interactive serial console feature on an instance."
                 },
                 "setIamPolicy": {
                   "id": "baremetalsolution.projects.locations.instances.setIamPolicy",
@@ -1119,81 +1045,6 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
-                }
-              }
-            },
-            "volumes": {
-              "methods": {
-                "list": {
-                  "id": "baremetalsolution.projects.locations.volumes.list",
-                  "path": "v2/{+parent}/volumes",
-                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/volumes",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "parent": {
-                      "description": "Required. Parent value for ListVolumesRequest.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "pageSize": {
-                      "description": "Requested page size. Server may return fewer items than requested. If unspecified, server will pick an appropriate default.",
-                      "location": "query",
-                      "type": "integer",
-                      "format": "int32"
-                    },
-                    "pageToken": {
-                      "description": "A token identifying a page of results the server should return.",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "filter": {
-                      "description": "Filtering results.",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "orderBy": {
-                      "description": "Hint for how to order the results.",
-                      "location": "query",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "parent"
-                  ],
-                  "response": {
-                    "$ref": "ListVolumesResponse"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Lists Volumes in a given project and location."
-                },
-                "get": {
-                  "id": "baremetalsolution.projects.locations.volumes.get",
-                  "path": "v2/{+name}",
-                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "name": {
-                      "description": "Required. Name of the resource.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/volumes\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "response": {
-                    "$ref": "Volume"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Gets details of a single Volume."
                 }
               }
             }

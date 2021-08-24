@@ -50,6 +50,8 @@ class AddonsConfig(_messages.Message):
       cluster nodes
     gcePersistentDiskCsiDriverConfig: Configuration for the Compute Engine
       Persistent Disk CSI driver.
+    gcpFilestoreCsiDriverConfig: Configuration for the GCP Filestore CSI
+      driver.
     gkeBackupAgentConfig: Configuration for the Backup for GKE agent addon.
     horizontalPodAutoscaling: Configuration for the horizontal pod autoscaling
       feature, which increases or decreases the number of replica pods a
@@ -77,13 +79,14 @@ class AddonsConfig(_messages.Message):
   configConnectorConfig = _messages.MessageField('ConfigConnectorConfig', 3)
   dnsCacheConfig = _messages.MessageField('DnsCacheConfig', 4)
   gcePersistentDiskCsiDriverConfig = _messages.MessageField('GcePersistentDiskCsiDriverConfig', 5)
-  gkeBackupAgentConfig = _messages.MessageField('GkeBackupAgentConfig', 6)
-  horizontalPodAutoscaling = _messages.MessageField('HorizontalPodAutoscaling', 7)
-  httpLoadBalancing = _messages.MessageField('HttpLoadBalancing', 8)
-  istioConfig = _messages.MessageField('IstioConfig', 9)
-  kalmConfig = _messages.MessageField('KalmConfig', 10)
-  kubernetesDashboard = _messages.MessageField('KubernetesDashboard', 11)
-  networkPolicyConfig = _messages.MessageField('NetworkPolicyConfig', 12)
+  gcpFilestoreCsiDriverConfig = _messages.MessageField('GcpFilestoreCsiDriverConfig', 6)
+  gkeBackupAgentConfig = _messages.MessageField('GkeBackupAgentConfig', 7)
+  horizontalPodAutoscaling = _messages.MessageField('HorizontalPodAutoscaling', 8)
+  httpLoadBalancing = _messages.MessageField('HttpLoadBalancing', 9)
+  istioConfig = _messages.MessageField('IstioConfig', 10)
+  kalmConfig = _messages.MessageField('KalmConfig', 11)
+  kubernetesDashboard = _messages.MessageField('KubernetesDashboard', 12)
+  networkPolicyConfig = _messages.MessageField('NetworkPolicyConfig', 13)
 
 
 class AdvancedMachineFeatures(_messages.Message):
@@ -1871,6 +1874,16 @@ class GcfsConfig(_messages.Message):
   enabled = _messages.BooleanField(1)
 
 
+class GcpFilestoreCsiDriverConfig(_messages.Message):
+  r"""Configuration for the GCP Filestore CSI driver.
+
+  Fields:
+    enabled: Whether the GCP Filestore CSI driver is enabled for this cluster.
+  """
+
+  enabled = _messages.BooleanField(1)
+
+
 class GetJSONWebKeysResponse(_messages.Message):
   r"""GetJSONWebKeysResponse is a valid JSON Web Key Set as specififed in rfc
   7517
@@ -2881,12 +2894,11 @@ class NodeConfig(_messages.Message):
       ensure-gke-docker" - "gci-metrics-enabled" - "gci-update-strategy" -
       "instance-template" - "kube-env" - "startup-script" - "user-data" -
       "disable-address-manager" - "windows-startup-script-ps1" - "common-psm1"
-      - "k8s-node-setup-psm1" - "install-ssh-psm1" - "user-profile-psm1" The
-      following keys are reserved for Windows nodes: - "serial-port-logging-
-      enable" Values are free-form strings, and only have meaning as
-      interpreted by the image running in the instance. The only restriction
-      placed on them is that each value's size must be less than or equal to
-      32 KB. The total size of all keys and values must be less than 512 KB.
+      - "k8s-node-setup-psm1" - "install-ssh-psm1" - "user-profile-psm1"
+      Values are free-form strings, and only have meaning as interpreted by
+      the image running in the instance. The only restriction placed on them
+      is that each value's size must be less than or equal to 32 KB. The total
+      size of all keys and values must be less than 512 KB.
 
   Fields:
     accelerators: A list of hardware accelerators to be attached to each node.
@@ -2905,6 +2917,7 @@ class NodeConfig(_messages.Message):
     diskType: Type of the disk attached to each node (e.g. 'pd-standard', 'pd-
       ssd' or 'pd-balanced') If unspecified, the default disk type is 'pd-
       standard'
+    enableStableFleet: Guarantees longer maintenance windows on underlying VMs
     ephemeralStorageConfig: Parameters for the ephemeral storage filesystem.
       If unspecified, ephemeral storage is backed by the boot disk.
     gcfsConfig: GCFS (Google Container File System) configs.
@@ -2941,12 +2954,11 @@ class NodeConfig(_messages.Message):
       ensure-gke-docker" - "gci-metrics-enabled" - "gci-update-strategy" -
       "instance-template" - "kube-env" - "startup-script" - "user-data" -
       "disable-address-manager" - "windows-startup-script-ps1" - "common-psm1"
-      - "k8s-node-setup-psm1" - "install-ssh-psm1" - "user-profile-psm1" The
-      following keys are reserved for Windows nodes: - "serial-port-logging-
-      enable" Values are free-form strings, and only have meaning as
-      interpreted by the image running in the instance. The only restriction
-      placed on them is that each value's size must be less than or equal to
-      32 KB. The total size of all keys and values must be less than 512 KB.
+      - "k8s-node-setup-psm1" - "install-ssh-psm1" - "user-profile-psm1"
+      Values are free-form strings, and only have meaning as interpreted by
+      the image running in the instance. The only restriction placed on them
+      is that each value's size must be less than or equal to 32 KB. The total
+      size of all keys and values must be less than 512 KB.
     minCpuPlatform: Minimum CPU platform to be used by this instance. The
       instance may be scheduled on the specified or newer CPU platform.
       Applicable values are the friendly names of CPU platforms, such as
@@ -3036,12 +3048,11 @@ class NodeConfig(_messages.Message):
     "gci-metrics-enabled" - "gci-update-strategy" - "instance-template" -
     "kube-env" - "startup-script" - "user-data" - "disable-address-manager" -
     "windows-startup-script-ps1" - "common-psm1" - "k8s-node-setup-psm1" -
-    "install-ssh-psm1" - "user-profile-psm1" The following keys are reserved
-    for Windows nodes: - "serial-port-logging-enable" Values are free-form
-    strings, and only have meaning as interpreted by the image running in the
-    instance. The only restriction placed on them is that each value's size
-    must be less than or equal to 32 KB. The total size of all keys and values
-    must be less than 512 KB.
+    "install-ssh-psm1" - "user-profile-psm1" Values are free-form strings, and
+    only have meaning as interpreted by the image running in the instance. The
+    only restriction placed on them is that each value's size must be less
+    than or equal to 32 KB. The total size of all keys and values must be less
+    than 512 KB.
 
     Messages:
       AdditionalProperty: An additional property for a MetadataValue object.
@@ -3068,29 +3079,30 @@ class NodeConfig(_messages.Message):
   bootDiskKmsKey = _messages.StringField(3)
   diskSizeGb = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   diskType = _messages.StringField(5)
-  ephemeralStorageConfig = _messages.MessageField('EphemeralStorageConfig', 6)
-  gcfsConfig = _messages.MessageField('GcfsConfig', 7)
-  gvnic = _messages.MessageField('VirtualNIC', 8)
-  imageType = _messages.StringField(9)
-  kubeletConfig = _messages.MessageField('NodeKubeletConfig', 10)
-  labels = _messages.MessageField('LabelsValue', 11)
-  linuxNodeConfig = _messages.MessageField('LinuxNodeConfig', 12)
-  localSsdCount = _messages.IntegerField(13, variant=_messages.Variant.INT32)
-  localSsdVolumeConfigs = _messages.MessageField('LocalSsdVolumeConfig', 14, repeated=True)
-  machineType = _messages.StringField(15)
-  metadata = _messages.MessageField('MetadataValue', 16)
-  minCpuPlatform = _messages.StringField(17)
-  nodeGroup = _messages.StringField(18)
-  nodeImageConfig = _messages.MessageField('CustomImageConfig', 19)
-  oauthScopes = _messages.StringField(20, repeated=True)
-  preemptible = _messages.BooleanField(21)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 22)
-  sandboxConfig = _messages.MessageField('SandboxConfig', 23)
-  serviceAccount = _messages.StringField(24)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 25)
-  tags = _messages.StringField(26, repeated=True)
-  taints = _messages.MessageField('NodeTaint', 27, repeated=True)
-  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 28)
+  enableStableFleet = _messages.BooleanField(6)
+  ephemeralStorageConfig = _messages.MessageField('EphemeralStorageConfig', 7)
+  gcfsConfig = _messages.MessageField('GcfsConfig', 8)
+  gvnic = _messages.MessageField('VirtualNIC', 9)
+  imageType = _messages.StringField(10)
+  kubeletConfig = _messages.MessageField('NodeKubeletConfig', 11)
+  labels = _messages.MessageField('LabelsValue', 12)
+  linuxNodeConfig = _messages.MessageField('LinuxNodeConfig', 13)
+  localSsdCount = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  localSsdVolumeConfigs = _messages.MessageField('LocalSsdVolumeConfig', 15, repeated=True)
+  machineType = _messages.StringField(16)
+  metadata = _messages.MessageField('MetadataValue', 17)
+  minCpuPlatform = _messages.StringField(18)
+  nodeGroup = _messages.StringField(19)
+  nodeImageConfig = _messages.MessageField('CustomImageConfig', 20)
+  oauthScopes = _messages.StringField(21, repeated=True)
+  preemptible = _messages.BooleanField(22)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 23)
+  sandboxConfig = _messages.MessageField('SandboxConfig', 24)
+  serviceAccount = _messages.StringField(25)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 26)
+  tags = _messages.StringField(27, repeated=True)
+  taints = _messages.MessageField('NodeTaint', 28, repeated=True)
+  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 29)
 
 
 class NodeConfigDefaults(_messages.Message):

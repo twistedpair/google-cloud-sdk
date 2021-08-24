@@ -104,10 +104,10 @@
     "oauth2": {
       "scopes": {
         "https://www.googleapis.com/auth/cloud-platform": {
-          "description": "See, edit, configure, and delete your Google Cloud Platform data"
+          "description": "See, edit, configure, and delete your Google Cloud data and see the email address for your Google Account."
         },
         "https://www.googleapis.com/auth/cloud-platform.read-only": {
-          "description": "View your data across Google Cloud Platform services"
+          "description": "View your data across Google Cloud services and see the email address of your Google Account"
         }
       }
     }
@@ -5400,6 +5400,44 @@
         "deployedModelId": {
           "description": "ID of the Endpoint's DeployedModel that served this prediction.",
           "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1RawPredictRequest": {
+      "id": "GoogleCloudAiplatformV1alpha1RawPredictRequest",
+      "description": "Request message for PredictionService.RawPredict.",
+      "type": "object",
+      "properties": {
+        "httpBody": {
+          "description": "The prediction input that supports HTTP headers and arbitrary data payload. A DeployedModel may have an upper limit on the number of instances it supports per request, and when it is exceeded the prediction call errors in case of AutoML Models, or, in case of customer created Models, the behaviour is as documented by that Model. The schema of any single instance may be specified via Endpoint's DeployedModels' Model's PredictSchemata's instance_schema_uri.",
+          "$ref": "GoogleApiHttpBody"
+        }
+      }
+    },
+    "GoogleApiHttpBody": {
+      "id": "GoogleApiHttpBody",
+      "description": "Message that represents an arbitrary HTTP body. It should only be used for payload formats that can't be represented as JSON, such as raw binary or an HTML page. This message can be used both in streaming and non-streaming API methods in the request as well as the response. It can be used as a top-level request field, which is convenient if one wants to extract parameters from either the URL or HTTP template into the request fields and also want access to the raw HTTP body. Example: message GetResourceRequest { \/\/ A unique request id. string request_id = 1; \/\/ The raw HTTP body is bound to this field. google.api.HttpBody http_body = 2; } service ResourceService { rpc GetResource(GetResourceRequest) returns (google.api.HttpBody); rpc UpdateResource(google.api.HttpBody) returns (google.protobuf.Empty); } Example with streaming methods: service CaldavService { rpc GetCalendar(stream google.api.HttpBody) returns (stream google.api.HttpBody); rpc UpdateCalendar(stream google.api.HttpBody) returns (stream google.api.HttpBody); } Use of this type only changes how the request and response bodies are handled, all other features will continue to work unchanged.",
+      "type": "object",
+      "properties": {
+        "contentType": {
+          "description": "The HTTP Content-Type header value specifying the content type of the body.",
+          "type": "string"
+        },
+        "data": {
+          "description": "The HTTP request\/response body as raw binary.",
+          "type": "string",
+          "format": "byte"
+        },
+        "extensions": {
+          "description": "Application specific response metadata. Must be set in the first response for streaming APIs.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "any",
+              "description": "Properties of the object. Contains field @type with type URL."
+            }
+          }
         }
       }
     },
@@ -15717,7 +15755,7 @@
       "type": "object",
       "properties": {
         "destinationBigqueryUri": {
-          "description": "URI of desired destination BigQuery table. Expected format: bq:\/\/:: If not specified, then results are exported to the following auto-created BigQuery table: :export_evaluated_examples__.evaluated_examples",
+          "description": "URI of desired destination BigQuery table. Expected format: `bq:\/\/{project_id}:{dataset_id}:{table}` If not specified, then results are exported to the following auto-created BigQuery table: `{project_id}:export_evaluated_examples_{model_name}_{yyyy_MM_dd'T'HH_mm_ss_SSS'Z'}.evaluated_examples`",
           "type": "string"
         },
         "overrideExistingTable": {
@@ -19784,7 +19822,7 @@
       "type": "object",
       "properties": {
         "destinationBigqueryUri": {
-          "description": "URI of desired destination BigQuery table. Expected format: bq:\/\/:: If not specified, then results are exported to the following auto-created BigQuery table: :export_evaluated_examples__.evaluated_examples",
+          "description": "URI of desired destination BigQuery table. Expected format: `bq:\/\/{project_id}:{dataset_id}:{table}` If not specified, then results are exported to the following auto-created BigQuery table: `{project_id}:export_evaluated_examples_{model_name}_{yyyy_MM_dd'T'HH_mm_ss_SSS'Z'}.evaluated_examples`",
           "type": "string"
         },
         "overrideExistingTable": {
@@ -20666,6 +20704,14 @@
       "description": "Represents specification of a Study.",
       "type": "object",
       "properties": {
+        "decayCurveStoppingSpec": {
+          "description": "The automated early stopping spec using decay curve rule.",
+          "$ref": "GoogleCloudAiplatformV1StudySpecDecayCurveAutomatedStoppingSpec"
+        },
+        "medianAutomatedStoppingSpec": {
+          "description": "The automated early stopping spec using median rule.",
+          "$ref": "GoogleCloudAiplatformV1StudySpecMedianAutomatedStoppingSpec"
+        },
         "metrics": {
           "description": "Required. Metric specs for the Study.",
           "type": "array",
@@ -20721,6 +20767,28 @@
             "LAST_MEASUREMENT",
             "BEST_MEASUREMENT"
           ]
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1StudySpecDecayCurveAutomatedStoppingSpec": {
+      "id": "GoogleCloudAiplatformV1StudySpecDecayCurveAutomatedStoppingSpec",
+      "description": "The decay curve automated stopping rule builds a Gaussian Process Regressor to predict the final objective value of a Trial based on the already completed Trials and the intermediate measurements of the current Trial. Early stopping is requested for the current Trial if there is very low probability to exceed the optimal value found so far.",
+      "type": "object",
+      "properties": {
+        "useElapsedDuration": {
+          "description": "True if Measurement.elapsed_duration is used as the x-axis of each Trials Decay Curve. Otherwise, Measurement.step_count will be used as the x-axis.",
+          "type": "boolean"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1StudySpecMedianAutomatedStoppingSpec": {
+      "id": "GoogleCloudAiplatformV1StudySpecMedianAutomatedStoppingSpec",
+      "description": "The median automated stopping rule stops a pending Trial if the Trial's best objective_value is strictly below the median 'performance' of all completed Trials reported up to the Trial's last measurement. Currently, 'performance' refers to the running average of the objective values reported by the Trial in each measurement.",
+      "type": "object",
+      "properties": {
+        "useElapsedDuration": {
+          "description": "True if median automated stopping rule applies on Measurement.elapsed_duration. It means that elapsed_duration field of latest measurement of current Trial is used to compute median objective value for each completed Trials.",
+          "type": "boolean"
         }
       }
     },
@@ -23733,6 +23801,34 @@
                   ],
                   "description": "Perform an online prediction."
                 },
+                "rawPredict": {
+                  "id": "aiplatform.projects.locations.endpoints.rawPredict",
+                  "path": "v1alpha1/{+endpoint}:rawPredict",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/endpoints/{endpointsId}:rawPredict",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "endpoint": {
+                      "description": "Required. The name of the Endpoint requested to serve the prediction. Format: `projects\/{project}\/locations\/{location}\/endpoints\/{endpoint}`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/endpoints\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "endpoint"
+                  ],
+                  "request": {
+                    "$ref": "GoogleCloudAiplatformV1alpha1RawPredictRequest"
+                  },
+                  "response": {
+                    "$ref": "GoogleApiHttpBody"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Perform an online prediction with arbitrary http payload."
+                },
                 "explain": {
                   "id": "aiplatform.projects.locations.endpoints.explain",
                   "path": "v1alpha1/{+endpoint}:explain",
@@ -26341,6 +26437,12 @@
                           "required": true,
                           "type": "string"
                         },
+                        "updateMask": {
+                          "description": "Required. A FieldMask indicating which fields should be updated. Functionality of this field is not yet supported.",
+                          "location": "query",
+                          "type": "string",
+                          "format": "google-fieldmask"
+                        },
                         "allowMissing": {
                           "description": "If set to true, and the Artifact is not found, a new Artifact will be created.",
                           "location": "query",
@@ -26476,6 +26578,12 @@
                           "location": "path",
                           "required": true,
                           "type": "string"
+                        },
+                        "updateMask": {
+                          "description": "Required. A FieldMask indicating which fields should be updated. Functionality of this field is not yet supported.",
+                          "location": "query",
+                          "type": "string",
+                          "format": "google-fieldmask"
                         },
                         "allowMissing": {
                           "description": "If set to true, and the Context is not found, a new Context will be created.",
@@ -26693,6 +26801,12 @@
                           "location": "path",
                           "required": true,
                           "type": "string"
+                        },
+                        "updateMask": {
+                          "description": "Required. A FieldMask indicating which fields should be updated. Functionality of this field is not yet supported.",
+                          "location": "query",
+                          "type": "string",
+                          "format": "google-fieldmask"
                         },
                         "allowMissing": {
                           "description": "If set to true, and the Execution is not found, a new Execution will be created.",

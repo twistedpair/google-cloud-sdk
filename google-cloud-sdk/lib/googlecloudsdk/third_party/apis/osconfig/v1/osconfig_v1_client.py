@@ -39,7 +39,6 @@ class OsconfigV1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
-    self.operations = self.OperationsService(self)
     self.projects_locations_instances_inventories = self.ProjectsLocationsInstancesInventoriesService(self)
     self.projects_locations_instances_vulnerabilityReports = self.ProjectsLocationsInstancesVulnerabilityReportsService(self)
     self.projects_locations_instances = self.ProjectsLocationsInstancesService(self)
@@ -48,70 +47,6 @@ class OsconfigV1(base_api.BaseApiClient):
     self.projects_patchJobs_instanceDetails = self.ProjectsPatchJobsInstanceDetailsService(self)
     self.projects_patchJobs = self.ProjectsPatchJobsService(self)
     self.projects = self.ProjectsService(self)
-
-  class OperationsService(base_api.BaseApiService):
-    """Service class for the operations resource."""
-
-    _NAME = 'operations'
-
-    def __init__(self, client):
-      super(OsconfigV1.OperationsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Delete(self, request, global_params=None):
-      r"""Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`.
-
-      Args:
-        request: (OsconfigOperationsDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Empty) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/operations/{operationsId}',
-        http_method='DELETE',
-        method_id='osconfig.operations.delete',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1/{+name}',
-        request_field='',
-        request_type_name='OsconfigOperationsDeleteRequest',
-        response_type_name='Empty',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`. NOTE: the `name` binding allows API services to override the binding to use different resource name schemes, such as `users/*/operations`. To override the binding, API services can add a binding such as `"/v1/{name=users/*}/operations"` to their service configuration. For backwards compatibility, the default name includes the operations collection id, however overriding users must ensure the name binding is the parent resource, without the operations collection id.
-
-      Args:
-        request: (OsconfigOperationsListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListOperationsResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/operations',
-        http_method='GET',
-        method_id='osconfig.operations.list',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
-        relative_path='v1/{+name}',
-        request_field='',
-        request_type_name='OsconfigOperationsListRequest',
-        response_type_name='ListOperationsResponse',
-        supports_download=False,
-    )
 
   class ProjectsLocationsInstancesInventoriesService(base_api.BaseApiService):
     """Service class for the projects_locations_instances_inventories resource."""

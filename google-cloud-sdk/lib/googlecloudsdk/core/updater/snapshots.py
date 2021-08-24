@@ -140,7 +140,8 @@ class ComponentSnapshot(object):
     Returns:
       A ComponentSnapshot object
     """
-    data = json.load(files.FileReader(snapshot_file))
+    with files.FileReader(snapshot_file) as f:
+      data = json.load(f)
     # Windows paths will start with a drive letter so they need an extra '/' up
     # front.  Also, URLs must only have forward slashes to work correctly.
     url = ('file://' +

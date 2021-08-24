@@ -2397,7 +2397,7 @@ class Policy(_messages.Message):
   roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
   role: roles/resourcemanager.organizationViewer condition: title: expirable
   access description: Does not grant access after Sep 2020 expression:
-  request.time < timestamp('2020-10-01T00:00:00.000Z') - etag: BwWWja0YfJA= -
+  request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA=
   version: 3 For a description of IAM and its features, see the [IAM
   documentation](https://cloud.google.com/iam/docs/).
 
@@ -2450,16 +2450,6 @@ class PolicyDelta(_messages.Message):
   """
 
   bindingDeltas = _messages.MessageField('BindingDelta', 1, repeated=True)
-
-
-class PolicyOperationMetadata(_messages.Message):
-  r"""Metadata for long-running Policy operations.
-
-  Fields:
-    createTime: Timestamp when the google.longrunning.Operation was created.
-  """
-
-  createTime = _messages.StringField(1)
 
 
 class QueryAuditableServicesRequest(_messages.Message):
@@ -2638,11 +2628,11 @@ class Saml(_messages.Message):
       the following constraints: 1) Must contain an Identity Provider Entity
       ID. 2) Must contain at least one non-expired signing key certificate. 3)
       For each signing key: a) Valid from should be no more than 7 days from
-      now. 4) Upto 3 IdP signing keys are allowed in the metadata xml. When
-      updating the provider's metadata xml, at lease one non-expired signing
-      key must overlap with the existing metadata. This requirement is skipped
-      if there are no non-expired signing keys present in the existing
-      metadata
+      now. b) Valid to should be no more than 10 years in the future. 4) Upto
+      3 IdP signing keys are allowed in the metadata xml. When updating the
+      provider's metadata xml, at lease one non-expired signing key must
+      overlap with the existing metadata. This requirement is skipped if there
+      are no non-expired signing keys present in the existing metadata
   """
 
   idpMetadataXml = _messages.StringField(1)

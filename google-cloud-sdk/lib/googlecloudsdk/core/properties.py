@@ -3313,7 +3313,26 @@ def FetchYaml(url):
 
   return yaml_data.text
 
-_feature_flag_config = None
+
+def Cache(func):
+  """Caches the result of a function."""
+  cached_results = {}
+  @functools.wraps(func)
+  def ReturnCachedOrCallFunc(*args):
+    try:
+      return cached_results[args]
+    except KeyError:
+      result = func(*args)
+      cached_results[args] = result
+      return result
+  ReturnCachedOrCallFunc.__wrapped__ = func
+  return ReturnCachedOrCallFunc
+
+
+@Cache
+def GetFeatureFlagConfig():
+  return feature_flags_parse.FeatureFlagsConfig(
+      FetchYaml(_FEATURE_FLAG_YAML_URL))
 
 
 def GetValueFromFeatureFlag(prop):
@@ -3325,12 +3344,8 @@ def GetValueFromFeatureFlag(prop):
   Returns:
     str, the value of the property, or None if it is not set.
   """
-  global _feature_flag_config
-  if not _feature_flag_config:
-    _feature_flag_config = feature_flags_parse.FeatureFlagsConfig(
-        FetchYaml(_FEATURE_FLAG_YAML_URL))
-
-  return _feature_flag_config.Get(prop)
+  feature_flag_config = GetFeatureFlagConfig()
+  return feature_flag_config.Get(prop)
 
 
 def _GetPropertyWithoutDefault(prop, properties_file):

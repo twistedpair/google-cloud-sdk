@@ -104,7 +104,7 @@
     "oauth2": {
       "scopes": {
         "https://www.googleapis.com/auth/cloud-platform": {
-          "description": "See, edit, configure, and delete your Google Cloud Platform data"
+          "description": "See, edit, configure, and delete your Google Cloud data and see the email address for your Google Account."
         }
       }
     }
@@ -298,6 +298,11 @@
           "description": "Output only. Workload Identity settings.",
           "readOnly": true,
           "$ref": "GoogleCloudGkemulticloudV1WorkloadIdentityConfig"
+        },
+        "clusterCaCertificate": {
+          "description": "Output only. PEM encoded x509 certificate of the cluster root of trust.",
+          "readOnly": true,
+          "type": "string"
         }
       }
     },
@@ -390,6 +395,10 @@
         "awsServicesAuthentication": {
           "description": "Required. Authentication configuration for management of AWS resources.",
           "$ref": "GoogleCloudGkemulticloudV1AwsServicesAuthentication"
+        },
+        "proxyConfig": {
+          "description": "Optional. Proxy configuration for outbound HTTP(S) traffic.",
+          "$ref": "GoogleCloudGkemulticloudV1AwsProxyConfig"
         }
       }
     },
@@ -465,6 +474,21 @@
         }
       }
     },
+    "GoogleCloudGkemulticloudV1AwsProxyConfig": {
+      "id": "GoogleCloudGkemulticloudV1AwsProxyConfig",
+      "description": "Details of a proxy config stored in AWS Secret Manager.",
+      "type": "object",
+      "properties": {
+        "secretArn": {
+          "description": "The ARN of the AWS Secret Manager secret that contains the HTTP(S) proxy configuration.",
+          "type": "string"
+        },
+        "secretVersion": {
+          "description": "The version string of the AWS Secret Manager secret that contains the HTTP(S) proxy configuration.",
+          "type": "string"
+        }
+      }
+    },
     "GoogleCloudGkemulticloudV1AwsAuthorization": {
       "id": "GoogleCloudGkemulticloudV1AwsAuthorization",
       "description": "Configuration related to the cluster RBAC settings.",
@@ -524,6 +548,24 @@
         "nextPageToken": {
           "description": "Token to retrieve the next page of results, or empty if there are no more results in the list.",
           "type": "string"
+        }
+      }
+    },
+    "GoogleCloudGkemulticloudV1GenerateAwsAccessTokenResponse": {
+      "id": "GoogleCloudGkemulticloudV1GenerateAwsAccessTokenResponse",
+      "description": "Response message for `AwsClusters.GenerateAwsAccessToken` method.",
+      "type": "object",
+      "properties": {
+        "accessToken": {
+          "description": "Output only. Access token to authenticate to k8s api-server.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "expirationTime": {
+          "description": "Output only. Timestamp at which the token will expire.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },
@@ -673,6 +715,10 @@
           "items": {
             "type": "string"
           }
+        },
+        "proxyConfig": {
+          "description": "Optional. Proxy configuration for outbound HTTP(S) traffic.",
+          "$ref": "GoogleCloudGkemulticloudV1AwsProxyConfig"
         }
       }
     },
@@ -1053,6 +1099,11 @@
           "description": "Output only. Workload Identity settings.",
           "readOnly": true,
           "$ref": "GoogleCloudGkemulticloudV1WorkloadIdentityConfig"
+        },
+        "clusterCaCertificate": {
+          "description": "Output only. PEM encoded x509 certificate of the cluster root of trust.",
+          "readOnly": true,
+          "type": "string"
         }
       }
     },
@@ -1212,6 +1263,24 @@
         "kubeconfig": {
           "description": "The generated kubeconfig file.",
           "type": "string"
+        }
+      }
+    },
+    "GoogleCloudGkemulticloudV1GenerateAzureAccessTokenResponse": {
+      "id": "GoogleCloudGkemulticloudV1GenerateAzureAccessTokenResponse",
+      "description": "Response message for `AzureClusters.GenerateAzureAccessToken` method.",
+      "type": "object",
+      "properties": {
+        "accessToken": {
+          "description": "Output only. Access token to authenticate to k8s api-server.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "expirationTime": {
+          "description": "Output only. Timestamp at which the token will expire.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },
@@ -1872,6 +1941,31 @@
                   ],
                   "description": "Deletes a specific AwsCluster resource. Fails if the cluster has one or more associated AwsNodePool resources. If successful, the response contains a newly created Operation resource that can be described to track the status of the operation."
                 },
+                "generateAwsAccessToken": {
+                  "id": "gkemulticloud.projects.locations.awsClusters.generateAwsAccessToken",
+                  "path": "v1/{+awsCluster}:generateAwsAccessToken",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/awsClusters/{awsClustersId}:generateAwsAccessToken",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "awsCluster": {
+                      "description": "Required. The name of the AwsCluster resource to authenticate to. `AwsCluster` names are formatted as `projects\/\/locations\/\/awsClusters\/`. See [Resource Names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for more details on Google Cloud resource names.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/awsClusters\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "awsCluster"
+                  ],
+                  "response": {
+                    "$ref": "GoogleCloudGkemulticloudV1GenerateAwsAccessTokenResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Generates a short-lived access token to authenticate to a given AwsCluster resource."
+                },
                 "getAwsClusterAdminKubeconfig": {
                   "id": "gkemulticloud.projects.locations.awsClusters.getAwsClusterAdminKubeconfig",
                   "path": "v1/{+awsCluster}:getAwsClusterAdminKubeconfig",
@@ -2480,6 +2574,31 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Deletes a specific AzureCluster resource. Fails if the cluster has one or more associated AzureNodePool resources. If successful, the response contains a newly created Operation resource that can be described to track the status of the operation."
+                },
+                "generateAzureAccessToken": {
+                  "id": "gkemulticloud.projects.locations.azureClusters.generateAzureAccessToken",
+                  "path": "v1/{+azureCluster}:generateAzureAccessToken",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/azureClusters/{azureClustersId}:generateAzureAccessToken",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "azureCluster": {
+                      "description": "Required. The name of the AzureCluster resource to authenticate to. `AzureCluster` names are formatted as `projects\/\/locations\/\/AzureClusters\/`. See [Resource Names](https:\/\/cloud.google.com\/apis\/design\/resource_names) for more details on Google Cloud resource names.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/azureClusters\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "azureCluster"
+                  ],
+                  "response": {
+                    "$ref": "GoogleCloudGkemulticloudV1GenerateAzureAccessTokenResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Generates a short-lived access token to authenticate to a given AzureCluster resource."
                 },
                 "getJwks": {
                   "id": "gkemulticloud.projects.locations.azureClusters.getJwks",

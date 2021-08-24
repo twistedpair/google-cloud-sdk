@@ -658,7 +658,7 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
-class File(_messages.Message):
+class GoogleDevtoolsArtifactregistryV1beta2File(_messages.Message):
   r"""Files store content that is potentially associated with Packages or
   Versions.
 
@@ -809,7 +809,7 @@ class ListFilesResponse(_messages.Message):
       there are no more files to return.
   """
 
-  files = _messages.MessageField('File', 1, repeated=True)
+  files = _messages.MessageField('GoogleDevtoolsArtifactregistryV1beta2File', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
 
 

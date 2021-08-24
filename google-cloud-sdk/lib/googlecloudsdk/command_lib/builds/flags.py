@@ -200,6 +200,14 @@ def AddAsyncFlag(parser):
   base.ASYNC_FLAG.AddToParser(parser)
 
 
+def AddSuppressLogsFlag(parser):
+  """Add a flag to suppress logs."""
+  parser.add_argument(
+      '--suppress-logs',
+      help='If set, build logs not streamed to stdout.',
+      action='store_true')
+
+
 def AddConfigFlags(parser):
   """Add config flags."""
   build_config = parser.add_mutually_exclusive_group()

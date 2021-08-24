@@ -145,6 +145,12 @@ class ClustersClient(_AzureClientBase):
 
     return self._service.Create(req)
 
+  def GenerateAccessToken(self, cluster_ref):
+    """Generates an access token for an Azure cluster."""
+    req = self._service.GetRequestType('GenerateAzureAccessToken')(
+        azureCluster=cluster_ref.RelativeName())
+    return self._service.GenerateAzureAccessToken(req)
+
   def GetKubeConfig(self, cluster_ref):
     req = self._service.GetRequestType('GetAzureClusterAdminKubeconfig')(
         azureCluster=cluster_ref.RelativeName())

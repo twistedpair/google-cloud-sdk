@@ -1399,6 +1399,97 @@ class GoogleRpcStatus(_messages.Message):
   message = _messages.StringField(3)
 
 
+class IdentityServiceAuthMethod(_messages.Message):
+  r"""Configuration of an auth method for a member/cluster. Only one
+  authentication method (e.g., OIDC and LDAP) can be set per AuthMethod.
+
+  Fields:
+    name: Identifier for auth config.
+    oidcConfig: OIDC specific configuration.
+    proxy: Proxy server address to use for auth method.
+  """
+
+  name = _messages.StringField(1)
+  oidcConfig = _messages.MessageField('IdentityServiceOidcConfig', 2)
+  proxy = _messages.StringField(3)
+
+
+class IdentityServiceMembershipSpec(_messages.Message):
+  r"""**Anthos Identity Service**: Configuration for a single Membership.
+
+  Fields:
+    authMethods: A member may support multiple auth methods.
+  """
+
+  authMethods = _messages.MessageField('IdentityServiceAuthMethod', 1, repeated=True)
+
+
+class IdentityServiceMembershipState(_messages.Message):
+  r"""**Anthos Identity Service**: State for a single Membership.
+
+  Enums:
+    StateValueValuesEnum: Deployment state on this member
+
+  Fields:
+    failureReason: The reason of the failure.
+    installedVersion: Installed AIS version. This is the AIS version installed
+      on this member. The values makes sense iff state is OK.
+    memberConfig: Last reconciled membership configuration
+    state: Deployment state on this member
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Deployment state on this member
+
+    Values:
+      DEPLOYMENT_STATE_UNSPECIFIED: Unspecified state
+      OK: deployment succeeds
+      ERROR: Failure with error.
+    """
+    DEPLOYMENT_STATE_UNSPECIFIED = 0
+    OK = 1
+    ERROR = 2
+
+  failureReason = _messages.StringField(1)
+  installedVersion = _messages.StringField(2)
+  memberConfig = _messages.MessageField('IdentityServiceMembershipSpec', 3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
+
+
+class IdentityServiceOidcConfig(_messages.Message):
+  r"""Configuration for OIDC Auth flow.
+
+  Fields:
+    certificateAuthorityData: PEM-encoded CA for OIDC provider.
+    clientId: ID for OIDC client application.
+    deployCloudConsoleProxy: Flag to denote if reverse proxy is used to
+      connect to auth provider. This flag should be set to true when provider
+      is not reachable by Google Cloud Console.
+    extraParams: Comma-separated list of key-value pairs.
+    groupPrefix: Prefix to prepend to group name.
+    groupsClaim: Claim in OIDC ID token that holds group information.
+    issuerUri: URI for the OIDC provider. This should point to the level below
+      .well-known/openid-configuration.
+    kubectlRedirectUri: Registered redirect uri to redirect users going
+      through OAuth flow using kubectl plugin.
+    scopes: Comma-separated list of identifiers.
+    userClaim: Claim in OIDC ID token that holds username.
+    userPrefix: Prefix to prepend to user name.
+  """
+
+  certificateAuthorityData = _messages.StringField(1)
+  clientId = _messages.StringField(2)
+  deployCloudConsoleProxy = _messages.BooleanField(3)
+  extraParams = _messages.StringField(4)
+  groupPrefix = _messages.StringField(5)
+  groupsClaim = _messages.StringField(6)
+  issuerUri = _messages.StringField(7)
+  kubectlRedirectUri = _messages.StringField(8)
+  scopes = _messages.StringField(9)
+  userClaim = _messages.StringField(10)
+  userPrefix = _messages.StringField(11)
+
+
 class ListFeaturesResponse(_messages.Message):
   r"""Response message for the `GkeHub.ListFeatures` method.
 
@@ -1525,9 +1616,11 @@ class MembershipFeatureSpec(_messages.Message):
 
   Fields:
     configmanagement: Config Management-specific spec.
+    identityservice: Identity Service-specific spec.
   """
 
   configmanagement = _messages.MessageField('ConfigManagementMembershipSpec', 1)
+  identityservice = _messages.MessageField('IdentityServiceMembershipSpec', 2)
 
 
 class MembershipFeatureState(_messages.Message):
@@ -1536,13 +1629,15 @@ class MembershipFeatureState(_messages.Message):
 
   Fields:
     configmanagement: Config Management-specific state.
+    identityservice: Identity Service-specific state.
     metering: Metering-specific spec.
     state: The high-level state of this Feature for a single membership.
   """
 
   configmanagement = _messages.MessageField('ConfigManagementMembershipState', 1)
-  metering = _messages.MessageField('MeteringMembershipState', 2)
-  state = _messages.MessageField('FeatureState', 3)
+  identityservice = _messages.MessageField('IdentityServiceMembershipState', 2)
+  metering = _messages.MessageField('MeteringMembershipState', 3)
+  state = _messages.MessageField('FeatureState', 4)
 
 
 class MeteringMembershipState(_messages.Message):
@@ -1753,7 +1848,7 @@ class Policy(_messages.Message):
   roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
   role: roles/resourcemanager.organizationViewer condition: title: expirable
   access description: Does not grant access after Sep 2020 expression:
-  request.time < timestamp('2020-10-01T00:00:00.000Z') - etag: BwWWja0YfJA= -
+  request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA=
   version: 3 For a description of IAM and its features, see the [IAM
   documentation](https://cloud.google.com/iam/docs/).
 

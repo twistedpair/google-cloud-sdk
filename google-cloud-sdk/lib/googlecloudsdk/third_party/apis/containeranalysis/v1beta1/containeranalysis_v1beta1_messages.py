@@ -1809,7 +1809,14 @@ class GrafeasV1beta1VulnerabilityDetails(_messages.Message):
   Enums:
     EffectiveSeverityValueValuesEnum: The distro assigned severity for this
       vulnerability when it is available, and note provider assigned severity
-      when distro has not yet assigned a severity for this vulnerability.
+      when distro has not yet assigned a severity for this vulnerability. When
+      there are multiple PackageIssues for this vulnerability, they can have
+      different effective severities because some might be provided by the
+      distro while others are provided by the language ecosystem for a
+      language pack. For this reason, it is advised to use the effective
+      severity on the PackageIssue level. In the case where multiple
+      PackageIssues have differing effective severities, this field should be
+      the highest severity for any of the PackageIssues.
     SeverityValueValuesEnum: Output only. The note provider assigned Severity
       of the vulnerability.
 
@@ -1819,7 +1826,14 @@ class GrafeasV1beta1VulnerabilityDetails(_messages.Message):
       high severity.
     effectiveSeverity: The distro assigned severity for this vulnerability
       when it is available, and note provider assigned severity when distro
-      has not yet assigned a severity for this vulnerability.
+      has not yet assigned a severity for this vulnerability. When there are
+      multiple PackageIssues for this vulnerability, they can have different
+      effective severities because some might be provided by the distro while
+      others are provided by the language ecosystem for a language pack. For
+      this reason, it is advised to use the effective severity on the
+      PackageIssue level. In the case where multiple PackageIssues have
+      differing effective severities, this field should be the highest
+      severity for any of the PackageIssues.
     longDescription: Output only. A detailed description of this
       vulnerability.
     packageIssue: Required. The set of affected locations and their fixes (if
@@ -1836,7 +1850,13 @@ class GrafeasV1beta1VulnerabilityDetails(_messages.Message):
   class EffectiveSeverityValueValuesEnum(_messages.Enum):
     r"""The distro assigned severity for this vulnerability when it is
     available, and note provider assigned severity when distro has not yet
-    assigned a severity for this vulnerability.
+    assigned a severity for this vulnerability. When there are multiple
+    PackageIssues for this vulnerability, they can have different effective
+    severities because some might be provided by the distro while others are
+    provided by the language ecosystem for a language pack. For this reason,
+    it is advised to use the effective severity on the PackageIssue level. In
+    the case where multiple PackageIssues have differing effective severities,
+    this field should be the highest severity for any of the PackageIssues.
 
     Values:
       SEVERITY_UNSPECIFIED: Unknown.
@@ -2346,16 +2366,47 @@ class PackageIssue(_messages.Message):
   r"""This message wraps a location affected by a vulnerability and its
   associated fix (if one is available).
 
+  Enums:
+    EffectiveSeverityValueValuesEnum: Output only. The distro or language
+      system assigned severity for this vulnerability when that is available
+      and note provider assigned severity when it is not available.
+
   Fields:
     affectedLocation: Required. The location of the vulnerability.
+    effectiveSeverity: Output only. The distro or language system assigned
+      severity for this vulnerability when that is available and note provider
+      assigned severity when it is not available.
     fixedLocation: The location of the available fix for vulnerability.
+    packageType: The type of package (e.g. OS, MAVEN, GO).
     severityName: Deprecated, use Details.effective_severity instead The
       severity (e.g., distro assigned severity) for this vulnerability.
   """
 
+  class EffectiveSeverityValueValuesEnum(_messages.Enum):
+    r"""Output only. The distro or language system assigned severity for this
+    vulnerability when that is available and note provider assigned severity
+    when it is not available.
+
+    Values:
+      SEVERITY_UNSPECIFIED: Unknown.
+      MINIMAL: Minimal severity.
+      LOW: Low severity.
+      MEDIUM: Medium severity.
+      HIGH: High severity.
+      CRITICAL: Critical severity.
+    """
+    SEVERITY_UNSPECIFIED = 0
+    MINIMAL = 1
+    LOW = 2
+    MEDIUM = 3
+    HIGH = 4
+    CRITICAL = 5
+
   affectedLocation = _messages.MessageField('VulnerabilityLocation', 1)
-  fixedLocation = _messages.MessageField('VulnerabilityLocation', 2)
-  severityName = _messages.StringField(3)
+  effectiveSeverity = _messages.EnumField('EffectiveSeverityValueValuesEnum', 2)
+  fixedLocation = _messages.MessageField('VulnerabilityLocation', 3)
+  packageType = _messages.StringField(4)
+  severityName = _messages.StringField(5)
 
 
 class PackageNote(_messages.Message):
@@ -2538,7 +2589,7 @@ class Policy(_messages.Message):
   roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
   role: roles/resourcemanager.organizationViewer condition: title: expirable
   access description: Does not grant access after Sep 2020 expression:
-  request.time < timestamp('2020-10-01T00:00:00.000Z') - etag: BwWWja0YfJA= -
+  request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA=
   version: 3 For a description of IAM and its features, see the [IAM
   documentation](https://cloud.google.com/iam/docs/).
 

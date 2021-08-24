@@ -149,7 +149,8 @@ class TailerBase(object):
 
   def _PrintLogLine(self, text):
     """Testing Hook: This method enables better verification of output."""
-    self.out.Print(text.rstrip())
+    if self.out:
+      self.out.Print(text.rstrip())
 
   def _PrintFirstLine(self):
     """Print a pretty starting line to identify start of build output logs."""

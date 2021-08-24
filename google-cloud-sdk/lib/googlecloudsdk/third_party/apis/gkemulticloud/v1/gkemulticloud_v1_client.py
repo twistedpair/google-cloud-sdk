@@ -296,6 +296,33 @@ class GkemulticloudV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GenerateAwsAccessToken(self, request, global_params=None):
+      r"""Generates a short-lived access token to authenticate to a given AwsCluster resource.
+
+      Args:
+        request: (GkemulticloudProjectsLocationsAwsClustersGenerateAwsAccessTokenRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudGkemulticloudV1GenerateAwsAccessTokenResponse) The response message.
+      """
+      config = self.GetMethodConfig('GenerateAwsAccessToken')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GenerateAwsAccessToken.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/awsClusters/{awsClustersId}:generateAwsAccessToken',
+        http_method='GET',
+        method_id='gkemulticloud.projects.locations.awsClusters.generateAwsAccessToken',
+        ordered_params=['awsCluster'],
+        path_params=['awsCluster'],
+        query_params=[],
+        relative_path='v1/{+awsCluster}:generateAwsAccessToken',
+        request_field='',
+        request_type_name='GkemulticloudProjectsLocationsAwsClustersGenerateAwsAccessTokenRequest',
+        response_type_name='GoogleCloudGkemulticloudV1GenerateAwsAccessTokenResponse',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Describes a specific AwsCluster resource.
 
@@ -792,6 +819,33 @@ class GkemulticloudV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='GkemulticloudProjectsLocationsAzureClustersDeleteRequest',
         response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def GenerateAzureAccessToken(self, request, global_params=None):
+      r"""Generates a short-lived access token to authenticate to a given AzureCluster resource.
+
+      Args:
+        request: (GkemulticloudProjectsLocationsAzureClustersGenerateAzureAccessTokenRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudGkemulticloudV1GenerateAzureAccessTokenResponse) The response message.
+      """
+      config = self.GetMethodConfig('GenerateAzureAccessToken')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GenerateAzureAccessToken.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/azureClusters/{azureClustersId}:generateAzureAccessToken',
+        http_method='GET',
+        method_id='gkemulticloud.projects.locations.azureClusters.generateAzureAccessToken',
+        ordered_params=['azureCluster'],
+        path_params=['azureCluster'],
+        query_params=[],
+        relative_path='v1/{+azureCluster}:generateAzureAccessToken',
+        request_field='',
+        request_type_name='GkemulticloudProjectsLocationsAzureClustersGenerateAzureAccessTokenRequest',
+        response_type_name='GoogleCloudGkemulticloudV1GenerateAzureAccessTokenResponse',
         supports_download=False,
     )
 

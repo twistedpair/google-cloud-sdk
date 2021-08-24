@@ -25,7 +25,7 @@ from googlecloudsdk.api_lib.run import revision
 from googlecloudsdk.api_lib.run import traffic
 
 
-ENDPOINT_VISIBILITY = 'serving.knative.dev/visibility'
+ENDPOINT_VISIBILITY = 'networking.knative.dev/visibility'
 CLUSTER_LOCAL = 'cluster-local'
 
 INGRESS_ANNOTATION = 'run.googleapis.com/ingress'

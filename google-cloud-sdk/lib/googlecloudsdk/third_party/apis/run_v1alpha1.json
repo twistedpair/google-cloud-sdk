@@ -551,11 +551,11 @@
     },
     "Volume": {
       "id": "Volume",
-      "description": "Not supported by Cloud Run Volume represents a named volume in a container.",
+      "description": "Volume represents a named volume in a container.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Volume's name.",
+          "description": "Volume's name. In Cloud Run Fully Managed, the name 'cloudsql' is reserved.",
           "type": "string"
         },
         "secret": {
@@ -923,11 +923,11 @@
     },
     "VolumeMount": {
       "id": "VolumeMount",
-      "description": "Not supported by Cloud Run VolumeMount describes a mounting of a Volume within a container.",
+      "description": "VolumeMount describes a mounting of a Volume within a container.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "This must match the Name of a Volume.",
+          "description": "The name of the volume. There must be a corresponding Volume with the same name.",
           "type": "string"
         },
         "readOnly": {

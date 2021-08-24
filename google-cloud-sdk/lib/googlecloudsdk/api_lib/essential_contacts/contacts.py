@@ -24,7 +24,8 @@ from googlecloudsdk.api_lib.util import apis
 API_NAME = 'essentialcontacts'
 ALPHA_API_VERSION = 'v1alpha1'
 BETA_API_VERSION = 'v1beta1'
-DEFAULT_API_VERSION = BETA_API_VERSION
+GA_API_VERSION = 'v1'
+DEFAULT_API_VERSION = GA_API_VERSION
 
 _CONTACT_TYPES_BY_VERSION = {
     ALPHA_API_VERSION: {
@@ -34,6 +35,10 @@ _CONTACT_TYPES_BY_VERSION = {
     BETA_API_VERSION: {
         'param_name': 'googleCloudEssentialcontactsV1beta1Contact',
         'message_name': 'GoogleCloudEssentialcontactsV1beta1Contact'
+    },
+    GA_API_VERSION: {
+        'param_name': 'googleCloudEssentialcontactsV1Contact',
+        'message_name': 'GoogleCloudEssentialcontactsV1Contact'
     }
 }
 

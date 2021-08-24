@@ -41,7 +41,6 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
         response_encoding=response_encoding)
     self.projects_locations_instances = self.ProjectsLocationsInstancesService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
-    self.projects_locations_volumes = self.ProjectsLocationsVolumesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
 
@@ -54,6 +53,60 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
       super(BaremetalsolutionV2.ProjectsLocationsInstancesService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def DisableInteractiveSerialConsole(self, request, global_params=None):
+      r"""Disable the interactive serial console feature on an instance.
+
+      Args:
+        request: (BaremetalsolutionProjectsLocationsInstancesDisableInteractiveSerialConsoleRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('DisableInteractiveSerialConsole')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DisableInteractiveSerialConsole.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:disableInteractiveSerialConsole',
+        http_method='POST',
+        method_id='baremetalsolution.projects.locations.instances.disableInteractiveSerialConsole',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}:disableInteractiveSerialConsole',
+        request_field='disableInteractiveSerialConsoleRequest',
+        request_type_name='BaremetalsolutionProjectsLocationsInstancesDisableInteractiveSerialConsoleRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def EnableInteractiveSerialConsole(self, request, global_params=None):
+      r"""Enable the interactive serial console feature on an instance.
+
+      Args:
+        request: (BaremetalsolutionProjectsLocationsInstancesEnableInteractiveSerialConsoleRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('EnableInteractiveSerialConsole')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    EnableInteractiveSerialConsole.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:enableInteractiveSerialConsole',
+        http_method='POST',
+        method_id='baremetalsolution.projects.locations.instances.enableInteractiveSerialConsole',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}:enableInteractiveSerialConsole',
+        request_field='enableInteractiveSerialConsoleRequest',
+        request_type_name='BaremetalsolutionProjectsLocationsInstancesEnableInteractiveSerialConsoleRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
 
     def Get(self, request, global_params=None):
       r"""Gets details of a single Instance.
@@ -133,33 +186,6 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
         request_field='',
         request_type_name='BaremetalsolutionProjectsLocationsInstancesListRequest',
         response_type_name='ListInstancesResponse',
-        supports_download=False,
-    )
-
-    def Reset(self, request, global_params=None):
-      r"""Performs a power reset on an Instance.
-
-      Args:
-        request: (BaremetalsolutionProjectsLocationsInstancesResetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Reset')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Reset.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:reset',
-        http_method='POST',
-        method_id='baremetalsolution.projects.locations.instances.reset',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v2/{+name}:reset',
-        request_field='resetInstanceRequest',
-        request_type_name='BaremetalsolutionProjectsLocationsInstancesResetRequest',
-        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -332,70 +358,6 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
         request_field='',
         request_type_name='BaremetalsolutionProjectsLocationsOperationsListRequest',
         response_type_name='ListOperationsResponse',
-        supports_download=False,
-    )
-
-  class ProjectsLocationsVolumesService(base_api.BaseApiService):
-    """Service class for the projects_locations_volumes resource."""
-
-    _NAME = 'projects_locations_volumes'
-
-    def __init__(self, client):
-      super(BaremetalsolutionV2.ProjectsLocationsVolumesService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Get(self, request, global_params=None):
-      r"""Gets details of a single Volume.
-
-      Args:
-        request: (BaremetalsolutionProjectsLocationsVolumesGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Volume) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}',
-        http_method='GET',
-        method_id='baremetalsolution.projects.locations.volumes.get',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v2/{+name}',
-        request_field='',
-        request_type_name='BaremetalsolutionProjectsLocationsVolumesGetRequest',
-        response_type_name='Volume',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""Lists Volumes in a given project and location.
-
-      Args:
-        request: (BaremetalsolutionProjectsLocationsVolumesListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListVolumesResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2/projects/{projectsId}/locations/{locationsId}/volumes',
-        http_method='GET',
-        method_id='baremetalsolution.projects.locations.volumes.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
-        relative_path='v2/{+parent}/volumes',
-        request_field='',
-        request_type_name='BaremetalsolutionProjectsLocationsVolumesListRequest',
-        response_type_name='ListVolumesResponse',
         supports_download=False,
     )
 

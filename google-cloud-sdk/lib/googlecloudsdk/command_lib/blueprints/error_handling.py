@@ -19,13 +19,18 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import io
+import json
+import textwrap
 
 from googlecloudsdk.api_lib.blueprints import blueprints_util
 from googlecloudsdk.api_lib.cloudbuild import logs as cloudbuild_logs
 from googlecloudsdk.api_lib.storage import storage_api
+from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
+from googlecloudsdk.core import yaml
+from googlecloudsdk.core.util import text
 
 
 def GetCloudBuild(build_id):
@@ -51,15 +56,19 @@ def GetCloudBuild(build_id):
   return build
 
 
-def GetTextFileContentsFromStorageBucket(gcs_path):
+def GetTextFileContentsFromStorageBucket(gcs_path, last_n_lines=0):
   """Gets the contents of a text file in Cloud Storage.
 
   Args:
     gcs_path: string, the full Cloud Storage path to a log file, e.g.
       'gs://my-bucket/logs/log.txt'.
+    last_n_lines: int, if set, only returns the last N lines from the file.
+
+  Raises:
+      BadFileException if the file read is not successful.
 
   Returns:
-    A string representing the last 24 lines of the file.
+    A string representing the last_n_lines lines of the file.
   """
   object_ref = resources.REGISTRY.Parse(gcs_path, collection='storage.objects')
   gcs_client = storage_api.StorageClient()
@@ -67,8 +76,9 @@ def GetTextFileContentsFromStorageBucket(gcs_path):
 
   wrapper = io.TextIOWrapper(log_bytes, encoding='utf-8')
   text_lines = wrapper.readlines()
-  last_lines = text_lines[-24:]
-  return ''.join(last_lines)
+  if last_n_lines:
+    text_lines = text_lines[-last_n_lines:]
+  return ''.join(text_lines)
 
 
 def GetBuildLogPathInGCS(logs_folder, build_id):
@@ -105,10 +115,181 @@ def PrintCloudBuildResults(logs_folder, build_id):
   log.status.Print('Cloud Build logs: {}'.format(build.logUrl))
 
   log_file_path = GetBuildLogPathInGCS(logs_folder, build_id)
-  log_contents = GetTextFileContentsFromStorageBucket(log_file_path)
+  log_contents = GetTextFileContentsFromStorageBucket(
+      log_file_path, last_n_lines=24)
 
   log.status.Print(
       'Log contents follow:\n{}\n(end of log contents)'.format(log_contents))
+
+
+def GetApplyResultsPathInGCS(artifacts_path):
+  """Gets a full Cloud Storage path to a apply-results file.
+
+  Args:
+    artifacts_path: string, the full Cloud Storage path to the folder containing
+      apply artifacts, e.g. 'gs://my-bucket/artifacts'.
+
+  Returns:
+    A string representing the full Cloud Storage path to the apply-results JSON
+    file.
+  """
+  return '{0}/results/apply-results.json'.format(artifacts_path)
+
+
+def GetPipelineResultsPathInGCS(artifacts_path):
+  """Gets a full Cloud Storage path to a pipeline results YAML file.
+
+  Args:
+    artifacts_path: string, the full Cloud Storage path to the folder containing
+      pipeline artifacts, e.g. 'gs://my-bucket/artifacts'.
+
+  Returns:
+    A string representing the full Cloud Storage path to the pipeline results
+    YAML file.
+  """
+  # TODO(b/197157657): Update this path once we have a consistent "last
+  # executed kpt results YAML" path.
+  return '{0}/results.yaml'.format(artifacts_path)
+
+
+def PrintKptApplyResultsError(artifacts_folder, max_resource_errors=25):
+  """Prints information about a failed `kpt apply`.
+
+  Args:
+    artifacts_folder: string, the full Cloud Storage path to the folder
+      containing the revision's apply artifacts,
+      e.g. 'gs://my-bucket/artifacts'.
+    max_resource_errors: int, the maximum number of kpt resource errors to
+      display before truncating.
+
+  Returns:
+    bool indicating whether an error was printed or not.
+  """
+  apply_results_path = GetApplyResultsPathInGCS(artifacts_folder)
+  try:
+    apply_results_content = GetTextFileContentsFromStorageBucket(
+        apply_results_path)
+  except exceptions.BadFileException as e:
+    log.debug('Unable to fetch kpt apply results: %s', e)
+    return False
+
+  try:
+    apply_results_data = [
+        json.loads(line) for line in apply_results_content.splitlines()
+    ]
+  except ValueError as e:
+    log.debug('Unable to parse apply results JSON: {}'.format(e))
+    return False
+
+  resource_failures = [
+      event for event in apply_results_data
+      if (event.get('type') == 'apply' and
+          event.get('eventType') == 'resourceFailed')
+  ]
+
+  if resource_failures:
+    num_resource_failures = len(resource_failures)
+    log.error('[kpt] {0} {1} failed to apply:'.format(
+        num_resource_failures,
+        text.Pluralize(len(resource_failures), 'resource')))
+    for failure_event in resource_failures[:max_resource_errors]:
+      log.status.Print('- "{0}" ({1}) failed:\n    "{2}"\n'.format(
+          failure_event.get('name'), failure_event.get('kind'),
+          failure_event.get('error')))
+    if num_resource_failures > max_resource_errors:
+      log.status.Print('Some errors were truncated.')
+    log.status.Print('See {0} for details.'.format(apply_results_path))
+  return bool(resource_failures)
+
+
+def PrintKptPipelineResultsError(artifacts_folder):
+  """Prints information about a failed kpt pipeline run.
+
+  Args:
+    artifacts_folder: string, the full Cloud Storage path to the folder
+      containing the revision's pipeline artifacts,
+      e.g. 'gs://my-bucket/artifacts'.
+
+  Returns:
+    bool indicating whether an error was printed or not.
+  """
+  pipeline_results_path = GetPipelineResultsPathInGCS(artifacts_folder)
+  try:
+    pipeline_results_content = GetTextFileContentsFromStorageBucket(
+        pipeline_results_path)
+    pipeline_results_data = yaml.load(pipeline_results_content)
+  except exceptions.BadFileException as e:
+    log.debug('Unable to fetch kpt pipeline results: %s', e)
+    return False
+  except yaml.YAMLParseError as e:
+    log.debug('Unable to parse kpt pipeline YAML: %s', e)
+    return False
+  if pipeline_results_data.get('apiVersion') != 'kpt.dev/v1':
+    log.debug('Unknown kpt API version: {}'.format(
+        pipeline_results_data.get('apiVersion')))
+    return False
+
+  printed_error = False
+  for pipeline_result in pipeline_results_data.get('items', []):
+    error_messages = [
+        result.get('message')
+        for result in pipeline_result.get('results', [])
+        if 'message' in result and result.get('severity') == 'error'
+    ]
+    exit_code = pipeline_result.get('exitCode')
+    image = pipeline_result.get('image', '(Unknown)')
+    stderr = pipeline_result.get('stderr')
+
+    # TODO(b/197227175): This line is not marked as covered by Zapfhan, but it
+    # is being executed in tests. gcloud mandates 100% coverage, so this should
+    # get fixed.
+    if exit_code == 0 or not (error_messages or stderr):
+      continue
+
+    log.status.Print('- Function with image "{}" exited with code {}'.format(
+        image, exit_code or '(Unknown)'))
+    printed_error = True
+    if error_messages:
+      for msg in error_messages:
+        log.status.Print('  - Error: "{}"'.format(msg))
+    elif stderr:
+      log.status.Print('  - Stderr:\n{}'.format(
+          '\n'.join(textwrap.wrap(
+              stderr, initial_indent=' ' * 6, subsequent_indent=' ' * 6))))
+    log.status.Print()
+  if printed_error:
+    log.status.Print('See {0} for details.'.format(pipeline_results_path))
+  return printed_error
+
+
+def PrintApplyRunError(apply_results):
+  """Prints error details for a failed apply run.
+
+  Attempts to display kpt-specific errors, and falls back to displaying Cloud
+  Build logs if kpt errors are inaccessible.
+
+  Args:
+    apply_results: ApplyResults proto, the apply results from the failed
+      revision.
+  """
+  kpt_error_found = PrintKptApplyResultsError(apply_results.artifacts)
+  if not kpt_error_found:
+    PrintCloudBuildResults(apply_results.logs, apply_results.build)
+
+
+def PrintPipelineRunError(pipeline_results):
+  """Prints error details for a failed pipeline run.
+
+  Attempts to display kpt-specific errors, and falls back to displaying Cloud
+  Build logs if kpt errors are inaccessible.
+
+  Args:
+    pipeline_results: PipelineResults proto, the apply results from the failed
+      revision.
+  """
+  kpt_error_found = PrintKptPipelineResultsError(pipeline_results.artifacts)
+  if not kpt_error_found:
+    PrintCloudBuildResults(pipeline_results.logs, pipeline_results.build)
 
 
 def RevisionFailed(revision_ref):
@@ -141,15 +322,13 @@ def RevisionFailed(revision_ref):
         revision_ref.stateDetail))
   elif revision_error_code == messages.Revision.ErrorCodeValueValuesEnum.PIPELINE_BUILD_RUN_FAILED:
     log.error('The pipeline build failed while running.')
-    PrintCloudBuildResults(revision_ref.pipelineResults.logs,
-                           revision_ref.pipelineResults.build)
+    PrintPipelineRunError(revision_ref.pipelineResults)
   elif revision_error_code == messages.Revision.ErrorCodeValueValuesEnum.APPLY_BUILD_API_FAILED:
     log.error('The apply build failed before it could run: {}'.format(
         revision_ref.stateDetail))
   elif revision_error_code == messages.Revision.ErrorCodeValueValuesEnum.APPLY_BUILD_RUN_FAILED:
     log.error('The apply build failed while running.')
-    PrintCloudBuildResults(revision_ref.applyResults.logs,
-                           revision_ref.applyResults.build)
+    PrintApplyRunError(revision_ref.applyResults)
   else:
     log.error('The deployment failed due to an unrecognized error code on the '
               'revision ("{}"): {}'.format(revision_error_code,
@@ -193,9 +372,8 @@ def DeploymentFailed(deployment_ref):
         deployment_ref.stateDetail))
   elif deployment_error_code == messages.Deployment.ErrorCodeValueValuesEnum.DELETE_BUILD_RUN_FAILED:
     log.error('The delete build failed while running.')
-    PrintCloudBuildResults(
-        deployment_ref.deleteResults.logs,
-        deployment_ref.deleteResults.build)
+    PrintCloudBuildResults(deployment_ref.deleteResults.logs,
+                           deployment_ref.deleteResults.build)
   else:
     log.error('The deployment failed due to an unrecognized error code ("{}"): '
               '{}'.format(deployment_error_code, deployment_ref.stateDetail))

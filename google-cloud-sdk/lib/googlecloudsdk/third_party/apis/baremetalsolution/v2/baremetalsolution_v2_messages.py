@@ -25,6 +25,36 @@ class BaremetalsolutionProjectsLocationsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class BaremetalsolutionProjectsLocationsInstancesDisableInteractiveSerialConsoleRequest(_messages.Message):
+  r"""A BaremetalsolutionProjectsLocationsInstancesDisableInteractiveSerialCon
+  soleRequest object.
+
+  Fields:
+    disableInteractiveSerialConsoleRequest: A
+      DisableInteractiveSerialConsoleRequest resource to be passed as the
+      request body.
+    name: Required. Name of the resource.
+  """
+
+  disableInteractiveSerialConsoleRequest = _messages.MessageField('DisableInteractiveSerialConsoleRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class BaremetalsolutionProjectsLocationsInstancesEnableInteractiveSerialConsoleRequest(_messages.Message):
+  r"""A BaremetalsolutionProjectsLocationsInstancesEnableInteractiveSerialCons
+  oleRequest object.
+
+  Fields:
+    enableInteractiveSerialConsoleRequest: A
+      EnableInteractiveSerialConsoleRequest resource to be passed as the
+      request body.
+    name: Required. Name of the resource.
+  """
+
+  enableInteractiveSerialConsoleRequest = _messages.MessageField('EnableInteractiveSerialConsoleRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class BaremetalsolutionProjectsLocationsInstancesGetIamPolicyRequest(_messages.Message):
   r"""A BaremetalsolutionProjectsLocationsInstancesGetIamPolicyRequest object.
 
@@ -73,19 +103,6 @@ class BaremetalsolutionProjectsLocationsInstancesListRequest(_messages.Message):
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
-
-
-class BaremetalsolutionProjectsLocationsInstancesResetRequest(_messages.Message):
-  r"""A BaremetalsolutionProjectsLocationsInstancesResetRequest object.
-
-  Fields:
-    name: Required. Name of the resource.
-    resetInstanceRequest: A ResetInstanceRequest resource to be passed as the
-      request body.
-  """
-
-  name = _messages.StringField(1, required=True)
-  resetInstanceRequest = _messages.MessageField('ResetInstanceRequest', 2)
 
 
 class BaremetalsolutionProjectsLocationsInstancesSetIamPolicyRequest(_messages.Message):
@@ -188,35 +205,6 @@ class BaremetalsolutionProjectsLocationsOperationsListRequest(_messages.Message)
   pageToken = _messages.StringField(4)
 
 
-class BaremetalsolutionProjectsLocationsVolumesGetRequest(_messages.Message):
-  r"""A BaremetalsolutionProjectsLocationsVolumesGetRequest object.
-
-  Fields:
-    name: Required. Name of the resource.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class BaremetalsolutionProjectsLocationsVolumesListRequest(_messages.Message):
-  r"""A BaremetalsolutionProjectsLocationsVolumesListRequest object.
-
-  Fields:
-    filter: Filtering results.
-    orderBy: Hint for how to order the results.
-    pageSize: Requested page size. Server may return fewer items than
-      requested. If unspecified, server will pick an appropriate default.
-    pageToken: A token identifying a page of results the server should return.
-    parent: Required. Parent value for ListVolumesRequest.
-  """
-
-  filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
-
-
 class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
@@ -273,6 +261,10 @@ class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
 
+class DisableInteractiveSerialConsoleRequest(_messages.Message):
+  r"""Message for disabling the interactive serial console on an instance."""
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -281,6 +273,10 @@ class Empty(_messages.Message):
   representation for `Empty` is empty JSON object `{}`.
   """
 
+
+
+class EnableInteractiveSerialConsoleRequest(_messages.Message):
+  r"""Message for enabling the interactive serial console on an instance."""
 
 
 class Expr(_messages.Message):
@@ -332,6 +328,9 @@ class Instance(_messages.Message):
     createTime: Output only. Create time stamp.
     hyperthreadingEnabled: True if hyperthreading enabled for the instance,
       false otherwise. The default value is false.
+    interactiveSerialConsoleEnabled: True if the interactive serial console
+      feature is enabled for the instance, false otherwise. The default value
+      is false.
     labels: Labels as key value pairs.
     luns: List of luns associated with this instance.
     machineType: The type of this Instance. [Available Instance
@@ -386,13 +385,14 @@ class Instance(_messages.Message):
 
   createTime = _messages.StringField(1)
   hyperthreadingEnabled = _messages.BooleanField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  luns = _messages.MessageField('Lun', 4, repeated=True)
-  machineType = _messages.StringField(5)
-  name = _messages.StringField(6)
-  networks = _messages.MessageField('Network', 7, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
-  updateTime = _messages.StringField(9)
+  interactiveSerialConsoleEnabled = _messages.BooleanField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  luns = _messages.MessageField('Lun', 5, repeated=True)
+  machineType = _messages.StringField(6)
+  name = _messages.StringField(7)
+  networks = _messages.MessageField('Network', 8, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  updateTime = _messages.StringField(10)
 
 
 class ListInstancesResponse(_messages.Message):
@@ -434,21 +434,6 @@ class ListOperationsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
-
-
-class ListVolumesResponse(_messages.Message):
-  r"""Message for response to listing Volumes.
-
-  Fields:
-    nextPageToken: A token identifying a page of results the server should
-      return.
-    unreachable: Locations that could not be reached.
-    volumes: The list of Volume.
-  """
-
-  nextPageToken = _messages.StringField(1)
-  unreachable = _messages.StringField(2, repeated=True)
-  volumes = _messages.MessageField('Volume', 3, repeated=True)
 
 
 class Location(_messages.Message):
@@ -545,8 +530,8 @@ class Lun(_messages.Message):
     multiprotocolType: The Lun Multiprotocol type to ensure the
       characteristics of the LUN are optimized for the Operating System.
     name: Output only. The name of this Lun.
-    shared: Whether this Lun is allowed to be shared between multiple physical
-      servers.
+    shareable: Whether this Lun is allowed to be shared between multiple
+      physical servers.
     sizeGb: The size of this Lun, in gigabytes.
     state: The state of this Volume.
     storageType: The storage type of this Lun.
@@ -599,7 +584,7 @@ class Lun(_messages.Message):
   bootLun = _messages.BooleanField(1)
   multiprotocolType = _messages.EnumField('MultiprotocolTypeValueValuesEnum', 2)
   name = _messages.StringField(3)
-  shared = _messages.BooleanField(4)
+  shareable = _messages.BooleanField(4)
   sizeGb = _messages.IntegerField(5)
   state = _messages.EnumField('StateValueValuesEnum', 6)
   storageType = _messages.EnumField('StorageTypeValueValuesEnum', 7)
@@ -799,7 +784,7 @@ class Policy(_messages.Message):
   roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
   role: roles/resourcemanager.organizationViewer condition: title: expirable
   access description: Does not grant access after Sep 2020 expression:
-  request.time < timestamp('2020-10-01T00:00:00.000Z') - etag: BwWWja0YfJA= -
+  request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA=
   version: 3 For a description of IAM and its features, see the [IAM
   documentation](https://cloud.google.com/iam/docs/).
 
@@ -842,10 +827,6 @@ class Policy(_messages.Message):
   version = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
-class ResetInstanceRequest(_messages.Message):
-  r"""Message for resetting an Instance."""
-
-
 class SetIamPolicyRequest(_messages.Message):
   r"""Request message for `SetIamPolicy` method.
 
@@ -857,25 +838,6 @@ class SetIamPolicyRequest(_messages.Message):
   """
 
   policy = _messages.MessageField('Policy', 1)
-
-
-class SnapshotReservationDetail(_messages.Message):
-  r"""Details about snapshot space reservation and usage on the Volume.
-
-  Fields:
-    reservedSpaceGib: The space on this Volume reserved for snapshotsk,
-      provided in GiB.
-    reservedSpaceRemainingGib: The amount, in GiB, of space available in this
-      Volume's reserved snapshot space.
-    reservedSpaceUsedPercent: The percent of reserved snapshot space on this
-      Volume that is actually used by snapshot copies. This may be higher than
-      100% if snapshot copies are occupying more space than has been reserved
-      on the Volume.
-  """
-
-  reservedSpaceGib = _messages.IntegerField(1)
-  reservedSpaceRemainingGib = _messages.IntegerField(2)
-  reservedSpaceUsedPercent = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -1014,69 +976,6 @@ class TestIamPermissionsResponse(_messages.Message):
   """
 
   permissions = _messages.StringField(1, repeated=True)
-
-
-class Volume(_messages.Message):
-  r"""A storage Volume.
-
-  Enums:
-    StateValueValuesEnum: The state of this Volume.
-    StorageTypeValueValuesEnum: The storage type of this Volume.
-
-  Fields:
-    autoGrownSizeGib: The size, in GiB, that this Volume has expanded as a
-      result of an auto grow policy. In the absence of auto-grow, the value is
-      0.
-    currentSizeGib: The current size of this Volume, in GiB, including space
-      reserved for snapshots. This size may be different than the requested
-      size if the Volume has been configured with auto grow or auto shrink.
-    name: Output only. The resource name of this `Volume`. Resource names are
-      schemeless URIs that follow the conventions in
-      https://cloud.google.com/apis/design/resource_names. Format:
-      `projects/{project}/locations/{location}/volumes/{volume}`
-    remainingSpaceGib: The space remaining in the Volume for new LUNs, in GiB,
-      excluding space reserved for snapshots.
-    requestedSizeGib: The requested size of this Volume, in GiB.
-    snapshotReservationDetail: Details about snapshot space reservation and
-      usage on the Volume.
-    state: The state of this Volume.
-    storageType: The storage type of this Volume.
-  """
-
-  class StateValueValuesEnum(_messages.Enum):
-    r"""The state of this Volume.
-
-    Values:
-      STATE_UNSPECIFIED: The unspecified state.
-      CREATING: The Volume is being created.
-      READY: The Volume is ready for consumption.
-      DELETING: The Volume has been requested to be deleted.
-    """
-    STATE_UNSPECIFIED = 0
-    CREATING = 1
-    READY = 2
-    DELETING = 3
-
-  class StorageTypeValueValuesEnum(_messages.Enum):
-    r"""The storage type of this Volume.
-
-    Values:
-      STORAGE_TYPE_UNSPECIFIED: The unspecified type.
-      SSD: This Volume storage type is SSD.
-      HDD: This Volume storage type is HDD.
-    """
-    STORAGE_TYPE_UNSPECIFIED = 0
-    SSD = 1
-    HDD = 2
-
-  autoGrownSizeGib = _messages.IntegerField(1)
-  currentSizeGib = _messages.IntegerField(2)
-  name = _messages.StringField(3)
-  remainingSpaceGib = _messages.IntegerField(4)
-  requestedSizeGib = _messages.IntegerField(5)
-  snapshotReservationDetail = _messages.MessageField('SnapshotReservationDetail', 6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
-  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 8)
 
 
 encoding.AddCustomJsonFieldMapping(

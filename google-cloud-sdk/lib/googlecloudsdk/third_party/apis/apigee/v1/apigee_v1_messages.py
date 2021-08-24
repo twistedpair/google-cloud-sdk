@@ -615,12 +615,40 @@ class ApigeeOrganizationsDatacollectorsPatchRequest(_messages.Message):
 class ApigeeOrganizationsDeleteRequest(_messages.Message):
   r"""A ApigeeOrganizationsDeleteRequest object.
 
+  Enums:
+    RetentionValueValuesEnum: Optional. The settings that control how long
+      Organization data will be retained after the initial delete operation
+      completes. During this period, the Organization may be restored to its
+      last known state. After this period, the Organization will no longer be
+      able to be restored.
+
   Fields:
     name: Required. Name of the organization. Use the following structure in
       your request: `organizations/{org}`
+    retention: Optional. The settings that control how long Organization data
+      will be retained after the initial delete operation completes. During
+      this period, the Organization may be restored to its last known state.
+      After this period, the Organization will no longer be able to be
+      restored.
   """
 
+  class RetentionValueValuesEnum(_messages.Enum):
+    r"""Optional. The settings that control how long Organization data will be
+    retained after the initial delete operation completes. During this period,
+    the Organization may be restored to its last known state. After this
+    period, the Organization will no longer be able to be restored.
+
+    Values:
+      DELETION_RETENTION_UNSPECIFIED: Default data retention settings will be
+        applied.
+      MINIMUM: Organization data will be retained for the bare minimum period
+        of time.
+    """
+    DELETION_RETENTION_UNSPECIFIED = 0
+    MINIMUM = 1
+
   name = _messages.StringField(1, required=True)
+  retention = _messages.EnumField('RetentionValueValuesEnum', 2)
 
 
 class ApigeeOrganizationsDeploymentsListRequest(_messages.Message):
@@ -949,6 +977,22 @@ class ApigeeOrganizationsDevelopersAttributesRequest(_messages.Message):
 
   googleCloudApigeeV1Attributes = _messages.MessageField('GoogleCloudApigeeV1Attributes', 1)
   parent = _messages.StringField(2, required=True)
+
+
+class ApigeeOrganizationsDevelopersBalanceAdjustRequest(_messages.Message):
+  r"""A ApigeeOrganizationsDevelopersBalanceAdjustRequest object.
+
+  Fields:
+    googleCloudApigeeV1AdjustDeveloperBalanceRequest: A
+      GoogleCloudApigeeV1AdjustDeveloperBalanceRequest resource to be passed
+      as the request body.
+    name: Required. Account balance for the developer. Use the following
+      structure in your request:
+      `organizations/{org}/developers/{developer}/balance`
+  """
+
+  googleCloudApigeeV1AdjustDeveloperBalanceRequest = _messages.MessageField('GoogleCloudApigeeV1AdjustDeveloperBalanceRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class ApigeeOrganizationsDevelopersBalanceCreditRequest(_messages.Message):
@@ -3718,6 +3762,21 @@ class GoogleCloudApigeeV1AddonsConfig(_messages.Message):
 
   advancedApiOpsConfig = _messages.MessageField('GoogleCloudApigeeV1AdvancedApiOpsConfig', 1)
   monetizationConfig = _messages.MessageField('GoogleCloudApigeeV1MonetizationConfig', 2)
+
+
+class GoogleCloudApigeeV1AdjustDeveloperBalanceRequest(_messages.Message):
+  r"""Request for AdjustDeveloperBalance.
+
+  Fields:
+    adjustment: * A positive value of `adjustment` means that that the API
+      provider wishes to adjust the balance for an over-charged developer i.e.
+      the balance of the developer will increase. * A negative value of
+      `adjustment` means that that the API provider wishes to adjust the
+      balance for an under-charged developer i.e. the balance of the developer
+      will decrease.
+  """
+
+  adjustment = _messages.MessageField('GoogleTypeMoney', 1)
 
 
 class GoogleCloudApigeeV1AdvancedApiOpsConfig(_messages.Message):
@@ -8708,7 +8767,7 @@ class GoogleIamV1Policy(_messages.Message):
   roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
   role: roles/resourcemanager.organizationViewer condition: title: expirable
   access description: Does not grant access after Sep 2020 expression:
-  request.time < timestamp('2020-10-01T00:00:00.000Z') - etag: BwWWja0YfJA= -
+  request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA=
   version: 3 For a description of IAM and its features, see the [IAM
   documentation](https://cloud.google.com/iam/docs/).
 

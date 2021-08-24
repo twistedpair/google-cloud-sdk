@@ -544,7 +544,7 @@ def AddMutexEnvVarsFlags(parser):
 
 
 def AddMemoryFlag(parser):
-  parser.add_argument('--memory', help='Set a memory limit. Ex: 1Gi, 512Mi.')
+  parser.add_argument('--memory', help='Set a memory limit. Ex: 1024Mi, 4Gi.')
 
 
 def AddCpuFlag(parser, managed_only=False):

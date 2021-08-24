@@ -2079,6 +2079,11 @@ class PackageIssue(_messages.Message):
   r"""A detail for a distro and package this vulnerability occurrence was
   found in and its associated fix (if one is available).
 
+  Enums:
+    EffectiveSeverityValueValuesEnum: Output only. The distro or language
+      system assigned severity for this vulnerability when that is available
+      and note provider assigned severity when it is not available.
+
   Fields:
     affectedCpeUri: Required. The [CPE
       URI](https://cpe.mitre.org/specification/) this vulnerability was found
@@ -2086,6 +2091,9 @@ class PackageIssue(_messages.Message):
     affectedPackage: Required. The package this vulnerability was found in.
     affectedVersion: Required. The version of the package that is installed on
       the resource affected by this vulnerability.
+    effectiveSeverity: Output only. The distro or language system assigned
+      severity for this vulnerability when that is available and note provider
+      assigned severity when it is not available.
     fixAvailable: Output only. Whether a fix is available for this package.
     fixedCpeUri: The [CPE URI](https://cpe.mitre.org/specification/) this
       vulnerability was fixed in. It is possible for this to be different from
@@ -2095,15 +2103,38 @@ class PackageIssue(_messages.Message):
     fixedVersion: Required. The version of the package this vulnerability was
       fixed in. Setting this to VersionKind.MAXIMUM means no fix is yet
       available.
+    packageType: The type of package (e.g. OS, MAVEN, GO).
   """
+
+  class EffectiveSeverityValueValuesEnum(_messages.Enum):
+    r"""Output only. The distro or language system assigned severity for this
+    vulnerability when that is available and note provider assigned severity
+    when it is not available.
+
+    Values:
+      SEVERITY_UNSPECIFIED: Unknown.
+      MINIMAL: Minimal severity.
+      LOW: Low severity.
+      MEDIUM: Medium severity.
+      HIGH: High severity.
+      CRITICAL: Critical severity.
+    """
+    SEVERITY_UNSPECIFIED = 0
+    MINIMAL = 1
+    LOW = 2
+    MEDIUM = 3
+    HIGH = 4
+    CRITICAL = 5
 
   affectedCpeUri = _messages.StringField(1)
   affectedPackage = _messages.StringField(2)
   affectedVersion = _messages.MessageField('Version', 3)
-  fixAvailable = _messages.BooleanField(4)
-  fixedCpeUri = _messages.StringField(5)
-  fixedPackage = _messages.StringField(6)
-  fixedVersion = _messages.MessageField('Version', 7)
+  effectiveSeverity = _messages.EnumField('EffectiveSeverityValueValuesEnum', 4)
+  fixAvailable = _messages.BooleanField(5)
+  fixedCpeUri = _messages.StringField(6)
+  fixedPackage = _messages.StringField(7)
+  fixedVersion = _messages.MessageField('Version', 8)
+  packageType = _messages.StringField(9)
 
 
 class PackageNote(_messages.Message):
@@ -2160,7 +2191,7 @@ class Policy(_messages.Message):
   roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
   role: roles/resourcemanager.organizationViewer condition: title: expirable
   access description: Does not grant access after Sep 2020 expression:
-  request.time < timestamp('2020-10-01T00:00:00.000Z') - etag: BwWWja0YfJA= -
+  request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA=
   version: 3 For a description of IAM and its features, see the [IAM
   documentation](https://cloud.google.com/iam/docs/).
 
@@ -2822,7 +2853,13 @@ class VulnerabilityOccurrence(_messages.Message):
   Enums:
     EffectiveSeverityValueValuesEnum: The distro assigned severity for this
       vulnerability when it is available, otherwise this is the note provider
-      assigned severity.
+      assigned severity. When there are multiple PackageIssues for this
+      vulnerability, they can have different effective severities because some
+      might be provided by the distro while others are provided by the
+      language ecosystem for a language pack. For this reason, it is advised
+      to use the effective severity on the PackageIssue level. In the case
+      where multiple PackageIssues have differing effective severities, this
+      field should be the highest severity for any of the PackageIssues.
     SeverityValueValuesEnum: Output only. The note provider assigned severity
       of this vulnerability.
 
@@ -2832,7 +2869,13 @@ class VulnerabilityOccurrence(_messages.Message):
       high severity.
     effectiveSeverity: The distro assigned severity for this vulnerability
       when it is available, otherwise this is the note provider assigned
-      severity.
+      severity. When there are multiple PackageIssues for this vulnerability,
+      they can have different effective severities because some might be
+      provided by the distro while others are provided by the language
+      ecosystem for a language pack. For this reason, it is advised to use the
+      effective severity on the PackageIssue level. In the case where multiple
+      PackageIssues have differing effective severities, this field should be
+      the highest severity for any of the PackageIssues.
     fixAvailable: Output only. Whether at least one of the affected packages
       has a fix available.
     longDescription: Output only. A detailed description of this
@@ -2850,7 +2893,14 @@ class VulnerabilityOccurrence(_messages.Message):
 
   class EffectiveSeverityValueValuesEnum(_messages.Enum):
     r"""The distro assigned severity for this vulnerability when it is
-    available, otherwise this is the note provider assigned severity.
+    available, otherwise this is the note provider assigned severity. When
+    there are multiple PackageIssues for this vulnerability, they can have
+    different effective severities because some might be provided by the
+    distro while others are provided by the language ecosystem for a language
+    pack. For this reason, it is advised to use the effective severity on the
+    PackageIssue level. In the case where multiple PackageIssues have
+    differing effective severities, this field should be the highest severity
+    for any of the PackageIssues.
 
     Values:
       SEVERITY_UNSPECIFIED: Unknown.

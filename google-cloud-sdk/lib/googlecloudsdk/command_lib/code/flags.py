@@ -79,15 +79,6 @@ class BuilderFlags(MutuallyExclusiveGroupDef):
         default='Dockerfile',
         help='Dockerfile for the service image.')
 
-  def AddAppengine(self):
-    self._AddFlag(
-        '--appengine',
-        action='store_true',
-        default=False,
-        help='Build with a Cloud Native Computing Foundation Buildpack builder '
-        'selected from gcr.io/gae-runtimes/buildpacks, according to the App '
-        'Engine runtime specified in app.yaml.')
-
   def AddBuilder(self):
     self._AddFlag(
         '--builder',
@@ -254,7 +245,6 @@ class CommonFlags(FlagDefs):
     self.AddImage()
     self.AddMemory()
     self.AddCpu()
-    self.BuildersGroup().AddAppengine()
     self.BuildersGroup().AddBuilder()
     self.EnvVarsGroup().AddEnvVars()
     self.EnvVarsGroup().AddEnvVarsFile()

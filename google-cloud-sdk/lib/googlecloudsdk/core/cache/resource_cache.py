@@ -323,9 +323,10 @@ class Updater(BaseUpdater):
       return table.Select(row_template)
     except exceptions.CacheTableExpired:
       rows = self.Update(parameter_info, aggregations)
-      table.DeleteRows()
-      table.AddRows(rows)
-      table.Validate()
+      if rows is not None:
+        table.DeleteRows()
+        table.AddRows(rows)
+        table.Validate()
       return table.Select(row_template, ignore_expiration=True)
 
   def Select(self, row_template, parameter_info=None):

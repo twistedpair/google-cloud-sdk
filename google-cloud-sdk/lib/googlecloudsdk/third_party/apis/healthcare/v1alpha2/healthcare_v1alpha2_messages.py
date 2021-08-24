@@ -585,9 +585,7 @@ class Consent(_messages.Message):
         time of resource creation.
       ACTIVE: The Consent is active and is considered when evaluating a user's
         consent on resources.
-      ARCHIVED: When a Consent is updated, the current version is archived and
-        a new one is created with its state set to the updated Consent's
-        previous state.
+      ARCHIVED: The archived state is currently not being used.
       REVOKED: A revoked Consent is not considered when evaluating a user's
         consent on resources.
     """
@@ -4757,7 +4755,7 @@ class Policy(_messages.Message):
   roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
   role: roles/resourcemanager.organizationViewer condition: title: expirable
   access description: Does not grant access after Sep 2020 expression:
-  request.time < timestamp('2020-10-01T00:00:00.000Z') - etag: BwWWja0YfJA= -
+  request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA=
   version: 3 For a description of IAM and its features, see the [IAM
   documentation](https://cloud.google.com/iam/docs/).
 

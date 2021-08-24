@@ -2244,6 +2244,33 @@ class AiplatformV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def RawPredict(self, request, global_params=None):
+      r"""Perform an online prediction with arbitrary http payload.
+
+      Args:
+        request: (AiplatformProjectsLocationsEndpointsRawPredictRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleApiHttpBody) The response message.
+      """
+      config = self.GetMethodConfig('RawPredict')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RawPredict.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/endpoints/{endpointsId}:rawPredict',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.endpoints.rawPredict',
+        ordered_params=['endpoint'],
+        path_params=['endpoint'],
+        query_params=[],
+        relative_path='v1alpha1/{+endpoint}:rawPredict',
+        request_field='googleCloudAiplatformV1alpha1RawPredictRequest',
+        request_type_name='AiplatformProjectsLocationsEndpointsRawPredictRequest',
+        response_type_name='GoogleApiHttpBody',
+        supports_download=False,
+    )
+
     def UndeployModel(self, request, global_params=None):
       r"""Undeploys a Model from an Endpoint, removing a DeployedModel from it, and freeing all resources it's using.
 
@@ -3824,7 +3851,7 @@ class AiplatformV1alpha1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.metadataStores.artifacts.patch',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['allowMissing'],
+        query_params=['allowMissing', 'updateMask'],
         relative_path='v1alpha1/{+name}',
         request_field='googleCloudAiplatformV1alpha1Artifact',
         request_type_name='AiplatformProjectsLocationsMetadataStoresArtifactsPatchRequest',
@@ -3996,7 +4023,7 @@ class AiplatformV1alpha1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.metadataStores.contexts.patch',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['allowMissing'],
+        query_params=['allowMissing', 'updateMask'],
         relative_path='v1alpha1/{+name}',
         request_field='googleCloudAiplatformV1alpha1Context',
         request_type_name='AiplatformProjectsLocationsMetadataStoresContextsPatchRequest',
@@ -4168,7 +4195,7 @@ class AiplatformV1alpha1(base_api.BaseApiClient):
         method_id='aiplatform.projects.locations.metadataStores.executions.patch',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['allowMissing'],
+        query_params=['allowMissing', 'updateMask'],
         relative_path='v1alpha1/{+name}',
         request_field='googleCloudAiplatformV1alpha1Execution',
         request_type_name='AiplatformProjectsLocationsMetadataStoresExecutionsPatchRequest',

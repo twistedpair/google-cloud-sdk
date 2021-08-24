@@ -96,50 +96,6 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  PROJECTS_LOCATIONS_PRIVATECLOUDBACKUPS = (
-      'projects.locations.privateCloudBackups',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/'
-              'privateCloudBackups/{privateCloudBackupsId}',
-      },
-      ['name'],
-      True
-  )
-  PROJECTS_LOCATIONS_PRIVATECLOUDS = (
-      'projects.locations.privateClouds',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/privateClouds/'
-              '{privateCloudsId}',
-      },
-      ['name'],
-      True
-  )
-  PROJECTS_LOCATIONS_PRIVATECLOUDS_CLUSTERS = (
-      'projects.locations.privateClouds.clusters',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/privateClouds/'
-              '{privateCloudsId}/clusters/{clustersId}',
-      },
-      ['name'],
-      True
-  )
-  PROJECTS_LOCATIONS_PRIVATECLOUDS_IPADDRESSES = (
-      'projects.locations.privateClouds.ipAddresses',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/privateClouds/'
-              '{privateCloudsId}/ipAddresses/{ipAddressesId}',
-      },
-      ['name'],
-      True
-  )
 
   def __init__(self, collection_name, path, flat_paths, params,
                enable_uri_parsing):

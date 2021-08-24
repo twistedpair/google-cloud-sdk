@@ -138,19 +138,19 @@ def GetEventFiltersArg(args, release_track):
     return args.matching_criteria
 
 
-def AddDestinationArgs(parser, release_track, required=False):
-  """Adds arguments related to trigger's destination."""
+def AddCreateDestinationArgs(parser, release_track, required=False):
+  """Adds arguments related to trigger's destination for create operations."""
   dest_group = parser.add_mutually_exclusive_group(
       required=required,
       help='Flags for specifying the destination to which events should be sent.'
   )
-  _AddCloudRunDestinationArgs(dest_group)
+  _AddCreateCloudRunDestinationArgs(dest_group)
   if release_track == base.ReleaseTrack.GA:
-    _AddGKEDestinationArgs(dest_group, hidden=True)
+    _AddCreateGKEDestinationArgs(dest_group, hidden=True)
 
 
-def _AddCloudRunDestinationArgs(parser, required=False):
-  """Adds arguments related to trigger's Cloud Run fully-managed service destination."""
+def _AddCreateCloudRunDestinationArgs(parser, required=False):
+  """Adds arguments related to trigger's Cloud Run fully-managed service destination for create operations."""
   run_group = parser.add_group(
       required=required,
       help='Flags for specifying a Cloud Run fully-managed service destination.'
@@ -160,8 +160,8 @@ def _AddCloudRunDestinationArgs(parser, required=False):
   AddDestinationRunRegionArg(run_group)
 
 
-def _AddGKEDestinationArgs(parser, required=False, hidden=False):
-  """Adds arguments related to trigger's GKE service destination."""
+def _AddCreateGKEDestinationArgs(parser, required=False, hidden=False):
+  """Adds arguments related to trigger's GKE service destination for create operations."""
   gke_group = parser.add_group(
       required=required,
       hidden=hidden,
@@ -171,6 +171,27 @@ def _AddGKEDestinationArgs(parser, required=False, hidden=False):
   _AddDestinationGKENamespaceArg(gke_group)
   _AddDestinationGKEServiceArg(gke_group, required=True)
   _AddDestinationGKEPathArg(gke_group)
+
+
+def AddUpdateDestinationArgs(parser, required=False):
+  """Adds arguments related to trigger's destination for update operations."""
+  dest_group = parser.add_mutually_exclusive_group(
+      required=required,
+      help='Flags for specifying the destination to which events should be sent.'
+  )
+  _AddUpdateCloudRunDestinationArgs(dest_group)
+
+
+def _AddUpdateCloudRunDestinationArgs(parser, required=False):
+  """Adds arguments related to trigger's Cloud Run fully-managed service destination for update operations."""
+  run_group = parser.add_group(
+      required=required,
+      help='Flags for Cloud Run fully-managed service destination.')
+  AddDestinationRunServiceArg(run_group)
+  AddDestinationRunRegionArg(run_group)
+  destination_run_path_group = run_group.add_mutually_exclusive_group()
+  AddDestinationRunPathArg(destination_run_path_group)
+  AddClearDestinationRunPathArg(destination_run_path_group)
 
 
 def AddDestinationRunServiceArg(parser, required=False):

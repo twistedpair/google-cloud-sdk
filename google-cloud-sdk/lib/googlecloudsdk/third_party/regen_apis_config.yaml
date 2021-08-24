@@ -553,6 +553,8 @@ apis:
       discovery_doc: essentialcontacts_v1alpha1.json
     v1beta1:
       discovery_doc: essentialcontacts_v1beta1.json
+    v1:
+      discovery_doc: essentialcontacts_v1.json
       default: true
   eventarc:
     v1:
@@ -830,9 +832,11 @@ apis:
       discovery_doc: networkservices_v1.json
       default: true
   networksecurity:
+    v1:
+      discovery_doc: networksecurity_v1.json
+      default: true
     v1beta1:
       discovery_doc: networksecurity_v1beta1.json
-      default: true
     v1alpha1:
       discovery_doc: networksecurity_v1alpha1.json
   notebooks:

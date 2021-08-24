@@ -63,15 +63,25 @@ class SparkSqlBatchFactory(object):
     if args.jar_files:
       dependencies['jarFileUris'] = args.jar_files
 
+    if args.jars:
+      dependencies['jarFileUris'] = args.jars
+
+    params = None
     if args.script_variables:
+      params = args.script_variables
+    elif args.vars:
+      params = args.vars
+
+    if params:
       kwargs['scriptVariables'] = encoding.DictToAdditionalPropertyMessage(
-          args.script_variables,
+          params,
           self.dataproc.messages.SparkSqlBatch.ScriptVariablesValue,
           sort_items=True)
 
     if local_file_uploader.HasLocalFiles(dependencies):
-      if not args.bucket:
-        raise AttributeError('--bucket was not specified.')
+      bucket = args.deps_bucket if args.deps_bucket is not None else args.bucket
+      if not bucket:
+        raise AttributeError('--deps-bucket was not specified.')
       dependencies = local_file_uploader.Upload(args.bucket, dependencies)
 
     # Move main SQL script out of the list.

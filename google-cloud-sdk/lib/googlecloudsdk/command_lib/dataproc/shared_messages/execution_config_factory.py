@@ -19,6 +19,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 
@@ -58,11 +59,20 @@ class ExecutionConfigFactory(object):
       # args.networkTags should be parsed as a list of string.
       kwargs['networkTags'] = args.network_tags
 
+    if args.tags:
+      kwargs['networkTags'] = args.tags
+
     if args.network_uri:
       kwargs['networkUri'] = args.network_uri
 
+    if args.network:
+      kwargs['networkUri'] = args.network
+
     if args.subnetwork_uri:
       kwargs['subnetworkUri'] = args.subnetwork_uri
+
+    if args.subnet:
+      kwargs['subnetworkUri'] = args.subnet
 
     if args.performance_tier:
       kwargs['performanceTier'] = (
@@ -111,13 +121,39 @@ def AddArguments(parser):
   network_group = parser.add_mutually_exclusive_group()
   network_group.add_argument(
       '--network-uri',
+      hidden=True,
+      action=actions.DeprecationAction(
+          '--network_uri',
+          warn=('The `--network_uri` flag is deprecated. '
+                'Use the `--network` flag instead.')),
       help='Network URI to connect network to.')
   network_group.add_argument(
       '--subnetwork-uri',
+      hidden=True,
+      action=actions.DeprecationAction(
+          '--subnetwork_uri',
+          warn=('The `--subnetwork_uri` flag is deprecated. '
+                'Use the `--subnet` flag instead.')),
       help='Subnetwork URI to connect network to.')
+  network_group.add_argument(
+      '--network', help='Network URI to connect network to.')
+  network_group.add_argument(
+      '--subnet', help='Subnetwork URI to connect network to.')
 
-  parser.add_argument(
+  network_tags = parser.add_mutually_exclusive_group()
+  network_tags.add_argument(
       '--network-tags',
+      type=arg_parsers.ArgList(),
+      metavar='TAGS',
+      hidden=True,
+      action=actions.DeprecationAction(
+          '--network_tags',
+          warn=('The `--network_tags` flag is deprecated. '
+                'Use the `--tags` flag instead.')),
+      default=[],
+      help='Network tags for traffic control.')
+  network_tags.add_argument(
+      '--tags',
       type=arg_parsers.ArgList(),
       metavar='TAGS',
       default=[],

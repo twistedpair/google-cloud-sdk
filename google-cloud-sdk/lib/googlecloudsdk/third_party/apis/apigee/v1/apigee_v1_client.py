@@ -2089,6 +2089,33 @@ class ApigeeV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Adjust(self, request, global_params=None):
+      r"""Adjust the prepaid balance for the developer. This API will be used in scenarios where the developer has been under-charged or over-charged.
+
+      Args:
+        request: (ApigeeOrganizationsDevelopersBalanceAdjustRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1DeveloperBalance) The response message.
+      """
+      config = self.GetMethodConfig('Adjust')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Adjust.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/developers/{developersId}/balance:adjust',
+        http_method='POST',
+        method_id='apigee.organizations.developers.balance.adjust',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:adjust',
+        request_field='googleCloudApigeeV1AdjustDeveloperBalanceRequest',
+        request_type_name='ApigeeOrganizationsDevelopersBalanceAdjustRequest',
+        response_type_name='GoogleCloudApigeeV1DeveloperBalance',
+        supports_download=False,
+    )
+
     def Credit(self, request, global_params=None):
       r"""Credits the account balance for the developer.
 
@@ -6991,7 +7018,7 @@ class ApigeeV1(base_api.BaseApiClient):
         method_id='apigee.organizations.delete',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=[],
+        query_params=['retention'],
         relative_path='v1/{+name}',
         request_field='',
         request_type_name='ApigeeOrganizationsDeleteRequest',
