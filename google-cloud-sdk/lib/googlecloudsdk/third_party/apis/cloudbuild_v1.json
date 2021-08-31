@@ -950,6 +950,22 @@
           "items": {
             "$ref": "Volume"
           }
+        },
+        "dockerDaemon": {
+          "description": "Optional. Option to specify how (or if) a Docker daemon is provided for the build.",
+          "type": "string",
+          "enumDescriptions": [
+            "If the option is unspecified, a default will be set based on the environment.",
+            "No Docker daemon or functionality will be provided to the build.",
+            "A Docker daemon is available during the build that is running without privileged mode.",
+            "A Docker daemon will be available that is running in privileged mode. This is potentially a security vulnerability and should only be used if the user is fully aware of the associated risks."
+          ],
+          "enum": [
+            "DOCKER_DAEMON_UNSPECIFIED",
+            "NO_DOCKER",
+            "NON_PRIVILEGED",
+            "PRIVILEGED"
+          ]
         }
       }
     },
@@ -1058,7 +1074,7 @@
       "type": "object",
       "properties": {
         "approverAccount": {
-          "description": "Output only. Email of the user that called the ApproveBuild API to approve or reject a build at the time that the API was called (the user's actual email that is tied to their GAIA ID may have changed). This field is not stored, rather, it is calculated on the fly using approver_id.",
+          "description": "Output only. Email of the user that called the ApproveBuild API to approve or reject a build at the time that the API was called.",
           "readOnly": true,
           "type": "string"
         },
@@ -1748,6 +1764,10 @@
         },
         "displayName": {
           "description": "Optional. The user assigned display name for the config. Display names must meet the following requirements: + They must contain only alphanumeric characters and dashes. + They can be 1-64 characters long. + They must begin and end with an alphanumeric character.",
+          "type": "string"
+        },
+        "sslCa": {
+          "description": "Optional. SSL certificate to use for requests to Bitbucket Server. The format should be PEM format but the extension can be one of .pem, .cer, or .crt.",
           "type": "string"
         }
       }
@@ -3803,7 +3823,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Create an association between a GCP project and a GitHub Enterprise server. This API is experimental."
+                  "description": "Create an association between a GCP project and a GitHub Enterprise server."
                 },
                 "patch": {
                   "id": "cloudbuild.projects.locations.githubEnterpriseConfigs.patch",
@@ -3837,7 +3857,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Update an association between a GCP project and a GitHub Enterprise server. This API is experimental."
+                  "description": "Update an association between a GCP project and a GitHub Enterprise server."
                 },
                 "get": {
                   "id": "cloudbuild.projects.locations.githubEnterpriseConfigs.get",
@@ -3872,7 +3892,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Retrieve a GitHubEnterpriseConfig. This API is experimental."
+                  "description": "Retrieve a GitHubEnterpriseConfig."
                 },
                 "list": {
                   "id": "cloudbuild.projects.locations.githubEnterpriseConfigs.list",
@@ -3902,7 +3922,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "List all GitHubEnterpriseConfigs for a given project. This API is experimental."
+                  "description": "List all GitHubEnterpriseConfigs for a given project."
                 },
                 "delete": {
                   "id": "cloudbuild.projects.locations.githubEnterpriseConfigs.delete",
@@ -3937,7 +3957,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Delete an association between a GCP project and a GitHub Enterprise server. This API is experimental."
+                  "description": "Delete an association between a GCP project and a GitHub Enterprise server."
                 },
                 "getApp": {
                   "id": "cloudbuild.projects.locations.githubEnterpriseConfigs.getApp",
@@ -5033,7 +5053,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Create an association between a GCP project and a GitHub Enterprise server. This API is experimental."
+              "description": "Create an association between a GCP project and a GitHub Enterprise server."
             },
             "patch": {
               "id": "cloudbuild.projects.githubEnterpriseConfigs.patch",
@@ -5067,7 +5087,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Update an association between a GCP project and a GitHub Enterprise server. This API is experimental."
+              "description": "Update an association between a GCP project and a GitHub Enterprise server."
             },
             "get": {
               "id": "cloudbuild.projects.githubEnterpriseConfigs.get",
@@ -5102,7 +5122,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Retrieve a GitHubEnterpriseConfig. This API is experimental."
+              "description": "Retrieve a GitHubEnterpriseConfig."
             },
             "list": {
               "id": "cloudbuild.projects.githubEnterpriseConfigs.list",
@@ -5132,7 +5152,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "List all GitHubEnterpriseConfigs for a given project. This API is experimental."
+              "description": "List all GitHubEnterpriseConfigs for a given project."
             },
             "delete": {
               "id": "cloudbuild.projects.githubEnterpriseConfigs.delete",
@@ -5167,7 +5187,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Delete an association between a GCP project and a GitHub Enterprise server. This API is experimental."
+              "description": "Delete an association between a GCP project and a GitHub Enterprise server."
             },
             "getApp": {
               "id": "cloudbuild.projects.githubEnterpriseConfigs.getApp",

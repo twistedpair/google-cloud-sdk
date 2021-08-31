@@ -27,11 +27,11 @@ from googlecloudsdk.core import log
 
 CLUSTER_ROLE = 'clusterrole'
 NAMESPACE_ROLE = 'role'
-RBAC_POLICY_CLUSTER_ROLE_FORMAT = """\
+IMPERSONATE_POLICY_FORMAT = """\
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
 metadata:
-  name: gateway-impersonate-{project_id}-{cluster_name}
+  name: gateway-impersonate-{metadata_name}
 rules:
 - apiGroups:
   - ""
@@ -44,138 +44,146 @@ rules:
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: gateway-impersonate-{project_id}-{cluster_name}
+  name: gateway-impersonate-{metadata_name}
 roleRef:
   kind: ClusterRole
-  name: gateway-impersonate-{project_id}-{cluster_name}
+  name: gateway-impersonate-{metadata_name}
   apiGroup: rbac.authorization.k8s.io
 subjects:
 - kind: ServiceAccount
   name: connect-agent-sa
   namespace: gke-connect
+"""
+PERMISSION_POLICY_CLUSTER_FORMAT = """\
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRoleBinding
 metadata:
-  name: gateway-permission-{project_id}-{cluster_name}
+  name: gateway-permission-{metadata_name}
 subjects:{users}
 roleRef:
   kind: ClusterRole
   name: {permission}
   apiGroup: rbac.authorization.k8s.io
 """
-
-RBAC_POLICY_ROLE_FORMAT = """\
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRole
-metadata:
-  name: gateway-impersonate-{project_id}-{cluster_name}
-rules:
-- apiGroups:
-  - ""
-  resourceNames:{role_user_account}
-  resources:
-  - users
-  verbs:
-  - impersonate
----
-apiVersion: rbac.authorization.k8s.io/v1
-kind: ClusterRoleBinding
-metadata:
-  name: gateway-impersonate-{project_id}-{cluster_name}
-roleRef:
-  kind: ClusterRole
-  name: gateway-impersonate-{project_id}-{cluster_name}
-  apiGroup: rbac.authorization.k8s.io
-subjects:
-- kind: ServiceAccount
-  name: connect-agent-sa
-  namespace: gke-connect
+PERMISSION_POLICY_NAMESPACE_FORMAT = """\
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
-  name: gateway-permission-{project_id}-{cluster_name}
+  name: gateway-permission-{metadata_name}
   namespace: {namespace}
-subjects:{role_users}
+subjects:{users}
 roleRef:
   kind: Role
-  name: {role_permission}
+  name: {permission}
+  apiGroup: rbac.authorization.k8s.io
+"""
+PERMISSION_POLICY_ANTHOS_SUPPORT_FORMAT = """\
+---
+kind: ClusterRole
+apiVersion: rbac.authorization.k8s.io/v1
+metadata:
+  name: anthos-support-reader
+rules:
+- apiGroups:
+  - '*'
+  resources:
+  - '*'
+  verbs: ["get", "list", "watch"]
+- nonResourceURLs:
+  - '*'
+  verbs: ["get"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: gateway-anthos-support-permission-{metadata_name}
+subjects:{users}
+roleRef:
+  kind: ClusterRole
+  name: anthos-support-reader
   apiGroup: rbac.authorization.k8s.io
 """
 
 
-def ValidateArgs(args):
-  """Validation for input args in correct format."""
+def ValidateRole(role):
+  """Validation for the role in correct format."""
   cluster_pattern = re.compile('^clusterrole/')
   namespace_pattern = re.compile('^role/')
-  if cluster_pattern.match(args.role.lower()):
-    log.status.Print('Specified ClusterRole is:', args.role)
-    if len(args.role.split('/')) != 2:
+  if cluster_pattern.match(role.lower()):
+    log.status.Print('Specified Cluster Role is:', role)
+    if len(role.split('/')) != 2:
       raise InvalidArgsError(
           'Cluster role is not specified in correct format. Please specify the '
-          'cluster role as: clusterrole/cluser-permission'
-      )
-  elif namespace_pattern.match(args.role.lower()):
-    if len(args.role.split('/')) != 3:
+          'cluster role as: clusterrole/cluser-permission')
+  elif namespace_pattern.match(role.lower()):
+    log.status.Print('Specified Namespace Role is:', role)
+    if len(role.split('/')) != 3:
       raise InvalidArgsError(
           'Namespace role is not specified in correct format. Please specify '
-          'the namespace role as: role/namespace/namespace-permission'
-      )
-    log.status.Print('Specified Namespace Role is:', args.role)
+          'the namespace role as: role/namespace/namespace-permission')
   else:
     raise InvalidArgsError(
         'The required role is not a cluster role or a namespace role.')
 
 
+def ValidateArgs(args):
+  """Validate the confliction between '--anthos-support' and '--role'."""
+  if (args.anthos_support and args.role) or (not args.anthos_support and
+                                             not args.role):
+    raise InvalidArgsError(
+        'Please specify either --role or --anthos-support in the flags.')
+  if args.role:
+    ValidateRole(args.role)
+
+
 def GenerateRBAC(args, project_id):
   """Returns the generated RBAC policy file with args provided."""
-  expected_rbac = ''
+  generated_rbac = ''
   cluster_pattern = re.compile('^clusterrole/')
   namespace_pattern = re.compile('^role/')
-  if cluster_pattern.match(args.role.lower()):
-    # Get the role permission
+  impersonate_users = ''
+  permission_users = ''
+  users_list = args.users.split(',')
+  role_permission = ''
+  rbac_policy_format = ''
+  namespace = ''
+  metadata_name = ''
+
+  if args.anthos_support:
+    rbac_policy_format = IMPERSONATE_POLICY_FORMAT + PERMISSION_POLICY_ANTHOS_SUPPORT_FORMAT
+  elif cluster_pattern.match(args.role.lower()):
+    rbac_policy_format = IMPERSONATE_POLICY_FORMAT + PERMISSION_POLICY_CLUSTER_FORMAT
     role_permission = args.role.split('/')[1]
-
-    # Get the users to grant permission
-    user_account = ''
-    users = ''
-    user_list = args.users.split(',')
-    for user in user_list:
-      user_account += os.linesep + '  - {user}'.format(user=user)
-      users += os.linesep + '- kind: User'
-      users += os.linesep + '  name: {user}'.format(user=user)
-
-    # Assign value to the RBAC file templates.
-    expected_rbac = RBAC_POLICY_CLUSTER_ROLE_FORMAT.format(
-        project_id=project_id,
-        cluster_name=args.MEMBERSHIP,
-        user_account=user_account,
-        users=users,
-        permission=role_permission)
   elif namespace_pattern.match(args.role.lower()):
-    # Get the role permission
-    role_namespace = args.role.split('/')[1]
+    rbac_policy_format = IMPERSONATE_POLICY_FORMAT + PERMISSION_POLICY_NAMESPACE_FORMAT
+    namespace = args.role.split('/')[1]
     role_permission = args.role.split('/')[2]
+  else:
+    raise InvalidArgsError(
+        'Invalid flags, please specify either the --role or --anthos-support in'
+        'your flags.')
 
-    # Get the users to grant permission
-    users_in_cli = args.users.split(',')
-    user_account = ''
-    users = ''
-    for user in users_in_cli:
-      user_account += os.linesep + '  - {user}'.format(user=user)
-      users += os.linesep + '- kind: User'
-      users += os.linesep + '  name: {user}'.format(user=user)
+  if args.membership:
+    metadata_name = project_id + '-' + args.membership
+  else:
+    metadata_name = project_id
 
-    # Assign value to the RBAC file templates.
-    expected_rbac = RBAC_POLICY_ROLE_FORMAT.format(
-        project_id=project_id,
-        cluster_name=args.MEMBERSHIP,
-        namespace=role_namespace,
-        role_user_account=user_account,
-        role_users=users,
-        role_permission=role_permission)
-  return expected_rbac
+  for user in users_list:
+    impersonate_users += os.linesep + '  - {user}'.format(user=user)
+    permission_users += os.linesep + '- kind: User'
+    permission_users += os.linesep + '  name: {user}'.format(user=user)
+
+  # Assign value to the RBAC file templates.
+  generated_rbac = rbac_policy_format.format(
+      metadata_name=metadata_name,
+      namespace=namespace,
+      user_account=impersonate_users,
+      users=permission_users,
+      permission=role_permission)
+
+  return generated_rbac
 
 
 class InvalidArgsError(exceptions.Error):

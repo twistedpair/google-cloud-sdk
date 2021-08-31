@@ -308,7 +308,8 @@ class CloudresourcemanagerLiensListRequest(_messages.Message):
 
   Fields:
     pageSize: The maximum number of items to return. This is a suggestion for
-      the server.
+      the server. The server can return fewer liens than requested. If
+      unspecified, server picks an appropriate default.
     pageToken: The `next_page_token` value returned from a previous List
       request, if any.
     parent: Required. The name of the resource to list all attached Liens. For
@@ -1700,7 +1701,8 @@ class SearchOrganizationsRequest(_messages.Message):
       `domain:google.com` returns Organization resources corresponding to the
       domain `google.com`. This field is optional.
     pageSize: The maximum number of Organizations to return in the response.
-      This field is optional.
+      The server can return fewer organizations than requested. If
+      unspecified, server picks an appropriate default.
     pageToken: A pagination token returned from a previous call to
       `SearchOrganizations` that indicates from where listing should continue.
       This field is optional.

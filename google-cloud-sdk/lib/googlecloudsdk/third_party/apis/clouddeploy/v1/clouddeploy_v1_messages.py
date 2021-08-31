@@ -1002,6 +1002,23 @@ class Date(_messages.Message):
   year = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
+class DefaultPool(_messages.Message):
+  r"""Execution using the default Cloud Build pool.
+
+  Fields:
+    artifactStorage: Optional. Cloud Storage location where execution outputs
+      should be stored. This can either be a bucket ("gs://my-bucket") or a
+      path within a bucket ("gs://my-bucket/my-dir"). If unspecified, a
+      default bucket located in the same region will be used.
+    serviceAccount: Optional. Google service account to use for execution. If
+      unspecified, the project execution service account
+      (-compute@developer.gserviceaccount.com) will be used.
+  """
+
+  artifactStorage = _messages.StringField(1)
+  serviceAccount = _messages.StringField(2)
+
+
 class DeliveryPipeline(_messages.Message):
   r"""A `DeliveryPipeline` resource in the Cloud Deploy API. A
   `DeliveryPipeline` defines a pipeline through which a Skaffold configuration
@@ -1120,6 +1137,36 @@ class Empty(_messages.Message):
   representation for `Empty` is empty JSON object `{}`.
   """
 
+
+
+class ExecutionConfig(_messages.Message):
+  r"""Configuration of the environment to use when calling Skaffold.
+
+  Enums:
+    UsagesValueListEntryValuesEnum:
+
+  Fields:
+    defaultPool: Optional. Use default Cloud Build pool.
+    privatePool: Optional. Use private Cloud Build pool.
+    usages: Required. Usages when this configuration should be applied.
+  """
+
+  class UsagesValueListEntryValuesEnum(_messages.Enum):
+    r"""UsagesValueListEntryValuesEnum enum type.
+
+    Values:
+      EXECUTION_ENVIRONMENT_USAGE_UNSPECIFIED: Default value. This value is
+        unused.
+      RENDER: Use for rendering.
+      DEPLOY: Use for deploying and deployment hooks.
+    """
+    EXECUTION_ENVIRONMENT_USAGE_UNSPECIFIED = 0
+    RENDER = 1
+    DEPLOY = 2
+
+  defaultPool = _messages.MessageField('DefaultPool', 1)
+  privatePool = _messages.MessageField('PrivatePool', 2)
+  usages = _messages.EnumField('UsagesValueListEntryValuesEnum', 3, repeated=True)
 
 
 class Expr(_messages.Message):
@@ -1584,6 +1631,27 @@ class Policy(_messages.Message):
   bindings = _messages.MessageField('Binding', 2, repeated=True)
   etag = _messages.BytesField(3)
   version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
+class PrivatePool(_messages.Message):
+  r"""Execution using a private Cloud Build pool.
+
+  Fields:
+    artifactStorage: Optional. Cloud Storage location where execution outputs
+      should be stored. This can either be a bucket ("gs://my-bucket") or a
+      path within a bucket ("gs://my-bucket/my-dir"). If unspecified, a
+      default bucket located in the same region will be used.
+    serviceAccount: Optional. Google service account to use for execution. If
+      unspecified, the project execution service account
+      (-compute@developer.gserviceaccount.com) will be used.
+    workerPool: Required. Resource name of the Cloud Build worker pool to use.
+      The format is
+      `projects/{project}/locations/{location}/workerPools/{pool}`.
+  """
+
+  artifactStorage = _messages.StringField(1)
+  serviceAccount = _messages.StringField(2)
+  workerPool = _messages.StringField(3)
 
 
 class PromoteReleaseRequest(_messages.Message):
@@ -2279,6 +2347,13 @@ class Target(_messages.Message):
     etag: Optional. This checksum is computed by the server based on the value
       of other fields, and may be sent on update and delete requests to ensure
       the client has an up-to-date value before proceeding.
+    executionConfigs: Configurations for all execution that relates to this
+      `Target`. Each `ExecutionEnvironmentUsage` value may only be used in a
+      single configuration; using the same value multiple times is an error.
+      When one or more configurations are specified, they must include the
+      `RENDER` and `DEPLOY` `ExecutionEnvironmentUsage` values. When no
+      configurations are specified, execution will use the default specified
+      in `DefaultPool`.
     gke: Information specifying a GKE Cluster.
     gkeCluster: Information specifying a GKE Cluster.
     labels: Optional. Labels are attributes that can be set and used by both
@@ -2358,14 +2433,15 @@ class Target(_messages.Message):
   createTime = _messages.StringField(3)
   description = _messages.StringField(4)
   etag = _messages.StringField(5)
-  gke = _messages.MessageField('GkeCluster', 6)
-  gkeCluster = _messages.MessageField('GKECluster', 7)
-  labels = _messages.MessageField('LabelsValue', 8)
-  name = _messages.StringField(9)
-  requireApproval = _messages.BooleanField(10)
-  targetId = _messages.StringField(11)
-  uid = _messages.StringField(12)
-  updateTime = _messages.StringField(13)
+  executionConfigs = _messages.MessageField('ExecutionConfig', 6, repeated=True)
+  gke = _messages.MessageField('GkeCluster', 7)
+  gkeCluster = _messages.MessageField('GKECluster', 8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  name = _messages.StringField(10)
+  requireApproval = _messages.BooleanField(11)
+  targetId = _messages.StringField(12)
+  uid = _messages.StringField(13)
+  updateTime = _messages.StringField(14)
 
 
 class TargetArtifact(_messages.Message):

@@ -248,11 +248,9 @@ def AddTier(parser):
       '--tier',
       required=False,
       type=str,
-      help=('The tier for this instance. For Second Generation instances, '
-            'TIER is the instance\'s machine type (e.g., db-n1-standard-1). '
-            'For PostgreSQL instances, only shared-core machine types '
-            '(e.g., db-f1-micro) apply. A complete list of tiers is '
-            'available here: https://cloud.google.com/sql/pricing.'))
+      help=(
+          'The tier for this instance. The following tiers are available for '
+          'AlloyDB instances: n2-highmem-8, n2-highmem-16, and n2-highmem-32.'))
 
 
 def AddZone(parser):

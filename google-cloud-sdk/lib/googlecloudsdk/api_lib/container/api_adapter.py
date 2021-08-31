@@ -582,6 +582,7 @@ class CreateClusterOptions(object):
       threads_per_core=None,
       logging=None,
       monitoring=None,
+      enable_managed_prometheus=None,
   ):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
@@ -730,100 +731,104 @@ class CreateClusterOptions(object):
     self.threads_per_core = threads_per_core
     self.logging = logging
     self.monitoring = monitoring
+    self.enable_managed_prometheus = enable_managed_prometheus
 
 
 class UpdateClusterOptions(object):
   """Options to pass to UpdateCluster."""
 
-  def __init__(self,
-               version=None,
-               update_master=None,
-               update_nodes=None,
-               node_pool=None,
-               monitoring_service=None,
-               logging_service=None,
-               enable_stackdriver_kubernetes=None,
-               enable_logging_monitoring_system_only=None,
-               enable_workload_monitoring_eap=None,
-               master_logs=None,
-               no_master_logs=None,
-               enable_master_metrics=None,
-               logging=None,
-               monitoring=None,
-               disable_addons=None,
-               istio_config=None,
-               cloud_run_config=None,
-               cluster_dns=None,
-               cluster_dns_scope=None,
-               cluster_dns_domain=None,
-               enable_autoscaling=None,
-               min_nodes=None,
-               max_nodes=None,
-               image_type=None,
-               image=None,
-               image_project=None,
-               locations=None,
-               enable_master_authorized_networks=None,
-               master_authorized_networks=None,
-               enable_pod_security_policy=None,
-               enable_binauthz=None,
-               enable_vertical_pod_autoscaling=None,
-               enable_experimental_vertical_pod_autoscaling=None,
-               enable_intra_node_visibility=None,
-               enable_l4_ilb_subsetting=None,
-               security_profile=None,
-               security_profile_runtime_rules=None,
-               autoscaling_profile=None,
-               enable_peering_route_sharing=None,
-               workload_pool=None,
-               identity_provider=None,
-               disable_workload_identity=None,
-               enable_workload_certificates=None,
-               enable_alts=None,
-               enable_gke_oidc=None,
-               enable_identity_service=None,
-               enable_shielded_nodes=None,
-               disable_default_snat=None,
-               resource_usage_bigquery_dataset=None,
-               enable_network_egress_metering=None,
-               enable_resource_consumption_metering=None,
-               database_encryption_key=None,
-               disable_database_encryption=None,
-               enable_cost_management=None,
-               enable_autoprovisioning=None,
-               autoprovisioning_config_file=None,
-               autoprovisioning_service_account=None,
-               autoprovisioning_scopes=None,
-               autoprovisioning_locations=None,
-               min_cpu=None,
-               max_cpu=None,
-               min_memory=None,
-               max_memory=None,
-               min_accelerator=None,
-               max_accelerator=None,
-               release_channel=None,
-               autoprovisioning_image_type=None,
-               autoprovisioning_max_surge_upgrade=None,
-               autoprovisioning_max_unavailable_upgrade=None,
-               enable_autoprovisioning_autoupgrade=None,
-               enable_autoprovisioning_autorepair=None,
-               autoprovisioning_min_cpu_platform=None,
-               enable_tpu=None,
-               tpu_ipv4_cidr=None,
-               enable_master_global_access=None,
-               enable_tpu_service_networking=None,
-               notification_config=None,
-               private_ipv6_google_access_type=None,
-               kubernetes_objects_changes_target=None,
-               kubernetes_objects_snapshots_target=None,
-               disable_autopilot=None,
-               add_cross_connect_subnetworks=None,
-               remove_cross_connect_subnetworks=None,
-               clear_cross_connect_subnetworks=None,
-               enable_service_externalips=None,
-               security_group=None,
-               enable_gcfs=None,
-               enable_image_streaming=None):
+  def __init__(
+      self,
+      version=None,
+      update_master=None,
+      update_nodes=None,
+      node_pool=None,
+      monitoring_service=None,
+      logging_service=None,
+      enable_stackdriver_kubernetes=None,
+      enable_logging_monitoring_system_only=None,
+      enable_workload_monitoring_eap=None,
+      master_logs=None,
+      no_master_logs=None,
+      enable_master_metrics=None,
+      logging=None,
+      monitoring=None,
+      disable_addons=None,
+      istio_config=None,
+      cloud_run_config=None,
+      cluster_dns=None,
+      cluster_dns_scope=None,
+      cluster_dns_domain=None,
+      enable_autoscaling=None,
+      min_nodes=None,
+      max_nodes=None,
+      image_type=None,
+      image=None,
+      image_project=None,
+      locations=None,
+      enable_master_authorized_networks=None,
+      master_authorized_networks=None,
+      enable_pod_security_policy=None,
+      enable_binauthz=None,
+      enable_vertical_pod_autoscaling=None,
+      enable_experimental_vertical_pod_autoscaling=None,
+      enable_intra_node_visibility=None,
+      enable_l4_ilb_subsetting=None,
+      security_profile=None,
+      security_profile_runtime_rules=None,
+      autoscaling_profile=None,
+      enable_peering_route_sharing=None,
+      workload_pool=None,
+      identity_provider=None,
+      disable_workload_identity=None,
+      enable_workload_certificates=None,
+      enable_alts=None,
+      enable_gke_oidc=None,
+      enable_identity_service=None,
+      enable_shielded_nodes=None,
+      disable_default_snat=None,
+      resource_usage_bigquery_dataset=None,
+      enable_network_egress_metering=None,
+      enable_resource_consumption_metering=None,
+      database_encryption_key=None,
+      disable_database_encryption=None,
+      enable_cost_management=None,
+      enable_autoprovisioning=None,
+      autoprovisioning_config_file=None,
+      autoprovisioning_service_account=None,
+      autoprovisioning_scopes=None,
+      autoprovisioning_locations=None,
+      min_cpu=None,
+      max_cpu=None,
+      min_memory=None,
+      max_memory=None,
+      min_accelerator=None,
+      max_accelerator=None,
+      release_channel=None,
+      autoprovisioning_image_type=None,
+      autoprovisioning_max_surge_upgrade=None,
+      autoprovisioning_max_unavailable_upgrade=None,
+      enable_autoprovisioning_autoupgrade=None,
+      enable_autoprovisioning_autorepair=None,
+      autoprovisioning_min_cpu_platform=None,
+      enable_tpu=None,
+      tpu_ipv4_cidr=None,
+      enable_master_global_access=None,
+      enable_tpu_service_networking=None,
+      notification_config=None,
+      private_ipv6_google_access_type=None,
+      kubernetes_objects_changes_target=None,
+      kubernetes_objects_snapshots_target=None,
+      disable_autopilot=None,
+      add_cross_connect_subnetworks=None,
+      remove_cross_connect_subnetworks=None,
+      clear_cross_connect_subnetworks=None,
+      enable_service_externalips=None,
+      security_group=None,
+      enable_gcfs=None,
+      enable_image_streaming=None,
+      enable_managed_prometheus=None,
+  ):
     self.version = version
     self.update_master = bool(update_master)
     self.update_nodes = bool(update_nodes)
@@ -913,6 +918,7 @@ class UpdateClusterOptions(object):
     self.security_group = security_group
     self.enable_gcfs = enable_gcfs
     self.enable_image_streaming = enable_image_streaming
+    self.enable_managed_prometheus = enable_managed_prometheus
 
 
 class SetMasterAuthOptions(object):
@@ -2213,7 +2219,7 @@ class APIAdapter(object):
         update.desiredMonitoringService = options.monitoring_service
       if options.logging_service:
         update.desiredLoggingService = options.logging_service
-    elif options.logging or options.monitoring:
+    elif options.logging or options.monitoring or options.enable_managed_prometheus:
       logging = _GetLoggingConfig(options, self.messages)
       monitoring = _GetMonitoringConfig(options, self.messages)
       update = self.messages.ClusterUpdate()
@@ -4773,46 +4779,62 @@ def _GetLoggingConfig(options, messages):
 
 def _GetMonitoringConfig(options, messages):
   """Gets the MonitoringConfig from create and update options."""
-  if options.monitoring is None:
+
+  comp = None
+  prom = None
+  config = messages.MonitoringConfig()
+
+  if options.monitoring is not None:
+    # TODO(b/195524749): Validate the input in flags.py after Control Plane
+    # Signals is GA.
+    if any(c not in MONITORING_OPTIONS for c in options.monitoring):
+      raise util.Error(
+          '[' + ', '.join(options.monitoring) +
+          '] contains option(s) that are not supported for monitoring.')
+
+    comp = messages.MonitoringComponentConfig()
+    if NONE in options.monitoring:
+      if len(options.monitoring) > 1:
+        raise util.Error('Cannot include other values when None is specified.')
+      return messages.MonitoringConfig(componentConfig=comp)
+    if SYSTEM not in options.monitoring:
+      raise util.Error(
+          'Must include system monitoring if any monitoring is enabled.')
+    comp.enableComponents.append(
+        messages.MonitoringComponentConfig
+        .EnableComponentsValueListEntryValuesEnum.SYSTEM_COMPONENTS)
+
+    if WORKLOAD in options.monitoring:
+      comp.enableComponents.append(
+          messages.MonitoringComponentConfig
+          .EnableComponentsValueListEntryValuesEnum.WORKLOADS)
+    if API_SERVER in options.monitoring:
+      comp.enableComponents.append(
+          messages.MonitoringComponentConfig
+          .EnableComponentsValueListEntryValuesEnum.APISERVER)
+    if SCHEDULER in options.monitoring:
+      comp.enableComponents.append(
+          messages.MonitoringComponentConfig
+          .EnableComponentsValueListEntryValuesEnum.SCHEDULER)
+    if CONTROLLER_MANAGER in options.monitoring:
+      comp.enableComponents.append(
+          messages.MonitoringComponentConfig
+          .EnableComponentsValueListEntryValuesEnum.CONTROLLER_MANAGER)
+
+    config.componentConfig = comp
+
+  if options.enable_managed_prometheus is not None:
+    prom = messages.ManagedPrometheusConfig(
+        enabled=options.enable_managed_prometheus)
+    # The v1 MonitoringConfig does not have this field, as it is currently in
+    # beta. Guard against that here.
+    if hasattr(config, 'managedPrometheusConfig'):
+      config.managedPrometheusConfig = prom
+
+  if comp is None and prom is None:
     return None
 
-  # TODO(b/195524749): Validate the input in flags.py after Control Plane
-  # Signals is GA.
-  if any(c not in MONITORING_OPTIONS for c in options.monitoring):
-    raise util.Error(
-        '[' + ', '.join(options.monitoring) +
-        '] contains option(s) that are not supported for monitoring.')
-
-  config = messages.MonitoringComponentConfig()
-  if NONE in options.monitoring:
-    if len(options.monitoring) > 1:
-      raise util.Error('Cannot include other values when None is specified.')
-    return messages.MonitoringConfig(componentConfig=config)
-  if SYSTEM not in options.monitoring:
-    raise util.Error(
-        'Must include system monitoring if any monitoring is enabled.')
-  config.enableComponents.append(
-      messages.MonitoringComponentConfig
-      .EnableComponentsValueListEntryValuesEnum.SYSTEM_COMPONENTS)
-
-  if WORKLOAD in options.monitoring:
-    config.enableComponents.append(
-        messages.MonitoringComponentConfig
-        .EnableComponentsValueListEntryValuesEnum.WORKLOADS)
-  if API_SERVER in options.monitoring:
-    config.enableComponents.append(
-        messages.MonitoringComponentConfig
-        .EnableComponentsValueListEntryValuesEnum.APISERVER)
-  if SCHEDULER in options.monitoring:
-    config.enableComponents.append(
-        messages.MonitoringComponentConfig
-        .EnableComponentsValueListEntryValuesEnum.SCHEDULER)
-  if CONTROLLER_MANAGER in options.monitoring:
-    config.enableComponents.append(
-        messages.MonitoringComponentConfig
-        .EnableComponentsValueListEntryValuesEnum.CONTROLLER_MANAGER)
-
-  return messages.MonitoringConfig(componentConfig=config)
+  return config
 
 
 def _GetKubernetesObjectsExportConfigForClusterCreate(options, messages):

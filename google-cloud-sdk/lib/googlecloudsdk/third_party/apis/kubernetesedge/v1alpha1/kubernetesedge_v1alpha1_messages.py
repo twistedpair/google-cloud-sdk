@@ -76,6 +76,19 @@ class AuditLogConfig(_messages.Message):
   logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
 
 
+class Authorization(_messages.Message):
+  r"""RBAC policy that will be applied and managed by GEC.
+
+  Fields:
+    adminUsers: Required. User that will be granted the cluster-admin role on
+      the cluster, providing full access to the cluster. Currently, this is a
+      singular field, but will be expanded to allow multiple admins in the
+      future.
+  """
+
+  adminUsers = _messages.MessageField('ClusterUser', 1)
+
+
 class Binding(_messages.Message):
   r"""Associates `members` with a `role`.
 
@@ -159,6 +172,8 @@ class Cluster(_messages.Message):
     LabelsValue: Labels associated with this resource.
 
   Fields:
+    authorization: Required. Immutable. RBAC policy that will be applied and
+      managed by GEC.
     createTime: Output only. The time when the cluster was created.
     defaultMaxPodsPerNode: The default maximum number of pods per node used if
       a maximum value is not specified explicitly for a node pool in this
@@ -195,14 +210,15 @@ class Cluster(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  createTime = _messages.StringField(1)
-  defaultMaxPodsPerNode = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  endpoint = _messages.StringField(3)
-  hub = _messages.MessageField('Hub', 4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  networking = _messages.MessageField('ClusterNetworking', 7)
-  updateTime = _messages.StringField(8)
+  authorization = _messages.MessageField('Authorization', 1)
+  createTime = _messages.StringField(2)
+  defaultMaxPodsPerNode = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  endpoint = _messages.StringField(4)
+  hub = _messages.MessageField('Hub', 5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  networking = _messages.MessageField('ClusterNetworking', 8)
+  updateTime = _messages.StringField(9)
 
 
 class ClusterNetworking(_messages.Message):
@@ -219,6 +235,16 @@ class ClusterNetworking(_messages.Message):
 
   clusterIpv4CidrBlocks = _messages.StringField(1, repeated=True)
   servicesIpv4CidrBlocks = _messages.StringField(2, repeated=True)
+
+
+class ClusterUser(_messages.Message):
+  r"""A user principal for an RBAC policy.
+
+  Fields:
+    username: An active Google username.
+  """
+
+  username = _messages.StringField(1)
 
 
 class Details(_messages.Message):

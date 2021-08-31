@@ -80,6 +80,11 @@ class NodePoolsClient(object):
     config.sshConfig = ssh_config
     return ssh_config
 
+  def _CreateAwsProxyConfig(self, secret_arn, secret_version_id):
+    msg = 'GoogleCloudGkemulticloud{}AwsProxyConfig'.format(self.version)
+    return getattr(self.messages, msg)(
+        secretArn=secret_arn, secretVersion=secret_version_id)
+
   def Create(self, node_pool_ref, args):
     """Create an AWS node pool."""
     validate_only = getattr(args, 'validate_only', False)
@@ -105,6 +110,9 @@ class NodePoolsClient(object):
     config.instanceType = args.instance_type
     if args.security_group_ids:
       config.securityGroupIds.extend(args.security_group_ids)
+    if args.proxy_secret_arn and args.proxy_secret_version_id:
+      config.proxyConfig = self._CreateAwsProxyConfig(
+          args.proxy_secret_arn, args.proxy_secret_version_id)
 
     root_volume = self._AddAwsNodePoolRootVolume(config)
     root_volume.sizeGib = args.root_volume_size

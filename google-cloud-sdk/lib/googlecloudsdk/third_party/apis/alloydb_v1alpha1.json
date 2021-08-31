@@ -103,7 +103,7 @@
     "oauth2": {
       "scopes": {
         "https://www.googleapis.com/auth/cloud-platform": {
-          "description": "See, edit, configure, and delete your Google Cloud Platform data"
+          "description": "See, edit, configure, and delete your Google Cloud data and see the email address for your Google Account."
         }
       }
     }
@@ -179,7 +179,7 @@
     },
     "Policy": {
       "id": "Policy",
-      "description": "An Identity and Access Management (IAM) policy, which specifies access controls for Google Cloud resources. A `Policy` is a collection of `bindings`. A `binding` binds one or more `members` to a single `role`. Members can be user accounts, service accounts, Google groups, and domains (such as G Suite). A `role` is a named list of permissions; each `role` can be an IAM predefined role or a user-created custom role. For some types of Google Cloud resources, a `binding` can also specify a `condition`, which is a logical expression that allows access to a resource only if the expression evaluates to `true`. A condition can add constraints based on attributes of the request, the resource, or both. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies). **JSON example:** { \"bindings\": [ { \"role\": \"roles\/resourcemanager.organizationAdmin\", \"members\": [ \"user:mike@example.com\", \"group:admins@example.com\", \"domain:google.com\", \"serviceAccount:my-project-id@appspot.gserviceaccount.com\" ] }, { \"role\": \"roles\/resourcemanager.organizationViewer\", \"members\": [ \"user:eve@example.com\" ], \"condition\": { \"title\": \"expirable access\", \"description\": \"Does not grant access after Sep 2020\", \"expression\": \"request.time < timestamp('2020-10-01T00:00:00.000Z')\", } } ], \"etag\": \"BwWWja0YfJA=\", \"version\": 3 } **YAML example:** bindings: - members: - user:mike@example.com - group:admins@example.com - domain:google.com - serviceAccount:my-project-id@appspot.gserviceaccount.com role: roles\/resourcemanager.organizationAdmin - members: - user:eve@example.com role: roles\/resourcemanager.organizationViewer condition: title: expirable access description: Does not grant access after Sep 2020 expression: request.time < timestamp('2020-10-01T00:00:00.000Z') - etag: BwWWja0YfJA= - version: 3 For a description of IAM and its features, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/docs\/).",
+      "description": "An Identity and Access Management (IAM) policy, which specifies access controls for Google Cloud resources. A `Policy` is a collection of `bindings`. A `binding` binds one or more `members` to a single `role`. Members can be user accounts, service accounts, Google groups, and domains (such as G Suite). A `role` is a named list of permissions; each `role` can be an IAM predefined role or a user-created custom role. For some types of Google Cloud resources, a `binding` can also specify a `condition`, which is a logical expression that allows access to a resource only if the expression evaluates to `true`. A condition can add constraints based on attributes of the request, the resource, or both. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies). **JSON example:** { \"bindings\": [ { \"role\": \"roles\/resourcemanager.organizationAdmin\", \"members\": [ \"user:mike@example.com\", \"group:admins@example.com\", \"domain:google.com\", \"serviceAccount:my-project-id@appspot.gserviceaccount.com\" ] }, { \"role\": \"roles\/resourcemanager.organizationViewer\", \"members\": [ \"user:eve@example.com\" ], \"condition\": { \"title\": \"expirable access\", \"description\": \"Does not grant access after Sep 2020\", \"expression\": \"request.time < timestamp('2020-10-01T00:00:00.000Z')\", } } ], \"etag\": \"BwWWja0YfJA=\", \"version\": 3 } **YAML example:** bindings: - members: - user:mike@example.com - group:admins@example.com - domain:google.com - serviceAccount:my-project-id@appspot.gserviceaccount.com role: roles\/resourcemanager.organizationAdmin - members: - user:eve@example.com role: roles\/resourcemanager.organizationViewer condition: title: expirable access description: Does not grant access after Sep 2020 expression: request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA= version: 3 For a description of IAM and its features, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/docs\/).",
       "type": "object",
       "properties": {
         "version": {
@@ -450,20 +450,23 @@
     },
     "Cluster": {
       "id": "Cluster",
-      "description": "Message describing Cluster object NEXT_ID: 8",
+      "description": "Message describing Cluster object NEXT_ID: 9",
       "type": "object",
       "properties": {
         "name": {
-          "description": "The name of the cluster resource with the format: * projects\/{project}\/locations\/{region}\/clusters\/{cluster_id} where the cluster ID segment should satisfy the regex expression \"[a-z0-9-]+\". For more details see https:\/\/google.aip.dev\/122. The prefix of the cluster resource name is the name of the parent resource: * projects\/{project}\/locations\/{region}",
+          "description": "Output only. The name of the cluster resource with the format: * projects\/{project}\/locations\/{region}\/clusters\/{cluster_id} where the cluster ID segment should satisfy the regex expression \"[a-z0-9-]+\". For more details see https:\/\/google.aip.dev\/122. The prefix of the cluster resource name is the name of the parent resource: * projects\/{project}\/locations\/{region}",
+          "readOnly": true,
           "type": "string"
         },
         "createTime": {
-          "description": "Create time stamp",
+          "description": "Output only. Create time stamp",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
-          "description": "Update time stamp",
+          "description": "Output only. Update time stamp",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
@@ -475,7 +478,8 @@
           }
         },
         "state": {
-          "description": "The current serving state of the cluster.",
+          "description": "Output only. The current serving state of the cluster.",
+          "readOnly": true,
           "type": "string",
           "enumDescriptions": [
             "The state of the cluster is unknown.",
@@ -511,6 +515,28 @@
         "network": {
           "description": "The resource link for the VPC network in which cluster resources are created and from which they are accessible via Private IP. The network must belong to the same project as the cluster. It is specified in the form: \"projects\/{project_number}\/global\/networks\/{network_id}\". This is required to create a cluster. It can be updated, but it cannot be removed.",
           "type": "string"
+        },
+        "initialUsers": {
+          "description": "Input only. Initial users to setup during cluster creation. Must be non-empty. We intend to deprecate this post private preview, once we have separate User resources.",
+          "type": "array",
+          "items": {
+            "$ref": "UserPassword"
+          }
+        }
+      }
+    },
+    "UserPassword": {
+      "id": "UserPassword",
+      "description": "The username\/password for a database user. Used for specifying initial users at cluster creation time.",
+      "type": "object",
+      "properties": {
+        "user": {
+          "description": "The database username.",
+          "type": "string"
+        },
+        "password": {
+          "description": "The initial password for the user.",
+          "type": "string"
         }
       }
     },
@@ -519,7 +545,7 @@
       "type": "object",
       "properties": {
         "requestId": {
-          "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes after the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+          "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes after the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
           "type": "string"
         }
       }
@@ -551,20 +577,23 @@
     },
     "Instance": {
       "id": "Instance",
-      "description": "Message describing Instance object NEXT ID: 13",
+      "description": "Message describing Instance object NEXT ID: 14",
       "type": "object",
       "properties": {
         "name": {
-          "description": "The name of the instance resource with the format: * projects\/{project}\/locations\/{region}\/clusters\/{cluster_id}\/instances\/{instance_id} where the cluster and instance ID segments should satisfy the regex expression \"[a-z0-9-]+\". For more details see https:\/\/google.aip.dev\/122. The prefix of the instance resource name is the name of the parent resource: * projects\/{project}\/locations\/{region}\/clusters\/{cluster_id}",
+          "description": "Output only. The name of the instance resource with the format: * projects\/{project}\/locations\/{region}\/clusters\/{cluster_id}\/instances\/{instance_id} where the cluster and instance ID segments should satisfy the regex expression \"[a-z0-9-]+\". For more details see https:\/\/google.aip.dev\/122. The prefix of the instance resource name is the name of the parent resource: * projects\/{project}\/locations\/{region}\/clusters\/{cluster_id}",
+          "readOnly": true,
           "type": "string"
         },
         "createTime": {
-          "description": "Create time stamp",
+          "description": "Output only. Create time stamp",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
-          "description": "Update time stamp",
+          "description": "Output only. Update time stamp",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
@@ -575,8 +604,22 @@
             "type": "string"
           }
         },
+        "instanceType": {
+          "type": "string",
+          "enumDescriptions": [
+            "",
+            "PRIMARY instances support read and write operations.",
+            "READ instances support read operations only. Each read instance consists of one or more homogeneous read replicas. * READ instance of size 1 can only have zonal availability. * READ instances with replica count of 2 or more can have regional availability (replicas are present in 2 or more zones in a region)."
+          ],
+          "enum": [
+            "INSTANCE_TYPE_UNSPECIFIED",
+            "PRIMARY",
+            "READ"
+          ]
+        },
         "state": {
-          "description": "The current serving state of the instance.",
+          "description": "Output only. The current serving state of the instance.",
+          "readOnly": true,
           "type": "string",
           "enumDescriptions": [
             "The state of the instance is unknown.",
@@ -597,21 +640,8 @@
             "FAILED"
           ]
         },
-        "instanceType": {
-          "type": "string",
-          "enumDescriptions": [
-            "",
-            "PRIMARY instances support read and write operations.",
-            "READ instances support read operations only. Each read instance consists of one or more homogeneous read replicas. * READ instance of size 1 can only have zonal availability. * READ instances with replica count of 2 or more can have regional availability (replicas are present in 2 or more zones in a region)."
-          ],
-          "enum": [
-            "INSTANCE_TYPE_UNSPECIFIED",
-            "PRIMARY",
-            "READ"
-          ]
-        },
         "tier": {
-          "description": "The tier (or machine type) for this instance, for example *db-custom-1-3840* (PostgreSQL instances). Required for new instances and can be updated.",
+          "description": "The tier (or machine type) for this instance, for example *n2-standard-2* (PostgreSQL instances). Required for new instances and can be updated.",
           "type": "string"
         },
         "availabilityType": {
@@ -646,6 +676,11 @@
         "readPoolConfig": {
           "description": "Read pool specific config.",
           "$ref": "ReadPoolConfig"
+        },
+        "ipAddress": {
+          "description": "Output only. The IP address for the Instance. This is the connection endpoint for an end-user application.",
+          "readOnly": true,
+          "type": "string"
         }
       }
     },
@@ -713,12 +748,23 @@
         }
       }
     },
+    "FailoverInstanceRequest": {
+      "id": "FailoverInstanceRequest",
+      "description": "Message for triggering failover on an Instance",
+      "type": "object",
+      "properties": {
+        "requestId": {
+          "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes after the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+          "type": "string"
+        }
+      }
+    },
     "RestartInstanceRequest": {
       "id": "RestartInstanceRequest",
       "type": "object",
       "properties": {
         "requestId": {
-          "description": "An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes after the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+          "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes after the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
           "type": "string"
         }
       }
@@ -754,16 +800,19 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "name of resource",
+          "description": "Output only. name of resource",
+          "readOnly": true,
           "type": "string"
         },
         "createTime": {
-          "description": "Create time stamp",
+          "description": "Output only. Create time stamp",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
-          "description": "Update time stamp",
+          "description": "Output only. Update time stamp",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
@@ -807,16 +856,19 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "name of resource",
+          "description": "Output only. The name of the backup resource with the format: * projects\/{project}\/locations\/{region}\/clusters\/{cluster_id}\/backups\/{backup_id} where the cluster and backup ID segments should satisfy the regex expression \"[a-z0-9-]+\". For more details see https:\/\/google.aip.dev\/122. The prefix of the backup resource name is the name of the parent resource: * projects\/{project}\/locations\/{region}\/clusters\/{cluster_id}",
+          "readOnly": true,
           "type": "string"
         },
         "createTime": {
-          "description": "Create time stamp",
+          "description": "Output only. Create time stamp",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
-          "description": "Update time stamp",
+          "description": "Output only. Update time stamp",
+          "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
@@ -826,6 +878,37 @@
           "additionalProperties": {
             "type": "string"
           }
+        },
+        "state": {
+          "description": "Output only. The current state of the backup.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "The state of the backup is unknown.",
+            "The backup is ready.",
+            "The backup is creating.",
+            "The backup failed."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "READY",
+            "CREATING",
+            "FAILED"
+          ]
+        },
+        "type": {
+          "description": "The backup type, which suggests the trigger for the backup.",
+          "type": "string",
+          "enumDescriptions": [
+            "",
+            "ON_DEMAND backups that were triggered by the customer (e.g., not AUTOMATED).",
+            "AUTOMATED backups triggered by the backup scheduler."
+          ],
+          "enum": [
+            "TYPE_UNSPECIFIED",
+            "ON_DEMAND",
+            "AUTOMATED"
+          ]
         }
       }
     },
@@ -897,7 +980,7 @@
           }
         },
         "requiresDbRestart": {
-          "description": "Whether setting or updating this flag on an Instance requires a database restart. If a flag that requires database restart is set, the backend will automatically restart the database (making sure to satisfy any avaialability SLO's).",
+          "description": "Whether setting or updating this flag on an Instance requires a database restart. If a flag that requires database restart is set, the backend will automatically restart the database (making sure to satisfy any availability SLO's).",
           "type": "boolean"
         },
         "stringRestrictions": {
@@ -998,6 +1081,59 @@
           "items": {
             "type": "string"
           }
+        },
+        "instanceStatuses": {
+          "description": "A map representing current state of the instances involved in the BatchCreateInstances operation. The instance state will be in STATE_UNSPECIFIED state if the instance has not yet been picked up for processing. The key of the map is the name of the instance resource. For the required format, see the comment on the Instance.name field.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "BatchCreateInstanceStatus"
+          }
+        }
+      }
+    },
+    "BatchCreateInstanceStatus": {
+      "id": "BatchCreateInstanceStatus",
+      "description": "Message for current status of an instance in the BatchCreateInstances operation. For example, lets say a BatchCreateInstances workflow has 4 instances, Instance1 through Instance4. Lets also assume that 2 instances succeeded but the third failed to create and the 4th was never picked up for creation because of failure of the previous one. Then, resulting states would look something like: 1. Instance1 = ROLLED_BACK 2. Instance2 = ROLLED_BACK 3. Instance3 = FAILED 4. Instance4 = PENDING_CREATE However, while the operation is running, the instance might be in other states including ACTIVE, DELETING and CREATING.",
+      "type": "object",
+      "properties": {
+        "state": {
+          "description": "The current state of an instance involved in the batch create operation. Once the operation is complete, the final state of the instances in the LRO can be one of: 1. ACTIVE, indicating that instances were created successfully 2. FAILED, indicating that a particular instance failed creation 3. ROLLED_BACK indicating that although the instance was created successfully, it had to be rolled back and deleted due to failure in other steps of the workflow. 4. PENDING_CREATE, indicating that the instance was never picked up for creation due to some error in a preceding operation that caused the BatchCreateInstances operation to stop.",
+          "type": "string",
+          "enumDescriptions": [
+            "The state of the instance is unknown.",
+            "Instance is pending creation and has not yet been picked up for processsing in the backend.",
+            "The instance is active and running.",
+            "The instance is being created.",
+            "The instance is being deleted.",
+            "The creation of the instance failed or a fatal error occurred during an operation on the instance.",
+            "The instance was created successfully, but was rolled back and deleted due to some other failure during BatchCreateInstances operation."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "PENDING_CREATE",
+            "ACTIVE",
+            "CREATING",
+            "DELETING",
+            "FAILED",
+            "ROLLED_BACK"
+          ]
+        },
+        "errorMsg": {
+          "description": "Error, if any error occurred and is available, during instance creation.",
+          "type": "string"
+        },
+        "type": {
+          "type": "string",
+          "enumDescriptions": [
+            "",
+            "PRIMARY instances support read and write operations.",
+            "READ instances support read operations only. Each read instance consists of one or more homogeneous read replicas. * READ instance of size 1 can only have zonal availability. * READ instances with replica count of 2 or more can have regional availability (replicas are present in 2 or more zones in a region)."
+          ],
+          "enum": [
+            "INSTANCE_TYPE_UNSPECIFIED",
+            "PRIMARY",
+            "READ"
+          ]
         }
       }
     }
@@ -1179,7 +1315,7 @@
                       "type": "string"
                     },
                     "pageSize": {
-                      "description": "Requested page size. Server may return fewer items than requested. If unspecified, server will pick an appropriate default.",
+                      "description": "Optional. Requested page size. Server may return fewer items than requested. If unspecified, server will pick an appropriate default.",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"
@@ -1190,12 +1326,12 @@
                       "type": "string"
                     },
                     "filter": {
-                      "description": "Filtering results",
+                      "description": "Optional. Filtering results",
                       "location": "query",
                       "type": "string"
                     },
                     "orderBy": {
-                      "description": "Hint for how to order the results",
+                      "description": "Optional. Hint for how to order the results",
                       "location": "query",
                       "type": "string"
                     }
@@ -1281,14 +1417,14 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "The name of the cluster resource with the format: * projects\/{project}\/locations\/{region}\/clusters\/{cluster_id} where the cluster ID segment should satisfy the regex expression \"[a-z0-9-]+\". For more details see https:\/\/google.aip.dev\/122. The prefix of the cluster resource name is the name of the parent resource: * projects\/{project}\/locations\/{region}",
+                      "description": "Output only. The name of the cluster resource with the format: * projects\/{project}\/locations\/{region}\/clusters\/{cluster_id} where the cluster ID segment should satisfy the regex expression \"[a-z0-9-]+\". For more details see https:\/\/google.aip.dev\/122. The prefix of the cluster resource name is the name of the parent resource: * projects\/{project}\/locations\/{region}",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "Required. Field mask is used to specify the fields to be overwritten in the Cluster resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
+                      "description": "Optional. Field mask is used to specify the fields to be overwritten in the Cluster resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"
@@ -1330,6 +1466,11 @@
                       "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes after the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
                       "location": "query",
                       "type": "string"
+                    },
+                    "force": {
+                      "description": "Optional. Whether to cascade delete child instances for given cluster.",
+                      "location": "query",
+                      "type": "boolean"
                     }
                   },
                   "parameterOrder": [
@@ -1350,7 +1491,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
-                      "description": "The name of the resource. For the required format, see the comment on the Cluster.name field.",
+                      "description": "Required. The name of the resource. For the required format, see the comment on the Cluster.name field.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -1370,6 +1511,49 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Forces a Failover for a regional cluster. Failover promotes the HA standby instance in the regional cluster."
+                },
+                "importCluster": {
+                  "id": "alloydb.projects.locations.clusters.importCluster",
+                  "path": "v1alpha1/{+parent}/clusters:importCluster",
+                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters:importCluster",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The name of the parent resource. For the required format, see the comment on the Cluster.name field.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "clusterId": {
+                      "description": "Required. Id of the requesting object If auto-generating Id server-side, remove this field and cluster_id from the method_signature of Create RPC",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "backupSource.backupName": {
+                      "description": "Required. The name of the backup resource with the format: * projects\/{project}\/locations\/{region}\/clusters\/{cluster_id}\/backups\/{backup_id}",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "Cluster"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a new Cluster in a given project and location, with a volume restored from the provided backup ID."
                 }
               }
               ,
@@ -1390,7 +1574,7 @@
                           "type": "string"
                         },
                         "pageSize": {
-                          "description": "Requested page size. Server may return fewer items than requested. If unspecified, server will pick an appropriate default.",
+                          "description": "Optional. Requested page size. Server may return fewer items than requested. If unspecified, server will pick an appropriate default.",
                           "location": "query",
                           "type": "integer",
                           "format": "int32"
@@ -1401,12 +1585,12 @@
                           "type": "string"
                         },
                         "filter": {
-                          "description": "Filtering results",
+                          "description": "Optional. Filtering results",
                           "location": "query",
                           "type": "string"
                         },
                         "orderBy": {
-                          "description": "Hint for how to order the results",
+                          "description": "Optional. Hint for how to order the results",
                           "location": "query",
                           "type": "string"
                         }
@@ -1525,14 +1709,14 @@
                       "httpMethod": "PATCH",
                       "parameters": {
                         "name": {
-                          "description": "The name of the instance resource with the format: * projects\/{project}\/locations\/{region}\/clusters\/{cluster_id}\/instances\/{instance_id} where the cluster and instance ID segments should satisfy the regex expression \"[a-z0-9-]+\". For more details see https:\/\/google.aip.dev\/122. The prefix of the instance resource name is the name of the parent resource: * projects\/{project}\/locations\/{region}\/clusters\/{cluster_id}",
+                          "description": "Output only. The name of the instance resource with the format: * projects\/{project}\/locations\/{region}\/clusters\/{cluster_id}\/instances\/{instance_id} where the cluster and instance ID segments should satisfy the regex expression \"[a-z0-9-]+\". For more details see https:\/\/google.aip.dev\/122. The prefix of the instance resource name is the name of the parent resource: * projects\/{project}\/locations\/{region}\/clusters\/{cluster_id}",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+\/instances\/[^\/]+$",
                           "location": "path",
                           "required": true,
                           "type": "string"
                         },
                         "updateMask": {
-                          "description": "Required. Field mask is used to specify the fields to be overwritten in the Instance resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
+                          "description": "Optional. Field mask is used to specify the fields to be overwritten in the Instance resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
                           "location": "query",
                           "type": "string",
                           "format": "google-fieldmask"
@@ -1587,6 +1771,34 @@
                       ],
                       "description": "Deletes a single Instance."
                     },
+                    "failover": {
+                      "id": "alloydb.projects.locations.clusters.instances.failover",
+                      "path": "v1alpha1/{+name}:failover",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/instances/{instancesId}:failover",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The name of the resource. For the required format, see the comment on the Instance.name field.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+\/instances\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "FailoverInstanceRequest"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Forces a Failover for a highly available instance. Failover promotes the HA standby instance as the new primary."
+                    },
                     "restart": {
                       "id": "alloydb.projects.locations.clusters.instances.restart",
                       "path": "v1alpha1/{+name}:restart",
@@ -1594,7 +1806,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "name": {
-                          "description": "The name of the resource. For the required format, see the comment on the Instance.name field.",
+                          "description": "Required. The name of the resource. For the required format, see the comment on the Instance.name field.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+\/instances\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -1633,7 +1845,7 @@
                           "type": "string"
                         },
                         "pageSize": {
-                          "description": "Requested page size. Server may return fewer items than requested. If unspecified, server will pick an appropriate default.",
+                          "description": "Optional. Requested page size. Server may return fewer items than requested. If unspecified, server will pick an appropriate default.",
                           "location": "query",
                           "type": "integer",
                           "format": "int32"
@@ -1644,12 +1856,12 @@
                           "type": "string"
                         },
                         "filter": {
-                          "description": "Filtering results",
+                          "description": "Optional. Filtering results",
                           "location": "query",
                           "type": "string"
                         },
                         "orderBy": {
-                          "description": "Hint for how to order the results",
+                          "description": "Optional. Hint for how to order the results",
                           "location": "query",
                           "type": "string"
                         }
@@ -1735,14 +1947,14 @@
                       "httpMethod": "PATCH",
                       "parameters": {
                         "name": {
-                          "description": "name of resource",
+                          "description": "Output only. name of resource",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+\/users\/[^\/]+$",
                           "location": "path",
                           "required": true,
                           "type": "string"
                         },
                         "updateMask": {
-                          "description": "Required. Field mask is used to specify the fields to be overwritten in the User resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
+                          "description": "Optional. Field mask is used to specify the fields to be overwritten in the User resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
                           "location": "query",
                           "type": "string",
                           "format": "google-fieldmask"
@@ -1815,7 +2027,7 @@
                           "type": "string"
                         },
                         "pageSize": {
-                          "description": "Requested page size. Server may return fewer items than requested. If unspecified, server will pick an appropriate default.",
+                          "description": "Optional. Requested page size. Server may return fewer items than requested. If unspecified, server will pick an appropriate default.",
                           "location": "query",
                           "type": "integer",
                           "format": "int32"
@@ -1826,12 +2038,12 @@
                           "type": "string"
                         },
                         "filter": {
-                          "description": "Filtering results",
+                          "description": "Optional. Filtering results",
                           "location": "query",
                           "type": "string"
                         },
                         "orderBy": {
-                          "description": "Hint for how to order the results",
+                          "description": "Optional. Hint for how to order the results",
                           "location": "query",
                           "type": "string"
                         }
@@ -1917,14 +2129,14 @@
                       "httpMethod": "PATCH",
                       "parameters": {
                         "name": {
-                          "description": "name of resource",
+                          "description": "Output only. The name of the backup resource with the format: * projects\/{project}\/locations\/{region}\/clusters\/{cluster_id}\/backups\/{backup_id} where the cluster and backup ID segments should satisfy the regex expression \"[a-z0-9-]+\". For more details see https:\/\/google.aip.dev\/122. The prefix of the backup resource name is the name of the parent resource: * projects\/{project}\/locations\/{region}\/clusters\/{cluster_id}",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+\/backups\/[^\/]+$",
                           "location": "path",
                           "required": true,
                           "type": "string"
                         },
                         "updateMask": {
-                          "description": "Required. Field mask is used to specify the fields to be overwritten in the Backup resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
+                          "description": "Optional. Field mask is used to specify the fields to be overwritten in the Backup resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
                           "location": "query",
                           "type": "string",
                           "format": "google-fieldmask"

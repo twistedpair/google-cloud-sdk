@@ -28,10 +28,12 @@ import re
 
 from apitools.base.py import encoding_helper
 from apitools.base.py import exceptions as apitools_exceptions
+from googlecloudsdk.api_lib.app import yaml_parsing as app_engine_yaml_parsing
 from googlecloudsdk.api_lib.run import container_resource
 from googlecloudsdk.api_lib.run import service as k8s_service
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import messages as messages_util
+from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.auth import auth_util
 from googlecloudsdk.command_lib.code import secrets
 from googlecloudsdk.command_lib.code import yaml_helper
@@ -56,6 +58,10 @@ _C_IDENTIFIER = r'^[a-zA-Z_][a-zA-Z_0-9]*$'
 
 class InvalidLocationError(exceptions.Error):
   """File is in an invalid location."""
+
+
+class _ParseError(TypeError):
+  """File does not parse with the expected schema."""
 
 
 class _DataType(type):
@@ -267,11 +273,18 @@ class Settings(DataObject):
     )
 
   def WithServiceYaml(self, yaml_path):
-    """Overrides settings with service.yaml and returns a new Settings object."""
-    yaml_dict = yaml.load_path(yaml_path)
-    message = messages_util.DictToMessageWithErrorCheck(
-        yaml_dict, RUN_MESSAGES_MODULE.Service)
-    knative_service = k8s_service.Service(message, RUN_MESSAGES_MODULE)
+    """Overrides settings with service.yaml and returns a new Settings object.
+
+    Args:
+      yaml_path: Filename to read.
+
+    Returns:
+      New Settings object.
+
+    Raises:
+      _ParseError: Input does not look like a service.yaml
+    """
+    knative_service = self._ParseServiceYaml(yaml_path)
 
     replacements = {
         'service_name': knative_service.metadata.name,
@@ -334,6 +347,16 @@ class Settings(DataObject):
 
     return self.replace(**replacements)
 
+  def _ParseServiceYaml(self, yaml_path):
+    try:
+      yaml_dict = yaml.load_path(yaml_path)
+      message = messages_util.DictToMessageWithErrorCheck(
+          yaml_dict, RUN_MESSAGES_MODULE.Service)
+      knative_service = k8s_service.Service(message, RUN_MESSAGES_MODULE)
+    except (yaml.Error, messages_util.DecodeError):
+      raise _ParseError()
+    return knative_service
+
   def _ResourceRequests(self, container):
     if not container.resources or not container.resources.limits:
       return {}
@@ -344,6 +367,27 @@ class Settings(DataObject):
       if prop.key == 'memory':
         ret['memory'] = prop.value
     return ret
+
+  def WithAppYaml(self, yaml_path):
+    """Overrides settings with app.yaml and returns a new Settings object.
+
+    Args:
+      yaml_path: Filename to read.
+
+    Returns:
+      New Settings object.
+
+    Raises:
+      ParseError: Input does not look like an app.yaml
+    """
+    try:
+      service_config = app_engine_yaml_parsing.ServiceYamlInfo.FromFile(
+          yaml_path)
+    except yaml.Error:
+      raise _ParseError()
+    builder_url = _GaeBuilderPackagePath(service_config.parsed.runtime)
+    builder = BuildpackBuilder(builder=builder_url, trust=True, devmode=False)
+    return self.replace(builder=builder)
 
   def WithArgs(self, args):
     """Overrides settings with args and returns a new Settings object."""
@@ -399,15 +443,16 @@ class Settings(DataObject):
 
 
 def _ChooseExistingServiceYaml(context, arg):
-  """Rules for choosing a service.yaml file depending on SERVICE_CONFIG arg.
+  """Rules for choosing a service.yaml or app.yaml file.
 
   The rules are meant to discover common filename variants like
   'service.dev.yml' or 'staging-service.yaml'.
 
   Args:
     context: Build context dir. Could be '.'.
-    arg: User's path (relative to context or absolute) to a yaml file with a
-      knative Service description, or None.
+    arg: User's path (relative to context or absolute) to a yaml file with
+      service config, or None. The service config could be a knative Service
+      description or an appengine app.yaml.
 
   Returns:
     Absolute path to a yaml file, or None.
@@ -416,7 +461,7 @@ def _ChooseExistingServiceYaml(context, arg):
     complete_abs_path = os.path.abspath(os.path.join(context, arg))
     if os.path.exists(complete_abs_path):
       return complete_abs_path
-    raise ValueError("file '{}' not found".format(complete_abs_path))
+    raise exceptions.Error("File '{}' not found.".format(complete_abs_path))
   for pattern in [
       '*service.dev.yaml',
       '*service.dev.yml',
@@ -456,14 +501,30 @@ def _MergedEnvVars(env_vars, env_vars_secrets, new_env_vars,
   return {'env_vars': env_vars, 'env_vars_secrets': env_vars_secrets}
 
 
-def AssembleSettings(args):
-  """Layer the default values, service.yaml values, and cmdline overrides."""
+def AssembleSettings(args, release_track):
+  """Layer the defaults, service.yaml/app.yaml values, and cmdline overrides."""
+
+  # See flags.py for where we set help text based on release track, too.
+  service_config_may_be_app_yaml = release_track == base.ReleaseTrack.ALPHA
+
   settings = Settings.Defaults()
-  yaml_file = _ChooseExistingServiceYaml(
-      getattr(args, 'source', None) or os.path.curdir,
-      getattr(args, 'service_config', None))
+  context_dir = getattr(args, 'source', None) or os.path.curdir
+  service_config_arg = getattr(args, 'service_config', None)
+  yaml_file = _ChooseExistingServiceYaml(context_dir, service_config_arg)
   if yaml_file:
-    settings = settings.WithServiceYaml(yaml_file)
+    try:
+      settings = settings.WithServiceYaml(yaml_file)
+    except _ParseError:
+      if service_config_may_be_app_yaml:
+        try:
+          settings = settings.WithAppYaml(yaml_file)
+        except _ParseError:
+          raise exceptions.Error(
+              '%r is unreadable as a service.yaml or app.yaml file.' %
+              yaml_file)
+      else:
+        raise exceptions.Error('%r is unreadable as a service.yaml file.' %
+                               yaml_file)
   settings = settings.WithArgs(args)
   settings = settings.Build()
   return settings

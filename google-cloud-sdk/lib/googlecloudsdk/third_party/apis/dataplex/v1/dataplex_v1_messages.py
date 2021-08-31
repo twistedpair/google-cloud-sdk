@@ -1549,8 +1549,9 @@ class GoogleCloudDataplexV1Lake(_messages.Message):
     description: Optional. Description of the lake.
     displayName: Optional. User friendly display name.
     labels: Optional. User-defined labels for the lake.
-    metastore: Optional. Settings to manage metadata publishing to a Hive
-      Metastore from the lake.
+    metastore: Optional. Settings to manage lake and Dataproc Metastore
+      service instance association.
+    metastoreStatus: Output only. Metastore status of the lake.
     name: Output only. The relative resource name of the lake, of the form:
       projects/{project_number}/locations/{location_id}/lakes/{lake_id}
     securitySpec: Optional. Specification of the security policy applied to
@@ -1615,27 +1616,60 @@ class GoogleCloudDataplexV1Lake(_messages.Message):
   displayName = _messages.StringField(5)
   labels = _messages.MessageField('LabelsValue', 6)
   metastore = _messages.MessageField('GoogleCloudDataplexV1LakeMetastore', 7)
-  name = _messages.StringField(8)
-  securitySpec = _messages.MessageField('GoogleCloudDataplexV1LakeSecuritySpec', 9)
-  securityStatus = _messages.MessageField('GoogleCloudDataplexV1SecurityStatus', 10)
-  serviceAccount = _messages.StringField(11)
-  state = _messages.EnumField('StateValueValuesEnum', 12)
-  uid = _messages.StringField(13)
-  updateTime = _messages.StringField(14)
+  metastoreStatus = _messages.MessageField('GoogleCloudDataplexV1LakeMetastoreStatus', 8)
+  name = _messages.StringField(9)
+  securitySpec = _messages.MessageField('GoogleCloudDataplexV1LakeSecuritySpec', 10)
+  securityStatus = _messages.MessageField('GoogleCloudDataplexV1SecurityStatus', 11)
+  serviceAccount = _messages.StringField(12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
+  uid = _messages.StringField(14)
+  updateTime = _messages.StringField(15)
 
 
 class GoogleCloudDataplexV1LakeMetastore(_messages.Message):
-  r"""Settings to manage metadata publishing to a Hive Metastore from a lake.
+  r"""Settings to manage association of Dataproc Metastore with a lake.
 
   Fields:
     service: Optional. A relative reference to the Dataproc Metastore
-      (https://cloud.google.com/dataproc-metastore/docs) service instance into
-      which metadata will be published. This is of the form:
-      projects/{project_number}/locations/{location_id}/services/{service_id}
-      where the project and location matches the those of the lake.
+      (https://cloud.google.com/dataproc-metastore/docs) service associated
+      with the lake:
+      projects/{project_id}/locations/{location_id}/services/{service_id}
   """
 
   service = _messages.StringField(1)
+
+
+class GoogleCloudDataplexV1LakeMetastoreStatus(_messages.Message):
+  r"""Status of Lake and Dataproc Metastore service instance association.
+
+  Enums:
+    StateValueValuesEnum: Current state of association.
+
+  Fields:
+    message: Additional information about the current status.
+    state: Current state of association.
+    updateTime: Last update time of the metastore status of the lake.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Current state of association.
+
+    Values:
+      STATE_UNSPECIFIED: Unspecified.
+      NONE: A Metastore service instance is not associated with the lake.
+      READY: A Metastore service instance is attached to the lake.
+      UPDATING: Attach/detach is in progress.
+      ERROR: Attach/detach could not be done due to errors.
+    """
+    STATE_UNSPECIFIED = 0
+    NONE = 1
+    READY = 2
+    UPDATING = 3
+    ERROR = 4
+
+  message = _messages.StringField(1)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
+  updateTime = _messages.StringField(3)
 
 
 class GoogleCloudDataplexV1LakeSecuritySpec(_messages.Message):

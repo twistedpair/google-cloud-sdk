@@ -205,18 +205,18 @@
     },
     "ListInstancesResponse": {
       "id": "ListInstancesResponse",
-      "description": "Message for response to listing Instances.",
+      "description": "Response message for the list of servers.",
       "type": "object",
       "properties": {
         "instances": {
-          "description": "The list of Instance.",
+          "description": "The list of servers.",
           "type": "array",
           "items": {
             "$ref": "Instance"
           }
         },
         "nextPageToken": {
-          "description": "A token identifying a page of results the server should return.",
+          "description": "A token identifying a page of results from the server.",
           "type": "string"
         },
         "unreachable": {
@@ -230,7 +230,7 @@
     },
     "Instance": {
       "id": "Instance",
-      "description": "An instance resource.",
+      "description": "A server.",
       "type": "object",
       "properties": {
         "name": {
@@ -239,29 +239,29 @@
           "type": "string"
         },
         "createTime": {
-          "description": "Output only. Create time stamp.",
+          "description": "Output only. Create a time stamp.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "updateTime": {
-          "description": "Output only. Update time stamp.",
+          "description": "Output only. Update a time stamp.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
         },
         "machineType": {
-          "description": "The type of this Instance. [Available Instance types](https:\/\/cloud.google.com\/bare-metal\/docs\/bms-planning#server_configurations)",
+          "description": "The server type. [Available server types](https:\/\/cloud.google.com\/bare-metal\/docs\/bms-planning#server_configurations)",
           "type": "string"
         },
         "state": {
-          "description": "The state of this Instance.",
+          "description": "The state of the server.",
           "type": "string",
           "enumDescriptions": [
-            "The unspecified state.",
-            "The Instance is being provisioned.",
-            "The Instance is running.",
-            "The Instance has been deleted."
+            "The server is in an unknown state.",
+            "The server is being provisioned.",
+            "The server is running.",
+            "The server has been deleted."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
@@ -271,7 +271,7 @@
           ]
         },
         "hyperthreadingEnabled": {
-          "description": "True if hyperthreading enabled for the instance, false otherwise. The default value is false.",
+          "description": "True if you enable hyperthreading for the server, otherwise false. The default value is false.",
           "type": "boolean"
         },
         "labels": {
@@ -282,14 +282,14 @@
           }
         },
         "luns": {
-          "description": "List of luns associated with this instance.",
+          "description": "List of LUNs associated with this server.",
           "type": "array",
           "items": {
             "$ref": "Lun"
           }
         },
         "networks": {
-          "description": "List of networks associated with this instance.",
+          "description": "List of networks associated with this server.",
           "type": "array",
           "items": {
             "$ref": "Network"
@@ -303,23 +303,23 @@
     },
     "Lun": {
       "id": "Lun",
-      "description": "A storage Lun.",
+      "description": "A storage volume logical unit number (LUN).",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. The name of this Lun.",
+          "description": "Output only. The name of the LUN.",
           "readOnly": true,
           "type": "string"
         },
         "state": {
-          "description": "The state of this Volume.",
+          "description": "The state of this storage volume.",
           "type": "string",
           "enumDescriptions": [
-            "The unspecified state.",
-            "The Lun is being created.",
-            "The Lun is being updated.",
-            "The Lun is ready for consumption.",
-            "The Lun has been requested to be deleted."
+            "The LUN is in an unknown state.",
+            "The LUN is being created.",
+            "The LUN is being updated.",
+            "The LUN is ready for use.",
+            "The LUN has been requested to be deleted."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
@@ -330,12 +330,12 @@
           ]
         },
         "sizeGb": {
-          "description": "The size of this Lun, in gigabytes.",
+          "description": "The size of this LUN, in gigabytes.",
           "type": "string",
           "format": "int64"
         },
         "multiprotocolType": {
-          "description": "The Lun Multiprotocol type to ensure the characteristics of the LUN are optimized for the Operating System.",
+          "description": "The LUN multiprotocol type ensures the characteristics of the LUN are optimized for each operating system.",
           "type": "string",
           "enumDescriptions": [
             "Server has no OS specified.",
@@ -351,24 +351,24 @@
           ]
         },
         "storageVolume": {
-          "description": "The storage volume that this Lun is attached to.",
+          "description": "Display the storage volume for this LUN.",
           "type": "string"
         },
         "shareable": {
-          "description": "Whether this Lun is allowed to be shared between multiple physical servers.",
+          "description": "Display if this LUN can be shared between multiple physical servers.",
           "type": "boolean"
         },
         "bootLun": {
-          "description": "Whether this Lun is a boot Lun.",
+          "description": "Display if this LUN is a boot LUN.",
           "type": "boolean"
         },
         "storageType": {
-          "description": "The storage type of this Lun.",
+          "description": "The storage type for this LUN.",
           "type": "string",
           "enumDescriptions": [
-            "The unspecified type.",
-            "This Lun storage type is SSD.",
-            "This Lun storage type is HDD."
+            "The storage type for this LUN is unknown.",
+            "This storage type for this LUN is SSD.",
+            "This storage type for this LUN is HDD."
           ],
           "enum": [
             "STORAGE_TYPE_UNSPECIFIED",
@@ -392,8 +392,8 @@
           "type": "string",
           "enumDescriptions": [
             "Unspecified value.",
-            "Client network, that is a network peered to a GCP VPC.",
-            "Private network, that is a network local to the BMS POD."
+            "Client network, a network peered to a Google Cloud VPC.",
+            "Private network, a network local to the Bare Metal Solution environment."
           ],
           "enum": [
             "TYPE_UNSPECIFIED",
@@ -406,26 +406,12 @@
           "type": "string"
         },
         "macAddress": {
-          "description": "List of physical nics.",
+          "description": "List of physical interfaces.",
           "type": "array",
           "items": {
             "type": "string"
           }
         }
-      }
-    },
-    "EnableInteractiveSerialConsoleRequest": {
-      "id": "EnableInteractiveSerialConsoleRequest",
-      "description": "Message for enabling the interactive serial console on an instance.",
-      "type": "object",
-      "properties": {
-      }
-    },
-    "DisableInteractiveSerialConsoleRequest": {
-      "id": "DisableInteractiveSerialConsoleRequest",
-      "description": "Message for disabling the interactive serial console on an instance.",
-      "type": "object",
-      "properties": {
       }
     },
     "ListLocationsResponse": {
@@ -590,7 +576,7 @@
     },
     "OperationMetadata": {
       "id": "OperationMetadata",
-      "description": "Represents the metadata of the long-running operation.",
+      "description": "Represents the metadata from a long-running operation.",
       "type": "object",
       "properties": {
         "createTime": {
@@ -611,7 +597,7 @@
           "type": "string"
         },
         "verb": {
-          "description": "Output only. Name of the verb executed by the operation.",
+          "description": "Output only. Name of the action executed by the operation.",
           "readOnly": true,
           "type": "string"
         },
@@ -621,12 +607,12 @@
           "type": "string"
         },
         "requestedCancellation": {
-          "description": "Output only. Identifies whether the user has requested cancellation of the operation. Operations that have successfully been cancelled have Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.",
+          "description": "Output only. Identifies whether the user requested the cancellation of the operation. Operations that have been successfully cancelled have Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.",
           "readOnly": true,
           "type": "boolean"
         },
         "apiVersion": {
-          "description": "Output only. API version used to start the operation.",
+          "description": "Output only. API version used with the operation.",
           "readOnly": true,
           "type": "string"
         }
@@ -846,13 +832,13 @@
                       "type": "string"
                     },
                     "pageSize": {
-                      "description": "Requested page size. Server may return fewer items than requested. If unspecified, server will pick an appropriate default.",
+                      "description": "Requested page size. Server may return fewer items than requested. If unspecified, the server will pick an appropriate default.",
                       "location": "query",
                       "type": "integer",
                       "format": "int32"
                     },
                     "pageToken": {
-                      "description": "A token identifying a page of results the server should return.",
+                      "description": "A token identifying a page of results from the server.",
                       "location": "query",
                       "type": "string"
                     },
@@ -876,7 +862,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Lists Instances in a given project and location."
+                  "description": "List servers in a given project and location."
                 },
                 "get": {
                   "id": "baremetalsolution.projects.locations.instances.get",
@@ -901,63 +887,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Gets details of a single Instance."
-                },
-                "enableInteractiveSerialConsole": {
-                  "id": "baremetalsolution.projects.locations.instances.enableInteractiveSerialConsole",
-                  "path": "v2/{+name}:enableInteractiveSerialConsole",
-                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:enableInteractiveSerialConsole",
-                  "httpMethod": "POST",
-                  "parameters": {
-                    "name": {
-                      "description": "Required. Name of the resource.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "request": {
-                    "$ref": "EnableInteractiveSerialConsoleRequest"
-                  },
-                  "response": {
-                    "$ref": "Operation"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Enable the interactive serial console feature on an instance."
-                },
-                "disableInteractiveSerialConsole": {
-                  "id": "baremetalsolution.projects.locations.instances.disableInteractiveSerialConsole",
-                  "path": "v2/{+name}:disableInteractiveSerialConsole",
-                  "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:disableInteractiveSerialConsole",
-                  "httpMethod": "POST",
-                  "parameters": {
-                    "name": {
-                      "description": "Required. Name of the resource.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "request": {
-                    "$ref": "DisableInteractiveSerialConsoleRequest"
-                  },
-                  "response": {
-                    "$ref": "Operation"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Disable the interactive serial console feature on an instance."
+                  "description": "Get details about a single server."
                 },
                 "setIamPolicy": {
                   "id": "baremetalsolution.projects.locations.instances.setIamPolicy",

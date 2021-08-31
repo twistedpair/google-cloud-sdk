@@ -426,6 +426,20 @@
         "kerberosConfig": {
           "description": "Information used to configure the Hive metastore service as a service principal in a Kerberos realm. To disable Kerberos, use the UpdateService method and specify this field's path (hive_metastore_config.kerberos_config) in the request's update_mask while omitting this field from the request's service.",
           "$ref": "KerberosConfig"
+        },
+        "endpointProtocol": {
+          "description": "The protocol to use for the metastore service endpoint. If unspecified, defaults to THRIFT.",
+          "type": "string",
+          "enumDescriptions": [
+            "The protocol is not set.",
+            "Use the legacy Apache Thrift protocol for the metastore service endpoint.",
+            "Use the modernized gRPC protocol for the metastore service endpoint."
+          ],
+          "enum": [
+            "ENDPOINT_PROTOCOL_UNSPECIFIED",
+            "THRIFT",
+            "GRPC"
+          ]
         }
       }
     },
@@ -467,6 +481,10 @@
         "dataCatalogConfig": {
           "description": "The integration config for the Data Catalog service.",
           "$ref": "DataCatalogConfig"
+        },
+        "dataplexConfig": {
+          "description": "The integration config for the Dataplex service.",
+          "$ref": "DataplexConfig"
         }
       }
     },
@@ -478,6 +496,31 @@
         "enabled": {
           "description": "Defines whether the metastore metadata should be synced to Data Catalog. The default value is to disable syncing metastore metadata to Data Catalog.",
           "type": "boolean"
+        }
+      }
+    },
+    "DataplexConfig": {
+      "id": "DataplexConfig",
+      "description": "Specifies how metastore metadata should be integrated with the Dataplex service.",
+      "type": "object",
+      "properties": {
+        "lakeResources": {
+          "description": "A reference to the Lake resources that this metastore service is attached to. The key is the lake resource name. Example: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id}.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "Lake"
+          }
+        }
+      }
+    },
+    "Lake": {
+      "id": "Lake",
+      "description": "Represents a Lake resource",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The Lake resource name. Example: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id}",
+          "type": "string"
         }
       }
     },

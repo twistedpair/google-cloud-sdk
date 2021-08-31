@@ -1471,9 +1471,9 @@ class LogView(_messages.Message):
       resource.type = "gce_instance" AND LOG_ID("stdout")
     name: The resource name of the view.For example:projects/my-
       project/locations/global/buckets/my-bucket/views/my-view
-    schema: Describes the schema of the logs stored in the bucket that are
-      accessible via this view.This field is only populated for views in
-      analytics-enabled buckets.
+    schema: Output only. Describes the schema of the logs stored in the bucket
+      that are accessible via this view.This field is only populated for views
+      in analytics-enabled buckets.
     updateTime: Output only. The last update timestamp of the view.
   """
 

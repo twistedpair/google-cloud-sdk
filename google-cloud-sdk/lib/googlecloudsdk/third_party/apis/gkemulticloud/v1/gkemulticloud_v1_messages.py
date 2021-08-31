@@ -1631,6 +1631,12 @@ class GoogleCloudGkemulticloudV1AzureControlPlane(_messages.Message):
       for each control plane replica. The main volume is in charge of storing
       all of the cluster's etcd state. When unspecified, it defaults to a
       8-GiB Azure Disk.
+    proxyConfig: Optional. Proxy configuration for outbound HTTP(S) traffic.
+    replicaPlacements: Optional. Configuration for where to place the control
+      plane replicas. Up to three replica placement instances can be
+      specified. If replica_placements is set, the replica placement instances
+      will be applied to the three control plane replicas as evenly as
+      possible.
     rootVolume: Optional. Configuration related to the root volume provisioned
       for each control plane replica. When unspecified, it defaults to 32-GiB
       Azure Disk.
@@ -1677,12 +1683,14 @@ class GoogleCloudGkemulticloudV1AzureControlPlane(_messages.Message):
 
   databaseEncryption = _messages.MessageField('GoogleCloudGkemulticloudV1AzureDatabaseEncryption', 1)
   mainVolume = _messages.MessageField('GoogleCloudGkemulticloudV1AzureDiskTemplate', 2)
-  rootVolume = _messages.MessageField('GoogleCloudGkemulticloudV1AzureDiskTemplate', 3)
-  sshConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AzureSshConfig', 4)
-  subnetId = _messages.StringField(5)
-  tags = _messages.MessageField('TagsValue', 6)
-  version = _messages.StringField(7)
-  vmSize = _messages.StringField(8)
+  proxyConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AzureProxyConfig', 3)
+  replicaPlacements = _messages.MessageField('GoogleCloudGkemulticloudV1ReplicaPlacement', 4, repeated=True)
+  rootVolume = _messages.MessageField('GoogleCloudGkemulticloudV1AzureDiskTemplate', 5)
+  sshConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AzureSshConfig', 6)
+  subnetId = _messages.StringField(7)
+  tags = _messages.MessageField('TagsValue', 8)
+  version = _messages.StringField(9)
+  vmSize = _messages.StringField(10)
 
 
 class GoogleCloudGkemulticloudV1AzureDatabaseEncryption(_messages.Message):
@@ -1754,6 +1762,7 @@ class GoogleCloudGkemulticloudV1AzureNodeConfig(_messages.Message):
     labels: Optional. The initial labels assigned to nodes of this node pool.
       An object containing a list of "key": value pairs. Example: { "name":
       "wrench", "mass": "1.3kg", "count": "3" }.
+    proxyConfig: Optional. Proxy configuration for outbound HTTP(S) traffic.
     rootVolume: Optional. Configuration related to the root volume provisioned
       for each node pool machine. When unspecified, it defaults to a 32-GiB
       Azure Disk.
@@ -1825,11 +1834,12 @@ class GoogleCloudGkemulticloudV1AzureNodeConfig(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   labels = _messages.MessageField('LabelsValue', 1)
-  rootVolume = _messages.MessageField('GoogleCloudGkemulticloudV1AzureDiskTemplate', 2)
-  sshConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AzureSshConfig', 3)
-  tags = _messages.MessageField('TagsValue', 4)
-  taints = _messages.MessageField('GoogleCloudGkemulticloudV1NodeTaint', 5, repeated=True)
-  vmSize = _messages.StringField(6)
+  proxyConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AzureProxyConfig', 2)
+  rootVolume = _messages.MessageField('GoogleCloudGkemulticloudV1AzureDiskTemplate', 3)
+  sshConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AzureSshConfig', 4)
+  tags = _messages.MessageField('TagsValue', 5)
+  taints = _messages.MessageField('GoogleCloudGkemulticloudV1NodeTaint', 6, repeated=True)
+  vmSize = _messages.StringField(7)
 
 
 class GoogleCloudGkemulticloudV1AzureNodePool(_messages.Message):
@@ -1992,6 +2002,21 @@ class GoogleCloudGkemulticloudV1AzureOpenIdConfig(_messages.Message):
   jwks_uri = _messages.StringField(5)
   response_types_supported = _messages.StringField(6, repeated=True)
   subject_types_supported = _messages.StringField(7, repeated=True)
+
+
+class GoogleCloudGkemulticloudV1AzureProxyConfig(_messages.Message):
+  r"""Details of a proxy config stored in Azure Key Vault.
+
+  Fields:
+    resourceGroupId: The ARM ID the of the resourcegroup containing proxy
+      keyvault. Resource group ids are formatted as
+      `/subscriptions//resourceGroups/`.
+    secretId: The URL the of the proxy setting secret with its version. Secret
+      ids are formatted as `https://.vault.azure.net/secrets//`.
+  """
+
+  resourceGroupId = _messages.StringField(1)
+  secretId = _messages.StringField(2)
 
 
 class GoogleCloudGkemulticloudV1AzureServerConfig(_messages.Message):
@@ -2230,6 +2255,22 @@ class GoogleCloudGkemulticloudV1OperationMetadata(_messages.Message):
   endTime = _messages.StringField(2)
   statusDetail = _messages.StringField(3)
   target = _messages.StringField(4)
+
+
+class GoogleCloudGkemulticloudV1ReplicaPlacement(_messages.Message):
+  r"""Configuration for the placement of a control plane replica.
+
+  Fields:
+    azureAvailabilityZone: Required. For a given replica, the Azure
+      availability zone where to provision the control plane VM and the ETCD
+      disk.
+    subnetId: Required. For a given replica, the ARM ID of the subnet where
+      the control plane VM is deployed. Make sure it's a subnet under the
+      virtual network in the cluster configuration.
+  """
+
+  azureAvailabilityZone = _messages.StringField(1)
+  subnetId = _messages.StringField(2)
 
 
 class GoogleCloudGkemulticloudV1WorkloadIdentityConfig(_messages.Message):

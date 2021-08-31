@@ -77,7 +77,7 @@ class AuditLogConfig(_messages.Message):
 
 
 class Backup(_messages.Message):
-  r"""Backup resource Next id: 27
+  r"""Backup resource Next id: 28
 
   Enums:
     StateValueValuesEnum: Current state of the Backup
@@ -87,6 +87,7 @@ class Backup(_messages.Message):
 
   Fields:
     allNamespaces: Output only. If set to true, all namespaces backup
+    clusterConfigSizeBytes: Output only. cluster config backup size in bytes.
     clusterMetadata: cluster metadata
     completeTime: Output only. Completion time of the Backup
     containsSecrets: Output only. A boolean flag specifies whether secrets has
@@ -132,7 +133,7 @@ class Backup(_messages.Message):
       automatically from the BackupPlan's schedule.
     name: Output only. The fully qualified name of the Backup.
       projects/*/locations/*/backupPlans/*/backups/*
-    podCount: Output only. total number of pods backed up
+    podCount: Output only. total number of pods backed up.
     resourceCount: Output only. total number of resources backed up
     retainDays: retain_days specifies the desired number of days from the
       create_time of this Backup after which it will be automatically deleted.
@@ -208,31 +209,32 @@ class Backup(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   allNamespaces = _messages.BooleanField(1)
-  clusterMetadata = _messages.MessageField('ClusterMetadata', 2)
-  completeTime = _messages.StringField(3)
-  containsSecrets = _messages.BooleanField(4)
-  containsVolumeData = _messages.BooleanField(5)
-  createTime = _messages.StringField(6)
-  deleteLockDays = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  deleteLockExpireTime = _messages.StringField(8)
-  description = _messages.StringField(9)
-  encryptionKey = _messages.MessageField('EncryptionKey', 10)
-  etag = _messages.StringField(11)
-  labels = _messages.MessageField('LabelsValue', 12)
-  manual = _messages.BooleanField(13)
-  name = _messages.StringField(14)
-  podCount = _messages.IntegerField(15, variant=_messages.Variant.INT32)
-  resourceCount = _messages.IntegerField(16, variant=_messages.Variant.INT32)
-  retainDays = _messages.IntegerField(17, variant=_messages.Variant.INT32)
-  retainExpireTime = _messages.StringField(18)
-  selectedApplications = _messages.MessageField('NamespacedNames', 19)
-  selectedNamespaces = _messages.MessageField('Namespaces', 20)
-  sizeBytes = _messages.IntegerField(21)
-  state = _messages.EnumField('StateValueValuesEnum', 22)
-  stateReason = _messages.StringField(23)
-  uid = _messages.StringField(24)
-  updateTime = _messages.StringField(25)
-  volumeCount = _messages.IntegerField(26, variant=_messages.Variant.INT32)
+  clusterConfigSizeBytes = _messages.IntegerField(2)
+  clusterMetadata = _messages.MessageField('ClusterMetadata', 3)
+  completeTime = _messages.StringField(4)
+  containsSecrets = _messages.BooleanField(5)
+  containsVolumeData = _messages.BooleanField(6)
+  createTime = _messages.StringField(7)
+  deleteLockDays = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  deleteLockExpireTime = _messages.StringField(9)
+  description = _messages.StringField(10)
+  encryptionKey = _messages.MessageField('EncryptionKey', 11)
+  etag = _messages.StringField(12)
+  labels = _messages.MessageField('LabelsValue', 13)
+  manual = _messages.BooleanField(14)
+  name = _messages.StringField(15)
+  podCount = _messages.IntegerField(16, variant=_messages.Variant.INT32)
+  resourceCount = _messages.IntegerField(17, variant=_messages.Variant.INT32)
+  retainDays = _messages.IntegerField(18, variant=_messages.Variant.INT32)
+  retainExpireTime = _messages.StringField(19)
+  selectedApplications = _messages.MessageField('NamespacedNames', 20)
+  selectedNamespaces = _messages.MessageField('Namespaces', 21)
+  sizeBytes = _messages.IntegerField(22)
+  state = _messages.EnumField('StateValueValuesEnum', 23)
+  stateReason = _messages.StringField(24)
+  uid = _messages.StringField(25)
+  updateTime = _messages.StringField(26)
+  volumeCount = _messages.IntegerField(27, variant=_messages.Variant.INT32)
 
 
 class BackupConfig(_messages.Message):
@@ -1837,7 +1839,7 @@ class Policy(_messages.Message):
   roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
   role: roles/resourcemanager.organizationViewer condition: title: expirable
   access description: Does not grant access after Sep 2020 expression:
-  request.time < timestamp('2020-10-01T00:00:00.000Z') - etag: BwWWja0YfJA= -
+  request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA=
   version: 3 For a description of IAM and its features, see the [IAM
   documentation](https://cloud.google.com/iam/docs/).
 

@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.container.gkemulticloud import util as api_util
 from googlecloudsdk.calliope import base
+from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
 
 CLUSTERS_FORMAT = """\
@@ -30,6 +31,10 @@ CLUSTERS_FORMAT = """\
     controlPlane.version:label=CONTROL_PLANE_VERSION,
     controlPlane.instanceType,
     state)"""
+
+
+class UnsupportedPropertyError(exceptions.Error):
+  """Class for errors by unsupported properties."""
 
 
 class Client(object):
@@ -93,6 +98,11 @@ class Client(object):
     msg = 'GoogleCloudGkemulticloud{}AwsSshConfig'.format(self.version)
     return getattr(self.messages, msg)(ec2KeyPair=key_pair_name)
 
+  def _CreateAwsProxyConfig(self, secret_arn, secret_version_id):
+    msg = 'GoogleCloudGkemulticloud{}AwsProxyConfig'.format(self.version)
+    return getattr(self.messages, msg)(
+        secretArn=secret_arn, secretVersion=secret_version_id)
+
   def Create(self, cluster_ref, args):
     """Create an AWS cluster."""
     validate_only = getattr(args, 'validate_only', False)
@@ -125,6 +135,9 @@ class Client(object):
     cp.sshConfig = self._CreateAwsSshConfig(args.ssh_ec2_key_pair)
     if args.security_group_ids:
       cp.securityGroupIds.extend(args.security_group_ids)
+    if args.proxy_secret_arn and args.proxy_secret_version_id:
+      cp.proxyConfig = self._CreateAwsProxyConfig(args.proxy_secret_arn,
+                                                  args.proxy_secret_version_id)
 
     net = self._AddAwsNetworking(c)
     net.vpcId = args.vpc_id
@@ -140,7 +153,15 @@ class Client(object):
       ])
 
     a = self._AddAwsAuthorization(c)
-    username = properties.VALUES.core.account.Get()
+    # TODO(b/197350917): Remove the restriction
+    # once the feature is implemented.
+    # This is because gcloud may be authorized by an account different
+    # from core/account. Check if auth/credential_file_override is set.
+    if properties.VALUES.auth.credential_file_override.IsExplicitlySet():
+      raise UnsupportedPropertyError(
+          'The property [auth/credential_file_override] '
+          'is not supported by this command.')
+    username = properties.VALUES.core.account.GetOrFail()
     a.adminUsers.append(self._CreateAwsClusterUser(username))
 
     return self.service.Create(req)

@@ -5272,7 +5272,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single MetadataStore and all its child resources (i.e. all Artifacts, Executions, Contexts).
+      r"""Deletes a single MetadataStore and all its child resources (Artifacts, Executions, and Contexts).
 
       Args:
         request: (AiplatformProjectsLocationsMetadataStoresDeleteRequest) input message
@@ -8407,6 +8407,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def BatchCreate(self, request, global_params=None):
+      r"""Batch create TensorboardTimeSeries that belong to a TensorboardExperiment.
+
+      Args:
+        request: (AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesBatchCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1BatchCreateTensorboardTimeSeriesResponse) The response message.
+      """
+      config = self.GetMethodConfig('BatchCreate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    BatchCreate.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/runs/{runsId}/timeSeries:batchCreate',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.tensorboards.experiments.runs.timeSeries.batchCreate',
+        ordered_params=['parent', 'runsId'],
+        path_params=['parent', 'runsId'],
+        query_params=[],
+        relative_path='v1beta1/{+parent}/runs/{runsId}/timeSeries:batchCreate',
+        request_field='googleCloudAiplatformV1beta1BatchCreateTensorboardTimeSeriesRequest',
+        request_type_name='AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesBatchCreateRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1BatchCreateTensorboardTimeSeriesResponse',
+        supports_download=False,
+    )
+
     def Create(self, request, global_params=None):
       r"""Creates a TensorboardTimeSeries.
 
@@ -8632,6 +8659,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
       super(AiplatformV1beta1.ProjectsLocationsTensorboardsExperimentsRunsService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def BatchCreate(self, request, global_params=None):
+      r"""Batch create TensorboardRuns.
+
+      Args:
+        request: (AiplatformProjectsLocationsTensorboardsExperimentsRunsBatchCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1BatchCreateTensorboardRunsResponse) The response message.
+      """
+      config = self.GetMethodConfig('BatchCreate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    BatchCreate.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/runs:batchCreate',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.tensorboards.experiments.runs.batchCreate',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1beta1/{+parent}/runs:batchCreate',
+        request_field='googleCloudAiplatformV1beta1BatchCreateTensorboardRunsRequest',
+        request_type_name='AiplatformProjectsLocationsTensorboardsExperimentsRunsBatchCreateRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1BatchCreateTensorboardRunsResponse',
+        supports_download=False,
+    )
 
     def Create(self, request, global_params=None):
       r"""Creates a TensorboardRun.

@@ -77,9 +77,7 @@ class ApprovalResult(_messages.Message):
     approvalTime: Output only. The time when the approval decision was made.
     approverAccount: Output only. Email of the user that called the
       ApproveBuild API to approve or reject a build at the time that the API
-      was called (the user's actual email that is tied to their GAIA ID may
-      have changed). This field is not stored, rather, it is calculated on the
-      fly using approver_id.
+      was called.
     comment: Optional. An optional comment for this manual approval result.
     decision: Required. The decision of this manual approval.
     url: Optional. An optional URL tied to this manual approval result. This
@@ -204,6 +202,9 @@ class BitbucketServerConfig(_messages.Message):
       {project} is a project number or id and {network} is the name of a VPC
       network in the project.
     secrets: Required. Secret Manager secrets needed by the config.
+    sslCa: Optional. SSL certificate to use for requests to Bitbucket Server.
+      The format should be PEM format but the extension can be one of .pem,
+      .cer, or .crt.
     username: Username of the account Cloud Build will use on Bitbucket
       Server.
     webhookKey: Output only. UUID included in webhook requests. The UUID is
@@ -218,8 +219,9 @@ class BitbucketServerConfig(_messages.Message):
   name = _messages.StringField(6)
   peeredNetwork = _messages.StringField(7)
   secrets = _messages.MessageField('BitbucketServerSecrets', 8)
-  username = _messages.StringField(9)
-  webhookKey = _messages.StringField(10)
+  sslCa = _messages.StringField(9)
+  username = _messages.StringField(10)
+  webhookKey = _messages.StringField(11)
 
 
 class BitbucketServerRepositoryId(_messages.Message):
@@ -538,6 +540,8 @@ class BuildOptions(_messages.Message):
   r"""Optional arguments to enable specific features of builds.
 
   Enums:
+    DockerDaemonValueValuesEnum: Optional. Option to specify how (or if) a
+      Docker daemon is provided for the build.
     LogStreamingOptionValueValuesEnum: Option to define build log streaming
       behavior to Google Cloud Storage.
     LoggingValueValuesEnum: Option to specify the logging mode, which
@@ -562,6 +566,8 @@ class BuildOptions(_messages.Message):
       a larger disk than requested. At present, the maximum disk size is
       1000GB; builds that request more than the maximum are rejected with an
       error.
+    dockerDaemon: Optional. Option to specify how (or if) a Docker daemon is
+      provided for the build.
     dynamicSubstitutions: Option to specify whether or not to apply bash style
       string operations to the substitutions. NOTE: this is always enabled for
       triggered builds and cannot be overridden in the build configuration
@@ -599,6 +605,27 @@ class BuildOptions(_messages.Message):
       configuration.
     workerPool: This field deprecated; please use `pool.name` instead.
   """
+
+  class DockerDaemonValueValuesEnum(_messages.Enum):
+    r"""Optional. Option to specify how (or if) a Docker daemon is provided
+    for the build.
+
+    Values:
+      DOCKER_DAEMON_UNSPECIFIED: If the option is unspecified, a default will
+        be set based on the environment.
+      NO_DOCKER: No Docker daemon or functionality will be provided to the
+        build.
+      NON_PRIVILEGED: A Docker daemon is available during the build that is
+        running without privileged mode.
+      PRIVILEGED: A Docker daemon will be available that is running in
+        privileged mode. This is potentially a security vulnerability and
+        should only be used if the user is fully aware of the associated
+        risks.
+    """
+    DOCKER_DAEMON_UNSPECIFIED = 0
+    NO_DOCKER = 1
+    NON_PRIVILEGED = 2
+    PRIVILEGED = 3
 
   class LogStreamingOptionValueValuesEnum(_messages.Enum):
     r"""Option to define build log streaming behavior to Google Cloud Storage.
@@ -691,18 +718,19 @@ class BuildOptions(_messages.Message):
   anthosCluster = _messages.MessageField('AnthosWorkerPool', 1)
   cluster = _messages.MessageField('ClusterOptions', 2)
   diskSizeGb = _messages.IntegerField(3)
-  dynamicSubstitutions = _messages.BooleanField(4)
-  env = _messages.StringField(5, repeated=True)
-  logStreamingOption = _messages.EnumField('LogStreamingOptionValueValuesEnum', 6)
-  logging = _messages.EnumField('LoggingValueValuesEnum', 7)
-  machineType = _messages.EnumField('MachineTypeValueValuesEnum', 8)
-  pool = _messages.MessageField('PoolOption', 9)
-  requestedVerifyOption = _messages.EnumField('RequestedVerifyOptionValueValuesEnum', 10)
-  secretEnv = _messages.StringField(11, repeated=True)
-  sourceProvenanceHash = _messages.EnumField('SourceProvenanceHashValueListEntryValuesEnum', 12, repeated=True)
-  substitutionOption = _messages.EnumField('SubstitutionOptionValueValuesEnum', 13)
-  volumes = _messages.MessageField('Volume', 14, repeated=True)
-  workerPool = _messages.StringField(15)
+  dockerDaemon = _messages.EnumField('DockerDaemonValueValuesEnum', 4)
+  dynamicSubstitutions = _messages.BooleanField(5)
+  env = _messages.StringField(6, repeated=True)
+  logStreamingOption = _messages.EnumField('LogStreamingOptionValueValuesEnum', 7)
+  logging = _messages.EnumField('LoggingValueValuesEnum', 8)
+  machineType = _messages.EnumField('MachineTypeValueValuesEnum', 9)
+  pool = _messages.MessageField('PoolOption', 10)
+  requestedVerifyOption = _messages.EnumField('RequestedVerifyOptionValueValuesEnum', 11)
+  secretEnv = _messages.StringField(12, repeated=True)
+  sourceProvenanceHash = _messages.EnumField('SourceProvenanceHashValueListEntryValuesEnum', 13, repeated=True)
+  substitutionOption = _messages.EnumField('SubstitutionOptionValueValuesEnum', 14)
+  volumes = _messages.MessageField('Volume', 15, repeated=True)
+  workerPool = _messages.StringField(16)
 
 
 class BuildStep(_messages.Message):

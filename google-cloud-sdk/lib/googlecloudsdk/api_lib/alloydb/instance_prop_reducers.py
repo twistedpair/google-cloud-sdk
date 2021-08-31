@@ -22,7 +22,6 @@ from __future__ import unicode_literals
 from googlecloudsdk.calliope import exceptions
 
 
-_DEFAULT_MACHINE_TYPE = 'db-n1-standard-1'
 _MINIMUM_CPU_COUNT = 2
 _MAXIMUM_CPU_COUNT = 96
 _MINIMUM_MEMORY = 3840
@@ -118,6 +117,7 @@ def MachineType(tier=None, memory=None, cpu=None):
 
   # Reverting to default if creating instance and no flags are set.
   if not machine_type:
-    machine_type = _DEFAULT_MACHINE_TYPE
+    raise exceptions.InvalidArgumentException(
+        'Please specify [--tier] or [--cpu]/[--memory]')
 
   return machine_type

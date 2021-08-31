@@ -670,7 +670,7 @@ class CloudbuildV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Create an association between a GCP project and a GitHub Enterprise server. This API is experimental.
+      r"""Create an association between a GCP project and a GitHub Enterprise server.
 
       Args:
         request: (CloudbuildProjectsGithubEnterpriseConfigsCreateRequest) input message
@@ -697,7 +697,7 @@ class CloudbuildV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Delete an association between a GCP project and a GitHub Enterprise server. This API is experimental.
+      r"""Delete an association between a GCP project and a GitHub Enterprise server.
 
       Args:
         request: (CloudbuildProjectsGithubEnterpriseConfigsDeleteRequest) input message
@@ -724,7 +724,7 @@ class CloudbuildV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Retrieve a GitHubEnterpriseConfig. This API is experimental.
+      r"""Retrieve a GitHubEnterpriseConfig.
 
       Args:
         request: (CloudbuildProjectsGithubEnterpriseConfigsGetRequest) input message
@@ -778,7 +778,7 @@ class CloudbuildV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""List all GitHubEnterpriseConfigs for a given project. This API is experimental.
+      r"""List all GitHubEnterpriseConfigs for a given project.
 
       Args:
         request: (CloudbuildProjectsGithubEnterpriseConfigsListRequest) input message
@@ -805,7 +805,7 @@ class CloudbuildV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Update an association between a GCP project and a GitHub Enterprise server. This API is experimental.
+      r"""Update an association between a GCP project and a GitHub Enterprise server.
 
       Args:
         request: (CloudbuildProjectsGithubEnterpriseConfigsPatchRequest) input message
@@ -1455,7 +1455,7 @@ class CloudbuildV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Create an association between a GCP project and a GitHub Enterprise server. This API is experimental.
+      r"""Create an association between a GCP project and a GitHub Enterprise server.
 
       Args:
         request: (CloudbuildProjectsLocationsGithubEnterpriseConfigsCreateRequest) input message
@@ -1482,7 +1482,7 @@ class CloudbuildV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Delete an association between a GCP project and a GitHub Enterprise server. This API is experimental.
+      r"""Delete an association between a GCP project and a GitHub Enterprise server.
 
       Args:
         request: (CloudbuildProjectsLocationsGithubEnterpriseConfigsDeleteRequest) input message
@@ -1509,7 +1509,7 @@ class CloudbuildV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Retrieve a GitHubEnterpriseConfig. This API is experimental.
+      r"""Retrieve a GitHubEnterpriseConfig.
 
       Args:
         request: (CloudbuildProjectsLocationsGithubEnterpriseConfigsGetRequest) input message
@@ -1563,7 +1563,7 @@ class CloudbuildV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""List all GitHubEnterpriseConfigs for a given project. This API is experimental.
+      r"""List all GitHubEnterpriseConfigs for a given project.
 
       Args:
         request: (CloudbuildProjectsLocationsGithubEnterpriseConfigsListRequest) input message
@@ -1590,7 +1590,7 @@ class CloudbuildV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Update an association between a GCP project and a GitHub Enterprise server. This API is experimental.
+      r"""Update an association between a GCP project and a GitHub Enterprise server.
 
       Args:
         request: (CloudbuildProjectsLocationsGithubEnterpriseConfigsPatchRequest) input message

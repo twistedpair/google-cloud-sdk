@@ -85,7 +85,7 @@ def NetworkFirewallPolicyAssociationArgument(required=False,
 def AddArgsCreateAssociation(parser):
   """Adds the arguments of association creation."""
   parser.add_argument(
-      '--name', required=True, help=('Name of the association.'))
+      '--name', help=('Name of the association.'))
 
   parser.add_argument(
       '--network',

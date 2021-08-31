@@ -30,8 +30,9 @@ class AccessLevel(_messages.Message):
       behavior.
     name: Required. Resource name for the Access Level. The `short_name`
       component must begin with a letter and only include alphanumeric and
-      '_'. Format: `accessPolicies/{policy_id}/accessLevels/{short_name}`. The
-      maximum length // of the `short_name` component is 50 characters.
+      '_'. Format:
+      `accessPolicies/{access_policy}/accessLevels/{access_level}`. The
+      maximum length of the `access_level` component is 50 characters.
     title: Human readable title. Must be unique within the Policy.
   """
 
@@ -54,11 +55,10 @@ class AccessPolicy(_messages.Message):
       `AccessPolicy`. This will always be a strongly validated etag, meaning
       that two Access Polices will be identical if and only if their etags are
       identical. Clients should not expect this to be in any specific format.
-    name: Output only. Resource name of the `AccessPolicy`. Format:
-      `accessPolicies/{policy_id}`
-    parent: Required. The parent of this `AccessPolicy` in the Cloud Resource
-      Hierarchy. Currently immutable once created. Format:
-      `organizations/{organization_id}`
+    name: Resource name of the `AccessPolicy`. Format:
+      `accessPolicies/{access_policy}`
+    parent: Immutable. The parent of this `AccessPolicy` in the Cloud Resource
+      Hierarchy Format: `organizations/{organization_id}`
     title: Required. Human readable title. Does not affect behavior.
   """
 
@@ -186,8 +186,9 @@ class AccesscontextmanagerAccessPoliciesAccessLevelsPatchRequest(_messages.Messa
     accessLevel: A AccessLevel resource to be passed as the request body.
     name: Required. Resource name for the Access Level. The `short_name`
       component must begin with a letter and only include alphanumeric and
-      '_'. Format: `accessPolicies/{policy_id}/accessLevels/{short_name}`. The
-      maximum length // of the `short_name` component is 50 characters.
+      '_'. Format:
+      `accessPolicies/{access_policy}/accessLevels/{access_level}`. The
+      maximum length of the `access_level` component is 50 characters.
     updateMask: Required. Mask to control which fields get updated. Must be
       non-empty.
   """
@@ -256,8 +257,8 @@ class AccesscontextmanagerAccessPoliciesPatchRequest(_messages.Message):
 
   Fields:
     accessPolicy: A AccessPolicy resource to be passed as the request body.
-    name: Output only. Resource name of the `AccessPolicy`. Format:
-      `accessPolicies/{policy_id}`
+    name: Resource name of the `AccessPolicy`. Format:
+      `accessPolicies/{access_policy}`
     updateMask: Required. Mask to control which fields get updated. Must be
       non-empty.
   """
@@ -345,7 +346,8 @@ class AccesscontextmanagerAccessPoliciesServicePerimetersPatchRequest(_messages.
   Fields:
     name: Required. Resource name for the ServicePerimeter. The `short_name`
       component must begin with a letter and only include alphanumeric and
-      '_'. Format: `accessPolicies/{policy_id}/servicePerimeters/{short_name}`
+      '_'. Format:
+      `accessPolicies/{access_policy}/servicePerimeters/{service_perimeter}
     servicePerimeter: A ServicePerimeter resource to be passed as the request
       body.
     updateMask: Required. Mask to control which fields get updated. Must be
@@ -1255,7 +1257,8 @@ class ServicePerimeter(_messages.Message):
       affect behavior.
     name: Required. Resource name for the ServicePerimeter. The `short_name`
       component must begin with a letter and only include alphanumeric and
-      '_'. Format: `accessPolicies/{policy_id}/servicePerimeters/{short_name}`
+      '_'. Format:
+      `accessPolicies/{access_policy}/servicePerimeters/{service_perimeter}
     perimeterType: Perimeter type indicator. A single project is allowed to be
       a member of single regular perimeter, but multiple service perimeter
       bridges. A project cannot be a included in a perimeter bridge without

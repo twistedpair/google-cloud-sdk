@@ -809,22 +809,26 @@ class GoogleCloudSecuritycenterV1MuteConfig(_messages.Message):
       `:` * resource.parent_display_name: `=`, `:` * resource.type: `=`, `:` *
       finding_class: `=`, `:` * indicator.ip_addresses: `=`, `:` *
       indicator.domains: `=`, `:`
+    mostRecentEditor: Output only. Email address of the user who last edited
+      the mute config. This field is set by the server and will be ignored if
+      provided on config creation or update.
     name: The config id is a server generated unique identifier. This field
       will be ignored if provided on config creation. Format
       "organizations/{organization}/muteConfigs/{mute_config}"
       "folders/{folder}/muteConfigs/{mute_config}"
       "projects/{project}/muteConfigs/{mute_config}"
     updateTime: Output only. The most recent time at which the mute config was
-      updated. This field is by the server and will be ignored if provided on
-      config creation or update.
+      updated. This field is set by the server and will be ignored if provided
+      on config creation or update.
   """
 
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
   displayName = _messages.StringField(3)
   filter = _messages.StringField(4)
-  name = _messages.StringField(5)
-  updateTime = _messages.StringField(6)
+  mostRecentEditor = _messages.StringField(5)
+  name = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
 
 
 class GoogleCloudSecuritycenterV1NotificationMessage(_messages.Message):

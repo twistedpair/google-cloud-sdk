@@ -191,15 +191,23 @@ def Cluster(name, server, ca_path=None, ca_data=None):
 
 def User(name,
          auth_provider=None,
+         auth_provider_cmd_path=None,
+         auth_provider_cmd_args=None,
+         auth_provider_expiry_key=None,
+         auth_provider_token_key=None,
          cert_path=None,
          cert_data=None,
          key_path=None,
          key_data=None):
-  """Generate and return a user kubeconfig object.
+  """Generates and returns a user kubeconfig object.
 
   Args:
     name: str, nickname for this user entry.
     auth_provider: str, authentication provider.
+    auth_provider_cmd_path: str, authentication provider command path.
+    auth_provider_cmd_args: str, authentication provider command args.
+    auth_provider_expiry_key: str, authentication provider expiry key.
+    auth_provider_token_key: str, authentication provider token key.
     cert_path: str, path to client certificate file.
     cert_data: str, base64 encoded client certificate data.
     key_path: str, path to client key file.
@@ -216,7 +224,12 @@ def User(name,
     raise Error('either auth_provider or cert & key must be provided')
   user = {}
   if auth_provider:
-    user['auth-provider'] = _AuthProvider(name=auth_provider)
+    user['auth-provider'] = _AuthProvider(
+        name=auth_provider,
+        cmd_path=auth_provider_cmd_path,
+        cmd_args=auth_provider_cmd_args,
+        expiry_key=auth_provider_expiry_key,
+        token_key=auth_provider_token_key)
 
   if cert_path and cert_data:
     raise Error('cannot specify both cert_path and cert_data')
@@ -246,8 +259,12 @@ $ gcloud config set container/use_application_default_credentials true
 $ export CLOUDSDK_CONTAINER_USE_APPLICATION_DEFAULT_CREDENTIALS=true'''
 
 
-def _AuthProvider(name='gcp'):
-  """Generate and return an auth provider config.
+def _AuthProvider(name='gcp',
+                  cmd_path=None,
+                  cmd_args=None,
+                  expiry_key=None,
+                  token_key=None):
+  """Generates and returns an auth provider config.
 
   Constructs an auth provider config entry readable by kubectl. This tells
   kubectl to call out to a specific gcloud command and parse the output to
@@ -257,6 +274,11 @@ def _AuthProvider(name='gcp'):
 
   Args:
     name: auth provider name
+    cmd_path: str, authentication provider command path.
+    cmd_args: str, authentication provider command arguments.
+    expiry_key: str, authentication provider expiry key.
+    token_key: str, authentication provider token key.
+
   Returns:
     dict, valid auth provider config entry.
   Raises:
@@ -272,19 +294,27 @@ def _AuthProvider(name='gcp'):
     bin_name = 'gcloud'
     if platforms.OperatingSystem.IsWindows():
       bin_name = 'gcloud.cmd'
-    sdk_bin_path = config.Paths().sdk_bin_path
-    if sdk_bin_path is None:
-      log.error(SDK_BIN_PATH_NOT_FOUND)
-      raise Error(SDK_BIN_PATH_NOT_FOUND)
+
+    if cmd_path is None:
+      sdk_bin_path = config.Paths().sdk_bin_path
+      if sdk_bin_path is None:
+        log.error(SDK_BIN_PATH_NOT_FOUND)
+        raise Error(SDK_BIN_PATH_NOT_FOUND)
+      cmd_path = os.path.join(sdk_bin_path, bin_name)
+
     cfg = {
         # Command for gcloud credential helper
-        'cmd-path': os.path.join(sdk_bin_path, bin_name),
+        'cmd-path':
+            cmd_path,
         # Args for gcloud credential helper
-        'cmd-args': 'config config-helper --format=json',
+        'cmd-args':
+            cmd_args if cmd_args else 'config config-helper --format=json',
         # JSONpath to the field that is the raw access token
-        'token-key': '{.credential.access_token}',
+        'token-key':
+            token_key if token_key else '{.credential.access_token}',
         # JSONpath to the field that is the expiration timestamp
-        'expiry-key': '{.credential.token_expiry}',
+        'expiry-key':
+            expiry_key if expiry_key else '{.credential.token_expiry}'
         # Note: we're omitting 'time-fmt' field, which if provided, is a
         # format string of the golang reference time. It can be safely omitted
         # because config-helper's default time format is RFC3339, which is the

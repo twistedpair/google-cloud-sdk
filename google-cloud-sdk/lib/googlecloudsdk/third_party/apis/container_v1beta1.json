@@ -595,6 +595,10 @@
         "gvnic": {
           "description": "Enable or disable gvnic on the node pool.",
           "$ref": "VirtualNIC"
+        },
+        "spot": {
+          "description": "Spot flag for enabling Spot VM, which is a rebrand of the existing preemptible flag.",
+          "type": "boolean"
         }
       }
     },
@@ -2531,6 +2535,10 @@
         "componentConfig": {
           "description": "Monitoring components configuration",
           "$ref": "MonitoringComponentConfig"
+        },
+        "managedPrometheusConfig": {
+          "description": "Enable Google Prometheus Managed Collection in the cluster.",
+          "$ref": "ManagedPrometheusConfig"
         }
       }
     },
@@ -2563,6 +2571,17 @@
               "GOOGLE_PROMETHEUS_ENGINE"
             ]
           }
+        }
+      }
+    },
+    "ManagedPrometheusConfig": {
+      "id": "ManagedPrometheusConfig",
+      "description": "ManagedPrometheusConfig defines the configuration for Prometheus managed collection.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Enable managed collection.",
+          "type": "boolean"
         }
       }
     },

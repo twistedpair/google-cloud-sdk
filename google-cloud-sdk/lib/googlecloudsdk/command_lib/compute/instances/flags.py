@@ -844,10 +844,12 @@ def AddCreateDiskArgs(parser,
   if support_multi_writer:
     spec['multi-writer'] = arg_parsers.ArgBoolean()
     disk_help += """
-      *multi-writer*::: If ``yes'', create the disk in multi-writer mode so that
-      it can be attached with read-write access to multiple VMs. Can only be
-      used with zonal SSD persistent disks. Disks in multi-writer mode do not
-      support resize and snapshot operations. The default value is ``no''.
+      *multi-writer*::: If ``yes'', the disk is created in multi-writer mode so
+      that it can be attached with read-write access to two VMs. The
+      default value is ``no''.
+      The multi-writer feature requires specialized filesystems, among other
+      restrictions. For more information, see
+      https://cloud.google.com/compute/docs/disks/sharing-disks-between-vms.
     """
 
   if support_replica_zones:
@@ -3118,6 +3120,17 @@ def AddThreadsPerCoreArgs(parser):
       The number of visible threads per physical core. To disable simultaneous
       multithreading (SMT) set this to 1. Valid values are: 1 or 2.
     """)
+
+
+def AddNumaNodeCountArgs(parser):
+  parser.add_argument(
+      '--numa-node-count',
+      type=int,
+      help="""\
+      The number of virtual NUMA nodes for the instance.
+      Valid values are: 0, 1, 2, 4 or 8. Setting NUMA node count to 0 means
+      using the default setting.
+      """)
 
 
 def AddStackTypeArgs(parser):

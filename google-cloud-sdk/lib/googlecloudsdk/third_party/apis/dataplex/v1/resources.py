@@ -51,6 +51,13 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_LAKES_ACTIONS = (
+      'projects.locations.lakes.actions',
+      'projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/actions',
+      {},
+      ['projectsId', 'locationsId', 'lakesId'],
+      True
+  )
   PROJECTS_LOCATIONS_LAKES_ZONES = (
       'projects.locations.lakes.zones',
       '{+name}',
@@ -62,6 +69,14 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_LAKES_ZONES_ACTIONS = (
+      'projects.locations.lakes.zones.actions',
+      'projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/zones/'
+      '{zonesId}/actions',
+      {},
+      ['projectsId', 'locationsId', 'lakesId', 'zonesId'],
+      True
+  )
   PROJECTS_LOCATIONS_LAKES_ZONES_ASSETS = (
       'projects.locations.lakes.zones.assets',
       '{+name}',
@@ -71,6 +86,14 @@ class Collections(enum.Enum):
               'zones/{zonesId}/assets/{assetsId}',
       },
       ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_LAKES_ZONES_ASSETS_ACTIONS = (
+      'projects.locations.lakes.zones.assets.actions',
+      'projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/zones/'
+      '{zonesId}/assets/{assetsId}/actions',
+      {},
+      ['projectsId', 'locationsId', 'lakesId', 'zonesId', 'assetsId'],
       True
   )
   PROJECTS_LOCATIONS_OPERATIONS = (

@@ -2400,15 +2400,49 @@ class PackageIssue(_messages.Message):
   r"""This message wraps a location affected by a vulnerability and its
   associated fix (if one is available).
 
+  Enums:
+    EffectiveSeverityValueValuesEnum: Output only. The distro or language
+      system assigned severity for this vulnerability when that is available
+      and note provider assigned severity when distro or language system has
+      not yet assigned a severity for this vulnerability.
+
   Fields:
     affectedLocation: The location of the vulnerability.
+    effectiveSeverity: Output only. The distro or language system assigned
+      severity for this vulnerability when that is available and note provider
+      assigned severity when distro or language system has not yet assigned a
+      severity for this vulnerability.
     fixedLocation: The location of the available fix for vulnerability.
+    packageType: The type of package (e.g. OS, MAVEN, GO).
     severityName: A string attribute.
   """
 
+  class EffectiveSeverityValueValuesEnum(_messages.Enum):
+    r"""Output only. The distro or language system assigned severity for this
+    vulnerability when that is available and note provider assigned severity
+    when distro or language system has not yet assigned a severity for this
+    vulnerability.
+
+    Values:
+      SEVERITY_UNSPECIFIED: Unknown Impact
+      MINIMAL: Minimal Impact
+      LOW: Low Impact
+      MEDIUM: Medium Impact
+      HIGH: High Impact
+      CRITICAL: Critical Impact
+    """
+    SEVERITY_UNSPECIFIED = 0
+    MINIMAL = 1
+    LOW = 2
+    MEDIUM = 3
+    HIGH = 4
+    CRITICAL = 5
+
   affectedLocation = _messages.MessageField('VulnerabilityLocation', 1)
-  fixedLocation = _messages.MessageField('VulnerabilityLocation', 2)
-  severityName = _messages.StringField(3)
+  effectiveSeverity = _messages.EnumField('EffectiveSeverityValueValuesEnum', 2)
+  fixedLocation = _messages.MessageField('VulnerabilityLocation', 3)
+  packageType = _messages.StringField(4)
+  severityName = _messages.StringField(5)
 
 
 class PackageNote(_messages.Message):
@@ -3357,7 +3391,15 @@ class VulnerabilityDetails(_messages.Message):
   Enums:
     EffectiveSeverityValueValuesEnum: The distro assigned severity for this
       vulnerability when that is available and note provider assigned severity
-      when distro has not yet assigned a severity for this vulnerability.
+      when distro has not yet assigned a severity for this vulnerability. When
+      there are multiple package issues for this vulnerability, they can have
+      different effective severities because some might come from the distro
+      and some might come from installed language packs (e.g. Maven JARs or Go
+      binaries). For this reason, it is advised to use the effective severity
+      on the PackageIssue level, as this field may eventually be deprecated.
+      In the case where multiple PackageIssues have different effective
+      severities, the one set here will be the highest severity of any of the
+      PackageIssues.
     SeverityValueValuesEnum: Output only. The note provider assigned Severity
       of the vulnerability.
 
@@ -3367,19 +3409,35 @@ class VulnerabilityDetails(_messages.Message):
       high severity.
     effectiveSeverity: The distro assigned severity for this vulnerability
       when that is available and note provider assigned severity when distro
-      has not yet assigned a severity for this vulnerability.
+      has not yet assigned a severity for this vulnerability. When there are
+      multiple package issues for this vulnerability, they can have different
+      effective severities because some might come from the distro and some
+      might come from installed language packs (e.g. Maven JARs or Go
+      binaries). For this reason, it is advised to use the effective severity
+      on the PackageIssue level, as this field may eventually be deprecated.
+      In the case where multiple PackageIssues have different effective
+      severities, the one set here will be the highest severity of any of the
+      PackageIssues.
     packageIssue: The set of affected locations and their fixes (if available)
       within the associated resource.
     severity: Output only. The note provider assigned Severity of the
       vulnerability.
     type: The type of package; whether native or non native(ruby gems, node.js
-      packages etc)
+      packages etc). This may be deprecated in the future because we can have
+      multiple PackageIssues with different package types.
   """
 
   class EffectiveSeverityValueValuesEnum(_messages.Enum):
     r"""The distro assigned severity for this vulnerability when that is
     available and note provider assigned severity when distro has not yet
-    assigned a severity for this vulnerability.
+    assigned a severity for this vulnerability. When there are multiple
+    package issues for this vulnerability, they can have different effective
+    severities because some might come from the distro and some might come
+    from installed language packs (e.g. Maven JARs or Go binaries). For this
+    reason, it is advised to use the effective severity on the PackageIssue
+    level, as this field may eventually be deprecated. In the case where
+    multiple PackageIssues have different effective severities, the one set
+    here will be the highest severity of any of the PackageIssues.
 
     Values:
       SEVERITY_UNSPECIFIED: Unknown Impact

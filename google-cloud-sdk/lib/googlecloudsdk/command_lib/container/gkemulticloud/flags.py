@@ -400,3 +400,10 @@ def GetNodeTaints(args):
           key=k, value=value, effect=effect)
       taints.append(taint)
   return taints
+
+
+def AddAuthProviderCmdPath(parser):
+  parser.add_argument(
+      '--auth-provider-cmd-path',
+      hidden=True,
+      help='Path to the executable for the auth provider field in kubeconfig.')

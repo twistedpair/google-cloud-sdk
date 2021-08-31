@@ -411,7 +411,7 @@
           "format": "int32"
         },
         "failoverOrigin": {
-          "description": "Optional. The Origin resource to try when the current origin cannot be reached. After maxAttempts is reached, the configured failoverOrigin will be used to fulfil the request. For example, the following are both valid URLs to an EdgeCacheOrigin resource: - networkservices\/v1alpha1\/projects\/project\/global\/edgeCacheOrigins\/yourOrigin - \/global\/edgeCacheOrigins\/yourOrigin The value of timeout.maxAttemptsTimeout dictates the timeout across all origins.",
+          "description": "Optional. The EdgeCacheOrigin resource to try when the current origin cannot be reached. After maxAttempts is reached, the configured failoverOrigin will be used to fulfil the request. The following are both valid paths to an EdgeCacheOrigin resource: * projects\/my-project\/locations\/global\/edgeCacheOrigins\/my-origin * my-origin The value of timeout.maxAttemptsTimeout dictates the timeout across all origins.",
           "type": "string"
         },
         "retryConditions": {
@@ -520,7 +520,7 @@
           "type": "boolean"
         },
         "edgeSslCertificates": {
-          "description": "Optional. URLs to sslCertificate resources that are used to authenticate connections between users and the EdgeCacheService. Note that only \"global\" certificates with a \"scope\" of \"EDGE_CACHE\" can be attached to an EdgeCacheService. The following are both valid URLs to a Certificate resource: - \/v1\/projects\/project\/locations\/global\/certificates\/media-example-com-cert - \/global\/certificates\/media-example-com-cert You may specify up to 5 SSL certificates.",
+          "description": "Optional. Certificate resources that are used to authenticate connections between users and the EdgeCacheService. Note that only \"global\" certificates with a \"scope\" of \"EDGE_CACHE\" can be attached to an EdgeCacheService. The following are both valid paths to a Certificate resource: * projects\/project\/locations\/global\/certificates\/media-example-com-cert * media-example-com-cert You may specify up to 5 SSL certificates.",
           "type": "array",
           "items": {
             "type": "string"
@@ -627,7 +627,7 @@
       "type": "object",
       "properties": {
         "origin": {
-          "description": "Optional. The Origin resource that requests to this route should fetch from when a matching response is not in cache. Origins can be defined as short names (\"my-origin\") or fully-qualified resource URLs - e.g. \"networkservices.googleapis.com\/projects\/my-project\/global\/edgecacheorigins\/my-origin\" Only one of origin or urlRedirect can be set.",
+          "description": "Optional. The EdgeCacheOrigin resource that requests to this route should fetch from when a matching response is not in cache. The following are both valid paths to an EdgeCacheOrigin resource: * projects\/my-project\/locations\/global\/edgeCacheOrigins\/my-origin * my-origin Only one of origin or urlRedirect can be set.",
           "type": "string"
         },
         "urlRedirect": {
@@ -937,7 +937,7 @@
           ]
         },
         "signedRequestKeyset": {
-          "description": "Optional. The EdgeCacheKeyset containing the set of public keys used to validate signed requests at the edge. For example, the following are both valid URLs to an EdgeCacheKeyset resource: - networkservices\/v1alpha1\/projects\/project\/global\/edgeCacheKeysets\/yourKeyset - \/global\/edgeCacheKeysets\/yourKeyset signedRequestMode must be set to a value other than DISABLED when a keyset is provided.",
+          "description": "Optional. The EdgeCacheKeyset containing the set of public keys used to validate signed requests at the edge. The following are both valid paths to an EdgeCacheKeyset resource: * projects\/project\/locations\/global\/edgeCacheKeysets\/yourKeyset * yourKeyset signedRequestMode must be set to a value other than DISABLED when a keyset is provided.",
           "type": "string"
         }
       }

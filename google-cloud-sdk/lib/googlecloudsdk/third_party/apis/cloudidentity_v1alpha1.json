@@ -1456,7 +1456,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the Device in format: `devices\/{device_id}`, where device_id is the unique id assigned to the Device.",
+          "description": "Output only. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the Device in format: `devices\/{device}`, where device is the unique id assigned to the Device.",
           "readOnly": true,
           "type": "string"
         },
@@ -1713,7 +1713,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the DeviceUser in format: `devices\/{device_id}\/deviceUsers\/{device_user_id}`, where `device_user_id` uniquely identifies a user's use of a device.",
+          "description": "Output only. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the DeviceUser in format: `devices\/{device}\/deviceUsers\/{device_user}`, where `device_user` uniquely identifies a user's use of a device.",
           "readOnly": true,
           "type": "string"
         },
@@ -1807,7 +1807,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the ClientState in format: `devices\/{device_id}\/deviceUsers\/{device_user_id}\/clientState\/{partner_id}`, where partner_id corresponds to the partner storing the data. For partners belonging to the \"BeyondCorp Alliance\", this is the partner ID specified to you by Google. For all other callers, this is a string of the form: `{customer_id}-suffix`, where `customer_id` is your customer ID. The *suffix* is any string the caller specifies. This string will be displayed verbatim in the administration console. This suffix is used in setting up Custom Access Levels in Context-Aware Access. Your organization's customer ID can be obtained from the URL: `GET https:\/\/www.googleapis.com\/admin\/directory\/v1\/customers\/my_customer` The `id` field in the response contains the customer ID starting with the letter 'C'. The customer ID to be used in this API is the string after the letter 'C' (not including 'C')",
+          "description": "Output only. [Resource name](https:\/\/cloud.google.com\/apis\/design\/resource_names) of the ClientState in format: `devices\/{device}\/deviceUsers\/{device_user}\/clientState\/{partner}`, where partner corresponds to the partner storing the data. For partners belonging to the \"BeyondCorp Alliance\", this is the partner ID specified to you by Google. For all other callers, this is a string of the form: `{customer}-suffix`, where `customer` is your customer ID. The *suffix* is any string the caller specifies. This string will be displayed verbatim in the administration console. This suffix is used in setting up Custom Access Levels in Context-Aware Access. Your organization's customer ID can be obtained from the URL: `GET https:\/\/www.googleapis.com\/admin\/directory\/v1\/customers\/my_customer` The `id` field in the response contains the customer ID starting with the letter 'C'. The customer ID to be used in this API is the string after the letter 'C' (not including 'C')",
           "readOnly": true,
           "type": "string"
         },
@@ -1998,6 +1998,97 @@
           "description": "Resultant Device object for the action. Note that asset tags will not be returned in the device object.",
           "$ref": "GoogleAppsCloudidentityDevicesV1Device"
         }
+      }
+    },
+    "GoogleAppsCloudidentityDevicesV1CreateDeviceMetadata": {
+      "id": "GoogleAppsCloudidentityDevicesV1CreateDeviceMetadata",
+      "description": "Metadata for CreateDevice LRO.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleAppsCloudidentityDevicesV1DeleteDeviceMetadata": {
+      "id": "GoogleAppsCloudidentityDevicesV1DeleteDeviceMetadata",
+      "description": "Metadata for DeleteDevice LRO.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleAppsCloudidentityDevicesV1UpdateDeviceMetadata": {
+      "id": "GoogleAppsCloudidentityDevicesV1UpdateDeviceMetadata",
+      "description": "Metadata for UpdateDevice LRO.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleAppsCloudidentityDevicesV1WipeDeviceMetadata": {
+      "id": "GoogleAppsCloudidentityDevicesV1WipeDeviceMetadata",
+      "description": "Metadata for WipeDevice LRO.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleAppsCloudidentityDevicesV1CancelWipeDeviceMetadata": {
+      "id": "GoogleAppsCloudidentityDevicesV1CancelWipeDeviceMetadata",
+      "description": "Metadata for CancelWipeDevice LRO.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleAppsCloudidentityDevicesV1DeleteDeviceUserMetadata": {
+      "id": "GoogleAppsCloudidentityDevicesV1DeleteDeviceUserMetadata",
+      "description": "Metadata for DeleteDeviceUser LRO.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleAppsCloudidentityDevicesV1ApproveDeviceUserMetadata": {
+      "id": "GoogleAppsCloudidentityDevicesV1ApproveDeviceUserMetadata",
+      "description": "Metadata for ApproveDeviceUser LRO.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleAppsCloudidentityDevicesV1SignoutDeviceUserMetadata": {
+      "id": "GoogleAppsCloudidentityDevicesV1SignoutDeviceUserMetadata",
+      "description": "Metadata for SignoutDeviceUser LRO.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleAppsCloudidentityDevicesV1BlockDeviceUserMetadata": {
+      "id": "GoogleAppsCloudidentityDevicesV1BlockDeviceUserMetadata",
+      "description": "Metadata for BlockDeviceUser LRO.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleAppsCloudidentityDevicesV1WipeDeviceUserMetadata": {
+      "id": "GoogleAppsCloudidentityDevicesV1WipeDeviceUserMetadata",
+      "description": "Metadata for WipeDeviceUser LRO.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleAppsCloudidentityDevicesV1CancelWipeDeviceUserMetadata": {
+      "id": "GoogleAppsCloudidentityDevicesV1CancelWipeDeviceUserMetadata",
+      "description": "Metadata for CancelWipeDeviceUser LRO.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleAppsCloudidentityDevicesV1ListEndpointAppsMetadata": {
+      "id": "GoogleAppsCloudidentityDevicesV1ListEndpointAppsMetadata",
+      "description": "Metadata for ListEndpointApps LRO.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "GoogleAppsCloudidentityDevicesV1UpdateClientStateMetadata": {
+      "id": "GoogleAppsCloudidentityDevicesV1UpdateClientStateMetadata",
+      "description": "Metadata for UpdateClientState LRO.",
+      "type": "object",
+      "properties": {
       }
     }
   },

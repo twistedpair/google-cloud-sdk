@@ -575,6 +575,10 @@
           "description": "Required. Reference to the complex type name, in the following form: `projects\/{project}\/locations\/{location}\/complexTypes\/{name}`.",
           "type": "string"
         },
+        "moduleDefinition": {
+          "description": "Reference to the module definition name, in the following form: `projects\/{project}\/locations\/{location}\/modules\/{name}#{definition}`.",
+          "type": "string"
+        },
         "required": {
           "description": "If true, this asset metadata is required to be specified during asset creation.",
           "type": "boolean"
@@ -2247,12 +2251,6 @@
                       "required": true,
                       "type": "string"
                     },
-                    "oldUpdateMask": {
-                      "description": "this is temporary",
-                      "location": "query",
-                      "type": "string",
-                      "format": "google-fieldmask"
-                    },
                     "updateMask": {
                       "description": "Required. Comma-separated list of fields is used to specify the fields to be overwritten in the AssetType resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
                       "location": "query",
@@ -2416,12 +2414,6 @@
                           "required": true,
                           "type": "string"
                         },
-                        "oldReadMask": {
-                          "description": "This is temporary.",
-                          "location": "query",
-                          "type": "string",
-                          "format": "google-fieldmask"
-                        },
                         "readMask": {
                           "description": "Extra fields to be poplulated as part of the asset resource in the response. Currently, this only supports populating asset metadata (no wildcards and no contents of the entire asset).",
                           "location": "query",
@@ -2503,12 +2495,6 @@
                           "location": "query",
                           "type": "string"
                         },
-                        "oldReadMask": {
-                          "description": "This is temporary.",
-                          "location": "query",
-                          "type": "string",
-                          "format": "google-fieldmask"
-                        },
                         "readMask": {
                           "description": "Extra fields to be poplulated as part of the asset resource in the response. Currently, this only supports populating asset metadata (no wildcards and no contents of the entire asset).",
                           "location": "query",
@@ -2538,12 +2524,6 @@
                           "location": "path",
                           "required": true,
                           "type": "string"
-                        },
-                        "oldUpdateMask": {
-                          "description": "this is temporary",
-                          "location": "query",
-                          "type": "string",
-                          "format": "google-fieldmask"
                         },
                         "updateMask": {
                           "description": "Required. Comma-separated list of fields is used to specify the fields to be overwritten in the Asset resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
@@ -3093,12 +3073,6 @@
                                   "required": true,
                                   "type": "string"
                                 },
-                                "oldUpdateMask": {
-                                  "description": "this is temporary",
-                                  "location": "query",
-                                  "type": "string",
-                                  "format": "google-fieldmask"
-                                },
                                 "updateMask": {
                                   "description": "Required. Comma-separated list of fields to be updated.",
                                   "location": "query",
@@ -3321,12 +3295,6 @@
                           "required": true,
                           "type": "string"
                         },
-                        "oldUpdateMask": {
-                          "description": "this is temporary",
-                          "location": "query",
-                          "type": "string",
-                          "format": "google-fieldmask"
-                        },
                         "updateMask": {
                           "description": "Required. Comma-separated list of fields to be updated.",
                           "location": "query",
@@ -3534,12 +3502,6 @@
                       "location": "path",
                       "required": true,
                       "type": "string"
-                    },
-                    "oldUpdateMask": {
-                      "description": "this is temporary",
-                      "location": "query",
-                      "type": "string",
-                      "format": "google-fieldmask"
                     },
                     "updateMask": {
                       "description": "Required. Comma-separated list of fields is used to specify the fields to be overwritten in the ComplexType resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
@@ -3975,12 +3937,6 @@
                       "location": "path",
                       "required": true,
                       "type": "string"
-                    },
-                    "oldUpdateMask": {
-                      "description": "this is temporary",
-                      "location": "query",
-                      "type": "string",
-                      "format": "google-fieldmask"
                     },
                     "updateMask": {
                       "description": "Required. Comma-separated list of fields is used to specify the fields to be overwritten in the Transformer resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",

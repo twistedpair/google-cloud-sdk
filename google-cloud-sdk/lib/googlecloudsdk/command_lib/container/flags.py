@@ -916,6 +916,18 @@ def AddEnableWorkloadMonitoringEapFlag(parser):
   )
 
 
+def AddManagedPrometheusFlag(parser):
+  """Adds a --enable-managed-prometheus flag to parser."""
+  help_text = """Enable Prometheus Managed Collection."""
+  parser.add_argument(
+      '--enable-managed-prometheus',
+      action='store_true',
+      default=None,
+      help=help_text,
+      hidden=True,
+  )
+
+
 def AddEnableMasterSignalsFlags(parser, for_create=False):
   """Adds --master-logs and --enable-master-metrics flags to parser."""
 
@@ -3669,6 +3681,19 @@ def AddThreadsPerCore(parser):
     """
   parser.add_argument(
       '--threads-per-core',
+      type=arg_parsers.BoundedInt(1),
+      help=help_text,
+      default=None)
+
+
+def AddNumaNodeCount(parser):
+  help_text = """
+      The number of virtual NUMA nodes for the instance.
+      Valid values are: 0, 1, 2, 4 or 8. Setting NUMA node count to 0 means
+      using the default setting.
+      """
+  parser.add_argument(
+      '--numa-node-count',
       type=arg_parsers.BoundedInt(1),
       help=help_text,
       default=None)

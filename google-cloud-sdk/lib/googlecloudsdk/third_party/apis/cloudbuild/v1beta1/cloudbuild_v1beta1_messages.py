@@ -37,9 +37,7 @@ class ApprovalResult(_messages.Message):
     approvalTime: Output only. The time when the approval decision was made.
     approverAccount: Output only. Email of the user that called the
       ApproveBuild API to approve or reject a build at the time that the API
-      was called (the user's actual email that is tied to their GAIA ID may
-      have changed). This field is not stored, rather, it is calculated on the
-      fly using approver_id.
+      was called.
     comment: Optional. An optional comment for this manual approval result.
     decision: Required. The decision of this manual approval.
     url: Optional. An optional URL tied to this manual approval result. This

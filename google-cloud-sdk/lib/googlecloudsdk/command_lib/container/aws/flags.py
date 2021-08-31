@@ -141,3 +141,23 @@ def AddMainVolumeKmsKeyArn(parser):
 
 def AddDatabaseEncryptionKmsKeyArn(parser):
   _AddKmsKeyArn(parser, 'database-encryption', 'cluster secrets', required=True)
+
+
+def AddProxyConfig(parser):
+  """Add proxy configuration flags.
+
+  Args:
+    parser: The argparse.parser to add the arguments to.
+  """
+
+  group = parser.add_argument_group('Proxy config')
+  group.add_argument(
+      '--proxy-secret-arn',
+      required=True,
+      help=('ARN of the AWS Secrets Manager secret that contains a proxy '
+            'configuration.'))
+  group.add_argument(
+      '--proxy-secret-version-id',
+      required=True,
+      help=('Version ID string of the AWS Secrets Manager secret that contains '
+            'a proxy configuration.'))

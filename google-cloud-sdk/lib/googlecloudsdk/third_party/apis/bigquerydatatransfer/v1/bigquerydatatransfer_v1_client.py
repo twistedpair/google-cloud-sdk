@@ -569,6 +569,33 @@ class BigquerydatatransferV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def EnrollDataSources(self, request, global_params=None):
+      r"""Enroll data sources in a user project. This allows users to create transfer configurations for these data sources. They will also appear in the ListDataSources RPC and as such, will appear in the BigQuery UI 'https://bigquery.cloud.google.com' (and the documents can be found at https://cloud.google.com/bigquery/bigquery-web-ui and https://cloud.google.com/bigquery/docs/working-with-transfers).
+
+      Args:
+        request: (BigquerydatatransferProjectsLocationsEnrollDataSourcesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('EnrollDataSources')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    EnrollDataSources.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}:enrollDataSources',
+        http_method='POST',
+        method_id='bigquerydatatransfer.projects.locations.enrollDataSources',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:enrollDataSources',
+        request_field='enrollDataSourcesRequest',
+        request_type_name='BigquerydatatransferProjectsLocationsEnrollDataSourcesRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets information about a location.
 
@@ -959,3 +986,30 @@ class BigquerydatatransferV1(base_api.BaseApiClient):
       super(BigquerydatatransferV1.ProjectsService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def EnrollDataSources(self, request, global_params=None):
+      r"""Enroll data sources in a user project. This allows users to create transfer configurations for these data sources. They will also appear in the ListDataSources RPC and as such, will appear in the BigQuery UI 'https://bigquery.cloud.google.com' (and the documents can be found at https://cloud.google.com/bigquery/bigquery-web-ui and https://cloud.google.com/bigquery/docs/working-with-transfers).
+
+      Args:
+        request: (BigquerydatatransferProjectsEnrollDataSourcesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('EnrollDataSources')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    EnrollDataSources.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}:enrollDataSources',
+        http_method='POST',
+        method_id='bigquerydatatransfer.projects.enrollDataSources',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:enrollDataSources',
+        request_field='enrollDataSourcesRequest',
+        request_type_name='BigquerydatatransferProjectsEnrollDataSourcesRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )

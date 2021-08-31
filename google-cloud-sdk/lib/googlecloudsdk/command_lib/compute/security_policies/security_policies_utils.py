@@ -111,12 +111,24 @@ def SecurityPolicyFromFile(input_file, messages, file_format):
     if 'ruleNumber' in rule:
       security_policy_rule.ruleNumber = int(rule['ruleNumber'])
     if 'redirectOptions' in rule:
-      redirect_options = rule['redirectOptions']
-      security_policy_rule.redirectOptions = (
-          messages.SecurityPolicyRuleRedirectOptions(
-              type=messages.SecurityPolicyRedirectOptions.TypeValueValuesEnum(
-                  redirect_options['type']),
-              target=redirect_options['target']))
+      redirect_options = messages.SecurityPolicyRuleRedirectOptions()
+      if 'type' in rule['redirectOptions']:
+        redirect_options.type = (
+            messages.SecurityPolicyRuleRedirectOptions.TypeValueValuesEnum(
+                rule['redirectOptions']['type']))
+      if 'target' in rule['redirectOptions']:
+        redirect_options.target = rule['redirectOptions']['target']
+      security_policy_rule.redirectOptions = redirect_options
+    if 'headerAction' in rule:
+      header_action = messages.SecurityPolicyRuleHttpHeaderAction()
+      headers_to_add = []
+      for header_to_add in rule['headerAction']['requestHeadersToAdds']:
+        headers_to_add.append(
+            messages.SecurityPolicyRuleHttpHeaderActionHttpHeaderOption(
+                headerName=header_to_add['headerName'],
+                headerValue=header_to_add['headerValue']))
+      header_action.requestHeadersToAdds = headers_to_add
+      security_policy_rule.headerAction = header_action
     if 'rateLimitOptions' in rule:
       rate_limit_options = rule['rateLimitOptions']
       security_policy_rule.rateLimitOptions = (

@@ -20,23 +20,12 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import waiter
-from googlecloudsdk.calliope import base
 from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
 
 _API_NAME = 'clouddeploy'
-_GA_API_VERSION = 'v1'
-_ALPHA_API_VERSION = 'v1'
-_BETA_API_VERSION = 'v1beta1'
-
-# Release-API version map.
-# E.g. For alpha release, the v1alpha1 API will be used.
-RELEASE_TRACK_TO_API_VERSION = {
-    base.ReleaseTrack.GA: _GA_API_VERSION,
-    base.ReleaseTrack.BETA: _BETA_API_VERSION,
-    base.ReleaseTrack.ALPHA: _ALPHA_API_VERSION,
-}
+_API_VERSION = 'v1'
 
 
 def GetMessagesModule(client=None):
@@ -52,21 +41,16 @@ def GetMessagesModule(client=None):
   return client.MESSAGES_MODULE
 
 
-def GetClientInstance(release_track=base.ReleaseTrack.ALPHA, use_http=True):
+def GetClientInstance(use_http=True):
   """Returns an instance of the Cloud Deploy client.
 
   Args:
-    release_track: The desired value of the enum
-      googlecloudsdk.calliope.base.ReleaseTrack.
     use_http: bool, True to create an http object for this client.
 
   Returns:
     base_api.BaseApiClient, An instance of the Cloud Deploy client.
   """
-  return apis.GetClientInstance(
-      _API_NAME,
-      RELEASE_TRACK_TO_API_VERSION[release_track],
-      no_http=(not use_http))
+  return apis.GetClientInstance(_API_NAME, _API_VERSION, no_http=(not use_http))
 
 
 class DeployOperationPoller(waiter.CloudOperationPoller):

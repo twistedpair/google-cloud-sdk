@@ -1165,11 +1165,22 @@
           "description": "Optional. Configuration related to application-layer secrets encryption.",
           "$ref": "GoogleCloudGkemulticloudV1AzureDatabaseEncryption"
         },
+        "proxyConfig": {
+          "description": "Optional. Proxy configuration for outbound HTTP(S) traffic.",
+          "$ref": "GoogleCloudGkemulticloudV1AzureProxyConfig"
+        },
         "tags": {
           "description": "Optional. A set of tags to apply to all underlying control plane Azure resources.",
           "type": "object",
           "additionalProperties": {
             "type": "string"
+          }
+        },
+        "replicaPlacements": {
+          "description": "Optional. Configuration for where to place the control plane replicas. Up to three replica placement instances can be specified. If replica_placements is set, the replica placement instances will be applied to the three control plane replicas as evenly as possible.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudGkemulticloudV1ReplicaPlacement"
           }
         }
       }
@@ -1208,6 +1219,36 @@
         },
         "kmsKeyIdentifier": {
           "description": "Required. The URL the of the Azure Key Vault key (with its version) to use to encrypt \/ decrypt data. For example: `https:\/\/.vault.azure.net\/keys\/\/`",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudGkemulticloudV1AzureProxyConfig": {
+      "id": "GoogleCloudGkemulticloudV1AzureProxyConfig",
+      "description": "Details of a proxy config stored in Azure Key Vault.",
+      "type": "object",
+      "properties": {
+        "resourceGroupId": {
+          "description": "The ARM ID the of the resourcegroup containing proxy keyvault. Resource group ids are formatted as `\/subscriptions\/\/resourceGroups\/`.",
+          "type": "string"
+        },
+        "secretId": {
+          "description": "The URL the of the proxy setting secret with its version. Secret ids are formatted as `https:\/\/.vault.azure.net\/secrets\/\/`.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudGkemulticloudV1ReplicaPlacement": {
+      "id": "GoogleCloudGkemulticloudV1ReplicaPlacement",
+      "description": "Configuration for the placement of a control plane replica.",
+      "type": "object",
+      "properties": {
+        "subnetId": {
+          "description": "Required. For a given replica, the ARM ID of the subnet where the control plane VM is deployed. Make sure it's a subnet under the virtual network in the cluster configuration.",
+          "type": "string"
+        },
+        "azureAvailabilityZone": {
+          "description": "Required. For a given replica, the Azure availability zone where to provision the control plane VM and the ETCD disk.",
           "type": "string"
         }
       }
@@ -1398,6 +1439,10 @@
         "sshConfig": {
           "description": "Required. SSH configuration for how to access the node pool machines.",
           "$ref": "GoogleCloudGkemulticloudV1AzureSshConfig"
+        },
+        "proxyConfig": {
+          "description": "Optional. Proxy configuration for outbound HTTP(S) traffic.",
+          "$ref": "GoogleCloudGkemulticloudV1AzureProxyConfig"
         },
         "taints": {
           "description": "Optional. The initial taints assigned to nodes of this node pool.",

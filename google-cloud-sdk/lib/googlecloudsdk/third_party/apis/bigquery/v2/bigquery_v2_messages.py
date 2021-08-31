@@ -2725,8 +2725,8 @@ class QueryResponse(_messages.Message):
       GetQueryResults and specify the jobReference returned above.
     schema: The schema of the results. Present only when the query completes
       successfully.
-    sessionInfoTemplate: [Output-only] [Preview] Information of the session if
-      this job is part of one.
+    sessionInfo: [Output-only] [Preview] Information of the session if this
+      job is part of one.
     totalBytesProcessed: The total number of bytes processed for this query.
       If this query was a dry run, this is the number of bytes that would be
       processed if the query were run.
@@ -2745,7 +2745,7 @@ class QueryResponse(_messages.Message):
   pageToken = _messages.StringField(8)
   rows = _messages.MessageField('TableRow', 9, repeated=True)
   schema = _messages.MessageField('TableSchema', 10)
-  sessionInfoTemplate = _messages.MessageField('SessionInfo', 11)
+  sessionInfo = _messages.MessageField('SessionInfo', 11)
   totalBytesProcessed = _messages.IntegerField(12)
   totalRows = _messages.IntegerField(13, variant=_messages.Variant.UINT64)
 

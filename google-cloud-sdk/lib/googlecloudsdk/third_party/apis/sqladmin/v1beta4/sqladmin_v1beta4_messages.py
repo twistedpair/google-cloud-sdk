@@ -1020,10 +1020,23 @@ class ExportContext(_messages.Message):
     only.
 
     Fields:
+      escapeCharacter: Specifies the character that should appear before a
+        data character that needs to be escaped.
+      fieldsTerminatedBy: Specifies the character that separates columns
+        within each row (line) of the file.
+      linesTerminatedBy: This is used to separate lines. If a line does not
+        contain all fields, the rest of the columns are set to their default
+        values.
+      quoteCharacter: Specifies the quoting character to be used when a data
+        value is quoted.
       selectQuery: The select query used to extract the data.
     """
 
-    selectQuery = _messages.StringField(1)
+    escapeCharacter = _messages.StringField(1)
+    fieldsTerminatedBy = _messages.StringField(2)
+    linesTerminatedBy = _messages.StringField(3)
+    quoteCharacter = _messages.StringField(4)
+    selectQuery = _messages.StringField(5)
 
   class SqlExportOptionsValue(_messages.Message):
     r"""Options for exporting data as SQL statements.
@@ -1311,11 +1324,24 @@ class ImportContext(_messages.Message):
     Fields:
       columns: The columns to which CSV data is imported. If not specified,
         all columns of the database table are loaded with CSV data.
+      escapeCharacter: Specifies the character that should appear before a
+        data character that needs to be escaped.
+      fieldsTerminatedBy: Specifies the character that separates columns
+        within each row (line) of the file.
+      linesTerminatedBy: This is used to separate lines. If a line does not
+        contain all fields, the rest of the columns are set to their default
+        values.
+      quoteCharacter: Specifies the quoting character to be used when a data
+        value is quoted.
       table: The table to which CSV data is imported.
     """
 
     columns = _messages.StringField(1, repeated=True)
-    table = _messages.StringField(2)
+    escapeCharacter = _messages.StringField(2)
+    fieldsTerminatedBy = _messages.StringField(3)
+    linesTerminatedBy = _messages.StringField(4)
+    quoteCharacter = _messages.StringField(5)
+    table = _messages.StringField(6)
 
   bakImportOptions = _messages.MessageField('BakImportOptionsValue', 1)
   csvImportOptions = _messages.MessageField('CsvImportOptionsValue', 2)
@@ -2849,6 +2875,8 @@ class SqlInstancesVerifyExternalSyncSettingsRequest(_messages.Message):
       sync.
     syncMode: External sync mode
     verifyConnectionOnly: Flag to enable verifying connection only
+    verifyReplicationOnly: Optional. Flag to verify settings required by
+      replication setup only
   """
 
   class SyncModeValueValuesEnum(_messages.Enum):
@@ -2869,6 +2897,7 @@ class SqlInstancesVerifyExternalSyncSettingsRequest(_messages.Message):
   mysqlSyncConfig = _messages.MessageField('MySqlSyncConfig', 1)
   syncMode = _messages.EnumField('SyncModeValueValuesEnum', 2)
   verifyConnectionOnly = _messages.BooleanField(3)
+  verifyReplicationOnly = _messages.BooleanField(4)
 
 
 class SqlInstancesVerifyExternalSyncSettingsResponse(_messages.Message):

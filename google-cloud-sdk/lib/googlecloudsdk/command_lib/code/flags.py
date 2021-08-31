@@ -187,15 +187,30 @@ class CommonFlags(FlagDefs):
         help='Add a readiness probe to the list of containers that delays '
         'deployment stabilization until the application app has bound to $PORT')
 
-  def AddServiceYamlPositionalArg(self):
+  def AddServiceConfigPositionalArg(self, include_app_engine_docs=False):
+    """_AddFlag for service_config, which has two possible help strings.
+
+    Args:
+      include_app_engine_docs: Add paragraph that says app.yaml is allowed.
+    """
+    help_text = (
+        'service.yaml filename override. Defaults to the first file '
+        'matching ```*service.dev.yaml``` then ```*service.yaml```, if any '
+        'exist. This path is relative to the --source dir.')
+    if include_app_engine_docs:
+      help_text += (
+          '\n'
+          'An App Engine config path (typically ```app.yaml```) may also be '
+          'provided here, and we will build with a Cloud Native Computing '
+          'Foundation Buildpack builder selected from '
+          'gcr.io/gae-runtimes/buildpacks, according to the App Engine '
+          '```runtime``` specified in app.yaml.')
+
     self._AddFlag(
         'service_config',
         metavar='SERVICE_CONFIG',
         nargs='?',
-        help=(
-            'service.yaml filename override. Defaults to the first file '
-            'matching ```*service.dev.yaml``` then ```*service.yaml```, if any '
-            'exist.'),
+        help=help_text,
     )
 
   def AddAllowSecretManagerFlag(self):
@@ -239,7 +254,11 @@ class CommonFlags(FlagDefs):
 
   def _AddAlphaFlags(self):
     """Set up flags that are for alpha track only."""
-    self.AddServiceYamlPositionalArg()
+
+    # See AssembleSettings for where we decide how to parse service_config args
+    # based on release track.
+    self.AddServiceConfigPositionalArg(include_app_engine_docs=True)
+
     self.AddCloudsqlInstances()
     self.AddServiceName()
     self.AddImage()

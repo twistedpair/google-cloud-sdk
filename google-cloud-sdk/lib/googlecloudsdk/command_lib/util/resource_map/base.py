@@ -19,7 +19,6 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import abc
-import re
 
 from googlecloudsdk.calliope import base as calliope_base
 from googlecloudsdk.core import exceptions
@@ -443,12 +442,7 @@ class ResourceData(object):
     return self._api_name
 
   def get_full_collection_name(self):
-    # Returns the full collectionn name in dotted format. Below regex
-    # splits on capital letters in collection name used in resource map.
-    # TODO(b/192248455) Update resource map to use dotted notation.
-    collection_resource = '.'.join(
-        re.sub(r'([A-Z])', r' \1', self.get_resource_name()).split()).lower()
-    return '{}.{}'.format(self.get_api_name(), collection_resource)
+    return '{}.{}'.format(self.get_api_name(), self.get_resource_name())
 
   def get_metadata(self, metadata_field):
     if metadata_field not in self._resource_data:

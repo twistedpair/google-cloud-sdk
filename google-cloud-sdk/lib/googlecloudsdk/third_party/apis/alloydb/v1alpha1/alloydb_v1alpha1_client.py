@@ -378,6 +378,33 @@ class AlloydbV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Failover(self, request, global_params=None):
+      r"""Forces a Failover for a highly available instance. Failover promotes the HA standby instance as the new primary.
+
+      Args:
+        request: (AlloydbProjectsLocationsClustersInstancesFailoverRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Failover')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Failover.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/instances/{instancesId}:failover',
+        http_method='POST',
+        method_id='alloydb.projects.locations.clusters.instances.failover',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}:failover',
+        request_field='failoverInstanceRequest',
+        request_type_name='AlloydbProjectsLocationsClustersInstancesFailoverRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets details of a single Instance.
 
@@ -687,7 +714,7 @@ class AlloydbV1alpha1(base_api.BaseApiClient):
         method_id='alloydb.projects.locations.clusters.delete',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['requestId'],
+        query_params=['force', 'requestId'],
         relative_path='v1alpha1/{+name}',
         request_field='',
         request_type_name='AlloydbProjectsLocationsClustersDeleteRequest',
@@ -773,6 +800,33 @@ class AlloydbV1alpha1(base_api.BaseApiClient):
         request_field='',
         request_type_name='AlloydbProjectsLocationsClustersGetIamPolicyRequest',
         response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def ImportCluster(self, request, global_params=None):
+      r"""Creates a new Cluster in a given project and location, with a volume restored from the provided backup ID.
+
+      Args:
+        request: (AlloydbProjectsLocationsClustersImportClusterRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('ImportCluster')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ImportCluster.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters:importCluster',
+        http_method='POST',
+        method_id='alloydb.projects.locations.clusters.importCluster',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['backupSource_backupName', 'clusterId', 'requestId'],
+        relative_path='v1alpha1/{+parent}/clusters:importCluster',
+        request_field='cluster',
+        request_type_name='AlloydbProjectsLocationsClustersImportClusterRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

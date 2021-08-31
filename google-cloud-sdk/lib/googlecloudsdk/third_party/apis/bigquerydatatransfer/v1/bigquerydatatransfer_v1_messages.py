@@ -62,6 +62,20 @@ class BigquerydatatransferProjectsDataSourcesListRequest(_messages.Message):
   parent = _messages.StringField(3, required=True)
 
 
+class BigquerydatatransferProjectsEnrollDataSourcesRequest(_messages.Message):
+  r"""A BigquerydatatransferProjectsEnrollDataSourcesRequest object.
+
+  Fields:
+    enrollDataSourcesRequest: A EnrollDataSourcesRequest resource to be passed
+      as the request body.
+    name: The name of the project resource in the form:
+      `projects/{project_id}`
+  """
+
+  enrollDataSourcesRequest = _messages.MessageField('EnrollDataSourcesRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class BigquerydatatransferProjectsLocationsDataSourcesCheckValidCredsRequest(_messages.Message):
   r"""A BigquerydatatransferProjectsLocationsDataSourcesCheckValidCredsRequest
   object.
@@ -108,6 +122,20 @@ class BigquerydatatransferProjectsLocationsDataSourcesListRequest(_messages.Mess
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+
+
+class BigquerydatatransferProjectsLocationsEnrollDataSourcesRequest(_messages.Message):
+  r"""A BigquerydatatransferProjectsLocationsEnrollDataSourcesRequest object.
+
+  Fields:
+    enrollDataSourcesRequest: A EnrollDataSourcesRequest resource to be passed
+      as the request body.
+    name: The name of the project resource in the form:
+      `projects/{project_id}`
+  """
+
+  enrollDataSourcesRequest = _messages.MessageField('EnrollDataSourcesRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class BigquerydatatransferProjectsLocationsGetRequest(_messages.Message):
@@ -986,6 +1014,18 @@ class Empty(_messages.Message):
   representation for `Empty` is empty JSON object `{}`.
   """
 
+
+
+class EnrollDataSourcesRequest(_messages.Message):
+  r"""A request to enroll a set of data sources so they are visible in the
+  BigQuery UI's `Transfer` tab.
+
+  Fields:
+    dataSourceIds: Data sources that are enrolled. It is required to provide
+      at least one data source id.
+  """
+
+  dataSourceIds = _messages.StringField(1, repeated=True)
 
 
 class ListDataSourcesResponse(_messages.Message):

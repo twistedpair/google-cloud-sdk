@@ -25,36 +25,6 @@ class BaremetalsolutionProjectsLocationsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
-class BaremetalsolutionProjectsLocationsInstancesDisableInteractiveSerialConsoleRequest(_messages.Message):
-  r"""A BaremetalsolutionProjectsLocationsInstancesDisableInteractiveSerialCon
-  soleRequest object.
-
-  Fields:
-    disableInteractiveSerialConsoleRequest: A
-      DisableInteractiveSerialConsoleRequest resource to be passed as the
-      request body.
-    name: Required. Name of the resource.
-  """
-
-  disableInteractiveSerialConsoleRequest = _messages.MessageField('DisableInteractiveSerialConsoleRequest', 1)
-  name = _messages.StringField(2, required=True)
-
-
-class BaremetalsolutionProjectsLocationsInstancesEnableInteractiveSerialConsoleRequest(_messages.Message):
-  r"""A BaremetalsolutionProjectsLocationsInstancesEnableInteractiveSerialCons
-  oleRequest object.
-
-  Fields:
-    enableInteractiveSerialConsoleRequest: A
-      EnableInteractiveSerialConsoleRequest resource to be passed as the
-      request body.
-    name: Required. Name of the resource.
-  """
-
-  enableInteractiveSerialConsoleRequest = _messages.MessageField('EnableInteractiveSerialConsoleRequest', 1)
-  name = _messages.StringField(2, required=True)
-
-
 class BaremetalsolutionProjectsLocationsInstancesGetIamPolicyRequest(_messages.Message):
   r"""A BaremetalsolutionProjectsLocationsInstancesGetIamPolicyRequest object.
 
@@ -93,8 +63,8 @@ class BaremetalsolutionProjectsLocationsInstancesListRequest(_messages.Message):
     filter: Filtering results.
     orderBy: Hint for how to order the results.
     pageSize: Requested page size. Server may return fewer items than
-      requested. If unspecified, server will pick an appropriate default.
-    pageToken: A token identifying a page of results the server should return.
+      requested. If unspecified, the server will pick an appropriate default.
+    pageToken: A token identifying a page of results from the server.
     parent: Required. Parent value for ListInstancesRequest.
   """
 
@@ -261,10 +231,6 @@ class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
 
-class DisableInteractiveSerialConsoleRequest(_messages.Message):
-  r"""Message for disabling the interactive serial console on an instance."""
-
-
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -273,10 +239,6 @@ class Empty(_messages.Message):
   representation for `Empty` is empty JSON object `{}`.
   """
 
-
-
-class EnableInteractiveSerialConsoleRequest(_messages.Message):
-  r"""Message for enabling the interactive serial console on an instance."""
 
 
 class Expr(_messages.Message):
@@ -316,43 +278,43 @@ class Expr(_messages.Message):
 
 
 class Instance(_messages.Message):
-  r"""An instance resource.
+  r"""A server.
 
   Enums:
-    StateValueValuesEnum: The state of this Instance.
+    StateValueValuesEnum: The state of the server.
 
   Messages:
     LabelsValue: Labels as key value pairs.
 
   Fields:
-    createTime: Output only. Create time stamp.
-    hyperthreadingEnabled: True if hyperthreading enabled for the instance,
-      false otherwise. The default value is false.
+    createTime: Output only. Create a time stamp.
+    hyperthreadingEnabled: True if you enable hyperthreading for the server,
+      otherwise false. The default value is false.
     interactiveSerialConsoleEnabled: True if the interactive serial console
       feature is enabled for the instance, false otherwise. The default value
       is false.
     labels: Labels as key value pairs.
-    luns: List of luns associated with this instance.
-    machineType: The type of this Instance. [Available Instance
+    luns: List of LUNs associated with this server.
+    machineType: The server type. [Available server
       types](https://cloud.google.com/bare-metal/docs/bms-
       planning#server_configurations)
     name: Output only. The resource name of this `Instance`. Resource names
       are schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. Format:
       `projects/{project}/locations/{location}/instances/{instance}`
-    networks: List of networks associated with this instance.
-    state: The state of this Instance.
-    updateTime: Output only. Update time stamp.
+    networks: List of networks associated with this server.
+    state: The state of the server.
+    updateTime: Output only. Update a time stamp.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""The state of this Instance.
+    r"""The state of the server.
 
     Values:
-      STATE_UNSPECIFIED: The unspecified state.
-      PROVISIONING: The Instance is being provisioned.
-      RUNNING: The Instance is running.
-      DELETED: The Instance has been deleted.
+      STATE_UNSPECIFIED: The server is in an unknown state.
+      PROVISIONING: The server is being provisioned.
+      RUNNING: The server is running.
+      DELETED: The server has been deleted.
     """
     STATE_UNSPECIFIED = 0
     PROVISIONING = 1
@@ -396,12 +358,11 @@ class Instance(_messages.Message):
 
 
 class ListInstancesResponse(_messages.Message):
-  r"""Message for response to listing Instances.
+  r"""Response message for the list of servers.
 
   Fields:
-    instances: The list of Instance.
-    nextPageToken: A token identifying a page of results the server should
-      return.
+    instances: The list of servers.
+    nextPageToken: A token identifying a page of results from the server.
     unreachable: Locations that could not be reached.
   """
 
@@ -517,30 +478,30 @@ class Location(_messages.Message):
 
 
 class Lun(_messages.Message):
-  r"""A storage Lun.
+  r"""A storage volume logical unit number (LUN).
 
   Enums:
-    MultiprotocolTypeValueValuesEnum: The Lun Multiprotocol type to ensure the
-      characteristics of the LUN are optimized for the Operating System.
-    StateValueValuesEnum: The state of this Volume.
-    StorageTypeValueValuesEnum: The storage type of this Lun.
+    MultiprotocolTypeValueValuesEnum: The LUN multiprotocol type ensures the
+      characteristics of the LUN are optimized for each operating system.
+    StateValueValuesEnum: The state of this storage volume.
+    StorageTypeValueValuesEnum: The storage type for this LUN.
 
   Fields:
-    bootLun: Whether this Lun is a boot Lun.
-    multiprotocolType: The Lun Multiprotocol type to ensure the
-      characteristics of the LUN are optimized for the Operating System.
-    name: Output only. The name of this Lun.
-    shareable: Whether this Lun is allowed to be shared between multiple
-      physical servers.
-    sizeGb: The size of this Lun, in gigabytes.
-    state: The state of this Volume.
-    storageType: The storage type of this Lun.
-    storageVolume: The storage volume that this Lun is attached to.
+    bootLun: Display if this LUN is a boot LUN.
+    multiprotocolType: The LUN multiprotocol type ensures the characteristics
+      of the LUN are optimized for each operating system.
+    name: Output only. The name of the LUN.
+    shareable: Display if this LUN can be shared between multiple physical
+      servers.
+    sizeGb: The size of this LUN, in gigabytes.
+    state: The state of this storage volume.
+    storageType: The storage type for this LUN.
+    storageVolume: Display the storage volume for this LUN.
   """
 
   class MultiprotocolTypeValueValuesEnum(_messages.Enum):
-    r"""The Lun Multiprotocol type to ensure the characteristics of the LUN
-    are optimized for the Operating System.
+    r"""The LUN multiprotocol type ensures the characteristics of the LUN are
+    optimized for each operating system.
 
     Values:
       MULTIPROTOCOL_TYPE_UNSPECIFIED: Server has no OS specified.
@@ -554,14 +515,14 @@ class Lun(_messages.Message):
     VMWARE = 3
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""The state of this Volume.
+    r"""The state of this storage volume.
 
     Values:
-      STATE_UNSPECIFIED: The unspecified state.
-      CREATING: The Lun is being created.
-      UPDATING: The Lun is being updated.
-      READY: The Lun is ready for consumption.
-      DELETING: The Lun has been requested to be deleted.
+      STATE_UNSPECIFIED: The LUN is in an unknown state.
+      CREATING: The LUN is being created.
+      UPDATING: The LUN is being updated.
+      READY: The LUN is ready for use.
+      DELETING: The LUN has been requested to be deleted.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
@@ -570,12 +531,12 @@ class Lun(_messages.Message):
     DELETING = 4
 
   class StorageTypeValueValuesEnum(_messages.Enum):
-    r"""The storage type of this Lun.
+    r"""The storage type for this LUN.
 
     Values:
-      STORAGE_TYPE_UNSPECIFIED: The unspecified type.
-      SSD: This Lun storage type is SSD.
-      HDD: This Lun storage type is HDD.
+      STORAGE_TYPE_UNSPECIFIED: The storage type for this LUN is unknown.
+      SSD: This storage type for this LUN is SSD.
+      HDD: This storage type for this LUN is HDD.
     """
     STORAGE_TYPE_UNSPECIFIED = 0
     SSD = 1
@@ -599,7 +560,7 @@ class Network(_messages.Message):
 
   Fields:
     ipAddress: IP address configured.
-    macAddress: List of physical nics.
+    macAddress: List of physical interfaces.
     network: Name of the network.
     type: The type of this network.
   """
@@ -609,8 +570,9 @@ class Network(_messages.Message):
 
     Values:
       TYPE_UNSPECIFIED: Unspecified value.
-      CLIENT: Client network, that is a network peered to a GCP VPC.
-      PRIVATE: Private network, that is a network local to the BMS POD.
+      CLIENT: Client network, a network peered to a Google Cloud VPC.
+      PRIVATE: Private network, a network local to the Bare Metal Solution
+        environment.
     """
     TYPE_UNSPECIFIED = 0
     CLIENT = 1
@@ -731,21 +693,21 @@ class Operation(_messages.Message):
 
 
 class OperationMetadata(_messages.Message):
-  r"""Represents the metadata of the long-running operation.
+  r"""Represents the metadata from a long-running operation.
 
   Fields:
-    apiVersion: Output only. API version used to start the operation.
+    apiVersion: Output only. API version used with the operation.
     createTime: Output only. The time the operation was created.
     endTime: Output only. The time the operation finished running.
-    requestedCancellation: Output only. Identifies whether the user has
-      requested cancellation of the operation. Operations that have
-      successfully been cancelled have Operation.error value with a
+    requestedCancellation: Output only. Identifies whether the user requested
+      the cancellation of the operation. Operations that have been
+      successfully cancelled have Operation.error value with a
       google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
     statusMessage: Output only. Human-readable status of the operation, if
       any.
     target: Output only. Server-defined resource path for the target of the
       operation.
-    verb: Output only. Name of the verb executed by the operation.
+    verb: Output only. Name of the action executed by the operation.
   """
 
   apiVersion = _messages.StringField(1)

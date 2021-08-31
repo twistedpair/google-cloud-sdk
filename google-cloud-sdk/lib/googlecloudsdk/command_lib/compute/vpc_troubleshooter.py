@@ -32,9 +32,13 @@ IAP_MESSAGE = (
     'https://cloud.google.com/iap/docs/using-tcp-forwarding\n')
 
 DEFAULT_SSH_PORT_MESSAGE = (
-    'If the default firewall rule is defined for the project, SSH '
-    'connections to all VMs are allowed. If the VM has a custom network '
-    'firewall rule, make sure it is valid.\n'
+    'No ingress firewall rule allowing SSH found.\n'
+    '\n'
+    'If the project uses the default ingress firewall rule for SSH, connections'
+    ' to all VMs are allowed on TCP port 22.\n'
+    'If the VPC network that the VM\'s network interface is in has a custom '
+    'firewall rule, make sure that custom rule allows ingress traffic on the '
+    'VM\'s SSH TCP port (usually, this is TCP port 22).\n'
     'Help for default firewall rule: '
     'https://cloud.google.com/vpc/docs/vpc#default-network\n'
     'Help for custom firewall rule: '
@@ -79,7 +83,7 @@ class VPCTroubleshooter(ssh_troubleshooter.SshTroubleshooter):
     self._CheckDefaultSSHPort()
     if self.iap_tunnel_args:
       self._CheckIAPTunneling()
-    log.status.Print('VPC setting: {0} issue(s) found.\n'.format(
+    log.status.Print('VPC settings: {0} issue(s) found.\n'.format(
         len(self.issues)))
     for message in self.issues.values():
       log.status.Print(message)

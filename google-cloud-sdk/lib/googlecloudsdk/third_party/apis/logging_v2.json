@@ -600,7 +600,8 @@
           "type": "string"
         },
         "schema": {
-          "description": "Describes the schema of the logs stored in the bucket that are accessible via this view.This field is only populated for views in analytics-enabled buckets.",
+          "description": "Output only. Describes the schema of the logs stored in the bucket that are accessible via this view.This field is only populated for views in analytics-enabled buckets.",
+          "readOnly": true,
           "$ref": "TableSchema"
         }
       }

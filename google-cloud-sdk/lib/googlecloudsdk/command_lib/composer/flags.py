@@ -437,6 +437,7 @@ UPDATE_WEB_SERVER_ALLOW_IP = base.Argument(
 CLOUD_SQL_MACHINE_TYPE = base.Argument(
     '--cloud-sql-machine-type',
     type=str,
+    action=V1ExclusiveStoreAction,
     help="""\
     Cloud SQL machine type used by the Airflow database.
     """)

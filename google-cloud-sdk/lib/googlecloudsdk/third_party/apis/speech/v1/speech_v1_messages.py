@@ -56,10 +56,13 @@ class LongRunningRecognizeRequest(_messages.Message):
     audio: Required. The audio data to be recognized.
     config: Required. Provides information to the recognizer that specifies
       how to process the request.
+    outputConfig: Optional. Specifies an optional destination for the
+      recognition results.
   """
 
   audio = _messages.MessageField('RecognitionAudio', 1)
   config = _messages.MessageField('RecognitionConfig', 2)
+  outputConfig = _messages.MessageField('TranscriptOutputConfig', 3)
 
 
 class LongRunningRecognizeResponse(_messages.Message):
@@ -741,6 +744,18 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class TranscriptOutputConfig(_messages.Message):
+  r"""Specifies an optional destination for the recognition results.
+
+  Fields:
+    gcsUri: Specifies a Cloud Storage URI for the recognition results. Must be
+      specified in the format: `gs://bucket_name/object_name`, and the bucket
+      must already exist.
+  """
+
+  gcsUri = _messages.StringField(1)
 
 
 class WordInfo(_messages.Message):

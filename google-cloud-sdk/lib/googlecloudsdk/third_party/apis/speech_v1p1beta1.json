@@ -421,6 +421,10 @@
           "description": "Speech adaptation configuration improves the accuracy of speech recognition. When speech adaptation is set it supersedes the `speech_contexts` field. For more information, see the [speech adaptation](https:\/\/cloud.google.com\/speech-to-text\/docs\/adaptation) documentation.",
           "$ref": "SpeechAdaptation"
         },
+        "transcriptNormalization": {
+          "description": "Use transcription normalization to automatically replace parts of the transcript with phrases of your choosing. For StreamingRecognize, this normalization only applies to stable partial transcripts (stability > 0.8) and final transcripts.",
+          "$ref": "TranscriptNormalization"
+        },
         "speechContexts": {
           "description": "Array of SpeechContext. A means to provide context to assist the speech recognition. For more information, see [speech adaptation](https:\/\/cloud.google.com\/speech-to-text\/docs\/adaptation).",
           "type": "array",
@@ -500,6 +504,39 @@
           "items": {
             "$ref": "CustomClass"
           }
+        }
+      }
+    },
+    "TranscriptNormalization": {
+      "id": "TranscriptNormalization",
+      "description": "Transcription normalization configuration. Use transcription normalization to automatically replace parts of the transcript with phrases of your choosing. For StreamingRecognize, this normalization only applies to stable partial transcripts (stability > 0.8) and final transcripts.",
+      "type": "object",
+      "properties": {
+        "entries": {
+          "description": "A list of replacement entries. We will perform replacement with one entry at a time. For example, the second entry in [\"cat\" => \"dog\", \"mountain cat\" => \"mountain dog\"] will never be applied because we will always process the first entry before it. At most 100 entries.",
+          "type": "array",
+          "items": {
+            "$ref": "Entry"
+          }
+        }
+      }
+    },
+    "Entry": {
+      "id": "Entry",
+      "description": "A single replacement configuration.",
+      "type": "object",
+      "properties": {
+        "search": {
+          "description": "What to replace. Max length is 100 characters.",
+          "type": "string"
+        },
+        "replace": {
+          "description": "What to replace with. Max length is 100 characters.",
+          "type": "string"
+        },
+        "caseSensitive": {
+          "description": "Whether the search is case sensitive.",
+          "type": "boolean"
         }
       }
     },

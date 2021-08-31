@@ -219,11 +219,11 @@ class CDNPolicy(_messages.Message):
       CDNPolicy will not apply any default negative caching when a policy
       exists.
     signedRequestKeyset: Optional. The EdgeCacheKeyset containing the set of
-      public keys used to validate signed requests at the edge. For example,
-      the following are both valid URLs to an EdgeCacheKeyset resource: - netw
-      orkservices/v1alpha1/projects/project/global/edgeCacheKeysets/yourKeyset
-      - /global/edgeCacheKeysets/yourKeyset signedRequestMode must be set to a
-      value other than DISABLED when a keyset is provided.
+      public keys used to validate signed requests at the edge. The following
+      are both valid paths to an EdgeCacheKeyset resource: *
+      projects/project/locations/global/edgeCacheKeysets/yourKeyset *
+      yourKeyset signedRequestMode must be set to a value other than DISABLED
+      when a keyset is provided.
     signedRequestMode: Optional. Whether to enforce signed requests. The
       default value is DISABLED, which means all content is public, and does
       not authorize access. You must also set a signedRequestKeyset to enable
@@ -511,13 +511,13 @@ class EdgeCacheOrigin(_messages.Message):
     createTime: Output only. A human-readable description of the resource.
       Creation timestamp in RFC3339 text format.
     description: Optional. A human-readable description of the resource.
-    failoverOrigin: Optional. The Origin resource to try when the current
-      origin cannot be reached. After maxAttempts is reached, the configured
-      failoverOrigin will be used to fulfil the request. For example, the
-      following are both valid URLs to an EdgeCacheOrigin resource: - networks
-      ervices/v1alpha1/projects/project/global/edgeCacheOrigins/yourOrigin -
-      /global/edgeCacheOrigins/yourOrigin The value of
-      timeout.maxAttemptsTimeout dictates the timeout across all origins.
+    failoverOrigin: Optional. The EdgeCacheOrigin resource to try when the
+      current origin cannot be reached. After maxAttempts is reached, the
+      configured failoverOrigin will be used to fulfil the request. The
+      following are both valid paths to an EdgeCacheOrigin resource: *
+      projects/my-project/locations/global/edgeCacheOrigins/my-origin * my-
+      origin The value of timeout.maxAttemptsTimeout dictates the timeout
+      across all origins.
     labels: Optional. Set of label tags associated with the EdgeCache
       resource.
     maxAttempts: Optional. The maximum number of attempts to cache fill from
@@ -686,14 +686,13 @@ class EdgeCacheService(_messages.Message):
     edgeSecurityPolicy: Optional. Resource URL that points at the Cloud Armor
       edge security policy that is applied on each request against the
       EdgeCacheService.
-    edgeSslCertificates: Optional. URLs to sslCertificate resources that are
-      used to authenticate connections between users and the EdgeCacheService.
-      Note that only "global" certificates with a "scope" of "EDGE_CACHE" can
-      be attached to an EdgeCacheService. The following are both valid URLs to
-      a Certificate resource: -
-      /v1/projects/project/locations/global/certificates/media-example-com-
-      cert - /global/certificates/media-example-com-cert You may specify up to
-      5 SSL certificates.
+    edgeSslCertificates: Optional. Certificate resources that are used to
+      authenticate connections between users and the EdgeCacheService. Note
+      that only "global" certificates with a "scope" of "EDGE_CACHE" can be
+      attached to an EdgeCacheService. The following are both valid paths to a
+      Certificate resource: *
+      projects/project/locations/global/certificates/media-example-com-cert *
+      media-example-com-cert You may specify up to 5 SSL certificates.
     ipv4Addresses: Output only. The IPv4 addresses associated with this
       service. Addresses are static for the lifetime of the service. IP
       addresses provisioned via Bring-Your-Own-IP (BYOIP) are not supported.
@@ -1960,12 +1959,11 @@ class RouteRule(_messages.Message):
       predicates within a given matchRule have AND semantics. All predicates
       within a matchRule must match for the request to match the rule. You may
       specify up to 5 match rules.
-    origin: Optional. The Origin resource that requests to this route should
-      fetch from when a matching response is not in cache. Origins can be
-      defined as short names ("my-origin") or fully-qualified resource URLs -
-      e.g. "networkservices.googleapis.com/projects/my-
-      project/global/edgecacheorigins/my-origin" Only one of origin or
-      urlRedirect can be set.
+    origin: Optional. The EdgeCacheOrigin resource that requests to this route
+      should fetch from when a matching response is not in cache. The
+      following are both valid paths to an EdgeCacheOrigin resource: *
+      projects/my-project/locations/global/edgeCacheOrigins/my-origin * my-
+      origin Only one of origin or urlRedirect can be set.
     priority: Required. The priority of this route rule, where 1 is the
       highest priority. You cannot configure two or more routeRules with the
       same priority. Priority for each rule must be set to a number between 1

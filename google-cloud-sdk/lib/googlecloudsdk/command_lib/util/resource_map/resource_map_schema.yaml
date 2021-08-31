@@ -5,6 +5,10 @@ definitions:
     properties:
       home_directory:
         type: string
+      supported_apis:
+        type: array
+        items:
+          type: string
     additionalProperties: false
 
   resource:
@@ -12,6 +16,10 @@ definitions:
     properties:
       home_directory:
         type: string
+      supported_apis:
+        type: array
+        items:
+          type: string
       GA:
         type: {$ref: "#/definitions/release_track"}
       BETA:

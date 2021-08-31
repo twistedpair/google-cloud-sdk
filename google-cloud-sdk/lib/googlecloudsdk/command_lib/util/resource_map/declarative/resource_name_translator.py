@@ -91,6 +91,10 @@ class ResourceNameTranslator(object):
           declarative_map.DeclarativeMap())
     return cls._translator_instance
 
+  def __iter__(self):
+    for resource in self.collection_map.values():
+      yield resource
+
   def populate_name_mappings(self, resource_map):
     """Populates name maps for constant time access to resources."""
     self.ai_map = {}
@@ -132,9 +136,9 @@ class ResourceNameTranslator(object):
 
     if collection_name:
       if not self.is_translatable(collection_name=collection_name):
-        raise ResourceIdentifierNotFoundError(collection_name.lower())
+        raise ResourceIdentifierNotFoundError(collection_name)
 
-      return self.collection_map[collection_name.lower()]
+      return self.collection_map[collection_name]
 
   def is_translatable(self,
                       asset_inventory_type=None,
@@ -146,6 +150,6 @@ class ResourceNameTranslator(object):
     elif krm_kind:
       return KrmKind(*krm_kind) in self.krm_map
     elif collection_name:
-      return collection_name.lower() in self.collection_map
+      return collection_name in self.collection_map
     else:
       return False

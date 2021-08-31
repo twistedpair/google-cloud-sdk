@@ -553,6 +553,21 @@
         "audio": {
           "description": "Required. The audio data to be recognized.",
           "$ref": "RecognitionAudio"
+        },
+        "outputConfig": {
+          "description": "Optional. Specifies an optional destination for the recognition results.",
+          "$ref": "TranscriptOutputConfig"
+        }
+      }
+    },
+    "TranscriptOutputConfig": {
+      "id": "TranscriptOutputConfig",
+      "description": "Specifies an optional destination for the recognition results.",
+      "type": "object",
+      "properties": {
+        "gcsUri": {
+          "description": "Specifies a Cloud Storage URI for the recognition results. Must be specified in the format: `gs:\/\/bucket_name\/object_name`, and the bucket must already exist.",
+          "type": "string"
         }
       }
     },

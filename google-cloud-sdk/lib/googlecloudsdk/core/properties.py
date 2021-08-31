@@ -969,12 +969,12 @@ class _SectionCompute(_Section):
             'returns subnets in the current project.'))
     self.image_family_scope = self._Add(
         'image_family_scope',
-        hidden=True,
-        help_text='Sets how images are selected with image families. By '
-        'default zonal image resources are used when using an image family in '
-        'a public image project, and global image resources are used for all '
-        'other projects. Setting this property to `zonal` or `global` '
-        'overrides the default behavior.')
+        help_text='Sets how images are selected with image families for '
+        'disk and instance creation. By default, zonal image resources '
+        'are used when using an image family in a public image project, '
+        'and global image resources are used for all other projects. '
+        'To override the default behavior, set this property to `zonal` '
+        'or `global`. ')
 
 
 class _SectionBlueprints(_Section):

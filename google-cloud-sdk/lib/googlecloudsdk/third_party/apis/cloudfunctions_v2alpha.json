@@ -844,7 +844,7 @@
       "type": "object",
       "properties": {
         "target": {
-          "description": "Target of the operation - for example projects\/project-1\/locations\/region-1\/functions\/function-1",
+          "description": "Target of the operation - for example `projects\/project-1\/locations\/region-1\/functions\/function-1`",
           "type": "string"
         },
         "type": {
@@ -890,7 +890,7 @@
           "type": "string"
         },
         "buildName": {
-          "description": "The Cloud Build Name of the function deployment. This field is only populated for Create and Update operations. projects\/\/locations\/\/builds\/.",
+          "description": "The Cloud Build Name of the function deployment. This field is only populated for Create and Update operations. `projects\/\/locations\/\/builds\/`.",
           "type": "string"
         }
       }

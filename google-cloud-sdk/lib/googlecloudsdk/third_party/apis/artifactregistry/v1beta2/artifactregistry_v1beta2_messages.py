@@ -104,22 +104,6 @@ class ArtifactregistryProjectsLocationsOperationsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
-class ArtifactregistryProjectsLocationsOperationsListRequest(_messages.Message):
-  r"""A ArtifactregistryProjectsLocationsOperationsListRequest object.
-
-  Fields:
-    filter: The standard list filter.
-    name: The name of the operation's parent resource.
-    pageSize: The standard list page size.
-    pageToken: The standard list page token.
-  """
-
-  filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-
-
 class ArtifactregistryProjectsLocationsRepositoriesAptArtifactsImportRequest(_messages.Message):
   r"""A ArtifactregistryProjectsLocationsRepositoriesAptArtifactsImportRequest
   object.
@@ -824,19 +808,6 @@ class ListLocationsResponse(_messages.Message):
 
   locations = _messages.MessageField('Location', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
-
-
-class ListOperationsResponse(_messages.Message):
-  r"""The response message for Operations.ListOperations.
-
-  Fields:
-    nextPageToken: The standard List next-page token.
-    operations: A list of operations that matches the specified filter in the
-      request.
-  """
-
-  nextPageToken = _messages.StringField(1)
-  operations = _messages.MessageField('Operation', 2, repeated=True)
 
 
 class ListPackagesResponse(_messages.Message):

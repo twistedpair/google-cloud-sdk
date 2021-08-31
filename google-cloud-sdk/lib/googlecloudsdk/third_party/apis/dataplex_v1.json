@@ -280,13 +280,18 @@
           "$ref": "GoogleCloudDataplexV1SecurityStatus"
         },
         "metastore": {
-          "description": "Optional. Settings to manage metadata publishing to a Hive Metastore from the lake.",
+          "description": "Optional. Settings to manage lake and Dataproc Metastore service instance association.",
           "$ref": "GoogleCloudDataplexV1LakeMetastore"
         },
         "assetStatus": {
           "description": "Output only. Aggregated status of the underlying assets of the lake.",
           "readOnly": true,
           "$ref": "GoogleCloudDataplexV1AssetStatus"
+        },
+        "metastoreStatus": {
+          "description": "Output only. Metastore status of the lake.",
+          "readOnly": true,
+          "$ref": "GoogleCloudDataplexV1LakeMetastoreStatus"
         },
         "actions": {
           "description": "Output only. The current set of actions required of the administrator for this lake.",
@@ -360,11 +365,11 @@
     },
     "GoogleCloudDataplexV1LakeMetastore": {
       "id": "GoogleCloudDataplexV1LakeMetastore",
-      "description": "Settings to manage metadata publishing to a Hive Metastore from a lake.",
+      "description": "Settings to manage association of Dataproc Metastore with a lake.",
       "type": "object",
       "properties": {
         "service": {
-          "description": "Optional. A relative reference to the Dataproc Metastore (https:\/\/cloud.google.com\/dataproc-metastore\/docs) service instance into which metadata will be published. This is of the form: projects\/{project_number}\/locations\/{location_id}\/services\/{service_id} where the project and location matches the those of the lake.",
+          "description": "Optional. A relative reference to the Dataproc Metastore (https:\/\/cloud.google.com\/dataproc-metastore\/docs) service associated with the lake: projects\/{project_id}\/locations\/{location_id}\/services\/{service_id}",
           "type": "string"
         }
       }
@@ -388,6 +393,40 @@
           "description": "Number of assets that are in process of updating the security policy on attached resources.",
           "type": "integer",
           "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudDataplexV1LakeMetastoreStatus": {
+      "id": "GoogleCloudDataplexV1LakeMetastoreStatus",
+      "description": "Status of Lake and Dataproc Metastore service instance association.",
+      "type": "object",
+      "properties": {
+        "state": {
+          "description": "Current state of association.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified.",
+            "A Metastore service instance is not associated with the lake.",
+            "A Metastore service instance is attached to the lake.",
+            "Attach\/detach is in progress.",
+            "Attach\/detach could not be done due to errors."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "NONE",
+            "READY",
+            "UPDATING",
+            "ERROR"
+          ]
+        },
+        "message": {
+          "description": "Additional information about the current status.",
+          "type": "string"
+        },
+        "updateTime": {
+          "description": "Last update time of the metastore status of the lake.",
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },

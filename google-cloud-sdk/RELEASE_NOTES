@@ -5,6 +5,67 @@ Copyright 2014-2021 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 355.0.0 (2021-08-31)
+
+### Anthos Identity Service
+
+*  Promoted `gcloud container hub identity-service` to beta.
+
+### Artifact Registry
+
+*   Added `gcloud beta artifacts settings` for enabling/disabling/finalizing
+    redirection.
+
+### Cloud Deploy
+
+*   Promoted `gcloud deploy` to beta.
+
+### Cloud Pub/Sub
+
+* Promoted `--message-retention-duration` flag of `gcloud pubsub topics create` to GA.
+* Promoted `--message-retention-duration` flag of `gcloud pubsub topics update` to GA.
+* Promoted `--clear-message-retention-duration` flag of `gcloud pubsub topics update` to GA.
+
+### Compute Engine
+
+* Promoted `skip-instances-on-validation-error` in `gcloud compute
+  instance-groups managed delete-instances` to GA.
+* Promoted `--image-family-scope` flag to GA for
+  `gcloud compute instances create` and `gcloud compute disks create`.
+
+### Config Connector
+
+* Updated Google Cloud Config Connector to version 1.59.0.
+  See Config Connector Overview for more details [https://cloud.google.com/config-connector/docs/overview](https://cloud.google.com/config-connector/docs/overview).
+
+### GKE Hub
+
+* Promoted the following commands to beta:
+  * `gcloud container hub mesh describe`.
+  * `gcloud container hub mesh disable`.
+  * `gcloud container hub mesh enable`.
+
+### Game Servers
+
+* Added `--view=(basic|full)` arg (default to basic) to `game servers clusters get` and `game servers clusters list` commands to optionally turn off/on Agones and Kubernetes version reporting.
+
+### Kubernetes Engine
+
+*   Added `--security-group` flag to `gcloud container clusters create-auto` to
+    allow enabling Google Groups for RBAC on Autopilot clusters at creation
+    time.
+
+*   Promoted `gpu-partition-size` field within `--accelerator` flag to enable
+    partitioning of A100 GPUs to GA.
+
+### Network Security
+
+* Promoted `gcloud network-security server-tls-policies` to GA.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 354.0.0 (2021-08-24)
 
 ### Breaking Changes

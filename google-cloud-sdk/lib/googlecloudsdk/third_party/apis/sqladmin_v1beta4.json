@@ -355,6 +355,22 @@
               "items": {
                 "type": "string"
               }
+            },
+            "escapeCharacter": {
+              "description": "Specifies the character that should appear before a data character that needs to be escaped.",
+              "type": "string"
+            },
+            "quoteCharacter": {
+              "description": "Specifies the quoting character to be used when a data value is quoted.",
+              "type": "string"
+            },
+            "fieldsTerminatedBy": {
+              "description": "Specifies the character that separates columns within each row (line) of the file.",
+              "type": "string"
+            },
+            "linesTerminatedBy": {
+              "description": "This is used to separate lines. If a line does not contain all fields, the rest of the columns are set to their default values.",
+              "type": "string"
             }
           }
         },
@@ -441,6 +457,22 @@
           "properties": {
             "selectQuery": {
               "description": "The select query used to extract the data.",
+              "type": "string"
+            },
+            "escapeCharacter": {
+              "description": "Specifies the character that should appear before a data character that needs to be escaped.",
+              "type": "string"
+            },
+            "quoteCharacter": {
+              "description": "Specifies the quoting character to be used when a data value is quoted.",
+              "type": "string"
+            },
+            "fieldsTerminatedBy": {
+              "description": "Specifies the character that separates columns within each row (line) of the file.",
+              "type": "string"
+            },
+            "linesTerminatedBy": {
+              "description": "This is used to separate lines. If a line does not contain all fields, the rest of the columns are set to their default values.",
               "type": "string"
             }
           }
@@ -2306,6 +2338,10 @@
             "ONLINE",
             "OFFLINE"
           ]
+        },
+        "verifyReplicationOnly": {
+          "description": "Optional. Flag to verify settings required by replication setup only",
+          "type": "boolean"
         },
         "mysqlSyncConfig": {
           "description": "Optional. MySQL-specific settings for start external sync.",

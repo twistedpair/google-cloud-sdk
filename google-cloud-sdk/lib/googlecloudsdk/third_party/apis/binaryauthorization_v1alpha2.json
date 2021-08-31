@@ -241,7 +241,7 @@
     },
     "Policy": {
       "id": "Policy",
-      "description": "A policy for container image binary authorization.",
+      "description": "A policy for Binary Authorization.",
       "type": "object",
       "properties": {
         "name": {

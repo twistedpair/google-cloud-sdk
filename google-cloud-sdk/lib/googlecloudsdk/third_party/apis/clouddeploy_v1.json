@@ -467,6 +467,13 @@
         "etag": {
           "description": "Optional. This checksum is computed by the server based on the value of other fields, and may be sent on update and delete requests to ensure the client has an up-to-date value before proceeding.",
           "type": "string"
+        },
+        "executionConfigs": {
+          "description": "Configurations for all execution that relates to this `Target`. Each `ExecutionEnvironmentUsage` value may only be used in a single configuration; using the same value multiple times is an error. When one or more configurations are specified, they must include the `RENDER` and `DEPLOY` `ExecutionEnvironmentUsage` values. When no configurations are specified, execution will use the default specified in `DefaultPool`.",
+          "type": "array",
+          "items": {
+            "$ref": "ExecutionConfig"
+          }
         }
       }
     },
@@ -496,6 +503,72 @@
       "properties": {
         "cluster": {
           "description": "Information specifying a GKE Cluster. Format is `projects\/{project_id}\/locations\/{location_id}\/clusters\/{cluster_id}.",
+          "type": "string"
+        }
+      }
+    },
+    "ExecutionConfig": {
+      "id": "ExecutionConfig",
+      "description": "Configuration of the environment to use when calling Skaffold.",
+      "type": "object",
+      "properties": {
+        "usages": {
+          "description": "Required. Usages when this configuration should be applied.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enumDescriptions": [
+              "Default value. This value is unused.",
+              "Use for rendering.",
+              "Use for deploying and deployment hooks."
+            ],
+            "enum": [
+              "EXECUTION_ENVIRONMENT_USAGE_UNSPECIFIED",
+              "RENDER",
+              "DEPLOY"
+            ]
+          }
+        },
+        "defaultPool": {
+          "description": "Optional. Use default Cloud Build pool.",
+          "$ref": "DefaultPool"
+        },
+        "privatePool": {
+          "description": "Optional. Use private Cloud Build pool.",
+          "$ref": "PrivatePool"
+        }
+      }
+    },
+    "DefaultPool": {
+      "id": "DefaultPool",
+      "description": "Execution using the default Cloud Build pool.",
+      "type": "object",
+      "properties": {
+        "serviceAccount": {
+          "description": "Optional. Google service account to use for execution. If unspecified, the project execution service account (-compute@developer.gserviceaccount.com) will be used.",
+          "type": "string"
+        },
+        "artifactStorage": {
+          "description": "Optional. Cloud Storage location where execution outputs should be stored. This can either be a bucket (\"gs:\/\/my-bucket\") or a path within a bucket (\"gs:\/\/my-bucket\/my-dir\"). If unspecified, a default bucket located in the same region will be used.",
+          "type": "string"
+        }
+      }
+    },
+    "PrivatePool": {
+      "id": "PrivatePool",
+      "description": "Execution using a private Cloud Build pool.",
+      "type": "object",
+      "properties": {
+        "workerPool": {
+          "description": "Required. Resource name of the Cloud Build worker pool to use. The format is `projects\/{project}\/locations\/{location}\/workerPools\/{pool}`.",
+          "type": "string"
+        },
+        "serviceAccount": {
+          "description": "Optional. Google service account to use for execution. If unspecified, the project execution service account (-compute@developer.gserviceaccount.com) will be used.",
+          "type": "string"
+        },
+        "artifactStorage": {
+          "description": "Optional. Cloud Storage location where execution outputs should be stored. This can either be a bucket (\"gs:\/\/my-bucket\") or a path within a bucket (\"gs:\/\/my-bucket\/my-dir\"). If unspecified, a default bucket located in the same region will be used.",
           "type": "string"
         }
       }

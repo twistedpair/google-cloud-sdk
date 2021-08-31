@@ -282,6 +282,8 @@ apis:
           path: projects/_/buckets/{bucketId}
     v2alpha:
       discovery_doc: cloudfunctions_v2alpha.json
+    v2beta:
+      discovery_doc: cloudfunctions_v2beta.json
   cloudidentity:
     v1alpha1:
       discovery_doc: cloudidentity_v1alpha1.json
@@ -481,6 +483,13 @@ apis:
     v1:
       discovery_doc: dataplex_v1.json
       default: true
+      resources:
+        projects.locations.lakes.actions:
+          path: projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/actions
+        projects.locations.lakes.zones.actions:
+          path: projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/zones/{zonesId}/actions
+        projects.locations.lakes.zones.assets.actions:
+          path: projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/zones/{zonesId}/assets/{assetsId}/actions
   dataproc:
     v1:
       discovery_doc: dataproc_v1.json
@@ -599,6 +608,8 @@ apis:
     v1alpha1:
       discovery_doc: gkebackup_v1alpha1.json
       default: true
+    v1:
+      discovery_doc: gkebackup_v1.json
   gkehub:
     v1alpha:
       discovery_doc: gkehub_v1alpha.json

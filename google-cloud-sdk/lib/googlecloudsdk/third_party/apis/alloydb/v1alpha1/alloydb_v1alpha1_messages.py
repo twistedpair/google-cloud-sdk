@@ -128,10 +128,10 @@ class AlloydbProjectsLocationsClustersBackupsListRequest(_messages.Message):
   r"""A AlloydbProjectsLocationsClustersBackupsListRequest object.
 
   Fields:
-    filter: Filtering results
-    orderBy: Hint for how to order the results
-    pageSize: Requested page size. Server may return fewer items than
-      requested. If unspecified, server will pick an appropriate default.
+    filter: Optional. Filtering results
+    orderBy: Optional. Hint for how to order the results
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
     pageToken: A token identifying a page of results the server should return.
     parent: Required. Parent value for ListBackupsRequest
   """
@@ -148,7 +148,13 @@ class AlloydbProjectsLocationsClustersBackupsPatchRequest(_messages.Message):
 
   Fields:
     backup: A Backup resource to be passed as the request body.
-    name: name of resource
+    name: Output only. The name of the backup resource with the format: * proj
+      ects/{project}/locations/{region}/clusters/{cluster_id}/backups/{backup_
+      id} where the cluster and backup ID segments should satisfy the regex
+      expression "[a-z0-9-]+". For more details see
+      https://google.aip.dev/122. The prefix of the backup resource name is
+      the name of the parent resource: *
+      projects/{project}/locations/{region}/clusters/{cluster_id}
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -160,7 +166,7 @@ class AlloydbProjectsLocationsClustersBackupsPatchRequest(_messages.Message):
       This prevents clients from accidentally creating duplicate commitments.
       The request ID must be a valid UUID with the exception that zero UUID is
       not supported (00000000-0000-0000-0000-000000000000).
-    updateMask: Required. Field mask is used to specify the fields to be
+    updateMask: Optional. Field mask is used to specify the fields to be
       overwritten in the Backup resource by the update. The fields specified
       in the update_mask are relative to the resource, not the full request. A
       field will be overwritten if it is in the mask. If the user does not
@@ -206,6 +212,8 @@ class AlloydbProjectsLocationsClustersDeleteRequest(_messages.Message):
   r"""A AlloydbProjectsLocationsClustersDeleteRequest object.
 
   Fields:
+    force: Optional. Whether to cascade delete child instances for given
+      cluster.
     name: Required. The name of the resource. For the required format, see the
       comment on the Cluster.name field.
     requestId: Optional. An optional request ID to identify requests. Specify
@@ -221,8 +229,9 @@ class AlloydbProjectsLocationsClustersDeleteRequest(_messages.Message):
       not supported (00000000-0000-0000-0000-000000000000).
   """
 
-  name = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
+  force = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
 
 
 class AlloydbProjectsLocationsClustersFailoverRequest(_messages.Message):
@@ -231,8 +240,8 @@ class AlloydbProjectsLocationsClustersFailoverRequest(_messages.Message):
   Fields:
     failoverClusterRequest: A FailoverClusterRequest resource to be passed as
       the request body.
-    name: The name of the resource. For the required format, see the comment
-      on the Cluster.name field.
+    name: Required. The name of the resource. For the required format, see the
+      comment on the Cluster.name field.
   """
 
   failoverClusterRequest = _messages.MessageField('FailoverClusterRequest', 1)
@@ -269,6 +278,39 @@ class AlloydbProjectsLocationsClustersGetRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class AlloydbProjectsLocationsClustersImportClusterRequest(_messages.Message):
+  r"""A AlloydbProjectsLocationsClustersImportClusterRequest object.
+
+  Fields:
+    backupSource_backupName: Required. The name of the backup resource with
+      the format: * projects/{project}/locations/{region}/clusters/{cluster_id
+      }/backups/{backup_id}
+    cluster: A Cluster resource to be passed as the request body.
+    clusterId: Required. Id of the requesting object If auto-generating Id
+      server-side, remove this field and cluster_id from the method_signature
+      of Create RPC
+    parent: Required. The name of the parent resource. For the required
+      format, see the comment on the Cluster.name field.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  backupSource_backupName = _messages.StringField(1)
+  cluster = _messages.MessageField('Cluster', 2)
+  clusterId = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(5)
 
 
 class AlloydbProjectsLocationsClustersInstancesBatchCreateRequest(_messages.Message):
@@ -348,6 +390,20 @@ class AlloydbProjectsLocationsClustersInstancesDeleteRequest(_messages.Message):
   requestId = _messages.StringField(2)
 
 
+class AlloydbProjectsLocationsClustersInstancesFailoverRequest(_messages.Message):
+  r"""A AlloydbProjectsLocationsClustersInstancesFailoverRequest object.
+
+  Fields:
+    failoverInstanceRequest: A FailoverInstanceRequest resource to be passed
+      as the request body.
+    name: Required. The name of the resource. For the required format, see the
+      comment on the Instance.name field.
+  """
+
+  failoverInstanceRequest = _messages.MessageField('FailoverInstanceRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class AlloydbProjectsLocationsClustersInstancesGetRequest(_messages.Message):
   r"""A AlloydbProjectsLocationsClustersInstancesGetRequest object.
 
@@ -363,10 +419,10 @@ class AlloydbProjectsLocationsClustersInstancesListRequest(_messages.Message):
   r"""A AlloydbProjectsLocationsClustersInstancesListRequest object.
 
   Fields:
-    filter: Filtering results
-    orderBy: Hint for how to order the results
-    pageSize: Requested page size. Server may return fewer items than
-      requested. If unspecified, server will pick an appropriate default.
+    filter: Optional. Filtering results
+    orderBy: Optional. Hint for how to order the results
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
     pageToken: A token identifying a page of results the server should return.
     parent: Required. The name of the parent resource. For the required
       format, see the comment on the Instance.name field. Additionally, you
@@ -387,10 +443,10 @@ class AlloydbProjectsLocationsClustersInstancesPatchRequest(_messages.Message):
 
   Fields:
     instance: A Instance resource to be passed as the request body.
-    name: The name of the instance resource with the format: * projects/{proje
-      ct}/locations/{region}/clusters/{cluster_id}/instances/{instance_id}
-      where the cluster and instance ID segments should satisfy the regex
-      expression "[a-z0-9-]+". For more details see
+    name: Output only. The name of the instance resource with the format: * pr
+      ojects/{project}/locations/{region}/clusters/{cluster_id}/instances/{ins
+      tance_id} where the cluster and instance ID segments should satisfy the
+      regex expression "[a-z0-9-]+". For more details see
       https://google.aip.dev/122. The prefix of the instance resource name is
       the name of the parent resource: *
       projects/{project}/locations/{region}/clusters/{cluster_id}
@@ -405,7 +461,7 @@ class AlloydbProjectsLocationsClustersInstancesPatchRequest(_messages.Message):
       This prevents clients from accidentally creating duplicate commitments.
       The request ID must be a valid UUID with the exception that zero UUID is
       not supported (00000000-0000-0000-0000-000000000000).
-    updateMask: Required. Field mask is used to specify the fields to be
+    updateMask: Optional. Field mask is used to specify the fields to be
       overwritten in the Instance resource by the update. The fields specified
       in the update_mask are relative to the resource, not the full request. A
       field will be overwritten if it is in the mask. If the user does not
@@ -422,8 +478,8 @@ class AlloydbProjectsLocationsClustersInstancesRestartRequest(_messages.Message)
   r"""A AlloydbProjectsLocationsClustersInstancesRestartRequest object.
 
   Fields:
-    name: The name of the resource. For the required format, see the comment
-      on the Instance.name field.
+    name: Required. The name of the resource. For the required format, see the
+      comment on the Instance.name field.
     restartInstanceRequest: A RestartInstanceRequest resource to be passed as
       the request body.
   """
@@ -436,10 +492,10 @@ class AlloydbProjectsLocationsClustersListRequest(_messages.Message):
   r"""A AlloydbProjectsLocationsClustersListRequest object.
 
   Fields:
-    filter: Filtering results
-    orderBy: Hint for how to order the results
-    pageSize: Requested page size. Server may return fewer items than
-      requested. If unspecified, server will pick an appropriate default.
+    filter: Optional. Filtering results
+    orderBy: Optional. Hint for how to order the results
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
     pageToken: A token identifying a page of results the server should return.
     parent: Required. The name of the parent resource. For the required
       format, see the comment on the Cluster.name field. Additionally, you can
@@ -459,7 +515,7 @@ class AlloydbProjectsLocationsClustersPatchRequest(_messages.Message):
 
   Fields:
     cluster: A Cluster resource to be passed as the request body.
-    name: The name of the cluster resource with the format: *
+    name: Output only. The name of the cluster resource with the format: *
       projects/{project}/locations/{region}/clusters/{cluster_id} where the
       cluster ID segment should satisfy the regex expression "[a-z0-9-]+". For
       more details see https://google.aip.dev/122. The prefix of the cluster
@@ -476,7 +532,7 @@ class AlloydbProjectsLocationsClustersPatchRequest(_messages.Message):
       This prevents clients from accidentally creating duplicate commitments.
       The request ID must be a valid UUID with the exception that zero UUID is
       not supported (00000000-0000-0000-0000-000000000000).
-    updateMask: Required. Field mask is used to specify the fields to be
+    updateMask: Optional. Field mask is used to specify the fields to be
       overwritten in the Cluster resource by the update. The fields specified
       in the update_mask are relative to the resource, not the full request. A
       field will be overwritten if it is in the mask. If the user does not
@@ -583,10 +639,10 @@ class AlloydbProjectsLocationsClustersUsersListRequest(_messages.Message):
   r"""A AlloydbProjectsLocationsClustersUsersListRequest object.
 
   Fields:
-    filter: Filtering results
-    orderBy: Hint for how to order the results
-    pageSize: Requested page size. Server may return fewer items than
-      requested. If unspecified, server will pick an appropriate default.
+    filter: Optional. Filtering results
+    orderBy: Optional. Hint for how to order the results
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
     pageToken: A token identifying a page of results the server should return.
     parent: Required. Parent value for ListUsersRequest
   """
@@ -602,7 +658,7 @@ class AlloydbProjectsLocationsClustersUsersPatchRequest(_messages.Message):
   r"""A AlloydbProjectsLocationsClustersUsersPatchRequest object.
 
   Fields:
-    name: name of resource
+    name: Output only. name of resource
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -614,7 +670,7 @@ class AlloydbProjectsLocationsClustersUsersPatchRequest(_messages.Message):
       This prevents clients from accidentally creating duplicate commitments.
       The request ID must be a valid UUID with the exception that zero UUID is
       not supported (00000000-0000-0000-0000-000000000000).
-    updateMask: Required. Field mask is used to specify the fields to be
+    updateMask: Optional. Field mask is used to specify the fields to be
       overwritten in the User resource by the update. The fields specified in
       the update_mask are relative to the resource, not the full request. A
       field will be overwritten if it is in the mask. If the user does not
@@ -893,15 +949,55 @@ class AuditLogConfig(_messages.Message):
 class Backup(_messages.Message):
   r"""Message describing Backup object
 
+  Enums:
+    StateValueValuesEnum: Output only. The current state of the backup.
+    TypeValueValuesEnum: The backup type, which suggests the trigger for the
+      backup.
+
   Messages:
     LabelsValue: Labels as key value pairs
 
   Fields:
-    createTime: Create time stamp
+    createTime: Output only. Create time stamp
     labels: Labels as key value pairs
-    name: name of resource
-    updateTime: Update time stamp
+    name: Output only. The name of the backup resource with the format: * proj
+      ects/{project}/locations/{region}/clusters/{cluster_id}/backups/{backup_
+      id} where the cluster and backup ID segments should satisfy the regex
+      expression "[a-z0-9-]+". For more details see
+      https://google.aip.dev/122. The prefix of the backup resource name is
+      the name of the parent resource: *
+      projects/{project}/locations/{region}/clusters/{cluster_id}
+    state: Output only. The current state of the backup.
+    type: The backup type, which suggests the trigger for the backup.
+    updateTime: Output only. Update time stamp
   """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of the backup.
+
+    Values:
+      STATE_UNSPECIFIED: The state of the backup is unknown.
+      READY: The backup is ready.
+      CREATING: The backup is creating.
+      FAILED: The backup failed.
+    """
+    STATE_UNSPECIFIED = 0
+    READY = 1
+    CREATING = 2
+    FAILED = 3
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""The backup type, which suggests the trigger for the backup.
+
+    Values:
+      TYPE_UNSPECIFIED: <no description>
+      ON_DEMAND: ON_DEMAND backups that were triggered by the customer (e.g.,
+        not AUTOMATED).
+      AUTOMATED: AUTOMATED backups triggered by the backup scheduler.
+    """
+    TYPE_UNSPECIFIED = 0
+    ON_DEMAND = 1
+    AUTOMATED = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -930,20 +1026,158 @@ class Backup(_messages.Message):
   createTime = _messages.StringField(1)
   labels = _messages.MessageField('LabelsValue', 2)
   name = _messages.StringField(3)
-  updateTime = _messages.StringField(4)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
+  type = _messages.EnumField('TypeValueValuesEnum', 5)
+  updateTime = _messages.StringField(6)
+
+
+class BatchCreateInstanceStatus(_messages.Message):
+  r"""Message for current status of an instance in the BatchCreateInstances
+  operation. For example, lets say a BatchCreateInstances workflow has 4
+  instances, Instance1 through Instance4. Lets also assume that 2 instances
+  succeeded but the third failed to create and the 4th was never picked up for
+  creation because of failure of the previous one. Then, resulting states
+  would look something like: 1. Instance1 = ROLLED_BACK 2. Instance2 =
+  ROLLED_BACK 3. Instance3 = FAILED 4. Instance4 = PENDING_CREATE However,
+  while the operation is running, the instance might be in other states
+  including ACTIVE, DELETING and CREATING.
+
+  Enums:
+    StateValueValuesEnum: The current state of an instance involved in the
+      batch create operation. Once the operation is complete, the final state
+      of the instances in the LRO can be one of: 1. ACTIVE, indicating that
+      instances were created successfully 2. FAILED, indicating that a
+      particular instance failed creation 3. ROLLED_BACK indicating that
+      although the instance was created successfully, it had to be rolled back
+      and deleted due to failure in other steps of the workflow. 4.
+      PENDING_CREATE, indicating that the instance was never picked up for
+      creation due to some error in a preceding operation that caused the
+      BatchCreateInstances operation to stop.
+    TypeValueValuesEnum:
+
+  Fields:
+    errorMsg: Error, if any error occurred and is available, during instance
+      creation.
+    state: The current state of an instance involved in the batch create
+      operation. Once the operation is complete, the final state of the
+      instances in the LRO can be one of: 1. ACTIVE, indicating that instances
+      were created successfully 2. FAILED, indicating that a particular
+      instance failed creation 3. ROLLED_BACK indicating that although the
+      instance was created successfully, it had to be rolled back and deleted
+      due to failure in other steps of the workflow. 4. PENDING_CREATE,
+      indicating that the instance was never picked up for creation due to
+      some error in a preceding operation that caused the BatchCreateInstances
+      operation to stop.
+    type: A TypeValueValuesEnum attribute.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""The current state of an instance involved in the batch create
+    operation. Once the operation is complete, the final state of the
+    instances in the LRO can be one of: 1. ACTIVE, indicating that instances
+    were created successfully 2. FAILED, indicating that a particular instance
+    failed creation 3. ROLLED_BACK indicating that although the instance was
+    created successfully, it had to be rolled back and deleted due to failure
+    in other steps of the workflow. 4. PENDING_CREATE, indicating that the
+    instance was never picked up for creation due to some error in a preceding
+    operation that caused the BatchCreateInstances operation to stop.
+
+    Values:
+      STATE_UNSPECIFIED: The state of the instance is unknown.
+      PENDING_CREATE: Instance is pending creation and has not yet been picked
+        up for processsing in the backend.
+      ACTIVE: The instance is active and running.
+      CREATING: The instance is being created.
+      DELETING: The instance is being deleted.
+      FAILED: The creation of the instance failed or a fatal error occurred
+        during an operation on the instance.
+      ROLLED_BACK: The instance was created successfully, but was rolled back
+        and deleted due to some other failure during BatchCreateInstances
+        operation.
+    """
+    STATE_UNSPECIFIED = 0
+    PENDING_CREATE = 1
+    ACTIVE = 2
+    CREATING = 3
+    DELETING = 4
+    FAILED = 5
+    ROLLED_BACK = 6
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""TypeValueValuesEnum enum type.
+
+    Values:
+      INSTANCE_TYPE_UNSPECIFIED: <no description>
+      PRIMARY: PRIMARY instances support read and write operations.
+      READ: READ instances support read operations only. Each read instance
+        consists of one or more homogeneous read replicas. * READ instance of
+        size 1 can only have zonal availability. * READ instances with replica
+        count of 2 or more can have regional availability (replicas are
+        present in 2 or more zones in a region).
+    """
+    INSTANCE_TYPE_UNSPECIFIED = 0
+    PRIMARY = 1
+    READ = 2
+
+  errorMsg = _messages.StringField(1)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
+  type = _messages.EnumField('TypeValueValuesEnum', 3)
 
 
 class BatchCreateInstancesMetadata(_messages.Message):
   r"""Message for metadata that is specific to BatchCreateInstances API.
 
+  Messages:
+    InstanceStatusesValue: A map representing current state of the instances
+      involved in the BatchCreateInstances operation. The instance state will
+      be in STATE_UNSPECIFIED state if the instance has not yet been picked up
+      for processing. The key of the map is the name of the instance resource.
+      For the required format, see the comment on the Instance.name field.
+
   Fields:
+    instanceStatuses: A map representing current state of the instances
+      involved in the BatchCreateInstances operation. The instance state will
+      be in STATE_UNSPECIFIED state if the instance has not yet been picked up
+      for processing. The key of the map is the name of the instance resource.
+      For the required format, see the comment on the Instance.name field.
     instanceTargets: The instances being created in the API call. Each string
       in this list is the server defined resource path for target instances in
       the request and for the format of each string, see the comment on the
       Instance.name field.
   """
 
-  instanceTargets = _messages.StringField(1, repeated=True)
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class InstanceStatusesValue(_messages.Message):
+    r"""A map representing current state of the instances involved in the
+    BatchCreateInstances operation. The instance state will be in
+    STATE_UNSPECIFIED state if the instance has not yet been picked up for
+    processing. The key of the map is the name of the instance resource. For
+    the required format, see the comment on the Instance.name field.
+
+    Messages:
+      AdditionalProperty: An additional property for a InstanceStatusesValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        InstanceStatusesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a InstanceStatusesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A BatchCreateInstanceStatus attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('BatchCreateInstanceStatus', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  instanceStatuses = _messages.MessageField('InstanceStatusesValue', 1)
+  instanceTargets = _messages.StringField(2, repeated=True)
 
 
 class Binding(_messages.Message):
@@ -1003,23 +1237,27 @@ class CancelOperationRequest(_messages.Message):
 
 
 class Cluster(_messages.Message):
-  r"""Message describing Cluster object NEXT_ID: 8
+  r"""Message describing Cluster object NEXT_ID: 9
 
   Enums:
     DatabaseVersionValueValuesEnum: The database engine major version.
       Specified by customer at creation time. This field cannot be changed
       after cluster creation.
-    StateValueValuesEnum: The current serving state of the cluster.
+    StateValueValuesEnum: Output only. The current serving state of the
+      cluster.
 
   Messages:
     LabelsValue: Labels as key value pairs
 
   Fields:
-    createTime: Create time stamp
+    createTime: Output only. Create time stamp
     databaseVersion: The database engine major version. Specified by customer
       at creation time. This field cannot be changed after cluster creation.
+    initialUsers: Input only. Initial users to setup during cluster creation.
+      Must be non-empty. We intend to deprecate this post private preview,
+      once we have separate User resources.
     labels: Labels as key value pairs
-    name: The name of the cluster resource with the format: *
+    name: Output only. The name of the cluster resource with the format: *
       projects/{project}/locations/{region}/clusters/{cluster_id} where the
       cluster ID segment should satisfy the regex expression "[a-z0-9-]+". For
       more details see https://google.aip.dev/122. The prefix of the cluster
@@ -1031,8 +1269,8 @@ class Cluster(_messages.Message):
       in the form: "projects/{project_number}/global/networks/{network_id}".
       This is required to create a cluster. It can be updated, but it cannot
       be removed.
-    state: The current serving state of the cluster.
-    updateTime: Update time stamp
+    state: Output only. The current serving state of the cluster.
+    updateTime: Output only. Update time stamp
   """
 
   class DatabaseVersionValueValuesEnum(_messages.Enum):
@@ -1047,7 +1285,7 @@ class Cluster(_messages.Message):
     POSTGRES_12 = 1
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""The current serving state of the cluster.
+    r"""Output only. The current serving state of the cluster.
 
     Values:
       STATE_UNSPECIFIED: The state of the cluster is unknown.
@@ -1096,11 +1334,12 @@ class Cluster(_messages.Message):
 
   createTime = _messages.StringField(1)
   databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  name = _messages.StringField(4)
-  network = _messages.StringField(5)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
-  updateTime = _messages.StringField(7)
+  initialUsers = _messages.MessageField('UserPassword', 3, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  network = _messages.StringField(6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  updateTime = _messages.StringField(8)
 
 
 class CreateInstanceRequest(_messages.Message):
@@ -1193,31 +1432,52 @@ class FailoverClusterRequest(_messages.Message):
   r"""A FailoverClusterRequest object.
 
   Fields:
-    requestId: An optional request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server will
-      guarantee that for at least 60 minutes after the first request. For
-      example, consider a situation where you make an initial request and the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
-      (00000000-0000-0000-0000-000000000000).
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  requestId = _messages.StringField(1)
+
+
+class FailoverInstanceRequest(_messages.Message):
+  r"""Message for triggering failover on an Instance
+
+  Fields:
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
   """
 
   requestId = _messages.StringField(1)
 
 
 class Instance(_messages.Message):
-  r"""Message describing Instance object NEXT ID: 13
+  r"""Message describing Instance object NEXT ID: 14
 
   Enums:
     AvailabilityTypeValueValuesEnum: Availability type of an Instance.
       Defaults to REGIONAL for both primary and read instances. Note that
       primary and read instances can have different availability types.
     InstanceTypeValueValuesEnum:
-    StateValueValuesEnum: The current serving state of the instance.
+    StateValueValuesEnum: Output only. The current serving state of the
+      instance.
 
   Messages:
     DatabaseFlagsValue: Database flags. Set at instance level. * They are
@@ -1231,7 +1491,7 @@ class Instance(_messages.Message):
     availabilityType: Availability type of an Instance. Defaults to REGIONAL
       for both primary and read instances. Note that primary and read
       instances can have different availability types.
-    createTime: Create time stamp
+    createTime: Output only. Create time stamp
     databaseFlags: Database flags. Set at instance level. * They are copied
       from primary instance on read instance creation. * Read instances can
       set new or override existing flags that are relevant for reads, e.g. for
@@ -1242,11 +1502,13 @@ class Instance(_messages.Message):
       instance, an error will be thrown. If this is absent for a ZONAL
       instance, instance is created in a random zone with available capacity.
     instanceType: A InstanceTypeValueValuesEnum attribute.
+    ipAddress: Output only. The IP address for the Instance. This is the
+      connection endpoint for an end-user application.
     labels: Labels as key value pairs
-    name: The name of the instance resource with the format: * projects/{proje
-      ct}/locations/{region}/clusters/{cluster_id}/instances/{instance_id}
-      where the cluster and instance ID segments should satisfy the regex
-      expression "[a-z0-9-]+". For more details see
+    name: Output only. The name of the instance resource with the format: * pr
+      ojects/{project}/locations/{region}/clusters/{cluster_id}/instances/{ins
+      tance_id} where the cluster and instance ID segments should satisfy the
+      regex expression "[a-z0-9-]+". For more details see
       https://google.aip.dev/122. The prefix of the instance resource name is
       the name of the parent resource: *
       projects/{project}/locations/{region}/clusters/{cluster_id}
@@ -1254,11 +1516,11 @@ class Instance(_messages.Message):
       enable/disable public IP, enable/disable SSL and manage which external
       networks can connect to the instance.
     readPoolConfig: Read pool specific config.
-    state: The current serving state of the instance.
-    tier: The tier (or machine type) for this instance, for example *db-
-      custom-1-3840* (PostgreSQL instances). Required for new instances and
+    state: Output only. The current serving state of the instance.
+    tier: The tier (or machine type) for this instance, for example
+      *n2-standard-2* (PostgreSQL instances). Required for new instances and
       can be updated.
-    updateTime: Update time stamp
+    updateTime: Output only. Update time stamp
   """
 
   class AvailabilityTypeValueValuesEnum(_messages.Enum):
@@ -1292,7 +1554,7 @@ class Instance(_messages.Message):
     READ = 2
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""The current serving state of the instance.
+    r"""Output only. The current serving state of the instance.
 
     Values:
       STATE_UNSPECIFIED: The state of the instance is unknown.
@@ -1373,13 +1635,14 @@ class Instance(_messages.Message):
   databaseFlags = _messages.MessageField('DatabaseFlagsValue', 3)
   gceZone = _messages.StringField(4)
   instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  name = _messages.StringField(7)
-  networkConfig = _messages.MessageField('NetworkConfig', 8)
-  readPoolConfig = _messages.MessageField('ReadPoolConfig', 9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  tier = _messages.StringField(11)
-  updateTime = _messages.StringField(12)
+  ipAddress = _messages.StringField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  name = _messages.StringField(8)
+  networkConfig = _messages.MessageField('NetworkConfig', 9)
+  readPoolConfig = _messages.MessageField('ReadPoolConfig', 10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  tier = _messages.StringField(12)
+  updateTime = _messages.StringField(13)
 
 
 class IntegerRestrictions(_messages.Message):
@@ -1750,7 +2013,7 @@ class Policy(_messages.Message):
   roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
   role: roles/resourcemanager.organizationViewer condition: title: expirable
   access description: Does not grant access after Sep 2020 expression:
-  request.time < timestamp('2020-10-01T00:00:00.000Z') - etag: BwWWja0YfJA= -
+  request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA=
   version: 3 For a description of IAM and its features, see the [IAM
   documentation](https://cloud.google.com/iam/docs/).
 
@@ -1809,17 +2072,17 @@ class RestartInstanceRequest(_messages.Message):
   r"""A RestartInstanceRequest object.
 
   Fields:
-    requestId: An optional request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server will
-      guarantee that for at least 60 minutes after the first request. For
-      example, consider a situation where you make an initial request and the
-      request times out. If you make the request again with the same request
-      ID, the server can check if original operation with the same request ID
-      was received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
-      (00000000-0000-0000-0000-000000000000).
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
   """
 
   requestId = _messages.StringField(1)
@@ -1990,7 +2253,7 @@ class SupportedDatabaseFlag(_messages.Message):
     requiresDbRestart: Whether setting or updating this flag on an Instance
       requires a database restart. If a flag that requires database restart is
       set, the backend will automatically restart the database (making sure to
-      satisfy any avaialability SLO's).
+      satisfy any availability SLO's).
     stringRestrictions: A StringRestrictions attribute.
     supportedDbVersions: Major database engine versions for which this flag is
       supported.
@@ -2064,10 +2327,10 @@ class User(_messages.Message):
     LabelsValue: Labels as key value pairs
 
   Fields:
-    createTime: Create time stamp
+    createTime: Output only. Create time stamp
     labels: Labels as key value pairs
-    name: name of resource
-    updateTime: Update time stamp
+    name: Output only. name of resource
+    updateTime: Output only. Update time stamp
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -2098,6 +2361,19 @@ class User(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 2)
   name = _messages.StringField(3)
   updateTime = _messages.StringField(4)
+
+
+class UserPassword(_messages.Message):
+  r"""The username/password for a database user. Used for specifying initial
+  users at cluster creation time.
+
+  Fields:
+    password: The initial password for the user.
+    user: The database username.
+  """
+
+  password = _messages.StringField(1)
+  user = _messages.StringField(2)
 
 
 encoding.AddCustomJsonFieldMapping(

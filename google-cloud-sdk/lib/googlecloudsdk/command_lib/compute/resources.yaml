@@ -53,7 +53,7 @@ address:
     attribute_name: address
     help: The name of the Google Compute address.
 
-firewall_rule:
+firewall:
   name: firewall_rule
   collection: compute.firewalls
   attributes:

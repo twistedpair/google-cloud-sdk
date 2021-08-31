@@ -303,36 +303,13 @@ def RevisionFailed(revision_ref):
   """
   messages = blueprints_util.GetMessagesModule()
 
+  log.error(revision_ref.stateDetail)
+
   revision_error_code = revision_ref.errorCode
-  if revision_error_code == messages.Revision.ErrorCodeValueValuesEnum.BUCKET_CREATION_PERMISSION_DENIED:
-    log.error('Permission was denied when creating the root Cloud Storage '
-              'bucket. Ensure your project has the '
-              'roles/cloudconfig.serviceAgent role bound to the Blueprints '
-              'Controller service account.')
-  elif revision_error_code == messages.Revision.ErrorCodeValueValuesEnum.BUCKET_CREATION_FAILED:
-    log.error('Creating the root Cloud Storage bucket failed: {}'.format(
-        revision_ref.stateDetail))
-  elif revision_error_code == messages.Revision.ErrorCodeValueValuesEnum.CLOUD_BUILD_PERMISSION_DENIED:
-    log.error(
-        'Permission was denied to Cloud Build. Ensure your project has the '
-        'roles/cloudconfig.serviceAgent role bound to the Blueprints '
-        'Controller service account.')
-  elif revision_error_code == messages.Revision.ErrorCodeValueValuesEnum.PIPELINE_BUILD_API_FAILED:
-    log.error('The pipeline build failed before it could run: {}'.format(
-        revision_ref.stateDetail))
-  elif revision_error_code == messages.Revision.ErrorCodeValueValuesEnum.PIPELINE_BUILD_RUN_FAILED:
-    log.error('The pipeline build failed while running.')
+  if revision_error_code == messages.Revision.ErrorCodeValueValuesEnum.PIPELINE_BUILD_RUN_FAILED:
     PrintPipelineRunError(revision_ref.pipelineResults)
-  elif revision_error_code == messages.Revision.ErrorCodeValueValuesEnum.APPLY_BUILD_API_FAILED:
-    log.error('The apply build failed before it could run: {}'.format(
-        revision_ref.stateDetail))
   elif revision_error_code == messages.Revision.ErrorCodeValueValuesEnum.APPLY_BUILD_RUN_FAILED:
-    log.error('The apply build failed while running.')
     PrintApplyRunError(revision_ref.applyResults)
-  else:
-    log.error('The deployment failed due to an unrecognized error code on the '
-              'revision ("{}"): {}'.format(revision_error_code,
-                                           revision_ref.stateDetail))
 
 
 def DeploymentFailed(deployment_ref):
@@ -351,29 +328,11 @@ def DeploymentFailed(deployment_ref):
   messages = blueprints_util.GetMessagesModule()
   deployment_error_code = deployment_ref.errorCode
 
+  log.error(deployment_ref.stateDetail)
+
   if deployment_error_code == messages.Deployment.ErrorCodeValueValuesEnum.REVISION_FAILED:
     revision_ref = blueprints_util.GetRevision(deployment_ref.latestRevision)
     RevisionFailed(revision_ref)
-  elif deployment_error_code == messages.Deployment.ErrorCodeValueValuesEnum.CLUSTER_CREATION_PERMISSION_DENIED:
-    log.error('Permission was denied when creating the Config Controller '
-              'cluster. Ensure your project has the '
-              'roles/cloudconfig.serviceAgent role bound to the Blueprints '
-              'Controller service account.')
-  elif deployment_error_code == messages.Deployment.ErrorCodeValueValuesEnum.CLOUD_BUILD_PERMISSION_DENIED:
-    log.error(
-        'Permission was denied to Cloud Build. Ensure your project has the '
-        'roles/cloudconfig.serviceAgent role bound to the Blueprints '
-        'Controller service account.')
-  elif deployment_error_code == messages.Deployment.ErrorCodeValueValuesEnum.CLUSTER_CREATION_FAILED:
-    log.error('Failed to create the underlying Config Controller '
-              'cluster: {}'.format(deployment_ref.stateDetail))
-  elif deployment_error_code == messages.Deployment.ErrorCodeValueValuesEnum.DELETE_BUILD_API_FAILED:
-    log.error('The delete build failed before it could run: {}'.format(
-        deployment_ref.stateDetail))
   elif deployment_error_code == messages.Deployment.ErrorCodeValueValuesEnum.DELETE_BUILD_RUN_FAILED:
-    log.error('The delete build failed while running.')
     PrintCloudBuildResults(deployment_ref.deleteResults.logs,
                            deployment_ref.deleteResults.build)
-  else:
-    log.error('The deployment failed due to an unrecognized error code ("{}"): '
-              '{}'.format(deployment_error_code, deployment_ref.stateDetail))

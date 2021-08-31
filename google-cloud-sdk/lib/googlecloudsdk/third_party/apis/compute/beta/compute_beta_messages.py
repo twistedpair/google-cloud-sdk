@@ -46497,10 +46497,12 @@ class Quota(_messages.Message):
       BACKEND_SERVICES: <no description>
       C2D_CPUS: <no description>
       C2_CPUS: <no description>
+      C3_CPUS: <no description>
       COMMITMENTS: <no description>
       COMMITTED_A2_CPUS: <no description>
       COMMITTED_C2D_CPUS: <no description>
       COMMITTED_C2_CPUS: <no description>
+      COMMITTED_C3_CPUS: <no description>
       COMMITTED_CPUS: <no description>
       COMMITTED_E2_CPUS: <no description>
       COMMITTED_LICENSES: <no description>
@@ -46620,121 +46622,123 @@ class Quota(_messages.Message):
     BACKEND_SERVICES = 4
     C2D_CPUS = 5
     C2_CPUS = 6
-    COMMITMENTS = 7
-    COMMITTED_A2_CPUS = 8
-    COMMITTED_C2D_CPUS = 9
-    COMMITTED_C2_CPUS = 10
-    COMMITTED_CPUS = 11
-    COMMITTED_E2_CPUS = 12
-    COMMITTED_LICENSES = 13
-    COMMITTED_LOCAL_SSD_TOTAL_GB = 14
-    COMMITTED_MEMORY_OPTIMIZED_CPUS = 15
-    COMMITTED_N2A_CPUS = 16
-    COMMITTED_N2D_CPUS = 17
-    COMMITTED_N2_CPUS = 18
-    COMMITTED_NVIDIA_A100_GPUS = 19
-    COMMITTED_NVIDIA_K80_GPUS = 20
-    COMMITTED_NVIDIA_P100_GPUS = 21
-    COMMITTED_NVIDIA_P4_GPUS = 22
-    COMMITTED_NVIDIA_T4_GPUS = 23
-    COMMITTED_NVIDIA_V100_GPUS = 24
-    COMMITTED_T2D_CPUS = 25
-    CPUS = 26
-    CPUS_ALL_REGIONS = 27
-    DISKS_TOTAL_GB = 28
-    E2_CPUS = 29
-    EXTERNAL_NETWORK_LB_FORWARDING_RULES = 30
-    EXTERNAL_PROTOCOL_FORWARDING_RULES = 31
-    EXTERNAL_VPN_GATEWAYS = 32
-    FIREWALLS = 33
-    FORWARDING_RULES = 34
-    GLOBAL_INTERNAL_ADDRESSES = 35
-    GPUS_ALL_REGIONS = 36
-    HEALTH_CHECKS = 37
-    IMAGES = 38
-    INSTANCES = 39
-    INSTANCE_GROUPS = 40
-    INSTANCE_GROUP_MANAGERS = 41
-    INSTANCE_TEMPLATES = 42
-    INTERCONNECTS = 43
-    INTERCONNECT_ATTACHMENTS_PER_REGION = 44
-    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 45
-    INTERCONNECT_TOTAL_GBPS = 46
-    INTERNAL_ADDRESSES = 47
-    INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES = 48
-    IN_PLACE_SNAPSHOTS = 49
-    IN_USE_ADDRESSES = 50
-    IN_USE_BACKUP_SCHEDULES = 51
-    IN_USE_SNAPSHOT_SCHEDULES = 52
-    LOCAL_SSD_TOTAL_GB = 53
-    M1_CPUS = 54
-    M2_CPUS = 55
-    MACHINE_IMAGES = 56
-    N2A_CPUS = 57
-    N2D_CPUS = 58
-    N2_CPUS = 59
-    NETWORKS = 60
-    NETWORK_ENDPOINT_GROUPS = 61
-    NETWORK_FIREWALL_POLICIES = 62
-    NODE_GROUPS = 63
-    NODE_TEMPLATES = 64
-    NVIDIA_A100_GPUS = 65
-    NVIDIA_K80_GPUS = 66
-    NVIDIA_P100_GPUS = 67
-    NVIDIA_P100_VWS_GPUS = 68
-    NVIDIA_P4_GPUS = 69
-    NVIDIA_P4_VWS_GPUS = 70
-    NVIDIA_T4_GPUS = 71
-    NVIDIA_T4_VWS_GPUS = 72
-    NVIDIA_V100_GPUS = 73
-    PACKET_MIRRORINGS = 74
-    PD_EXTREME_TOTAL_PROVISIONED_IOPS = 75
-    PREEMPTIBLE_CPUS = 76
-    PREEMPTIBLE_LOCAL_SSD_GB = 77
-    PREEMPTIBLE_NVIDIA_A100_GPUS = 78
-    PREEMPTIBLE_NVIDIA_K80_GPUS = 79
-    PREEMPTIBLE_NVIDIA_P100_GPUS = 80
-    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 81
-    PREEMPTIBLE_NVIDIA_P4_GPUS = 82
-    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 83
-    PREEMPTIBLE_NVIDIA_T4_GPUS = 84
-    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 85
-    PREEMPTIBLE_NVIDIA_V100_GPUS = 86
-    PRIVATE_V6_ACCESS_SUBNETWORKS = 87
-    PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK = 88
-    PSC_INTERNAL_LB_FORWARDING_RULES = 89
-    PUBLIC_ADVERTISED_PREFIXES = 90
-    PUBLIC_DELEGATED_PREFIXES = 91
-    REGIONAL_AUTOSCALERS = 92
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 93
-    RESERVATIONS = 94
-    RESOURCE_POLICIES = 95
-    ROUTERS = 96
-    ROUTES = 97
-    SECURITY_POLICIES = 98
-    SECURITY_POLICIES_PER_REGION = 99
-    SECURITY_POLICY_CEVAL_RULES = 100
-    SECURITY_POLICY_RULES = 101
-    SECURITY_POLICY_RULES_PER_REGION = 102
-    SERVICE_ATTACHMENTS = 103
-    SNAPSHOTS = 104
-    SSD_TOTAL_GB = 105
-    SSL_CERTIFICATES = 106
-    STATIC_ADDRESSES = 107
-    STATIC_BYOIP_ADDRESSES = 108
-    SUBNETWORKS = 109
-    T2D_CPUS = 110
-    TARGET_HTTPS_PROXIES = 111
-    TARGET_HTTP_PROXIES = 112
-    TARGET_INSTANCES = 113
-    TARGET_POOLS = 114
-    TARGET_SSL_PROXIES = 115
-    TARGET_TCP_PROXIES = 116
-    TARGET_VPN_GATEWAYS = 117
-    URL_MAPS = 118
-    VPN_GATEWAYS = 119
-    VPN_TUNNELS = 120
-    XPN_SERVICE_PROJECTS = 121
+    C3_CPUS = 7
+    COMMITMENTS = 8
+    COMMITTED_A2_CPUS = 9
+    COMMITTED_C2D_CPUS = 10
+    COMMITTED_C2_CPUS = 11
+    COMMITTED_C3_CPUS = 12
+    COMMITTED_CPUS = 13
+    COMMITTED_E2_CPUS = 14
+    COMMITTED_LICENSES = 15
+    COMMITTED_LOCAL_SSD_TOTAL_GB = 16
+    COMMITTED_MEMORY_OPTIMIZED_CPUS = 17
+    COMMITTED_N2A_CPUS = 18
+    COMMITTED_N2D_CPUS = 19
+    COMMITTED_N2_CPUS = 20
+    COMMITTED_NVIDIA_A100_GPUS = 21
+    COMMITTED_NVIDIA_K80_GPUS = 22
+    COMMITTED_NVIDIA_P100_GPUS = 23
+    COMMITTED_NVIDIA_P4_GPUS = 24
+    COMMITTED_NVIDIA_T4_GPUS = 25
+    COMMITTED_NVIDIA_V100_GPUS = 26
+    COMMITTED_T2D_CPUS = 27
+    CPUS = 28
+    CPUS_ALL_REGIONS = 29
+    DISKS_TOTAL_GB = 30
+    E2_CPUS = 31
+    EXTERNAL_NETWORK_LB_FORWARDING_RULES = 32
+    EXTERNAL_PROTOCOL_FORWARDING_RULES = 33
+    EXTERNAL_VPN_GATEWAYS = 34
+    FIREWALLS = 35
+    FORWARDING_RULES = 36
+    GLOBAL_INTERNAL_ADDRESSES = 37
+    GPUS_ALL_REGIONS = 38
+    HEALTH_CHECKS = 39
+    IMAGES = 40
+    INSTANCES = 41
+    INSTANCE_GROUPS = 42
+    INSTANCE_GROUP_MANAGERS = 43
+    INSTANCE_TEMPLATES = 44
+    INTERCONNECTS = 45
+    INTERCONNECT_ATTACHMENTS_PER_REGION = 46
+    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 47
+    INTERCONNECT_TOTAL_GBPS = 48
+    INTERNAL_ADDRESSES = 49
+    INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES = 50
+    IN_PLACE_SNAPSHOTS = 51
+    IN_USE_ADDRESSES = 52
+    IN_USE_BACKUP_SCHEDULES = 53
+    IN_USE_SNAPSHOT_SCHEDULES = 54
+    LOCAL_SSD_TOTAL_GB = 55
+    M1_CPUS = 56
+    M2_CPUS = 57
+    MACHINE_IMAGES = 58
+    N2A_CPUS = 59
+    N2D_CPUS = 60
+    N2_CPUS = 61
+    NETWORKS = 62
+    NETWORK_ENDPOINT_GROUPS = 63
+    NETWORK_FIREWALL_POLICIES = 64
+    NODE_GROUPS = 65
+    NODE_TEMPLATES = 66
+    NVIDIA_A100_GPUS = 67
+    NVIDIA_K80_GPUS = 68
+    NVIDIA_P100_GPUS = 69
+    NVIDIA_P100_VWS_GPUS = 70
+    NVIDIA_P4_GPUS = 71
+    NVIDIA_P4_VWS_GPUS = 72
+    NVIDIA_T4_GPUS = 73
+    NVIDIA_T4_VWS_GPUS = 74
+    NVIDIA_V100_GPUS = 75
+    PACKET_MIRRORINGS = 76
+    PD_EXTREME_TOTAL_PROVISIONED_IOPS = 77
+    PREEMPTIBLE_CPUS = 78
+    PREEMPTIBLE_LOCAL_SSD_GB = 79
+    PREEMPTIBLE_NVIDIA_A100_GPUS = 80
+    PREEMPTIBLE_NVIDIA_K80_GPUS = 81
+    PREEMPTIBLE_NVIDIA_P100_GPUS = 82
+    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 83
+    PREEMPTIBLE_NVIDIA_P4_GPUS = 84
+    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 85
+    PREEMPTIBLE_NVIDIA_T4_GPUS = 86
+    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 87
+    PREEMPTIBLE_NVIDIA_V100_GPUS = 88
+    PRIVATE_V6_ACCESS_SUBNETWORKS = 89
+    PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK = 90
+    PSC_INTERNAL_LB_FORWARDING_RULES = 91
+    PUBLIC_ADVERTISED_PREFIXES = 92
+    PUBLIC_DELEGATED_PREFIXES = 93
+    REGIONAL_AUTOSCALERS = 94
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 95
+    RESERVATIONS = 96
+    RESOURCE_POLICIES = 97
+    ROUTERS = 98
+    ROUTES = 99
+    SECURITY_POLICIES = 100
+    SECURITY_POLICIES_PER_REGION = 101
+    SECURITY_POLICY_CEVAL_RULES = 102
+    SECURITY_POLICY_RULES = 103
+    SECURITY_POLICY_RULES_PER_REGION = 104
+    SERVICE_ATTACHMENTS = 105
+    SNAPSHOTS = 106
+    SSD_TOTAL_GB = 107
+    SSL_CERTIFICATES = 108
+    STATIC_ADDRESSES = 109
+    STATIC_BYOIP_ADDRESSES = 110
+    SUBNETWORKS = 111
+    T2D_CPUS = 112
+    TARGET_HTTPS_PROXIES = 113
+    TARGET_HTTP_PROXIES = 114
+    TARGET_INSTANCES = 115
+    TARGET_POOLS = 116
+    TARGET_SSL_PROXIES = 117
+    TARGET_TCP_PROXIES = 118
+    TARGET_VPN_GATEWAYS = 119
+    URL_MAPS = 120
+    VPN_GATEWAYS = 121
+    VPN_TUNNELS = 122
+    XPN_SERVICE_PROJECTS = 123
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -51698,6 +51702,8 @@ class Scheduling(_messages.Message):
   r"""Sets the scheduling options for an Instance. NextID: 21
 
   Enums:
+    InstanceTerminationActionValueValuesEnum: Specifies the termination action
+      for the instance.
     MaintenanceIntervalValueValuesEnum: For more information about maintenance
       intervals, see Setting maintenance intervals.
     OnHostMaintenanceValueValuesEnum: Defines the maintenance behavior for
@@ -51705,6 +51711,8 @@ class Scheduling(_messages.Message):
       For preemptible instances, the default and only possible behavior is
       TERMINATE. For more information, see Setting Instance Scheduling
       Options.
+    ProvisioningModelValueValuesEnum: Specifies the provisioning model of the
+      instance.
 
   Fields:
     automaticRestart: Specifies whether the instance should be automatically
@@ -51717,6 +51725,8 @@ class Scheduling(_messages.Message):
       detection, the value must be within the range of [90, 330] with the
       increment of 30, if unset, the default behavior of host error recovery
       will be used.
+    instanceTerminationAction: Specifies the termination action for the
+      instance.
     locationHint: An opaque location hint used to place the instance close to
       other resources. This field is for use by internal tools that use the
       public API.
@@ -51737,7 +51747,21 @@ class Scheduling(_messages.Message):
       set during instance creation or while the instance is stopped and
       therefore, in a `TERMINATED` state. See Instance Life Cycle for more
       information on the possible instance states.
+    provisioningModel: Specifies the provisioning model of the instance.
   """
+
+  class InstanceTerminationActionValueValuesEnum(_messages.Enum):
+    r"""Specifies the termination action for the instance.
+
+    Values:
+      DELETE: Delete the VM.
+      INSTANCE_TERMINATION_ACTION_UNSPECIFIED: Default value. This value is
+        unused.
+      STOP: Stop the VM without storing in-memory content. default action.
+    """
+    DELETE = 0
+    INSTANCE_TERMINATION_ACTION_UNSPECIFIED = 1
+    STOP = 2
 
   class MaintenanceIntervalValueValuesEnum(_messages.Enum):
     r"""For more information about maintenance intervals, see Setting
@@ -51771,15 +51795,25 @@ class Scheduling(_messages.Message):
     MIGRATE = 0
     TERMINATE = 1
 
+  class ProvisioningModelValueValuesEnum(_messages.Enum):
+    r"""Specifies the provisioning model of the instance.
+
+    Values:
+      SPOT: Heavily discounted, no guaranteed runtime.
+    """
+    SPOT = 0
+
   automaticRestart = _messages.BooleanField(1)
   hostErrorTimeoutSeconds = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  locationHint = _messages.StringField(3)
-  maintenanceFreezeDurationHours = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  maintenanceInterval = _messages.EnumField('MaintenanceIntervalValueValuesEnum', 5)
-  minNodeCpus = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  nodeAffinities = _messages.MessageField('SchedulingNodeAffinity', 7, repeated=True)
-  onHostMaintenance = _messages.EnumField('OnHostMaintenanceValueValuesEnum', 8)
-  preemptible = _messages.BooleanField(9)
+  instanceTerminationAction = _messages.EnumField('InstanceTerminationActionValueValuesEnum', 3)
+  locationHint = _messages.StringField(4)
+  maintenanceFreezeDurationHours = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  maintenanceInterval = _messages.EnumField('MaintenanceIntervalValueValuesEnum', 6)
+  minNodeCpus = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  nodeAffinities = _messages.MessageField('SchedulingNodeAffinity', 8, repeated=True)
+  onHostMaintenance = _messages.EnumField('OnHostMaintenanceValueValuesEnum', 9)
+  preemptible = _messages.BooleanField(10)
+  provisioningModel = _messages.EnumField('ProvisioningModelValueValuesEnum', 11)
 
 
 class SchedulingNodeAffinity(_messages.Message):

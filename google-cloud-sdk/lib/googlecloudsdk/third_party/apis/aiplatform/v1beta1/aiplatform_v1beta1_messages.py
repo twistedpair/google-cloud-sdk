@@ -2522,7 +2522,7 @@ class AiplatformProjectsLocationsMetadataStoresArtifactsPatchRequest(_messages.M
 
   Fields:
     allowMissing: If set to true, and the Artifact is not found, a new
-      Artifact will be created.
+      Artifact is created.
     googleCloudAiplatformV1beta1Artifact: A
       GoogleCloudAiplatformV1beta1Artifact resource to be passed as the
       request body.
@@ -2722,7 +2722,7 @@ class AiplatformProjectsLocationsMetadataStoresContextsPatchRequest(_messages.Me
 
   Fields:
     allowMissing: If set to true, and the Context is not found, a new Context
-      will be created.
+      is created.
     googleCloudAiplatformV1beta1Context: A GoogleCloudAiplatformV1beta1Context
       resource to be passed as the request body.
     name: Output only. The resource name of the Context.
@@ -2925,7 +2925,7 @@ class AiplatformProjectsLocationsMetadataStoresExecutionsPatchRequest(_messages.
 
   Fields:
     allowMissing: If set to true, and the Execution is not found, a new
-      Execution will be created.
+      Execution is created.
     googleCloudAiplatformV1beta1Execution: A
       GoogleCloudAiplatformV1beta1Execution resource to be passed as the
       request body.
@@ -4543,6 +4543,25 @@ class AiplatformProjectsLocationsTensorboardsExperimentsPatchRequest(_messages.M
   updateMask = _messages.StringField(3)
 
 
+class AiplatformProjectsLocationsTensorboardsExperimentsRunsBatchCreateRequest(_messages.Message):
+  r"""A
+  AiplatformProjectsLocationsTensorboardsExperimentsRunsBatchCreateRequest
+  object.
+
+  Fields:
+    googleCloudAiplatformV1beta1BatchCreateTensorboardRunsRequest: A
+      GoogleCloudAiplatformV1beta1BatchCreateTensorboardRunsRequest resource
+      to be passed as the request body.
+    parent: Required. The resource name of the TensorboardExperiment to create
+      the TensorboardRuns in. Format: `projects/{project}/locations/{location}
+      /tensorboards/{tensorboard}/experiments/{experiment}` The parent field
+      in the CreateTensorboardRunRequest messages must match this field.
+  """
+
+  googleCloudAiplatformV1beta1BatchCreateTensorboardRunsRequest = _messages.MessageField('GoogleCloudAiplatformV1beta1BatchCreateTensorboardRunsRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
 class AiplatformProjectsLocationsTensorboardsExperimentsRunsCreateRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsTensorboardsExperimentsRunsCreateRequest
   object.
@@ -4711,6 +4730,28 @@ class AiplatformProjectsLocationsTensorboardsExperimentsRunsPatchRequest(_messag
   googleCloudAiplatformV1beta1TensorboardRun = _messages.MessageField('GoogleCloudAiplatformV1beta1TensorboardRun', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
+
+
+class AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesBatchCreateRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesBatchC
+  reateRequest object.
+
+  Fields:
+    googleCloudAiplatformV1beta1BatchCreateTensorboardTimeSeriesRequest: A
+      GoogleCloudAiplatformV1beta1BatchCreateTensorboardTimeSeriesRequest
+      resource to be passed as the request body.
+    parent: Required. The resource name of the TensorboardExperiment to create
+      the TensorboardTimeSeries in. Format: `projects/{project}/locations/{loc
+      ation}/tensorboards/{tensorboard}/experiments/{experiment}` The
+      TensorboardRuns referenced by the parent fields in the
+      CreateTensorboardTimeSeriesRequest messages must be sub resources of
+      this TensorboardExperiment.
+    runsId: A string attribute.
+  """
+
+  googleCloudAiplatformV1beta1BatchCreateTensorboardTimeSeriesRequest = _messages.MessageField('GoogleCloudAiplatformV1beta1BatchCreateTensorboardTimeSeriesRequest', 1)
+  parent = _messages.StringField(2, required=True)
+  runsId = _messages.StringField(3, required=True)
 
 
 class AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesCreateRequest(_messages.Message):
@@ -7763,6 +7804,16 @@ class GoogleCloudAiplatformUiCreateDatasetOperationMetadata(_messages.Message):
 
   Fields:
     genericMetadata: The operation generic information.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformUiGenericOperationMetadata', 1)
+
+
+class GoogleCloudAiplatformUiCreateEdgeDeviceOperationMetadata(_messages.Message):
+  r"""Metadata message for EdgeDeviceService.CreateEdgeDevice.
+
+  Fields:
+    genericMetadata: Generic information about the operation.
   """
 
   genericMetadata = _messages.MessageField('GoogleCloudAiplatformUiGenericOperationMetadata', 1)
@@ -11170,6 +11221,12 @@ class GoogleCloudAiplatformV1CustomJobSpec(_messages.Message):
       backing a Trial of HyperparameterTuningJob: * AIP_MODEL_DIR = `//model/`
       * AIP_CHECKPOINT_DIR = `//checkpoints/` * AIP_TENSORBOARD_LOG_DIR =
       `//logs/`
+    enableWebAccess: Optional. Whether you want Vertex AI to enable
+      [interactive shell access](https://cloud.google.com/vertex-
+      ai/docs/training/monitor-debug-interactive-shell) to training
+      containers. If set to `true`, you can access interactive shells at the
+      URIs given by CustomJob.web_access_uris or Trial.web_access_uris (within
+      HyperparameterTuningJob.trials).
     network: The full name of the Compute Engine
       [network](/compute/docs/networks-and-firewalls#networks) to which the
       Job should be peered. For example,
@@ -11191,10 +11248,11 @@ class GoogleCloudAiplatformV1CustomJobSpec(_messages.Message):
   """
 
   baseOutputDirectory = _messages.MessageField('GoogleCloudAiplatformV1GcsDestination', 1)
-  network = _messages.StringField(2)
-  scheduling = _messages.MessageField('GoogleCloudAiplatformV1Scheduling', 3)
-  serviceAccount = _messages.StringField(4)
-  workerPoolSpecs = _messages.MessageField('GoogleCloudAiplatformV1WorkerPoolSpec', 5, repeated=True)
+  enableWebAccess = _messages.BooleanField(2)
+  network = _messages.StringField(3)
+  scheduling = _messages.MessageField('GoogleCloudAiplatformV1Scheduling', 4)
+  serviceAccount = _messages.StringField(5)
+  workerPoolSpecs = _messages.MessageField('GoogleCloudAiplatformV1WorkerPoolSpec', 6, repeated=True)
 
 
 class GoogleCloudAiplatformV1DedicatedResources(_messages.Message):
@@ -17846,6 +17904,50 @@ class GoogleCloudAiplatformV1beta1BatchCreateFeaturesResponse(_messages.Message)
   features = _messages.MessageField('GoogleCloudAiplatformV1beta1Feature', 1, repeated=True)
 
 
+class GoogleCloudAiplatformV1beta1BatchCreateTensorboardRunsRequest(_messages.Message):
+  r"""Request message for TensorboardService.BatchCreateTensorboardRuns.
+
+  Fields:
+    requests: Required. The request message specifying the TensorboardRuns to
+      create. A maximum of 1000 TensorboardRuns can be created in a batch.
+  """
+
+  requests = _messages.MessageField('GoogleCloudAiplatformV1beta1CreateTensorboardRunRequest', 1, repeated=True)
+
+
+class GoogleCloudAiplatformV1beta1BatchCreateTensorboardRunsResponse(_messages.Message):
+  r"""Response message for TensorboardService.BatchCreateTensorboardRuns.
+
+  Fields:
+    tensorboardRuns: The created TensorboardRuns.
+  """
+
+  tensorboardRuns = _messages.MessageField('GoogleCloudAiplatformV1beta1TensorboardRun', 1, repeated=True)
+
+
+class GoogleCloudAiplatformV1beta1BatchCreateTensorboardTimeSeriesRequest(_messages.Message):
+  r"""Request message for TensorboardService.BatchCreateTensorboardTimeSeries.
+
+  Fields:
+    requests: Required. The request message specifying the
+      TensorboardTimeSeries to create. A maximum of 1000 TensorboardTimeSeries
+      can be created in a batch.
+  """
+
+  requests = _messages.MessageField('GoogleCloudAiplatformV1beta1CreateTensorboardTimeSeriesRequest', 1, repeated=True)
+
+
+class GoogleCloudAiplatformV1beta1BatchCreateTensorboardTimeSeriesResponse(_messages.Message):
+  r"""Response message for
+  TensorboardService.BatchCreateTensorboardTimeSeries.
+
+  Fields:
+    tensorboardTimeSeries: The created TensorboardTimeSeries.
+  """
+
+  tensorboardTimeSeries = _messages.MessageField('GoogleCloudAiplatformV1beta1TensorboardTimeSeries', 1, repeated=True)
+
+
 class GoogleCloudAiplatformV1beta1BatchDedicatedResources(_messages.Message):
   r"""A description of resources that are used for performing batch
   operations, are dedicated to a Model, and need manual configuration.
@@ -18650,6 +18752,43 @@ class GoogleCloudAiplatformV1beta1CreateTensorboardOperationMetadata(_messages.M
   """
 
   genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 1)
+
+
+class GoogleCloudAiplatformV1beta1CreateTensorboardRunRequest(_messages.Message):
+  r"""Request message for TensorboardService.CreateTensorboardRun.
+
+  Fields:
+    parent: Required. The resource name of the TensorboardExperiment to create
+      the TensorboardRun in. Format: `projects/{project}/locations/{location}/
+      tensorboards/{tensorboard}/experiments/{experiment}`
+    tensorboardRun: Required. The TensorboardRun to create.
+    tensorboardRunId: Required. The ID to use for the Tensorboard run, which
+      will become the final component of the Tensorboard run's resource name.
+      This value should be 1-128 characters, and valid characters are /a-z-/.
+  """
+
+  parent = _messages.StringField(1)
+  tensorboardRun = _messages.MessageField('GoogleCloudAiplatformV1beta1TensorboardRun', 2)
+  tensorboardRunId = _messages.StringField(3)
+
+
+class GoogleCloudAiplatformV1beta1CreateTensorboardTimeSeriesRequest(_messages.Message):
+  r"""Request message for TensorboardService.CreateTensorboardTimeSeries.
+
+  Fields:
+    parent: Required. The resource name of the TensorboardRun to create the
+      TensorboardTimeSeries in. Format: `projects/{project}/locations/{locatio
+      n}/tensorboards/{tensorboard}/experiments/{experiment}/runs/{run}`
+    tensorboardTimeSeries: Required. The TensorboardTimeSeries to create.
+    tensorboardTimeSeriesId: Optional. The user specified unique ID to use for
+      the TensorboardTimeSeries, which will become the final component of the
+      TensorboardTimeSeries's resource name. Ref: go/ucaip-user-specified-id
+      This value should match "a-z0-9{0, 127}"
+  """
+
+  parent = _messages.StringField(1)
+  tensorboardTimeSeries = _messages.MessageField('GoogleCloudAiplatformV1beta1TensorboardTimeSeries', 2)
+  tensorboardTimeSeriesId = _messages.StringField(3)
 
 
 class GoogleCloudAiplatformV1beta1CsvDestination(_messages.Message):
@@ -23401,6 +23540,8 @@ class GoogleCloudAiplatformV1beta1ModelDeploymentMonitoringJob(_messages.Message
       ModelDeploymentMonitoringJob.
     endpoint: Required. Endpoint resource name. Format:
       `projects/{project}/locations/{location}/endpoints/{endpoint}`
+    error: Output only. Only populated when the job's state is
+      `JOB_STATE_FAILED` or `JOB_STATE_CANCELLED`.
     labels: The labels with user-defined metadata to organize your
       ModelDeploymentMonitoringJob. Label keys and values can be no longer
       than 64 characters (Unicode codepoints), can only contain lowercase
@@ -23521,20 +23662,21 @@ class GoogleCloudAiplatformV1beta1ModelDeploymentMonitoringJob(_messages.Message
   createTime = _messages.StringField(3)
   displayName = _messages.StringField(4)
   endpoint = _messages.StringField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  logTtl = _messages.StringField(7)
-  loggingSamplingStrategy = _messages.MessageField('GoogleCloudAiplatformV1beta1SamplingStrategy', 8)
-  modelDeploymentMonitoringObjectiveConfigs = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelDeploymentMonitoringObjectiveConfig', 9, repeated=True)
-  modelDeploymentMonitoringScheduleConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelDeploymentMonitoringScheduleConfig', 10)
-  modelMonitoringAlertConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelMonitoringAlertConfig', 11)
-  name = _messages.StringField(12)
-  nextScheduleTime = _messages.StringField(13)
-  predictInstanceSchemaUri = _messages.StringField(14)
-  samplePredictInstance = _messages.MessageField('extra_types.JsonValue', 15)
-  scheduleState = _messages.EnumField('ScheduleStateValueValuesEnum', 16)
-  state = _messages.EnumField('StateValueValuesEnum', 17)
-  statsAnomaliesBaseDirectory = _messages.MessageField('GoogleCloudAiplatformV1beta1GcsDestination', 18)
-  updateTime = _messages.StringField(19)
+  error = _messages.MessageField('GoogleRpcStatus', 6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  logTtl = _messages.StringField(8)
+  loggingSamplingStrategy = _messages.MessageField('GoogleCloudAiplatformV1beta1SamplingStrategy', 9)
+  modelDeploymentMonitoringObjectiveConfigs = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelDeploymentMonitoringObjectiveConfig', 10, repeated=True)
+  modelDeploymentMonitoringScheduleConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelDeploymentMonitoringScheduleConfig', 11)
+  modelMonitoringAlertConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelMonitoringAlertConfig', 12)
+  name = _messages.StringField(13)
+  nextScheduleTime = _messages.StringField(14)
+  predictInstanceSchemaUri = _messages.StringField(15)
+  samplePredictInstance = _messages.MessageField('extra_types.JsonValue', 16)
+  scheduleState = _messages.EnumField('ScheduleStateValueValuesEnum', 17)
+  state = _messages.EnumField('StateValueValuesEnum', 18)
+  statsAnomaliesBaseDirectory = _messages.MessageField('GoogleCloudAiplatformV1beta1GcsDestination', 19)
+  updateTime = _messages.StringField(20)
 
 
 class GoogleCloudAiplatformV1beta1ModelDeploymentMonitoringObjectiveConfig(_messages.Message):
@@ -27785,8 +27927,8 @@ class GoogleCloudAiplatformV1beta1StudySpec(_messages.Message):
 
   Fields:
     algorithm: The search algorithm specified for the Study.
-    convexStopConfig: Deprecated, use convex_automated_stopping_spec instead.
-      The automated early stopping using convex stopping rule.
+    convexStopConfig: Deprecated. The automated early stopping using convex
+      stopping rule.
     decayCurveStoppingSpec: The automated early stopping spec using decay
       curve rule.
     measurementSelectionType: Describe which measurement selection type will

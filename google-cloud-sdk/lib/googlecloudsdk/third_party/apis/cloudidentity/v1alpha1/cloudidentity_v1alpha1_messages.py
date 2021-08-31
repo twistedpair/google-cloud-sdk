@@ -1145,6 +1145,10 @@ class GoogleAppsCloudidentityDevicesV1AndroidAttributes(_messages.Message):
   supportsWorkProfile = _messages.BooleanField(4)
 
 
+class GoogleAppsCloudidentityDevicesV1ApproveDeviceUserMetadata(_messages.Message):
+  r"""Metadata for ApproveDeviceUser LRO."""
+
+
 class GoogleAppsCloudidentityDevicesV1ApproveDeviceUserResponse(_messages.Message):
   r"""Response message for approving the device to access user data.
 
@@ -1153,6 +1157,10 @@ class GoogleAppsCloudidentityDevicesV1ApproveDeviceUserResponse(_messages.Messag
   """
 
   deviceUser = _messages.MessageField('GoogleAppsCloudidentityDevicesV1DeviceUser', 1)
+
+
+class GoogleAppsCloudidentityDevicesV1BlockDeviceUserMetadata(_messages.Message):
+  r"""Metadata for BlockDeviceUser LRO."""
 
 
 class GoogleAppsCloudidentityDevicesV1BlockDeviceUserResponse(_messages.Message):
@@ -1165,6 +1173,10 @@ class GoogleAppsCloudidentityDevicesV1BlockDeviceUserResponse(_messages.Message)
   deviceUser = _messages.MessageField('GoogleAppsCloudidentityDevicesV1DeviceUser', 1)
 
 
+class GoogleAppsCloudidentityDevicesV1CancelWipeDeviceMetadata(_messages.Message):
+  r"""Metadata for CancelWipeDevice LRO."""
+
+
 class GoogleAppsCloudidentityDevicesV1CancelWipeDeviceResponse(_messages.Message):
   r"""Response message for cancelling an unfinished device wipe.
 
@@ -1174,6 +1186,10 @@ class GoogleAppsCloudidentityDevicesV1CancelWipeDeviceResponse(_messages.Message
   """
 
   device = _messages.MessageField('GoogleAppsCloudidentityDevicesV1Device', 1)
+
+
+class GoogleAppsCloudidentityDevicesV1CancelWipeDeviceUserMetadata(_messages.Message):
+  r"""Metadata for CancelWipeDeviceUser LRO."""
 
 
 class GoogleAppsCloudidentityDevicesV1CancelWipeDeviceUserResponse(_messages.Message):
@@ -1230,16 +1246,16 @@ class GoogleAppsCloudidentityDevicesV1ClientState(_messages.Message):
       client.
     name: Output only. [Resource
       name](https://cloud.google.com/apis/design/resource_names) of the
-      ClientState in format: `devices/{device_id}/deviceUsers/{device_user_id}
-      /clientState/{partner_id}`, where partner_id corresponds to the partner
-      storing the data. For partners belonging to the "BeyondCorp Alliance",
-      this is the partner ID specified to you by Google. For all other
-      callers, this is a string of the form: `{customer_id}-suffix`, where
-      `customer_id` is your customer ID. The *suffix* is any string the caller
-      specifies. This string will be displayed verbatim in the administration
-      console. This suffix is used in setting up Custom Access Levels in
-      Context-Aware Access. Your organization's customer ID can be obtained
-      from the URL: `GET
+      ClientState in format:
+      `devices/{device}/deviceUsers/{device_user}/clientState/{partner}`,
+      where partner corresponds to the partner storing the data. For partners
+      belonging to the "BeyondCorp Alliance", this is the partner ID specified
+      to you by Google. For all other callers, this is a string of the form:
+      `{customer}-suffix`, where `customer` is your customer ID. The *suffix*
+      is any string the caller specifies. This string will be displayed
+      verbatim in the administration console. This suffix is used in setting
+      up Custom Access Levels in Context-Aware Access. Your organization's
+      customer ID can be obtained from the URL: `GET
       https://www.googleapis.com/admin/directory/v1/customers/my_customer` The
       `id` field in the response contains the customer ID starting with the
       letter 'C'. The customer ID to be used in this API is the string after
@@ -1350,6 +1366,10 @@ class GoogleAppsCloudidentityDevicesV1ClientState(_messages.Message):
   scoreReason = _messages.StringField(12)
 
 
+class GoogleAppsCloudidentityDevicesV1CreateDeviceMetadata(_messages.Message):
+  r"""Metadata for CreateDevice LRO."""
+
+
 class GoogleAppsCloudidentityDevicesV1CustomAttributeValue(_messages.Message):
   r"""Additional custom attribute values may be one of these types
 
@@ -1362,6 +1382,14 @@ class GoogleAppsCloudidentityDevicesV1CustomAttributeValue(_messages.Message):
   boolValue = _messages.BooleanField(1)
   numberValue = _messages.FloatField(2)
   stringValue = _messages.StringField(3)
+
+
+class GoogleAppsCloudidentityDevicesV1DeleteDeviceMetadata(_messages.Message):
+  r"""Metadata for DeleteDevice LRO."""
+
+
+class GoogleAppsCloudidentityDevicesV1DeleteDeviceUserMetadata(_messages.Message):
+  r"""Metadata for DeleteDeviceUser LRO."""
 
 
 class GoogleAppsCloudidentityDevicesV1Device(_messages.Message):
@@ -1406,8 +1434,8 @@ class GoogleAppsCloudidentityDevicesV1Device(_messages.Message):
     model: Output only. Model name of device. Example: Pixel 3.
     name: Output only. [Resource
       name](https://cloud.google.com/apis/design/resource_names) of the Device
-      in format: `devices/{device_id}`, where device_id is the unique id
-      assigned to the Device.
+      in format: `devices/{device}`, where device is the unique id assigned to
+      the Device.
     networkOperator: Output only. Mobile or network operator of device, if
       available.
     osVersion: Output only. OS version of the device. Example: Android 8.1.0.
@@ -1561,9 +1589,8 @@ class GoogleAppsCloudidentityDevicesV1DeviceUser(_messages.Message):
     managementState: Output only. Management state of the user on the device.
     name: Output only. [Resource
       name](https://cloud.google.com/apis/design/resource_names) of the
-      DeviceUser in format:
-      `devices/{device_id}/deviceUsers/{device_user_id}`, where
-      `device_user_id` uniquely identifies a user's use of a device.
+      DeviceUser in format: `devices/{device}/deviceUsers/{device_user}`,
+      where `device_user` uniquely identifies a user's use of a device.
     passwordState: Password state of the DeviceUser object
     userAgent: Output only. User agent on the device for this specific user
     userEmail: Email address of the user registered on the device.
@@ -1627,6 +1654,26 @@ class GoogleAppsCloudidentityDevicesV1DeviceUser(_messages.Message):
   userEmail = _messages.StringField(10)
 
 
+class GoogleAppsCloudidentityDevicesV1ListEndpointAppsMetadata(_messages.Message):
+  r"""Metadata for ListEndpointApps LRO."""
+
+
+class GoogleAppsCloudidentityDevicesV1SignoutDeviceUserMetadata(_messages.Message):
+  r"""Metadata for SignoutDeviceUser LRO."""
+
+
+class GoogleAppsCloudidentityDevicesV1UpdateClientStateMetadata(_messages.Message):
+  r"""Metadata for UpdateClientState LRO."""
+
+
+class GoogleAppsCloudidentityDevicesV1UpdateDeviceMetadata(_messages.Message):
+  r"""Metadata for UpdateDevice LRO."""
+
+
+class GoogleAppsCloudidentityDevicesV1WipeDeviceMetadata(_messages.Message):
+  r"""Metadata for WipeDevice LRO."""
+
+
 class GoogleAppsCloudidentityDevicesV1WipeDeviceResponse(_messages.Message):
   r"""Response message for wiping all data on the device.
 
@@ -1636,6 +1683,10 @@ class GoogleAppsCloudidentityDevicesV1WipeDeviceResponse(_messages.Message):
   """
 
   device = _messages.MessageField('GoogleAppsCloudidentityDevicesV1Device', 1)
+
+
+class GoogleAppsCloudidentityDevicesV1WipeDeviceUserMetadata(_messages.Message):
+  r"""Metadata for WipeDeviceUser LRO."""
 
 
 class GoogleAppsCloudidentityDevicesV1WipeDeviceUserResponse(_messages.Message):

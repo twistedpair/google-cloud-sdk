@@ -37,6 +37,8 @@ class Execution(_messages.Message):
   /projects.locations.workflows).
 
   Enums:
+    CallLogLevelValueValuesEnum: The call logging level associated to this
+      execution.
     StateValueValuesEnum: Output only. Current state of the execution.
 
   Fields:
@@ -45,6 +47,7 @@ class Execution(_messages.Message):
       to run your workflow, you must escape any JSON string value of
       `argument`. Example:
       `'{"argument":"{\"firstName\":\"FIRST\",\"lastName\":\"LAST\"}"}'`
+    callLogLevel: The call logging level associated to this execution.
     endTime: Output only. Marks the end of execution, successful or not.
     error: Output only. The error which caused the execution to finish
       prematurely. The value is only present if the execution's state is
@@ -58,6 +61,20 @@ class Execution(_messages.Message):
     workflowRevisionId: Output only. Revision of the workflow this execution
       is using.
   """
+
+  class CallLogLevelValueValuesEnum(_messages.Enum):
+    r"""The call logging level associated to this execution.
+
+    Values:
+      CALL_LOG_LEVEL_UNSPECIFIED: No call logging specified.
+      LOG_ALL_CALLS: Log all call steps within workflows, all call returns,
+        and all exceptions raised.
+      LOG_ERRORS_ONLY: Log only exceptions that are raised from call steps
+        within workflows.
+    """
+    CALL_LOG_LEVEL_UNSPECIFIED = 0
+    LOG_ALL_CALLS = 1
+    LOG_ERRORS_ONLY = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. Current state of the execution.
@@ -76,13 +93,14 @@ class Execution(_messages.Message):
     CANCELLED = 4
 
   argument = _messages.StringField(1)
-  endTime = _messages.StringField(2)
-  error = _messages.MessageField('Error', 3)
-  name = _messages.StringField(4)
-  result = _messages.StringField(5)
-  startTime = _messages.StringField(6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
-  workflowRevisionId = _messages.StringField(8)
+  callLogLevel = _messages.EnumField('CallLogLevelValueValuesEnum', 2)
+  endTime = _messages.StringField(3)
+  error = _messages.MessageField('Error', 4)
+  name = _messages.StringField(5)
+  result = _messages.StringField(6)
+  startTime = _messages.StringField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  workflowRevisionId = _messages.StringField(9)
 
 
 class ListExecutionsResponse(_messages.Message):

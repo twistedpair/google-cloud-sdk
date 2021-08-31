@@ -604,10 +604,15 @@
           "format": "google-datetime"
         },
         "updateTime": {
-          "description": "Output only. The most recent time at which the mute config was updated. This field is by the server and will be ignored if provided on config creation or update.",
+          "description": "Output only. The most recent time at which the mute config was updated. This field is set by the server and will be ignored if provided on config creation or update.",
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
+        },
+        "mostRecentEditor": {
+          "description": "Output only. Email address of the user who last edited the mute config. This field is set by the server and will be ignored if provided on config creation or update.",
+          "readOnly": true,
+          "type": "string"
         }
       }
     },

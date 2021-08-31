@@ -1175,7 +1175,7 @@
       "type": "object",
       "properties": {
         "approverAccount": {
-          "description": "Output only. Email of the user that called the ApproveBuild API to approve or reject a build at the time that the API was called (the user's actual email that is tied to their GAIA ID may have changed). This field is not stored, rather, it is calculated on the fly using approver_id.",
+          "description": "Output only. Email of the user that called the ApproveBuild API to approve or reject a build at the time that the API was called.",
           "readOnly": true,
           "type": "string"
         },

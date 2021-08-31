@@ -1,1626 +1,4845 @@
 accessapproval:
-  Folders: {}
-  FoldersApprovalrequests: {}
-  Organizations: {}
-  OrganizationsApprovalrequests: {}
-  Projects: {}
-  ProjectsApprovalrequests: {}
+  folders:
+    supported_apis:
+    - v1
+  folders.approvalRequests:
+    supported_apis:
+    - v1
+  organizations:
+    supported_apis:
+    - v1
+  organizations.approvalRequests:
+    supported_apis:
+    - v1
+  projects:
+    supported_apis:
+    - v1
+  projects.approvalRequests:
+    supported_apis:
+    - v1
 accesscontextmanager:
-  Accesspolicies:
-    asset_inventory_type: accesscontextmanager.googleapis.com/Accesspolicy
+  accessPolicies:
+    asset_inventory_type: accesscontextmanager.googleapis.com/AccessPolicy
     krm_group: accesscontextmanager
     krm_kind: AccessContextManagerAccessPolicy
     support_bulk_export: true
     support_single_export: false
-  AccesspoliciesAccesslevels:
-    asset_inventory_type: accesscontextmanager.googleapis.com/Accesslevel
+    supported_apis:
+    - v1
+    - v1alpha
+    - v1beta
+  accessPolicies.accessLevels:
+    asset_inventory_type: accesscontextmanager.googleapis.com/AccessLevel
     krm_group: accesscontextmanager
     krm_kind: AccessContextManagerAccessLevel
     support_bulk_export: true
     support_single_export: false
-  AccesspoliciesServiceperimeters:
-    asset_inventory_type: accesscontextmanager.googleapis.com/Serviceperimeter
+    supported_apis:
+    - v1
+    - v1alpha
+    - v1beta
+  accessPolicies.servicePerimeters:
+    asset_inventory_type: accesscontextmanager.googleapis.com/ServicePerimeter
     krm_group: accesscontextmanager
     krm_kind: AccessContextManagerServicePerimeter
     support_bulk_export: true
     support_single_export: false
-  Operations: {}
-  Organizations: {}
-  OrganizationsGcpuseraccessbindings: {}
+    supported_apis:
+    - v1
+    - v1alpha
+    - v1beta
+  operations:
+    supported_apis:
+    - v1
+    - v1alpha
+    - v1beta
+  organizations:
+    supported_apis:
+    - v1
+    - v1alpha
+  organizations.gcpUserAccessBindings:
+    supported_apis:
+    - v1
+    - v1alpha
 admin:
-  Asps: {}
-  Chromeosdevices: {}
-  Customer: {}
-  Customers: {}
-  Domainaliases: {}
-  Domains: {}
-  Groups: {}
-  Members: {}
-  Mobiledevices: {}
-  Notifications: {}
-  Orgunits: {}
-  Resources: {}
-  ResourcesBuildings: {}
-  ResourcesCalendars: {}
-  ResourcesFeatures: {}
-  Roleassignments: {}
-  Roles: {}
-  Schemas: {}
-  Tokens: {}
-  Users: {}
-  UsersPhotos: {}
+  asps:
+    supported_apis:
+    - v1
+  chromeosdevices:
+    supported_apis:
+    - v1
+  customer:
+    supported_apis:
+    - v1
+  customers:
+    supported_apis:
+    - v1
+  domainAliases:
+    supported_apis:
+    - v1
+  domains:
+    supported_apis:
+    - v1
+  groups:
+    supported_apis:
+    - v1
+  members:
+    supported_apis:
+    - v1
+  mobiledevices:
+    supported_apis:
+    - v1
+  notifications:
+    supported_apis:
+    - v1
+  orgunits:
+    supported_apis:
+    - v1
+  resources:
+    supported_apis:
+    - v1
+  resources.buildings:
+    supported_apis:
+    - v1
+  resources.calendars:
+    supported_apis:
+    - v1
+  resources.features:
+    supported_apis:
+    - v1
+  roleAssignments:
+    supported_apis:
+    - v1
+  roles:
+    supported_apis:
+    - v1
+  schemas:
+    supported_apis:
+    - v1
+  tokens:
+    supported_apis:
+    - v1
+  users:
+    supported_apis:
+    - v1
+  users.photos:
+    supported_apis:
+    - v1
 aiplatform:
-  Projects: {}
-  ProjectsLocations: {}
-  ProjectsLocationsBatchpredictionjobs: {}
-  ProjectsLocationsCustomjobs: {}
-  ProjectsLocationsCustomjobsOperations: {}
-  ProjectsLocationsDatalabelingjobs: {}
-  ProjectsLocationsDatalabelingjobsOperations: {}
-  ProjectsLocationsDatasets: {}
-  ProjectsLocationsDatasetsAnnotationspecs: {}
-  ProjectsLocationsDatasetsAnnotationspecsOperations: {}
-  ProjectsLocationsDatasetsDataitems: {}
-  ProjectsLocationsDatasetsDataitemsAnnotations: {}
-  ProjectsLocationsDatasetsDataitemsAnnotationsOperations: {}
-  ProjectsLocationsDatasetsDataitemsOperations: {}
-  ProjectsLocationsDatasetsOperations: {}
-  ProjectsLocationsDatasetsSavedqueries: {}
-  ProjectsLocationsDatasetsSavedqueriesOperations: {}
-  ProjectsLocationsEndpoints: {}
-  ProjectsLocationsEndpointsOperations: {}
-  ProjectsLocationsFeaturestores: {}
-  ProjectsLocationsFeaturestoresEntitytypes: {}
-  ProjectsLocationsFeaturestoresEntitytypesFeatures: {}
-  ProjectsLocationsFeaturestoresEntitytypesFeaturesOperations: {}
-  ProjectsLocationsFeaturestoresEntitytypesOperations: {}
-  ProjectsLocationsFeaturestoresOperations: {}
-  ProjectsLocationsHyperparametertuningjobs: {}
-  ProjectsLocationsHyperparametertuningjobsOperations: {}
-  ProjectsLocationsIndexendpoints: {}
-  ProjectsLocationsIndexendpointsOperations: {}
-  ProjectsLocationsIndexes: {}
-  ProjectsLocationsIndexesOperations: {}
-  ProjectsLocationsMigratableresources: {}
-  ProjectsLocationsMigratableresourcesOperations: {}
-  ProjectsLocationsModeldeploymentmonitoringjobs: {}
-  ProjectsLocationsModeldeploymentmonitoringjobsOperations: {}
-  ProjectsLocationsModels: {}
-  ProjectsLocationsModelsEvaluations: {}
-  ProjectsLocationsModelsEvaluationsOperations: {}
-  ProjectsLocationsModelsEvaluationsSlices: {}
-  ProjectsLocationsModelsOperations: {}
-  ProjectsLocationsOperations: {}
-  ProjectsLocationsPipelinejobs: {}
-  ProjectsLocationsPipelinejobsOperations: {}
-  ProjectsLocationsSpecialistpools: {}
-  ProjectsLocationsSpecialistpoolsOperations: {}
-  ProjectsLocationsStudies: {}
-  ProjectsLocationsStudiesTrials: {}
-  ProjectsLocationsStudiesTrialsOperations: {}
-  ProjectsLocationsTensorboards: {}
-  ProjectsLocationsTensorboardsExperiments: {}
-  ProjectsLocationsTensorboardsExperimentsOperations: {}
-  ProjectsLocationsTensorboardsExperimentsRuns: {}
-  ProjectsLocationsTensorboardsExperimentsRunsOperations: {}
-  ProjectsLocationsTensorboardsExperimentsRunsTimeseries: {}
-  ProjectsLocationsTensorboardsExperimentsRunsTimeseriesOperations: {}
-  ProjectsLocationsTensorboardsOperations: {}
-  ProjectsLocationsTrainingpipelines: {}
-  ProjectsLocationsTrainingpipelinesOperations: {}
+  projects:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1beta1
+  projects.locations:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1beta1
+  projects.locations.batchPredictionJobs:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1beta1
+  projects.locations.customJobs:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1beta1
+  projects.locations.customJobs.operations:
+    supported_apis:
+    - v1alpha1
+    - v1beta1
+  projects.locations.dataLabelingJobs:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1beta1
+  projects.locations.dataLabelingJobs.operations:
+    supported_apis:
+    - v1alpha1
+    - v1beta1
+  projects.locations.datasets:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1beta1
+  projects.locations.datasets.annotationSpecs:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1beta1
+  projects.locations.datasets.annotationSpecs.operations:
+    supported_apis:
+    - v1alpha1
+    - v1beta1
+  projects.locations.datasets.dataItems:
+    supported_apis:
+    - v1alpha1
+    - v1beta1
+  projects.locations.datasets.dataItems.annotations:
+    supported_apis:
+    - v1alpha1
+    - v1beta1
+  projects.locations.datasets.dataItems.annotations.operations:
+    supported_apis:
+    - v1alpha1
+    - v1beta1
+  projects.locations.datasets.dataItems.operations:
+    supported_apis:
+    - v1alpha1
+    - v1beta1
+  projects.locations.datasets.operations:
+    supported_apis:
+    - v1alpha1
+    - v1beta1
+  projects.locations.datasets.savedQueries:
+    supported_apis:
+    - v1alpha1
+    - v1beta1
+  projects.locations.datasets.savedQueries.operations:
+    supported_apis:
+    - v1alpha1
+    - v1beta1
+  projects.locations.endpoints:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1beta1
+  projects.locations.endpoints.operations:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1beta1
+  projects.locations.featurestores:
+    supported_apis:
+    - v1alpha1
+    - v1beta1
+  projects.locations.featurestores.entityTypes:
+    supported_apis:
+    - v1alpha1
+    - v1beta1
+  projects.locations.featurestores.entityTypes.features:
+    supported_apis:
+    - v1alpha1
+    - v1beta1
+  projects.locations.featurestores.entityTypes.features.operations:
+    supported_apis:
+    - v1alpha1
+    - v1beta1
+  projects.locations.featurestores.entityTypes.operations:
+    supported_apis:
+    - v1alpha1
+    - v1beta1
+  projects.locations.featurestores.operations:
+    supported_apis:
+    - v1alpha1
+    - v1beta1
+  projects.locations.hyperparameterTuningJobs:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1beta1
+  projects.locations.hyperparameterTuningJobs.operations:
+    supported_apis:
+    - v1alpha1
+    - v1beta1
+  projects.locations.indexEndpoints:
+    supported_apis:
+    - v1alpha1
+    - v1beta1
+  projects.locations.indexEndpoints.operations:
+    supported_apis:
+    - v1alpha1
+    - v1beta1
+  projects.locations.indexes:
+    supported_apis:
+    - v1alpha1
+    - v1beta1
+  projects.locations.indexes.operations:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1beta1
+  projects.locations.metadataStores:
+    supported_apis:
+    - v1alpha1
+    - v1beta1
+  projects.locations.metadataStores.artifacts:
+    supported_apis:
+    - v1alpha1
+    - v1beta1
+  projects.locations.metadataStores.contexts:
+    supported_apis:
+    - v1alpha1
+    - v1beta1
+  projects.locations.metadataStores.executions:
+    supported_apis:
+    - v1alpha1
+    - v1beta1
+  projects.locations.metadataStores.metadataSchemas:
+    supported_apis:
+    - v1beta1
+  projects.locations.migratableResources:
+    supported_apis:
+    - v1alpha1
+    - v1beta1
+  projects.locations.migratableResources.operations:
+    supported_apis:
+    - v1alpha1
+    - v1beta1
+  projects.locations.modelDeploymentMonitoringJobs:
+    supported_apis:
+    - v1alpha1
+    - v1beta1
+  projects.locations.modelDeploymentMonitoringJobs.operations:
+    supported_apis:
+    - v1alpha1
+    - v1beta1
+  projects.locations.models:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1beta1
+  projects.locations.models.evaluations:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1beta1
+  projects.locations.models.evaluations.operations:
+    supported_apis:
+    - v1alpha1
+    - v1beta1
+  projects.locations.models.evaluations.slices:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1beta1
+  projects.locations.models.operations:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1beta1
+  projects.locations.operations:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1beta1
+  projects.locations.pipelineJobs:
+    supported_apis:
+    - v1alpha1
+    - v1beta1
+  projects.locations.pipelineJobs.operations:
+    supported_apis:
+    - v1alpha1
+    - v1beta1
+  projects.locations.specialistPools:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1beta1
+  projects.locations.specialistPools.operations:
+    supported_apis:
+    - v1alpha1
+    - v1beta1
+  projects.locations.studies:
+    supported_apis:
+    - v1alpha1
+    - v1beta1
+  projects.locations.studies.operations:
+    supported_apis:
+    - v1alpha1
+    - v1beta1
+  projects.locations.studies.trials:
+    supported_apis:
+    - v1alpha1
+    - v1beta1
+  projects.locations.studies.trials.operations:
+    supported_apis:
+    - v1alpha1
+    - v1beta1
+  projects.locations.tensorboards:
+    supported_apis:
+    - v1alpha1
+    - v1beta1
+  projects.locations.tensorboards.experiments:
+    supported_apis:
+    - v1alpha1
+    - v1beta1
+  projects.locations.tensorboards.experiments.operations:
+    supported_apis:
+    - v1alpha1
+    - v1beta1
+  projects.locations.tensorboards.experiments.runs:
+    supported_apis:
+    - v1alpha1
+    - v1beta1
+  projects.locations.tensorboards.experiments.runs.operations:
+    supported_apis:
+    - v1alpha1
+    - v1beta1
+  projects.locations.tensorboards.experiments.runs.timeSeries:
+    supported_apis:
+    - v1alpha1
+    - v1beta1
+  projects.locations.tensorboards.experiments.runs.timeSeries.operations:
+    supported_apis:
+    - v1alpha1
+    - v1beta1
+  projects.locations.tensorboards.operations:
+    supported_apis:
+    - v1alpha1
+    - v1beta1
+  projects.locations.trainingPipelines:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1beta1
+  projects.locations.trainingPipelines.operations:
+    supported_apis:
+    - v1alpha1
+    - v1beta1
+alloydb:
+  projects:
+    supported_apis:
+    - v1alpha1
+  projects.locations:
+    supported_apis:
+    - v1alpha1
+  projects.locations.clusters:
+    supported_apis:
+    - v1alpha1
+  projects.locations.clusters.backups:
+    supported_apis:
+    - v1alpha1
+  projects.locations.clusters.instances:
+    supported_apis:
+    - v1alpha1
+  projects.locations.clusters.users:
+    supported_apis:
+    - v1alpha1
+  projects.locations.operations:
+    supported_apis:
+    - v1alpha1
 anthosevents:
-  ApiV1Namespaces: {}
-  ApiV1NamespacesConfigmaps: {}
-  ApiV1NamespacesSecrets: {}
-  ApiV1NamespacesServiceaccounts: {}
-  Customresourcedefinitions: {}
-  Kuberuns: {}
-  Namespaces: {}
-  NamespacesApiserversources: {}
-  NamespacesBrokers: {}
-  NamespacesCloudauditlogssources: {}
-  NamespacesCloudpubsubsources: {}
-  NamespacesCloudruns: {}
-  NamespacesCloudschedulersources: {}
-  NamespacesCloudstoragesources: {}
-  NamespacesCustomresourcedefinitions: {}
-  NamespacesPingsources: {}
-  NamespacesTriggers: {}
-  Projects: {}
-  ProjectsLocations: {}
-  ProjectsLocationsConfigmaps: {}
-  ProjectsLocationsNamespaces: {}
-  ProjectsLocationsSecrets: {}
-  ProjectsLocationsServiceaccounts: {}
+  api.v1.namespaces:
+    supported_apis:
+    - v1
+  api.v1.namespaces.configmaps:
+    supported_apis:
+    - v1
+  api.v1.namespaces.secrets:
+    supported_apis:
+    - v1
+  api.v1.namespaces.serviceaccounts:
+    supported_apis:
+    - v1
+  customresourcedefinitions:
+    supported_apis:
+    - v1
+  kuberuns:
+    supported_apis:
+    - v1alpha1
+  namespaces:
+    supported_apis:
+    - v1alpha1
+    - v1beta1
+  namespaces.apiserversources:
+    supported_apis:
+    - v1beta1
+  namespaces.brokers:
+    supported_apis:
+    - v1
+    - v1beta1
+  namespaces.cloudauditlogssources:
+    supported_apis:
+    - v1
+    - v1beta1
+  namespaces.cloudpubsubsources:
+    supported_apis:
+    - v1
+    - v1beta1
+  namespaces.cloudruns:
+    supported_apis:
+    - v1alpha1
+  namespaces.cloudschedulersources:
+    supported_apis:
+    - v1
+    - v1beta1
+  namespaces.cloudstoragesources:
+    supported_apis:
+    - v1
+    - v1beta1
+  namespaces.customresourcedefinitions:
+    supported_apis:
+    - v1beta1
+  namespaces.pingsources:
+    supported_apis:
+    - v1beta1
+  namespaces.triggers:
+    supported_apis:
+    - v1
+    - v1beta1
+  projects:
+    supported_apis:
+    - v1
+  projects.locations:
+    supported_apis:
+    - v1
+  projects.locations.configmaps:
+    supported_apis:
+    - v1
+  projects.locations.namespaces:
+    supported_apis:
+    - v1
+  projects.locations.secrets:
+    supported_apis:
+    - v1
+  projects.locations.serviceaccounts:
+    supported_apis:
+    - v1
 apigateway:
-  Projects: {}
-  ProjectsLocations: {}
-  ProjectsLocationsApis: {}
-  ProjectsLocationsApisConfigs: {}
-  ProjectsLocationsGateways: {}
-  ProjectsLocationsOperations: {}
+  projects:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1beta
+  projects.locations:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1beta
+  projects.locations.apis:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1beta
+  projects.locations.apis.configs:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1beta
+  projects.locations.gateways:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1beta
+  projects.locations.operations:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1beta
 apigee:
-  Organizations: {}
-  OrganizationsAnalyticsDatastores: {}
-  OrganizationsApiproducts: {}
-  OrganizationsApiproductsAttributes: {}
-  OrganizationsApiproductsRateplans: {}
-  OrganizationsApis: {}
-  OrganizationsApisRevisions: {}
-  OrganizationsApps: {}
-  OrganizationsDatacollectors: {}
-  OrganizationsDevelopers: {}
-  OrganizationsDevelopersApps: {}
-  OrganizationsDevelopersAppsAttributes: {}
-  OrganizationsDevelopersAppsKeys: {}
-  OrganizationsDevelopersAttributes: {}
-  OrganizationsDevelopersSubscriptions: {}
-  OrganizationsEnvgroups: {}
-  OrganizationsEnvgroupsAttachments: {}
-  OrganizationsEnvironments: {}
-  OrganizationsEnvironmentsAnalyticsExports: {}
-  OrganizationsEnvironmentsApis: {}
-  OrganizationsEnvironmentsApisRevisions: {}
-  OrganizationsEnvironmentsApisRevisionsDebugsessions: {}
-  OrganizationsEnvironmentsApisRevisionsDebugsessionsData: {}
-  OrganizationsEnvironmentsArchivedeployments: {}
-  OrganizationsEnvironmentsFlowhooks: {}
-  OrganizationsEnvironmentsKeystores: {}
-  OrganizationsEnvironmentsKeystoresAliases: {}
-  OrganizationsEnvironmentsOptimizedstats: {}
-  OrganizationsEnvironmentsQueries: {}
-  OrganizationsEnvironmentsReferences: {}
-  OrganizationsEnvironmentsResourcefiles: {}
-  OrganizationsEnvironmentsStats: {}
-  OrganizationsEnvironmentsTargetservers: {}
-  OrganizationsEnvironmentsTraceconfigOverrides: {}
-  OrganizationsHostqueries: {}
-  OrganizationsHoststats: {}
-  OrganizationsInstances: {}
-  OrganizationsInstancesAttachments: {}
-  OrganizationsInstancesCanaryevaluations: {}
-  OrganizationsInstancesNataddresses: {}
-  OrganizationsOperations: {}
-  OrganizationsOptimizedhoststats: {}
-  OrganizationsReports: {}
-  OrganizationsSharedflows: {}
-  OrganizationsSharedflowsRevisions: {}
-  OrganizationsSites: {}
-  OrganizationsSitesApicategories: {}
+  organizations:
+    supported_apis:
+    - v1
+  organizations.analytics.datastores:
+    supported_apis:
+    - v1
+  organizations.apiproducts:
+    supported_apis:
+    - v1
+  organizations.apiproducts.attributes:
+    supported_apis:
+    - v1
+  organizations.apiproducts.rateplans:
+    supported_apis:
+    - v1
+  organizations.apis:
+    supported_apis:
+    - v1
+  organizations.apis.revisions:
+    supported_apis:
+    - v1
+  organizations.apps:
+    supported_apis:
+    - v1
+  organizations.datacollectors:
+    supported_apis:
+    - v1
+  organizations.developers:
+    supported_apis:
+    - v1
+  organizations.developers.apps:
+    supported_apis:
+    - v1
+  organizations.developers.apps.attributes:
+    supported_apis:
+    - v1
+  organizations.developers.apps.keys:
+    supported_apis:
+    - v1
+  organizations.developers.attributes:
+    supported_apis:
+    - v1
+  organizations.developers.subscriptions:
+    supported_apis:
+    - v1
+  organizations.envgroups:
+    supported_apis:
+    - v1
+  organizations.envgroups.attachments:
+    supported_apis:
+    - v1
+  organizations.environments:
+    supported_apis:
+    - v1
+  organizations.environments.analytics.exports:
+    supported_apis:
+    - v1
+  organizations.environments.apis:
+    supported_apis:
+    - v1
+  organizations.environments.apis.revisions:
+    supported_apis:
+    - v1
+  organizations.environments.apis.revisions.debugsessions:
+    supported_apis:
+    - v1
+  organizations.environments.apis.revisions.debugsessions.data:
+    supported_apis:
+    - v1
+  organizations.environments.archiveDeployments:
+    supported_apis:
+    - v1
+  organizations.environments.flowhooks:
+    supported_apis:
+    - v1
+  organizations.environments.keystores:
+    supported_apis:
+    - v1
+  organizations.environments.keystores.aliases:
+    supported_apis:
+    - v1
+  organizations.environments.optimizedStats:
+    supported_apis:
+    - v1
+  organizations.environments.queries:
+    supported_apis:
+    - v1
+  organizations.environments.references:
+    supported_apis:
+    - v1
+  organizations.environments.resourcefiles:
+    supported_apis:
+    - v1
+  organizations.environments.stats:
+    supported_apis:
+    - v1
+  organizations.environments.targetservers:
+    supported_apis:
+    - v1
+  organizations.environments.traceConfig.overrides:
+    supported_apis:
+    - v1
+  organizations.hostQueries:
+    supported_apis:
+    - v1
+  organizations.hostStats:
+    supported_apis:
+    - v1
+  organizations.instances:
+    supported_apis:
+    - v1
+  organizations.instances.attachments:
+    supported_apis:
+    - v1
+  organizations.instances.canaryevaluations:
+    supported_apis:
+    - v1
+  organizations.instances.natAddresses:
+    supported_apis:
+    - v1
+  organizations.operations:
+    supported_apis:
+    - v1
+  organizations.optimizedHostStats:
+    supported_apis:
+    - v1
+  organizations.reports:
+    supported_apis:
+    - v1
+  organizations.sharedflows:
+    supported_apis:
+    - v1
+  organizations.sharedflows.revisions:
+    supported_apis:
+    - v1
+  organizations.sites:
+    supported_apis:
+    - v1
+  organizations.sites.apicategories:
+    supported_apis:
+    - v1
 apikeys:
-  Operations: {}
-  Projects: {}
-  ProjectsKeys: {}
+  operations:
+    supported_apis:
+    - v2
+    - v2alpha1
+  projects:
+    supported_apis:
+    - v2
+    - v2alpha1
+  projects.keys:
+    supported_apis:
+    - v2alpha1
+  projects.locations:
+    supported_apis:
+    - v2
+  projects.locations.keys:
+    supported_apis:
+    - v2
 appengine:
-  Apps: {}
-  AppsAuthorizedcertificates: {}
-  AppsDomainmappings: {}
-  AppsFirewallIngressrules: {}
-  AppsLocations: {}
-  AppsOperations: {}
-  AppsServices: {}
-  AppsServicesVersions: {}
-  AppsServicesVersionsInstances: {}
-  Projects: {}
+  apps:
+    supported_apis:
+    - v1
+    - v1alpha
+    - v1beta
+  apps.authorizedCertificates:
+    supported_apis:
+    - v1
+    - v1alpha
+    - v1beta
+  apps.domainMappings:
+    supported_apis:
+    - v1
+    - v1alpha
+    - v1beta
+  apps.firewall.ingressRules:
+    supported_apis:
+    - v1
+    - v1beta
+  apps.locations:
+    supported_apis:
+    - v1
+    - v1alpha
+    - v1beta
+  apps.operations:
+    supported_apis:
+    - v1
+    - v1alpha
+    - v1beta
+  apps.services:
+    supported_apis:
+    - v1
+    - v1beta
+  apps.services.versions:
+    supported_apis:
+    - v1
+    - v1beta
+  apps.services.versions.instances:
+    supported_apis:
+    - v1
+    - v1beta
+  projects:
+    supported_apis:
+    - v1
 artifactregistry:
-  Projects: {}
-  ProjectsLocations: {}
-  ProjectsLocationsOperations: {}
-  ProjectsLocationsRepositories:
+  projects:
+    supported_apis:
+    - v1alpha1
+    - v1beta1
+    - v1beta2
+  projects.locations:
+    supported_apis:
+    - v1alpha1
+    - v1beta1
+    - v1beta2
+  projects.locations.operations:
+    supported_apis:
+    - v1alpha1
+    - v1beta1
+    - v1beta2
+  projects.locations.repositories:
     asset_inventory_type: artifactregistry.googleapis.com/Repository
     krm_group: artifactregistry
     krm_kind: ArtifactRegistryRepository
     support_bulk_export: true
     support_single_export: true
-  ProjectsLocationsRepositoriesFiles: {}
-  ProjectsLocationsRepositoriesPackages: {}
-  ProjectsLocationsRepositoriesPackagesTags: {}
-  ProjectsLocationsRepositoriesPackagesVersions: {}
+    supported_apis:
+    - v1beta1
+    - v1beta2
+  projects.locations.repositories.files:
+    supported_apis:
+    - v1beta1
+    - v1beta2
+  projects.locations.repositories.packages:
+    supported_apis:
+    - v1beta1
+    - v1beta2
+  projects.locations.repositories.packages.tags:
+    supported_apis:
+    - v1beta1
+    - v1beta2
+  projects.locations.repositories.packages.versions:
+    supported_apis:
+    - v1beta1
+    - v1beta2
 assuredworkloads:
-  Organizations: {}
-  OrganizationsLocations: {}
-  OrganizationsLocationsOperations: {}
-  OrganizationsLocationsWorkloads: {}
+  organizations:
+    supported_apis:
+    - v1
+    - v1beta1
+  organizations.locations:
+    supported_apis:
+    - v1
+    - v1beta1
+  organizations.locations.operations:
+    supported_apis:
+    - v1
+    - v1beta1
+  organizations.locations.workloads:
+    supported_apis:
+    - v1
+    - v1beta1
 bigquery:
-  Datasets:
+  datasets:
     asset_inventory_type: bigquery.googleapis.com/Dataset
     krm_group: bigquery
     krm_kind: BigQueryDataset
     support_bulk_export: true
     support_single_export: true
-  Jobs:
+    supported_apis:
+    - v2
+  jobs:
     asset_inventory_type: bigquery.googleapis.com/Job
     krm_group: bigquery
     krm_kind: BigQueryJob
     support_bulk_export: true
     support_single_export: true
-  Projects: {}
-  Tabledata: {}
-  Tables:
+    supported_apis:
+    - v2
+  projects:
+    supported_apis:
+    - v2
+  tabledata:
+    supported_apis:
+    - v2
+  tables:
     asset_inventory_type: bigquery.googleapis.com/Table
     krm_group: bigquery
     krm_kind: BigQueryTable
     support_bulk_export: true
     support_single_export: true
+    supported_apis:
+    - v2
 bigquerydatatransfer:
-  Projects: {}
-  ProjectsDatasources: {}
-  ProjectsLocations: {}
-  ProjectsLocationsDatasources: {}
-  ProjectsLocationsTransferconfigs: {}
-  ProjectsLocationsTransferconfigsRuns: {}
-  ProjectsTransferconfigs: {}
-  ProjectsTransferconfigsRuns: {}
+  projects:
+    supported_apis:
+    - v1
+  projects.dataSources:
+    supported_apis:
+    - v1
+  projects.locations:
+    supported_apis:
+    - v1
+  projects.locations.dataSources:
+    supported_apis:
+    - v1
+  projects.locations.transferConfigs:
+    supported_apis:
+    - v1
+  projects.locations.transferConfigs.runs:
+    supported_apis:
+    - v1
+  projects.transferConfigs:
+    supported_apis:
+    - v1
+  projects.transferConfigs.runs:
+    supported_apis:
+    - v1
 bigtableadmin:
-  Operations: {}
-  Projects: {}
-  ProjectsInstances:
+  operations:
+    supported_apis:
+    - v2
+  projects:
+    supported_apis:
+    - v2
+  projects.instances:
     asset_inventory_type: bigtableadmin.googleapis.com/Instance
     krm_group: bigtable
     krm_kind: BigtableInstance
     support_bulk_export: true
     support_single_export: true
-  ProjectsInstancesAppprofiles:
-    asset_inventory_type: bigtableadmin.googleapis.com/Appprofile
+    supported_apis:
+    - v2
+  projects.instances.appProfiles:
+    asset_inventory_type: bigtableadmin.googleapis.com/AppProfile
     krm_group: bigtable
     krm_kind: BigtableAppProfile
     support_bulk_export: true
     support_single_export: true
-  ProjectsInstancesClusters: {}
-  ProjectsInstancesClustersBackups: {}
-  ProjectsInstancesTables:
+    supported_apis:
+    - v2
+  projects.instances.clusters:
+    supported_apis:
+    - v2
+  projects.instances.clusters.backups:
+    supported_apis:
+    - v2
+  projects.instances.tables:
     asset_inventory_type: bigtableadmin.googleapis.com/Table
     krm_group: bigtable
     krm_kind: BigtableTable
     support_bulk_export: true
     support_single_export: true
-  ProjectsLocations: {}
+    supported_apis:
+    - v2
+  projects.locations:
+    supported_apis:
+    - v2
 billingbudgets:
-  Billingaccounts: {}
-  BillingaccountsBudgets: {}
+  billingAccounts:
+    supported_apis:
+    - v1
+    - v1beta1
+  billingAccounts.budgets:
+    supported_apis:
+    - v1
+    - v1beta1
 binaryauthorization:
-  Projects: {}
-  ProjectsAttestors: {}
-  ProjectsPolicy: {}
-  Systempolicy: {}
+  projects:
+    supported_apis:
+    - v1
+    - v1alpha2
+    - v1beta1
+  projects.attestors:
+    supported_apis:
+    - v1
+    - v1alpha2
+    - v1beta1
+  projects.policy:
+    supported_apis:
+    - v1
+    - v1alpha2
+    - v1beta1
+  systempolicy:
+    supported_apis:
+    - v1
+    - v1alpha2
+    - v1beta1
 certificatemanager:
-  Projects: {}
-  ProjectsLocations: {}
-  ProjectsLocationsCertificatemaps: {}
-  ProjectsLocationsCertificatemapsCertificatemapentries: {}
-  ProjectsLocationsCertificates: {}
-  ProjectsLocationsDnsauthorizations: {}
-  ProjectsLocationsOperations: {}
+  projects:
+    supported_apis:
+    - v1alpha1
+    - v1alpha2
+  projects.locations:
+    supported_apis:
+    - v1alpha1
+    - v1alpha2
+  projects.locations.certificateMaps:
+    supported_apis:
+    - v1alpha1
+    - v1alpha2
+  projects.locations.certificateMaps.certificateMapEntries:
+    supported_apis:
+    - v1alpha1
+    - v1alpha2
+  projects.locations.certificates:
+    supported_apis:
+    - v1alpha1
+    - v1alpha2
+  projects.locations.dnsAuthorizations:
+    supported_apis:
+    - v1alpha2
+  projects.locations.operations:
+    supported_apis:
+    - v1alpha1
+    - v1alpha2
 cloudasset:
-  Feeds: {}
-  Iampolicies: {}
-  Operations: {}
-  Resources: {}
+  feeds:
+    supported_apis:
+    - v1
+    - v1p2beta1
+  iamPolicies:
+    supported_apis:
+    - v1p1beta1
+  operations:
+    supported_apis:
+    - v1
+  resources:
+    supported_apis:
+    - v1p1beta1
 cloudbilling:
-  Billingaccounts: {}
-  Projects: {}
+  billingAccounts:
+    supported_apis:
+    - v1
+  projects:
+    supported_apis:
+    - v1
 cloudbuild:
-  Operations: {}
-  Projects: {}
-  ProjectsBuilds: {}
-  ProjectsGithubenterpriseconfigs: {}
-  ProjectsLocations: {}
-  ProjectsLocationsBitbucketserverconfigs: {}
-  ProjectsLocationsBuilds: {}
-  ProjectsLocationsGithubenterpriseconfigs: {}
-  ProjectsLocationsOperations: {}
-  ProjectsLocationsWorkerpools: {}
-  ProjectsTriggers:
+  operations:
+    supported_apis:
+    - v1
+  projects:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1alpha2
+    - v1beta1
+  projects.builds:
+    supported_apis:
+    - v1
+  projects.githubEnterpriseConfigs:
+    supported_apis:
+    - v1
+  projects.locations:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1alpha2
+    - v1beta1
+  projects.locations.bitbucketServerConfigs:
+    supported_apis:
+    - v1
+  projects.locations.builds:
+    supported_apis:
+    - v1
+  projects.locations.githubEnterpriseConfigs:
+    supported_apis:
+    - v1
+  projects.locations.operations:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1alpha2
+    - v1beta1
+  projects.locations.triggers:
+    supported_apis:
+    - v1
+  projects.locations.workerPools:
+    supported_apis:
+    - v1
+    - v1beta1
+  projects.triggers:
     asset_inventory_type: cloudbuild.googleapis.com/Trigger
     krm_group: cloudbuild
     krm_kind: CloudBuildTrigger
     support_bulk_export: true
     support_single_export: false
-  ProjectsWorkerpools: {}
+    supported_apis:
+    - v1
+  projects.workerPools:
+    supported_apis:
+    - v1alpha1
+    - v1alpha2
 cloudcommerceconsumerprocurement:
-  Billingaccounts: {}
-  BillingaccountsAccounts: {}
-  BillingaccountsAccountsOperations: {}
-  BillingaccountsOrders: {}
-  BillingaccountsOrdersOperations: {}
-  BillingaccountsOrdersOrderallocations: {}
-  BillingaccountsOrdersOrderallocationsOperations: {}
-  Projects: {}
-  ProjectsEntitlements: {}
-  ProjectsFreetrials: {}
-  ProjectsFreetrialsOperations: {}
+  billingAccounts:
+    supported_apis:
+    - v1alpha1
+  billingAccounts.accounts:
+    supported_apis:
+    - v1alpha1
+  billingAccounts.accounts.operations:
+    supported_apis:
+    - v1alpha1
+  billingAccounts.orders:
+    supported_apis:
+    - v1alpha1
+  billingAccounts.orders.operations:
+    supported_apis:
+    - v1alpha1
+  billingAccounts.orders.orderAllocations:
+    supported_apis:
+    - v1alpha1
+  billingAccounts.orders.orderAllocations.operations:
+    supported_apis:
+    - v1alpha1
+  projects:
+    supported_apis:
+    - v1alpha1
+  projects.entitlements:
+    supported_apis:
+    - v1alpha1
+  projects.freeTrials:
+    supported_apis:
+    - v1alpha1
+  projects.freeTrials.operations:
+    supported_apis:
+    - v1alpha1
 clouddebugger:
-  DebuggerDebuggees: {}
-  DebuggerDebuggeesBreakpoints: {}
+  debugger.debuggees:
+    supported_apis:
+    - v2
+  debugger.debuggees.breakpoints:
+    supported_apis:
+    - v2
 clouddeploy:
-  Projects: {}
-  ProjectsDeliverypipelines: {}
-  ProjectsDeliverypipelinesReleases: {}
-  ProjectsDeliverypipelinesReleasesDeliverypipelines: {}
-  ProjectsDeliverypipelinesReleasesTargets: {}
-  ProjectsLocations: {}
-  ProjectsLocationsDeliverypipelines: {}
-  ProjectsLocationsDeliverypipelinesReleases: {}
-  ProjectsLocationsDeliverypipelinesReleasesRollouts: {}
-  ProjectsLocationsDeliverypipelinesTargets: {}
-  ProjectsLocationsOperations: {}
+  projects:
+    supported_apis:
+    - v1
+  projects.locations:
+    supported_apis:
+    - v1
+  projects.locations.deliveryPipelines:
+    supported_apis:
+    - v1
+  projects.locations.deliveryPipelines.releases:
+    supported_apis:
+    - v1
+  projects.locations.deliveryPipelines.releases.rollouts:
+    supported_apis:
+    - v1
+  projects.locations.deliveryPipelines.targets:
+    supported_apis:
+    - v1
+  projects.locations.operations:
+    supported_apis:
+    - v1
+  projects.locations.targets:
+    supported_apis:
+    - v1
 clouderrorreporting:
-  Projects: {}
-  ProjectsGroups: {}
+  projects:
+    supported_apis:
+    - v1beta1
+  projects.groups:
+    supported_apis:
+    - v1beta1
 cloudfunctions:
-  Operations: {}
-  Projects: {}
-  ProjectsBuckets: {}
-  ProjectsLocations: {}
-  ProjectsLocationsFunctions: {}
-  ProjectsLocationsOperations: {}
-  ProvidersEvent_types: {}
+  operations:
+    supported_apis:
+    - v1
+  projects:
+    supported_apis:
+    - v1
+    - v2alpha
+  projects.buckets:
+    supported_apis:
+    - v1
+  projects.locations:
+    supported_apis:
+    - v1
+    - v2alpha
+  projects.locations.functions:
+    supported_apis:
+    - v1
+    - v2alpha
+  projects.locations.operations:
+    supported_apis:
+    - v2alpha
+  providers.event_types:
+    supported_apis:
+    - v1
 cloudidentity:
-  Customers: {}
-  CustomersUserinvitations: {}
-  Devices: {}
-  DevicesDeviceusers: {}
-  DevicesDeviceusersClientstates: {}
-  Groups: {}
-  GroupsMemberships: {}
+  customers:
+    supported_apis:
+    - v1beta1
+  customers.userinvitations:
+    supported_apis:
+    - v1beta1
+  devices:
+    supported_apis:
+    - v1
+    - v1beta1
+  devices.deviceUsers:
+    supported_apis:
+    - v1
+    - v1beta1
+  devices.deviceUsers.clientStates:
+    supported_apis:
+    - v1
+    - v1beta1
+  groups:
+    asset_inventory_type: cloudidentity.googleapis.com/Group
+    krm_group: cloudidentity
+    krm_kind: CloudIdentityGroup
+    support_bulk_export: true
+    support_single_export: false
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1beta1
+  groups.memberships:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1beta1
 cloudiot:
-  Projects: {}
-  ProjectsLocations: {}
-  ProjectsLocationsRegistries: {}
-  ProjectsLocationsRegistriesDevices: {}
-  ProjectsLocationsRegistriesDevicesConfigversions: {}
-  ProjectsLocationsRegistriesDevicesStates: {}
+  projects:
+    supported_apis:
+    - v1
+  projects.locations:
+    supported_apis:
+    - v1
+  projects.locations.registries:
+    supported_apis:
+    - v1
+  projects.locations.registries.devices:
+    supported_apis:
+    - v1
+  projects.locations.registries.devices.configVersions:
+    supported_apis:
+    - v1
+  projects.locations.registries.devices.states:
+    supported_apis:
+    - v1
 cloudkms:
-  Projects: {}
-  ProjectsLocations: {}
-  ProjectsLocationsKeyrings:
-    asset_inventory_type: cloudkms.googleapis.com/Keyring
+  projects:
+    supported_apis:
+    - v1
+  projects.locations:
+    supported_apis:
+    - v1
+  projects.locations.keyRings:
+    asset_inventory_type: cloudkms.googleapis.com/KeyRing
     krm_group: kms
     krm_kind: KMSKeyRing
     support_bulk_export: true
     support_single_export: true
-  ProjectsLocationsKeyringsCryptokeys:
-    asset_inventory_type: cloudkms.googleapis.com/Cryptokey
+    supported_apis:
+    - v1
+  projects.locations.keyRings.cryptoKeys:
+    asset_inventory_type: cloudkms.googleapis.com/CryptoKey
     krm_group: kms
     krm_kind: KMSCryptoKey
     support_bulk_export: true
     support_single_export: false
-  ProjectsLocationsKeyringsCryptokeysCryptokeyversions: {}
-  ProjectsLocationsKeyringsImportjobs: {}
+    supported_apis:
+    - v1
+  projects.locations.keyRings.cryptoKeys.cryptoKeyVersions:
+    supported_apis:
+    - v1
+  projects.locations.keyRings.importJobs:
+    supported_apis:
+    - v1
 cloudresourcemanager:
-  Folders: {}
-  Liens:
+  folders:
+    asset_inventory_type: cloudresourcemanager.googleapis.com/Folder
+    krm_group: resourcemanager
+    krm_kind: Folder
+    support_bulk_export: true
+    support_single_export: true
+    supported_apis:
+    - v2
+    - v2alpha1
+    - v2beta1
+    - v3
+  liens:
     asset_inventory_type: cloudresourcemanager.googleapis.com/Lien
     krm_group: resourcemanager
     krm_kind: ResourceManagerLien
     support_bulk_export: true
     support_single_export: false
-  Operations: {}
-  Organizations: {}
-  Projects: {}
-  Tagkeys: {}
-  Tagvalues: {}
+    supported_apis:
+    - v1
+    - v3
+  operations:
+    supported_apis:
+    - v1
+    - v3
+  organizations:
+    supported_apis:
+    - v1
+    - v1beta1
+    - v3
+  projects:
+    asset_inventory_type: cloudresourcemanager.googleapis.com/Project
+    krm_group: resourcemanager
+    krm_kind: Project
+    support_bulk_export: true
+    support_single_export: true
+    supported_apis:
+    - v1
+    - v1beta1
+    - v3
+  tagKeys:
+    supported_apis:
+    - v3
+  tagValues:
+    supported_apis:
+    - v3
 cloudscheduler:
-  Projects: {}
-  ProjectsLocations: {}
-  ProjectsLocationsJobs: {}
+  projects:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1beta1
+  projects.locations:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1beta1
+  projects.locations.jobs:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1beta1
 cloudshell:
-  Operations: {}
-  Users: {}
-  UsersEnvironments: {}
+  operations:
+    supported_apis:
+    - v1
+  users:
+    supported_apis:
+    - v1
+    - v1alpha1
+  users.environments:
+    supported_apis:
+    - v1
+    - v1alpha1
 cloudtasks:
-  Projects: {}
-  ProjectsLocations: {}
-  ProjectsLocationsQueues: {}
-  ProjectsLocationsQueuesTasks: {}
+  projects:
+    supported_apis:
+    - v2
+    - v2beta2
+    - v2beta3
+  projects.locations:
+    supported_apis:
+    - v2
+    - v2beta2
+    - v2beta3
+  projects.locations.queues:
+    supported_apis:
+    - v2
+    - v2beta2
+    - v2beta3
+  projects.locations.queues.tasks:
+    supported_apis:
+    - v2
+    - v2beta2
+    - v2beta3
 cloudtrace:
-  Projects: {}
-  ProjectsTracesinks: {}
+  projects:
+    supported_apis:
+    - v2beta1
+  projects.traceSinks:
+    supported_apis:
+    - v2beta1
 composer:
-  Projects: {}
-  ProjectsLocations: {}
-  ProjectsLocationsEnvironments: {}
-  ProjectsLocationsOperations: {}
+  projects:
+    supported_apis:
+    - v1
+    - v1alpha2
+    - v1beta1
+  projects.locations:
+    supported_apis:
+    - v1
+    - v1alpha2
+    - v1beta1
+  projects.locations.environments:
+    supported_apis:
+    - v1
+    - v1alpha2
+    - v1beta1
+  projects.locations.operations:
+    supported_apis:
+    - v1
+    - v1alpha2
+    - v1beta1
 composerflex:
-  Projects: {}
-  ProjectsLocations: {}
-  ProjectsLocationsContexts: {}
-  ProjectsLocationsWorkflows: {}
-  ProjectsLocationsWorkflowsRuns: {}
+  projects:
+    supported_apis:
+    - v1alpha1
+  projects.locations:
+    supported_apis:
+    - v1alpha1
+  projects.locations.contexts:
+    supported_apis:
+    - v1alpha1
+  projects.locations.workflows:
+    supported_apis:
+    - v1alpha1
+  projects.locations.workflows.runs:
+    supported_apis:
+    - v1alpha1
 compute:
-  Acceleratortypes: {}
-  Addresses:
+  acceleratorTypes:
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  addresses:
     asset_inventory_type: compute.googleapis.com/Address
     krm_group: compute
     krm_kind: ComputeAddress
+    enable_single_resource_autogen: true
+    home_directory: compute.addresses
     support_bulk_export: true
     support_single_export: true
-  Autoscalers: {}
-  Backendbuckets:
-    asset_inventory_type: compute.googleapis.com/Backendbucket
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  autoscalers:
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  backendBuckets:
+    asset_inventory_type: compute.googleapis.com/BackendBucket
     krm_group: compute
     krm_kind: ComputeBackendBucket
     support_bulk_export: true
     support_single_export: true
-  Backendservices:
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  backendServices:
     asset_inventory_type: compute.googleapis.com/BackendService
     krm_group: compute
     krm_kind: ComputeBackendService
     support_bulk_export: true
     support_single_export: true
-  Disks:
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  diskTypes:
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  disks:
     asset_inventory_type: compute.googleapis.com/Disk
     krm_group: compute
     krm_kind: ComputeDisk
     support_bulk_export: true
     support_single_export: true
-  Disktypes: {}
-  Externalvpngateways:
-    asset_inventory_type: compute.googleapis.com/Externalvpngateway
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  externalVpnGateways:
+    asset_inventory_type: compute.googleapis.com/ExternalVPNGateway
     krm_group: compute
     krm_kind: ComputeExternalVPNGateway
     support_bulk_export: true
     support_single_export: true
-  Firewallpolicies: {}
-  Firewalls:
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  firewallPolicies:
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  firewalls:
     asset_inventory_type: compute.googleapis.com/Firewall
     krm_group: compute
     krm_kind: ComputeFirewall
+    enable_single_resource_autogen: true
+    home_directory: compute.firewall_rules
     support_bulk_export: true
     support_single_export: true
-  Forwardingrules:
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  forwardingRules:
     asset_inventory_type: compute.googleapis.com/ForwardingRule
     krm_group: compute
     krm_kind: ComputeForwardingRule
     support_bulk_export: true
     support_single_export: true
-  Globaladdresses: {}
-  Globalforwardingrules: {}
-  Globalnetworkendpointgroups: {}
-  Globaloperations: {}
-  Globalorganizationoperations: {}
-  Globalpublicdelegatedprefixes: {}
-  Healthchecks:
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  futureReservations:
+    supported_apis:
+    - alpha
+  globalAddresses:
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  globalForwardingRules:
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  globalNetworkEndpointGroups:
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  globalOperations:
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  globalOrganizationOperations:
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  globalPublicDelegatedPrefixes:
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  healthChecks:
     asset_inventory_type: compute.googleapis.com/HealthCheck
     krm_group: compute
     krm_kind: ComputeHealthCheck
     support_bulk_export: true
     support_single_export: true
-  Httphealthchecks:
-    asset_inventory_type: compute.googleapis.com/HttpHealthCheck
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  httpHealthChecks:
+    asset_inventory_type: compute.googleapis.com/HTTPHealthCheck
     krm_group: compute
     krm_kind: ComputeHTTPHealthCheck
     support_bulk_export: true
     support_single_export: true
-  Httpshealthchecks:
-    asset_inventory_type: compute.googleapis.com/HttpsHealthCheck
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  httpsHealthChecks:
+    asset_inventory_type: compute.googleapis.com/HTTPSHealthCheck
     krm_group: compute
     krm_kind: ComputeHTTPSHealthCheck
     support_bulk_export: true
     support_single_export: true
-  Imagefamilyviews: {}
-  Images:
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  imageFamilyViews:
+    supported_apis:
+    - alpha
+    - beta
+  images:
     asset_inventory_type: compute.googleapis.com/Image
     krm_group: compute
     krm_kind: ComputeImage
     support_bulk_export: true
     support_single_export: true
-  Instancegroupmanagers: {}
-  Instancegroups:
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  instanceGroupManagers:
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  instanceGroups:
     asset_inventory_type: compute.googleapis.com/InstanceGroup
     krm_group: compute
     krm_kind: ComputeInstanceGroup
     support_bulk_export: true
     support_single_export: true
-  Instances:
-    asset_inventory_type: compute.googleapis.com/Instance
-    krm_group: compute
-    krm_kind: ComputeInstance
-    support_bulk_export: true
-    support_single_export: true
-  Instancetemplates:
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  instanceTemplates:
     asset_inventory_type: compute.googleapis.com/InstanceTemplate
     krm_group: compute
     krm_kind: ComputeInstanceTemplate
     support_bulk_export: true
     support_single_export: true
-  Interconnectattachments:
-    asset_inventory_type: compute.googleapis.com/Interconnectattachment
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  instances:
+    asset_inventory_type: compute.googleapis.com/Instance
+    krm_group: compute
+    krm_kind: ComputeInstance
+    enable_single_resource_autogen: true
+    resource_spec: compute.resources:instance
+    home_directory: compute.instances
+    support_bulk_export: true
+    support_single_export: true
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  interconnectAttachments:
+    asset_inventory_type: compute.googleapis.com/InterconnectAttachment
     krm_group: compute
     krm_kind: ComputeInterconnectAttachment
     support_bulk_export: true
     support_single_export: true
-  Interconnectlocations: {}
-  Interconnects: {}
-  Licensecodes: {}
-  Licenses: {}
-  Machineimages: {}
-  Machinetypes: {}
-  Networkendpointgroups:
-    asset_inventory_type: compute.googleapis.com/Networkendpointgroup
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  interconnectLocations:
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  interconnects:
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  licenseCodes:
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  licenses:
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  machineImages:
+    supported_apis:
+    - alpha
+    - beta
+  machineTypes:
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  networkEdgeSecurityServices:
+    supported_apis:
+    - alpha
+  networkEndpointGroups:
+    asset_inventory_type: compute.googleapis.com/NetworkEndpointGroup
     krm_group: compute
     krm_kind: ComputeNetworkEndpointGroup
     support_bulk_export: true
     support_single_export: true
-  Networkfirewallpolicies: {}
-  Networks:
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  networkFirewallPolicies:
+    supported_apis:
+    - alpha
+  networks:
     asset_inventory_type: compute.googleapis.com/Network
     krm_group: compute
     krm_kind: ComputeNetwork
     support_bulk_export: true
     support_single_export: true
-  Nexthopgateways: {}
-  Nodegroups:
-    asset_inventory_type: compute.googleapis.com/Nodegroup
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  nextHopGateways:
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  nodeGroups:
+    asset_inventory_type: compute.googleapis.com/NodeGroup
     krm_group: compute
     krm_kind: ComputeNodeGroup
     support_bulk_export: true
     support_single_export: true
-  Nodetemplates:
-    asset_inventory_type: compute.googleapis.com/Nodetemplate
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  nodeTemplates:
+    asset_inventory_type: compute.googleapis.com/NodeTemplate
     krm_group: compute
     krm_kind: ComputeNodeTemplate
     support_bulk_export: true
     support_single_export: true
-  Nodetypes: {}
-  Organizationsecuritypolicies:
-    asset_inventory_type: compute.googleapis.com/Securitypolicy
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  nodeTypes:
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  organizationSecurityPolicies:
+    supported_apis:
+    - alpha
+    - beta
+  packetMirrorings:
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  projects:
+    asset_inventory_type: compute.googleapis.com/SharedVPCServiceProject
     krm_group: compute
-    krm_kind: ComputeSecurityPolicy
+    krm_kind: ComputeSharedVPCServiceProject
     support_bulk_export: true
-    support_single_export: true
-  Packetmirrorings: {}
-  Projects: {}
-  Publicadvertisedprefixes: {}
-  Publicdelegatedprefixes: {}
-  Regionacceleratortypes: {}
-  Regionautoscalers: {}
-  Regionbackendservices: {}
-  Regioncommitments: {}
-  Regiondisks: {}
-  Regiondisktypes: {}
-  Regionhealthchecks: {}
-  Regionhealthcheckservices: {}
-  Regioninplacesnapshots: {}
-  Regioninstancegroupmanagers: {}
-  Regioninstancegroups: {}
-  Regioninstantsnapshots: {}
-  Regionmachinetypes: {}
-  Regionnetworkendpointgroups: {}
-  Regionnetworkfirewallpolicies: {}
-  Regionnotificationendpoints: {}
-  Regionoperations: {}
-  Regions: {}
-  Regionsslcertificates: {}
-  Regiontargethttpproxies: {}
-  Regiontargethttpsproxies: {}
-  Regionurlmaps: {}
-  Reservations:
+    support_single_export: false
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  publicAdvertisedPrefixes:
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  publicDelegatedPrefixes:
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  regionAcceleratorTypes:
+    supported_apis:
+    - alpha
+    - beta
+  regionAutoscalers:
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  regionBackendServices:
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  regionCommitments:
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  regionDiskTypes:
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  regionDisks:
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  regionHealthCheckServices:
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  regionHealthChecks:
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  regionInPlaceSnapshots:
+    supported_apis:
+    - alpha
+  regionInstanceGroupManagers:
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  regionInstanceGroups:
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  regionInstantSnapshots:
+    supported_apis:
+    - alpha
+  regionMachineTypes:
+    supported_apis:
+    - alpha
+  regionNetworkEndpointGroups:
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  regionNetworkFirewallPolicies:
+    supported_apis:
+    - alpha
+  regionNotificationEndpoints:
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  regionOperations:
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  regionSecurityPolicies:
+    supported_apis:
+    - alpha
+  regionSslCertificates:
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  regionTargetHttpProxies:
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  regionTargetHttpsProxies:
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  regionUrlMaps:
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  regions:
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  reservations:
     asset_inventory_type: compute.googleapis.com/Reservation
     krm_group: compute
     krm_kind: ComputeReservation
     support_bulk_export: true
     support_single_export: true
-  Resourcepolicies:
-    asset_inventory_type: compute.googleapis.com/Resourcepolicy
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  resourcePolicies:
+    asset_inventory_type: compute.googleapis.com/ResourcePolicy
     krm_group: compute
     krm_kind: ComputeResourcePolicy
     support_bulk_export: true
     support_single_export: true
-  Routers:
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  routers:
     asset_inventory_type: compute.googleapis.com/Router
     krm_group: compute
     krm_kind: ComputeRouter
     support_bulk_export: true
     support_single_export: true
-  Routes:
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  routes:
     asset_inventory_type: compute.googleapis.com/Route
     krm_group: compute
     krm_kind: ComputeRoute
     support_bulk_export: true
     support_single_export: true
-  Securitypolicies: {}
-  Securitypolicyrules: {}
-  Serviceattachments: {}
-  Snapshots:
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  securityPolicies:
+    asset_inventory_type: compute.googleapis.com/SecurityPolicy
+    krm_group: compute
+    krm_kind: ComputeSecurityPolicy
+    support_bulk_export: true
+    support_single_export: true
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  securityPolicyRules:
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  serviceAttachments:
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  snapshots:
     asset_inventory_type: compute.googleapis.com/Snapshot
     krm_group: compute
     krm_kind: ComputeSnapshot
     support_bulk_export: true
     support_single_export: true
-  Sslcertificates:
-    asset_inventory_type: compute.googleapis.com/Sslcertificate
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  sslCertificates:
+    asset_inventory_type: compute.googleapis.com/SSLCertificate
     krm_group: compute
     krm_kind: ComputeSSLCertificate
     support_bulk_export: true
     support_single_export: true
-  Sslpolicies:
-    asset_inventory_type: compute.googleapis.com/SslPolicy
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  sslPolicies:
+    asset_inventory_type: compute.googleapis.com/SSLPolicy
     krm_group: compute
     krm_kind: ComputeSSLPolicy
+    enable_single_resource_autogen: true
+    home_directory: compute.ssl_policies
     support_bulk_export: true
     support_single_export: true
-  Subnetworks:
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  subnetworks:
     asset_inventory_type: compute.googleapis.com/Subnetwork
     krm_group: compute
     krm_kind: ComputeSubnetwork
     support_bulk_export: true
     support_single_export: true
-  Targetgrpcproxies:
-    asset_inventory_type: compute.googleapis.com/TargetGrpcProxy
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  targetGrpcProxies:
+    asset_inventory_type: compute.googleapis.com/TargetGRPCProxy
     krm_group: compute
     krm_kind: ComputeTargetGRPCProxy
     support_bulk_export: true
     support_single_export: true
-  Targethttpproxies:
-    asset_inventory_type: compute.googleapis.com/TargetHttpProxy
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  targetHttpProxies:
+    asset_inventory_type: compute.googleapis.com/TargetHTTPProxy
     krm_group: compute
     krm_kind: ComputeTargetHTTPProxy
     support_bulk_export: true
     support_single_export: true
-  Targethttpsproxies:
-    asset_inventory_type: compute.googleapis.com/TargetHttpsProxy
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  targetHttpsProxies:
+    asset_inventory_type: compute.googleapis.com/TargetHTTPSProxy
     krm_group: compute
     krm_kind: ComputeTargetHTTPSProxy
     support_bulk_export: true
     support_single_export: true
-  Targetinstances:
-    asset_inventory_type: compute.googleapis.com/Targetinstance
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  targetInstances:
+    asset_inventory_type: compute.googleapis.com/TargetInstance
     krm_group: compute
     krm_kind: ComputeTargetInstance
     support_bulk_export: true
     support_single_export: true
-  Targetpools:
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  targetPools:
     asset_inventory_type: compute.googleapis.com/TargetPool
     krm_group: compute
     krm_kind: ComputeTargetPool
     support_bulk_export: true
     support_single_export: true
-  Targetsslproxies:
-    asset_inventory_type: compute.googleapis.com/Targetsslproxy
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  targetSslProxies:
+    asset_inventory_type: compute.googleapis.com/TargetSSLProxy
     krm_group: compute
     krm_kind: ComputeTargetSSLProxy
     support_bulk_export: true
     support_single_export: true
-  Targettcpproxies:
-    asset_inventory_type: compute.googleapis.com/TargetTcpProxy
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  targetTcpProxies:
+    asset_inventory_type: compute.googleapis.com/TargetTCPProxy
     krm_group: compute
     krm_kind: ComputeTargetTCPProxy
     support_bulk_export: true
     support_single_export: true
-  Targetvpngateways:
-    asset_inventory_type: compute.googleapis.com/Targetvpngateway
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  targetVpnGateways:
+    asset_inventory_type: compute.googleapis.com/TargetVPNGateway
     krm_group: compute
     krm_kind: ComputeTargetVPNGateway
     support_bulk_export: true
     support_single_export: true
-  Urlmaps:
-    asset_inventory_type: compute.googleapis.com/UrlMap
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  urlMaps:
+    asset_inventory_type: compute.googleapis.com/URLMap
     krm_group: compute
     krm_kind: ComputeURLMap
     support_bulk_export: true
     support_single_export: true
-  Vpngateways:
-    asset_inventory_type: compute.googleapis.com/Vpngateway
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  vpnGateways:
+    asset_inventory_type: compute.googleapis.com/VPNGateway
     krm_group: compute
     krm_kind: ComputeVPNGateway
     support_bulk_export: true
     support_single_export: true
-  Vpntunnels:
-    asset_inventory_type: compute.googleapis.com/Vpntunnel
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  vpnTunnels:
+    asset_inventory_type: compute.googleapis.com/VPNTunnel
     krm_group: compute
     krm_kind: ComputeVPNTunnel
     support_bulk_export: true
     support_single_export: true
-  Zoneinplacesnapshots: {}
-  Zoneinstantsnapshots: {}
-  Zoneoperations: {}
-  Zones: {}
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  zoneInPlaceSnapshots:
+    supported_apis:
+    - alpha
+  zoneInstantSnapshots:
+    supported_apis:
+    - alpha
+  zoneOperations:
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+  zones:
+    supported_apis:
+    - alpha
+    - beta
+    - v1
+config:
+  projects:
+    supported_apis:
+    - v1alpha1
+  projects.locations:
+    supported_apis:
+    - v1alpha1
+  projects.locations.deployments:
+    supported_apis:
+    - v1alpha1
+  projects.locations.deployments.revisions:
+    supported_apis:
+    - v1alpha1
+  projects.locations.operations:
+    supported_apis:
+    - v1alpha1
 container:
-  Projects: {}
-  ProjectsLocations: {}
-  ProjectsLocationsClusters:
+  projects:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1beta1
+  projects.locations:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1beta1
+  projects.locations.clusters:
     asset_inventory_type: container.googleapis.com/Cluster
     krm_group: container
     krm_kind: ContainerCluster
     support_bulk_export: true
     support_single_export: true
-  ProjectsLocationsClustersNodepools:
-    asset_inventory_type: container.googleapis.com/Nodepool
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1beta1
+  projects.locations.clusters.nodePools:
+    asset_inventory_type: container.googleapis.com/NodePool
     krm_group: container
     krm_kind: ContainerNodePool
     support_bulk_export: true
     support_single_export: false
-  ProjectsLocationsOperations: {}
-  ProjectsZones: {}
-  ProjectsZonesClusters: {}
-  ProjectsZonesClustersNodepools: {}
-  ProjectsZonesOperations: {}
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1beta1
+  projects.locations.operations:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1beta1
+  projects.zones:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1beta1
+  projects.zones.clusters:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1beta1
+  projects.zones.clusters.nodePools:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1beta1
+  projects.zones.operations:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1beta1
 containeranalysis:
-  Operations: {}
-  Projects: {}
-  ProjectsNotes: {}
-  ProjectsOccurrences: {}
-  ProjectsScanconfigs: {}
-  Providers: {}
-  ProvidersNotes: {}
+  operations:
+    supported_apis:
+    - v1
+  projects:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1beta1
+  projects.notes:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1beta1
+  projects.occurrences:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1beta1
+  projects.scanConfigs:
+    supported_apis:
+    - v1alpha1
+    - v1beta1
+  providers:
+    supported_apis:
+    - v1alpha1
+  providers.notes:
+    supported_apis:
+    - v1alpha1
 datacatalog:
-  Catalog: {}
-  Entries: {}
-  Projects: {}
-  ProjectsCrawlers: {}
-  ProjectsCrawlersCrawlerruns: {}
-  ProjectsLocations: {}
-  ProjectsLocationsEntrygroups: {}
-  ProjectsLocationsEntrygroupsEntries: {}
-  ProjectsLocationsEntrygroupsEntriesTags: {}
-  ProjectsLocationsTagtemplates: {}
-  ProjectsLocationsTagtemplatesFields: {}
-  ProjectsLocationsTagtemplatesFieldsEnumvalues: {}
-  ProjectsLocationsTaxonomies: {}
-  ProjectsLocationsTaxonomiesPolicytags: {}
-  ProjectsTaxonomies: {}
-  ProjectsTaxonomiesCategories: {}
+  catalog:
+    supported_apis:
+    - v1
+    - v1beta1
+  entries:
+    supported_apis:
+    - v1
+    - v1beta1
+  projects:
+    supported_apis:
+    - v1
+    - v1alpha3
+    - v1beta1
+  projects.crawlers:
+    supported_apis:
+    - v1alpha3
+  projects.crawlers.crawlerRuns:
+    supported_apis:
+    - v1alpha3
+  projects.locations:
+    supported_apis:
+    - v1
+    - v1beta1
+  projects.locations.entryGroups:
+    supported_apis:
+    - v1
+    - v1beta1
+  projects.locations.entryGroups.entries:
+    supported_apis:
+    - v1
+    - v1beta1
+  projects.locations.entryGroups.entries.tags:
+    supported_apis:
+    - v1
+    - v1beta1
+  projects.locations.tagTemplates:
+    supported_apis:
+    - v1
+    - v1beta1
+  projects.locations.tagTemplates.fields:
+    supported_apis:
+    - v1
+    - v1beta1
+  projects.locations.tagTemplates.fields.enumValues:
+    supported_apis:
+    - v1
+    - v1beta1
+  projects.locations.taxonomies:
+    supported_apis:
+    - v1
+    - v1beta1
+  projects.locations.taxonomies.policyTags:
+    supported_apis:
+    - v1
+    - v1beta1
+  projects.taxonomies:
+    supported_apis:
+    - v1alpha3
+  projects.taxonomies.categories:
+    supported_apis:
+    - v1alpha3
 dataflow:
-  Projects: {}
-  ProjectsCatalogtemplates: {}
-  ProjectsJobs:
+  projects:
+    supported_apis:
+    - v1b3
+  projects.catalogTemplates:
+    supported_apis:
+    - v1b3
+  projects.jobs:
     asset_inventory_type: dataflow.googleapis.com/Job
     krm_group: dataflow
     krm_kind: DataflowJob
     support_bulk_export: false
     support_single_export: false
-  ProjectsLocations: {}
-  ProjectsLocationsJobs: {}
-  ProjectsLocationsSnapshots: {}
-  ProjectsLocationsTemplates: {}
-  ProjectsSnapshots: {}
-  ProjectsTemplates:
-    asset_inventory_type: dataflow.googleapis.com/Flextemplatejob
-    krm_group: dataflow
-    krm_kind: DataflowFlexTemplateJob
-    support_bulk_export: false
-    support_single_export: false
+    supported_apis:
+    - v1b3
+  projects.locations:
+    supported_apis:
+    - v1b3
+  projects.locations.jobs:
+    supported_apis:
+    - v1b3
+  projects.locations.snapshots:
+    supported_apis:
+    - v1b3
+  projects.locations.templates:
+    supported_apis:
+    - v1b3
+  projects.snapshots:
+    supported_apis:
+    - v1b3
+  projects.templates:
+    supported_apis:
+    - v1b3
 datafusion:
-  Projects: {}
-  ProjectsLocations: {}
-  ProjectsLocationsInstances: {}
-  ProjectsLocationsOperations: {}
+  projects:
+    supported_apis:
+    - v1beta1
+  projects.locations:
+    supported_apis:
+    - v1beta1
+  projects.locations.instances:
+    supported_apis:
+    - v1beta1
+  projects.locations.operations:
+    supported_apis:
+    - v1beta1
 datamigration:
-  Projects: {}
-  ProjectsLocations: {}
-  ProjectsLocationsConnectionprofiles: {}
-  ProjectsLocationsMigrationjobs: {}
-  ProjectsLocationsOperations: {}
+  projects:
+    supported_apis:
+    - v1
+    - v1alpha2
+  projects.locations:
+    supported_apis:
+    - v1
+    - v1alpha2
+  projects.locations.connectionProfiles:
+    supported_apis:
+    - v1
+    - v1alpha2
+  projects.locations.migrationJobs:
+    supported_apis:
+    - v1
+    - v1alpha2
+  projects.locations.operations:
+    supported_apis:
+    - v1
+    - v1alpha2
+dataplex:
+  projects:
+    supported_apis:
+    - v1
+  projects.locations:
+    supported_apis:
+    - v1
+  projects.locations.lakes:
+    supported_apis:
+    - v1
+  projects.locations.lakes.zones:
+    supported_apis:
+    - v1
+  projects.locations.lakes.zones.assets:
+    supported_apis:
+    - v1
+  projects.locations.operations:
+    supported_apis:
+    - v1
 dataproc:
-  Projects: {}
-  ProjectsLocations: {}
-  ProjectsLocationsAutoscalingpolicies: {}
-  ProjectsLocationsWorkflowtemplates: {}
-  ProjectsRegions: {}
-  ProjectsRegionsAutoscalingpolicies: {}
-  ProjectsRegionsClusters: {}
-  ProjectsRegionsJobs: {}
-  ProjectsRegionsOperations: {}
-  ProjectsRegionsOperations_list: {}
-  ProjectsRegionsWorkflowtemplates: {}
+  projects:
+    supported_apis:
+    - v1
+    - v1beta2
+  projects.locations:
+    supported_apis:
+    - v1
+    - v1beta2
+  projects.locations.autoscalingPolicies:
+    supported_apis:
+    - v1
+    - v1beta2
+  projects.locations.batches:
+    supported_apis:
+    - v1
+  projects.locations.workflowTemplates:
+    supported_apis:
+    - v1
+    - v1beta2
+  projects.regions:
+    supported_apis:
+    - v1
+    - v1beta2
+  projects.regions.autoscalingPolicies:
+    supported_apis:
+    - v1
+    - v1beta2
+  projects.regions.clusters:
+    supported_apis:
+    - v1
+    - v1beta2
+  projects.regions.jobs:
+    supported_apis:
+    - v1
+    - v1beta2
+  projects.regions.operations:
+    supported_apis:
+    - v1
+    - v1beta2
+  projects.regions.operations_list:
+    supported_apis:
+    - v1
+    - v1beta2
+  projects.regions.workflowTemplates:
+    supported_apis:
+    - v1
+    - v1beta2
 datastore:
-  Projects: {}
-  ProjectsIndexes: {}
-  ProjectsOperations: {}
+  projects:
+    supported_apis:
+    - v1
+  projects.indexes:
+    supported_apis:
+    - v1
+  projects.operations:
+    supported_apis:
+    - v1
+datastream:
+  projects:
+    supported_apis:
+    - v1alpha1
+  projects.locations:
+    supported_apis:
+    - v1alpha1
+  projects.locations.connectionProfiles:
+    supported_apis:
+    - v1alpha1
+  projects.locations.operations:
+    supported_apis:
+    - v1alpha1
+  projects.locations.privateConnections:
+    supported_apis:
+    - v1alpha1
+  projects.locations.privateConnections.routes:
+    supported_apis:
+    - v1alpha1
+  projects.locations.streams:
+    supported_apis:
+    - v1alpha1
 deploymentmanager:
-  Compositetypes: {}
-  Deployments: {}
-  Manifests: {}
-  Operations: {}
-  Projects: {}
-  Resources: {}
-  Typeproviders: {}
-  Types: {}
+  compositeTypes:
+    supported_apis:
+    - alpha
+    - v2beta
+  deployments:
+    supported_apis:
+    - alpha
+    - v2
+    - v2beta
+  manifests:
+    supported_apis:
+    - alpha
+    - v2
+    - v2beta
+  operations:
+    supported_apis:
+    - alpha
+    - v2
+    - v2beta
+  projects:
+    supported_apis:
+    - alpha
+    - v2
+    - v2beta
+  resources:
+    supported_apis:
+    - alpha
+    - v2
+    - v2beta
+  typeProviders:
+    supported_apis:
+    - alpha
+    - v2beta
+  types:
+    supported_apis:
+    - alpha
 dialogflow:
-  Projects: {}
-  ProjectsAgent: {}
-  ProjectsAgentEntitytypes: {}
-  ProjectsAgentEnvironments: {}
-  ProjectsAgentEnvironmentsUsers: {}
-  ProjectsAgentEnvironmentsUsersSessions: {}
-  ProjectsAgentEnvironmentsUsersSessionsContexts: {}
-  ProjectsAgentEnvironmentsUsersSessionsEntitytypes: {}
-  ProjectsAgentIntents: {}
-  ProjectsAgentKnowledgebases: {}
-  ProjectsAgentKnowledgebasesDocuments: {}
-  ProjectsAgentSessions: {}
-  ProjectsAgentSessionsContexts: {}
-  ProjectsAgentSessionsEntitytypes: {}
-  ProjectsConversationprofiles: {}
-  ProjectsConversations: {}
-  ProjectsConversationsParticipants: {}
-  ProjectsKnowledgebases: {}
-  ProjectsKnowledgebasesDocuments: {}
-  ProjectsLocations: {}
-  ProjectsLocationsAgentEntitytypes: {}
-  ProjectsLocationsAgentEnvironments: {}
-  ProjectsLocationsAgentEnvironmentsUsers: {}
-  ProjectsLocationsAgentEnvironmentsUsersSessions: {}
-  ProjectsLocationsAgentEnvironmentsUsersSessionsContexts: {}
-  ProjectsLocationsAgentEnvironmentsUsersSessionsEntitytypes: {}
-  ProjectsLocationsAgentIntents: {}
-  ProjectsLocationsAgentSessions: {}
-  ProjectsLocationsAgentSessionsContexts: {}
-  ProjectsLocationsAgentSessionsEntitytypes: {}
-  ProjectsLocationsConversationprofiles: {}
-  ProjectsLocationsConversations: {}
-  ProjectsLocationsConversationsParticipants: {}
-  ProjectsLocationsKnowledgebases: {}
-  ProjectsLocationsKnowledgebasesDocuments: {}
-  ProjectsLocationsOperations: {}
-  ProjectsOperations: {}
+  projects:
+    supported_apis:
+    - v2
+  projects.agent:
+    supported_apis:
+    - v2
+  projects.agent.entityTypes:
+    supported_apis:
+    - v2
+  projects.agent.environments:
+    supported_apis:
+    - v2
+  projects.agent.environments.users:
+    supported_apis:
+    - v2
+  projects.agent.environments.users.sessions:
+    supported_apis:
+    - v2
+  projects.agent.environments.users.sessions.contexts:
+    supported_apis:
+    - v2
+  projects.agent.environments.users.sessions.entityTypes:
+    supported_apis:
+    - v2
+  projects.agent.intents:
+    supported_apis:
+    - v2
+  projects.agent.knowledgeBases:
+    supported_apis:
+    - v2
+  projects.agent.knowledgeBases.documents:
+    supported_apis:
+    - v2
+  projects.agent.sessions:
+    supported_apis:
+    - v2
+  projects.agent.sessions.contexts:
+    supported_apis:
+    - v2
+  projects.agent.sessions.entityTypes:
+    supported_apis:
+    - v2
+  projects.agent.versions:
+    supported_apis:
+    - v2
+  projects.conversationProfiles:
+    supported_apis:
+    - v2
+  projects.conversations:
+    supported_apis:
+    - v2
+  projects.conversations.participants:
+    supported_apis:
+    - v2
+  projects.knowledgeBases:
+    supported_apis:
+    - v2
+  projects.knowledgeBases.documents:
+    supported_apis:
+    - v2
+  projects.locations:
+    supported_apis:
+    - v2
+  projects.locations.agent.entityTypes:
+    supported_apis:
+    - v2
+  projects.locations.agent.environments:
+    supported_apis:
+    - v2
+  projects.locations.agent.environments.users:
+    supported_apis:
+    - v2
+  projects.locations.agent.environments.users.sessions:
+    supported_apis:
+    - v2
+  projects.locations.agent.environments.users.sessions.contexts:
+    supported_apis:
+    - v2
+  projects.locations.agent.environments.users.sessions.entityTypes:
+    supported_apis:
+    - v2
+  projects.locations.agent.intents:
+    supported_apis:
+    - v2
+  projects.locations.agent.sessions:
+    supported_apis:
+    - v2
+  projects.locations.agent.sessions.contexts:
+    supported_apis:
+    - v2
+  projects.locations.agent.sessions.entityTypes:
+    supported_apis:
+    - v2
+  projects.locations.agent.versions:
+    supported_apis:
+    - v2
+  projects.locations.conversationProfiles:
+    supported_apis:
+    - v2
+  projects.locations.conversations:
+    supported_apis:
+    - v2
+  projects.locations.conversations.participants:
+    supported_apis:
+    - v2
+  projects.locations.knowledgeBases:
+    supported_apis:
+    - v2
+  projects.locations.knowledgeBases.documents:
+    supported_apis:
+    - v2
+  projects.locations.operations:
+    supported_apis:
+    - v2
+  projects.operations:
+    supported_apis:
+    - v2
 discovery:
-  ApisVersions: {}
+  apis.versions:
+    supported_apis:
+    - v1
 dlp:
-  Infotypes: {}
-  Organizations: {}
-  OrganizationsDeidentifytemplates: {}
-  OrganizationsInspecttemplates: {}
-  OrganizationsLocations: {}
-  OrganizationsLocationsDeidentifytemplates: {}
-  OrganizationsLocationsInspecttemplates: {}
-  OrganizationsLocationsJobtriggers: {}
-  OrganizationsLocationsStoredinfotypes: {}
-  OrganizationsStoredinfotypes: {}
-  Projects: {}
-  ProjectsContent: {}
-  ProjectsDeidentifytemplates: {}
-  ProjectsDlpjobs: {}
-  ProjectsImage: {}
-  ProjectsInspecttemplates: {}
-  ProjectsJobtriggers: {}
-  ProjectsLocations: {}
-  ProjectsLocationsDeidentifytemplates: {}
-  ProjectsLocationsDlpjobs: {}
-  ProjectsLocationsInspecttemplates: {}
-  ProjectsLocationsJobtriggers: {}
-  ProjectsLocationsStoredinfotypes: {}
-  ProjectsStoredinfotypes: {}
+  infoTypes:
+    supported_apis:
+    - v2
+  organizations:
+    supported_apis:
+    - v2
+  organizations.deidentifyTemplates:
+    supported_apis:
+    - v2
+  organizations.inspectTemplates:
+    supported_apis:
+    - v2
+  organizations.locations:
+    supported_apis:
+    - v2
+  organizations.locations.deidentifyTemplates:
+    supported_apis:
+    - v2
+  organizations.locations.inspectTemplates:
+    supported_apis:
+    - v2
+  organizations.locations.jobTriggers:
+    supported_apis:
+    - v2
+  organizations.locations.storedInfoTypes:
+    supported_apis:
+    - v2
+  organizations.storedInfoTypes:
+    supported_apis:
+    - v2
+  projects:
+    supported_apis:
+    - v2
+  projects.content:
+    supported_apis:
+    - v2
+  projects.deidentifyTemplates:
+    supported_apis:
+    - v2
+  projects.dlpJobs:
+    supported_apis:
+    - v2
+  projects.image:
+    supported_apis:
+    - v2
+  projects.inspectTemplates:
+    supported_apis:
+    - v2
+  projects.jobTriggers:
+    supported_apis:
+    - v2
+  projects.locations:
+    supported_apis:
+    - v2
+  projects.locations.deidentifyTemplates:
+    supported_apis:
+    - v2
+  projects.locations.dlpJobs:
+    supported_apis:
+    - v2
+  projects.locations.inspectTemplates:
+    supported_apis:
+    - v2
+  projects.locations.jobTriggers:
+    supported_apis:
+    - v2
+  projects.locations.storedInfoTypes:
+    supported_apis:
+    - v2
+  projects.storedInfoTypes:
+    supported_apis:
+    - v2
 dns:
-  Changes: {}
-  Dnskeys: {}
-  Managedzoneoperations: {}
-  Managedzones:
-    asset_inventory_type: dns.googleapis.com/Managedzone
+  changes:
+    supported_apis:
+    - v1
+    - v1alpha2
+    - v1beta2
+  dnsKeys:
+    supported_apis:
+    - v1
+    - v1alpha2
+    - v1beta2
+  managedZoneOperations:
+    supported_apis:
+    - v1
+    - v1alpha2
+    - v1beta2
+  managedZones:
+    asset_inventory_type: dns.googleapis.com/ManagedZone
     krm_group: dns
     krm_kind: DNSManagedZone
     support_bulk_export: true
     support_single_export: true
-  Policies:
+    supported_apis:
+    - v1
+    - v1alpha2
+    - v1beta2
+  policies:
     asset_inventory_type: dns.googleapis.com/Policy
     krm_group: dns
     krm_kind: DNSPolicy
     support_bulk_export: true
     support_single_export: true
-  Projects: {}
-  ProjectsManagedzonesRrsets: {}
-  Resourcerecordsets:
-    asset_inventory_type: dns.googleapis.com/Recordset
+    supported_apis:
+    - v1
+    - v1alpha2
+    - v1beta2
+  projects:
+    supported_apis:
+    - v1
+    - v1alpha2
+    - v1beta2
+  resourceRecordSets:
+    asset_inventory_type: dns.googleapis.com/RecordSet
     krm_group: dns
     krm_kind: DNSRecordSet
     support_bulk_export: true
     support_single_export: false
-  Responsepolicies: {}
-  Responsepolicyrules: {}
+    supported_apis:
+    - v1
+    - v1alpha2
+    - v1beta2
+  responsePolicies:
+    supported_apis:
+    - v1alpha2
+    - v1beta2
+  responsePolicyRules:
+    supported_apis:
+    - v1alpha2
+    - v1beta2
 domains:
-  Projects: {}
-  ProjectsLocations: {}
-  ProjectsLocationsOperations: {}
-  ProjectsLocationsRegistrations: {}
+  projects:
+    supported_apis:
+    - v1alpha2
+    - v1beta1
+  projects.locations:
+    supported_apis:
+    - v1alpha2
+    - v1beta1
+  projects.locations.operations:
+    supported_apis:
+    - v1alpha2
+    - v1beta1
+  projects.locations.registrations:
+    supported_apis:
+    - v1alpha2
+    - v1beta1
+edgecontainer:
+  projects:
+    supported_apis:
+    - v1
+    - v1alpha
+    - v1beta
+  projects.locations:
+    supported_apis:
+    - v1
+    - v1alpha
+    - v1beta
+  projects.locations.clusters:
+    supported_apis:
+    - v1
+    - v1alpha
+    - v1beta
+  projects.locations.clusters.nodePools:
+    supported_apis:
+    - v1
+    - v1alpha
+    - v1beta
+  projects.locations.machines:
+    supported_apis:
+    - v1
+    - v1alpha
+    - v1beta
+  projects.locations.operations:
+    supported_apis:
+    - v1
+    - v1alpha
+    - v1beta
+  projects.locations.vpnConnections:
+    supported_apis:
+    - v1
+    - v1alpha
+    - v1beta
 essentialcontacts:
-  Folders: {}
-  FoldersContacts: {}
-  Organizations: {}
-  OrganizationsContacts: {}
-  Projects: {}
-  ProjectsContacts: {}
+  folders:
+    supported_apis:
+    - v1alpha1
+    - v1beta1
+  folders.contacts:
+    supported_apis:
+    - v1alpha1
+    - v1beta1
+  organizations:
+    supported_apis:
+    - v1alpha1
+    - v1beta1
+  organizations.contacts:
+    supported_apis:
+    - v1alpha1
+    - v1beta1
+  projects:
+    supported_apis:
+    - v1alpha1
+    - v1beta1
+  projects.contacts:
+    supported_apis:
+    - v1alpha1
+    - v1beta1
 eventarc:
-  Projects: {}
-  ProjectsLocations: {}
-  ProjectsLocationsOperations: {}
-  ProjectsLocationsTriggers: {}
+  projects:
+    supported_apis:
+    - v1
+    - v1beta1
+  projects.locations:
+    supported_apis:
+    - v1
+    - v1beta1
+  projects.locations.channels:
+    supported_apis:
+    - v1
+  projects.locations.ingresses:
+    supported_apis:
+    - v1
+  projects.locations.operations:
+    supported_apis:
+    - v1
+    - v1beta1
+  projects.locations.triggers:
+    supported_apis:
+    - v1
+    - v1beta1
 eventflow:
-  Projects: {}
-  ProjectsFlows: {}
+  projects:
+    supported_apis:
+    - v1beta2
+  projects.flows:
+    supported_apis:
+    - v1beta2
 events:
-  Namespaces: {}
-  NamespacesCustomresourcedefinitions: {}
-  NamespacesTriggers: {}
-  Projects: {}
-  ProjectsLocations: {}
-  ProjectsLocationsCustomresourcedefinitions: {}
-  ProjectsLocationsTriggers: {}
+  namespaces:
+    supported_apis:
+    - v1beta1
+  namespaces.customresourcedefinitions:
+    supported_apis:
+    - v1beta1
+  namespaces.triggers:
+    supported_apis:
+    - v1beta1
+  projects:
+    supported_apis:
+    - v1beta1
+  projects.locations:
+    supported_apis:
+    - v1beta1
+  projects.locations.customresourcedefinitions:
+    supported_apis:
+    - v1beta1
+  projects.locations.triggers:
+    supported_apis:
+    - v1beta1
 file:
-  Projects: {}
-  ProjectsLocations: {}
-  ProjectsLocationsBackups: {}
-  ProjectsLocationsInstances: {}
-  ProjectsLocationsOperations: {}
-  ProjectsLocationsSnapshots: {}
+  projects:
+    supported_apis:
+    - v1
+    - v1beta1
+    - v1p1alpha1
+  projects.locations:
+    supported_apis:
+    - v1
+    - v1beta1
+    - v1p1alpha1
+  projects.locations.backups:
+    supported_apis:
+    - v1
+    - v1beta1
+    - v1p1alpha1
+  projects.locations.instances:
+    supported_apis:
+    - v1
+    - v1beta1
+    - v1p1alpha1
+  projects.locations.operations:
+    supported_apis:
+    - v1
+    - v1beta1
+    - v1p1alpha1
+  projects.locations.snapshots:
+    supported_apis:
+    - v1p1alpha1
 firestore:
-  Projects: {}
-  ProjectsDatabases: {}
-  ProjectsDatabasesCollectiongroups: {}
-  ProjectsDatabasesCollectiongroupsFields: {}
-  ProjectsDatabasesCollectiongroupsIndexes: {}
-  ProjectsDatabasesDocuments: {}
-  ProjectsDatabasesIndexes:
+  projects:
+    supported_apis:
+    - v1
+    - v1beta1
+    - v1beta2
+  projects.databases:
+    supported_apis:
+    - v1
+    - v1beta1
+    - v1beta2
+  projects.databases.collectionGroups:
+    supported_apis:
+    - v1
+    - v1beta2
+  projects.databases.collectionGroups.fields:
+    supported_apis:
+    - v1
+    - v1beta2
+  projects.databases.collectionGroups.indexes:
+    supported_apis:
+    - v1
+    - v1beta2
+  projects.databases.documents:
+    supported_apis:
+    - v1
+    - v1beta1
+  projects.databases.indexes:
     asset_inventory_type: firestore.googleapis.com/Index
     krm_group: firestore
     krm_kind: FirestoreIndex
     support_bulk_export: true
     support_single_export: false
-  ProjectsDatabasesOperations: {}
-  ProjectsLocations: {}
+    supported_apis:
+    - v1beta1
+  projects.databases.operations:
+    supported_apis:
+    - v1
+    - v1beta2
+  projects.locations:
+    supported_apis:
+    - v1
 gameservices:
-  Projects: {}
-  ProjectsLocations: {}
-  ProjectsLocationsGameserverdeployments: {}
-  ProjectsLocationsGameserverdeploymentsConfigs: {}
-  ProjectsLocationsOperations: {}
-  ProjectsLocationsRealms: {}
-  ProjectsLocationsRealmsGameserverclusters: {}
+  projects:
+    supported_apis:
+    - v1
+    - v1alpha
+    - v1beta
+  projects.locations:
+    supported_apis:
+    - v1
+    - v1alpha
+    - v1beta
+  projects.locations.gameServerDeployments:
+    supported_apis:
+    - v1
+    - v1alpha
+    - v1beta
+  projects.locations.gameServerDeployments.configs:
+    supported_apis:
+    - v1
+    - v1alpha
+    - v1beta
+  projects.locations.operations:
+    supported_apis:
+    - v1
+    - v1alpha
+    - v1beta
+  projects.locations.realms:
+    supported_apis:
+    - v1
+    - v1alpha
+    - v1beta
+  projects.locations.realms.gameServerClusters:
+    supported_apis:
+    - v1
+    - v1alpha
+    - v1beta
 genomics:
-  Operations: {}
-  Pipelines: {}
-  Projects: {}
-  ProjectsOperations: {}
+  projects:
+    supported_apis:
+    - v2alpha1
+  projects.operations:
+    supported_apis:
+    - v2alpha1
+gkebackup:
+  projects:
+    supported_apis:
+    - v1alpha1
+  projects.locations:
+    supported_apis:
+    - v1alpha1
+  projects.locations.backupPlans:
+    supported_apis:
+    - v1alpha1
+  projects.locations.backupPlans.backups:
+    supported_apis:
+    - v1alpha1
+  projects.locations.backupPlans.backups.volumeBackups:
+    supported_apis:
+    - v1alpha1
+  projects.locations.operations:
+    supported_apis:
+    - v1alpha1
+  projects.locations.restores:
+    supported_apis:
+    - v1alpha1
+  projects.locations.restores.volumeRestores:
+    supported_apis:
+    - v1alpha1
 gkehub:
-  Projects: {}
-  ProjectsLocations: {}
-  ProjectsLocationsGlobalFeatures: {}
-  ProjectsLocationsGlobalMemberships: {}
-  ProjectsLocationsMemberships: {}
-  ProjectsLocationsOperations: {}
+  projects:
+    supported_apis:
+    - v1
+    - v1alpha
+    - v1alpha1
+    - v1alpha2
+    - v1beta
+    - v1beta1
+  projects.locations:
+    supported_apis:
+    - v1
+    - v1alpha
+    - v1alpha1
+    - v1alpha2
+    - v1beta
+    - v1beta1
+  projects.locations.features:
+    supported_apis:
+    - v1
+    - v1alpha
+    - v1beta
+  projects.locations.global.features:
+    supported_apis:
+    - v1alpha1
+  projects.locations.global.memberships:
+    supported_apis:
+    - v1alpha2
+  projects.locations.memberships:
+    supported_apis:
+    - v1
+    - v1alpha
+    - v1alpha2
+    - v1beta1
+  projects.locations.operations:
+    supported_apis:
+    - v1
+    - v1alpha
+    - v1alpha1
+    - v1alpha2
+    - v1beta
+    - v1beta1
+gkemulticloud:
+  projects:
+    supported_apis:
+    - v1
+  projects.locations:
+    supported_apis:
+    - v1
+  projects.locations.awsClusters:
+    supported_apis:
+    - v1
+  projects.locations.awsClusters.awsNodePools:
+    supported_apis:
+    - v1
+  projects.locations.azureClients:
+    supported_apis:
+    - v1
+  projects.locations.azureClusters:
+    supported_apis:
+    - v1
+  projects.locations.azureClusters.azureNodePools:
+    supported_apis:
+    - v1
+  projects.locations.operations:
+    supported_apis:
+    - v1
 gsuiteaddons:
-  Projects: {}
-  ProjectsDeployments: {}
+  projects:
+    supported_apis:
+    - v1
+  projects.deployments:
+    supported_apis:
+    - v1
 healthcare:
-  Projects: {}
-  ProjectsLocations: {}
-  ProjectsLocationsDatasets: {}
-  ProjectsLocationsDatasetsAnnotationstores: {}
-  ProjectsLocationsDatasetsAnnotationstoresAnnotations: {}
-  ProjectsLocationsDatasetsConsentstores: {}
-  ProjectsLocationsDatasetsConsentstoresAttributedefinitions: {}
-  ProjectsLocationsDatasetsConsentstoresConsentartifacts: {}
-  ProjectsLocationsDatasetsConsentstoresConsents: {}
-  ProjectsLocationsDatasetsConsentstoresUserdatamappings: {}
-  ProjectsLocationsDatasetsDicomstores: {}
-  ProjectsLocationsDatasetsFhirstores: {}
-  ProjectsLocationsDatasetsHl7v2stores: {}
-  ProjectsLocationsDatasetsHl7v2storesMessages: {}
-  ProjectsLocationsDatasetsOperations: {}
-  ProjectsLocationsServicesDeidentify: {}
+  projects:
+    supported_apis:
+    - v1
+    - v1alpha2
+    - v1beta1
+  projects.locations:
+    supported_apis:
+    - v1
+    - v1alpha2
+    - v1beta1
+  projects.locations.datasets:
+    supported_apis:
+    - v1
+    - v1alpha2
+    - v1beta1
+  projects.locations.datasets.annotationStores:
+    supported_apis:
+    - v1alpha2
+    - v1beta1
+  projects.locations.datasets.annotationStores.annotations:
+    supported_apis:
+    - v1beta1
+  projects.locations.datasets.consentStores:
+    supported_apis:
+    - v1
+    - v1alpha2
+    - v1beta1
+  projects.locations.datasets.consentStores.attributeDefinitions:
+    supported_apis:
+    - v1
+    - v1alpha2
+    - v1beta1
+  projects.locations.datasets.consentStores.consentArtifacts:
+    supported_apis:
+    - v1
+    - v1alpha2
+    - v1beta1
+  projects.locations.datasets.consentStores.consents:
+    supported_apis:
+    - v1
+    - v1alpha2
+    - v1beta1
+  projects.locations.datasets.consentStores.userDataMappings:
+    supported_apis:
+    - v1
+    - v1alpha2
+    - v1beta1
+  projects.locations.datasets.dicomStores:
+    supported_apis:
+    - v1
+    - v1alpha2
+    - v1beta1
+  projects.locations.datasets.fhirStores:
+    supported_apis:
+    - v1
+    - v1alpha2
+    - v1beta1
+  projects.locations.datasets.hl7V2Stores:
+    supported_apis:
+    - v1
+    - v1alpha2
+    - v1beta1
+  projects.locations.datasets.hl7V2Stores.messages:
+    supported_apis:
+    - v1
+    - v1beta1
+  projects.locations.datasets.operations:
+    supported_apis:
+    - v1
+    - v1alpha2
+    - v1beta1
+  projects.locations.services.deidentify:
+    supported_apis:
+    - v1alpha2
+  projects.locations.services.nlp:
+    supported_apis:
+    - v1
+    - v1alpha2
+    - v1beta1
 iam:
-  Iampolicies: {}
-  Organizations: {}
-  OrganizationsRoles: {}
-  Policies: {}
-  Projects: {}
-  ProjectsLocations: {}
-  ProjectsLocationsWorkloadidentitypools: {}
-  ProjectsLocationsWorkloadidentitypoolsOperations: {}
-  ProjectsLocationsWorkloadidentitypoolsProviders: {}
-  ProjectsLocationsWorkloadidentitypoolsProvidersOperations: {}
-  ProjectsRoles: {}
-  ProjectsServiceaccounts:
-    asset_inventory_type: iam.googleapis.com/Serviceaccount
+  iamPolicies:
+    supported_apis:
+    - v1
+  locations:
+    supported_apis:
+    - v1
+  locations.workforcePools:
+    supported_apis:
+    - v1
+  locations.workforcePools.providers:
+    supported_apis:
+    - v1
+  organizations:
+    supported_apis:
+    - v1
+  organizations.roles:
+    supported_apis:
+    - v1
+  policies:
+    supported_apis:
+    - v2alpha1
+  projects:
+    supported_apis:
+    - v1
+    - v1beta
+  projects.locations:
+    supported_apis:
+    - v1
+    - v1beta
+  projects.locations.workloadIdentityPools:
+    supported_apis:
+    - v1
+    - v1beta
+  projects.locations.workloadIdentityPools.operations:
+    supported_apis:
+    - v1
+    - v1beta
+  projects.locations.workloadIdentityPools.providers:
+    supported_apis:
+    - v1
+    - v1beta
+  projects.locations.workloadIdentityPools.providers.operations:
+    supported_apis:
+    - v1
+    - v1beta
+  projects.roles:
+    supported_apis:
+    - v1
+  projects.serviceAccounts:
+    asset_inventory_type: iam.googleapis.com/ServiceAccount
     krm_group: iam
     krm_kind: IAMServiceAccount
     support_bulk_export: true
     support_single_export: false
-  ProjectsServiceaccountsIdentitybindings: {}
-  ProjectsServiceaccountsKeys:
-    asset_inventory_type: iam.googleapis.com/Serviceaccountkey
+    supported_apis:
+    - v1
+  projects.serviceAccounts.identityBindings:
+    supported_apis:
+    - v1
+  projects.serviceAccounts.keys:
+    asset_inventory_type: iam.googleapis.com/ServiceAccountKey
     krm_group: iam
     krm_kind: IAMServiceAccountKey
     support_bulk_export: false
     support_single_export: false
-  Roles:
-    asset_inventory_type: iam.googleapis.com/Customrole
-    krm_group: iam
-    krm_kind: IAMCustomRole
-    support_bulk_export: true
-    support_single_export: false
+    supported_apis:
+    - v1
+  roles:
+    supported_apis:
+    - v1
+  operations:
+    supported_apis:
+    - v1alpha3
+  replays:
+    supported_apis:
+    - v1alpha3
+  simulator:
+    supported_apis:
+    - v1alpha2
+    - v1alpha3
 iamcredentials:
-  Serviceaccounts: {}
+  serviceAccounts:
+    supported_apis:
+    - v1
 iap:
-  Projects: {}
-  ProjectsBrands: {}
-  ProjectsBrandsIdentityawareproxyclients: {}
-  ProjectsIap_web: {}
-  ProjectsIap_webServices: {}
-  ProjectsIap_webServicesVersions: {}
+  projects:
+    supported_apis:
+    - v1
+    - v1beta1
+  projects.brands:
+    supported_apis:
+    - v1
+  projects.brands.identityAwareProxyClients:
+    supported_apis:
+    - v1
+  projects.iap_web:
+    supported_apis:
+    - v1
+    - v1beta1
+  projects.iap_web.services:
+    supported_apis:
+    - v1
+    - v1beta1
+  projects.iap_web.services.versions:
+    supported_apis:
+    - v1
+    - v1beta1
+ids:
+  projects:
+    supported_apis:
+    - v1
+  projects.locations:
+    supported_apis:
+    - v1
+  projects.locations.endpoints:
+    supported_apis:
+    - v1
+  projects.locations.operations:
+    supported_apis:
+    - v1
 krmapihosting:
-  Projects: {}
-  ProjectsLocations: {}
-  ProjectsLocationsAnthosapiendpoints: {}
-  ProjectsLocationsKrmapihosts: {}
-  ProjectsLocationsOperations: {}
+  projects:
+    supported_apis:
+    - v1alpha1
+  projects.locations:
+    supported_apis:
+    - v1alpha1
+  projects.locations.krmApiHosts:
+    supported_apis:
+    - v1alpha1
+  projects.locations.operations:
+    supported_apis:
+    - v1alpha1
 kubernetesedge:
-  Projects: {}
-  ProjectsLocations: {}
-  ProjectsLocationsClusters: {}
-  ProjectsLocationsClustersNodepools: {}
-  ProjectsLocationsClustersNodepoolsNodes: {}
-  ProjectsLocationsOperations: {}
-  ProjectsLocationsSites: {}
-  ProjectsLocationsSitesMachines: {}
+  projects:
+    supported_apis:
+    - v1alpha1
+  projects.locations:
+    supported_apis:
+    - v1alpha1
+  projects.locations.clusters:
+    supported_apis:
+    - v1alpha1
+  projects.locations.clusters.nodePools:
+    supported_apis:
+    - v1alpha1
+  projects.locations.machines:
+    supported_apis:
+    - v1alpha1
+  projects.locations.operations:
+    supported_apis:
+    - v1alpha1
+  projects.locations.sites:
+    supported_apis:
+    - v1alpha1
+  projects.locations.sites.machines:
+    supported_apis:
+    - v1alpha1
+  projects.locations.vpnConnections:
+    supported_apis:
+    - v1alpha1
 labelmanager:
-  Labelkeys: {}
-  Labelvalues: {}
-  Operations: {}
+  labelKeys:
+    supported_apis:
+    - v1alpha1
+  labelValues:
+    supported_apis:
+    - v1alpha1
+  operations:
+    supported_apis:
+    - v1alpha1
 language:
-  Documents: {}
+  documents:
+    supported_apis:
+    - v1
+    - v1beta2
 lifesciences:
-  Projects: {}
-  ProjectsLocations: {}
-  ProjectsLocationsOperations: {}
+  projects:
+    supported_apis:
+    - v2beta
+  projects.locations:
+    supported_apis:
+    - v2beta
+  projects.locations.operations:
+    supported_apis:
+    - v2beta
 logging:
-  Billingaccounts: {}
-  BillingaccountsBuckets: {}
-  BillingaccountsBucketsViews: {}
-  BillingaccountsExclusions: {}
-  BillingaccountsLocations: {}
-  BillingaccountsSinks: {}
-  Exclusions: {}
-  Folders: {}
-  FoldersExclusions: {}
-  FoldersLocations: {}
-  FoldersLocationsBuckets: {}
-  FoldersLocationsBucketsViews: {}
-  FoldersSinks: {}
-  Locations: {}
-  LocationsBuckets: {}
-  LocationsBucketsJobs: {}
-  LocationsBucketsTables: {}
-  LocationsBucketsViews: {}
-  Organizations: {}
-  OrganizationsExclusions: {}
-  OrganizationsLocations: {}
-  OrganizationsLocationsBuckets: {}
-  OrganizationsLocationsBucketsViews: {}
-  OrganizationsSinks: {}
-  Projects: {}
-  ProjectsExclusions: {}
-  ProjectsLocations: {}
-  ProjectsLocationsBuckets: {}
-  ProjectsLocationsBucketsViews: {}
-  ProjectsMetrics: {}
-  ProjectsSinks: {}
-  Sinks:
-    asset_inventory_type: logging.googleapis.com/Logsink
+  billingAccounts:
+    supported_apis:
+    - v2
+  billingAccounts.buckets:
+    supported_apis:
+    - v2
+  billingAccounts.buckets.views:
+    supported_apis:
+    - v2
+  billingAccounts.exclusions:
+    supported_apis:
+    - v2
+  billingAccounts.locations:
+    supported_apis:
+    - v2
+  billingAccounts.operations:
+    supported_apis:
+    - v2
+  billingAccounts.sinks:
+    supported_apis:
+    - v2
+  exclusions:
+    supported_apis:
+    - v2
+  folders:
+    supported_apis:
+    - v2
+  folders.exclusions:
+    supported_apis:
+    - v2
+  folders.locations:
+    supported_apis:
+    - v2
+  folders.locations.buckets:
+    supported_apis:
+    - v2
+  folders.locations.buckets.views:
+    supported_apis:
+    - v2
+  folders.locations.operations:
+    supported_apis:
+    - v2
+  folders.sinks:
+    supported_apis:
+    - v2
+  locations:
+    supported_apis:
+    - v2
+  locations.buckets:
+    supported_apis:
+    - v2
+  locations.buckets.tables:
+    supported_apis:
+    - v2
+  locations.buckets.views:
+    supported_apis:
+    - v2
+  locations.operations:
+    supported_apis:
+    - v2
+  organizations:
+    supported_apis:
+    - v2
+  organizations.exclusions:
+    supported_apis:
+    - v2
+  organizations.locations:
+    supported_apis:
+    - v2
+  organizations.locations.buckets:
+    supported_apis:
+    - v2
+  organizations.locations.buckets.views:
+    supported_apis:
+    - v2
+  organizations.locations.operations:
+    supported_apis:
+    - v2
+  organizations.sinks:
+    supported_apis:
+    - v2
+  projects:
+    supported_apis:
+    - v2
+  projects.exclusions:
+    supported_apis:
+    - v2
+  projects.locations:
+    supported_apis:
+    - v2
+  projects.locations.buckets:
+    supported_apis:
+    - v2
+  projects.locations.buckets.views:
+    supported_apis:
+    - v2
+  projects.locations.operations:
+    supported_apis:
+    - v2
+  projects.metrics:
+    supported_apis:
+    - v2
+  projects.sinks:
+    supported_apis:
+    - v2
+  sinks:
+    asset_inventory_type: logging.googleapis.com/LogSink
     krm_group: logging
     krm_kind: LoggingLogSink
     support_bulk_export: true
     support_single_export: false
-luxadmin:
-  Projects: {}
-  ProjectsLocations: {}
-  ProjectsLocationsBackups: {}
-  ProjectsLocationsClusters: {}
-  ProjectsLocationsClustersInstances: {}
-  ProjectsLocationsClustersUsers: {}
-  ProjectsLocationsOperations: {}
+    supported_apis:
+    - v2
 managedidentities:
-  Projects: {}
-  ProjectsLocations: {}
-  ProjectsLocationsGlobalDomains: {}
-  ProjectsLocationsGlobalDomainsSqlintegrations: {}
-  ProjectsLocationsGlobalOperations: {}
-  ProjectsLocationsGlobalPeerings: {}
+  projects:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1beta1
+  projects.locations:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1beta1
+  projects.locations.global.domains:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1beta1
+  projects.locations.global.domains.backups:
+    supported_apis:
+    - v1alpha1
+    - v1beta1
+  projects.locations.global.domains.sqlIntegrations:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1beta1
+  projects.locations.global.operations:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1beta1
+  projects.locations.global.peerings:
+    supported_apis:
+    - v1alpha1
+    - v1beta1
 mediaasset:
-  Projects: {}
-  ProjectsLocations: {}
-  ProjectsLocationsAssettypes: {}
-  ProjectsLocationsAssettypesAssets: {}
-  ProjectsLocationsAssettypesAssetsTransformations: {}
-  ProjectsLocationsComplextypes: {}
-  ProjectsLocationsOperations: {}
-  ProjectsLocationsTransformers: {}
+  projects:
+    supported_apis:
+    - v1alpha
+  projects.locations:
+    supported_apis:
+    - v1alpha
+  projects.locations.assetTypes:
+    supported_apis:
+    - v1alpha
+  projects.locations.assetTypes.assets:
+    supported_apis:
+    - v1alpha
+  projects.locations.assetTypes.assets.actions:
+    supported_apis:
+    - v1alpha
+  projects.locations.assetTypes.assets.annotationSets:
+    supported_apis:
+    - v1alpha
+  projects.locations.assetTypes.assets.annotationSets.annotations:
+    supported_apis:
+    - v1alpha
+  projects.locations.assetTypes.assets.transformations:
+    supported_apis:
+    - v1alpha
+  projects.locations.assetTypes.rules:
+    supported_apis:
+    - v1alpha
+  projects.locations.complexTypes:
+    supported_apis:
+    - v1alpha
+  projects.locations.operations:
+    supported_apis:
+    - v1alpha
+  projects.locations.transformers:
+    supported_apis:
+    - v1alpha
 memcache:
-  Projects: {}
-  ProjectsLocations: {}
-  ProjectsLocationsInstances:
+  projects:
+    supported_apis:
+    - v1
+    - v1beta2
+  projects.locations:
+    supported_apis:
+    - v1
+    - v1beta2
+  projects.locations.instances:
     asset_inventory_type: memcache.googleapis.com/Instance
     krm_group: memcache
     krm_kind: MemcacheInstance
     support_bulk_export: true
     support_single_export: true
-  ProjectsLocationsOperations: {}
+    supported_apis:
+    - v1
+    - v1beta2
+  projects.locations.operations:
+    supported_apis:
+    - v1
+    - v1beta2
 metastore:
-  Projects: {}
-  ProjectsLocations: {}
-  ProjectsLocationsOperations: {}
-  ProjectsLocationsServices: {}
-  ProjectsLocationsServicesMetadataimports: {}
+  projects:
+    supported_apis:
+    - v1
+    - v1alpha
+    - v1beta
+  projects.locations:
+    supported_apis:
+    - v1
+    - v1alpha
+    - v1beta
+  projects.locations.operations:
+    supported_apis:
+    - v1
+    - v1alpha
+    - v1beta
+  projects.locations.services:
+    supported_apis:
+    - v1
+    - v1alpha
+    - v1beta
+  projects.locations.services.backups:
+    supported_apis:
+    - v1
+    - v1alpha
+    - v1beta
+  projects.locations.services.metadataImports:
+    supported_apis:
+    - v1
+    - v1alpha
+    - v1beta
 ml:
-  Projects: {}
-  ProjectsJobs: {}
-  ProjectsLocations: {}
-  ProjectsLocationsOperations: {}
-  ProjectsLocationsStudies: {}
-  ProjectsLocationsStudiesTrials: {}
-  ProjectsModels: {}
-  ProjectsModelsVersions: {}
-  ProjectsOperations: {}
+  projects:
+    supported_apis:
+    - v1
+  projects.jobs:
+    supported_apis:
+    - v1
+  projects.locations:
+    supported_apis:
+    - v1
+  projects.locations.operations:
+    supported_apis:
+    - v1
+  projects.locations.studies:
+    supported_apis:
+    - v1
+  projects.locations.studies.trials:
+    supported_apis:
+    - v1
+  projects.models:
+    supported_apis:
+    - v1
+  projects.models.versions:
+    supported_apis:
+    - v1
+  projects.operations:
+    supported_apis:
+    - v1
 monitoring:
-  Projects: {}
-  ProjectsAlertpolicies:
-    asset_inventory_type: monitoring.googleapis.com/Alertpolicy
+  operations:
+    supported_apis:
+    - v1
+  projects:
+    supported_apis:
+    - v1
+    - v3
+  projects.alertPolicies:
+    asset_inventory_type: monitoring.googleapis.com/AlertPolicy
     krm_group: monitoring
     krm_kind: MonitoringAlertPolicy
     support_bulk_export: true
     support_single_export: false
-  ProjectsAlertpoliciesConditions: {}
-  ProjectsDashboards: {}
-  ProjectsGroups: {}
-  ProjectsMetricdescriptors: {}
-  ProjectsMonitoredresourcedescriptors: {}
-  ProjectsNotificationchanneldescriptors: {}
-  ProjectsNotificationchannels:
-    asset_inventory_type: monitoring.googleapis.com/Notificationchannel
+    supported_apis:
+    - v3
+  projects.alertPolicies.conditions:
+    supported_apis:
+    - v3
+  projects.dashboards:
+    supported_apis:
+    - v1
+  projects.groups:
+    supported_apis:
+    - v3
+  projects.metricDescriptors:
+    supported_apis:
+    - v3
+  projects.monitoredResourceDescriptors:
+    supported_apis:
+    - v3
+  projects.notificationChannelDescriptors:
+    supported_apis:
+    - v3
+  projects.notificationChannels:
+    asset_inventory_type: monitoring.googleapis.com/NotificationChannel
     krm_group: monitoring
     krm_kind: MonitoringNotificationChannel
     support_bulk_export: true
     support_single_export: false
-  ProjectsUptimecheckconfigs: {}
+    supported_apis:
+    - v3
+  projects.uptimeCheckConfigs:
+    supported_apis:
+    - v3
 networkconnectivity:
-  Projects: {}
-  ProjectsLocations: {}
-  ProjectsLocationsGlobalHubs: {}
-  ProjectsLocationsInternalranges: {}
-  ProjectsLocationsOperations: {}
-  ProjectsLocationsPolicybasedroutes: {}
-  ProjectsLocationsSpokes: {}
+  projects:
+    supported_apis:
+    - v1
+    - v1alpha1
+  projects.locations:
+    supported_apis:
+    - v1
+    - v1alpha1
+  projects.locations.global.hubs:
+    supported_apis:
+    - v1
+    - v1alpha1
+  projects.locations.global.policyBasedRoutes:
+    supported_apis:
+    - v1alpha1
+  projects.locations.internalRanges:
+    supported_apis:
+    - v1alpha1
+  projects.locations.operations:
+    supported_apis:
+    - v1
+    - v1alpha1
+  projects.locations.spokes:
+    supported_apis:
+    - v1
+    - v1alpha1
 networkmanagement:
-  Projects: {}
-  ProjectsLocations: {}
-  ProjectsLocationsGlobalConnectivitytests: {}
-  ProjectsLocationsGlobalOperations: {}
+  projects:
+    supported_apis:
+    - v1
+    - v1beta1
+  projects.locations:
+    supported_apis:
+    - v1
+    - v1beta1
+  projects.locations.global.connectivityTests:
+    supported_apis:
+    - v1
+    - v1beta1
+  projects.locations.global.operations:
+    supported_apis:
+    - v1
+    - v1beta1
 networksecurity:
-  Projects: {}
-  ProjectsLocations: {}
-  ProjectsLocationsAuthorizationpolicies: {}
-  ProjectsLocationsClienttlspolicies: {}
-  ProjectsLocationsOperations: {}
-  ProjectsLocationsServertlspolicies: {}
+  projects:
+    supported_apis:
+    - v1alpha1
+    - v1beta1
+  projects.locations:
+    supported_apis:
+    - v1alpha1
+    - v1beta1
+  projects.locations.addressGroups:
+    supported_apis:
+    - v1alpha1
+  projects.locations.authorizationPolicies:
+    supported_apis:
+    - v1alpha1
+    - v1beta1
+  projects.locations.clientTlsPolicies:
+    supported_apis:
+    - v1alpha1
+    - v1beta1
+  projects.locations.operations:
+    supported_apis:
+    - v1alpha1
+    - v1beta1
+  projects.locations.serverTlsPolicies:
+    supported_apis:
+    - v1alpha1
+    - v1beta1
 networkservices:
-  Projects: {}
-  ProjectsLocations: {}
-  ProjectsLocationsEdgecachekeysets: {}
-  ProjectsLocationsEdgecacheorigins: {}
-  ProjectsLocationsEdgecacheservices: {}
-  ProjectsLocationsEndpointconfigselectors: {}
-  ProjectsLocationsHttpfilters: {}
-  ProjectsLocationsOperations: {}
-  ProjectsLocationsRouters: {}
+  projects:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1beta1
+  projects.locations:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1beta1
+  projects.locations.edgeCacheKeysets:
+    supported_apis:
+    - v1
+    - v1alpha1
+  projects.locations.edgeCacheOrigins:
+    supported_apis:
+    - v1
+    - v1alpha1
+  projects.locations.edgeCacheServices:
+    supported_apis:
+    - v1
+    - v1alpha1
+  projects.locations.endpointConfigSelectors:
+    supported_apis:
+    - v1alpha1
+  projects.locations.endpointPolicies:
+    supported_apis:
+    - v1alpha1
+    - v1beta1
+  projects.locations.grpcRoutes:
+    supported_apis:
+    - v1alpha1
+  projects.locations.httpFilters:
+    supported_apis:
+    - v1alpha1
+  projects.locations.httpRoutes:
+    supported_apis:
+    - v1alpha1
+  projects.locations.observabilityPolicies:
+    supported_apis:
+    - v1alpha1
+  projects.locations.operations:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1beta1
+  projects.locations.routers:
+    supported_apis:
+    - v1alpha1
 notebooks:
-  Projects: {}
-  ProjectsLocations: {}
-  ProjectsLocationsEnvironments: {}
-  ProjectsLocationsExecutions: {}
-  ProjectsLocationsInstances: {}
-  ProjectsLocationsOperations: {}
-  ProjectsLocationsSchedules: {}
+  projects:
+    supported_apis:
+    - v1
+    - v1beta1
+  projects.locations:
+    supported_apis:
+    - v1
+    - v1beta1
+  projects.locations.environments:
+    supported_apis:
+    - v1
+    - v1beta1
+  projects.locations.executions:
+    supported_apis:
+    - v1
+  projects.locations.instances:
+    supported_apis:
+    - v1
+    - v1beta1
+  projects.locations.operations:
+    supported_apis:
+    - v1
+    - v1beta1
+  projects.locations.runtimes:
+    supported_apis:
+    - v1
+  projects.locations.schedules:
+    supported_apis:
+    - v1
 ondemandscanning:
-  Projects: {}
-  ProjectsLocations: {}
-  ProjectsLocationsOperations: {}
-  ProjectsLocationsScans: {}
-  ProjectsLocationsScansVulnerabilities: {}
+  projects:
+    supported_apis:
+    - v1
+    - v1beta1
+  projects.locations:
+    supported_apis:
+    - v1
+    - v1beta1
+  projects.locations.operations:
+    supported_apis:
+    - v1
+    - v1beta1
+  projects.locations.scans:
+    supported_apis:
+    - v1
+    - v1beta1
+  projects.locations.scans.vulnerabilities:
+    supported_apis:
+    - v1
+    - v1beta1
 orgpolicy:
-  Folders: {}
-  FoldersPolicies: {}
-  Organizations: {}
-  OrganizationsPolicies: {}
-  Policies: {}
-  Projects: {}
-  ProjectsPolicies: {}
+  folders:
+    supported_apis:
+    - v2
+  folders.policies:
+    supported_apis:
+    - v2
+  organizations:
+    supported_apis:
+    - v2
+  organizations.policies:
+    supported_apis:
+    - v2
+  policies:
+    supported_apis:
+    - v2alpha1
+  projects:
+    supported_apis:
+    - v2
+  projects.policies:
+    supported_apis:
+    - v2
 osconfig:
-  Folders: {}
-  FoldersAssignments: {}
-  FoldersGuestpolicies: {}
-  FoldersOsconfigs: {}
-  Organizations: {}
-  OrganizationsAssignments: {}
-  OrganizationsGuestpolicies: {}
-  OrganizationsOsconfigs: {}
-  Projects: {}
-  ProjectsAssignments: {}
-  ProjectsGuestpolicies: {}
-  ProjectsOsconfigs: {}
-  ProjectsPatchdeployments: {}
-  ProjectsPatchjobs: {}
+  folders:
+    supported_apis:
+    - v1alpha2
+  folders.guestPolicies:
+    supported_apis:
+    - v1alpha2
+  organizations:
+    supported_apis:
+    - v1alpha2
+  organizations.guestPolicies:
+    supported_apis:
+    - v1alpha2
+  projects:
+    supported_apis:
+    - v1
+    - v1alpha
+    - v1alpha2
+    - v1beta
+  projects.guestPolicies:
+    supported_apis:
+    - v1alpha2
+    - v1beta
+  projects.locations:
+    supported_apis:
+    - v1alpha
+  projects.locations.instanceOSPoliciesCompliances:
+    supported_apis:
+    - v1alpha
+  projects.locations.instances:
+    supported_apis:
+    - v1alpha
+  projects.locations.instances.inventories:
+    supported_apis:
+    - v1alpha
+  projects.locations.instances.vulnerabilityReports:
+    supported_apis:
+    - v1alpha
+  projects.locations.osPolicyAssignments:
+    supported_apis:
+    - v1alpha
+  projects.locations.osPolicyAssignments.operations:
+    supported_apis:
+    - v1alpha
+  projects.patchDeployments:
+    supported_apis:
+    - v1
+    - v1alpha2
+    - v1beta
+  projects.patchJobs:
+    supported_apis:
+    - v1
+    - v1alpha2
+    - v1beta
 oslogin:
-  Users: {}
-  UsersProjects: {}
-  UsersSshpublickeys: {}
+  users:
+    supported_apis:
+    - v1
+    - v1alpha
+    - v1beta
+  users.projects:
+    supported_apis:
+    - v1
+    - v1alpha
+    - v1beta
+  users.sshPublicKeys:
+    supported_apis:
+    - v1
+    - v1alpha
+    - v1beta
+policyanalyzer: {}
 policysimulator:
-  Folders: {}
-  FoldersLocations: {}
-  FoldersLocationsReplays: {}
-  Operations: {}
-  Organizations: {}
-  OrganizationsLocations: {}
-  OrganizationsLocationsReplays: {}
-  Projects: {}
-  ProjectsLocations: {}
-  ProjectsLocationsReplays: {}
-  Simulator: {}
+  folders:
+    supported_apis:
+    - v1
+    - v1beta1
+  folders.locations:
+    supported_apis:
+    - v1
+    - v1beta1
+  folders.locations.replays:
+    supported_apis:
+    - v1
+    - v1beta1
+  operations:
+    supported_apis:
+    - v1
+    - v1beta1
+  organizations:
+    supported_apis:
+    - v1
+    - v1beta1
+  organizations.locations:
+    supported_apis:
+    - v1
+    - v1beta1
+  organizations.locations.replays:
+    supported_apis:
+    - v1
+    - v1beta1
+  projects:
+    supported_apis:
+    - v1
+    - v1beta1
+  projects.locations:
+    supported_apis:
+    - v1
+    - v1beta1
+  projects.locations.replays:
+    supported_apis:
+    - v1
+    - v1beta1
+  simulator:
+    supported_apis:
+    - v1
+    - v1beta1
 policytroubleshooter:
-  Iam: {}
+  iam:
+    supported_apis:
+    - v1
+    - v1beta
+    - v2alpha1
 privateca:
-  Projects: {}
-  ProjectsLocations: {}
-  ProjectsLocationsCertificateauthorities: {}
-  ProjectsLocationsCertificateauthoritiesCertificaterevocationlists: {}
-  ProjectsLocationsCertificateauthoritiesCertificates: {}
-  ProjectsLocationsOperations: {}
-  ProjectsLocationsReusableconfigs: {}
+  projects:
+    supported_apis:
+    - v1
+    - v1beta1
+  projects.locations:
+    supported_apis:
+    - v1
+    - v1beta1
+  projects.locations.caPools:
+    supported_apis:
+    - v1
+  projects.locations.caPools.certificateAuthorities:
+    supported_apis:
+    - v1
+  projects.locations.caPools.certificateAuthorities.certificateRevocationLists:
+    supported_apis:
+    - v1
+  projects.locations.caPools.certificates:
+    supported_apis:
+    - v1
+  projects.locations.certificateAuthorities:
+    supported_apis:
+    - v1beta1
+  projects.locations.certificateAuthorities.certificateRevocationLists:
+    supported_apis:
+    - v1beta1
+  projects.locations.certificateAuthorities.certificates:
+    supported_apis:
+    - v1beta1
+  projects.locations.certificateTemplates:
+    supported_apis:
+    - v1
+  projects.locations.operations:
+    supported_apis:
+    - v1
+    - v1beta1
+  projects.locations.reusableConfigs:
+    supported_apis:
+    - v1beta1
 publicca: {}
 pubsub:
-  Projects: {}
-  ProjectsSchemas: {}
-  ProjectsSnapshots: {}
-  ProjectsSubscriptions:
+  projects:
+    supported_apis:
+    - v1
+  projects.schemas:
+    supported_apis:
+    - v1
+  projects.snapshots:
+    supported_apis:
+    - v1
+  projects.subscriptions:
     asset_inventory_type: pubsub.googleapis.com/Subscription
     krm_group: pubsub
     krm_kind: PubSubSubscription
     support_bulk_export: true
     support_single_export: true
-  ProjectsTopics:
+    supported_apis:
+    - v1
+  projects.topics:
     asset_inventory_type: pubsub.googleapis.com/Topic
     krm_group: pubsub
     krm_kind: PubSubTopic
     support_bulk_export: true
     support_single_export: true
+    supported_apis:
+    - v1
 pubsublite:
-  AdminProjects: {}
-  AdminProjectsLocations: {}
-  AdminProjectsLocationsSubscriptions: {}
-  AdminProjectsLocationsTopics: {}
-  AdminProjectsLocationsTopicsSubscriptions: {}
+  admin.projects:
+    supported_apis:
+    - v1
+  admin.projects.locations:
+    supported_apis:
+    - v1
+  admin.projects.locations.subscriptions:
+    supported_apis:
+    - v1
+  admin.projects.locations.topics:
+    supported_apis:
+    - v1
+  admin.projects.locations.topics.subscriptions:
+    supported_apis:
+    - v1
+  cursor.projects.locations.subscriptions:
+    supported_apis:
+    - v1
 recaptchaenterprise:
-  Projects: {}
-  ProjectsKeys: {}
+  projects:
+    supported_apis:
+    - v1
+  projects.keys:
+    supported_apis:
+    - v1
 recommender:
-  Billingaccounts: {}
-  BillingaccountsLocations: {}
-  BillingaccountsLocationsInsighttypes: {}
-  BillingaccountsLocationsInsighttypesInsights: {}
-  BillingaccountsLocationsRecommenders: {}
-  BillingaccountsLocationsRecommendersRecommendations: {}
-  Folders: {}
-  FoldersLocations: {}
-  FoldersLocationsInsighttypes: {}
-  FoldersLocationsInsighttypesInsights: {}
-  FoldersLocationsRecommenders: {}
-  FoldersLocationsRecommendersRecommendations: {}
-  Operations: {}
-  Organizations: {}
-  OrganizationsLocations: {}
-  OrganizationsLocationsInsighttypes: {}
-  OrganizationsLocationsInsighttypesInsights: {}
-  OrganizationsLocationsRecommenders: {}
-  OrganizationsLocationsRecommendersRecommendations: {}
-  Projects: {}
-  ProjectsLocations: {}
-  ProjectsLocationsInsighttypes: {}
-  ProjectsLocationsInsighttypesInsights: {}
-  ProjectsLocationsRecommenders: {}
-  ProjectsLocationsRecommendersRecommendations: {}
+  billingAccounts:
+    supported_apis:
+    - v1
+    - v1alpha2
+    - v1beta1
+  billingAccounts.locations:
+    supported_apis:
+    - v1
+    - v1alpha2
+    - v1beta1
+  billingAccounts.locations.insightTypes:
+    supported_apis:
+    - v1
+    - v1alpha2
+    - v1beta1
+  billingAccounts.locations.insightTypes.insights:
+    supported_apis:
+    - v1
+    - v1alpha2
+    - v1beta1
+  billingAccounts.locations.recommenders:
+    supported_apis:
+    - v1
+    - v1alpha2
+    - v1beta1
+  billingAccounts.locations.recommenders.recommendations:
+    supported_apis:
+    - v1
+    - v1alpha2
+    - v1beta1
+  folders:
+    supported_apis:
+    - v1
+    - v1alpha2
+    - v1beta1
+  folders.locations:
+    supported_apis:
+    - v1
+    - v1alpha2
+    - v1beta1
+  folders.locations.insightTypes:
+    supported_apis:
+    - v1
+    - v1alpha2
+    - v1beta1
+  folders.locations.insightTypes.insights:
+    supported_apis:
+    - v1
+    - v1alpha2
+    - v1beta1
+  folders.locations.recommenders:
+    supported_apis:
+    - v1
+    - v1alpha2
+    - v1beta1
+  folders.locations.recommenders.recommendations:
+    supported_apis:
+    - v1
+    - v1alpha2
+    - v1beta1
+  operations:
+    supported_apis:
+    - v1alpha1
+  organizations:
+    supported_apis:
+    - v1
+    - v1alpha2
+    - v1beta1
+  organizations.locations:
+    supported_apis:
+    - v1
+    - v1alpha2
+    - v1beta1
+  organizations.locations.insightTypes:
+    supported_apis:
+    - v1
+    - v1alpha2
+    - v1beta1
+  organizations.locations.insightTypes.insights:
+    supported_apis:
+    - v1
+    - v1alpha2
+    - v1beta1
+  organizations.locations.recommenders:
+    supported_apis:
+    - v1
+    - v1alpha2
+    - v1beta1
+  organizations.locations.recommenders.recommendations:
+    supported_apis:
+    - v1
+    - v1alpha2
+    - v1beta1
+  projects:
+    supported_apis:
+    - v1
+    - v1alpha2
+    - v1beta1
+  projects.locations:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1alpha2
+    - v1beta1
+  projects.locations.insightTypes:
+    supported_apis:
+    - v1
+    - v1alpha2
+    - v1beta1
+  projects.locations.insightTypes.insights:
+    supported_apis:
+    - v1
+    - v1alpha2
+    - v1beta1
+  projects.locations.recommenders:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1alpha2
+    - v1beta1
+  projects.locations.recommenders.recommendations:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1alpha2
+    - v1beta1
 redis:
-  Projects: {}
-  ProjectsLocations: {}
-  ProjectsLocationsInstances:
+  projects:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1beta1
+  projects.locations:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1beta1
+  projects.locations.instances:
     asset_inventory_type: redis.googleapis.com/Instance
     krm_group: redis
     krm_kind: RedisInstance
     support_bulk_export: true
     support_single_export: true
-  ProjectsLocationsOperations: {}
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1beta1
+  projects.locations.operations:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1beta1
 remotebuildexecution:
-  Projects: {}
-  ProjectsInstances: {}
-  ProjectsInstancesWorkerpools: {}
-  ProjectsOperations: {}
+  projects:
+    supported_apis:
+    - v1alpha
+  projects.instances:
+    supported_apis:
+    - v1alpha
+  projects.instances.workerpools:
+    supported_apis:
+    - v1alpha
+  projects.operations:
+    supported_apis:
+    - v1alpha
 resourcesettings:
-  Folders: {}
-  FoldersSettings: {}
-  Organizations: {}
-  OrganizationsSettings: {}
-  Projects: {}
-  ProjectsSettings: {}
+  folders:
+    supported_apis:
+    - v1
+  folders.settings:
+    supported_apis:
+    - v1
+  organizations:
+    supported_apis:
+    - v1
+  organizations.settings:
+    supported_apis:
+    - v1
+  projects:
+    supported_apis:
+    - v1
+  projects.settings:
+    supported_apis:
+    - v1
 run:
-  ApiV1Namespaces: {}
-  ApiV1NamespacesSecrets: {}
-  Namespaces: {}
-  NamespacesCloudauditlogssources: {}
-  NamespacesCloudpubsubsources: {}
-  NamespacesCloudschedulersources: {}
-  NamespacesCloudstoragesources: {}
-  NamespacesConfigurations: {}
-  NamespacesCustomresourcedefinitions: {}
-  NamespacesDomainmappings: {}
-  NamespacesJobs: {}
-  NamespacesRevisions: {}
-  NamespacesRoutes: {}
-  NamespacesServices: {}
-  NamespacesTriggers: {}
-  Projects: {}
-  ProjectsLocations: {}
-  ProjectsLocationsCloudauditlogssources: {}
-  ProjectsLocationsCloudpubsubsources: {}
-  ProjectsLocationsCloudschedulersources: {}
-  ProjectsLocationsCloudstoragesources: {}
-  ProjectsLocationsConfigurations: {}
-  ProjectsLocationsCustomresourcedefinitions: {}
-  ProjectsLocationsDomainmappings: {}
-  ProjectsLocationsNamespaces: {}
-  ProjectsLocationsRevisions: {}
-  ProjectsLocationsRoutes: {}
-  ProjectsLocationsSecrets: {}
-  ProjectsLocationsServices: {}
-  ProjectsLocationsTriggers: {}
+  api.v1.namespaces:
+    supported_apis:
+    - v1
+  api.v1.namespaces.secrets:
+    supported_apis:
+    - v1
+  namespaces:
+    supported_apis:
+    - v1alpha1
+  namespaces.configurations:
+    supported_apis:
+    - v1
+  namespaces.domainmappings:
+    supported_apis:
+    - v1
+    - v1alpha1
+  namespaces.jobs:
+    supported_apis:
+    - v1alpha1
+  namespaces.revisions:
+    supported_apis:
+    - v1
+  namespaces.routes:
+    supported_apis:
+    - v1
+  namespaces.services:
+    supported_apis:
+    - v1
+  projects:
+    supported_apis:
+    - v1
+    - v1alpha1
+  projects.locations:
+    supported_apis:
+    - v1
+    - v1alpha1
+  projects.locations.configurations:
+    supported_apis:
+    - v1
+  projects.locations.domainmappings:
+    supported_apis:
+    - v1
+    - v1alpha1
+  projects.locations.namespaces:
+    supported_apis:
+    - v1
+  projects.locations.revisions:
+    supported_apis:
+    - v1
+  projects.locations.routes:
+    supported_apis:
+    - v1
+  projects.locations.secrets:
+    supported_apis:
+    - v1
+  projects.locations.services:
+    supported_apis:
+    - v1
 runtimeconfig:
-  Projects: {}
-  ProjectsConfigs: {}
-  ProjectsConfigsOperations: {}
-  ProjectsConfigsVariables: {}
-  ProjectsConfigsWaiters: {}
+  projects:
+    supported_apis:
+    - v1beta1
+  projects.configs:
+    supported_apis:
+    - v1beta1
+  projects.configs.operations:
+    supported_apis:
+    - v1beta1
+  projects.configs.variables:
+    supported_apis:
+    - v1beta1
+  projects.configs.waiters:
+    supported_apis:
+    - v1beta1
 sddc:
-  Projects: {}
-  ProjectsLocations: {}
-  ProjectsLocationsClustergroupbackups: {}
-  ProjectsLocationsClustergroups: {}
-  ProjectsLocationsClustergroupsClusters: {}
-  ProjectsLocationsClustergroupsIpaddresses: {}
-  ProjectsLocationsOperations: {}
-  ProjectsLocationsPrivatecloudbackups: {}
-  ProjectsLocationsPrivateclouds: {}
-  ProjectsLocationsPrivatecloudsClusters: {}
-  ProjectsLocationsPrivatecloudsIpaddresses: {}
+  projects:
+    supported_apis:
+    - v1alpha1
+  projects.locations:
+    supported_apis:
+    - v1alpha1
+  projects.locations.clusterGroupBackups:
+    supported_apis:
+    - v1alpha1
+  projects.locations.clusterGroups:
+    supported_apis:
+    - v1alpha1
+  projects.locations.clusterGroups.clusters:
+    supported_apis:
+    - v1alpha1
+  projects.locations.clusterGroups.ipAddresses:
+    supported_apis:
+    - v1alpha1
+  projects.locations.operations:
+    supported_apis:
+    - v1alpha1
+  projects.locations.privateCloudBackups:
+    supported_apis:
+    - v1alpha1
+  projects.locations.privateClouds:
+    supported_apis:
+    - v1alpha1
+  projects.locations.privateClouds.clusters:
+    supported_apis:
+    - v1alpha1
+  projects.locations.privateClouds.ipAddresses:
+    supported_apis:
+    - v1alpha1
 secretmanager:
-  Projects: {}
-  ProjectsLocations: {}
-  ProjectsSecrets:
+  projects:
+    supported_apis:
+    - v1
+  projects.locations:
+    supported_apis:
+    - v1
+  projects.secrets:
     asset_inventory_type: secretmanager.googleapis.com/Secret
     krm_group: secretmanager
     krm_kind: SecretManagerSecret
     support_bulk_export: true
     support_single_export: true
-  ProjectsSecretsVersions:
-    asset_inventory_type: secretmanager.googleapis.com/Secretversion
+    supported_apis:
+    - v1
+  projects.secrets.versions:
+    asset_inventory_type: secretmanager.googleapis.com/SecretVersion
     krm_group: secretmanager
     krm_kind: SecretManagerSecretVersion
     support_bulk_export: true
     support_single_export: false
+    supported_apis:
+    - v1
 securitycenter:
-  Organizations: {}
-  OrganizationsAssets: {}
-  OrganizationsNotificationconfigs: {}
-  OrganizationsOperations: {}
-  OrganizationsSources: {}
-  OrganizationsSourcesFindings: {}
+  organizations:
+    supported_apis:
+    - v1
+  organizations.assets:
+    supported_apis:
+    - v1
+  organizations.notificationConfigs:
+    supported_apis:
+    - v1
+  organizations.operations:
+    supported_apis:
+    - v1
+  organizations.sources:
+    supported_apis:
+    - v1
+  organizations.sources.findings:
+    supported_apis:
+    - v1
 serviceconsumermanagement:
-  Operations: {}
-  Services: {}
-  ServicesConsumerquotametrics: {}
-  ServicesConsumerquotametricsLimits: {}
+  operations:
+    supported_apis:
+    - v1beta1
+  services:
+    supported_apis:
+    - v1beta1
+  services.consumerQuotaMetrics:
+    supported_apis:
+    - v1beta1
+  services.consumerQuotaMetrics.limits:
+    supported_apis:
+    - v1beta1
 servicedirectory:
-  Projects: {}
-  ProjectsLocations: {}
-  ProjectsLocationsNamespaces: {}
-  ProjectsLocationsNamespacesServices: {}
-  ProjectsLocationsNamespacesServicesEndpoints: {}
+  projects:
+    supported_apis:
+    - v1
+    - v1beta1
+  projects.locations:
+    supported_apis:
+    - v1
+    - v1beta1
+  projects.locations.namespaces:
+    supported_apis:
+    - v1
+    - v1beta1
+  projects.locations.namespaces.services:
+    supported_apis:
+    - v1
+    - v1beta1
+  projects.locations.namespaces.services.endpoints:
+    supported_apis:
+    - v1
+    - v1beta1
 servicemanagement:
-  Operations: {}
-  Services: {}
-  ServicesConfigs: {}
-  ServicesCustomersettings: {}
-  ServicesProjectsettings: {}
-  ServicesRollouts: {}
+  operations:
+    supported_apis:
+    - v1
+  services:
+    supported_apis:
+    - v1
+  services.configs:
+    supported_apis:
+    - v1
+  services.customerSettings:
+    supported_apis:
+    - v1
+  services.projectSettings:
+    supported_apis:
+    - v1
+  services.rollouts:
+    supported_apis:
+    - v1
 servicenetworking:
-  Operations: {}
-  ServicesProjects: {}
-  ServicesProjectsGlobal: {}
-  ServicesProjectsGlobalNetworks: {}
+  operations:
+    supported_apis:
+    - v1
+    - v1beta
+  services.projects:
+    supported_apis:
+    - v1
+  services.projects.global:
+    supported_apis:
+    - v1
+  services.projects.global.networks:
+    supported_apis:
+    - v1
 serviceusage:
-  Operations: {}
-  Services:
-    asset_inventory_type: serviceusage.googleapis.com/
+  operations:
+    supported_apis:
+    - v1
+    - v1alpha
+    - v1beta1
+  services:
+    asset_inventory_type: serviceusage.googleapis.com/Service
     krm_group: serviceusage
     krm_kind: Service
     support_bulk_export: true
     support_single_export: true
-  ServicesConsumerquotametrics: {}
-  ServicesConsumerquotametricsLimits: {}
+    supported_apis:
+    - v1
+    - v1beta1
+  services.consumerQuotaMetrics:
+    supported_apis:
+    - v1beta1
+  services.consumerQuotaMetrics.limits:
+    supported_apis:
+    - v1beta1
 source:
-  Projects: {}
-  ProjectsRepos: {}
-  ProjectsReposAliases: {}
-  ProjectsReposAliasesFiles: {}
-  ProjectsReposRevisions: {}
-  ProjectsReposRevisionsFiles: {}
-  ProjectsReposWorkspaces: {}
-  ProjectsReposWorkspacesFiles: {}
-  ProjectsReposWorkspacesSnapshots: {}
-  ProjectsReposWorkspacesSnapshotsFiles: {}
+  projects:
+    supported_apis:
+    - v1
+  projects.repos:
+    supported_apis:
+    - v1
+  projects.repos.aliases:
+    supported_apis:
+    - v1
+  projects.repos.aliases.files:
+    supported_apis:
+    - v1
+  projects.repos.revisions:
+    supported_apis:
+    - v1
+  projects.repos.revisions.files:
+    supported_apis:
+    - v1
+  projects.repos.workspaces:
+    supported_apis:
+    - v1
+  projects.repos.workspaces.files:
+    supported_apis:
+    - v1
+  projects.repos.workspaces.snapshots:
+    supported_apis:
+    - v1
+  projects.repos.workspaces.snapshots.files:
+    supported_apis:
+    - v1
 sourcerepo:
-  Projects: {}
-  ProjectsRepos:
+  projects:
+    supported_apis:
+    - v1
+  projects.repos:
     asset_inventory_type: sourcerepo.googleapis.com/Repository
     krm_group: sourcerepo
     krm_kind: SourceRepoRepository
     support_bulk_export: true
     support_single_export: true
+    supported_apis:
+    - v1
 spanner:
-  Projects: {}
-  ProjectsInstanceconfigs: {}
-  ProjectsInstances:
+  projects:
+    supported_apis:
+    - v1
+  projects.instanceConfigs:
+    supported_apis:
+    - v1
+  projects.instances:
     asset_inventory_type: spanner.googleapis.com/Instance
     krm_group: spanner
     krm_kind: SpannerInstance
     support_bulk_export: true
     support_single_export: true
-  ProjectsInstancesBackups: {}
-  ProjectsInstancesBackupsOperations: {}
-  ProjectsInstancesDatabases:
+    supported_apis:
+    - v1
+  projects.instances.backups:
+    supported_apis:
+    - v1
+  projects.instances.backups.operations:
+    supported_apis:
+    - v1
+  projects.instances.databases:
     asset_inventory_type: spanner.googleapis.com/Database
     krm_group: spanner
     krm_kind: SpannerDatabase
     support_bulk_export: true
     support_single_export: true
-  ProjectsInstancesDatabasesOperations: {}
-  ProjectsInstancesDatabasesSessions: {}
-  ProjectsInstancesOperations: {}
+    supported_apis:
+    - v1
+  projects.instances.databases.operations:
+    supported_apis:
+    - v1
+  projects.instances.databases.sessions:
+    supported_apis:
+    - v1
+  projects.instances.operations:
+    supported_apis:
+    - v1
 speech:
-  Operations: {}
-  Projects: {}
-  ProjectsLocations: {}
-  ProjectsLocationsCustomclasses: {}
-  ProjectsLocationsPhrasesets: {}
-  Speech: {}
+  operations:
+    supported_apis:
+    - v1
+    - v1p1beta1
+  projects:
+    supported_apis:
+    - v1p1beta1
+  projects.locations:
+    supported_apis:
+    - v1p1beta1
+  projects.locations.customClasses:
+    supported_apis:
+    - v1p1beta1
+  projects.locations.phraseSets:
+    supported_apis:
+    - v1p1beta1
+  speech:
+    supported_apis:
+    - v1
+    - v1p1beta1
 sqladmin:
-  Backupruns: {}
-  Databases:
+  backupRuns:
+    supported_apis:
+    - v1beta4
+  connect:
+    supported_apis:
+    - v1beta4
+  databases:
     asset_inventory_type: sqladmin.googleapis.com/Database
     krm_group: sql
     krm_kind: SQLDatabase
     support_bulk_export: true
     support_single_export: true
-  Instances:
+    supported_apis:
+    - v1beta4
+  instances:
     asset_inventory_type: sqladmin.googleapis.com/Instance
     krm_group: sql
     krm_kind: SQLInstance
     support_bulk_export: true
     support_single_export: true
-  Operations: {}
-  Projects: {}
-  Sslcerts:
-    asset_inventory_type: sqladmin.googleapis.com/Sslcert
+    supported_apis:
+    - v1beta4
+  operations:
+    supported_apis:
+    - v1beta4
+  projects:
+    supported_apis:
+    - v1beta4
+  sslCerts:
+    asset_inventory_type: sqladmin.googleapis.com/SSLCert
     krm_group: sql
     krm_kind: SQLSSLCert
     support_bulk_export: false
     support_single_export: false
+    supported_apis:
+    - v1beta4
 storage:
-  Bucketaccesscontrols:
-    asset_inventory_type: storage.googleapis.com/Bucketaccesscontrol
+  bucketAccessControls:
+    asset_inventory_type: storage.googleapis.com/BucketAccessControl
     krm_group: storage
     krm_kind: StorageBucketAccessControl
     support_bulk_export: true
     support_single_export: false
-  Buckets:
+    supported_apis:
+    - v1
+  buckets:
     asset_inventory_type: storage.googleapis.com/Bucket
     krm_group: storage
     krm_kind: StorageBucket
     support_bulk_export: true
     support_single_export: false
-  Defaultobjectaccesscontrols:
-    asset_inventory_type: storage.googleapis.com/Defaultobjectaccesscontrol
+    supported_apis:
+    - v1
+  defaultObjectAccessControls:
+    asset_inventory_type: storage.googleapis.com/DefaultObjectAccessControl
     krm_group: storage
     krm_kind: StorageDefaultObjectAccessControl
     support_bulk_export: true
     support_single_export: false
-  Notifications:
+    supported_apis:
+    - v1
+  notifications:
     asset_inventory_type: storage.googleapis.com/Notification
     krm_group: storage
     krm_kind: StorageNotification
     support_bulk_export: true
     support_single_export: false
-  Objectaccesscontrols: {}
-  Objects: {}
-  Projects: {}
-  ProjectsHmackeys: {}
-  ProjectsServiceaccount: {}
+    supported_apis:
+    - v1
+  objectAccessControls:
+    supported_apis:
+    - v1
+  objects:
+    supported_apis:
+    - v1
+  projects:
+    supported_apis:
+    - v1
+  projects.hmacKeys:
+    supported_apis:
+    - v1
+  projects.serviceAccount:
+    supported_apis:
+    - v1
 storagetransfer:
-  Googleserviceaccounts: {}
-  Transferjobs:
+  googleServiceAccounts:
+    supported_apis:
+    - v1
+  transferJobs:
     asset_inventory_type: storagetransfer.googleapis.com/Job
     krm_group: storagetransfer
     krm_kind: StorageTransferJob
     support_bulk_export: true
     support_single_export: false
-  Transferoperations: {}
+    supported_apis:
+    - v1
+  transferOperations:
+    supported_apis:
+    - v1
 testing:
-  Projects: {}
-  ProjectsTestmatrices: {}
-  Testenvironmentcatalog: {}
+  projects:
+    supported_apis:
+    - v1
+  projects.testMatrices:
+    supported_apis:
+    - v1
+  testEnvironmentCatalog:
+    supported_apis:
+    - v1
 toolresults:
-  Projects: {}
-  ProjectsHistories: {}
-  ProjectsHistoriesExecutions: {}
-  ProjectsHistoriesExecutionsClusters: {}
-  ProjectsHistoriesExecutionsEnvironments: {}
-  ProjectsHistoriesExecutionsSteps: {}
-  ProjectsHistoriesExecutionsStepsPerfsampleseries: {}
-  ProjectsHistoriesExecutionsStepsTestcases: {}
+  projects:
+    supported_apis:
+    - v1beta3
+  projects.histories:
+    supported_apis:
+    - v1beta3
+  projects.histories.executions:
+    supported_apis:
+    - v1beta3
+  projects.histories.executions.clusters:
+    supported_apis:
+    - v1beta3
+  projects.histories.executions.environments:
+    supported_apis:
+    - v1beta3
+  projects.histories.executions.steps:
+    supported_apis:
+    - v1beta3
+  projects.histories.executions.steps.perfSampleSeries:
+    supported_apis:
+    - v1beta3
+  projects.histories.executions.steps.testCases:
+    supported_apis:
+    - v1beta3
 tpu:
-  Projects: {}
-  ProjectsLocations: {}
-  ProjectsLocationsAcceleratortypes: {}
-  ProjectsLocationsNodes: {}
-  ProjectsLocationsOperations: {}
-  ProjectsLocationsRuntimeversions: {}
-  ProjectsLocationsTensorflowversions: {}
+  projects:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v2alpha1
+  projects.locations:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v2alpha1
+  projects.locations.acceleratorTypes:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v2alpha1
+  projects.locations.nodes:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v2alpha1
+  projects.locations.operations:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v2alpha1
+  projects.locations.runtimeVersions:
+    supported_apis:
+    - v2alpha1
+  projects.locations.tensorflowVersions:
+    supported_apis:
+    - v1
+    - v1alpha1
 transcoder:
-  Projects: {}
-  ProjectsLocations: {}
-  ProjectsLocationsJobs: {}
-  ProjectsLocationsJobtemplates: {}
+  projects:
+    supported_apis:
+    - v1beta1
+  projects.locations:
+    supported_apis:
+    - v1beta1
+  projects.locations.jobTemplates:
+    supported_apis:
+    - v1beta1
+  projects.locations.jobs:
+    supported_apis:
+    - v1beta1
 translate:
-  Projects: {}
-  ProjectsLocations: {}
-  ProjectsLocationsGlossaries: {}
-  ProjectsLocationsOperations: {}
+  projects:
+    supported_apis:
+    - v3
+    - v3beta1
+  projects.locations:
+    supported_apis:
+    - v3
+    - v3beta1
+  projects.locations.glossaries:
+    supported_apis:
+    - v3
+    - v3beta1
+  projects.locations.operations:
+    supported_apis:
+    - v3
+    - v3beta1
 videointelligence:
-  OperationsProjects: {}
-  OperationsProjectsLocations: {}
-  OperationsProjectsLocationsOperations: {}
-  Projects: {}
-  ProjectsLocations: {}
-  ProjectsLocationsOperations: {}
-  Videos: {}
+  operations.projects:
+    supported_apis:
+    - v1
+  operations.projects.locations:
+    supported_apis:
+    - v1
+  operations.projects.locations.operations:
+    supported_apis:
+    - v1
+  projects:
+    supported_apis:
+    - v1
+  projects.locations:
+    supported_apis:
+    - v1
+  projects.locations.operations:
+    supported_apis:
+    - v1
+  videos:
+    supported_apis:
+    - v1
 vision:
-  Files: {}
-  Images: {}
-  Locations: {}
-  LocationsOperations: {}
-  Operations: {}
-  Projects: {}
-  ProjectsLocations: {}
-  ProjectsLocationsOperations: {}
-  ProjectsLocationsProducts: {}
-  ProjectsLocationsProductsReferenceimages: {}
-  ProjectsLocationsProductsets: {}
-  ProjectsLocationsProductsetsProducts: {}
-  ProjectsOperations: {}
+  files:
+    supported_apis:
+    - v1
+  images:
+    supported_apis:
+    - v1
+  locations:
+    supported_apis:
+    - v1
+  locations.operations:
+    supported_apis:
+    - v1
+  operations:
+    supported_apis:
+    - v1
+  projects:
+    supported_apis:
+    - v1
+  projects.locations:
+    supported_apis:
+    - v1
+  projects.locations.operations:
+    supported_apis:
+    - v1
+  projects.locations.productSets:
+    supported_apis:
+    - v1
+  projects.locations.productSets.products:
+    supported_apis:
+    - v1
+  projects.locations.products:
+    supported_apis:
+    - v1
+  projects.locations.products.referenceImages:
+    supported_apis:
+    - v1
+  projects.operations:
+    supported_apis:
+    - v1
+vmwareengine:
+  projects:
+    supported_apis:
+    - v1
+  projects.locations:
+    supported_apis:
+    - v1
+  projects.locations.nodeTypes:
+    supported_apis:
+    - v1
+  projects.locations.operations:
+    supported_apis:
+    - v1
+  projects.locations.privateClouds:
+    supported_apis:
+    - v1
+  projects.locations.privateClouds.clusters:
+    supported_apis:
+    - v1
 vpcaccess:
-  Projects: {}
-  ProjectsLocations: {}
-  ProjectsLocationsConnectors: {}
-  ProjectsLocationsOperations: {}
+  projects:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1beta1
+  projects.locations:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1beta1
+  projects.locations.connectors:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1beta1
+  projects.locations.operations:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1beta1
 websecurityscanner:
-  Projects: {}
-  ProjectsScanconfigs: {}
-  ProjectsScanconfigsScanruns: {}
-  ProjectsScanconfigsScanrunsCrawledurls: {}
-  ProjectsScanconfigsScanrunsFindings: {}
+  projects:
+    supported_apis:
+    - v1beta
+  projects.scanConfigs:
+    supported_apis:
+    - v1beta
+  projects.scanConfigs.scanRuns:
+    supported_apis:
+    - v1beta
+  projects.scanConfigs.scanRuns.crawledUrls:
+    supported_apis:
+    - v1beta
+  projects.scanConfigs.scanRuns.findings:
+    supported_apis:
+    - v1beta
 workflowexecutions:
-  Projects: {}
-  ProjectsLocations: {}
-  ProjectsLocationsWorkflows: {}
-  ProjectsLocationsWorkflowsExecutions: {}
+  projects:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1beta
+  projects.locations:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1beta
+  projects.locations.workflows:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1beta
+  projects.locations.workflows.executions:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1beta
 workflows:
-  Projects: {}
-  ProjectsLocations: {}
-  ProjectsLocationsOperations: {}
-  ProjectsLocationsWorkflows: {}
+  projects:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1beta
+  projects.locations:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1beta
+  projects.locations.operations:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1beta
+  projects.locations.workflows:
+    supported_apis:
+    - v1
+    - v1alpha1
+    - v1beta

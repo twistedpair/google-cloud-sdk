@@ -100,6 +100,8 @@ def ConstructPatchRequestFromArgs(alloydb_messages, instance_ref, args):
       alloydb_messages.Instance.DatabaseFlagsValue,
       labels_dest='database_flags')
   instance_resource.gceZone = args.zone
+  instance_resource.instanceType = _ParseInstanceType(alloydb_messages,
+                                                      args.instance_type)
   instance_resource.networkConfig = _ParseNetworkConfig(alloydb_messages,
                                                         args.assign_ip)
   if args.read_pool_size:

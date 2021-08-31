@@ -172,7 +172,8 @@ class CloudresourcemanagerFoldersListRequest(_messages.Message):
 
   Fields:
     pageSize: Optional. The maximum number of folders to return in the
-      response. If unspecified, server picks an appropriate default.
+      response. The server can return fewer folders than requested. If
+      unspecified, server picks an appropriate default.
     pageToken: Optional. A pagination token returned from a previous call to
       `ListFolders` that indicates where this listing should continue from.
     parent: Required. The resource name of the organization or folder whose
@@ -224,7 +225,8 @@ class CloudresourcemanagerFoldersSearchRequest(_messages.Message):
 
   Fields:
     pageSize: Optional. The maximum number of folders to return in the
-      response. If unspecified, server picks an appropriate default.
+      response. The server can return fewer folders than requested. If
+      unspecified, server picks an appropriate default.
     pageToken: Optional. A pagination token returned from a previous call to
       `SearchFolders` that indicates from where search should continue.
     query: Optional. Search criteria used to select the folders to return. If
@@ -389,7 +391,8 @@ class CloudresourcemanagerLiensListRequest(_messages.Message):
 
   Fields:
     pageSize: The maximum number of items to return. This is a suggestion for
-      the server.
+      the server. The server can return fewer liens than requested. If
+      unspecified, server picks an appropriate default.
     pageToken: The `next_page_token` value returned from a previous List
       request, if any.
     parent: Required. The name of the resource to list all attached Liens. For
@@ -446,7 +449,8 @@ class CloudresourcemanagerOrganizationsSearchRequest(_messages.Message):
 
   Fields:
     pageSize: Optional. The maximum number of organizations to return in the
-      response. If unspecified, server picks an appropriate default.
+      response. The server can return fewer organizations than requested. If
+      unspecified, server picks an appropriate default.
     pageToken: Optional. A pagination token returned from a previous call to
       `SearchOrganizations` that indicates from where listing should continue.
     query: Optional. An optional query string used to filter the Organizations

@@ -22,7 +22,6 @@ import collections
 from googlecloudsdk.command_lib.deploy import deploy_util
 from googlecloudsdk.command_lib.deploy import exceptions
 from googlecloudsdk.command_lib.deploy import target_util
-from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 
@@ -31,9 +30,7 @@ DELIVERY_PIPELINE_KIND_V1BETA1 = 'DeliveryPipeline'
 TARGET_KIND_V1BETA1 = 'Target'
 API_VERSION_V1BETA1 = 'deploy.cloud.google.com/v1beta1'
 DELIVERY_PIPELINE_FIELDS = ['description', 'serialPipeline']
-TARGET_FIELDS = [
-    'description', 'requireApproval', 'cluster', 'gkeCluster', 'gke'
-]
+TARGET_FIELDS = ['description', 'requireApproval', 'gke']
 METADATA_FIELDS = ['annotations', 'labels']
 
 
@@ -175,15 +172,9 @@ def ProtoToManifest(resource, resource_ref, kind, fields):
   manifest['metadata']['name'] = resource_ref.Name()
 
   for k in fields:
-    try:
-      v = getattr(resource, k)
-      # Skips the 'zero' values in the message.
-      if v:
-        manifest[k] = v
-    except AttributeError:
-      # TODO(b/188524927) 'gkeCluster' will be removed at some point.
-      # try/except block and manifest_util_test.py can be removed when
-      # the migration is done.
-      log.debug('Field {} does not exist.'.format(k))
+    v = getattr(resource, k)
+    # Skips the 'zero' values in the message.
+    if v:
+      manifest[k] = v
 
   return manifest

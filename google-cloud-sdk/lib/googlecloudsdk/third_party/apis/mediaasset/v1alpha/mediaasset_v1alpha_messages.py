@@ -2116,14 +2116,12 @@ class MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsAnnotationsPatchR
       annotation `projects/{project}/locations/{location}/assetTypes/{asset_ty
       pe}/assets/{asset}/annotationSets/{annotation_set}/annotations/{annotati
       on}`.
-    oldUpdateMask: this is temporary
     updateMask: Required. Comma-separated list of fields to be updated.
   """
 
   annotation = _messages.MessageField('Annotation', 1)
   name = _messages.StringField(2, required=True)
-  oldUpdateMask = _messages.StringField(3)
-  updateMask = _messages.StringField(4)
+  updateMask = _messages.StringField(3)
 
 
 class MediaassetProjectsLocationsAssetTypesAssetsAnnotationSetsAnnotationsSetIamPolicyRequest(_messages.Message):
@@ -2325,15 +2323,13 @@ class MediaassetProjectsLocationsAssetTypesAssetsGetRequest(_messages.Message):
     name: Required. The name of the asset to retrieve, in the following form:
       `projects/{project}/locations/{location}/assetTypes/{type}/assets/{asset
       }`.
-    oldReadMask: This is temporary.
     readMask: Extra fields to be poplulated as part of the asset resource in
       the response. Currently, this only supports populating asset metadata
       (no wildcards and no contents of the entire asset).
   """
 
   name = _messages.StringField(1, required=True)
-  oldReadMask = _messages.StringField(2)
-  readMask = _messages.StringField(3)
+  readMask = _messages.StringField(2)
 
 
 class MediaassetProjectsLocationsAssetTypesAssetsListRequest(_messages.Message):
@@ -2343,7 +2339,6 @@ class MediaassetProjectsLocationsAssetTypesAssetsListRequest(_messages.Message):
     filter: The filter to apply to list results. Valid field expressions are
       defined in assetType.indexedFieldConfig. Format:
       https://cloud.google.com/logging/docs/view/advanced-queries
-    oldReadMask: This is temporary.
     pageSize: The maximum number of items to return. If unspecified, server
       will pick an appropriate default. Server may return fewer items than
       requested. A caller should only rely on response's next_page_token to
@@ -2358,11 +2353,10 @@ class MediaassetProjectsLocationsAssetTypesAssetsListRequest(_messages.Message):
   """
 
   filter = _messages.StringField(1)
-  oldReadMask = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
-  readMask = _messages.StringField(6)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+  readMask = _messages.StringField(5)
 
 
 class MediaassetProjectsLocationsAssetTypesAssetsPatchRequest(_messages.Message):
@@ -2376,7 +2370,6 @@ class MediaassetProjectsLocationsAssetTypesAssetsPatchRequest(_messages.Message)
       character minimum, 63 characters maximum 2. only contains letters,
       digits, underscore and hyphen 3. starts with a letter if length == 1,
       starts with a letter or underscore if length > 1
-    oldUpdateMask: this is temporary
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
@@ -2397,9 +2390,8 @@ class MediaassetProjectsLocationsAssetTypesAssetsPatchRequest(_messages.Message)
 
   asset = _messages.MessageField('Asset', 1)
   name = _messages.StringField(2, required=True)
-  oldUpdateMask = _messages.StringField(3)
-  requestId = _messages.StringField(4)
-  updateMask = _messages.StringField(5)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
 
 
 class MediaassetProjectsLocationsAssetTypesAssetsSetIamPolicyRequest(_messages.Message):
@@ -2551,7 +2543,6 @@ class MediaassetProjectsLocationsAssetTypesPatchRequest(_messages.Message):
       minimum, 63 characters maximum 2. only contains letters, digits,
       underscore and hyphen 3. starts with a letter if length == 1, starts
       with a letter or underscore if length > 1
-    oldUpdateMask: this is temporary
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
@@ -2572,9 +2563,8 @@ class MediaassetProjectsLocationsAssetTypesPatchRequest(_messages.Message):
 
   assetType = _messages.MessageField('AssetType', 1)
   name = _messages.StringField(2, required=True)
-  oldUpdateMask = _messages.StringField(3)
-  requestId = _messages.StringField(4)
-  updateMask = _messages.StringField(5)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
 
 
 class MediaassetProjectsLocationsAssetTypesRulesCreateRequest(_messages.Message):
@@ -2651,15 +2641,13 @@ class MediaassetProjectsLocationsAssetTypesRulesPatchRequest(_messages.Message):
       1 character minimum, 63 characters maximum 2. only contains letters,
       digits, underscore and hyphen 3. starts with a letter if length == 1,
       starts with a letter or underscore if length > 1
-    oldUpdateMask: this is temporary
     rule: A Rule resource to be passed as the request body.
     updateMask: Required. Comma-separated list of fields to be updated.
   """
 
   name = _messages.StringField(1, required=True)
-  oldUpdateMask = _messages.StringField(2)
-  rule = _messages.MessageField('Rule', 3)
-  updateMask = _messages.StringField(4)
+  rule = _messages.MessageField('Rule', 2)
+  updateMask = _messages.StringField(3)
 
 
 class MediaassetProjectsLocationsAssetTypesSetIamPolicyRequest(_messages.Message):
@@ -2811,7 +2799,6 @@ class MediaassetProjectsLocationsComplexTypesPatchRequest(_messages.Message):
       character minimum, 63 characters maximum 2. only contains letters,
       digits, underscore and hyphen 3. starts with a letter if length == 1,
       starts with a letter or underscore if length > 1
-    oldUpdateMask: this is temporary
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
@@ -2832,9 +2819,8 @@ class MediaassetProjectsLocationsComplexTypesPatchRequest(_messages.Message):
 
   complexType = _messages.MessageField('ComplexType', 1)
   name = _messages.StringField(2, required=True)
-  oldUpdateMask = _messages.StringField(3)
-  requestId = _messages.StringField(4)
-  updateMask = _messages.StringField(5)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
 
 
 class MediaassetProjectsLocationsComplexTypesSetIamPolicyRequest(_messages.Message):
@@ -3148,7 +3134,6 @@ class MediaassetProjectsLocationsTransformersPatchRequest(_messages.Message):
       are: 1. 1 character minimum, 63 characters maximum 2. only contains
       letters, digits, underscore and hyphen 3. starts with a letter if length
       == 1, starts with a letter or underscore if length > 1
-    oldUpdateMask: this is temporary
     requestId: An optional request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
@@ -3169,10 +3154,9 @@ class MediaassetProjectsLocationsTransformersPatchRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
-  oldUpdateMask = _messages.StringField(2)
-  requestId = _messages.StringField(3)
-  transformer = _messages.MessageField('Transformer', 4)
-  updateMask = _messages.StringField(5)
+  requestId = _messages.StringField(2)
+  transformer = _messages.MessageField('Transformer', 3)
+  updateMask = _messages.StringField(4)
 
 
 class MediaassetProjectsLocationsTransformersSetIamPolicyRequest(_messages.Message):
@@ -3214,14 +3198,18 @@ class MetadataConfig(_messages.Message):
     complexType: Required. Reference to the complex type name, in the
       following form:
       `projects/{project}/locations/{location}/complexTypes/{name}`.
+    moduleDefinition: Reference to the module definition name, in the
+      following form:
+      `projects/{project}/locations/{location}/modules/{name}#{definition}`.
     owner: Output only. The owner of the metadata, set by the system.
     required: If true, this asset metadata is required to be specified during
       asset creation.
   """
 
   complexType = _messages.StringField(1)
-  owner = _messages.StringField(2)
-  required = _messages.BooleanField(3)
+  moduleDefinition = _messages.StringField(2)
+  owner = _messages.StringField(3)
+  required = _messages.BooleanField(4)
 
 
 class MetadataInfo(_messages.Message):

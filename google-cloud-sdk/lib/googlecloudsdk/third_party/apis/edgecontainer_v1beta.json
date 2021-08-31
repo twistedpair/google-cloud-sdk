@@ -265,6 +265,10 @@
           "description": "Required. Cluster-wide networking configuration.",
           "$ref": "ClusterNetworking"
         },
+        "authorization": {
+          "description": "Required. Immutable. RBAC policy that will be applied and managed by GEC.",
+          "$ref": "Authorization"
+        },
         "defaultMaxPodsPerNode": {
           "description": "The default maximum number of pods per node used if a maximum value is not specified explicitly for a node pool in this cluster. If unspecified, the Kubernetes default value will be used.",
           "type": "integer",
@@ -306,6 +310,28 @@
           "items": {
             "type": "string"
           }
+        }
+      }
+    },
+    "Authorization": {
+      "id": "Authorization",
+      "description": "RBAC policy that will be applied and managed by GEC.",
+      "type": "object",
+      "properties": {
+        "adminUsers": {
+          "description": "Required. User that will be granted the cluster-admin role on the cluster, providing full access to the cluster. Currently, this is a singular field, but will be expanded to allow multiple admins in the future.",
+          "$ref": "ClusterUser"
+        }
+      }
+    },
+    "ClusterUser": {
+      "id": "ClusterUser",
+      "description": "A user principal for an RBAC policy.",
+      "type": "object",
+      "properties": {
+        "username": {
+          "description": "An active Google username.",
+          "type": "string"
         }
       }
     },

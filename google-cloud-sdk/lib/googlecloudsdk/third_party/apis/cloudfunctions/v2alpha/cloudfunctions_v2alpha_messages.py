@@ -1162,12 +1162,12 @@ class OperationMetadataV1(_messages.Message):
       call. This field is only populated for Create and Update operations.
     buildName: The Cloud Build Name of the function deployment. This field is
       only populated for Create and Update operations.
-      projects//locations//builds/.
+      `projects//locations//builds/`.
     request: The original request that started the operation.
     sourceToken: An identifier for Firebase function sources. Disclaimer: This
       field is only supported for Firebase function deployments.
     target: Target of the operation - for example
-      projects/project-1/locations/region-1/functions/function-1
+      `projects/project-1/locations/region-1/functions/function-1`
     type: Type of operation.
     updateTime: The last update timestamp of the operation.
     versionId: Version id of the function created or updated by an API call.

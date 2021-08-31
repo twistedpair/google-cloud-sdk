@@ -34,6 +34,11 @@ from mako import runtime
 from mako import template
 
 TEMPLATE_SUFFIX = '_template.tpl'
+CRUD_TEMPLATES = frozenset({
+    'create_template.tpl', 'delete_template.tpl', 'describe_template.tpl',
+    'get_iam_policy_template.tpl', 'list_template.tpl',
+    'set_iam_policy_template.tpl'
+})
 
 
 class CollectionNotFoundError(core_exceptions.Error):
@@ -60,6 +65,8 @@ def WriteAllYaml(collection_name, output_dir):
   collection_dict.update(api_dict)
   for command_template in os.listdir(
       os.path.join(os.path.dirname(__file__), 'command_templates')):
+    if command_template.split('/')[-1] not in CRUD_TEMPLATES:
+      continue
     should_write_test = WriteYaml(command_template, collection_dict, output_dir,
                                   api_message_module)
     if should_write_test:

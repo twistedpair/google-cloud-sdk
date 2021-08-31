@@ -3176,7 +3176,7 @@
           "$ref": "GoogleCloudAiplatformV1beta1StudySpecMedianAutomatedStoppingSpec"
         },
         "convexStopConfig": {
-          "description": "Deprecated, use convex_automated_stopping_spec instead. The automated early stopping using convex stopping rule.",
+          "description": "Deprecated. The automated early stopping using convex stopping rule.",
           "$ref": "GoogleCloudAiplatformV1beta1StudySpecConvexStopConfig"
         },
         "metrics": {
@@ -4126,6 +4126,11 @@
         "statsAnomaliesBaseDirectory": {
           "description": "Stats anomalies base folder path.",
           "$ref": "GoogleCloudAiplatformV1beta1GcsDestination"
+        },
+        "error": {
+          "description": "Output only. Only populated when the job's state is `JOB_STATE_FAILED` or `JOB_STATE_CANCELLED`.",
+          "readOnly": true,
+          "$ref": "GoogleRpcStatus"
         }
       }
     },
@@ -7033,6 +7038,53 @@
         }
       }
     },
+    "GoogleCloudAiplatformV1beta1BatchCreateTensorboardRunsRequest": {
+      "id": "GoogleCloudAiplatformV1beta1BatchCreateTensorboardRunsRequest",
+      "description": "Request message for TensorboardService.BatchCreateTensorboardRuns.",
+      "type": "object",
+      "properties": {
+        "requests": {
+          "description": "Required. The request message specifying the TensorboardRuns to create. A maximum of 1000 TensorboardRuns can be created in a batch.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1CreateTensorboardRunRequest"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1CreateTensorboardRunRequest": {
+      "id": "GoogleCloudAiplatformV1beta1CreateTensorboardRunRequest",
+      "description": "Request message for TensorboardService.CreateTensorboardRun.",
+      "type": "object",
+      "properties": {
+        "parent": {
+          "description": "Required. The resource name of the TensorboardExperiment to create the TensorboardRun in. Format: `projects\/{project}\/locations\/{location}\/tensorboards\/{tensorboard}\/experiments\/{experiment}`",
+          "type": "string"
+        },
+        "tensorboardRun": {
+          "description": "Required. The TensorboardRun to create.",
+          "$ref": "GoogleCloudAiplatformV1beta1TensorboardRun"
+        },
+        "tensorboardRunId": {
+          "description": "Required. The ID to use for the Tensorboard run, which will become the final component of the Tensorboard run's resource name. This value should be 1-128 characters, and valid characters are \/a-z-\/.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1BatchCreateTensorboardRunsResponse": {
+      "id": "GoogleCloudAiplatformV1beta1BatchCreateTensorboardRunsResponse",
+      "description": "Response message for TensorboardService.BatchCreateTensorboardRuns.",
+      "type": "object",
+      "properties": {
+        "tensorboardRuns": {
+          "description": "The created TensorboardRuns.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1TensorboardRun"
+          }
+        }
+      }
+    },
     "GoogleCloudAiplatformV1beta1ListTensorboardRunsResponse": {
       "id": "GoogleCloudAiplatformV1beta1ListTensorboardRunsResponse",
       "description": "Response message for TensorboardService.ListTensorboardRuns.",
@@ -7048,6 +7100,39 @@
         "nextPageToken": {
           "description": "A token, which can be sent as ListTensorboardRunsRequest.page_token to retrieve the next page. If this field is omitted, there are no subsequent pages.",
           "type": "string"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1BatchCreateTensorboardTimeSeriesRequest": {
+      "id": "GoogleCloudAiplatformV1beta1BatchCreateTensorboardTimeSeriesRequest",
+      "description": "Request message for TensorboardService.BatchCreateTensorboardTimeSeries.",
+      "type": "object",
+      "properties": {
+        "requests": {
+          "description": "Required. The request message specifying the TensorboardTimeSeries to create. A maximum of 1000 TensorboardTimeSeries can be created in a batch.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1CreateTensorboardTimeSeriesRequest"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1CreateTensorboardTimeSeriesRequest": {
+      "id": "GoogleCloudAiplatformV1beta1CreateTensorboardTimeSeriesRequest",
+      "description": "Request message for TensorboardService.CreateTensorboardTimeSeries.",
+      "type": "object",
+      "properties": {
+        "parent": {
+          "description": "Required. The resource name of the TensorboardRun to create the TensorboardTimeSeries in. Format: `projects\/{project}\/locations\/{location}\/tensorboards\/{tensorboard}\/experiments\/{experiment}\/runs\/{run}`",
+          "type": "string"
+        },
+        "tensorboardTimeSeriesId": {
+          "description": "Optional. The user specified unique ID to use for the TensorboardTimeSeries, which will become the final component of the TensorboardTimeSeries's resource name. Ref: go\/ucaip-user-specified-id This value should match \"a-z0-9{0, 127}\"",
+          "type": "string"
+        },
+        "tensorboardTimeSeries": {
+          "description": "Required. The TensorboardTimeSeries to create.",
+          "$ref": "GoogleCloudAiplatformV1beta1TensorboardTimeSeries"
         }
       }
     },
@@ -7139,6 +7224,20 @@
           "readOnly": true,
           "type": "string",
           "format": "int64"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1BatchCreateTensorboardTimeSeriesResponse": {
+      "id": "GoogleCloudAiplatformV1beta1BatchCreateTensorboardTimeSeriesResponse",
+      "description": "Response message for TensorboardService.BatchCreateTensorboardTimeSeries.",
+      "type": "object",
+      "properties": {
+        "tensorboardTimeSeries": {
+          "description": "The created TensorboardTimeSeries.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1beta1TensorboardTimeSeries"
+          }
         }
       }
     },
@@ -10138,6 +10237,17 @@
       "properties": {
         "genericMetadata": {
           "description": "The operation generic information.",
+          "$ref": "GoogleCloudAiplatformUiGenericOperationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformUiCreateEdgeDeviceOperationMetadata": {
+      "id": "GoogleCloudAiplatformUiCreateEdgeDeviceOperationMetadata",
+      "description": "Metadata message for EdgeDeviceService.CreateEdgeDevice.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "Generic information about the operation.",
           "$ref": "GoogleCloudAiplatformUiGenericOperationMetadata"
         }
       }
@@ -20751,6 +20861,10 @@
         "baseOutputDirectory": {
           "description": "The Cloud Storage location to store the output of this CustomJob or HyperparameterTuningJob. For HyperparameterTuningJob, the baseOutputDirectory of each child CustomJob backing a Trial is set to a subdirectory of name id under its parent HyperparameterTuningJob's baseOutputDirectory. The following Vertex AI environment variables will be passed to containers or python modules when this field is set: For CustomJob: * AIP_MODEL_DIR = `\/model\/` * AIP_CHECKPOINT_DIR = `\/checkpoints\/` * AIP_TENSORBOARD_LOG_DIR = `\/logs\/` For CustomJob backing a Trial of HyperparameterTuningJob: * AIP_MODEL_DIR = `\/\/model\/` * AIP_CHECKPOINT_DIR = `\/\/checkpoints\/` * AIP_TENSORBOARD_LOG_DIR = `\/\/logs\/`",
           "$ref": "GoogleCloudAiplatformV1GcsDestination"
+        },
+        "enableWebAccess": {
+          "description": "Optional. Whether you want Vertex AI to enable [interactive shell access](https:\/\/cloud.google.com\/vertex-ai\/docs\/training\/monitor-debug-interactive-shell) to training containers. If set to `true`, you can access interactive shells at the URIs given by CustomJob.web_access_uris or Trial.web_access_uris (within HyperparameterTuningJob.trials).",
+          "type": "boolean"
         }
       }
     },
@@ -27476,7 +27590,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Deletes a single MetadataStore and all its child resources (i.e. all Artifacts, Executions, Contexts)."
+                  "description": "Deletes a single MetadataStore and all its child resources (Artifacts, Executions, and Contexts)."
                 }
               }
               ,
@@ -27602,7 +27716,7 @@
                           "format": "google-fieldmask"
                         },
                         "allowMissing": {
-                          "description": "If set to true, and the Artifact is not found, a new Artifact will be created.",
+                          "description": "If set to true, and the Artifact is not found, a new Artifact is created.",
                           "location": "query",
                           "type": "boolean"
                         }
@@ -27838,7 +27952,7 @@
                           "format": "google-fieldmask"
                         },
                         "allowMissing": {
-                          "description": "If set to true, and the Context is not found, a new Context will be created.",
+                          "description": "If set to true, and the Context is not found, a new Context is created.",
                           "location": "query",
                           "type": "boolean"
                         }
@@ -28124,7 +28238,7 @@
                           "format": "google-fieldmask"
                         },
                         "allowMissing": {
-                          "description": "If set to true, and the Execution is not found, a new Execution will be created.",
+                          "description": "If set to true, and the Execution is not found, a new Execution is created.",
                           "location": "query",
                           "type": "boolean"
                         }
@@ -30872,6 +30986,34 @@
                           ],
                           "description": "Creates a TensorboardRun."
                         },
+                        "batchCreate": {
+                          "id": "aiplatform.projects.locations.tensorboards.experiments.runs.batchCreate",
+                          "path": "v1beta1/{+parent}/runs:batchCreate",
+                          "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/runs:batchCreate",
+                          "httpMethod": "POST",
+                          "parameters": {
+                            "parent": {
+                              "description": "Required. The resource name of the TensorboardExperiment to create the TensorboardRuns in. Format: `projects\/{project}\/locations\/{location}\/tensorboards\/{tensorboard}\/experiments\/{experiment}` The parent field in the CreateTensorboardRunRequest messages must match this field.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+\/experiments\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "parent"
+                          ],
+                          "request": {
+                            "$ref": "GoogleCloudAiplatformV1beta1BatchCreateTensorboardRunsRequest"
+                          },
+                          "response": {
+                            "$ref": "GoogleCloudAiplatformV1beta1BatchCreateTensorboardRunsResponse"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Batch create TensorboardRuns."
+                        },
                         "get": {
                           "id": "aiplatform.projects.locations.tensorboards.experiments.runs.get",
                           "path": "v1beta1/{+name}",
@@ -31192,6 +31334,40 @@
                         },
                         "timeSeries": {
                           "methods": {
+                            "batchCreate": {
+                              "id": "aiplatform.projects.locations.tensorboards.experiments.runs.timeSeries.batchCreate",
+                              "path": "v1beta1/{+parent}/runs/{runsId}/timeSeries:batchCreate",
+                              "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/runs/{runsId}/timeSeries:batchCreate",
+                              "httpMethod": "POST",
+                              "parameters": {
+                                "parent": {
+                                  "description": "Required. The resource name of the TensorboardExperiment to create the TensorboardTimeSeries in. Format: `projects\/{project}\/locations\/{location}\/tensorboards\/{tensorboard}\/experiments\/{experiment}` The TensorboardRuns referenced by the parent fields in the CreateTensorboardTimeSeriesRequest messages must be sub resources of this TensorboardExperiment.",
+                                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+\/experiments\/[^\/]+$",
+                                  "location": "path",
+                                  "required": true,
+                                  "type": "string"
+                                },
+                                "runsId": {
+                                  "location": "path",
+                                  "required": true,
+                                  "type": "string"
+                                }
+                              },
+                              "parameterOrder": [
+                                "parent",
+                                "runsId"
+                              ],
+                              "request": {
+                                "$ref": "GoogleCloudAiplatformV1beta1BatchCreateTensorboardTimeSeriesRequest"
+                              },
+                              "response": {
+                                "$ref": "GoogleCloudAiplatformV1beta1BatchCreateTensorboardTimeSeriesResponse"
+                              },
+                              "scopes": [
+                                "https://www.googleapis.com/auth/cloud-platform"
+                              ],
+                              "description": "Batch create TensorboardTimeSeries that belong to a TensorboardExperiment."
+                            },
                             "create": {
                               "id": "aiplatform.projects.locations.tensorboards.experiments.runs.timeSeries.create",
                               "path": "v1beta1/{+parent}/timeSeries",

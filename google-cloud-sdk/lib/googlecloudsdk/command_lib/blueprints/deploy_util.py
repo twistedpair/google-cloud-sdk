@@ -278,5 +278,15 @@ def Apply(source,
 
   if applied_deployment.state == messages.Deployment.StateValueValuesEnum.FAILED:
     error_handling.DeploymentFailed(applied_deployment)
+  elif (applied_deployment.state
+        == messages.Deployment.StateValueValuesEnum.ACTIVE and
+        applied_deployment.latestRevision and
+        not applied_deployment.reconcileTimeout):
+    # If the deployment succeeded without a timeout defined and
+    # has a latest revision, fetch that revision and print its apply results.
+    revision_ref = blueprints_util.GetRevision(
+        applied_deployment.latestRevision)
+    error_handling.PrintKptApplyResultsError(
+        revision_ref.applyResults.artifacts)
 
   return applied_deployment

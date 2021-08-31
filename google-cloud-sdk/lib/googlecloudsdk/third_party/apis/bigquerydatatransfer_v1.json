@@ -824,6 +824,20 @@
         }
       }
     },
+    "EnrollDataSourcesRequest": {
+      "id": "EnrollDataSourcesRequest",
+      "description": "A request to enroll a set of data sources so they are visible in the BigQuery UI's `Transfer` tab.",
+      "type": "object",
+      "properties": {
+        "dataSourceIds": {
+          "description": "Data sources that are enrolled. It is required to provide at least one data source id.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "ListLocationsResponse": {
       "id": "ListLocationsResponse",
       "description": "The response message for Locations.ListLocations.",
@@ -879,6 +893,38 @@
   },
   "resources": {
     "projects": {
+      "methods": {
+        "enrollDataSources": {
+          "id": "bigquerydatatransfer.projects.enrollDataSources",
+          "path": "v1/{+name}:enrollDataSources",
+          "flatPath": "v1/projects/{projectsId}:enrollDataSources",
+          "httpMethod": "POST",
+          "parameters": {
+            "name": {
+              "description": "The name of the project resource in the form: `projects\/{project_id}`",
+              "pattern": "^projects\/[^\/]+$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "request": {
+            "$ref": "EnrollDataSourcesRequest"
+          },
+          "response": {
+            "$ref": "Empty"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/bigquery",
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Enroll data sources in a user project. This allows users to create transfer configurations for these data sources. They will also appear in the ListDataSources RPC and as such, will appear in the BigQuery UI 'https:\/\/bigquery.cloud.google.com' (and the documents can be found at https:\/\/cloud.google.com\/bigquery\/bigquery-web-ui and https:\/\/cloud.google.com\/bigquery\/docs\/working-with-transfers)."
+        }
+      }
+      ,
       "resources": {
         "dataSources": {
           "methods": {
@@ -1428,6 +1474,35 @@
         },
         "locations": {
           "methods": {
+            "enrollDataSources": {
+              "id": "bigquerydatatransfer.projects.locations.enrollDataSources",
+              "path": "v1/{+name}:enrollDataSources",
+              "flatPath": "v1/projects/{projectsId}/locations/{locationsId}:enrollDataSources",
+              "httpMethod": "POST",
+              "parameters": {
+                "name": {
+                  "description": "The name of the project resource in the form: `projects\/{project_id}`",
+                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "EnrollDataSourcesRequest"
+              },
+              "response": {
+                "$ref": "Empty"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/bigquery",
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Enroll data sources in a user project. This allows users to create transfer configurations for these data sources. They will also appear in the ListDataSources RPC and as such, will appear in the BigQuery UI 'https:\/\/bigquery.cloud.google.com' (and the documents can be found at https:\/\/cloud.google.com\/bigquery\/bigquery-web-ui and https:\/\/cloud.google.com\/bigquery\/docs\/working-with-transfers)."
+            },
             "list": {
               "id": "bigquerydatatransfer.projects.locations.list",
               "path": "v1/{+name}/locations",

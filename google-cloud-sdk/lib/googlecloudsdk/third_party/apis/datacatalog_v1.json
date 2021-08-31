@@ -270,7 +270,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The resource name of the entry group in URL format. Note: The entry group itself and its child resources might not be stored in the location specified in its name. ",
+          "description": "The resource name of the entry group in URL format. Note: The entry group itself and its child resources might not be stored in the location specified in its name.",
           "type": "string"
         },
         "displayName": {
@@ -342,7 +342,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. The resource name of an entry in URL format. Note: The entry itself and its child resources might not be stored in the location specified in its name. ",
+          "description": "Output only. The resource name of an entry in URL format. Note: The entry itself and its child resources might not be stored in the location specified in its name.",
           "readOnly": true,
           "type": "string"
         },
@@ -1050,7 +1050,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The resource name of the tag template in URL format. Note: The tag template itself and its child resources might not be stored in the location specified in its name. ",
+          "description": "The resource name of the tag template in URL format. Note: The tag template itself and its child resources might not be stored in the location specified in its name.",
           "type": "string"
         },
         "displayName": {
@@ -1184,7 +1184,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The resource name of the tag in URL format where tag ID is a system-generated identifier. Note: The tag itself might not be stored in the location specified in its name. ",
+          "description": "The resource name of the tag in URL format where tag ID is a system-generated identifier. Note: The tag itself might not be stored in the location specified in its name.",
           "type": "string"
         },
         "template": {
@@ -1419,7 +1419,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. Resource name of this taxonomy in URL format. Note: Policy tag manager generates unique taxonomy IDs. ",
+          "description": "Output only. Resource name of this taxonomy in URL format. Note: Policy tag manager generates unique taxonomy IDs.",
           "readOnly": true,
           "type": "string"
         },
@@ -1483,7 +1483,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. Resource name of this policy tag in the URL format. The policy tag manager generates unique taxonomy IDs and policy tag IDs. ",
+          "description": "Output only. Resource name of this policy tag in the URL format. The policy tag manager generates unique taxonomy IDs and policy tag IDs.",
           "readOnly": true,
           "type": "string"
         },
@@ -1708,7 +1708,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The names of the project and location that the new entry group belongs to. Note: The entry group itself and its child resources might not be stored in the location specified in its name. ",
+                      "description": "Required. The names of the project and location that the new entry group belongs to. Note: The entry group itself and its child resources might not be stored in the location specified in its name.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -1741,7 +1741,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. The name of the entry group to get. ",
+                      "description": "Required. The name of the entry group to get.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/entryGroups\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -1772,7 +1772,7 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "The resource name of the entry group in URL format. Note: The entry group itself and its child resources might not be stored in the location specified in its name. ",
+                      "description": "The resource name of the entry group in URL format. Note: The entry group itself and its child resources might not be stored in the location specified in its name.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/entryGroups\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -1806,7 +1806,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "Required. The name of the entry group to delete. ",
+                      "description": "Required. The name of the entry group to delete.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/entryGroups\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -1961,7 +1961,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The name of the entry group this entry belongs to. Note: The entry itself and its child resources might not be stored in the location specified in its name. ",
+                          "description": "Required. The name of the entry group this entry belongs to. Note: The entry itself and its child resources might not be stored in the location specified in its name.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/entryGroups\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -1994,7 +1994,7 @@
                       "httpMethod": "PATCH",
                       "parameters": {
                         "name": {
-                          "description": "Output only. The resource name of an entry in URL format. Note: The entry itself and its child resources might not be stored in the location specified in its name. ",
+                          "description": "Output only. The resource name of an entry in URL format. Note: The entry itself and its child resources might not be stored in the location specified in its name.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/entryGroups\/[^\/]+\/entries\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -2028,7 +2028,7 @@
                       "httpMethod": "DELETE",
                       "parameters": {
                         "name": {
-                          "description": "Required. The name of the entry to delete. ",
+                          "description": "Required. The name of the entry to delete.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/entryGroups\/[^\/]+\/entries\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -2053,7 +2053,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "name": {
-                          "description": "Required. The name of the entry to get. ",
+                          "description": "Required. The name of the entry to get.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/entryGroups\/[^\/]+\/entries\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -2181,7 +2181,7 @@
                           "httpMethod": "POST",
                           "parameters": {
                             "parent": {
-                              "description": "Required. The name of the resource to attach this tag to. Tags can be attached to entries or entry groups. An entry can have up to 1000 attached tags. Note: The tag and its child resources might not be stored in the location specified in its name. ",
+                              "description": "Required. The name of the resource to attach this tag to. Tags can be attached to entries or entry groups. An entry can have up to 1000 attached tags. Note: The tag and its child resources might not be stored in the location specified in its name.",
                               "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/entryGroups\/[^\/]+\/entries\/[^\/]+$",
                               "location": "path",
                               "required": true,
@@ -2209,7 +2209,7 @@
                           "httpMethod": "PATCH",
                           "parameters": {
                             "name": {
-                              "description": "The resource name of the tag in URL format where tag ID is a system-generated identifier. Note: The tag itself might not be stored in the location specified in its name. ",
+                              "description": "The resource name of the tag in URL format where tag ID is a system-generated identifier. Note: The tag itself might not be stored in the location specified in its name.",
                               "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/entryGroups\/[^\/]+\/entries\/[^\/]+\/tags\/[^\/]+$",
                               "location": "path",
                               "required": true,
@@ -2243,7 +2243,7 @@
                           "httpMethod": "DELETE",
                           "parameters": {
                             "name": {
-                              "description": "Required. The name of the tag to delete. ",
+                              "description": "Required. The name of the tag to delete.",
                               "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/entryGroups\/[^\/]+\/entries\/[^\/]+\/tags\/[^\/]+$",
                               "location": "path",
                               "required": true,
@@ -2268,7 +2268,7 @@
                           "httpMethod": "GET",
                           "parameters": {
                             "parent": {
-                              "description": "Required. The name of the Data Catalog resource to list the tags of. The resource can be an Entry or an EntryGroup (without `\/entries\/{entries}` at the end). ",
+                              "description": "Required. The name of the Data Catalog resource to list the tags of. The resource can be an Entry or an EntryGroup (without `\/entries\/{entries}` at the end).",
                               "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/entryGroups\/[^\/]+\/entries\/[^\/]+$",
                               "location": "path",
                               "required": true,
@@ -2310,7 +2310,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The name of the resource to attach this tag to. Tags can be attached to entries or entry groups. An entry can have up to 1000 attached tags. Note: The tag and its child resources might not be stored in the location specified in its name. ",
+                          "description": "Required. The name of the resource to attach this tag to. Tags can be attached to entries or entry groups. An entry can have up to 1000 attached tags. Note: The tag and its child resources might not be stored in the location specified in its name.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/entryGroups\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -2338,7 +2338,7 @@
                       "httpMethod": "PATCH",
                       "parameters": {
                         "name": {
-                          "description": "The resource name of the tag in URL format where tag ID is a system-generated identifier. Note: The tag itself might not be stored in the location specified in its name. ",
+                          "description": "The resource name of the tag in URL format where tag ID is a system-generated identifier. Note: The tag itself might not be stored in the location specified in its name.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/entryGroups\/[^\/]+\/tags\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -2372,7 +2372,7 @@
                       "httpMethod": "DELETE",
                       "parameters": {
                         "name": {
-                          "description": "Required. The name of the tag to delete. ",
+                          "description": "Required. The name of the tag to delete.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/entryGroups\/[^\/]+\/tags\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -2397,7 +2397,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The name of the Data Catalog resource to list the tags of. The resource can be an Entry or an EntryGroup (without `\/entries\/{entries}` at the end). ",
+                          "description": "Required. The name of the Data Catalog resource to list the tags of. The resource can be an Entry or an EntryGroup (without `\/entries\/{entries}` at the end).",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/entryGroups\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -2439,7 +2439,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The name of the project and the template location [region](https:\/\/cloud.google.com\/data-catalog\/docs\/concepts\/regions). ",
+                      "description": "Required. The name of the project and the template location [region](https:\/\/cloud.google.com\/data-catalog\/docs\/concepts\/regions).",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -2472,7 +2472,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. The name of the tag template to get. ",
+                      "description": "Required. The name of the tag template to get.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tagTemplates\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -2497,7 +2497,7 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "The resource name of the tag template in URL format. Note: The tag template itself and its child resources might not be stored in the location specified in its name. ",
+                      "description": "The resource name of the tag template in URL format. Note: The tag template itself and its child resources might not be stored in the location specified in its name.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tagTemplates\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -2531,7 +2531,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "Required. The name of the tag template to delete. ",
+                      "description": "Required. The name of the tag template to delete.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tagTemplates\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -2650,7 +2650,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The name of the project and the template location [region](https:\/\/cloud.google.com\/data-catalog\/docs\/concepts\/regions). ",
+                          "description": "Required. The name of the project and the template location [region](https:\/\/cloud.google.com\/data-catalog\/docs\/concepts\/regions).",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tagTemplates\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -2683,7 +2683,7 @@
                       "httpMethod": "PATCH",
                       "parameters": {
                         "name": {
-                          "description": "Required. The name of the tag template field. ",
+                          "description": "Required. The name of the tag template field.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tagTemplates\/[^\/]+\/fields\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -2717,7 +2717,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "name": {
-                          "description": "Required. The name of the tag template. ",
+                          "description": "Required. The name of the tag template.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tagTemplates\/[^\/]+\/fields\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -2745,7 +2745,7 @@
                       "httpMethod": "DELETE",
                       "parameters": {
                         "name": {
-                          "description": "Required. The name of the tag template field to delete. ",
+                          "description": "Required. The name of the tag template field to delete.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tagTemplates\/[^\/]+\/fields\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -2780,7 +2780,7 @@
                           "httpMethod": "POST",
                           "parameters": {
                             "name": {
-                              "description": "Required. The name of the enum field value. ",
+                              "description": "Required. The name of the enum field value.",
                               "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tagTemplates\/[^\/]+\/fields\/[^\/]+\/enumValues\/[^\/]+$",
                               "location": "path",
                               "required": true,
@@ -2816,7 +2816,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. Resource name of the project that the taxonomy will belong to. ",
+                      "description": "Required. Resource name of the project that the taxonomy will belong to.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -2844,7 +2844,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "Required. Resource name of the taxonomy to delete. Note: All policy tags in this taxonomy are also deleted. ",
+                      "description": "Required. Resource name of the taxonomy to delete. Note: All policy tags in this taxonomy are also deleted.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/taxonomies\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -2869,7 +2869,7 @@
                   "httpMethod": "PATCH",
                   "parameters": {
                     "name": {
-                      "description": "Output only. Resource name of this taxonomy in URL format. Note: Policy tag manager generates unique taxonomy IDs. ",
+                      "description": "Output only. Resource name of this taxonomy in URL format. Note: Policy tag manager generates unique taxonomy IDs.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/taxonomies\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -2903,7 +2903,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. Resource name of the project to list the taxonomies of. ",
+                      "description": "Required. Resource name of the project to list the taxonomies of.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -2939,7 +2939,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. Resource name of the taxonomy to get. ",
+                      "description": "Required. Resource name of the taxonomy to get.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/taxonomies\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -3076,7 +3076,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. Resource name of project that the imported taxonomies will belong to. ",
+                      "description": "Required. Resource name of project that the imported taxonomies will belong to.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -3104,7 +3104,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. Resource name of the project that the exported taxonomies belong to. ",
+                      "description": "Required. Resource name of the project that the exported taxonomies belong to.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -3145,7 +3145,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "parent": {
-                          "description": "Required. Resource name of the taxonomy that the policy tag will belong to. ",
+                          "description": "Required. Resource name of the taxonomy that the policy tag will belong to.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/taxonomies\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -3173,7 +3173,7 @@
                       "httpMethod": "DELETE",
                       "parameters": {
                         "name": {
-                          "description": "Required. Resource name of the policy tag to delete. Note: All of its descendant policy tags are also deleted. ",
+                          "description": "Required. Resource name of the policy tag to delete. Note: All of its descendant policy tags are also deleted.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/taxonomies\/[^\/]+\/policyTags\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -3198,7 +3198,7 @@
                       "httpMethod": "PATCH",
                       "parameters": {
                         "name": {
-                          "description": "Output only. Resource name of this policy tag in the URL format. The policy tag manager generates unique taxonomy IDs and policy tag IDs. ",
+                          "description": "Output only. Resource name of this policy tag in the URL format. The policy tag manager generates unique taxonomy IDs and policy tag IDs.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/taxonomies\/[^\/]+\/policyTags\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -3232,7 +3232,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "Required. Resource name of the taxonomy to list the policy tags of. ",
+                          "description": "Required. Resource name of the taxonomy to list the policy tags of.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/taxonomies\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -3268,7 +3268,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "name": {
-                          "description": "Required. Resource name of the policy tag. ",
+                          "description": "Required. Resource name of the policy tag.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/taxonomies\/[^\/]+\/policyTags\/[^\/]+$",
                           "location": "path",
                           "required": true,

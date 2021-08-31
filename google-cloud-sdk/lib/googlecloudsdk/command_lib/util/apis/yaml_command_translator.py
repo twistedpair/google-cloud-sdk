@@ -44,7 +44,8 @@ from googlecloudsdk.command_lib.util.apis import update
 from googlecloudsdk.command_lib.util.apis import yaml_command_schema
 from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.command_lib.util.declarative import flags as declarative_config_flags
-from googlecloudsdk.command_lib.util.declarative.clients import kcc_client
+from googlecloudsdk.command_lib.util.declarative import python_command_util
+
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
@@ -919,13 +920,14 @@ class CommandBuilder(object):
 
       def Run(self_, args):  # pylint: disable=no-self-argument
         # pylint: disable=missing-docstring
-        client = kcc_client.KccClient()
+        collection = self.spec.arguments.resource.GenerateResourceSpec(
+        ).collection
         if getattr(args, 'all', None):
-          collection = self.spec.arguments.resource.GenerateResourceSpec(
-          ).collection
-          return client.ExportAll(args=args, collection=collection)
+          return python_command_util.RunExport(
+              args=args, collection=collection, resource_ref=None)
         ref = self.arg_generator.GetRequestResourceRef(args).SelfLink()
-        return client.Export(args, resource_uri=ref)
+        return python_command_util.RunExport(
+            args=args, collection=collection, resource_ref=ref)
 
     return Command
 
@@ -1400,7 +1402,8 @@ class AsyncOperationPoller(waiter.OperationPoller):
 
   def _ResourceGetMethod(self):
     return registry.GetMethod(
-        self.spec.request.collection, self.spec.async_.resource_get_method,
+        self.spec.request.collection,
+        self.spec.async_.resource_get_method,
         api_version=self.spec.request.api_version)
 
 

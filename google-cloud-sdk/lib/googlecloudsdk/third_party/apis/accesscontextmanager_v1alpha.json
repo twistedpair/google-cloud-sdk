@@ -196,11 +196,11 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. Resource name of the `AccessPolicy`. Format: `accessPolicies\/{policy_id}`",
+          "description": "Resource name of the `AccessPolicy`. Format: `accessPolicies\/{access_policy}`",
           "type": "string"
         },
         "parent": {
-          "description": "Required. The parent of this `AccessPolicy` in the Cloud Resource Hierarchy. Currently immutable once created. Format: `organizations\/{organization_id}`",
+          "description": "Immutable. The parent of this `AccessPolicy` in the Cloud Resource Hierarchy Format: `organizations\/{organization_id}`",
           "type": "string"
         },
         "title": {
@@ -209,6 +209,7 @@
         },
         "etag": {
           "description": "Output only. An opaque identifier for the current version of the `AccessPolicy`. This will always be a strongly validated etag, meaning that two Access Polices will be identical if and only if their etags are identical. Clients should not expect this to be in any specific format.",
+          "readOnly": true,
           "type": "string"
         }
       }
@@ -237,7 +238,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Required. Resource name for the Access Level. The `short_name` component must begin with a letter and only include alphanumeric and '_'. Format: `accessPolicies\/{policy_id}\/accessLevels\/{short_name}`. The maximum length \/\/ of the `short_name` component is 50 characters.",
+          "description": "Required. Resource name for the Access Level. The `short_name` component must begin with a letter and only include alphanumeric and '_'. Format: `accessPolicies\/{access_policy}\/accessLevels\/{access_level}`. The maximum length of the `access_level` component is 50 characters.",
           "type": "string"
         },
         "title": {
@@ -462,6 +463,24 @@
         }
       }
     },
+    "ReplaceAccessLevelsRequest": {
+      "id": "ReplaceAccessLevelsRequest",
+      "description": "A request to replace all existing Access Levels in an Access Policy with the Access Levels provided. This is done atomically.",
+      "type": "object",
+      "properties": {
+        "accessLevels": {
+          "description": "Required. The desired Access Levels that should replace all existing Access Levels in the Access Policy.",
+          "type": "array",
+          "items": {
+            "$ref": "AccessLevel"
+          }
+        },
+        "etag": {
+          "description": "Optional. The etag for the version of the Access Policy that this replace operation is to be performed on. If, at the time of replace, the etag for the Access Policy stored in Access Context Manager is different from the specified etag, then the replace operation will not be performed and the call will fail. This field is not required. If etag is not provided, the operation will be performed as if a valid etag is provided.",
+          "type": "string"
+        }
+      }
+    },
     "ListServicePerimetersResponse": {
       "id": "ListServicePerimetersResponse",
       "description": "A response to `ListServicePerimetersRequest`.",
@@ -486,7 +505,7 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "Required. Resource name for the ServicePerimeter. The `short_name` component must begin with a letter and only include alphanumeric and '_'. Format: `accessPolicies\/{policy_id}\/servicePerimeters\/{short_name}`",
+          "description": "Required. Resource name for the ServicePerimeter. The `short_name` component must begin with a letter and only include alphanumeric and '_'. Format: `accessPolicies\/{access_policy}\/servicePerimeters\/{service_perimeter}",
           "type": "string"
         },
         "title": {
@@ -781,6 +800,35 @@
         }
       }
     },
+    "ReplaceServicePerimetersRequest": {
+      "id": "ReplaceServicePerimetersRequest",
+      "description": "A request to replace all existing Service Perimeters in an Access Policy with the Service Perimeters provided. This is done atomically.",
+      "type": "object",
+      "properties": {
+        "servicePerimeters": {
+          "description": "Required. The desired Service Perimeters that should replace all existing Service Perimeters in the Access Policy.",
+          "type": "array",
+          "items": {
+            "$ref": "ServicePerimeter"
+          }
+        },
+        "etag": {
+          "description": "Optional. The etag for the version of the Access Policy that this replace operation is to be performed on. If, at the time of replace, the etag for the Access Policy stored in Access Context Manager is different from the specified etag, then the replace operation will not be performed and the call will fail. This field is not required. If etag is not provided, the operation will be performed as if a valid etag is provided.",
+          "type": "string"
+        }
+      }
+    },
+    "CommitServicePerimetersRequest": {
+      "id": "CommitServicePerimetersRequest",
+      "description": "A request to commit dry-run specs in all Service Perimeters belonging to an Access Policy.",
+      "type": "object",
+      "properties": {
+        "etag": {
+          "description": "Optional. The etag for the version of the Access Policy that this commit operation is to be performed on. If, at the time of commit, the etag for the Access Policy stored in Access Context Manager is different from the specified etag, then the commit operation will not be performed and the call will fail. This field is not required. If etag is not provided, the operation will be performed as if a valid etag is provided.",
+          "type": "string"
+        }
+      }
+    },
     "ListGcpUserAccessBindingsResponse": {
       "id": "ListGcpUserAccessBindingsResponse",
       "description": "Response of ListGcpUserAccessBindings.",
@@ -818,53 +866,6 @@
           "items": {
             "type": "string"
           }
-        }
-      }
-    },
-    "ReplaceAccessLevelsRequest": {
-      "id": "ReplaceAccessLevelsRequest",
-      "description": "A request to replace all existing Access Levels in an Access Policy with the Access Levels provided. This is done atomically.",
-      "type": "object",
-      "properties": {
-        "accessLevels": {
-          "description": "Required. The desired Access Levels that should replace all existing Access Levels in the Access Policy.",
-          "type": "array",
-          "items": {
-            "$ref": "AccessLevel"
-          }
-        },
-        "etag": {
-          "description": "Optional. The etag for the version of the Access Policy that this replace operation is to be performed on. If, at the time of replace, the etag for the Access Policy stored in Access Context Manager is different from the specified etag, then the replace operation will not be performed and the call will fail. This field is not required. If etag is not provided, the operation will be performed as if a valid etag is provided.",
-          "type": "string"
-        }
-      }
-    },
-    "ReplaceServicePerimetersRequest": {
-      "id": "ReplaceServicePerimetersRequest",
-      "description": "A request to replace all existing Service Perimeters in an Access Policy with the Service Perimeters provided. This is done atomically.",
-      "type": "object",
-      "properties": {
-        "servicePerimeters": {
-          "description": "Required. The desired Service Perimeters that should replace all existing Service Perimeters in the Access Policy.",
-          "type": "array",
-          "items": {
-            "$ref": "ServicePerimeter"
-          }
-        },
-        "etag": {
-          "description": "Optional. The etag for the version of the Access Policy that this replace operation is to be performed on. If, at the time of replace, the etag for the Access Policy stored in Access Context Manager is different from the specified etag, then the replace operation will not be performed and the call will fail. This field is not required. If etag is not provided, the operation will be performed as if a valid etag is provided.",
-          "type": "string"
-        }
-      }
-    },
-    "CommitServicePerimetersRequest": {
-      "id": "CommitServicePerimetersRequest",
-      "description": "A request to commit dry-run specs in all Service Perimeters belonging to an Access Policy.",
-      "type": "object",
-      "properties": {
-        "etag": {
-          "description": "Optional. The etag for the version of the Access Policy that this commit operation is to be performed on. If, at the time of commit, the etag for the Access Policy stored in Access Context Manager is different from the specified etag, then the commit operation will not be performed and the call will fail. This field is not required. If etag is not provided, the operation will be performed as if a valid etag is provided.",
-          "type": "string"
         }
       }
     },
@@ -1035,7 +1036,7 @@
           "httpMethod": "PATCH",
           "parameters": {
             "name": {
-              "description": "Output only. Resource name of the `AccessPolicy`. Format: `accessPolicies\/{policy_id}`",
+              "description": "Resource name of the `AccessPolicy`. Format: `accessPolicies\/{access_policy}`",
               "pattern": "^accessPolicies\/[^\/]+$",
               "location": "path",
               "required": true,
@@ -1218,7 +1219,7 @@
               "httpMethod": "PATCH",
               "parameters": {
                 "name": {
-                  "description": "Required. Resource name for the Access Level. The `short_name` component must begin with a letter and only include alphanumeric and '_'. Format: `accessPolicies\/{policy_id}\/accessLevels\/{short_name}`. The maximum length \/\/ of the `short_name` component is 50 characters.",
+                  "description": "Required. Resource name for the Access Level. The `short_name` component must begin with a letter and only include alphanumeric and '_'. Format: `accessPolicies\/{access_policy}\/accessLevels\/{access_level}`. The maximum length of the `access_level` component is 50 characters.",
                   "pattern": "^accessPolicies\/[^\/]+\/accessLevels\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -1398,7 +1399,7 @@
               "httpMethod": "PATCH",
               "parameters": {
                 "name": {
-                  "description": "Required. Resource name for the ServicePerimeter. The `short_name` component must begin with a letter and only include alphanumeric and '_'. Format: `accessPolicies\/{policy_id}\/servicePerimeters\/{short_name}`",
+                  "description": "Required. Resource name for the ServicePerimeter. The `short_name` component must begin with a letter and only include alphanumeric and '_'. Format: `accessPolicies\/{access_policy}\/servicePerimeters\/{service_perimeter}",
                   "pattern": "^accessPolicies\/[^\/]+\/servicePerimeters\/[^\/]+$",
                   "location": "path",
                   "required": true,

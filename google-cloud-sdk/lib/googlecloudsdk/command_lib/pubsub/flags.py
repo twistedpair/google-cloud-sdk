@@ -410,13 +410,12 @@ def AddTopicMessageRetentionFlags(parser, is_update):
       help="""\
           Indicates the minimum duration to retain a message after it is
           published to the topic. If this field is set, messages published to
-          the topic in the last `message_retention_duration` are always
-          available to subscribers. For instance, it allows any attached
-          subscription to seek to a timestamp that is up to
-          `message_retention_duration` in the past. If this field is not set,
-          message retention is controlled by settings on individual
-          subscriptions. The minimum is 10 minutes and the maximum is 7
-          days. {}""".format(DURATION_HELP_STR))
+          the topic in the last MESSAGE_RETENTION_DURATION are always available
+          to subscribers. For instance, it allows any attached subscription to
+          seek to a timestamp that is up to MESSAGE_RETENTION_DURATION in the
+          past. If this field is not set, message retention is controlled by
+          settings on individual subscriptions. The minimum is 10 minutes and
+          the maximum is 7 days. {}""".format(DURATION_HELP_STR))
 
 
 def ParseMessageBody(args):

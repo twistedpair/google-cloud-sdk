@@ -35,3 +35,7 @@ properties:
       multithreading (SMT) set this to 1. If unset, the maximum number of
       threads supported per core by the underlying processor is assumed.
     type: integer
+  numaNodeCount:
+    description: |-
+      The number of virtual NUMA nodes.
+    type: integer

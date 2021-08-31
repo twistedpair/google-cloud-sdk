@@ -138,7 +138,7 @@ def _location_attribute_config():
       ])
 
 
-def key_flag(parser, suffix='to act on', api_version='v2alpha1'):
+def key_flag(parser, suffix='to act on', api_version='v2'):
   return concept_parsers.ConceptParser([
       _create_key_resource_arg(
           help_txt='The name of the key {0}.'.format(suffix),

@@ -571,6 +571,14 @@ MAP = {
                 default_version=False,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
+        'v2beta':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.cloudfunctions.v2beta',
+                client_classpath='cloudfunctions_v2beta_client.CloudfunctionsV2beta',
+                messages_modulepath='cloudfunctions_v2beta_messages',
+                default_version=False,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
     },
     'cloudidentity': {
         'v1':
@@ -1279,6 +1287,14 @@ MAP = {
                 mtls_endpoint_override=''),
     },
     'gkebackup': {
+        'v1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.gkebackup.v1',
+                client_classpath='gkebackup_v1_client.GkebackupV1',
+                messages_modulepath='gkebackup_v1_messages',
+                default_version=False,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
         'v1alpha1':
             APIDef(
                 class_path='googlecloudsdk.third_party.apis.gkebackup.v1alpha1',

@@ -194,9 +194,21 @@ class _BaseTriggersClient(object):
 class _TriggersClient(_BaseTriggersClient):
   """Client for Triggers service in the Eventarc GA API."""
 
-  def _BuildTriggerMessage(self, trigger_ref, event_filters, service_account,
-                           destination_message, transport_topic_ref):
-    """Builds a Trigger message with the given data."""
+  def BuildTriggerMessage(self, trigger_ref, event_filters, service_account,
+                          destination_message, transport_topic_ref):
+    """Builds a Trigger message with the given data.
+
+    Args:
+      trigger_ref: Resource, the Trigger to create.
+      event_filters: dict or None, the Trigger's event filters.
+      service_account: str or None, the Trigger's service account.
+      destination_message: Destination message or None, the Trigger's
+        destination.
+      transport_topic_ref: Resource or None, the user-provided transport topic.
+
+    Returns:
+      A Trigger message with a destination service.
+    """
     filter_messages = [] if event_filters is None else [
         self._messages.EventFilter(attribute=key, value=value)
         for key, value in event_filters.items()
@@ -213,85 +225,93 @@ class _TriggersClient(_BaseTriggersClient):
         destination=destination_message,
         transport=transport)
 
-  def BuildCloudRunTriggerMessage(self, trigger_ref, event_filters,
-                                  service_account, destination_run_service,
-                                  destination_run_path, destination_run_region,
-                                  transport_topic_ref):
-    """Builds a Cloud Run Trigger message with the given data.
+  def BuildCloudRunDestinationMessage(self, destination_run_service,
+                                      destination_run_path,
+                                      destination_run_region):
+    """Builds a Destination message for a destination Cloud Run service.
 
     Args:
-      trigger_ref: Resource, the Trigger to create.
-      event_filters: dict or None, the Trigger's event filters.
-      service_account: str or None, the Trigger's service account.
-      destination_run_service: str or None, the Trigger's destination
-        Cloud Run service.
+      destination_run_service: str or None, the destination Cloud Run service.
       destination_run_path: str or None, the path on the destination Cloud Run
         service.
       destination_run_region: str or None, the destination Cloud Run service's
         region.
-      transport_topic_ref: Resource or None, the user-provided transport topic.
 
     Returns:
-      A Trigger message with a destination Cloud Run service.
+      A Destination message for a destination Cloud Run service.
     """
-
     run_message = self._messages.CloudRun(
         service=destination_run_service,
         path=destination_run_path,
         region=destination_run_region)
-    destination_message = self._messages.Destination(cloudRun=run_message)
-    return self._BuildTriggerMessage(trigger_ref, event_filters,
-                                     service_account, destination_message,
-                                     transport_topic_ref)
+    return self._messages.Destination(cloudRun=run_message)
 
-  def BuildGKETriggerMessage(self, trigger_ref, event_filters, service_account,
-                             destination_gke_cluster, destination_gke_location,
-                             destination_gke_namespace, destination_gke_service,
-                             destination_gke_path, transport_topic_ref):
-    """Builds a GKE Trigger message with the given data.
+  def BuildGKEDestinationMessage(self, destination_gke_cluster,
+                                 destination_gke_location,
+                                 destination_gke_namespace,
+                                 destination_gke_service, destination_gke_path):
+    """Builds a Destination message for a destination GKE service.
 
     Args:
-      trigger_ref: Resource, the Trigger to create.
-      event_filters: dict or None, the Trigger's event filters.
-      service_account: str or None, the Trigger's service account.
-      destination_gke_cluster: str or None, the Trigger's destination GKE
+      destination_gke_cluster: str or None, the destination GKE service's
+        cluster.
+      destination_gke_location: str or None, the location of the destination GKE
         service's cluster.
-      destination_gke_location: str or None, the location of the Trigger's
-        destination GKE service's cluster. It defaults to the Trigger's region.
-      destination_gke_namespace: str or None, the Trigger's destination GKE
-        service's namespace.
-      destination_gke_service: str or None, the Trigger's destination
-        GKE service.
-      destination_gke_path: str or None, the path on the destinationa GKE
+      destination_gke_namespace: str or None, the destination GKE service's
+        namespace.
+      destination_gke_service: str or None, the destination GKE service.
+      destination_gke_path: str or None, the path on the destination GKE
         service.
-      transport_topic_ref: Resource or None, the user-provided transport topic.
 
     Returns:
-      A Trigger message with a GKE destination service.
+      A Destination message for a destination GKE service.
     """
-
     gke_message = self._messages.GKE(
         cluster=destination_gke_cluster,
         location=destination_gke_location,
         namespace=destination_gke_namespace,
         service=destination_gke_service,
         path=destination_gke_path)
-    destination_message = self._messages.Destination(gke=gke_message)
-    return self._BuildTriggerMessage(trigger_ref, event_filters,
-                                     service_account, destination_message,
-                                     transport_topic_ref)
+    return self._messages.Destination(gke=gke_message)
+
+  def BuildWorkflowDestinationMessage(self, project_id, destination_workflow,
+                                      destination_workflow_location):
+    """Builds a Workflow Destination message with the given data.
+
+    Args:
+      project_id: the ID of the project.
+      destination_workflow: str or None, the Trigger's destination Workflow ID.
+      destination_workflow_location: str or None, the location of the Trigger's
+        destination Workflow. It defaults to the Trigger's location.
+
+    Returns:
+      A Destination message with a Workflow destination.
+    """
+
+    workflow_message = 'projects/{}/locations/{}/workflows/{}'.format(
+        project_id, destination_workflow_location, destination_workflow)
+    return self._messages.Destination(workflow=workflow_message)
 
   def BuildUpdateMask(self, event_filters, service_account,
                       destination_run_service, destination_run_path,
-                      destination_run_region):
-    """Builds an update mask for updating a trigger.
+                      destination_run_region, destination_gke_namespace,
+                      destination_gke_service, destination_gke_path):
+    """Builds an update mask for updating a Cloud Run trigger.
 
     Args:
       event_filters: bool, whether to update the event filters.
       service_account: bool, whether to update the service account.
-      destination_run_service: bool, whether to update the destination service.
-      destination_run_path: bool, whether to update the destination path.
-      destination_run_region: bool, whether to update the destination region.
+      destination_run_service: bool, whether to update the destination Cloud Run
+        service.
+      destination_run_path: bool, whether to update the destination Cloud Run
+        path.
+      destination_run_region: bool, whether to update the destination Cloud Run
+        region.
+      destination_gke_namespace: bool, whether to update the destination GKE
+        service namespace.
+      destination_gke_service: bool, whether to update the destination GKE
+        service name.
+      destination_gke_path: bool, whether to update the destination GKE path.
 
     Returns:
       The update mask as a string.
@@ -306,6 +326,12 @@ class _TriggersClient(_BaseTriggersClient):
       update_mask.append('destination.cloudRun.region')
     if destination_run_service:
       update_mask.append('destination.cloudRun.service')
+    if destination_gke_namespace:
+      update_mask.append('destination.gke.namespace')
+    if destination_gke_service:
+      update_mask.append('destination.gke.service')
+    if destination_gke_path:
+      update_mask.append('destination.gke.path')
     if event_filters:
       update_mask.append('eventFilters')
     if service_account:
@@ -322,37 +348,25 @@ class _TriggersClient(_BaseTriggersClient):
 class _TriggersClientBeta(_BaseTriggersClient):
   """Client for Triggers service in the Eventarc beta API."""
 
-  def BuildCloudRunTriggerMessage(self, trigger_ref, event_filters,
-                                  service_account, destination_run_service,
-                                  destination_run_path, destination_run_region,
-                                  transport_topic_ref):
-    """Builds a Cloud Run Trigger message with the given data.
+  def BuildTriggerMessage(self, trigger_ref, event_filters, service_account,
+                          destination_message, transport_topic_ref):
+    """Builds a Trigger message with the given data.
 
     Args:
       trigger_ref: Resource, the Trigger to create.
       event_filters: dict or None, the Trigger's event filters.
       service_account: str or None, the Trigger's service account.
-      destination_run_service: str or None, the Trigger's destination
-        Cloud Run service.
-      destination_run_path: str or None, the path on the destination Cloud Run
-        service.
-      destination_run_region: str or None, the destination Cloud Run service's
-        region.
+      destination_message: Destination message or None, the Trigger's
+        destination.
       transport_topic_ref: Resource or None, the user-provided transport topic.
 
     Returns:
-      A Trigger message with a destination Cloud Run service.
+      A Trigger message with a destination service.
     """
     criteria_messages = [] if event_filters is None else [
         self._messages.MatchingCriteria(attribute=key, value=value)
         for key, value in event_filters.items()
     ]
-    run_message = self._messages.CloudRunService(
-        service=destination_run_service,
-        path=destination_run_path,
-        region=destination_run_region)
-    destination_message = self._messages.Destination(
-        cloudRunService=run_message)
     transport = None
     if transport_topic_ref:
       transport_topic_name = transport_topic_ref.RelativeName()
@@ -364,6 +378,27 @@ class _TriggersClientBeta(_BaseTriggersClient):
         serviceAccount=service_account,
         destination=destination_message,
         transport=transport)
+
+  def BuildCloudRunDestinationMessage(self, destination_run_service,
+                                      destination_run_path,
+                                      destination_run_region):
+    """Builds a Destination message for a destination Cloud Run service.
+
+    Args:
+      destination_run_service: str or None, the destination Cloud Run service.
+      destination_run_path: str or None, the path on the destination Cloud Run
+        service.
+      destination_run_region: str or None, the destination Cloud Run service's
+        region.
+
+    Returns:
+      A Destination message for a destination Cloud Run service.
+    """
+    run_message = self._messages.CloudRunService(
+        service=destination_run_service,
+        path=destination_run_path,
+        region=destination_run_region)
+    return self._messages.Destination(cloudRunService=run_message)
 
   def BuildUpdateMask(self, event_filters, service_account,
                       destination_run_service, destination_run_path,

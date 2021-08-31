@@ -1262,7 +1262,7 @@
               "type": "string"
             },
             "pageSize": {
-              "description": "The maximum number of items to return. This is a suggestion for the server.",
+              "description": "The maximum number of items to return. This is a suggestion for the server. The server can return fewer liens than requested. If unspecified, server picks an appropriate default.",
               "location": "query",
               "type": "integer",
               "format": "int32"
@@ -1429,7 +1429,7 @@
               "type": "string"
             },
             "pageSize": {
-              "description": "Optional. The maximum number of folders to return in the response. If unspecified, server picks an appropriate default.",
+              "description": "Optional. The maximum number of folders to return in the response. The server can return fewer folders than requested. If unspecified, server picks an appropriate default.",
               "location": "query",
               "type": "integer",
               "format": "int32"
@@ -1463,7 +1463,7 @@
           "httpMethod": "GET",
           "parameters": {
             "pageSize": {
-              "description": "Optional. The maximum number of folders to return in the response. If unspecified, server picks an appropriate default.",
+              "description": "Optional. The maximum number of folders to return in the response. The server can return fewer folders than requested. If unspecified, server picks an appropriate default.",
               "location": "query",
               "type": "integer",
               "format": "int32"
@@ -1747,7 +1747,7 @@
           "httpMethod": "GET",
           "parameters": {
             "pageSize": {
-              "description": "Optional. The maximum number of organizations to return in the response. If unspecified, server picks an appropriate default.",
+              "description": "Optional. The maximum number of organizations to return in the response. The server can return fewer organizations than requested. If unspecified, server picks an appropriate default.",
               "location": "query",
               "type": "integer",
               "format": "int32"

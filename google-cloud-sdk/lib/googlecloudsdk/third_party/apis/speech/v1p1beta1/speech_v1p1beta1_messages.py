@@ -80,6 +80,20 @@ class Empty(_messages.Message):
 
 
 
+class Entry(_messages.Message):
+  r"""A single replacement configuration.
+
+  Fields:
+    caseSensitive: Whether the search is case sensitive.
+    replace: What to replace with. Max length is 100 characters.
+    search: What to replace. Max length is 100 characters.
+  """
+
+  caseSensitive = _messages.BooleanField(1)
+  replace = _messages.StringField(2)
+  search = _messages.StringField(3)
+
+
 class ListCustomClassesResponse(_messages.Message):
   r"""Message returned to the client by the `ListCustomClasses` method.
 
@@ -498,6 +512,10 @@ class RecognitionConfig(_messages.Message):
     speechContexts: Array of SpeechContext. A means to provide context to
       assist the speech recognition. For more information, see [speech
       adaptation](https://cloud.google.com/speech-to-text/docs/adaptation).
+    transcriptNormalization: Use transcription normalization to automatically
+      replace parts of the transcript with phrases of your choosing. For
+      StreamingRecognize, this normalization only applies to stable partial
+      transcripts (stability > 0.8) and final transcripts.
     useEnhanced: Set to true to use an enhanced model for speech recognition.
       If `use_enhanced` is set to true and the `model` field is not set, then
       an appropriate enhanced model is chosen if an enhanced model exists for
@@ -581,7 +599,8 @@ class RecognitionConfig(_messages.Message):
   profanityFilter = _messages.BooleanField(18)
   sampleRateHertz = _messages.IntegerField(19, variant=_messages.Variant.INT32)
   speechContexts = _messages.MessageField('SpeechContext', 20, repeated=True)
-  useEnhanced = _messages.BooleanField(21)
+  transcriptNormalization = _messages.MessageField('TranscriptNormalization', 21)
+  useEnhanced = _messages.BooleanField(22)
 
 
 class RecognitionMetadata(_messages.Message):
@@ -1169,6 +1188,22 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class TranscriptNormalization(_messages.Message):
+  r"""Transcription normalization configuration. Use transcription
+  normalization to automatically replace parts of the transcript with phrases
+  of your choosing. For StreamingRecognize, this normalization only applies to
+  stable partial transcripts (stability > 0.8) and final transcripts.
+
+  Fields:
+    entries: A list of replacement entries. We will perform replacement with
+      one entry at a time. For example, the second entry in ["cat" => "dog",
+      "mountain cat" => "mountain dog"] will never be applied because we will
+      always process the first entry before it. At most 100 entries.
+  """
+
+  entries = _messages.MessageField('Entry', 1, repeated=True)
 
 
 class TranscriptOutputConfig(_messages.Message):

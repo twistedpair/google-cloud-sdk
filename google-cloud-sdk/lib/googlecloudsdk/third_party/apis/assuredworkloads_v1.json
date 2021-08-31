@@ -452,7 +452,8 @@
             "Assured Workloads For US Regions data protection controls",
             "Health Insurance Portability and Accountability Act controls",
             "Health Information Trust Alliance controls",
-            "Assured Workloads For EU Regions and Support controls"
+            "Assured Workloads For EU Regions and Support controls",
+            "Assured Workloads For Canada Regions and Support controls"
           ],
           "enum": [
             "COMPLIANCE_REGIME_UNSPECIFIED",
@@ -463,7 +464,8 @@
             "US_REGIONAL_ACCESS",
             "HIPAA",
             "HITRUST",
-            "EU_REGIONS_AND_SUPPORT"
+            "EU_REGIONS_AND_SUPPORT",
+            "CA_REGIONS_AND_SUPPORT"
           ]
         },
         "resourceSettings": {
@@ -541,7 +543,8 @@
             "Assured Workloads For US Regions data protection controls",
             "Health Insurance Portability and Accountability Act controls",
             "Health Information Trust Alliance controls",
-            "Assured Workloads For EU Regions and Support controls"
+            "Assured Workloads For EU Regions and Support controls",
+            "Assured Workloads For Canada Regions and Support controls"
           ],
           "enum": [
             "COMPLIANCE_REGIME_UNSPECIFIED",
@@ -552,7 +555,8 @@
             "US_REGIONAL_ACCESS",
             "HIPAA",
             "HITRUST",
-            "EU_REGIONS_AND_SUPPORT"
+            "EU_REGIONS_AND_SUPPORT",
+            "CA_REGIONS_AND_SUPPORT"
           ]
         },
         "createTime": {

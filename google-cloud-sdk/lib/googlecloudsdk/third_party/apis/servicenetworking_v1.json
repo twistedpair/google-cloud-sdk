@@ -330,6 +330,10 @@
             "$ref": "SecondaryIpRangeSpec"
           }
         },
+        "privateIpv6GoogleAccess": {
+          "description": "Optional. The private IPv6 google access type for the VMs in this subnet. For information about the access types that can be set using this field, see [subnetwork](https:\/\/cloud.google.com\/compute\/docs\/reference\/rest\/v1\/subnetworks) in the Compute API documentation.",
+          "type": "string"
+        },
         "requestedRanges": {
           "description": "Optional. The name of one or more allocated IP address ranges associated with this private service access connection. If no range names are provided all ranges associated with this connection will be considered. If a CIDR range with the specified IP prefix length is not available within these ranges, the call fails.",
           "type": "array",

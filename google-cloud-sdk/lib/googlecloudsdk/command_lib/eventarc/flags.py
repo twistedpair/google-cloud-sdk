@@ -147,6 +147,7 @@ def AddCreateDestinationArgs(parser, release_track, required=False):
   _AddCreateCloudRunDestinationArgs(dest_group)
   if release_track == base.ReleaseTrack.GA:
     _AddCreateGKEDestinationArgs(dest_group, hidden=True)
+    _AddCreateWorkflowDestinationArgs(dest_group, hidden=True)
 
 
 def _AddCreateCloudRunDestinationArgs(parser, required=False):
@@ -173,25 +174,50 @@ def _AddCreateGKEDestinationArgs(parser, required=False, hidden=False):
   _AddDestinationGKEPathArg(gke_group)
 
 
-def AddUpdateDestinationArgs(parser, required=False):
+def _AddCreateWorkflowDestinationArgs(parser, required=False, hidden=False):
+  """Adds arguments related to trigger's Workflows destination for create operations."""
+  workflow_group = parser.add_group(
+      required=required,
+      hidden=hidden,
+      help='Flags for specifying a Workflow destination.'
+      )
+  _AddDestinationWorkflowArg(workflow_group, required=True)
+  _AddDestinationWorkflowLocationArg(workflow_group)
+
+
+def AddUpdateDestinationArgs(parser, release_track, required=False):
   """Adds arguments related to trigger's destination for update operations."""
   dest_group = parser.add_mutually_exclusive_group(
       required=required,
-      help='Flags for specifying the destination to which events should be sent.'
-  )
+      help='Flags for updating the destination to which events should be sent.')
   _AddUpdateCloudRunDestinationArgs(dest_group)
+  if release_track == base.ReleaseTrack.GA:
+    _AddUpdateGKEDestinationArgs(dest_group, hidden=True)
 
 
 def _AddUpdateCloudRunDestinationArgs(parser, required=False):
   """Adds arguments related to trigger's Cloud Run fully-managed service destination for update operations."""
   run_group = parser.add_group(
       required=required,
-      help='Flags for Cloud Run fully-managed service destination.')
+      help='Flags for updating a Cloud Run fully-managed service destination.')
   AddDestinationRunServiceArg(run_group)
   AddDestinationRunRegionArg(run_group)
   destination_run_path_group = run_group.add_mutually_exclusive_group()
   AddDestinationRunPathArg(destination_run_path_group)
   AddClearDestinationRunPathArg(destination_run_path_group)
+
+
+def _AddUpdateGKEDestinationArgs(parser, required=False, hidden=False):
+  """Adds arguments related to trigger's GKE service destination for update operations."""
+  gke_group = parser.add_group(
+      required=required,
+      hidden=hidden,
+      help='Flags for updating a GKE service destination.')
+  _AddDestinationGKENamespaceArg(gke_group)
+  _AddDestinationGKEServiceArg(gke_group)
+  destination_gke_path_group = gke_group.add_mutually_exclusive_group()
+  _AddDestinationGKEPathArg(destination_gke_path_group)
+  _AddClearDestinationGKEPathArg(destination_gke_path_group)
 
 
 def AddDestinationRunServiceArg(parser, required=False):
@@ -272,6 +298,25 @@ def _AddDestinationGKEPathArg(parser, required=False):
       "``route'', ``route/subroute''.")
 
 
+def _AddDestinationWorkflowArg(parser, required=False):
+  """Adds an argument for the trigger's destination Workflow."""
+  parser.add_argument(
+      '--destination-workflow',
+      required=required,
+      help='ID of the Workflow that receives the events for the trigger. '
+      'The Workflow must be in the same project as the trigger.')
+
+
+def _AddDestinationWorkflowLocationArg(parser, required=False):
+  """Adds an argument for the trigger's destination Workflow location."""
+  parser.add_argument(
+      '--destination-workflow-location',
+      required=required,
+      help='Location that the destination Workflow is running in. '
+      'If not specified, it is assumed that the Workflow is in the same '
+      'location as the trigger.')
+
+
 def AddClearServiceAccountArg(parser):
   """Adds an argument for clearing the trigger's service account."""
   parser.add_argument(
@@ -281,12 +326,21 @@ def AddClearServiceAccountArg(parser):
 
 
 def AddClearDestinationRunPathArg(parser):
-  """Adds an argument for clearing the trigger's destination path."""
+  """Adds an argument for clearing the trigger's Cloud Run destination path."""
   parser.add_argument(
       '--clear-destination-run-path',
       action='store_true',
       help='Clear the relative path on the destination Cloud Run service to '
       'which the events for the trigger should be sent.')
+
+
+def _AddClearDestinationGKEPathArg(parser):
+  """Adds an argument for clearing the trigger's GKE destination path."""
+  parser.add_argument(
+      '--clear-destination-gke-path',
+      action='store_true',
+      help='Clear the relative path on the destination GKE service to which '
+      'the events for the trigger should be sent.')
 
 
 def AddTypePositionalArg(parser, help_text):

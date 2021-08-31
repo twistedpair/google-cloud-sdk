@@ -2725,7 +2725,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Disable a ServiceAccountKey. A disabled service account key can be enabled through EnableServiceAccountKey."
+                  "description": "Disable a ServiceAccountKey. A disabled service account key can be enabled through EnableServiceAccountKey. The API is currently in preview phase."
                 },
                 "enable": {
                   "id": "iam.projects.serviceAccounts.keys.enable",
@@ -2753,7 +2753,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Enable a ServiceAccountKey."
+                  "description": "Enable a ServiceAccountKey. The API is currently in preview phase."
                 }
               }
             },

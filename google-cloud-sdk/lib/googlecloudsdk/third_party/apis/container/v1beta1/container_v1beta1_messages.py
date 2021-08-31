@@ -2440,6 +2440,17 @@ class MaintenanceWindow(_messages.Message):
   recurringWindow = _messages.MessageField('RecurringTimeWindow', 3)
 
 
+class ManagedPrometheusConfig(_messages.Message):
+  r"""ManagedPrometheusConfig defines the configuration for Prometheus managed
+  collection.
+
+  Fields:
+    enabled: Enable managed collection.
+  """
+
+  enabled = _messages.BooleanField(1)
+
+
 class Master(_messages.Message):
   r"""Master is the configuration for components on master.
 
@@ -2606,9 +2617,12 @@ class MonitoringConfig(_messages.Message):
 
   Fields:
     componentConfig: Monitoring components configuration
+    managedPrometheusConfig: Enable Google Prometheus Managed Collection in
+      the cluster.
   """
 
   componentConfig = _messages.MessageField('MonitoringComponentConfig', 1)
+  managedPrometheusConfig = _messages.MessageField('ManagedPrometheusConfig', 2)
 
 
 class NetworkConfig(_messages.Message):
@@ -2872,6 +2886,8 @@ class NodeConfig(_messages.Message):
       otherwise, if no Service Account is specified, the "default" service
       account is used.
     shieldedInstanceConfig: Shielded Instance options.
+    spot: Spot flag for enabling Spot VM, which is a rebrand of the existing
+      preemptible flag.
     tags: The list of instance tags applied to all nodes. Tags are used to
       identify valid sources or targets for network firewalls and are
       specified by the client during cluster or node pool creation. Each tag
@@ -2974,9 +2990,10 @@ class NodeConfig(_messages.Message):
   sandboxConfig = _messages.MessageField('SandboxConfig', 22)
   serviceAccount = _messages.StringField(23)
   shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 24)
-  tags = _messages.StringField(25, repeated=True)
-  taints = _messages.MessageField('NodeTaint', 26, repeated=True)
-  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 27)
+  spot = _messages.BooleanField(25)
+  tags = _messages.StringField(26, repeated=True)
+  taints = _messages.MessageField('NodeTaint', 27, repeated=True)
+  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 28)
 
 
 class NodeConfigDefaults(_messages.Message):

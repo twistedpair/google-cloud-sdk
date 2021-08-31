@@ -788,7 +788,7 @@ class PkixPublicKey(_messages.Message):
 
 
 class Policy(_messages.Message):
-  r"""A policy for container image binary authorization.
+  r"""A policy for Binary Authorization.
 
   Enums:
     GlobalPolicyEvaluationModeValueValuesEnum: Optional. Controls the

@@ -1207,9 +1207,9 @@ class ManagedidentitiesProjectsLocationsGlobalDomainsCreateRequest(_messages.Mes
       mydomain.myorganization.com, with the following restrictions: * Must
       contain only lowercase letters, numbers, periods and hyphens. * Must
       start with a letter. * Must contain between 2-64 characters. * Must end
-      with a number or a letter. * Must not start with period. * First
-      segement length (mydomain form example above) shouldn't exceed 15 chars.
-      * The last segment cannot be fully numeric. * Must be unique within the
+      with a number or a letter. * Must not start with period. * First segment
+      length (mydomain for example above) shouldn't exceed 15 chars. * The
+      last segment cannot be fully numeric. * Must be unique within the
       customer project.
     parent: Required. The resource project name and location using the form:
       `projects/{project_id}/locations/global`
@@ -1526,6 +1526,61 @@ class ManagedidentitiesProjectsLocationsGlobalOperationsListRequest(_messages.Me
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class ManagedidentitiesProjectsLocationsGlobalPeeringsGetIamPolicyRequest(_messages.Message):
+  r"""A ManagedidentitiesProjectsLocationsGlobalPeeringsGetIamPolicyRequest
+  object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The policy format version to be
+      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected. Requests for policies with any conditional
+      bindings must specify version 3. Policies without any conditional
+      bindings may specify any valid value or leave the field unset. To learn
+      which resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class ManagedidentitiesProjectsLocationsGlobalPeeringsSetIamPolicyRequest(_messages.Message):
+  r"""A ManagedidentitiesProjectsLocationsGlobalPeeringsSetIamPolicyRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class ManagedidentitiesProjectsLocationsGlobalPeeringsTestIamPermissionsRequest(_messages.Message):
+  r"""A
+  ManagedidentitiesProjectsLocationsGlobalPeeringsTestIamPermissionsRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class ManagedidentitiesProjectsLocationsListRequest(_messages.Message):

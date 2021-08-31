@@ -235,6 +235,51 @@ class DatabaseDump(_messages.Message):
   type = _messages.EnumField('TypeValueValuesEnum', 4)
 
 
+class DataplexConfig(_messages.Message):
+  r"""Specifies how metastore metadata should be integrated with the Dataplex
+  service.
+
+  Messages:
+    LakeResourcesValue: A reference to the Lake resources that this metastore
+      service is attached to. The key is the lake resource name. Example:
+      projects/{project_number}/locations/{location_id}/lakes/{lake_id}.
+
+  Fields:
+    lakeResources: A reference to the Lake resources that this metastore
+      service is attached to. The key is the lake resource name. Example:
+      projects/{project_number}/locations/{location_id}/lakes/{lake_id}.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LakeResourcesValue(_messages.Message):
+    r"""A reference to the Lake resources that this metastore service is
+    attached to. The key is the lake resource name. Example:
+    projects/{project_number}/locations/{location_id}/lakes/{lake_id}.
+
+    Messages:
+      AdditionalProperty: An additional property for a LakeResourcesValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type LakeResourcesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LakeResourcesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A Lake attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('Lake', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  lakeResources = _messages.MessageField('LakeResourcesValue', 1)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -339,6 +384,10 @@ class HiveMetastoreConfig(_messages.Message):
   r"""Specifies configuration information specific to running Hive metastore
   software as the metastore service.
 
+  Enums:
+    EndpointProtocolValueValuesEnum: The protocol to use for the metastore
+      service endpoint. If unspecified, defaults to THRIFT.
+
   Messages:
     ConfigOverridesValue: A mapping of Hive metastore configuration key-value
       pairs to apply to the Hive metastore (configured in hive-site.xml). The
@@ -348,6 +397,8 @@ class HiveMetastoreConfig(_messages.Message):
     configOverrides: A mapping of Hive metastore configuration key-value pairs
       to apply to the Hive metastore (configured in hive-site.xml). The
       mappings override system defaults (some keys cannot be overridden).
+    endpointProtocol: The protocol to use for the metastore service endpoint.
+      If unspecified, defaults to THRIFT.
     kerberosConfig: Information used to configure the Hive metastore service
       as a service principal in a Kerberos realm. To disable Kerberos, use the
       UpdateService method and specify this field's path
@@ -355,6 +406,21 @@ class HiveMetastoreConfig(_messages.Message):
       while omitting this field from the request's service.
     version: Immutable. The Hive metastore schema version.
   """
+
+  class EndpointProtocolValueValuesEnum(_messages.Enum):
+    r"""The protocol to use for the metastore service endpoint. If
+    unspecified, defaults to THRIFT.
+
+    Values:
+      ENDPOINT_PROTOCOL_UNSPECIFIED: The protocol is not set.
+      THRIFT: Use the legacy Apache Thrift protocol for the metastore service
+        endpoint.
+      GRPC: Use the modernized gRPC protocol for the metastore service
+        endpoint.
+    """
+    ENDPOINT_PROTOCOL_UNSPECIFIED = 0
+    THRIFT = 1
+    GRPC = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ConfigOverridesValue(_messages.Message):
@@ -384,8 +450,9 @@ class HiveMetastoreConfig(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   configOverrides = _messages.MessageField('ConfigOverridesValue', 1)
-  kerberosConfig = _messages.MessageField('KerberosConfig', 2)
-  version = _messages.StringField(3)
+  endpointProtocol = _messages.EnumField('EndpointProtocolValueValuesEnum', 2)
+  kerberosConfig = _messages.MessageField('KerberosConfig', 3)
+  version = _messages.StringField(4)
 
 
 class HiveMetastoreVersion(_messages.Message):
@@ -418,6 +485,17 @@ class KerberosConfig(_messages.Message):
   keytab = _messages.MessageField('Secret', 1)
   krb5ConfigGcsUri = _messages.StringField(2)
   principal = _messages.StringField(3)
+
+
+class Lake(_messages.Message):
+  r"""Represents a Lake resource
+
+  Fields:
+    name: The Lake resource name. Example:
+      projects/{project_number}/locations/{location_id}/lakes/{lake_id}
+  """
+
+  name = _messages.StringField(1)
 
 
 class ListBackupsResponse(_messages.Message):
@@ -728,9 +806,11 @@ class MetadataIntegration(_messages.Message):
 
   Fields:
     dataCatalogConfig: The integration config for the Data Catalog service.
+    dataplexConfig: The integration config for the Dataplex service.
   """
 
   dataCatalogConfig = _messages.MessageField('DataCatalogConfig', 1)
+  dataplexConfig = _messages.MessageField('DataplexConfig', 2)
 
 
 class MetadataManagementActivity(_messages.Message):

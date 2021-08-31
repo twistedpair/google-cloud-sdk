@@ -29,45 +29,12 @@ _PARENT_RESOURCE = 'projects/%s/locations/global'
 _API_NAME = 'apikeys'
 
 _RELEASE_TRACK_TO_API_VERSION = {
-    calliope_base.ReleaseTrack.ALPHA: 'v2alpha1',
+    calliope_base.ReleaseTrack.ALPHA: 'v2',
     calliope_base.ReleaseTrack.GA: 'v2'
 }
 
 
 def ListKeys(project, deleted=None, page_size=None, limit=None):
-  """List API Keys for a given project.
-
-  Args:
-    project: The project for which to list keys.
-    deleted: List deleted keys.
-    page_size: The page size to list.
-    limit: The max number of metrics to return.
-
-  Raises:
-    exceptions.PermissionDeniedException: when listing keys fails.
-
-  Returns:
-    The list of keys
-  """
-  client = GetClientInstance(calliope_base.ReleaseTrack.ALPHA)
-  messages = client.MESSAGES_MODULE
-
-  if deleted:
-    key_filter = 'state:DELETED'
-  else:
-    key_filter = None
-  request = messages.ApikeysProjectsKeysListRequest(
-      parent=GetParentResourceName(project), filter=key_filter)
-  return list_pager.YieldFromList(
-      client.projects_keys,
-      request,
-      limit=limit,
-      batch_size_attribute='pageSize',
-      batch_size=page_size,
-      field='keys')
-
-
-def ListKeysGa(project, deleted=None, page_size=None, limit=None):
   """List API Keys for a given project.
 
   Args:
@@ -90,9 +57,7 @@ def ListKeysGa(project, deleted=None, page_size=None, limit=None):
   else:
     key_filter = None
   request = messages.ApikeysProjectsLocationsKeysListRequest(
-      parent=GetParentResourceName(
-          project, release_track=calliope_base.ReleaseTrack.GA),
-      filter=key_filter)
+      parent=GetParentResourceName(project), filter=key_filter)
   return list_pager.YieldFromList(
       client.projects_locations_keys,
       request,
@@ -135,7 +100,7 @@ def GetAllowedAndroidApplications(args, messages):
   """Create list of allowed android applications."""
   allowed_applications = []
   for application in getattr(args, 'allowed_application', []) or []:
-    android_application = messages.V2alpha1AndroidApplication(
+    android_application = messages.V2AndroidApplication(
         sha1Fingerprint=application['sha1_fingerprint'],
         packageName=application['package_name'])
     allowed_applications.append(android_application)
@@ -147,37 +112,11 @@ def GetApiTargets(args, messages):
   api_targets = []
   for api_target in getattr(args, 'api_target', []) or []:
     api_targets.append(
-        messages.V2alpha1ApiTarget(
-            service=api_target.get('service'),
-            methods=api_target.get('methods', [])))
-  return api_targets
-
-
-def GetAllowedAndroidApplicationsGa(args, messages):
-  """Create list of allowed android applications."""
-  allowed_applications = []
-  for application in getattr(args, 'allowed_application', []) or []:
-    android_application = messages.V2AndroidApplication(
-        sha1Fingerprint=application['sha1_fingerprint'],
-        packageName=application['package_name'])
-    allowed_applications.append(android_application)
-  return allowed_applications
-
-
-def GetApiTargetsGa(args, messages):
-  """Create list of target apis."""
-  api_targets = []
-  for api_target in getattr(args, 'api_target', []) or []:
-    api_targets.append(
         messages.V2ApiTarget(
             service=api_target.get('service'),
             methods=api_target.get('methods', [])))
   return api_targets
 
 
-def GetParentResourceName(project,
-                          release_track=calliope_base.ReleaseTrack.ALPHA):
-  if release_track == calliope_base.ReleaseTrack.ALPHA:
-    return _PROJECT_RESOURCE % (project)
-  else:
-    return _PARENT_RESOURCE % (project)
+def GetParentResourceName(project):
+  return _PARENT_RESOURCE % (project)

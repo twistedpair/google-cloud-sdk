@@ -54,62 +54,8 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
-    def DisableInteractiveSerialConsole(self, request, global_params=None):
-      r"""Disable the interactive serial console feature on an instance.
-
-      Args:
-        request: (BaremetalsolutionProjectsLocationsInstancesDisableInteractiveSerialConsoleRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('DisableInteractiveSerialConsole')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    DisableInteractiveSerialConsole.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:disableInteractiveSerialConsole',
-        http_method='POST',
-        method_id='baremetalsolution.projects.locations.instances.disableInteractiveSerialConsole',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v2/{+name}:disableInteractiveSerialConsole',
-        request_field='disableInteractiveSerialConsoleRequest',
-        request_type_name='BaremetalsolutionProjectsLocationsInstancesDisableInteractiveSerialConsoleRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def EnableInteractiveSerialConsole(self, request, global_params=None):
-      r"""Enable the interactive serial console feature on an instance.
-
-      Args:
-        request: (BaremetalsolutionProjectsLocationsInstancesEnableInteractiveSerialConsoleRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('EnableInteractiveSerialConsole')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    EnableInteractiveSerialConsole.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:enableInteractiveSerialConsole',
-        http_method='POST',
-        method_id='baremetalsolution.projects.locations.instances.enableInteractiveSerialConsole',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v2/{+name}:enableInteractiveSerialConsole',
-        request_field='enableInteractiveSerialConsoleRequest',
-        request_type_name='BaremetalsolutionProjectsLocationsInstancesEnableInteractiveSerialConsoleRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
     def Get(self, request, global_params=None):
-      r"""Gets details of a single Instance.
+      r"""Get details about a single server.
 
       Args:
         request: (BaremetalsolutionProjectsLocationsInstancesGetRequest) input message
@@ -163,7 +109,7 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists Instances in a given project and location.
+      r"""List servers in a given project and location.
 
       Args:
         request: (BaremetalsolutionProjectsLocationsInstancesListRequest) input message

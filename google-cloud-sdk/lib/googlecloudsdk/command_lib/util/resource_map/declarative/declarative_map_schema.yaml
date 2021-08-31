@@ -3,6 +3,10 @@ definitions:
   release_track:
     type: object
     properties:
+      supported_apis:
+        type: array
+        items:
+          type: string
       support_single_export:
         type: boolean
       support_bulk_export:
@@ -13,11 +17,17 @@ definitions:
         type: string
       asset_inventory_type:
         type: string
+      enable_single_resource_autogen:
+        type: boolean
     additionalProperties: false
 
   resource:
     type: object
     properties:
+      supported_apis:
+        type: array
+        items:
+          type: string
       support_single_export:
         type: boolean
       support_bulk_export:
@@ -28,6 +38,8 @@ definitions:
         type: string
       asset_inventory_type:
         type: string
+      enable_single_resource_autogen:
+        type: boolean
       GA:
         type: {$ref: "#/definitions/release_track"}
       BETA:

@@ -121,9 +121,10 @@ def AddMultiWriterFlag(parser):
       action='store_true',
       help="""
       Create the disk in multi-writer mode so that it can be attached
-      with read-write access to multiple VMs. Can only be used with
-      zonal SSD persistent disks. Disks in multi-writer mode do not support
-      resize and snapshot operations.
+      with read-write access to two VMs. The multi-writer feature requires
+      specialized filesystems, among other restrictions. For more information,
+      see
+      https://cloud.google.com/compute/docs/disks/sharing-disks-between-vms.
       """)
 
 
