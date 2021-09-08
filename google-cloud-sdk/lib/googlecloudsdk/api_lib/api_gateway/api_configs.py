@@ -20,6 +20,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.api_gateway import base
+from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.command_lib.api_gateway import common_flags
 
 
@@ -32,10 +33,17 @@ class ApiConfigClient(base.BaseClient):
         client=client,
         message_base='ApigatewayProjectsLocationsApisConfigs',
         service_name='projects_locations_apis_configs')
-    self.DefineGet()
     self.DefineDelete()
     self.DefineList('apiConfigs')
     self.DefineUpdate('apigatewayApiConfig')
+    self.supported_views = {
+        'FULL':
+            self.messages.ApigatewayProjectsLocationsApisConfigsGetRequest
+            .ViewValueValuesEnum.FULL,
+        'BASIC':
+            self.messages.ApigatewayProjectsLocationsApisConfigsGetRequest
+            .ViewValueValuesEnum.BASIC
+    }
 
   def Create(self, api_config_ref, display_name=None, labels=None,
              backend_auth=None, managed_service_configs=None,
@@ -80,3 +88,31 @@ class ApiConfigClient(base.BaseClient):
         parent=api_config_ref.Parent().RelativeName())
 
     return self.service.Create(req)
+
+  def Get(self, api_config_ref, view=None):
+    """Returns an API Config object.
+
+    Args:
+      api_config_ref: A parsed resource reference for the API.
+      view: Optional string. If specified as FULL, the source config files will
+        be returned.
+
+    Returns:
+      An API Config object.
+
+    Raises:
+      calliope.InvalidArgumentException: If an invalid view (i.e. not FULL,
+      BASIC, or none) was
+      provided.
+    """
+
+    view_enum = None
+    if view is not None:
+      try:
+        view_enum = self.supported_views[view.upper()]
+      except KeyError:
+        raise calliope_exceptions.InvalidArgumentException(
+            '--view', 'View must be one of: "FULL" or "BASIC".')
+    req = self.get_request(name=api_config_ref.RelativeName(), view=view_enum)
+
+    return self.service.Get(req)

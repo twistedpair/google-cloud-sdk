@@ -45,6 +45,7 @@ class MediaassetV1alpha(base_api.BaseApiClient):
     self.projects_locations_assetTypes_assets = self.ProjectsLocationsAssetTypesAssetsService(self)
     self.projects_locations_assetTypes_rules = self.ProjectsLocationsAssetTypesRulesService(self)
     self.projects_locations_assetTypes = self.ProjectsLocationsAssetTypesService(self)
+    self.projects_locations_catalogs = self.ProjectsLocationsCatalogsService(self)
     self.projects_locations_complexTypes = self.ProjectsLocationsComplexTypesService(self)
     self.projects_locations_modules = self.ProjectsLocationsModulesService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
@@ -1135,6 +1136,151 @@ class MediaassetV1alpha(base_api.BaseApiClient):
         request_field='googleIamV1TestIamPermissionsRequest',
         request_type_name='MediaassetProjectsLocationsAssetTypesTestIamPermissionsRequest',
         response_type_name='GoogleIamV1TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsCatalogsService(base_api.BaseApiService):
+    """Service class for the projects_locations_catalogs resource."""
+
+    _NAME = 'projects_locations_catalogs'
+
+    def __init__(self, client):
+      super(MediaassetV1alpha.ProjectsLocationsCatalogsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new catalog in a given project and location.
+
+      Args:
+        request: (MediaassetProjectsLocationsCatalogsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/catalogs',
+        http_method='POST',
+        method_id='mediaasset.projects.locations.catalogs.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['catalogId'],
+        relative_path='v1alpha/{+parent}/catalogs',
+        request_field='catalog',
+        request_type_name='MediaassetProjectsLocationsCatalogsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single catalog.
+
+      Args:
+        request: (MediaassetProjectsLocationsCatalogsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/catalogs/{catalogsId}',
+        http_method='DELETE',
+        method_id='mediaasset.projects.locations.catalogs.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='MediaassetProjectsLocationsCatalogsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single catalog.
+
+      Args:
+        request: (MediaassetProjectsLocationsCatalogsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Catalog) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/catalogs/{catalogsId}',
+        http_method='GET',
+        method_id='mediaasset.projects.locations.catalogs.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='MediaassetProjectsLocationsCatalogsGetRequest',
+        response_type_name='Catalog',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists catalogs in a given project and location.
+
+      Args:
+        request: (MediaassetProjectsLocationsCatalogsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListCatalogsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/catalogs',
+        http_method='GET',
+        method_id='mediaasset.projects.locations.catalogs.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/catalogs',
+        request_field='',
+        request_type_name='MediaassetProjectsLocationsCatalogsListRequest',
+        response_type_name='ListCatalogsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the parameters of a single catalog.
+
+      Args:
+        request: (MediaassetProjectsLocationsCatalogsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/catalogs/{catalogsId}',
+        http_method='PATCH',
+        method_id='mediaasset.projects.locations.catalogs.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha/{+name}',
+        request_field='catalog',
+        request_type_name='MediaassetProjectsLocationsCatalogsPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

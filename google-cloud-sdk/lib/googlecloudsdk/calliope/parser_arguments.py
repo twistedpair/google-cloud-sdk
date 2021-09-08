@@ -67,12 +67,15 @@ class Argument(object):
       arguments may be specified.
     is_positional: bool, The argument is a positional argument.
     is_required: bool, The argument is required.
+    sort_args: bool, Whether to sort the arguments in this group when displaying
+      help/usage text. Applies only to this arg group (does not propagate to
+      nested groups).
   """
 
   # pylint: disable=redefined-builtin, Python can't keep help to itself
   def __init__(self, arguments=None, hidden=False, is_group=False,
                is_global=False, mutex=False, required=False,
-               help=None, category=None):
+               help=None, category=None, sort_args=True):
     self.arguments = arguments or []
     self.is_group = is_group or arguments
     self.is_global = is_global
@@ -82,10 +85,15 @@ class Argument(object):
     self.is_required = required
     self.help = help
     self.category = category
+    self._sort_args = sort_args
 
   @property
   def is_hidden(self):
     return self._is_hidden
+
+  @property
+  def sort_args(self):
+    return self._sort_args
 
 
 class ArgumentInterceptor(Argument):
@@ -406,7 +414,7 @@ class ArgumentInterceptor(Argument):
     return self.parser.parse_known_args(args=args, namespace=namespace)
 
   def add_group(self, help=None, category=None, mutex=False, required=False,
-                hidden=False, **kwargs):
+                hidden=False, sort_args=True, **kwargs):
     """Adds an argument group with mutex/required attributes to the parser.
 
     Args:
@@ -415,6 +423,10 @@ class ArgumentInterceptor(Argument):
       mutex: bool, A mutually exclusive group if True.
       required: bool, A required group if True.
       hidden: bool, A hidden group if True.
+      sort_args: bool, Whether to sort the group's arguments in help/usage text.
+        NOTE - For ordering consistency across gcloud, generally prefer using
+        argument categories to organize information (instead of unsetting the
+        argument sorting).
       **kwargs: Passed verbatim to ArgumentInterceptor().
 
     Returns:
@@ -435,6 +447,7 @@ class ArgumentInterceptor(Argument):
                                 mutex=mutex,
                                 required=required,
                                 hidden=hidden or self._is_hidden,
+                                sort_args=sort_args,
                                 **kwargs)
     self.arguments.append(group)
     return group
@@ -624,3 +637,15 @@ class ArgumentInterceptor(Argument):
           completer, argument=arg)
     else:
       arg.completer = completer
+
+  def SetSortArgs(self, sort_args):
+    """Sets whether or not to sort this group's arguments in help/usage text.
+
+    NOTE - For ordering consistency across gcloud, generally prefer using
+    argument categories to organize information (instead of unsetting the
+    argument sorting).
+
+    Args:
+      sort_args: bool, If arguments in this group should be sorted.
+    """
+    self._sort_args = sort_args

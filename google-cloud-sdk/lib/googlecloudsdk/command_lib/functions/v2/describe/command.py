@@ -19,6 +19,14 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.functions.v2 import util as api_util
+from googlecloudsdk.core import log
+
+
+def _PrintStateMessages(state_messages):
+  log.critical("Function has the following conditions:")
+  for state_message_string in api_util.GetStateMessagesStrings(state_messages):
+    log.status.Print("  " + state_message_string)
+  log.status.Print("")  # newline
 
 
 def Run(args, release_track):
@@ -27,7 +35,9 @@ def Run(args, release_track):
   messages = api_util.GetMessagesModule(release_track=release_track)
 
   function_ref = args.CONCEPTS.name.Parse()
-
-  return client.projects_locations_functions.Get(
+  function = client.projects_locations_functions.Get(
       messages.CloudfunctionsProjectsLocationsFunctionsGetRequest(
           name=function_ref.RelativeName()))
+  if function.stateMessages:
+    _PrintStateMessages(function.stateMessages)
+  return function

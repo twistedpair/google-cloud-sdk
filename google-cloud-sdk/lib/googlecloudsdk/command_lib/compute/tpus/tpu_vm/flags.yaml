@@ -135,7 +135,6 @@ labels:
     https://cloud.google.com/compute/docs/labeling-resources for details.
 
 metadata:
-  api_field: node.metadata
   arg_name: metadata
   type: "googlecloudsdk.calliope.arg_parsers:ArgDict:"
   required: false
@@ -143,10 +142,8 @@ metadata:
     List of comma-separated metadata key-value pairs for the Cloud TPU VM node.
 
 metadata_from_file:
-  api_field: node.metadata
   arg_name: metadata-from-file
   type: "googlecloudsdk.calliope.arg_parsers:ArgDict:"
-  processor: googlecloudsdk.command_lib.compute.tpus.tpu_vm.util:ReadMetadataFromFile
   required: false
   help_text: |
     Same as --metadata except the value for the entry will be read from a local file.

@@ -42,6 +42,8 @@ _RELEASE_TRACK_TO_API_VERSION = {
 MAX_WAIT_MS = 1820000
 SLEEP_MS = 1000
 
+# TODO(b/197300386) this util is using v2alpha specific deserializations/enums
+
 
 def GetMessagesModule(release_track):
   """Returns the API messages module for GCFv2."""
@@ -53,6 +55,12 @@ def GetClientInstance(release_track):
   """Returns an API client for GCFv2."""
   api_version = _RELEASE_TRACK_TO_API_VERSION.get(release_track)
   return apis.GetClientInstance(_API_NAME, api_version)
+
+
+def GetStateMessagesStrings(state_messages):
+  """Returns the list of string representations of the state messages."""
+  return map(lambda st: '[{}] {}'.format(str(st.severity), st.message),
+             state_messages)
 
 
 def _GetStageName(name_enum):
@@ -126,7 +134,11 @@ def _GetOperationStatus(client, request, tracker, messages):
               stage_key, 'Logs are available at [{}]'.format(stage.resourceUri))
         else:
           tracker.UpdateStage(stage_key, '')
-        tracker.CompleteStage(stage_key)
+        if stage.stateMessages:
+          tracker.CompleteStageWithWarnings(
+              stage_key, GetStateMessagesStrings(stage.stateMessages))
+        else:
+          tracker.CompleteStage(stage_key)
   return operation.done
 
 

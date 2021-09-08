@@ -59,7 +59,7 @@ def GetApiEnablementInfo(status_message):
 
 
 def PromptToEnableApi(project, service_token):
-  """Prompts to enable the API and throws if the answer is no.
+  """Prompts to enable the API.
 
   Args:
     project (str): The project that the API is not enabled on.

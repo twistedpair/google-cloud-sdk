@@ -141,7 +141,7 @@ _INVALID_CLOUD_SQL_IPV4_CIDR_BLOCK_ERROR = (
 _INVALID_COMPOSER_NETWORK_IPV4_CIDR_BLOCK_ERROR = (
     'Not a valid IPV4 CIDR block value for the composer network')
 _ENVIRONMENT_SIZE_MAPPING = {
-    'ENVIRONMENT_SIZE_UNSPECIFIED': 'unsepcified',
+    'ENVIRONMENT_SIZE_UNSPECIFIED': 'unspecified',
     'ENVIRONMENT_SIZE_SMALL': 'small',
     'ENVIRONMENT_SIZE_MEDIUM': 'medium',
     'ENVIRONMENT_SIZE_LARGE': 'large'
@@ -453,7 +453,6 @@ WEB_SERVER_MACHINE_TYPE = base.Argument(
 
 SCHEDULER_CPU = base.Argument(
     '--scheduler-cpu',
-    hidden=True,
     type=float,
     default=None,
     action=V2ExclusiveStoreAction,
@@ -463,7 +462,6 @@ SCHEDULER_CPU = base.Argument(
 
 WORKER_CPU = base.Argument(
     '--worker-cpu',
-    hidden=True,
     type=float,
     default=None,
     action=V2ExclusiveStoreAction,
@@ -473,7 +471,6 @@ WORKER_CPU = base.Argument(
 
 WEB_SERVER_CPU = base.Argument(
     '--web-server-cpu',
-    hidden=True,
     type=float,
     default=None,
     action=V2ExclusiveStoreAction,
@@ -483,7 +480,6 @@ WEB_SERVER_CPU = base.Argument(
 
 SCHEDULER_MEMORY = base.Argument(
     '--scheduler-memory',
-    hidden=True,
     type=arg_parsers.BinarySize(
         lower_bound='128MB',
         upper_bound='512GB',
@@ -492,13 +488,12 @@ SCHEDULER_MEMORY = base.Argument(
     default=None,
     action=V2ExclusiveStoreAction,
     help="""\
-    Memory allocated to Airflow scheduler. If units are not provided,
+    Memory allocated to Airflow scheduler, ex. 600MB, 3GB, 2. If units are not provided,
     defaults to GB.
     """)
 
 WORKER_MEMORY = base.Argument(
     '--worker-memory',
-    hidden=True,
     type=arg_parsers.BinarySize(
         lower_bound='128MB',
         upper_bound='512GB',
@@ -507,13 +502,12 @@ WORKER_MEMORY = base.Argument(
     action=V2ExclusiveStoreAction,
     default=None,
     help="""\
-    Memory allocated to Airflow worker. If units are not provided,
+    Memory allocated to Airflow worker, ex. 600MB, 3GB, 2. If units are not provided,
     defaults to GB.
     """)
 
 WEB_SERVER_MEMORY = base.Argument(
     '--web-server-memory',
-    hidden=True,
     type=arg_parsers.BinarySize(
         lower_bound='128MB',
         upper_bound='512GB',
@@ -522,13 +516,12 @@ WEB_SERVER_MEMORY = base.Argument(
     action=V2ExclusiveStoreAction,
     default=None,
     help="""\
-    Memory allocated to Airflow web server. If units are not provided,
+    Memory allocated to Airflow web server, ex. 600MB, 3GB, 2. If units are not provided,
     defaults to GB.
     """)
 
 SCHEDULER_STORAGE = base.Argument(
     '--scheduler-storage',
-    hidden=True,
     type=arg_parsers.BinarySize(
         lower_bound='5MB',
         upper_bound='10GB',
@@ -537,13 +530,12 @@ SCHEDULER_STORAGE = base.Argument(
     action=V2ExclusiveStoreAction,
     default=None,
     help="""\
-    Storage allocated to Airflow scheduler. If units are not provided,
+    Storage allocated to Airflow scheduler, ex. 600MB, 3GB, 2. If units are not provided,
     defaults to GB.
     """)
 
 WORKER_STORAGE = base.Argument(
     '--worker-storage',
-    hidden=True,
     type=arg_parsers.BinarySize(
         lower_bound='5MB',
         upper_bound='10GB',
@@ -552,13 +544,12 @@ WORKER_STORAGE = base.Argument(
     action=V2ExclusiveStoreAction,
     default=None,
     help="""\
-    Storage allocated to Airflow worker. If units are not provided,
+    Storage allocated to Airflow worker, ex. 600MB, 3GB, 2. If units are not provided,
     defaults to GB.
     """)
 
 WEB_SERVER_STORAGE = base.Argument(
     '--web-server-storage',
-    hidden=True,
     type=arg_parsers.BinarySize(
         lower_bound='5MB',
         upper_bound='10GB',
@@ -567,13 +558,12 @@ WEB_SERVER_STORAGE = base.Argument(
     action=V2ExclusiveStoreAction,
     default=None,
     help="""\
-    Storage allocated to Airflow web server. If units are not provided,
+    Storage allocated to Airflow web server, ex. 600MB, 3GB, 2. If units are not provided,
     defaults to GB.
     """)
 
 MIN_WORKERS = base.Argument(
     '--min-workers',
-    hidden=True,
     type=int,
     default=None,
     action=V2ExclusiveStoreAction,
@@ -583,7 +573,6 @@ MIN_WORKERS = base.Argument(
 
 MAX_WORKERS = base.Argument(
     '--max-workers',
-    hidden=True,
     action=V2ExclusiveStoreAction,
     type=int,
     default=None,
@@ -601,21 +590,19 @@ NUM_SCHEDULERS = base.Argument(
 
 ENVIRONMENT_SIZE_BETA = arg_utils.ChoiceEnumMapper(
     arg_name='--environment-size',
-    help_str='Size of the environment. One of small, medium, large.',
+    help_str='Size of the environment. Unspecified means that the default option will be chosen.',
     message_enum=api_util.GetMessagesModule(
         release_track=base.ReleaseTrack.BETA).EnvironmentConfig
     .EnvironmentSizeValueValuesEnum,
-    custom_mappings=_ENVIRONMENT_SIZE_MAPPING,
-    hidden=True)
+    custom_mappings=_ENVIRONMENT_SIZE_MAPPING)
 
 ENVIRONMENT_SIZE_ALPHA = arg_utils.ChoiceEnumMapper(
     arg_name='--environment-size',
-    help_str='Size of the environment. One of small, medium, large.',
+    help_str='Size of the environment. Unspecified means that the default option will be chosen.',
     message_enum=api_util.GetMessagesModule(
         release_track=base.ReleaseTrack.ALPHA).EnvironmentConfig
     .EnvironmentSizeValueValuesEnum,
-    custom_mappings=_ENVIRONMENT_SIZE_MAPPING,
-    hidden=True)
+    custom_mappings=_ENVIRONMENT_SIZE_MAPPING)
 
 
 def _IsValidIpv4CidrBlock(ipv4_cidr_block):
@@ -823,10 +810,9 @@ COMPOSER_NETWORK_IPV4_CIDR_FLAG = base.Argument(
     '--composer-network-ipv4-cidr',
     default=None,
     type=COMPOSER_NETWORK_IPV4_CIDR_BLOCK_FORMAT_VALIDATOR,
-    hidden=True,
     action=V2ExclusiveStoreAction,
     help="""\
-    IPv4 CIDR range to use for the Composer network. This should have
+    IPv4 CIDR range to use for the Composer network. This must have
     a size of the netmask between 24 and 29.
 
     Can be specified for Composer v2 environments only. Cannot be specified

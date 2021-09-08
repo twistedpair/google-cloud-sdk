@@ -1469,23 +1469,27 @@ def PromptForRegion():
     return region
 
 
-def GetRegion(args, prompt=False):
+def GetRegion(args, prompt=False, region_label=None):
   """Prompt for region if not provided.
 
   Region is decided in the following order:
   - region argument;
+  - region label
   - run/region gcloud config;
   - prompt user.
 
   Args:
     args: Namespace, The args namespace.
     prompt: bool, whether to attempt to prompt.
+    region_label: a k8s label for the region
 
   Returns:
     A str representing region.
   """
   if getattr(args, 'region', None):
     return args.region
+  if region_label is not None:
+    return region_label
   if properties.VALUES.run.region.IsExplicitlySet():
     return properties.VALUES.run.region.Get()
   if prompt:

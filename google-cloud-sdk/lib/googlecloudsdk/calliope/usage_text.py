@@ -495,7 +495,10 @@ def GetArgUsage(arg, brief=False, definition=False, markdown=False,
     remainder_usage = []
   else:
     include_remainder_usage = False
-  for a in sorted(arg.arguments, key=GetArgSortKey):
+  arguments = (
+      sorted(arg.arguments, key=GetArgSortKey)
+      if arg.sort_args else arg.arguments)
+  for a in arguments:
     if a.is_hidden and not hidden:
       continue
     if a.is_group:
@@ -603,15 +606,6 @@ def GetFlags(arg, optional=False):
   return sorted(flags, key=_GetArgUsageSortKey)
 
 
-def _GetArgHeading(category):
-  """Returns the arg section heading for an arg category."""
-  if category is None:
-    category = 'OTHER'
-  elif 'ARGUMENTS' in category or 'FLAGS' in category:
-    return category
-  return category + ' FLAGS'
-
-
 class Section(object):
   """A positional/flag section.
 
@@ -625,7 +619,7 @@ class Section(object):
     self.args = args
 
 
-def GetArgSections(arguments, is_root, is_group):
+def GetArgSections(arguments, is_root, is_group, sort_top_level_args):
   """Returns the positional/flag sections in document order.
 
   Args:
@@ -633,12 +627,13 @@ def GetArgSections(arguments, is_root, is_group):
       group.
     is_root: bool, True if arguments are for the CLI root command.
     is_group: bool, True if arguments are for a command group.
+    sort_top_level_args: bool, True if top level arguments should be sorted.
 
   Returns:
     ([Section] global_flags)
       global_flags - The sorted list of global flags if command is not the root.
   """
-  categories = {}
+  categories = collections.OrderedDict()
   dests = set()
   global_flags = set()
   if not is_root and is_group:
@@ -668,41 +663,55 @@ def GetArgSections(arguments, is_root, is_group):
         continue
       dests.add(arg.dest)
     if category not in categories:
-      categories[category] = set()
-    categories[category].add(arg)
+      categories[category] = []
+    categories[category].append(arg)
 
   # Collect the priority sections first in order:
-  #   POSITIONAL ARGUMENTS, REQUIRED, COMMON, OTHER, and categorized.
+  #   POSITIONAL ARGUMENTS, REQUIRED, COMMON
+  # Followed by uncategorized / categorized:
+  # * If the top level args are sorted, just put uncategorized first followed by
+  #   the remaining categories in alphabetical order.
+  # * If the top level args shouldn't be sorted, then use the insertion order of
+  #   categories so as to mirror the top level args order.
   sections = []
   if is_root:
     common = 'GLOBAL'
   else:
     common = base.COMMONLY_USED_FLAGS
-  other_flags_heading = 'FLAGS'
-  for category, other in (('POSITIONAL ARGUMENTS', ''),
-                          ('REQUIRED', 'OPTIONAL'),
-                          (common, 'OTHER'),
-                          ('OTHER', None)):
+  if sort_top_level_args:
+    initial_categories = ['POSITIONAL ARGUMENTS', 'REQUIRED', common, 'OTHER']
+    remaining_categories = sorted([
+        c for c in categories if c not in initial_categories])
+  else:
+    initial_categories = ['POSITIONAL ARGUMENTS', 'REQUIRED', common]
+    remaining_categories = [
+        c for c in categories if c not in initial_categories]
+
+  def _GetArgHeading(category):
+    """Returns the arg section heading for an arg category."""
+    if category == 'OTHER':
+      # We can be more descriptive with the OTHER flags heading, depending on
+      # what other categories are present.
+      if set(remaining_categories) - set(['OTHER']):  # Additional categorized.
+        other_flags_heading = 'FLAGS'
+      elif common in categories:
+        other_flags_heading = 'OTHER FLAGS'
+      elif 'REQUIRED' in categories:
+        other_flags_heading = 'OPTIONAL FLAGS'
+      else:
+        other_flags_heading = 'FLAGS'
+      return other_flags_heading
+    if 'ARGUMENTS' in category or 'FLAGS' in category:
+      return category
+    return category + ' FLAGS'
+
+  for category in initial_categories + remaining_categories:
     if category not in categories:
       continue
-    if other is not None:
-      if other:
-        other_flags_heading = other
-      heading = category
-    elif len(categories) > 1:
-      heading = 'FLAGS'
-    else:
-      heading = other_flags_heading
-    sections.append(Section(_GetArgHeading(heading),
-                            parser_arguments.Argument(
-                                arguments=categories[category])))
-    # This prevents the category from being re-added in the loop below.
-    del categories[category]
-
-  # Add the remaining categories in sorted order.
-  for category, args in sorted(six.iteritems(categories)):
     sections.append(Section(_GetArgHeading(category),
-                            parser_arguments.Argument(arguments=args)))
+                            parser_arguments.Argument(
+                                arguments=categories[category],
+                                sort_args=sort_top_level_args)))
 
   return sections, global_flags
 

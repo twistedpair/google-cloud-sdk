@@ -131,6 +131,18 @@ class Collections(enum.Enum):
       ['projectsId', 'locationsId', 'indexesId', 'operationsId'],
       True
   )
+  PROJECTS_LOCATIONS_MODELDEPLOYMENTMONITORINGJOBS = (
+      'projects.locations.modelDeploymentMonitoringJobs',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'modelDeploymentMonitoringJobs/'
+              '{modelDeploymentMonitoringJobsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_MODELS = (
       'projects.locations.models',
       '{+name}',
@@ -201,6 +213,28 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/specialistPools/'
               '{specialistPoolsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_STUDIES = (
+      'projects.locations.studies',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/studies/'
+              '{studiesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_STUDIES_TRIALS = (
+      'projects.locations.studies.trials',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/studies/'
+              '{studiesId}/trials/{trialsId}',
       },
       ['name'],
       True

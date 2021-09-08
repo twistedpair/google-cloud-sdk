@@ -145,6 +145,7 @@ def Argument(d):
   group.help = group.description
   group.is_global = False
   group.is_hidden = False
+  group.sort_args = True
   return group
 
 

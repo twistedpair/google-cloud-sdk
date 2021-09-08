@@ -205,6 +205,7 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
     self._command_name = ' '.join(self._command_path)
     self._subcommands = None
     self._subgroups = None
+    self._sort_top_level_args = None
     self._top = self._command_path[0] if self._command_path else ''
     self._buf = io.StringIO()
     self._out = self._buf.write
@@ -284,6 +285,11 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
     return bool(self._subgroups or self._subcommands)
 
   @property
+  def sort_top_level_args(self):
+    """Returns whether to sort the top level arguments in markdown docs."""
+    return self._sort_top_level_args
+
+  @property
   def is_topic(self):
     """Returns True if this node is a topic command."""
     if (len(self._command_path) >= 3 and
@@ -318,7 +324,8 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
     """Sets self._arg_sections in document order."""
     if self._arg_sections is None:
       self._arg_sections, self._global_flags = usage_text.GetArgSections(
-          self.GetArguments(), self.is_root, self.is_group)
+          self.GetArguments(), self.is_root, self.is_group,
+          self.sort_top_level_args)
 
   def _SplitCommandFromArgs(self, cmd):
     """Splits cmd into command and args lists.
@@ -442,8 +449,9 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
 
   def _PrintArgGroup(self, arg, depth=0, single=False):
     """Prints an arg group definition list at depth."""
-
-    args = sorted(arg.arguments, key=usage_text.GetArgSortKey)
+    args = (
+        sorted(arg.arguments, key=usage_text.GetArgSortKey)
+        if arg.sort_args else arg.arguments)
     heading = []
     if arg.help or arg.is_mutex or arg.is_required:
       if arg.help:
@@ -890,6 +898,7 @@ class CommandMarkdownGenerator(MarkdownGenerator):
     self._sections.update(getattr(self._command, 'detailed_help', {}))
     self._subcommands = command.GetSubCommandHelps()
     self._subgroups = command.GetSubGroupHelps()
+    self._sort_top_level_args = command.ai.sort_args
 
   def _SetSectionHelp(self, name, lines):
     """Sets section name help composed of lines.

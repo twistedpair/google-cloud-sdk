@@ -21,11 +21,11 @@ from __future__ import unicode_literals
 import sys
 
 from googlecloudsdk.api_lib.compute import base_classes
+from googlecloudsdk.api_lib.compute import metadata_utils
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
-from googlecloudsdk.core.util import files
 
 import six
 
@@ -41,19 +41,27 @@ def InvertBoolean(boolean):
   return not boolean
 
 
-def ReadMetadataFromFile(metadata_from_file):
-  """Reads the metadata values from the files.
+def MergeMetadata(unused_ref, args, request):
+  """Request hook for merging the metadata and metadata from file.
 
   Args:
-    metadata_from_file: dict of metadata keys to filenames.
+    unused_ref: ref to the service.
+    args:  The args for this method.
+    request: The request to be made.
 
   Returns:
-    A dict of metadata keys to values.
+    Request with metadata field populated.
   """
-  metadata = {}
-  for key, file_path in six.iteritems(metadata_from_file):
-    metadata[key] = files.ReadFileContents(file_path)
-  return metadata
+  metadata_dict = metadata_utils.ConstructMetadataDict(args.metadata,
+                                                       args.metadata_from_file)
+  tpu_messages = TPUNode().GetMessages()
+  if request.node.metadata is None:
+    request.node.metadata = tpu_messages.Node.MetadataValue()
+  for key, value in six.iteritems(metadata_dict):
+    request.node.metadata.additionalProperties.append(
+        tpu_messages.Node.MetadataValue.AdditionalProperty(
+            key=key, value=value))
+  return request
 
 
 def GetMessagesModule(version='v2alpha1'):

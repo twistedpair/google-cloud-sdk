@@ -91,8 +91,6 @@ _SIGNATURE_TYPE_ENV_VAR_COLLISION_ERROR_MESSAGE = (
 
 _LEGACY_V1_FLAGS = [
     ('security_level', '--security-level'),
-    ('trigger_event', '--trigger-event'),
-    ('trigger_resource', '--trigger-resource'),
 ]
 _LEGACY_V1_FLAG_ERROR = '`%s` is only supported in Cloud Functions V1.'
 
@@ -123,7 +121,8 @@ _DEPLOYMENT_TOOL_VALUE = 'cli-gcloud'
 
 def _IsHttpTriggered(args):
   return args.IsSpecified('trigger_http') or not (
-      args.trigger_topic or args.trigger_bucket or args.trigger_event_filters)
+      args.trigger_topic or args.trigger_bucket or args.trigger_event_filters or
+      args.trigger_event)
 
 
 def _GcloudIgnoreCreationPredicate(directory):
@@ -397,11 +396,15 @@ def _GetEventTrigger(args, messages):
   event_filters = []
   event_type = None
   pubsub_topic = None
+  service_account_email = args.trigger_service_account or args.service_account
+
+  if args.trigger_event or args.trigger_resource:
+    return _GetEventTriggerForEventType(args,
+                                        messages), frozenset(['event_trigger'])
 
   if args.trigger_topic:
     event_type = _EVENT_TYPE_PUBSUB_MESSAGE_PUBLISHED
-    pubsub_topic = 'projects/{}/topics/{}'.format(
-        properties.VALUES.core.project.GetOrFail(), args.trigger_topic)
+    pubsub_topic = _BuildFullPubsubTopic(args.trigger_topic)
   elif args.trigger_bucket:
     bucket = args.trigger_bucket[5:].rstrip('/')  # strip 'gs://' and final '/'
     event_type = _EVENT_TYPE_STORAGE_OBJECT_FINALIZED
@@ -416,15 +419,66 @@ def _GetEventTrigger(args, messages):
   else:
     # Not expected given the implementation of _IsHttpTriggered
     raise NotImplementedError('unknown trigger type')
-
   event_trigger = messages.EventTrigger(
       eventFilters=event_filters,
       eventType=event_type,
       pubsubTopic=pubsub_topic,
-      serviceAccountEmail=args.trigger_service_account or args.service_account,
+      serviceAccountEmail=service_account_email,
       triggerRegion=args.trigger_location)
 
   return event_trigger, frozenset(['event_trigger'])
+
+
+def _GetEventTriggerForEventType(args, messages):
+  """Constructs an EventTrigger message from the command-line arguments.
+
+  Args:
+    args: argparse.Namespace, arguments that this command was invoked with
+    messages: messages module, the GCFv2 message stubs
+
+  Returns:
+    event_trigger: cloudfunctions_v2alpha_messages.EventTrigger, used to request
+      events sent from another service
+  """
+  trigger_event = args.trigger_event
+  trigger_resource = args.trigger_resource
+  service_account_email = args.trigger_service_account or args.service_account
+
+  # TODO(b/195973812): add gcf v1 type conversion
+  if trigger_event == 'google.cloud.pubsub.topic.v1.messagePublished':
+    pubsub_topic = trigger_resource
+    return messages.EventTrigger(
+        eventType=_EVENT_TYPE_PUBSUB_MESSAGE_PUBLISHED,
+        pubsubTopic=_BuildFullPubsubTopic(pubsub_topic),
+        serviceAccountEmail=service_account_email,
+        triggerRegion=args.trigger_location)
+
+  elif trigger_event in [
+      'google.cloud.storage.object.v1.archived',
+      'google.cloud.storage.object.v1.deleted',
+      'google.cloud.storage.object.v1.finalized',
+      'google.cloud.storage.object.v1.metadataUpdated',
+  ]:
+    # name without prefix gs://
+    bucket_name = storage_util.BucketReference.FromUrl(
+        trigger_resource).bucket
+    return messages.EventTrigger(
+        eventType=trigger_event,
+        eventFilters=[
+            messages.EventFilter(attribute='bucket', value=bucket_name)
+        ],
+        serviceAccountEmail=service_account_email,
+        triggerRegion=args.trigger_location)
+
+  else:
+    raise exceptions.InvalidArgumentException(
+        '--trigger-event',
+        'Unsupported event type: {} specified.'.format(trigger_event))
+
+
+def _BuildFullPubsubTopic(pubsub_topic):
+  return 'projects/{}/topics/{}'.format(
+      properties.VALUES.core.project.GetOrFail(), pubsub_topic)
 
 
 def _GetSignatureType(args, event_trigger):

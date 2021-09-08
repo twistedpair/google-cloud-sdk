@@ -40,6 +40,9 @@ _TAINT_FORMAT_HELP = 'Node taint is of format key=value:effect.'
 _TAINT_EFFECT_HELP = 'Effect must be one of: {}.'.format(', '.join(
     [_ToCamelCase(e) for e in _TAINT_EFFECT_ENUM_MAPPER.choices]))
 
+_REPLICAPLACEMENT_FORMAT_HELP = (
+    'Replica placement is of format subnetid:zone, for example subnetid12345:1')
+
 
 def AddRegion(parser, hidden=False):
   """Add the --location flag."""
@@ -402,8 +405,60 @@ def GetNodeTaints(args):
   return taints
 
 
+def _ReplicaPlacementStrToObject(replicaplacement):
+  """Converts a colon-delimited string to a GoogleCloudGkemulticloudV1ReplicaPlacement instance.
+
+  Replica placement is of format subnetid:zone.
+
+  Args:
+    replicaplacement: Replica placement.
+
+  Returns:
+    An GoogleCloudGkemulticloudV1ReplicaPlacement instance.
+
+  Raises:
+    ArgumentError: If the Replica placement format is invalid.
+  """
+  strs = replicaplacement.split(':')
+  if len(strs) != 2:
+    raise arg_parsers.ArgumentTypeError(
+        'Invalid value [{}] for argument --replica-placements. {}'.format(
+            replicaplacement, _REPLICAPLACEMENT_FORMAT_HELP))
+  subnetid, zone = strs[0], strs[1]
+  return api_util.GetMessagesModule(
+      ).GoogleCloudGkemulticloudV1ReplicaPlacement(
+          azureAvailabilityZone=zone, subnetId=subnetid)
+
+
+def AddReplicaPlacements(parser):
+  parser.add_argument(
+      '--replica-placements',
+      type=arg_parsers.ArgList(element_type=_ReplicaPlacementStrToObject),
+      metavar='REPLICA_PLACEMENT',
+      help=('Placement info for the control plane replicas. '
+            '{}'.format(_REPLICAPLACEMENT_FORMAT_HELP)))
+
+
 def AddAuthProviderCmdPath(parser):
   parser.add_argument(
       '--auth-provider-cmd-path',
       hidden=True,
       help='Path to the executable for the auth provider field in kubeconfig.')
+
+
+def AddProxyConfig(parser):
+  """Add proxy configuration flags.
+
+  Args:
+    parser: The argparse.parser to add the arguments to.
+  """
+
+  group = parser.add_argument_group('Proxy config')
+  group.add_argument(
+      '--proxy-resource-group-id',
+      required=True,
+      help=('The ARM ID the of the resource group containing proxy keyvault.'))
+  group.add_argument(
+      '--proxy-secret-id',
+      required=True,
+      help=('The URL the of the proxy setting secret with its version.'))

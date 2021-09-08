@@ -479,7 +479,7 @@ class DatabaseInstance(_messages.Message):
       *SQLSERVER_2017_EXPRESS*, or *SQLSERVER_2017_WEB*.
     InstalledVersionValueValuesEnum: installed_version stores the current
       fully resolved database version including minor version such as
-      MySQL_5.6.50
+      MYSQL_5_6_50
     InstanceTypeValueValuesEnum: The instance type. This can be one of the
       following. *CLOUD_SQL_INSTANCE*: A Cloud SQL instance that is not
       replicating from a primary instance. *ON_PREMISES_INSTANCE*: An instance
@@ -512,6 +512,9 @@ class DatabaseInstance(_messages.Message):
       property has been deprecated. Use the
       "cloudsql.googleapis.com/database/disk/bytes_used" metric in Cloud
       Monitoring API instead. Please see this announcement for details.
+    databaseInstalledVersion: database_installed_version stores the current
+      fully resolved database version including minor version such as
+      MYSQL_5_6_50
     databaseVersion: The database engine type and version. The
       *databaseVersion* field cannot be changed after instance creation. MySQL
       instances: *MYSQL_8_0*, *MYSQL_5_7* (default), or *MYSQL_5_6*.
@@ -532,7 +535,7 @@ class DatabaseInstance(_messages.Message):
       when the instance was created if the instance has failed over to its
       secondary zone.
     installedVersion: installed_version stores the current fully resolved
-      database version including minor version such as MySQL_5.6.50
+      database version including minor version such as MYSQL_5_6_50
     instanceType: The instance type. This can be one of the following.
       *CLOUD_SQL_INSTANCE*: A Cloud SQL instance that is not replicating from
       a primary instance. *ON_PREMISES_INSTANCE*: An instance running on the
@@ -664,7 +667,7 @@ class DatabaseInstance(_messages.Message):
 
   class InstalledVersionValueValuesEnum(_messages.Enum):
     r"""installed_version stores the current fully resolved database version
-    including minor version such as MySQL_5.6.50
+    including minor version such as MYSQL_5_6_50
 
     Values:
       SQL_DATABASE_VERSION_UNSPECIFIED: This is an unknown database version.
@@ -803,36 +806,37 @@ class DatabaseInstance(_messages.Message):
   connectionName = _messages.StringField(2)
   createTime = _messages.StringField(3)
   currentDiskSize = _messages.IntegerField(4)
-  databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 5)
-  diskEncryptionConfiguration = _messages.MessageField('DiskEncryptionConfiguration', 6)
-  diskEncryptionStatus = _messages.MessageField('DiskEncryptionStatus', 7)
-  etag = _messages.StringField(8)
-  failoverReplica = _messages.MessageField('FailoverReplicaValue', 9)
-  gceZone = _messages.StringField(10)
-  installedVersion = _messages.EnumField('InstalledVersionValueValuesEnum', 11)
-  instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 12)
-  ipAddresses = _messages.MessageField('IpMapping', 13, repeated=True)
-  ipv6Address = _messages.StringField(14)
-  kind = _messages.StringField(15)
-  masterInstanceName = _messages.StringField(16)
-  maxDiskSize = _messages.IntegerField(17)
-  name = _messages.StringField(18)
-  onPremisesConfiguration = _messages.MessageField('OnPremisesConfiguration', 19)
-  outOfDiskReport = _messages.MessageField('SqlOutOfDiskReport', 20)
-  project = _messages.StringField(21)
-  region = _messages.StringField(22)
-  replicaConfiguration = _messages.MessageField('ReplicaConfiguration', 23)
-  replicaNames = _messages.StringField(24, repeated=True)
-  rootPassword = _messages.StringField(25)
-  satisfiesPzs = _messages.BooleanField(26)
-  scheduledMaintenance = _messages.MessageField('SqlScheduledMaintenance', 27)
-  secondaryGceZone = _messages.StringField(28)
-  selfLink = _messages.StringField(29)
-  serverCaCert = _messages.MessageField('SslCert', 30)
-  serviceAccountEmailAddress = _messages.StringField(31)
-  settings = _messages.MessageField('Settings', 32)
-  state = _messages.EnumField('StateValueValuesEnum', 33)
-  suspensionReason = _messages.EnumField('SuspensionReasonValueListEntryValuesEnum', 34, repeated=True)
+  databaseInstalledVersion = _messages.StringField(5)
+  databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 6)
+  diskEncryptionConfiguration = _messages.MessageField('DiskEncryptionConfiguration', 7)
+  diskEncryptionStatus = _messages.MessageField('DiskEncryptionStatus', 8)
+  etag = _messages.StringField(9)
+  failoverReplica = _messages.MessageField('FailoverReplicaValue', 10)
+  gceZone = _messages.StringField(11)
+  installedVersion = _messages.EnumField('InstalledVersionValueValuesEnum', 12)
+  instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 13)
+  ipAddresses = _messages.MessageField('IpMapping', 14, repeated=True)
+  ipv6Address = _messages.StringField(15)
+  kind = _messages.StringField(16)
+  masterInstanceName = _messages.StringField(17)
+  maxDiskSize = _messages.IntegerField(18)
+  name = _messages.StringField(19)
+  onPremisesConfiguration = _messages.MessageField('OnPremisesConfiguration', 20)
+  outOfDiskReport = _messages.MessageField('SqlOutOfDiskReport', 21)
+  project = _messages.StringField(22)
+  region = _messages.StringField(23)
+  replicaConfiguration = _messages.MessageField('ReplicaConfiguration', 24)
+  replicaNames = _messages.StringField(25, repeated=True)
+  rootPassword = _messages.StringField(26)
+  satisfiesPzs = _messages.BooleanField(27)
+  scheduledMaintenance = _messages.MessageField('SqlScheduledMaintenance', 28)
+  secondaryGceZone = _messages.StringField(29)
+  selfLink = _messages.StringField(30)
+  serverCaCert = _messages.MessageField('SslCert', 31)
+  serviceAccountEmailAddress = _messages.StringField(32)
+  settings = _messages.MessageField('Settings', 33)
+  state = _messages.EnumField('StateValueValuesEnum', 34)
+  suspensionReason = _messages.EnumField('SuspensionReasonValueListEntryValuesEnum', 35, repeated=True)
 
 
 class DatabasesListResponse(_messages.Message):
@@ -2081,6 +2085,7 @@ class Settings(_messages.Message):
     denyMaintenancePeriods: Deny maintenance periods
     insightsConfig: Insights configuration, for now relevant only for
       Postgres.
+    instanceVersion: The current software version the instance is running on.
     ipConfiguration: The settings for IP Management. This allows to enable or
       disable the instance IP and manage which external networks can connect
       to the instance. The IPv4 address cannot be disabled.
@@ -2101,6 +2106,7 @@ class Settings(_messages.Message):
       field for update method to make sure concurrent updates are handled
       properly. During update, use the most recent settingsVersion value for
       this instance and do not try to update this value.
+    sqlServerAuditConfig: SQL Server specific audit configuration.
     storageAutoResize: Configuration to increase storage size automatically.
       The default value is true.
     storageAutoResizeLimit: The maximum size to which storage capacity can be
@@ -2233,17 +2239,19 @@ class Settings(_messages.Message):
   databaseReplicationEnabled = _messages.BooleanField(11)
   denyMaintenancePeriods = _messages.MessageField('DenyMaintenancePeriod', 12, repeated=True)
   insightsConfig = _messages.MessageField('InsightsConfig', 13)
-  ipConfiguration = _messages.MessageField('IpConfiguration', 14)
-  kind = _messages.StringField(15)
-  locationPreference = _messages.MessageField('LocationPreference', 16)
-  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 17)
-  pricingPlan = _messages.EnumField('PricingPlanValueValuesEnum', 18)
-  replicationType = _messages.EnumField('ReplicationTypeValueValuesEnum', 19)
-  settingsVersion = _messages.IntegerField(20)
-  storageAutoResize = _messages.BooleanField(21)
-  storageAutoResizeLimit = _messages.IntegerField(22)
-  tier = _messages.StringField(23)
-  userLabels = _messages.MessageField('UserLabelsValue', 24)
+  instanceVersion = _messages.StringField(14)
+  ipConfiguration = _messages.MessageField('IpConfiguration', 15)
+  kind = _messages.StringField(16)
+  locationPreference = _messages.MessageField('LocationPreference', 17)
+  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 18)
+  pricingPlan = _messages.EnumField('PricingPlanValueValuesEnum', 19)
+  replicationType = _messages.EnumField('ReplicationTypeValueValuesEnum', 20)
+  settingsVersion = _messages.IntegerField(21)
+  sqlServerAuditConfig = _messages.MessageField('SqlServerAuditConfig', 22)
+  storageAutoResize = _messages.BooleanField(23)
+  storageAutoResizeLimit = _messages.IntegerField(24)
+  tier = _messages.StringField(25)
+  userLabels = _messages.MessageField('UserLabelsValue', 26)
 
 
 class SqlActiveDirectoryConfig(_messages.Message):
@@ -3046,6 +3054,18 @@ class SqlScheduledMaintenance(_messages.Message):
   canReschedule = _messages.BooleanField(2)
   scheduleDeadlineTime = _messages.StringField(3)
   startTime = _messages.StringField(4)
+
+
+class SqlServerAuditConfig(_messages.Message):
+  r"""SQL Server specific audit configuration.
+
+  Fields:
+    bucket: The name of the destination bucket (e.g., gs://mybucket).
+    kind: This is always sql#sqlServerAuditConfig
+  """
+
+  bucket = _messages.StringField(1)
+  kind = _messages.StringField(2)
 
 
 class SqlServerDatabaseDetails(_messages.Message):

@@ -2122,72 +2122,6 @@
         }
       }
     },
-    "GoogleCloudAiplatformV1beta1QueryFeatureValuesRequest": {
-      "id": "GoogleCloudAiplatformV1beta1QueryFeatureValuesRequest",
-      "description": "Request message for FeaturestoreService.QueryFeatureValues.",
-      "type": "object",
-      "properties": {
-        "csvReadInstances": {
-          "description": "Each read instance consists of exactly one read timestamp and one or more entity IDs identifying entities of the corresponding EntityTypes whose Features are requested. Each output instance contains Feature values of requested entities concatenated together as of the read time. An example read instance may be `foo_entity_id, bar_entity_id, 2020-01-01T10:00:00.123Z`. An example output instance may be `foo_entity_id, bar_entity_id, 2020-01-01T10:00:00.123Z, foo_entity_feature1_value, bar_entity_feature2_value`. Timestamp in each read instance must be millisecond-aligned. `csv_read_instances` are read instances stored in a plain-text CSV file. The header should be: [ENTITY_TYPE_ID1], [ENTITY_TYPE_ID2], ..., timestamp The columns can be in any order. Values in the timestamp column must use the RFC 3339 format, e.g. `2012-07-30T10:43:17.123Z`.",
-          "$ref": "GoogleCloudAiplatformV1beta1CsvSource"
-        },
-        "bigqueryReadInstances": {
-          "description": "Similar to csv_read_instances, but from BigQuery source.",
-          "$ref": "GoogleCloudAiplatformV1beta1BigQuerySource"
-        },
-        "destination": {
-          "description": "Required. Specifies output location and format.",
-          "$ref": "GoogleCloudAiplatformV1beta1FeatureValueDestination"
-        },
-        "passThroughFields": {
-          "description": "When not empty, the specified fields in the *_read_instances source will be joined as-is in the output, in addition to those fields from the Featurestore Entity. For BigQuery source, the type of the pass-through values will be automatically inferred. For CSV source, the pass-through values will be passed as opaque bytes.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudAiplatformV1beta1QueryFeatureValuesRequestPassThroughField"
-          }
-        },
-        "entityTypeSpecs": {
-          "description": "Required. Specifies EntityType grouping Features to read values of and settings. Each EntityType referenced in [QueryFeatureValuesRequest.entity_type_specs] must have a column specifying entity IDs in tha EntityType in QueryFeatureValuesRequest.request .",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudAiplatformV1beta1QueryFeatureValuesRequestEntityTypeSpec"
-          }
-        }
-      }
-    },
-    "GoogleCloudAiplatformV1beta1QueryFeatureValuesRequestPassThroughField": {
-      "id": "GoogleCloudAiplatformV1beta1QueryFeatureValuesRequestPassThroughField",
-      "description": "Describe pass-through fields in read_instance source.",
-      "type": "object",
-      "properties": {
-        "fieldName": {
-          "description": "Required. The name of the field in the CSV header or the name of the column in BigQuery table. The naming restriction is the same as Feature.name.",
-          "type": "string"
-        }
-      }
-    },
-    "GoogleCloudAiplatformV1beta1QueryFeatureValuesRequestEntityTypeSpec": {
-      "id": "GoogleCloudAiplatformV1beta1QueryFeatureValuesRequestEntityTypeSpec",
-      "description": "Selects Features of an EntityType to read values of and specifies read settings.",
-      "type": "object",
-      "properties": {
-        "entityType": {
-          "description": "Required. The resource name (EntityType) from which to query Feature values. Format: `projects\/{project}\/locations\/{location}\/featurestores\/{featurestore}\/entityTypes\/{entity_type}`",
-          "type": "string"
-        },
-        "featureSelector": {
-          "description": "Required. Selectors choosing which Feature values to read from the EntityType.",
-          "$ref": "GoogleCloudAiplatformV1beta1FeatureSelector"
-        },
-        "settings": {
-          "description": "The setting for each Feature in the query output.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudAiplatformV1beta1DestinationFeatureSetting"
-          }
-        }
-      }
-    },
     "GoogleCloudAiplatformV1beta1ExportFeatureValuesRequest": {
       "id": "GoogleCloudAiplatformV1beta1ExportFeatureValuesRequest",
       "description": "Request message for FeaturestoreService.ExportFeatureValues.",
@@ -4126,6 +4060,10 @@
         "statsAnomaliesBaseDirectory": {
           "description": "Stats anomalies base folder path.",
           "$ref": "GoogleCloudAiplatformV1beta1GcsDestination"
+        },
+        "encryptionSpec": {
+          "description": "Customer-managed encryption key spec for a ModelDeploymentMonitoringJob. If set, this ModelDeploymentMonitoringJob and all sub-resources of this ModelDeploymentMonitoringJob will be secured by this key.",
+          "$ref": "GoogleCloudAiplatformV1beta1EncryptionSpec"
         },
         "error": {
           "description": "Output only. Only populated when the job's state is `JOB_STATE_FAILED` or `JOB_STATE_CANCELLED`.",
@@ -6659,7 +6597,7 @@
       "type": "object",
       "properties": {
         "httpBody": {
-          "description": "The prediction input that supports HTTP headers and arbitrary data payload. A DeployedModel may have an upper limit on the number of instances it supports per request, and when it is exceeded the prediction call errors in case of AutoML Models, or, in case of customer created Models, the behaviour is as documented by that Model. The schema of any single instance may be specified via Endpoint's DeployedModels' Model's PredictSchemata's instance_schema_uri.",
+          "description": "The prediction input. Supports HTTP headers and arbitrary data payload. A DeployedModel may have an upper limit on the number of instances it supports per request. When this limit it is exceeded for an AutoML model, the RawPredict method returns an error. When this limit is exceeded for a custom-trained model, the behavior varies depending on the model. You can specify the schema for each instance in the predict_schemata.instance_schema_uri field when you create a Model. This schema applies when you deploy the `Model` as a `DeployedModel` to an Endpoint and use the `RawPredict` method.",
           "$ref": "GoogleApiHttpBody"
         }
       }
@@ -6719,7 +6657,7 @@
     },
     "GoogleCloudAiplatformV1beta1ExplanationSpecOverride": {
       "id": "GoogleCloudAiplatformV1beta1ExplanationSpecOverride",
-      "description": "The ExplanationSpec entries that can be overridden at online explanation[google.cloud.aiplatform.v1beta1.PredictionService.Explain] time.",
+      "description": "The ExplanationSpec entries that can be overridden at online explanation time.",
       "type": "object",
       "properties": {
         "parameters": {
@@ -6802,7 +6740,7 @@
     },
     "GoogleCloudAiplatformV1beta1SpecialistPool": {
       "id": "GoogleCloudAiplatformV1beta1SpecialistPool",
-      "description": "SpecialistPool represents customers' own workforce to work on their data labeling jobs. It includes a group of specialist managers who are responsible for managing the labelers in this pool as well as customers' data labeling jobs associated with this pool. Customers create specialist pool as well as start data labeling jobs on Cloud, managers and labelers work with the jobs using CrowdCompute console.",
+      "description": "SpecialistPool represents customers' own workforce to work on their data labeling jobs. It includes a group of specialist managers and workers. Managers are responsible for managing the workers in this pool as well as customers' data labeling jobs associated with this pool. Customers create specialist pool as well as start data labeling jobs on Cloud, managers and workers handle the jobs using CrowdCompute console.",
       "type": "object",
       "properties": {
         "name": {
@@ -6814,13 +6752,13 @@
           "type": "string"
         },
         "specialistManagersCount": {
-          "description": "Output only. The number of Specialists in this SpecialistPool.",
+          "description": "Output only. The number of managers in this SpecialistPool.",
           "readOnly": true,
           "type": "integer",
           "format": "int32"
         },
         "specialistManagerEmails": {
-          "description": "The email addresses of the specialists in the SpecialistPool.",
+          "description": "The email addresses of the managers in the SpecialistPool.",
           "type": "array",
           "items": {
             "type": "string"
@@ -9486,7 +9424,7 @@
     },
     "GoogleCloudAiplatformInternalSpecialistPool": {
       "id": "GoogleCloudAiplatformInternalSpecialistPool",
-      "description": "SpecialistPool represents customers' own workforce to work on their data labeling jobs. It includes a group of specialist managers who are responsible for managing the labelers in this pool as well as customers' data labeling jobs associated with this pool. Customers create specialist pool as well as start data labeling jobs on Cloud, managers and labelers work with the jobs using CrowdCompute console.",
+      "description": "SpecialistPool represents customers' own workforce to work on their data labeling jobs. It includes a group of specialist managers and workers. Managers are responsible for managing the workers in this pool as well as customers' data labeling jobs associated with this pool. Customers create specialist pool as well as start data labeling jobs on Cloud, managers and workers handle the jobs using CrowdCompute console.",
       "type": "object",
       "properties": {
         "name": {
@@ -9498,13 +9436,13 @@
           "type": "string"
         },
         "specialistManagersCount": {
-          "description": "Output only. The number of Specialists in this SpecialistPool.",
+          "description": "Output only. The number of managers in this SpecialistPool.",
           "readOnly": true,
           "type": "integer",
           "format": "int32"
         },
         "specialistManagerEmails": {
-          "description": "The email addresses of the specialists in the SpecialistPool.",
+          "description": "The email addresses of the managers in the SpecialistPool.",
           "type": "array",
           "items": {
             "type": "string"
@@ -9517,6 +9455,18 @@
           "items": {
             "type": "string"
           }
+        },
+        "useCase": {
+          "description": "If it's not specified, will treat it as the default case.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified use case.",
+            "Translation hub pool."
+          ],
+          "enum": [
+            "USE_CASE_UNSPECIFIED",
+            "TRANSLATION_HUB"
+          ]
         }
       }
     },
@@ -11948,7 +11898,7 @@
     },
     "GoogleCloudAiplatformUiSpecialistPool": {
       "id": "GoogleCloudAiplatformUiSpecialistPool",
-      "description": "SpecialistPool represents customers' own workforce to work on their data labeling jobs. It includes a group of specialist managers who are responsible for managing the labelers in this pool as well as customers' data labeling jobs associated with this pool. Customers create specialist pool as well as start data labeling jobs on Cloud, managers and labelers work with the jobs using CrowdCompute console.",
+      "description": "SpecialistPool represents customers' own workforce to work on their data labeling jobs. It includes a group of specialist managers and workers. Managers are responsible for managing the workers in this pool as well as customers' data labeling jobs associated with this pool. Customers create specialist pool as well as start data labeling jobs on Cloud, managers and workers handle the jobs using CrowdCompute console.",
       "type": "object",
       "properties": {
         "name": {
@@ -11960,13 +11910,13 @@
           "type": "string"
         },
         "specialistManagersCount": {
-          "description": "Output only. The number of Specialists in this SpecialistPool.",
+          "description": "Output only. The number of managers in this SpecialistPool.",
           "readOnly": true,
           "type": "integer",
           "format": "int32"
         },
         "specialistManagerEmails": {
-          "description": "The email addresses of the specialists in the SpecialistPool.",
+          "description": "The email addresses of the managers in the SpecialistPool.",
           "type": "array",
           "items": {
             "type": "string"
@@ -14040,7 +13990,7 @@
     },
     "GoogleCloudAiplatformV1alpha1SpecialistPool": {
       "id": "GoogleCloudAiplatformV1alpha1SpecialistPool",
-      "description": "SpecialistPool represents customers' own workforce to work on their data labeling jobs. It includes a group of specialist managers who are responsible for managing the labelers in this pool as well as customers' data labeling jobs associated with this pool. Customers create specialist pool as well as start data labeling jobs on Cloud, managers and labelers work with the jobs using CrowdCompute console.",
+      "description": "SpecialistPool represents customers' own workforce to work on their data labeling jobs. It includes a group of specialist managers and workers. Managers are responsible for managing the workers in this pool as well as customers' data labeling jobs associated with this pool. Customers create specialist pool as well as start data labeling jobs on Cloud, managers and workers handle the jobs using CrowdCompute console.",
       "type": "object",
       "properties": {
         "name": {
@@ -14052,13 +14002,13 @@
           "type": "string"
         },
         "specialistManagersCount": {
-          "description": "Output only. The number of Specialists in this SpecialistPool.",
+          "description": "Output only. The number of managers in this SpecialistPool.",
           "readOnly": true,
           "type": "integer",
           "format": "int32"
         },
         "specialistManagerEmails": {
-          "description": "The email addresses of the specialists in the SpecialistPool.",
+          "description": "The email addresses of the managers in the SpecialistPool.",
           "type": "array",
           "items": {
             "type": "string"
@@ -18319,6 +18269,25 @@
         }
       }
     },
+    "GoogleCloudAiplatformV1CheckTrialEarlyStoppingStateMetatdata": {
+      "id": "GoogleCloudAiplatformV1CheckTrialEarlyStoppingStateMetatdata",
+      "description": "This message will be placed in the metadata field of a google.longrunning.Operation associated with a CheckTrialEarlyStoppingState request.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "Operation metadata for suggesting Trials.",
+          "$ref": "GoogleCloudAiplatformV1GenericOperationMetadata"
+        },
+        "study": {
+          "description": "The name of the Study that the Trial belongs to.",
+          "type": "string"
+        },
+        "trial": {
+          "description": "The Trial name.",
+          "type": "string"
+        }
+      }
+    },
     "GoogleCloudAiplatformV1CreateDatasetOperationMetadata": {
       "id": "GoogleCloudAiplatformV1CreateDatasetOperationMetadata",
       "description": "Runtime operation information for DatasetService.CreateDataset.",
@@ -19255,7 +19224,7 @@
     },
     "GoogleCloudAiplatformV1SpecialistPool": {
       "id": "GoogleCloudAiplatformV1SpecialistPool",
-      "description": "SpecialistPool represents customers' own workforce to work on their data labeling jobs. It includes a group of specialist managers who are responsible for managing the labelers in this pool as well as customers' data labeling jobs associated with this pool. Customers create specialist pool as well as start data labeling jobs on Cloud, managers and labelers work with the jobs using CrowdCompute console.",
+      "description": "SpecialistPool represents customers' own workforce to work on their data labeling jobs. It includes a group of specialist managers and workers. Managers are responsible for managing the workers in this pool as well as customers' data labeling jobs associated with this pool. Customers create specialist pool as well as start data labeling jobs on Cloud, managers and workers handle the jobs using CrowdCompute console.",
       "type": "object",
       "properties": {
         "name": {
@@ -19267,13 +19236,13 @@
           "type": "string"
         },
         "specialistManagersCount": {
-          "description": "Output only. The number of Specialists in this SpecialistPool.",
+          "description": "Output only. The number of managers in this SpecialistPool.",
           "readOnly": true,
           "type": "integer",
           "format": "int32"
         },
         "specialistManagerEmails": {
-          "description": "The email addresses of the specialists in the SpecialistPool.",
+          "description": "The email addresses of the managers in the SpecialistPool.",
           "type": "array",
           "items": {
             "type": "string"
@@ -19286,6 +19255,21 @@
           "items": {
             "type": "string"
           }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SuggestTrialsMetadata": {
+      "id": "GoogleCloudAiplatformV1SuggestTrialsMetadata",
+      "description": "Details of operations that perform Trials suggestion.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "Operation metadata for suggesting Trials.",
+          "$ref": "GoogleCloudAiplatformV1GenericOperationMetadata"
+        },
+        "clientId": {
+          "description": "The identifier of the client that is requesting the suggestion. If multiple SuggestTrialsRequests have the same `client_id`, the service will return the identical suggested Trial if the Trial is pending, and provide a new Trial if the last suggested Trial was completed.",
+          "type": "string"
         }
       }
     },
@@ -19323,6 +19307,17 @@
       "description": "Response message for IndexEndpointService.UndeployIndex.",
       "type": "object",
       "properties": {
+      }
+    },
+    "GoogleCloudAiplatformV1UpdateModelDeploymentMonitoringJobOperationMetadata": {
+      "id": "GoogleCloudAiplatformV1UpdateModelDeploymentMonitoringJobOperationMetadata",
+      "description": "Runtime operation information for JobService.UpdateModelDeploymentMonitoringJob.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "The operation generic information.",
+          "$ref": "GoogleCloudAiplatformV1GenericOperationMetadata"
+        }
       }
     },
     "GoogleCloudAiplatformV1UpdateSpecialistPoolOperationMetadata": {
@@ -20920,7 +20915,7 @@
           }
         },
         "env": {
-          "description": "Environment variables to be passed to the container.",
+          "description": "Environment variables to be passed to the container. Maximum limit is 100.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudAiplatformV1EnvVar"
@@ -20971,7 +20966,7 @@
           }
         },
         "env": {
-          "description": "Environment variables to be passed to the python module.",
+          "description": "Environment variables to be passed to the python module. Maximum limit is 100.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudAiplatformV1EnvVar"
@@ -24240,44 +24235,6 @@
                   ],
                   "description": "Batch reads Feature values from a Featurestore. This API enables batch reading Feature values, where each read instance in the batch may read Feature values of entities from one or more EntityTypes. Point-in-time correctness is guaranteed for Feature values of each read instance as of each instance's read timestamp."
                 },
-                "queryFeatureValues": {
-                  "id": "aiplatform.projects.locations.featurestores.queryFeatureValues",
-                  "path": "v1beta1/projects/{projectsId}/locations/{locationsId}/featurestores/{featurestoresId}:queryFeatureValues",
-                  "flatPath": "v1beta1/projects/{projectsId}/locations/{locationsId}/featurestores/{featurestoresId}:queryFeatureValues",
-                  "httpMethod": "POST",
-                  "parameters": {
-                    "projectsId": {
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "locationsId": {
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "featurestoresId": {
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "projectsId",
-                    "locationsId",
-                    "featurestoresId"
-                  ],
-                  "request": {
-                    "$ref": "GoogleCloudAiplatformV1beta1QueryFeatureValuesRequest"
-                  },
-                  "response": {
-                    "$ref": "GoogleLongrunningOperation"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Query Feature values from a Featurestore. Featurestore runs a managed query and combines multiple Features, possibly from multiple EntityTypes, according to the provided Entity IDs in the request."
-                },
                 "searchFeatures": {
                   "id": "aiplatform.projects.locations.featurestores.searchFeatures",
                   "path": "v1beta1/{+location}/featurestores:searchFeatures",
@@ -27209,7 +27166,7 @@
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "Required. The update mask applies to the resource.",
+                      "description": "Required. The update mask is used to specify the fields to be overwritten in the ModelDeploymentMonitoringJob resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then only the non-empty fields present in the request will be overwritten. Set the update_mask to `*` to override all fields. For the objective config, the user can either provide the update mask for model_deployment_monitoring_objective_configs or any combination of its nested fields, such as: model_deployment_monitoring_objective_configs.objective_config.training_dataset. Updatable fields: * `display_name` * `model_deployment_monitoring_schedule_config` * `model_monitoring_alert_config` * `logging_sampling_strategy` * `labels` * `log_ttl` * `enable_monitoring_pipeline_logs` . and * `model_deployment_monitoring_objective_configs` . or * `model_deployment_monitoring_objective_configs.objective_config.training_dataset` * `model_deployment_monitoring_objective_configs.objective_config.training_prediction_skew_detection_config` * `model_deployment_monitoring_objective_configs.objective_config.prediction_drift_detection_config`",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"

@@ -26,10 +26,12 @@ import six
 try:
   # TODO(b/175725675) Make google_crc32c available with Cloud SDK.
   import google_crc32c
-  if google_crc32c.implementation == 'cffi':
+  if google_crc32c.implementation in ('c', 'cffi'):
+    # google-crc32c==1.1.3 changed implementation value to `c`.
+    # We are checking both to ensure this is compatible with older versions.
     IS_FAST_GOOGLE_CRC32C_AVAILABLE = True
   else:
-    IS_FAST_GOOGLE_CRC32C_AVAILABLE = False
+    raise ImportError
 except ImportError:
   # TODO(b/194124148) Fall back on pure Python google-crc32c.
   # Cleans up a lot of this file.

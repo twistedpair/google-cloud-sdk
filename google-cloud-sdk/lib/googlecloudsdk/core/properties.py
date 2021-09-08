@@ -2231,6 +2231,7 @@ class _SectionApiEndpointOverrides(_Section):
     self.datafusion = self._Add('datafusion')
     self.datamigration = self._Add('datamigration')
     self.datapol = self._Add('datapol')
+    self.dataplex = self._Add('dataplex')
     self.dataproc = self._Add('dataproc')
     self.datastore = self._Add('datastore')
     self.datastream = self._Add('datastream')

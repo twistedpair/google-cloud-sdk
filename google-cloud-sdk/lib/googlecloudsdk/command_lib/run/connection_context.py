@@ -457,7 +457,8 @@ def GetConnectionContext(args,
                          product=flags.Product.RUN,
                          release_track=base.ReleaseTrack.GA,
                          version_override=None,
-                         platform=None):
+                         platform=None,
+                         region_label=None):
   """Gets the regional, kubeconfig, or GKE connection context.
 
   Args:
@@ -468,6 +469,7 @@ def GetConnectionContext(args,
       the other parameters.
     platform: 'gke', 'kubernetes', or 'managed'. If not specified, the value of
       the --platform flag will be used instead.
+    region_label: A k8s label representing the intended region.
 
   Raises:
     ArgumentError if region or cluster is not specified.
@@ -504,7 +506,7 @@ def GetConnectionContext(args,
     return GKEConnectionContext(cluster_ref, api_name, api_version)
 
   if platform == platforms.PLATFORM_MANAGED:
-    region = flags.GetRegion(args, prompt=True)
+    region = flags.GetRegion(args, prompt=True, region_label=region_label)
     if not region:
       raise serverless_exceptions.ArgumentError(
           'You must specify a region. Either use the `--region` flag '

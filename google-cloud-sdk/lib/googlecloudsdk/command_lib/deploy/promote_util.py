@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.api_lib.clouddeploy import rollout
 from googlecloudsdk.command_lib.deploy import exceptions
 from googlecloudsdk.command_lib.deploy import release_util
 from googlecloudsdk.command_lib.deploy import rollout_util
@@ -28,6 +29,8 @@ from googlecloudsdk.core import resources
 _LAST_TARGET_IN_SEQUENCE = (
     'Release {} is already deployed to the last target '
     '({}) in the promotion sequence.\n- Release: {}\n- Target: {}\n')
+# In progress List filter
+IN_PROGRESS_FILTER_TEMPLATE = ('state="IN_PROGRESS"')
 
 
 def Promote(release_ref,
@@ -39,8 +42,9 @@ def Promote(release_ref,
             labels=None):
   """Creates a rollout for the given release in the destination target.
 
-  If to_target is not specified, this computes the destination target base on
-  the promotion sequence.
+  If to_target is not specified and there is a rollout in progress, the promote
+  will fail. Otherwise this computes the destination target based on the
+  promotion sequence.
 
   Args:
     release_ref: protorpc.messages.Message, release resource object.
@@ -106,6 +110,8 @@ def GetToTargetID(release_obj, is_create):
   reversed_snapshots = list(reversed(release_obj.targetSnapshots))
   for i, snapshot in enumerate(reversed_snapshots):
     target_ref = target_util.TargetReferenceFromName(snapshot.name)
+    # Starting with the last target in the promotion sequence per above, find
+    # the last successfully deployed rollout to that target.
     _, current_rollout = target_util.GetReleasesAndCurrentRollout(
         target_ref,
         release_ref.AsDict()['deliveryPipelinesId'])
@@ -129,6 +135,7 @@ def GetToTargetID(release_obj, is_create):
                   release_util.ResourceNameProjectNumberToId(
                       target_ref.RelativeName())))
           to_target = target_ref.RelativeName()
+          # Once a target to promote to is found break out of the loop
         break
 
   # This means the release is not deployed to any target,
@@ -137,3 +144,21 @@ def GetToTargetID(release_obj, is_create):
     raise exceptions.ReleaseInactiveError()
 
   return target_util.TargetId(to_target)
+
+
+def CheckIfInProgressRollout(release_ref, release_obj, to_target_id):
+  """Checks if there are any rollouts in progress for the given release.
+
+  Args:
+    release_ref: protorpc.messages.Message, release resource object.
+    release_obj: apitools.base.protorpclite.messages.Message, release message
+      object.
+    to_target_id: string, target id (e.g. 'prod')
+
+  Raises:
+    googlecloudsdk.command_lib.deploy.exceptions.RolloutInProgressError
+  """
+  resp = rollout.RolloutClient().List(release_ref.RelativeName(),
+                                      IN_PROGRESS_FILTER_TEMPLATE)
+  if resp.rollouts:
+    raise exceptions.RolloutInProgressError(release_obj.name, to_target_id)

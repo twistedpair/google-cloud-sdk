@@ -16,11 +16,14 @@ class GoogleCloudRecaptchaenterpriseV1AndroidKeySettings(_messages.Message):
   r"""Settings specific to keys that can be used by Android apps.
 
   Fields:
+    allowAllPackageNames: If set to true, it means allowed_package_names will
+      not be enforced.
     allowedPackageNames: Android package names of apps allowed to use the key.
       Example: 'com.companyname.appname'
   """
 
-  allowedPackageNames = _messages.StringField(1, repeated=True)
+  allowAllPackageNames = _messages.BooleanField(1)
+  allowedPackageNames = _messages.StringField(2, repeated=True)
 
 
 class GoogleCloudRecaptchaenterpriseV1AnnotateAssessmentRequest(_messages.Message):
@@ -173,11 +176,14 @@ class GoogleCloudRecaptchaenterpriseV1IOSKeySettings(_messages.Message):
   r"""Settings specific to keys that can be used by iOS apps.
 
   Fields:
+    allowAllBundleIds: If set to true, it means allowed_bundle_ids will not be
+      enforced.
     allowedBundleIds: iOS bundle ids of apps allowed to use the key. Example:
       'com.companyname.productname.appname'
   """
 
-  allowedBundleIds = _messages.StringField(1, repeated=True)
+  allowAllBundleIds = _messages.BooleanField(1)
+  allowedBundleIds = _messages.StringField(2, repeated=True)
 
 
 class GoogleCloudRecaptchaenterpriseV1Key(_messages.Message):

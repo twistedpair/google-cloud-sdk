@@ -322,4 +322,16 @@ def ParseUpdateOptionsBase(args, locations):
           'PersistentVolumes will also fail to start.',
           cancel_on_no=True)
 
+  if (args.disable_addons and
+      api_adapter.GCPFILESTORECSIDRIVER in args.disable_addons):
+    filestorecsi_disabled = args.disable_addons[
+        api_adapter.GCPFILESTORECSIDRIVER]
+    if filestorecsi_disabled:
+      console_io.PromptContinue(
+          message='If the GCP Filestore CSI Driver is disabled, then any '
+          'pods currently using PersistentVolumes owned by the driver '
+          'will fail to terminate. Any new pods that try to use those '
+          'PersistentVolumes will also fail to start.',
+          cancel_on_no=True)
+
   return opts

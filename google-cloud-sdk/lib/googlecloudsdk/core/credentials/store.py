@@ -215,11 +215,6 @@ class InvalidCredentialFileException(Error):
         .format(f=f, message=six.text_type(e)))
 
 
-class UnsupportedCredentialsError(Error):
-  """Exception for when loading unsupported credentials fails."""
-  pass
-
-
 class AccountImpersonationError(Error):
   """Exception for when attempting to impersonate a service account fails."""
   pass
@@ -710,11 +705,13 @@ def _LoadFromFileOverride(cred_file_override, scopes, use_google_auth):
       scopes = config.CLOUDSDK_SCOPES
     cred = google_auth_creds.with_scopes_if_required(cred, scopes)
 
-    if isinstance(cred, google_auth_external_account.Credentials):
-      if not cred.service_account_email:
-        raise UnsupportedCredentialsError(
-            'Workload identity pools without service account impersonation are '
-            'not supported.')
+    if (isinstance(cred, google_auth_external_account.Credentials) and
+        not cred.service_account_email):
+      # Reinitialize with client auth.
+      json_info = cred.info
+      json_info['client_id'] = config.CLOUDSDK_CLIENT_ID
+      json_info['client_secret'] = config.CLOUDSDK_CLIENT_NOTSOSECRET
+      cred = type(cred).from_info(json_info, scopes=config.CLOUDSDK_SCOPES)
 
     # Set token_uri after scopes since token_uri needs to be explicitly
     # preserved when scopes are applied.
@@ -1107,6 +1104,7 @@ def Store(credentials, account=None, scopes=None):
 
   if cred_type.key not in [
       c_creds.USER_ACCOUNT_CREDS_NAME, c_creds.EXTERNAL_ACCOUNT_CREDS_NAME,
+      c_creds.EXTERNAL_ACCOUNT_USER_CREDS_NAME,
       c_creds.SERVICE_ACCOUNT_CREDS_NAME, c_creds.P12_SERVICE_ACCOUNT_CREDS_NAME
   ]:
     return
@@ -1186,11 +1184,9 @@ def Revoke(account=None):
 
   rv = False
   try:
-    # External account credentials are not revocable. Currently service account
-    # impersonation is required with these credentials. So the existing logic
-    # will work for these credentials. The account ID will end with
-    # .gserviceaccount.com and revoke will be a no-op.
-    if not account.endswith('.gserviceaccount.com'):
+    # External account credentials are not revocable.
+    if (not account.endswith('.gserviceaccount.com') and
+        not isinstance(credentials, google_auth_external_account.Credentials)):
       RevokeCredentials(credentials)
       rv = True
   except (client.TokenRevokeError, c_google_auth.TokenRevokeError) as e:
@@ -1379,6 +1375,7 @@ class _LegacyGenerator(object):
     if self._cred_type not in (c_creds.USER_ACCOUNT_CREDS_NAME,
                                c_creds.SERVICE_ACCOUNT_CREDS_NAME,
                                c_creds.EXTERNAL_ACCOUNT_CREDS_NAME,
+                               c_creds.EXTERNAL_ACCOUNT_USER_CREDS_NAME,
                                c_creds.P12_SERVICE_ACCOUNT_CREDS_NAME):
       raise c_creds.CredentialFileSaveError(
           'Unsupported credentials type {0}'.format(type(self.credentials)))
@@ -1436,7 +1433,8 @@ class _LegacyGenerator(object):
     self.Clean()
 
     # TODO(b/190119704): Legacy credentials path will be supported in later CLs.
-    if self._cred_type == c_creds.EXTERNAL_ACCOUNT_CREDS_NAME:
+    if (self._cred_type == c_creds.EXTERNAL_ACCOUNT_CREDS_NAME or
+        self._cred_type == c_creds.EXTERNAL_ACCOUNT_USER_CREDS_NAME):
       return
 
     # Generates credentials used by bq and gsutil.

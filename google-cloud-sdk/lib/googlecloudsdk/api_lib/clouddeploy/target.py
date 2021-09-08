@@ -35,7 +35,6 @@ class TargetsClient(object):
     """
     self.client = client or client_util.GetClientInstance()
     self.messages = messages or client_util.GetMessagesModule(client)
-    self._less_shared_service = self.client.projects_locations_deliveryPipelines_targets
     self._service = self.client.projects_locations_targets
 
   def Get(self, name):
@@ -93,4 +92,3 @@ class TargetsClient(object):
     return self._service.List(
         self.messages.ClouddeployProjectsLocationsTargetsListRequest(
             parent=location))
-

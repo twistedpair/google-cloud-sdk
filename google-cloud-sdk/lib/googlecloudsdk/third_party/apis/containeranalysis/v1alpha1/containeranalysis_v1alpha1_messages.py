@@ -2673,9 +2673,8 @@ class Recipe(_messages.Message):
   container corresponds to one step in the recipe.
 
   Messages:
-    EnvironmentValue: Any other builder-controlled inputs necessary for
-      correctly evaluating the recipe. Usually only needed for reproducing the
-      build but not evaluated as part of policy.
+    ArgumentsValueListEntry: A ArgumentsValueListEntry object.
+    EnvironmentValueListEntry: A EnvironmentValueListEntry object.
 
   Fields:
     arguments: Collection of all external inputs that influenced the build on
@@ -2701,36 +2700,61 @@ class Recipe(_messages.Message):
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
-  class EnvironmentValue(_messages.Message):
-    r"""Any other builder-controlled inputs necessary for correctly evaluating
-    the recipe. Usually only needed for reproducing the build but not
-    evaluated as part of policy.
+  class ArgumentsValueListEntry(_messages.Message):
+    r"""A ArgumentsValueListEntry object.
 
     Messages:
-      AdditionalProperty: An additional property for a EnvironmentValue
+      AdditionalProperty: An additional property for a ArgumentsValueListEntry
         object.
 
     Fields:
-      additionalProperties: Additional properties of type EnvironmentValue
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
     """
 
     class AdditionalProperty(_messages.Message):
-      r"""An additional property for a EnvironmentValue object.
+      r"""An additional property for a ArgumentsValueListEntry object.
 
       Fields:
         key: Name of the additional property.
-        value: A string attribute.
+        value: A extra_types.JsonValue attribute.
       """
 
       key = _messages.StringField(1)
-      value = _messages.StringField(2)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  arguments = _messages.StringField(1, repeated=True)
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class EnvironmentValueListEntry(_messages.Message):
+    r"""A EnvironmentValueListEntry object.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        EnvironmentValueListEntry object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a EnvironmentValueListEntry object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  arguments = _messages.MessageField('ArgumentsValueListEntry', 1, repeated=True)
   definedInMaterial = _messages.IntegerField(2)
   entryPoint = _messages.StringField(3)
-  environment = _messages.MessageField('EnvironmentValue', 4)
+  environment = _messages.MessageField('EnvironmentValueListEntry', 4, repeated=True)
   type = _messages.StringField(5)
 
 

@@ -561,6 +561,8 @@
           "type": "string",
           "enumDescriptions": [
             "The algorithm is unspecified.",
+            "RSA\/MD5. Cannot be used for new deployments.",
+            "Diffie-Hellman. Cannot be used for new deployments.",
             "DSA\/SHA1. Not recommended for new deployments.",
             "ECC. Not recommended for new deployments.",
             "RSA\/SHA-1. Not recommended for new deployments.",
@@ -572,10 +574,15 @@
             "ECDSA Curve P-256 with SHA-256.",
             "ECDSA Curve P-384 with SHA-384.",
             "Ed25519.",
-            "Ed448."
+            "Ed448.",
+            "Reserved for Indirect Keys. Cannot be used for new deployments.",
+            "Private algorithm. Cannot be used for new deployments.",
+            "Private algorithm OID. Cannot be used for new deployments."
           ],
           "enum": [
             "ALGORITHM_UNSPECIFIED",
+            "RSAMD5",
+            "DH",
             "DSA",
             "ECC",
             "RSASHA1",
@@ -587,7 +594,10 @@
             "ECDSAP256SHA256",
             "ECDSAP384SHA384",
             "ED25519",
-            "ED448"
+            "ED448",
+            "INDIRECT",
+            "PRIVATEDNS",
+            "PRIVATEOID"
           ]
         },
         "digestType": {

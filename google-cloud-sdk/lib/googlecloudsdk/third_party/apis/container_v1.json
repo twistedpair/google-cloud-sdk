@@ -277,6 +277,10 @@
           "description": "Configuration for the use of Kubernetes Service Accounts in GCP IAM policies.",
           "$ref": "WorkloadIdentityConfig"
         },
+        "meshCertificates": {
+          "description": "Configuration for issuance of mTLS keys and certificates to Kubernetes pods.",
+          "$ref": "MeshCertificates"
+        },
         "notificationConfig": {
           "description": "Notification configuration of the cluster.",
           "$ref": "NotificationConfig"
@@ -1795,6 +1799,17 @@
         }
       }
     },
+    "MeshCertificates": {
+      "id": "MeshCertificates",
+      "description": "Configuration for issuance of mTLS keys and certificates to Kubernetes pods.",
+      "type": "object",
+      "properties": {
+        "enableCertificates": {
+          "description": "enable_certificates controls issuance of workload mTLS certificates. If set, the GKE Workload Identity Certificates controller and node agent will be deployed in the cluster, which can then be configured by creating a WorkloadCertificateConfig Custom Resource. Requires Workload Identity (workload_pool must be non-empty).",
+          "type": "boolean"
+        }
+      }
+    },
     "NotificationConfig": {
       "id": "NotificationConfig",
       "description": "NotificationConfig is the configuration of notifications.",
@@ -2239,6 +2254,10 @@
         "desiredWorkloadIdentityConfig": {
           "description": "Configuration for Workload Identity.",
           "$ref": "WorkloadIdentityConfig"
+        },
+        "desiredMeshCertificates": {
+          "description": "Configuration for issuance of mTLS keys and certificates to Kubernetes pods.",
+          "$ref": "MeshCertificates"
         },
         "desiredShieldedNodes": {
           "description": "Configuration for Shielded Nodes.",

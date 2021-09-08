@@ -602,6 +602,19 @@ def AddAllocatedIpRangeName(parser):
           ))
 
 
+def AddSqlServerAuditBucketPath(parser):
+  """Adds the `--audit-bucket-path` flag to the parser."""
+  parser.add_argument(
+      '--audit-bucket-path',
+      required=False,
+      hidden=True,
+      help=(
+          'Path in Google Cloud Storage to upload generated audit files. '
+          'The URI is in the form gs://bucketName/folderName. '
+          'Only available for SQL Server instances.'
+          ))
+
+
 def AddReplication(parser):
   base.ChoiceArgument(
       '--replication',

@@ -883,14 +883,17 @@ def ValidateCloudRunConfigUpdateArgs(cloud_run_config_args, update_addons_args):
 
 def AddEnableStackdriverKubernetesFlag(parser):
   """Adds a --enable-stackdriver-kubernetes flag to parser."""
-  help_text = """Enable Cloud Operations for GKE. To enable only Cloud
-    Monitoring use `--enable-stackdriver-kubernetes`
-    and `--no-enable-cloud-logging`. To enable only Cloud Logging use
-    `--enable-stackdriver-kubernetes` and `--no-enable-cloud-monitoring`.
-  """
+  help_text = """Enable Cloud Operations for GKE."""
   parser.add_argument(
       '--enable-stackdriver-kubernetes',
-      action='store_true',
+      action=actions.DeprecationAction(
+          '--enable-stackdriver-kubernetes',
+          warn='The `--enable-stackdriver-kubernetes` flag is deprecated and '
+          'will be removed in an upcoming release. '
+          'Please use `--logging` and `--monitoring` instead. '
+          'For more information, please read: '
+          'https://cloud.google.com/stackdriver/docs/solutions/gke/installing.',
+          action='store_true'),
       default=None,
       help=help_text)
 
@@ -900,7 +903,14 @@ def AddEnableLoggingMonitoringSystemOnlyFlag(parser):
   help_text = """Enable Cloud Operations system-only monitoring and logging."""
   parser.add_argument(
       '--enable-logging-monitoring-system-only',
-      action='store_true',
+      action=actions.DeprecationAction(
+          '--enable-logging-monitoring-system-only',
+          warn='The `--enable-logging-monitoring-system-only` flag is '
+          'deprecated and will be removed in an upcoming release. '
+          'Please use `--logging` and `--monitoring` instead. '
+          'For more information, please read: '
+          'https://cloud.google.com/stackdriver/docs/solutions/gke/installing.',
+          action='store_true'),
       help=help_text)
 
 
@@ -948,6 +958,13 @@ Examples:
       type=arg_parsers.ArgList(choices=api_adapter.PRIMARY_LOGS_OPTIONS),
       help=help_text,
       metavar='COMPONENT',
+      action=actions.DeprecationAction(
+          '--master-logs',
+          warn='The `--master-logs` flag is deprecated and will be removed in '
+          'an upcoming release. Please use `--logging` instead. '
+          'For more information, please read: '
+          'https://cloud.google.com/stackdriver/docs/solutions/gke/installing.'
+          ),
   )
 
   if not for_create:
@@ -956,7 +973,13 @@ Disable sending logs from master components to Cloud Operations.
 """
     group.add_argument(
         '--no-master-logs',
-        action='store_true',
+        action=actions.DeprecationAction(
+            '--no-master-logs',
+            warn='The `--no-master-logs` flag is deprecated and will be removed'
+            ' in an upcoming release. Please use `--logging` instead. '
+            'For more information, please read: '
+            'https://cloud.google.com/stackdriver/docs/solutions/gke/installing.',
+            action='store_true'),
         default=False,
         help=help_text,
     )
@@ -966,7 +989,13 @@ Enable sending metrics from master components to Cloud Operations.
 """
   group.add_argument(
       '--enable-master-metrics',
-      action='store_true',
+      action=actions.DeprecationAction(
+          '--enable-master-metrics',
+          warn='The `--enable-master-metrics` flag is deprecated and will be '
+          'removed in an upcoming release. Please use `--monitoring` instead. '
+          'For more information, please read: '
+          'https://cloud.google.com/stackdriver/docs/solutions/gke/installing.',
+          action='store_true'),
       default=None,
       help=help_text,
   )
@@ -1234,6 +1263,28 @@ for more information on how to use Preemptible VMs with Kubernetes Engine."""
 
   parser.add_argument(
       '--preemptible', action='store_true', help=help_text, hidden=suppressed)
+
+
+def AddSpotFlag(parser, for_node_pool=False, hidden=True):
+  """Adds a --spot flag to parser."""
+  if for_node_pool:
+    help_text = """\
+Create nodes using spot VM instances in the new node pool.
+
+  $ {command} node-pool-1 --cluster=example-cluster --spot
+"""
+  else:
+    help_text = """\
+Create nodes using spot VM instances in the new cluster.
+
+  $ {command} example-cluster --spot
+"""
+  help_text += """
+New nodes, including ones created by resize or recreate, will use spot
+VM instances."""
+
+  parser.add_argument(
+      '--spot', action='store_true', help=help_text, hidden=hidden)
 
 
 def AddNodePoolNameArg(parser, help_text):
@@ -2217,7 +2268,16 @@ service with Kubernetes-native resource model enabled),
 "none" (logs will not be exported from the cluster)
 """
 
-  parser.add_argument('--logging-service', help=help_str)
+  parser.add_argument(
+      '--logging-service',
+      action=actions.DeprecationAction(
+          '--logging-service',
+          warn='The `--logging-service` flag is deprecated and will be removed '
+          'in an upcoming release. Please use `--logging` instead. '
+          'For more information, please read: '
+          'https://cloud.google.com/stackdriver/docs/solutions/gke/installing.'
+          ),
+      help=help_str)
 
 
 def AddMonitoringServiceFlag(parser):
@@ -2235,7 +2295,16 @@ Monitoring service with Kubernetes-native resource model enabled),
 "none" (no metrics will be exported from the cluster)
 """
 
-  parser.add_argument('--monitoring-service', help=help_str)
+  parser.add_argument(
+      '--monitoring-service',
+      action=actions.DeprecationAction(
+          '--monitoring-service',
+          warn='The `--monitoring-service` flag is deprecated and will be '
+          'removed in an upcoming release. Please use `--monitoring` instead. '
+          'For more information, please read: '
+          'https://cloud.google.com/stackdriver/docs/solutions/gke/installing.'
+          ),
+      help=help_str)
 
 
 def AddNodeIdentityFlags(parser, example_target):
@@ -3626,11 +3695,11 @@ def AddEnableCloudLogging(parser):
           '--enable-cloud-logging',
           show_message=lambda val: val,
           warn='Legacy Logging and Monitoring is deprecated. Thus, '
-          'flag `--enable-cloud-logging` is also deprecated. Please use '
-          '`--enable-stackdriver-kubernetes` '
-          '(optionally with `--no-enable-cloud-monitoring`). '
+          'flag `--enable-cloud-logging` is also deprecated and will be removed'
+          ' in an upcoming release. '
+          'Please use `--logging` (optionally with `--monitoring`). '
           'For more details, please read: '
-          'https://cloud.google.com/monitoring/kubernetes-engine/migration.',
+          'https://cloud.google.com/stackdriver/docs/solutions/gke/installing.',
           action='store_true'),
       help='Automatically send logs from the cluster to the Google Cloud '
       'Logging API.')
@@ -3644,10 +3713,9 @@ def AddEnableCloudMonitoring(parser):
           show_message=lambda val: val,
           warn='Legacy Logging and Monitoring is deprecated. Thus, '
           'flag `--enable-cloud-monitoring` is also deprecated. Please use '
-          '`--enable-stackdriver-kubernetes` '
-          '(optionally with `--no-enable-cloud-logging`). '
+          '`--monitoring` (optionally with `--logging`). '
           'For more details, please read: '
-          'https://cloud.google.com/monitoring/kubernetes-engine/migration.',
+          'https://cloud.google.com/stackdriver/docs/solutions/gke/installing.',
           action='store_true'),
       help='Automatically send metrics from pods in the cluster to the Google '
       'Cloud Monitoring API. VM metrics will be collected by Google Compute '

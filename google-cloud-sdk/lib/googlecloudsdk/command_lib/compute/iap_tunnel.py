@@ -37,6 +37,7 @@ from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import http_proxy
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+from googlecloudsdk.core import transport
 from googlecloudsdk.core.credentials import creds
 from googlecloudsdk.core.credentials import store
 from googlecloudsdk.core.util import files
@@ -582,13 +583,14 @@ class _BaseIapTunnelHelper(object):
     self._ip = ip
     self._port = port
 
-  def _InitiateWebSocketConnection(self, local_conn, get_access_token_callback):
+  def _InitiateWebSocketConnection(self, local_conn, get_access_token_callback,
+                                   user_agent):
     tunnel_target = self._GetTunnelTargetInfo()
     new_websocket = iap_tunnel_websocket.IapTunnelWebSocket(
         tunnel_target, get_access_token_callback,
         functools.partial(_SendLocalDataCallback, local_conn),
         functools.partial(_CloseLocalConnectionCallback, local_conn),
-        ignore_certs=self._ignore_certs)
+        user_agent, ignore_certs=self._ignore_certs)
     new_websocket.InitiateConnection()
     return new_websocket
 
@@ -607,21 +609,22 @@ class _BaseIapTunnelHelper(object):
                                      network=self._network,
                                      ip=self._ip)
 
-  def _RunReceiveLocalData(self, conn, socket_address):
+  def _RunReceiveLocalData(self, conn, socket_address, user_agent):
     """Receive data from provided local connection and send over WebSocket.
 
     Args:
       conn: A socket or _StdinSocket representing the local connection.
       socket_address: A verbose loggable string describing where conn is
         connected to.
+      user_agent: The user_agent of this connection
     """
-
     websocket_conn = None
     try:
       websocket_conn = self._InitiateWebSocketConnection(
           conn,
           functools.partial(_GetAccessTokenCallback,
-                            store.LoadIfEnabled(use_google_auth=True)))
+                            store.LoadIfEnabled(use_google_auth=True)),
+          user_agent)
       while not self._shutdown:
         data = conn.recv(utils.SUBPROTOCOL_MAX_DATA_FRAME_SIZE)
         if not data:
@@ -693,10 +696,12 @@ class IapTunnelProxyServerHelper(_BaseIapTunnelHelper):
 
   def _TestConnection(self):
     log.status.Print('Testing if tunnel connection works.')
+    user_agent = transport.MakeUserAgentString()
     websocket_conn = self._InitiateWebSocketConnection(
         None,
         functools.partial(_GetAccessTokenCallback,
-                          store.LoadIfEnabled(use_google_auth=True)))
+                          store.LoadIfEnabled(use_google_auth=True)),
+        user_agent)
     websocket_conn.Close()
 
   def _AcceptNewConnection(self):
@@ -767,7 +772,8 @@ class IapTunnelProxyServerHelper(_BaseIapTunnelHelper):
 
   def _HandleNewConnection(self, conn, socket_address):
     try:
-      self._RunReceiveLocalData(conn, repr(socket_address))
+      user_agent = transport.MakeUserAgentString()
+      self._RunReceiveLocalData(conn, repr(socket_address), user_agent)
     except EnvironmentError as e:
       log.info('Socket error [%s] while receiving from client.',
                six.text_type(e))
@@ -782,6 +788,12 @@ class IapTunnelStdinHelper(_BaseIapTunnelHelper):
     """Executes the tunneling of data."""
     try:
       with execution_utils.RaisesKeyboardInterrupt():
-        self._RunReceiveLocalData(_StdinSocket(), 'stdin')
+
+        # Fetching user agent before we start the read loop, because the agent
+        # fetch will call sys.stdin.isatty, which is blocking if there is a read
+        # waiting for data in the stdin. This only affects MacOs + python 2.7.
+        user_agent = transport.MakeUserAgentString()
+
+        self._RunReceiveLocalData(_StdinSocket(), 'stdin', user_agent)
     except KeyboardInterrupt:
       log.info('Keyboard interrupt received.')

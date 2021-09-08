@@ -60,7 +60,8 @@ def AddMatcher(parser, required=True):
 def AddAction(parser,
               required=True,
               support_redirect=False,
-              support_rate_limit=False):
+              support_rate_limit=False,
+              support_tcp_ssl=False):
   """Adds the action argument to the argparse."""
   actions = [
       'allow', 'deny-403', 'deny-404', 'deny-502', 'redirect-to-recaptcha'
@@ -69,6 +70,8 @@ def AddAction(parser,
     actions.append('redirect')
   if support_rate_limit:
     actions.extend(['rate-based-ban', 'throttle'])
+  if support_tcp_ssl:
+    actions.append('deny')
   parser.add_argument(
       '--action',
       choices=actions,
@@ -113,7 +116,7 @@ def AddRedirectOptions(parser):
       """)
 
 
-def AddRateLimitOptions(parser):
+def AddRateLimitOptions(parser, support_tcp_ssl=False):
   """Adds rate limiting related arguments to the argparse."""
   parser.add_argument(
       '--rate-limit-threshold-count',
@@ -137,6 +140,8 @@ def AddRateLimitOptions(parser):
             'which are not dropped.'))
 
   exceed_actions = ['deny-403', 'deny-404', 'deny-429', 'deny-502']
+  if support_tcp_ssl:
+    exceed_actions.append('deny')
   parser.add_argument(
       '--exceed-action',
       choices=exceed_actions,

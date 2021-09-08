@@ -5898,6 +5898,9 @@ class GoogleCloudApigeeV1Instance(_messages.Message):
       `SLASH_20` and defaults to `SLASH_16`. Evaluation organizations support
       only `SLASH_23`.
     port: Output only. Port number of the exposed Apigee endpoint.
+    runtimeVersion: Output only. Version of the runtime system running in the
+      instance. The runtime system is the set of components that serve the API
+      Proxy traffic in your Environments.
     state: Output only. State of the instance. Values other than `ACTIVE`
       means the resource is not ready to use.
   """
@@ -5956,7 +5959,8 @@ class GoogleCloudApigeeV1Instance(_messages.Message):
   nodeConfig = _messages.MessageField('GoogleCloudApigeeV1NodeConfig', 11)
   peeringCidrRange = _messages.EnumField('PeeringCidrRangeValueValuesEnum', 12)
   port = _messages.StringField(13)
-  state = _messages.EnumField('StateValueValuesEnum', 14)
+  runtimeVersion = _messages.StringField(14)
+  state = _messages.EnumField('StateValueValuesEnum', 15)
 
 
 class GoogleCloudApigeeV1InstanceAttachment(_messages.Message):
@@ -8279,6 +8283,8 @@ class GoogleCloudApigeeV1TargetServerConfig(_messages.Message):
     ProtocolValueValuesEnum: The protocol used by this target server.
 
   Fields:
+    enabled: Whether the target server is enabled. An empty/omitted value for
+      this field should be interpreted as true.
     host: Host name of the target server.
     name: Target server revision name in the following format: `organizations/
       {org}/environments/{env}/targetservers/{targetserver}/revisions/{rev}`
@@ -8300,11 +8306,12 @@ class GoogleCloudApigeeV1TargetServerConfig(_messages.Message):
     HTTP = 1
     GRPC = 2
 
-  host = _messages.StringField(1)
-  name = _messages.StringField(2)
-  port = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  protocol = _messages.EnumField('ProtocolValueValuesEnum', 4)
-  tlsInfo = _messages.MessageField('GoogleCloudApigeeV1TlsInfoConfig', 5)
+  enabled = _messages.BooleanField(1)
+  host = _messages.StringField(2)
+  name = _messages.StringField(3)
+  port = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 5)
+  tlsInfo = _messages.MessageField('GoogleCloudApigeeV1TlsInfoConfig', 6)
 
 
 class GoogleCloudApigeeV1TestDatastoreResponse(_messages.Message):

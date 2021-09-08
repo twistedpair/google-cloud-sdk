@@ -71,11 +71,6 @@ def AddOnErrorFlag(parser):
 
 
 def AddListResourcesFlags(parser):
-  parser.add_argument(
-      '--output-format',
-      choices=['table', 'yaml', 'json'],
-      default='table',
-      help='Determines the output format of the supported resources.')
   _GetBulkExportParentGroup(
       parser,
       project_help=('Project ID to list supported '

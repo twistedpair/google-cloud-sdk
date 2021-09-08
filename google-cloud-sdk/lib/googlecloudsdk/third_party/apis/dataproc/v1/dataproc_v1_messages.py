@@ -185,6 +185,7 @@ class Batch(_messages.Message):
     sparkRBatch: Optional. SparkR batch config.
     sparkSqlBatch: Optional. SparkSql batch config.
     state: Output only. The state of the batch.
+    stateHistory: Output only. Historical state information for the batch.
     stateMessage: Output only. Batch state details, such as a failure
       description if the state is FAILED.
     stateTime: Output only. The time when the batch entered a current state.
@@ -254,9 +255,10 @@ class Batch(_messages.Message):
   sparkRBatch = _messages.MessageField('SparkRBatch', 11)
   sparkSqlBatch = _messages.MessageField('SparkSqlBatch', 12)
   state = _messages.EnumField('StateValueValuesEnum', 13)
-  stateMessage = _messages.StringField(14)
-  stateTime = _messages.StringField(15)
-  uuid = _messages.StringField(16)
+  stateHistory = _messages.MessageField('StateHistory', 14, repeated=True)
+  stateMessage = _messages.StringField(15)
+  stateTime = _messages.StringField(16)
+  uuid = _messages.StringField(17)
 
 
 class BatchOperationMetadata(_messages.Message):
@@ -5088,6 +5090,46 @@ class StartClusterRequest(_messages.Message):
 
   clusterUuid = _messages.StringField(1)
   requestId = _messages.StringField(2)
+
+
+class StateHistory(_messages.Message):
+  r"""Historical state information.
+
+  Enums:
+    StateValueValuesEnum: Output only. The state of the batch at this point in
+      history.
+
+  Fields:
+    state: Output only. The state of the batch at this point in history.
+    stateMessage: Output only. Details about the state at this point in
+      history.
+    stateStartTime: Output only. The time when the batch entered the
+      historical state.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the batch at this point in history.
+
+    Values:
+      STATE_UNSPECIFIED: The batch state is unknown.
+      PENDING: The batch is created before running.
+      RUNNING: The batch is running.
+      CANCELLING: The batch is cancelling.
+      CANCELLED: The batch cancellation was successful.
+      SUCCEEDED: The batch completed successfully.
+      FAILED: The batch is no longer running due to an error.
+    """
+    STATE_UNSPECIFIED = 0
+    PENDING = 1
+    RUNNING = 2
+    CANCELLING = 3
+    CANCELLED = 4
+    SUCCEEDED = 5
+    FAILED = 6
+
+  state = _messages.EnumField('StateValueValuesEnum', 1)
+  stateMessage = _messages.StringField(2)
+  stateStartTime = _messages.StringField(3)
 
 
 class Status(_messages.Message):

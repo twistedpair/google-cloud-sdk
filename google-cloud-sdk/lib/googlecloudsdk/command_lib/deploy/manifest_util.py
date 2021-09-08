@@ -22,6 +22,7 @@ import collections
 from googlecloudsdk.command_lib.deploy import deploy_util
 from googlecloudsdk.command_lib.deploy import exceptions
 from googlecloudsdk.command_lib.deploy import target_util
+from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 
@@ -30,8 +31,9 @@ DELIVERY_PIPELINE_KIND_V1BETA1 = 'DeliveryPipeline'
 TARGET_KIND_V1BETA1 = 'Target'
 API_VERSION_V1BETA1 = 'deploy.cloud.google.com/v1beta1'
 DELIVERY_PIPELINE_FIELDS = ['description', 'serialPipeline']
-TARGET_FIELDS = ['description', 'requireApproval', 'gke']
+TARGET_FIELDS = ['description', 'requireApproval', 'gke', 'executionConfigs']
 METADATA_FIELDS = ['annotations', 'labels']
+USAGE_CHOICES = ['RENDER', 'DEPLOY']
 
 
 def ParseDeployConfig(messages, manifests, region):
@@ -109,7 +111,12 @@ def _ParseV1Beta1Config(messages, kind, manifest, project, region,
 
   for field in manifest:
     if field not in ['apiVersion', 'kind', 'metadata', 'deliveryPipeline']:
-      setattr(resource, field, manifest.get(field))
+      value = manifest.get(field)
+      if field == 'executionConfigs':
+        SetExecutionConfig(messages, resource, value)
+        continue
+      setattr(resource, field, value)
+
   # Sets the properties in metadata.
   for field in metadata:
     if field not in ['name', 'annotations', 'labels']:
@@ -178,3 +185,34 @@ def ProtoToManifest(resource, resource_ref, kind, fields):
       manifest[k] = v
 
   return manifest
+
+
+def SetExecutionConfig(messages, target, execution_configs):
+  """Sets the executionConfigs field of cloud deploy resource message.
+
+  Args:
+    messages: module containing the definitions of messages for Cloud Deploy.
+    target:  googlecloudsdk.third_party.apis.clouddeploy.Target message.
+    execution_configs:
+      [googlecloudsdk.third_party.apis.clouddeploy.ExecutionConfig], list of
+      ExecutionConfig messages.
+
+  Raises:
+    arg_parsers.ArgumentTypeError: if usage is not a valid enum.
+  """
+  for config in execution_configs:
+    execution_config_message = messages.ExecutionConfig()
+    for field in config:
+      # the value of usages field has enum, which needs special treatment.
+      if field != 'usages':
+        setattr(execution_config_message, field, config.get(field))
+    usages = config.get('usages') or []
+    for usage in usages:
+      execution_config_message.usages.append(
+          # converts a string literal in executionConfig.usages to an Enum.
+          arg_utils.ChoiceToEnum(
+              usage,
+              messages.ExecutionConfig.UsagesValueListEntryValuesEnum,
+              valid_choices=USAGE_CHOICES))
+
+    target.executionConfigs.append(execution_config_message)

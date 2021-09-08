@@ -357,7 +357,7 @@ def AddressArgHelp(include_l7_internal_load_balancing, include_gfe3,
                    include_l7_rxlb):
   """Build the help text for the address argument."""
 
-  lb_schemes = '(EXTERNAL, INTERNAL, INTERNAL_MANAGED'
+  lb_schemes = '(EXTERNAL, INTERNAL, INTERNAL_SELF_MANAGED'
   if include_l7_internal_load_balancing:
     lb_schemes += ', INTERNAL_MANAGED'
   if include_gfe3 or include_l7_rxlb:
@@ -380,7 +380,7 @@ def AddressArgHelp(include_l7_internal_load_balancing, include_gfe3,
     - global/addresses/address-1
     - address-1
 
-    The load-balancing-scheme (%s) and the forwarding rule's target determine
+    The load-balancing-scheme %s and the forwarding rule's target determine
     the type of IP address that you can use. The address type must be external
     for load-balancing-scheme EXTERNAL or EXTERNAL_MANAGED, and for the other
     load-balancing-schemes the address must be internal. For detailed

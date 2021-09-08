@@ -2980,6 +2980,10 @@
           "description": "Stats anomalies base folder path.",
           "$ref": "GoogleCloudAiplatformV1alpha1GcsDestination"
         },
+        "encryptionSpec": {
+          "description": "Customer-managed encryption key spec for a ModelDeploymentMonitoringJob. If set, this ModelDeploymentMonitoringJob and all sub-resources of this ModelDeploymentMonitoringJob will be secured by this key.",
+          "$ref": "GoogleCloudAiplatformV1alpha1EncryptionSpec"
+        },
         "error": {
           "description": "Output only. Only populated when the job's state is `JOB_STATE_FAILED` or `JOB_STATE_CANCELLED`.",
           "readOnly": true,
@@ -4610,14 +4614,6 @@
           "description": "Output only. Aggregated explanation metrics for the Model's prediction output over the data this ModelEvaluation uses. This field is populated only if the Model is evaluated with explanations, and only for AutoML tabular Models. ",
           "readOnly": true,
           "$ref": "GoogleCloudAiplatformV1alpha1ModelExplanation"
-        },
-        "explanationSpecs": {
-          "description": "Output only. Describes the values of ExplanationSpec that are used for explaining the predicted values on the evaluated data.",
-          "readOnly": true,
-          "type": "array",
-          "items": {
-            "$ref": "GoogleCloudAiplatformV1alpha1ModelEvaluationModelEvaluationExplanationSpec"
-          }
         }
       }
     },
@@ -4682,20 +4678,6 @@
           "description": "Output only. Name of the explain output. Specified as the key in ExplanationMetadata.outputs.",
           "readOnly": true,
           "type": "string"
-        }
-      }
-    },
-    "GoogleCloudAiplatformV1alpha1ModelEvaluationModelEvaluationExplanationSpec": {
-      "id": "GoogleCloudAiplatformV1alpha1ModelEvaluationModelEvaluationExplanationSpec",
-      "type": "object",
-      "properties": {
-        "explanationType": {
-          "description": "Explanation type. For AutoML Image Classification models, possible values are: * `image-integrated-gradients` * `image-xrai`",
-          "type": "string"
-        },
-        "explanationSpec": {
-          "description": "Explanation spec details.",
-          "$ref": "GoogleCloudAiplatformV1alpha1ExplanationSpec"
         }
       }
     },
@@ -5414,7 +5396,7 @@
       "type": "object",
       "properties": {
         "httpBody": {
-          "description": "The prediction input that supports HTTP headers and arbitrary data payload. A DeployedModel may have an upper limit on the number of instances it supports per request, and when it is exceeded the prediction call errors in case of AutoML Models, or, in case of customer created Models, the behaviour is as documented by that Model. The schema of any single instance may be specified via Endpoint's DeployedModels' Model's PredictSchemata's instance_schema_uri.",
+          "description": "The prediction input. Supports HTTP headers and arbitrary data payload. A DeployedModel may have an upper limit on the number of instances it supports per request. When this limit it is exceeded for an AutoML model, the RawPredict method returns an error. When this limit is exceeded for a custom-trained model, the behavior varies depending on the model. You can specify the schema for each instance in the predict_schemata.instance_schema_uri field when you create a Model. This schema applies when you deploy the `Model` as a `DeployedModel` to an Endpoint and use the `RawPredict` method.",
           "$ref": "GoogleApiHttpBody"
         }
       }
@@ -5510,7 +5492,7 @@
     },
     "GoogleCloudAiplatformV1alpha1SpecialistPool": {
       "id": "GoogleCloudAiplatformV1alpha1SpecialistPool",
-      "description": "SpecialistPool represents customers' own workforce to work on their data labeling jobs. It includes a group of specialist managers who are responsible for managing the labelers in this pool as well as customers' data labeling jobs associated with this pool. Customers create specialist pool as well as start data labeling jobs on Cloud, managers and labelers work with the jobs using CrowdCompute console.",
+      "description": "SpecialistPool represents customers' own workforce to work on their data labeling jobs. It includes a group of specialist managers and workers. Managers are responsible for managing the workers in this pool as well as customers' data labeling jobs associated with this pool. Customers create specialist pool as well as start data labeling jobs on Cloud, managers and workers handle the jobs using CrowdCompute console.",
       "type": "object",
       "properties": {
         "name": {
@@ -5522,13 +5504,13 @@
           "type": "string"
         },
         "specialistManagersCount": {
-          "description": "Output only. The number of Specialists in this SpecialistPool.",
+          "description": "Output only. The number of managers in this SpecialistPool.",
           "readOnly": true,
           "type": "integer",
           "format": "int32"
         },
         "specialistManagerEmails": {
-          "description": "The email addresses of the specialists in the SpecialistPool.",
+          "description": "The email addresses of the managers in the SpecialistPool.",
           "type": "array",
           "items": {
             "type": "string"
@@ -8194,7 +8176,7 @@
     },
     "GoogleCloudAiplatformInternalSpecialistPool": {
       "id": "GoogleCloudAiplatformInternalSpecialistPool",
-      "description": "SpecialistPool represents customers' own workforce to work on their data labeling jobs. It includes a group of specialist managers who are responsible for managing the labelers in this pool as well as customers' data labeling jobs associated with this pool. Customers create specialist pool as well as start data labeling jobs on Cloud, managers and labelers work with the jobs using CrowdCompute console.",
+      "description": "SpecialistPool represents customers' own workforce to work on their data labeling jobs. It includes a group of specialist managers and workers. Managers are responsible for managing the workers in this pool as well as customers' data labeling jobs associated with this pool. Customers create specialist pool as well as start data labeling jobs on Cloud, managers and workers handle the jobs using CrowdCompute console.",
       "type": "object",
       "properties": {
         "name": {
@@ -8206,13 +8188,13 @@
           "type": "string"
         },
         "specialistManagersCount": {
-          "description": "Output only. The number of Specialists in this SpecialistPool.",
+          "description": "Output only. The number of managers in this SpecialistPool.",
           "readOnly": true,
           "type": "integer",
           "format": "int32"
         },
         "specialistManagerEmails": {
-          "description": "The email addresses of the specialists in the SpecialistPool.",
+          "description": "The email addresses of the managers in the SpecialistPool.",
           "type": "array",
           "items": {
             "type": "string"
@@ -8225,6 +8207,18 @@
           "items": {
             "type": "string"
           }
+        },
+        "useCase": {
+          "description": "If it's not specified, will treat it as the default case.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified use case.",
+            "Translation hub pool."
+          ],
+          "enum": [
+            "USE_CASE_UNSPECIFIED",
+            "TRANSLATION_HUB"
+          ]
         }
       }
     },
@@ -10656,7 +10650,7 @@
     },
     "GoogleCloudAiplatformUiSpecialistPool": {
       "id": "GoogleCloudAiplatformUiSpecialistPool",
-      "description": "SpecialistPool represents customers' own workforce to work on their data labeling jobs. It includes a group of specialist managers who are responsible for managing the labelers in this pool as well as customers' data labeling jobs associated with this pool. Customers create specialist pool as well as start data labeling jobs on Cloud, managers and labelers work with the jobs using CrowdCompute console.",
+      "description": "SpecialistPool represents customers' own workforce to work on their data labeling jobs. It includes a group of specialist managers and workers. Managers are responsible for managing the workers in this pool as well as customers' data labeling jobs associated with this pool. Customers create specialist pool as well as start data labeling jobs on Cloud, managers and workers handle the jobs using CrowdCompute console.",
       "type": "object",
       "properties": {
         "name": {
@@ -10668,13 +10662,13 @@
           "type": "string"
         },
         "specialistManagersCount": {
-          "description": "Output only. The number of Specialists in this SpecialistPool.",
+          "description": "Output only. The number of managers in this SpecialistPool.",
           "readOnly": true,
           "type": "integer",
           "format": "int32"
         },
         "specialistManagerEmails": {
-          "description": "The email addresses of the specialists in the SpecialistPool.",
+          "description": "The email addresses of the managers in the SpecialistPool.",
           "type": "array",
           "items": {
             "type": "string"
@@ -14681,7 +14675,7 @@
     },
     "GoogleCloudAiplatformV1beta1SpecialistPool": {
       "id": "GoogleCloudAiplatformV1beta1SpecialistPool",
-      "description": "SpecialistPool represents customers' own workforce to work on their data labeling jobs. It includes a group of specialist managers who are responsible for managing the labelers in this pool as well as customers' data labeling jobs associated with this pool. Customers create specialist pool as well as start data labeling jobs on Cloud, managers and labelers work with the jobs using CrowdCompute console.",
+      "description": "SpecialistPool represents customers' own workforce to work on their data labeling jobs. It includes a group of specialist managers and workers. Managers are responsible for managing the workers in this pool as well as customers' data labeling jobs associated with this pool. Customers create specialist pool as well as start data labeling jobs on Cloud, managers and workers handle the jobs using CrowdCompute console.",
       "type": "object",
       "properties": {
         "name": {
@@ -14693,13 +14687,13 @@
           "type": "string"
         },
         "specialistManagersCount": {
-          "description": "Output only. The number of Specialists in this SpecialistPool.",
+          "description": "Output only. The number of managers in this SpecialistPool.",
           "readOnly": true,
           "type": "integer",
           "format": "int32"
         },
         "specialistManagerEmails": {
-          "description": "The email addresses of the specialists in the SpecialistPool.",
+          "description": "The email addresses of the managers in the SpecialistPool.",
           "type": "array",
           "items": {
             "type": "string"
@@ -18056,6 +18050,25 @@
         }
       }
     },
+    "GoogleCloudAiplatformV1CheckTrialEarlyStoppingStateMetatdata": {
+      "id": "GoogleCloudAiplatformV1CheckTrialEarlyStoppingStateMetatdata",
+      "description": "This message will be placed in the metadata field of a google.longrunning.Operation associated with a CheckTrialEarlyStoppingState request.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "Operation metadata for suggesting Trials.",
+          "$ref": "GoogleCloudAiplatformV1GenericOperationMetadata"
+        },
+        "study": {
+          "description": "The name of the Study that the Trial belongs to.",
+          "type": "string"
+        },
+        "trial": {
+          "description": "The Trial name.",
+          "type": "string"
+        }
+      }
+    },
     "GoogleCloudAiplatformV1CreateDatasetOperationMetadata": {
       "id": "GoogleCloudAiplatformV1CreateDatasetOperationMetadata",
       "description": "Runtime operation information for DatasetService.CreateDataset.",
@@ -18992,7 +19005,7 @@
     },
     "GoogleCloudAiplatformV1SpecialistPool": {
       "id": "GoogleCloudAiplatformV1SpecialistPool",
-      "description": "SpecialistPool represents customers' own workforce to work on their data labeling jobs. It includes a group of specialist managers who are responsible for managing the labelers in this pool as well as customers' data labeling jobs associated with this pool. Customers create specialist pool as well as start data labeling jobs on Cloud, managers and labelers work with the jobs using CrowdCompute console.",
+      "description": "SpecialistPool represents customers' own workforce to work on their data labeling jobs. It includes a group of specialist managers and workers. Managers are responsible for managing the workers in this pool as well as customers' data labeling jobs associated with this pool. Customers create specialist pool as well as start data labeling jobs on Cloud, managers and workers handle the jobs using CrowdCompute console.",
       "type": "object",
       "properties": {
         "name": {
@@ -19004,13 +19017,13 @@
           "type": "string"
         },
         "specialistManagersCount": {
-          "description": "Output only. The number of Specialists in this SpecialistPool.",
+          "description": "Output only. The number of managers in this SpecialistPool.",
           "readOnly": true,
           "type": "integer",
           "format": "int32"
         },
         "specialistManagerEmails": {
-          "description": "The email addresses of the specialists in the SpecialistPool.",
+          "description": "The email addresses of the managers in the SpecialistPool.",
           "type": "array",
           "items": {
             "type": "string"
@@ -19023,6 +19036,21 @@
           "items": {
             "type": "string"
           }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1SuggestTrialsMetadata": {
+      "id": "GoogleCloudAiplatformV1SuggestTrialsMetadata",
+      "description": "Details of operations that perform Trials suggestion.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "Operation metadata for suggesting Trials.",
+          "$ref": "GoogleCloudAiplatformV1GenericOperationMetadata"
+        },
+        "clientId": {
+          "description": "The identifier of the client that is requesting the suggestion. If multiple SuggestTrialsRequests have the same `client_id`, the service will return the identical suggested Trial if the Trial is pending, and provide a new Trial if the last suggested Trial was completed.",
+          "type": "string"
         }
       }
     },
@@ -19060,6 +19088,17 @@
       "description": "Response message for IndexEndpointService.UndeployIndex.",
       "type": "object",
       "properties": {
+      }
+    },
+    "GoogleCloudAiplatformV1UpdateModelDeploymentMonitoringJobOperationMetadata": {
+      "id": "GoogleCloudAiplatformV1UpdateModelDeploymentMonitoringJobOperationMetadata",
+      "description": "Runtime operation information for JobService.UpdateModelDeploymentMonitoringJob.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "The operation generic information.",
+          "$ref": "GoogleCloudAiplatformV1GenericOperationMetadata"
+        }
       }
     },
     "GoogleCloudAiplatformV1UpdateSpecialistPoolOperationMetadata": {
@@ -20657,7 +20696,7 @@
           }
         },
         "env": {
-          "description": "Environment variables to be passed to the container.",
+          "description": "Environment variables to be passed to the container. Maximum limit is 100.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudAiplatformV1EnvVar"
@@ -20708,7 +20747,7 @@
           }
         },
         "env": {
-          "description": "Environment variables to be passed to the python module.",
+          "description": "Environment variables to be passed to the python module. Maximum limit is 100.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudAiplatformV1EnvVar"
@@ -26051,7 +26090,7 @@
                       "type": "string"
                     },
                     "updateMask": {
-                      "description": "Required. The update mask applies to the resource.",
+                      "description": "Required. The update mask is used to specify the fields to be overwritten in the ModelDeploymentMonitoringJob resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then only the non-empty fields present in the request will be overwritten. Set the update_mask to `*` to override all fields. For the objective config, the user can either provide the update mask for model_deployment_monitoring_objective_configs or any combination of its nested fields, such as: model_deployment_monitoring_objective_configs.objective_config.training_dataset. Updatable fields: * `display_name` * `model_deployment_monitoring_schedule_config` * `model_monitoring_alert_config` * `logging_sampling_strategy` * `labels` * `log_ttl` * `enable_monitoring_pipeline_logs` . and * `model_deployment_monitoring_objective_configs` . or * `model_deployment_monitoring_objective_configs.objective_config.training_dataset` * `model_deployment_monitoring_objective_configs.objective_config.training_prediction_skew_detection_config` * `model_deployment_monitoring_objective_configs.objective_config.prediction_drift_detection_config`",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"

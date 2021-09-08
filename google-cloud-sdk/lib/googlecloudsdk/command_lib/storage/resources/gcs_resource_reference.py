@@ -19,41 +19,17 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import collections
+import json
 
-from apitools.base.protorpclite import messages
+from apitools.base.py import encoding
+
 from googlecloudsdk.command_lib.storage.resources import resource_reference
 from googlecloudsdk.command_lib.storage.resources import resource_util
 
 
-def _json_dump_recursion_helper(metadata):
+def _json_dump_helper(metadata):
   """See _get_json_dump docstring."""
-  if isinstance(metadata, list):
-    return [_json_dump_recursion_helper(item) for item in metadata]
-
-  if not isinstance(metadata, messages.Message):
-    # Recursive function down the stack may have been processing a list.
-    return resource_util.convert_to_json_parsable_type(metadata)
-
-  # Construct dictionary from Apitools object.
-  formatted_dict = collections.OrderedDict()
-  # Similar to Apitools messages.py Message __repr__ implementation.
-  for field in sorted(metadata.all_fields(), key=lambda f: f.name):
-    value = metadata.get_assigned_value(field.name)
-    if isinstance(value, messages.Message):
-      # Recursively handled nested Apitools objects.
-      formatted_dict[field.name] = _json_dump_recursion_helper(value)
-    elif isinstance(value, list):
-      # Recursively handled lists, which may contain Apitools objects.
-      # Example: ACL list.
-      formatted_list = [_json_dump_recursion_helper(item) for item in value]
-      if formatted_list:
-        # Ignore empty lists.
-        formatted_dict[field.name] = formatted_list
-    elif value or resource_util.should_preserve_falsy_metadata_value(value):
-      # 0, 0.0, and False are acceptables Falsy-types. Lists handled later.
-      formatted_dict[field.name] = (
-          resource_util.convert_to_json_parsable_type(value))
-  return formatted_dict
+  return json.loads(encoding.MessageToJson(metadata))
 
 
 def _get_json_dump(resource):
@@ -69,7 +45,7 @@ def _get_json_dump(resource):
       collections.OrderedDict([
           ('url', resource.storage_url.url_string),
           ('type', resource.TYPE_STRING),
-          ('metadata', _json_dump_recursion_helper(resource.metadata))
+          ('metadata', _json_dump_helper(resource.metadata)),
       ]))
 
 
@@ -85,21 +61,20 @@ def _get_full_bucket_metadata_string(resource):
   # Heavily-formatted sections.
   if resource.metadata.labels:
     labels_section = resource_util.get_metadata_json_section_string(
-        'Labels', resource.metadata.labels, _json_dump_recursion_helper)
+        'Labels', resource.metadata.labels, _json_dump_helper)
   else:
     labels_section = resource_util.get_padded_metadata_key_value_line(
         'Labels', 'None')
 
   if resource.metadata.acl:
     acl_section = resource_util.get_metadata_json_section_string(
-        'ACL', resource.metadata.acl, _json_dump_recursion_helper)
+        'ACL', resource.metadata.acl, _json_dump_helper)
   else:
     acl_section = resource_util.get_padded_metadata_key_value_line('ACL', '[]')
 
   if resource.metadata.defaultObjectAcl:
     default_acl_section = resource_util.get_metadata_json_section_string(
-        'Default ACL', resource.metadata.defaultObjectAcl,
-        _json_dump_recursion_helper)
+        'Default ACL', resource.metadata.defaultObjectAcl, _json_dump_helper)
   else:
     default_acl_section = resource_util.get_padded_metadata_key_value_line(
         'Default ACL', '[]')
@@ -242,7 +217,7 @@ def _get_full_object_metadata_string(resource):
   # Non-optional item that will always display.
   if resource.metadata.acl:
     acl_section = resource_util.get_metadata_json_section_string(
-        'ACL', resource.metadata.acl, _json_dump_recursion_helper)
+        'ACL', resource.metadata.acl, _json_dump_helper)
   else:
     acl_section = resource_util.get_padded_metadata_key_value_line('ACL', '[]')
 
@@ -355,8 +330,7 @@ def _get_full_object_metadata_string(resource):
   if getattr(resource.metadata.metadata, 'additionalProperties', None):
     optional_metadata_section = resource_util.get_metadata_json_section_string(
         'Additional Properties',
-        resource.metadata.metadata.additionalProperties,
-        _json_dump_recursion_helper)
+        resource.metadata.metadata.additionalProperties, _json_dump_helper)
   else:
     optional_metadata_section = ''
 

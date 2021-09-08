@@ -184,8 +184,18 @@ def AddSrcIpRanges(parser, required=False):
       type=arg_parsers.ArgList(),
       required=required,
       metavar='SRC_IP_RANGE',
-      help=('Source IP ranges to match for this rule. '
-            'Can only be specified if DIRECTION is ingress.'))
+      help=(
+          'A list of IP address blocks that are allowed to make '
+          'inbound connections that match the firewall rule to the instances '
+          'on the network. The IP address blocks must be specified in CIDR '
+          'format: http://en.wikipedia.org/wiki/Classless_Inter-Domain_Routing.'
+          'Either --src-ip-ranges or --src-secure-tags must be specified for '
+          'INGRESS traffic. If both --src-ip-ranges and --src-secure-tags are '
+          'specified, the rule matches if either the range of the source '
+          'matches --src-ip-ranges or the secure tag of the source matches '
+          '--src-secure-tags.'
+          'Multiple IP address blocks can be specified if they are separated '
+          'by commas.'))
 
 
 def AddDestIpRanges(parser, required=False):
@@ -266,8 +276,16 @@ def AddSrcSecureTags(parser, required=False):
       type=arg_parsers.ArgList(),
       metavar='SOURCE_SECURE_TAGS',
       required=required,
-      help=('An optional, list of source secure tags with a name of the '
-            'format tagValues/'))
+      help=(
+          'A list of instance secure tags indicating the set of instances on '
+          'the network to which the rule applies if all other fields match. '
+          'Either --src-ip-ranges or --src-secure-tags must be specified for '
+          'ingress traffic. If both --src-ip-ranges and --src-secure-tags are '
+          'specified, an inbound connection is allowed if either the range of '
+          'the source matches --src-ip-ranges or the tag of the source matches '
+          '--src-secure-tags. Secure Tags can be assigned to instances during '
+          'instance creation.'
+          ))
 
 
 def AddTargetSecureTags(parser, required=False):
@@ -277,8 +295,8 @@ def AddTargetSecureTags(parser, required=False):
       type=arg_parsers.ArgList(),
       metavar='TARGET_SECURE_TAGS',
       required=required,
-      help=('An optional, list of source secure tags with a name of the '
-            'format tagValues/'))
+      help=('An optional, list of target secure tags with a name of the '
+            'format tagValues/ or full namespaced name'))
 
 
 def AddNewPriority(parser, operation=None):

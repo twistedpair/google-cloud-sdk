@@ -906,8 +906,9 @@ class OSPolicyAssignmentInstanceFilter(_messages.Message):
       are applicable for the VM.
     inventories: List of inventories to select VMs. A VM is selected if its
       inventory data matches at least one of the following inventories.
-    osShortNames: A VM is selected if it's OS short name matches with any of
-      the values provided in this list.
+    osShortNames: Deprecated. Use the `inventories` field instead. A VM is
+      selected if it's OS short name matches with any of the values provided
+      in this list.
   """
 
   all = _messages.BooleanField(1)
@@ -1394,7 +1395,8 @@ class OSPolicyResourceGroup(_messages.Message):
       inventory_filters[0].os_short_name='rhel' and
       inventory_filters[1].os_short_name='centos' If the list is empty, this
       resource group will be applied to the target VM unconditionally.
-    osFilter: Used to specify the OS filter for a resource group
+    osFilter: Deprecated. Use the `inventory_filters` field instead. Used to
+      specify the OS filter for a resource group
     resources: Required. List of resources configured for this resource group.
       The resources are executed in the exact order specified here.
   """

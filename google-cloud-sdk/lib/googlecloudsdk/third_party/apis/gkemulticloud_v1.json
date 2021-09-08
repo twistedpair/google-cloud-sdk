@@ -1229,7 +1229,7 @@
       "type": "object",
       "properties": {
         "resourceGroupId": {
-          "description": "The ARM ID the of the resourcegroup containing proxy keyvault. Resource group ids are formatted as `\/subscriptions\/\/resourceGroups\/`.",
+          "description": "The ARM ID the of the resource group containing proxy keyvault. Resource group ids are formatted as `\/subscriptions\/\/resourceGroups\/`.",
           "type": "string"
         },
         "secretId": {

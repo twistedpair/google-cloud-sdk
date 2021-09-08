@@ -2529,7 +2529,25 @@ class AiplatformProjectsLocationsModelDeploymentMonitoringJobsPatchRequest(_mess
       GoogleCloudAiplatformV1alpha1ModelDeploymentMonitoringJob resource to be
       passed as the request body.
     name: Output only. Resource name of a ModelDeploymentMonitoringJob.
-    updateMask: Required. The update mask applies to the resource.
+    updateMask: Required. The update mask is used to specify the fields to be
+      overwritten in the ModelDeploymentMonitoringJob resource by the update.
+      The fields specified in the update_mask are relative to the resource,
+      not the full request. A field will be overwritten if it is in the mask.
+      If the user does not provide a mask then only the non-empty fields
+      present in the request will be overwritten. Set the update_mask to `*`
+      to override all fields. For the objective config, the user can either
+      provide the update mask for
+      model_deployment_monitoring_objective_configs or any combination of its
+      nested fields, such as: model_deployment_monitoring_objective_configs.ob
+      jective_config.training_dataset. Updatable fields: * `display_name` *
+      `model_deployment_monitoring_schedule_config` *
+      `model_monitoring_alert_config` * `logging_sampling_strategy` * `labels`
+      * `log_ttl` * `enable_monitoring_pipeline_logs` . and *
+      `model_deployment_monitoring_objective_configs` . or * `model_deployment
+      _monitoring_objective_configs.objective_config.training_dataset` * `mode
+      l_deployment_monitoring_objective_configs.objective_config.training_pred
+      iction_skew_detection_config` * `model_deployment_monitoring_objective_c
+      onfigs.objective_config.prediction_drift_detection_config`
   """
 
   googleCloudAiplatformV1alpha1ModelDeploymentMonitoringJob = _messages.MessageField('GoogleCloudAiplatformV1alpha1ModelDeploymentMonitoringJob', 1)
@@ -6593,11 +6611,15 @@ class GoogleCloudAiplatformInternalSmoothGradConfig(_messages.Message):
 
 class GoogleCloudAiplatformInternalSpecialistPool(_messages.Message):
   r"""SpecialistPool represents customers' own workforce to work on their data
-  labeling jobs. It includes a group of specialist managers who are
-  responsible for managing the labelers in this pool as well as customers'
-  data labeling jobs associated with this pool. Customers create specialist
-  pool as well as start data labeling jobs on Cloud, managers and labelers
-  work with the jobs using CrowdCompute console.
+  labeling jobs. It includes a group of specialist managers and workers.
+  Managers are responsible for managing the workers in this pool as well as
+  customers' data labeling jobs associated with this pool. Customers create
+  specialist pool as well as start data labeling jobs on Cloud, managers and
+  workers handle the jobs using CrowdCompute console.
+
+  Enums:
+    UseCaseValueValuesEnum: If it's not specified, will treat it as the
+      default case.
 
   Fields:
     displayName: Required. The user-defined name of the SpecialistPool. The
@@ -6606,17 +6628,29 @@ class GoogleCloudAiplatformInternalSpecialistPool(_messages.Message):
     name: Required. The resource name of the SpecialistPool.
     pendingDataLabelingJobs: Output only. The resource name of the pending
       data labeling jobs.
-    specialistManagerEmails: The email addresses of the specialists in the
+    specialistManagerEmails: The email addresses of the managers in the
       SpecialistPool.
-    specialistManagersCount: Output only. The number of Specialists in this
+    specialistManagersCount: Output only. The number of managers in this
       SpecialistPool.
+    useCase: If it's not specified, will treat it as the default case.
   """
+
+  class UseCaseValueValuesEnum(_messages.Enum):
+    r"""If it's not specified, will treat it as the default case.
+
+    Values:
+      USE_CASE_UNSPECIFIED: Unspecified use case.
+      TRANSLATION_HUB: Translation hub pool.
+    """
+    USE_CASE_UNSPECIFIED = 0
+    TRANSLATION_HUB = 1
 
   displayName = _messages.StringField(1)
   name = _messages.StringField(2)
   pendingDataLabelingJobs = _messages.StringField(3, repeated=True)
   specialistManagerEmails = _messages.StringField(4, repeated=True)
   specialistManagersCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  useCase = _messages.EnumField('UseCaseValueValuesEnum', 6)
 
 
 class GoogleCloudAiplatformInternalUndeployModelOperationMetadata(_messages.Message):
@@ -9817,11 +9851,11 @@ class GoogleCloudAiplatformUiSmoothGradConfig(_messages.Message):
 
 class GoogleCloudAiplatformUiSpecialistPool(_messages.Message):
   r"""SpecialistPool represents customers' own workforce to work on their data
-  labeling jobs. It includes a group of specialist managers who are
-  responsible for managing the labelers in this pool as well as customers'
-  data labeling jobs associated with this pool. Customers create specialist
-  pool as well as start data labeling jobs on Cloud, managers and labelers
-  work with the jobs using CrowdCompute console.
+  labeling jobs. It includes a group of specialist managers and workers.
+  Managers are responsible for managing the workers in this pool as well as
+  customers' data labeling jobs associated with this pool. Customers create
+  specialist pool as well as start data labeling jobs on Cloud, managers and
+  workers handle the jobs using CrowdCompute console.
 
   Fields:
     displayName: Required. The user-defined name of the SpecialistPool. The
@@ -9832,9 +9866,9 @@ class GoogleCloudAiplatformUiSpecialistPool(_messages.Message):
       in JOB_STATE_RUNNING using this SpecialistPool.
     pendingDataLabelingJobs: Output only. The resource name of the pending
       data labeling jobs.
-    specialistManagerEmails: The email addresses of the specialists in the
+    specialistManagerEmails: The email addresses of the managers in the
       SpecialistPool.
-    specialistManagersCount: Output only. The number of Specialists in this
+    specialistManagersCount: Output only. The number of managers in this
       SpecialistPool.
   """
 
@@ -10365,6 +10399,22 @@ class GoogleCloudAiplatformV1BatchMigrateResourcesResponse(_messages.Message):
   migrateResourceResponses = _messages.MessageField('GoogleCloudAiplatformV1MigrateResourceResponse', 1, repeated=True)
 
 
+class GoogleCloudAiplatformV1CheckTrialEarlyStoppingStateMetatdata(_messages.Message):
+  r"""This message will be placed in the metadata field of a
+  google.longrunning.Operation associated with a CheckTrialEarlyStoppingState
+  request.
+
+  Fields:
+    genericMetadata: Operation metadata for suggesting Trials.
+    study: The name of the Study that the Trial belongs to.
+    trial: The Trial name.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1GenericOperationMetadata', 1)
+  study = _messages.StringField(2)
+  trial = _messages.StringField(3)
+
+
 class GoogleCloudAiplatformV1ContainerSpec(_messages.Message):
   r"""The spec of a Container.
 
@@ -10372,7 +10422,8 @@ class GoogleCloudAiplatformV1ContainerSpec(_messages.Message):
     args: The arguments to be passed when starting the container.
     command: The command to be invoked when the container is started. It
       overrides the entrypoint instruction in Dockerfile when provided.
-    env: Environment variables to be passed to the container.
+    env: Environment variables to be passed to the container. Maximum limit is
+      100.
     imageUri: Required. The URI of a container image in the Container Registry
       that is to be run on each worker replica.
   """
@@ -11766,7 +11817,8 @@ class GoogleCloudAiplatformV1PythonPackageSpec(_messages.Message):
 
   Fields:
     args: Command line arguments to be passed to the Python task.
-    env: Environment variables to be passed to the python module.
+    env: Environment variables to be passed to the python module. Maximum
+      limit is 100.
     executorImageUri: Required. The URI of a container image in Artifact
       Registry that will run the provided Python package. Vertex AI provides a
       wide range of executor images with pre-installed packages to meet users'
@@ -14238,11 +14290,11 @@ class GoogleCloudAiplatformV1SmoothGradConfig(_messages.Message):
 
 class GoogleCloudAiplatformV1SpecialistPool(_messages.Message):
   r"""SpecialistPool represents customers' own workforce to work on their data
-  labeling jobs. It includes a group of specialist managers who are
-  responsible for managing the labelers in this pool as well as customers'
-  data labeling jobs associated with this pool. Customers create specialist
-  pool as well as start data labeling jobs on Cloud, managers and labelers
-  work with the jobs using CrowdCompute console.
+  labeling jobs. It includes a group of specialist managers and workers.
+  Managers are responsible for managing the workers in this pool as well as
+  customers' data labeling jobs associated with this pool. Customers create
+  specialist pool as well as start data labeling jobs on Cloud, managers and
+  workers handle the jobs using CrowdCompute console.
 
   Fields:
     displayName: Required. The user-defined name of the SpecialistPool. The
@@ -14251,9 +14303,9 @@ class GoogleCloudAiplatformV1SpecialistPool(_messages.Message):
     name: Required. The resource name of the SpecialistPool.
     pendingDataLabelingJobs: Output only. The resource name of the pending
       data labeling jobs.
-    specialistManagerEmails: The email addresses of the specialists in the
+    specialistManagerEmails: The email addresses of the managers in the
       SpecialistPool.
-    specialistManagersCount: Output only. The number of Specialists in this
+    specialistManagersCount: Output only. The number of managers in this
       SpecialistPool.
   """
 
@@ -14580,6 +14632,21 @@ class GoogleCloudAiplatformV1StudySpecParameterSpecIntegerValueSpec(_messages.Me
   minValue = _messages.IntegerField(3)
 
 
+class GoogleCloudAiplatformV1SuggestTrialsMetadata(_messages.Message):
+  r"""Details of operations that perform Trials suggestion.
+
+  Fields:
+    clientId: The identifier of the client that is requesting the suggestion.
+      If multiple SuggestTrialsRequests have the same `client_id`, the service
+      will return the identical suggested Trial if the Trial is pending, and
+      provide a new Trial if the last suggested Trial was completed.
+    genericMetadata: Operation metadata for suggesting Trials.
+  """
+
+  clientId = _messages.StringField(1)
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1GenericOperationMetadata', 2)
+
+
 class GoogleCloudAiplatformV1UndeployIndexOperationMetadata(_messages.Message):
   r"""Runtime operation information for IndexEndpointService.UndeployIndex.
 
@@ -14619,6 +14686,17 @@ class GoogleCloudAiplatformV1UpdateIndexOperationMetadata(_messages.Message):
 
   genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1GenericOperationMetadata', 1)
   nearestNeighborSearchOperationMetadata = _messages.MessageField('GoogleCloudAiplatformV1NearestNeighborSearchOperationMetadata', 2)
+
+
+class GoogleCloudAiplatformV1UpdateModelDeploymentMonitoringJobOperationMetadata(_messages.Message):
+  r"""Runtime operation information for
+  JobService.UpdateModelDeploymentMonitoringJob.
+
+  Fields:
+    genericMetadata: The operation generic information.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1GenericOperationMetadata', 1)
 
 
 class GoogleCloudAiplatformV1UpdateSpecialistPoolOperationMetadata(_messages.Message):
@@ -19647,6 +19725,10 @@ class GoogleCloudAiplatformV1alpha1ModelDeploymentMonitoringJob(_messages.Messag
       ModelDeploymentMonitoringJob. The name can be up to 128 characters long
       and can be consist of any UTF-8 characters. Display name of a
       ModelDeploymentMonitoringJob.
+    encryptionSpec: Customer-managed encryption key spec for a
+      ModelDeploymentMonitoringJob. If set, this ModelDeploymentMonitoringJob
+      and all sub-resources of this ModelDeploymentMonitoringJob will be
+      secured by this key.
     endpoint: Required. Endpoint resource name. Format:
       `projects/{project}/locations/{location}/endpoints/{endpoint}`
     error: Output only. Only populated when the job's state is
@@ -19770,22 +19852,23 @@ class GoogleCloudAiplatformV1alpha1ModelDeploymentMonitoringJob(_messages.Messag
   bigqueryTables = _messages.MessageField('GoogleCloudAiplatformV1alpha1ModelDeploymentMonitoringBigQueryTable', 2, repeated=True)
   createTime = _messages.StringField(3)
   displayName = _messages.StringField(4)
-  endpoint = _messages.StringField(5)
-  error = _messages.MessageField('GoogleRpcStatus', 6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  logTtl = _messages.StringField(8)
-  loggingSamplingStrategy = _messages.MessageField('GoogleCloudAiplatformV1alpha1SamplingStrategy', 9)
-  modelDeploymentMonitoringObjectiveConfigs = _messages.MessageField('GoogleCloudAiplatformV1alpha1ModelDeploymentMonitoringObjectiveConfig', 10, repeated=True)
-  modelDeploymentMonitoringScheduleConfig = _messages.MessageField('GoogleCloudAiplatformV1alpha1ModelDeploymentMonitoringScheduleConfig', 11)
-  modelMonitoringAlertConfig = _messages.MessageField('GoogleCloudAiplatformV1alpha1ModelMonitoringAlertConfig', 12)
-  name = _messages.StringField(13)
-  nextScheduleTime = _messages.StringField(14)
-  predictInstanceSchemaUri = _messages.StringField(15)
-  samplePredictInstance = _messages.MessageField('extra_types.JsonValue', 16)
-  scheduleState = _messages.EnumField('ScheduleStateValueValuesEnum', 17)
-  state = _messages.EnumField('StateValueValuesEnum', 18)
-  statsAnomaliesBaseDirectory = _messages.MessageField('GoogleCloudAiplatformV1alpha1GcsDestination', 19)
-  updateTime = _messages.StringField(20)
+  encryptionSpec = _messages.MessageField('GoogleCloudAiplatformV1alpha1EncryptionSpec', 5)
+  endpoint = _messages.StringField(6)
+  error = _messages.MessageField('GoogleRpcStatus', 7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  logTtl = _messages.StringField(9)
+  loggingSamplingStrategy = _messages.MessageField('GoogleCloudAiplatformV1alpha1SamplingStrategy', 10)
+  modelDeploymentMonitoringObjectiveConfigs = _messages.MessageField('GoogleCloudAiplatformV1alpha1ModelDeploymentMonitoringObjectiveConfig', 11, repeated=True)
+  modelDeploymentMonitoringScheduleConfig = _messages.MessageField('GoogleCloudAiplatformV1alpha1ModelDeploymentMonitoringScheduleConfig', 12)
+  modelMonitoringAlertConfig = _messages.MessageField('GoogleCloudAiplatformV1alpha1ModelMonitoringAlertConfig', 13)
+  name = _messages.StringField(14)
+  nextScheduleTime = _messages.StringField(15)
+  predictInstanceSchemaUri = _messages.StringField(16)
+  samplePredictInstance = _messages.MessageField('extra_types.JsonValue', 17)
+  scheduleState = _messages.EnumField('ScheduleStateValueValuesEnum', 18)
+  state = _messages.EnumField('StateValueValuesEnum', 19)
+  statsAnomaliesBaseDirectory = _messages.MessageField('GoogleCloudAiplatformV1alpha1GcsDestination', 20)
+  updateTime = _messages.StringField(21)
 
 
 class GoogleCloudAiplatformV1alpha1ModelDeploymentMonitoringObjectiveConfig(_messages.Message):
@@ -19819,8 +19902,6 @@ class GoogleCloudAiplatformV1alpha1ModelEvaluation(_messages.Message):
 
   Fields:
     createTime: Output only. Timestamp when this ModelEvaluation was created.
-    explanationSpecs: Output only. Describes the values of ExplanationSpec
-      that are used for explaining the predicted values on the evaluated data.
     metrics: Output only. Evaluation metrics of the Model. The schema of the
       metrics is stored in metrics_schema_uri
     metricsSchemaUri: Output only. Points to a YAML file stored on Google
@@ -19840,27 +19921,11 @@ class GoogleCloudAiplatformV1alpha1ModelEvaluation(_messages.Message):
   """
 
   createTime = _messages.StringField(1)
-  explanationSpecs = _messages.MessageField('GoogleCloudAiplatformV1alpha1ModelEvaluationModelEvaluationExplanationSpec', 2, repeated=True)
-  metrics = _messages.MessageField('extra_types.JsonValue', 3)
-  metricsSchemaUri = _messages.StringField(4)
-  modelExplanation = _messages.MessageField('GoogleCloudAiplatformV1alpha1ModelExplanation', 5)
-  name = _messages.StringField(6)
-  sliceDimensions = _messages.StringField(7, repeated=True)
-
-
-class GoogleCloudAiplatformV1alpha1ModelEvaluationModelEvaluationExplanationSpec(_messages.Message):
-  r"""A
-  GoogleCloudAiplatformV1alpha1ModelEvaluationModelEvaluationExplanationSpec
-  object.
-
-  Fields:
-    explanationSpec: Explanation spec details.
-    explanationType: Explanation type. For AutoML Image Classification models,
-      possible values are: * `image-integrated-gradients` * `image-xrai`
-  """
-
-  explanationSpec = _messages.MessageField('GoogleCloudAiplatformV1alpha1ExplanationSpec', 1)
-  explanationType = _messages.StringField(2)
+  metrics = _messages.MessageField('extra_types.JsonValue', 2)
+  metricsSchemaUri = _messages.StringField(3)
+  modelExplanation = _messages.MessageField('GoogleCloudAiplatformV1alpha1ModelExplanation', 4)
+  name = _messages.StringField(5)
+  sliceDimensions = _messages.StringField(6, repeated=True)
 
 
 class GoogleCloudAiplatformV1alpha1ModelEvaluationSlice(_messages.Message):
@@ -20876,13 +20941,15 @@ class GoogleCloudAiplatformV1alpha1RawPredictRequest(_messages.Message):
   r"""Request message for PredictionService.RawPredict.
 
   Fields:
-    httpBody: The prediction input that supports HTTP headers and arbitrary
-      data payload. A DeployedModel may have an upper limit on the number of
-      instances it supports per request, and when it is exceeded the
-      prediction call errors in case of AutoML Models, or, in case of customer
-      created Models, the behaviour is as documented by that Model. The schema
-      of any single instance may be specified via Endpoint's DeployedModels'
-      Model's PredictSchemata's instance_schema_uri.
+    httpBody: The prediction input. Supports HTTP headers and arbitrary data
+      payload. A DeployedModel may have an upper limit on the number of
+      instances it supports per request. When this limit it is exceeded for an
+      AutoML model, the RawPredict method returns an error. When this limit is
+      exceeded for a custom-trained model, the behavior varies depending on
+      the model. You can specify the schema for each instance in the
+      predict_schemata.instance_schema_uri field when you create a Model. This
+      schema applies when you deploy the `Model` as a `DeployedModel` to an
+      Endpoint and use the `RawPredict` method.
   """
 
   httpBody = _messages.MessageField('GoogleApiHttpBody', 1)
@@ -21755,11 +21822,11 @@ class GoogleCloudAiplatformV1alpha1Similarity(_messages.Message):
 
 class GoogleCloudAiplatformV1alpha1SpecialistPool(_messages.Message):
   r"""SpecialistPool represents customers' own workforce to work on their data
-  labeling jobs. It includes a group of specialist managers who are
-  responsible for managing the labelers in this pool as well as customers'
-  data labeling jobs associated with this pool. Customers create specialist
-  pool as well as start data labeling jobs on Cloud, managers and labelers
-  work with the jobs using CrowdCompute console.
+  labeling jobs. It includes a group of specialist managers and workers.
+  Managers are responsible for managing the workers in this pool as well as
+  customers' data labeling jobs associated with this pool. Customers create
+  specialist pool as well as start data labeling jobs on Cloud, managers and
+  workers handle the jobs using CrowdCompute console.
 
   Fields:
     displayName: Required. The user-defined name of the SpecialistPool. The
@@ -21768,9 +21835,9 @@ class GoogleCloudAiplatformV1alpha1SpecialistPool(_messages.Message):
     name: Required. The resource name of the SpecialistPool.
     pendingDataLabelingJobs: Output only. The resource name of the pending
       data labeling jobs.
-    specialistManagerEmails: The email addresses of the specialists in the
+    specialistManagerEmails: The email addresses of the managers in the
       SpecialistPool.
-    specialistManagersCount: Output only. The number of Specialists in this
+    specialistManagersCount: Output only. The number of managers in this
       SpecialistPool.
   """
 
@@ -27714,11 +27781,11 @@ class GoogleCloudAiplatformV1beta1SmoothGradConfig(_messages.Message):
 
 class GoogleCloudAiplatformV1beta1SpecialistPool(_messages.Message):
   r"""SpecialistPool represents customers' own workforce to work on their data
-  labeling jobs. It includes a group of specialist managers who are
-  responsible for managing the labelers in this pool as well as customers'
-  data labeling jobs associated with this pool. Customers create specialist
-  pool as well as start data labeling jobs on Cloud, managers and labelers
-  work with the jobs using CrowdCompute console.
+  labeling jobs. It includes a group of specialist managers and workers.
+  Managers are responsible for managing the workers in this pool as well as
+  customers' data labeling jobs associated with this pool. Customers create
+  specialist pool as well as start data labeling jobs on Cloud, managers and
+  workers handle the jobs using CrowdCompute console.
 
   Fields:
     displayName: Required. The user-defined name of the SpecialistPool. The
@@ -27727,9 +27794,9 @@ class GoogleCloudAiplatformV1beta1SpecialistPool(_messages.Message):
     name: Required. The resource name of the SpecialistPool.
     pendingDataLabelingJobs: Output only. The resource name of the pending
       data labeling jobs.
-    specialistManagerEmails: The email addresses of the specialists in the
+    specialistManagerEmails: The email addresses of the managers in the
       SpecialistPool.
-    specialistManagersCount: Output only. The number of Specialists in this
+    specialistManagersCount: Output only. The number of managers in this
       SpecialistPool.
   """
 

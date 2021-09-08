@@ -123,3 +123,13 @@ class BmsClient(object):
   def AggregateList(self, project_resource, limit=None):
     return self.AggregateYieldFromList(
         self.service, project_resource, limit=limit)
+
+  def IsClientNetwork(self, network):
+    if network.type == self.messages.Network.TypeValueValuesEnum.CLIENT:
+      return True
+    return False
+
+  def IsPrivateNetwork(self, network):
+    if network.type == self.messages.Network.TypeValueValuesEnum.PRIVATE:
+      return True
+    return False

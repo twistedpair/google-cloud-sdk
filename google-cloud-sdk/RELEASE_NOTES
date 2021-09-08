@@ -5,6 +5,79 @@ Copyright 2014-2021 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 356.0.0 (2021-09-08)
+
+### Assured Workloads
+
+*   Added CA_REGIONS_AND_SUPPORT as compliance regime options for `gcloud assured workloads create` command.
+*   ResourceType CONSUMER_PROJECT is deprecated.
+*   ResourceType CONSUMER_FOLDER and KEYRING are added.
+*   display_name is added to ResourceSettings.
+*   billing_account is now optional in Workload.
+*   resource_settings is added to CreateWorkloadOperationMetadata.
+
+### Cloud API Gateway
+
+* Added `--view` flag to `gcloud api-gateway api-configs describe` to allow the use of the [existing config view option available via the API](https://cloud.google.com/api-gateway/docs/reference/rest/v1/projects.locations.apis.configs/get#configview).
+
+### Cloud Composer
+
+* Added `--composer-network-ipv4-cidr` to `gcloud beta composer create` to be used with Cloud Composer 2.
+* Added the following flags to `gcloud beta composer create` and `gcloud beta composer update` to be used with Cloud Composer 2:
+   * `--environment-size`
+   * `--min-workers`
+   * `--max-workers`
+   * `--scheduler-cpu`
+   * `--scheduler-memory`
+   * `--scheduler-storage`
+   * `--web-server-cpu`
+   * `--web-server-memory`
+   * `--web-server-storage`
+   * `--worker-cpu`
+   * `--worker-memory`
+   * `--worker-storage`
+
+### Cloud Run
+
+*   Updated `gcloud run deploy` to include Cloud Run for Anthos enabled clusters
+on cluster suggestions.
+*   Promoted `--no-cpu-throttling` flag of `gcloud run` to beta.
+
+### Compute Engine
+
+*   Promoted `--source-ip-ranges` flag of `gcloud compute forwarding-rules create` and `gcloud compute forwarding-rules update` to beta.
+
+### Config Connector
+
+* Updated Google Cloud Config Connector to version 1.60.0.
+  See Config Connector Overview for more details [https://cloud.google.com/config-connector/docs/overview](https://cloud.google.com/config-connector/docs/overview).
+
+### GKE Hub
+
+*   Running `gcloud container hub memberships get-credentials` with
+    `connectgateway.googleapis.com` disabled now prompts the user to enable
+    the API, and throws an error if the user declines to enable the API.
+
+### Kubernetes Engine
+
+*   Added `--addons=GcpFilestoreCsiDriver` to `gcloud container clusters
+    create` and `--update-addons=GcpFilestoreCsiDriver` to `gcloud
+    container clusters update` to enable/disable the GCP Filestore
+    Container Storage Interface (CSI) Driver.
+*   Deprecated `--enable-stackdriver-kubernetes`,
+    `--enable-logging-monitoring-system-only`, `--monitoring-service`,
+    `--logging-service`, `--master-logs`, `--no-master-logs`, and
+    `--enable-master-metrics` flags from
+    `gcloud container clusters create/update`.
+
+### Network Security
+
+* Promoted `gcloud network-security client-tls-policies` to GA.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 355.0.0 (2021-08-31)
 
 ### Anthos Identity Service

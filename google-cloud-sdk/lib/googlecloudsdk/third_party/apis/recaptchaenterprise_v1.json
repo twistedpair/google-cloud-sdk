@@ -403,6 +403,10 @@
       "description": "Settings specific to keys that can be used by Android apps.",
       "type": "object",
       "properties": {
+        "allowAllPackageNames": {
+          "description": "If set to true, it means allowed_package_names will not be enforced.",
+          "type": "boolean"
+        },
         "allowedPackageNames": {
           "description": "Android package names of apps allowed to use the key. Example: 'com.companyname.appname'",
           "type": "array",
@@ -417,6 +421,10 @@
       "description": "Settings specific to keys that can be used by iOS apps.",
       "type": "object",
       "properties": {
+        "allowAllBundleIds": {
+          "description": "If set to true, it means allowed_bundle_ids will not be enforced.",
+          "type": "boolean"
+        },
         "allowedBundleIds": {
           "description": "iOS bundle ids of apps allowed to use the key. Example: 'com.companyname.productname.appname'",
           "type": "array",

@@ -346,7 +346,7 @@
       "type": "object",
       "properties": {
         "clusterId": {
-          "description": "Required. The user-provided identifier of the new `Cluster`.",
+          "description": "Required. The user-provided identifier of the new `Cluster`. The identifier must be 1-63 characters long, comply with [RFC 1034](https:\/\/datatracker.ietf.org\/doc\/html\/rfc1034){: .external} (section 3.5), and not be formatted as a UUID. For example, a name that is 1-63 characters long, matches the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?`, and otherwise complies with RFC 1034. This regular expression describes a name where the first character is a lowercase letter, and all following characters are a dash, lowercase letter, or digit, except the last character, which isn't a dash. @pattern (^[a-z]([-a-z0-9]*[a-z0-9])?$)(?<!(^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$))",
           "type": "string"
         },
         "nodeTypeId": {
@@ -1182,7 +1182,7 @@
                       "type": "string"
                     },
                     "privateCloudId": {
-                      "description": "Required. The user-provided identifier of the private cloud to be created. This identifier must be unique among each `PrivateCloud` within the parent and becomes the final token in the name URI.",
+                      "description": "Required. The user-provided identifier of the private cloud to be created. This identifier must be unique among each `PrivateCloud` within the parent and becomes the final token in the name URI. The identifier must be 1-63 characters long, comply with [RFC 1034](https:\/\/datatracker.ietf.org\/doc\/html\/rfc1034){: .external} (section 3.5), and not be formatted as a UUID. For example, a name that is 1-63 characters long, matches the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?`, and otherwise complies with RFC 1034. This regular expression describes a name where the first character is a lowercase letter, and all following characters are a dash, lowercase letter, or digit, except the last character, which isn't a dash. @pattern (^[a-z]([-a-z0-9]*[a-z0-9])?$)(?<!(^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$))",
                       "location": "query",
                       "type": "string"
                     },
@@ -1596,7 +1596,7 @@
                           "type": "string"
                         },
                         "clusterId": {
-                          "description": "Required. The user-provided identifier of the new `Cluster`. This identifier must be unique among clusters within the parent and becomes the final token in the name URI.",
+                          "description": "Required. The user-provided identifier of the new `Cluster`. This identifier must be unique among clusters within the parent and becomes the final token in the name URI. The identifier must be 1-63 characters long, comply with [RFC 1034](https:\/\/datatracker.ietf.org\/doc\/html\/rfc1034){: .external} (section 3.5), and not be formatted as a UUID. For example, a name that is 1-63 characters long, matches the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?`, and otherwise complies with RFC 1034. This regular expression describes a name where the first character is a lowercase letter, and all following characters are a dash, lowercase letter, or digit, except the last character, which isn't a dash. @pattern (^[a-z]([-a-z0-9]*[a-z0-9])?$)(?<!(^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$))",
                           "location": "query",
                           "type": "string"
                         },

@@ -385,7 +385,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a view on a log bucket.
+      r"""Deletes a view on a log bucket. If an UNAVAILABLE error is returned, this indicates that system is not in a state where it can delete the view. If this occurs, please try again in a few minutes.
 
       Args:
         request: (LoggingBillingAccountsLocationsBucketsViewsDeleteRequest) input message
@@ -439,7 +439,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a view on a log bucket. This method replaces the following fields in the existing view with values from the new view: filter.
+      r"""Updates a view on a log bucket. This method replaces the following fields in the existing view with values from the new view: filter. If an UNAVAILABLE error is returned, this indicates that system is not in a state where it can update the view. If this occurs, please try again in a few minutes.
 
       Args:
         request: (LoggingBillingAccountsLocationsBucketsViewsPatchRequest) input message
@@ -1526,7 +1526,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a view on a log bucket.
+      r"""Deletes a view on a log bucket. If an UNAVAILABLE error is returned, this indicates that system is not in a state where it can delete the view. If this occurs, please try again in a few minutes.
 
       Args:
         request: (LoggingFoldersLocationsBucketsViewsDeleteRequest) input message
@@ -1607,7 +1607,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a view on a log bucket. This method replaces the following fields in the existing view with values from the new view: filter.
+      r"""Updates a view on a log bucket. This method replaces the following fields in the existing view with values from the new view: filter. If an UNAVAILABLE error is returned, this indicates that system is not in a state where it can update the view. If this occurs, please try again in a few minutes.
 
       Args:
         request: (LoggingFoldersLocationsBucketsViewsPatchRequest) input message
@@ -2308,7 +2308,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a view on a log bucket.
+      r"""Deletes a view on a log bucket. If an UNAVAILABLE error is returned, this indicates that system is not in a state where it can delete the view. If this occurs, please try again in a few minutes.
 
       Args:
         request: (LoggingLocationsBucketsViewsDeleteRequest) input message
@@ -2389,7 +2389,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a view on a log bucket. This method replaces the following fields in the existing view with values from the new view: filter.
+      r"""Updates a view on a log bucket. This method replaces the following fields in the existing view with values from the new view: filter. If an UNAVAILABLE error is returned, this indicates that system is not in a state where it can update the view. If this occurs, please try again in a few minutes.
 
       Args:
         request: (LoggingLocationsBucketsViewsPatchRequest) input message
@@ -3062,7 +3062,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a view on a log bucket.
+      r"""Deletes a view on a log bucket. If an UNAVAILABLE error is returned, this indicates that system is not in a state where it can delete the view. If this occurs, please try again in a few minutes.
 
       Args:
         request: (LoggingOrganizationsLocationsBucketsViewsDeleteRequest) input message
@@ -3143,7 +3143,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a view on a log bucket. This method replaces the following fields in the existing view with values from the new view: filter.
+      r"""Updates a view on a log bucket. This method replaces the following fields in the existing view with values from the new view: filter. If an UNAVAILABLE error is returned, this indicates that system is not in a state where it can update the view. If this occurs, please try again in a few minutes.
 
       Args:
         request: (LoggingOrganizationsLocationsBucketsViewsPatchRequest) input message
@@ -4016,7 +4016,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a view on a log bucket.
+      r"""Deletes a view on a log bucket. If an UNAVAILABLE error is returned, this indicates that system is not in a state where it can delete the view. If this occurs, please try again in a few minutes.
 
       Args:
         request: (LoggingProjectsLocationsBucketsViewsDeleteRequest) input message
@@ -4097,7 +4097,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a view on a log bucket. This method replaces the following fields in the existing view with values from the new view: filter.
+      r"""Updates a view on a log bucket. This method replaces the following fields in the existing view with values from the new view: filter. If an UNAVAILABLE error is returned, this indicates that system is not in a state where it can update the view. If this occurs, please try again in a few minutes.
 
       Args:
         request: (LoggingProjectsLocationsBucketsViewsPatchRequest) input message

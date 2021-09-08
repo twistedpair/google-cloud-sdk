@@ -1,0 +1,39 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: networkservices v1alpha1 TcpRouteRouteAction export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+additionalProperties: false
+properties:
+  COMMENT:
+    type: object
+    description: User specified info ignored by gcloud import.
+    additionalProperties: false
+    properties:
+      template-id:
+        type: string
+      region:
+        type: string
+      description:
+        type: string
+      date:
+        type: string
+      version:
+        type: string
+  UNKNOWN:
+    type: array
+    description: Unknown API fields that cannot be imported.
+    items:
+      type: string
+  destinations:
+    description: |-
+      The destination services to which traffic should be forwarded. At least
+      one destination service is required.
+    type: array
+    items:
+      $ref: TcpRouteRouteDestination.yaml
+  originalDestination:
+    description: |-
+      If true, Router will use the destination IP and port of the original
+      connection as the destination of the request. Default is false.
+    type: boolean

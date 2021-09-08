@@ -41,6 +41,7 @@ class EventarcV1(base_api.BaseApiClient):
         response_encoding=response_encoding)
     self.projects_locations_channels = self.ProjectsLocationsChannelsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
+    self.projects_locations_providers = self.ProjectsLocationsProvidersService(self)
     self.projects_locations_triggers = self.ProjectsLocationsTriggersService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
@@ -386,6 +387,70 @@ class EventarcV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='EventarcProjectsLocationsOperationsListRequest',
         response_type_name='GoogleLongrunningListOperationsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsProvidersService(base_api.BaseApiService):
+    """Service class for the projects_locations_providers resource."""
+
+    _NAME = 'projects_locations_providers'
+
+    def __init__(self, client):
+      super(EventarcV1.ProjectsLocationsProvidersService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Get a single Provider.
+
+      Args:
+        request: (EventarcProjectsLocationsProvidersGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Provider) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/providers/{providersId}',
+        http_method='GET',
+        method_id='eventarc.projects.locations.providers.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='EventarcProjectsLocationsProvidersGetRequest',
+        response_type_name='Provider',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""List providers.
+
+      Args:
+        request: (EventarcProjectsLocationsProvidersListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListProvidersResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/providers',
+        http_method='GET',
+        method_id='eventarc.projects.locations.providers.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/providers',
+        request_field='',
+        request_type_name='EventarcProjectsLocationsProvidersListRequest',
+        response_type_name='ListProvidersResponse',
         supports_download=False,
     )
 

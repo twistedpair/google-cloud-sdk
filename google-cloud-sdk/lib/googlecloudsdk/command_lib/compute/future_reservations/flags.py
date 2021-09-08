@@ -52,7 +52,7 @@ def GetStartTimeFlag(required=True):
 def GetStartTimeHelpText():
   """Gets the --start-time help text."""
   help_text = """\
-  Start time of the Future Reservation. The start time must be an RFC3399 valid
+  Start time of the Future Reservation. The start time must be an RFC3339 valid
   string formatted by date, time, and timezone or "YYYY-MM-DDTHH:MM:SSZ"; where
   YYYY = year, MM = month, DD = day, HH = hours, MM = minutes, SS = seconds, and
   Z = timezone (i.e. 2021-11-20T07:00:00Z).
@@ -63,7 +63,7 @@ def GetStartTimeHelpText():
 def GetEndTimeHelpText():
   """Gets the --end-time help text."""
   help_text = """\
-  End time of the Future Reservation. The end time must be an RFC3399 valid
+  End time of the Future Reservation. The end time must be an RFC3339 valid
   string formatted by date, time, and timezone or "YYYY-MM-DDTHH:MM:SSZ"; where
   YYYY = year, MM = month, DD = day, HH = hours, MM = minutes, SS = seconds, and
   Z = timezone (i.e. 2021-11-20T07:00:00Z).

@@ -118,6 +118,7 @@ def MachineType(tier=None, memory=None, cpu=None):
   # Reverting to default if creating instance and no flags are set.
   if not machine_type:
     raise exceptions.InvalidArgumentException(
+        '--tier, --cpu/--memory'
         'Please specify [--tier] or [--cpu]/[--memory]')
 
   return machine_type

@@ -90,7 +90,7 @@ def GenerateZoneForUpdateRequest(description, display_name, labels,
                                  exclude_patterns, schedule):
   """Create Zone for Message Update Requests."""
   module = dataplex_api.GetMessageModule()
-  module.GoogleCloudDataplexV1Zone(
+  return module.GoogleCloudDataplexV1Zone(
       description=description,
       displayName=display_name,
       labels=labels,

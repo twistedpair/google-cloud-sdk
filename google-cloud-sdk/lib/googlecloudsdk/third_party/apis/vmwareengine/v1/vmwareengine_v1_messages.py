@@ -476,6 +476,16 @@ class ManagementCluster(_messages.Message):
 
   Fields:
     clusterId: Required. The user-provided identifier of the new `Cluster`.
+      The identifier must be 1-63 characters long, comply with [RFC
+      1034](https://datatracker.ietf.org/doc/html/rfc1034){: .external}
+      (section 3.5), and not be formatted as a UUID. For example, a name that
+      is 1-63 characters long, matches the regular expression
+      `[a-z]([-a-z0-9]*[a-z0-9])?`, and otherwise complies with RFC 1034. This
+      regular expression describes a name where the first character is a
+      lowercase letter, and all following characters are a dash, lowercase
+      letter, or digit, except the last character, which isn't a dash.
+      @pattern (^[a-z]([-a-z0-9]*[a-z0-9])?$)(?<!(^[0-9a-f]{8}-[0-9a-f]{4}-[0-
+      9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$))
     nodeCount: Required. Number of nodes in this cluster.
     nodeTypeId: Required. The canonical identifier of node types (`NodeType`)
       in this cluster. For example: standard-72.
@@ -1355,7 +1365,17 @@ class VmwareengineProjectsLocationsPrivateCloudsClustersCreateRequest(_messages.
     cluster: A Cluster resource to be passed as the request body.
     clusterId: Required. The user-provided identifier of the new `Cluster`.
       This identifier must be unique among clusters within the parent and
-      becomes the final token in the name URI.
+      becomes the final token in the name URI. The identifier must be 1-63
+      characters long, comply with [RFC
+      1034](https://datatracker.ietf.org/doc/html/rfc1034){: .external}
+      (section 3.5), and not be formatted as a UUID. For example, a name that
+      is 1-63 characters long, matches the regular expression
+      `[a-z]([-a-z0-9]*[a-z0-9])?`, and otherwise complies with RFC 1034. This
+      regular expression describes a name where the first character is a
+      lowercase letter, and all following characters are a dash, lowercase
+      letter, or digit, except the last character, which isn't a dash.
+      @pattern (^[a-z]([-a-z0-9]*[a-z0-9])?$)(?<!(^[0-9a-f]{8}-[0-9a-f]{4}-[0-
+      9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$))
     parent: Required. The resource name of the private cloud to create a new
       cluster in. Resource names are schemeless URIs that follow the
       conventions in https://cloud.google.com/apis/design/resource_names. For
@@ -1548,7 +1568,16 @@ class VmwareengineProjectsLocationsPrivateCloudsCreateRequest(_messages.Message)
     privateCloudId: Required. The user-provided identifier of the private
       cloud to be created. This identifier must be unique among each
       `PrivateCloud` within the parent and becomes the final token in the name
-      URI.
+      URI. The identifier must be 1-63 characters long, comply with [RFC
+      1034](https://datatracker.ietf.org/doc/html/rfc1034){: .external}
+      (section 3.5), and not be formatted as a UUID. For example, a name that
+      is 1-63 characters long, matches the regular expression
+      `[a-z]([-a-z0-9]*[a-z0-9])?`, and otherwise complies with RFC 1034. This
+      regular expression describes a name where the first character is a
+      lowercase letter, and all following characters are a dash, lowercase
+      letter, or digit, except the last character, which isn't a dash.
+      @pattern (^[a-z]([-a-z0-9]*[a-z0-9])?$)(?<!(^[0-9a-f]{8}-[0-9a-f]{4}-[0-
+      9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$))
     requestId: Optional. The request ID must be a valid UUID with the
       exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).

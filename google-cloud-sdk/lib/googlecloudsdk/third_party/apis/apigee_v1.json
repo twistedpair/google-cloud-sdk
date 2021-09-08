@@ -1756,6 +1756,10 @@
             "HTTP",
             "GRPC"
           ]
+        },
+        "enabled": {
+          "description": "Whether the target server is enabled. An empty\/omitted value for this field should be interpreted as true.",
+          "type": "boolean"
         }
       }
     },
@@ -2366,6 +2370,11 @@
             "DELETING",
             "UPDATING"
           ]
+        },
+        "runtimeVersion": {
+          "description": "Output only. Version of the runtime system running in the instance. The runtime system is the set of components that serve the API Proxy traffic in your Environments.",
+          "readOnly": true,
+          "type": "string"
         }
       }
     },

@@ -39,3 +39,10 @@ properties:
     description: |-
       The number of virtual NUMA nodes.
     type: integer
+  visibleCoreCount:
+    description: |-
+      The number of physical cores to expose to the instance's guest operating
+      system. The number of virtual CPUs visible to the instance's guest
+      operating system is this number of cores multiplied by the instance's
+      count of visible threads per physical core.
+    type: integer

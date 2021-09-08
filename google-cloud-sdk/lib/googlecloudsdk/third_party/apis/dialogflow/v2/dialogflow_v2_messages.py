@@ -3790,7 +3790,7 @@ class GoogleCloudDialogflowCxV3ConversationTurnVirtualAgentOutput(_messages.Mess
 
   Messages:
     DiagnosticInfoValue: Required. Input only. The diagnostic info output for
-      the turn.
+      the turn. Required to calculate the testing coverage.
     SessionParametersValue: The session parameters available to the bot at
       this point.
 
@@ -3798,7 +3798,7 @@ class GoogleCloudDialogflowCxV3ConversationTurnVirtualAgentOutput(_messages.Mess
     currentPage: The Page on which the utterance was spoken. Only name and
       displayName will be set.
     diagnosticInfo: Required. Input only. The diagnostic info output for the
-      turn.
+      turn. Required to calculate the testing coverage.
     differences: Output only. If this is part of a result conversation turn,
       the list of differences between the original run and the replay for this
       output, if any.
@@ -3814,6 +3814,7 @@ class GoogleCloudDialogflowCxV3ConversationTurnVirtualAgentOutput(_messages.Mess
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DiagnosticInfoValue(_messages.Message):
     r"""Required. Input only. The diagnostic info output for the turn.
+    Required to calculate the testing coverage.
 
     Messages:
       AdditionalProperty: An additional property for a DiagnosticInfoValue
@@ -3981,7 +3982,7 @@ class GoogleCloudDialogflowCxV3ExportFlowResponse(_messages.Message):
 
 class GoogleCloudDialogflowCxV3ExportTestCasesMetadata(_messages.Message):
   r"""Metadata returned for the TestCases.ExportTestCases long running
-  operation.
+  operation. This message currently has no fields.
   """
 
 
@@ -4998,6 +4999,7 @@ class GoogleCloudDialogflowCxV3RunContinuousTestResponse(_messages.Message):
 
 class GoogleCloudDialogflowCxV3RunTestCaseMetadata(_messages.Message):
   r"""Metadata returned for the TestCases.RunTestCase long running operation.
+  This message currently has no fields.
   """
 
 
@@ -5669,7 +5671,7 @@ class GoogleCloudDialogflowCxV3beta1ConversationTurnVirtualAgentOutput(_messages
 
   Messages:
     DiagnosticInfoValue: Required. Input only. The diagnostic info output for
-      the turn.
+      the turn. Required to calculate the testing coverage.
     SessionParametersValue: The session parameters available to the bot at
       this point.
 
@@ -5677,7 +5679,7 @@ class GoogleCloudDialogflowCxV3beta1ConversationTurnVirtualAgentOutput(_messages
     currentPage: The Page on which the utterance was spoken. Only name and
       displayName will be set.
     diagnosticInfo: Required. Input only. The diagnostic info output for the
-      turn.
+      turn. Required to calculate the testing coverage.
     differences: Output only. If this is part of a result conversation turn,
       the list of differences between the original run and the replay for this
       output, if any.
@@ -5693,6 +5695,7 @@ class GoogleCloudDialogflowCxV3beta1ConversationTurnVirtualAgentOutput(_messages
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DiagnosticInfoValue(_messages.Message):
     r"""Required. Input only. The diagnostic info output for the turn.
+    Required to calculate the testing coverage.
 
     Messages:
       AdditionalProperty: An additional property for a DiagnosticInfoValue
@@ -5860,7 +5863,7 @@ class GoogleCloudDialogflowCxV3beta1ExportFlowResponse(_messages.Message):
 
 class GoogleCloudDialogflowCxV3beta1ExportTestCasesMetadata(_messages.Message):
   r"""Metadata returned for the TestCases.ExportTestCases long running
-  operation.
+  operation. This message currently has no fields.
   """
 
 
@@ -6877,6 +6880,7 @@ class GoogleCloudDialogflowCxV3beta1RunContinuousTestResponse(_messages.Message)
 
 class GoogleCloudDialogflowCxV3beta1RunTestCaseMetadata(_messages.Message):
   r"""Metadata returned for the TestCases.RunTestCase long running operation.
+  This message currently has no fields.
   """
 
 

@@ -20,7 +20,10 @@ from __future__ import unicode_literals
 
 import re
 
+from apitools.base.py import exceptions as api_exceptions
 from googlecloudsdk.api_lib.container import api_adapter as container_api_adapter
+from googlecloudsdk.api_lib.container.hub import client as hub_client
+from googlecloudsdk.api_lib.container.hub import util as hub_util
 from googlecloudsdk.api_lib.resourcesettings import service as resourcesettings_service
 from googlecloudsdk.api_lib.run import job
 from googlecloudsdk.api_lib.run import service
@@ -38,6 +41,8 @@ SERVERLESS_API_NAME = 'run'
 SERVERLESS_API_VERSION = 'v1'
 
 _ALL_REGIONS = '-'
+
+CLOUDRUN_FEATURE = 'appdevexperience'
 
 
 def GetServerlessClientInstance(api_version=SERVERLESS_API_VERSION):
@@ -160,9 +165,13 @@ def ListClusters(location=None, project=None):
     return (cluster.zone, cluster.name)
 
   clusters = sorted(response.clusters, key=_SortKey)
+
+  crfa_cluster_names = ListCloudRunForAnthosClusters(project)
+
   return [
-      c for c in clusters if (c.addonsConfig.cloudRunConfig and
-                              not c.addonsConfig.cloudRunConfig.disabled)
+      c for c in clusters if (c.name in crfa_cluster_names
+                              or (c.addonsConfig.cloudRunConfig and
+                                  not c.addonsConfig.cloudRunConfig.disabled))
   ]
 
 
@@ -270,3 +279,36 @@ def _MultiTenantProjectIds(project):
 def _MulitTenantProjectId(setting_value):
   return setting_value.split('/')[1]
 
+
+def ListCloudRunForAnthosClusters(project):
+  """Get all clusters with Cloud Run for Anthos enabled.
+
+  Args:
+   project: str optional of project to search for clusters in. Leaving
+     this field blank will use the project defined by the corresponding
+     property.
+
+  Returns:
+    List of Cluster string names
+  """
+
+  crfa_spec = 'projects/%s/locations/global/features/%s' % (project,
+                                                            CLOUDRUN_FEATURE)
+  try:
+    f = hub_client.HubClient().GetFeature(crfa_spec)
+  except api_exceptions.HttpError:
+    return []
+
+  cluster_state_obj = _ListAnthosClusterStates(f)
+  return [name for name, state in cluster_state_obj.items() if state == 'OK']
+
+
+def _ListAnthosClusterStates(f):
+  try:
+    cluster_state_obj = {
+        hub_util.MembershipShortname(m): s.state.code.name
+        for m, s in hub_client.HubClient.ToPyDict(f.membershipStates).items()
+    }
+  except AttributeError:
+    return {}
+  return cluster_state_obj

@@ -25491,7 +25491,7 @@ class FirewallPolicy(_messages.Message):
     description: An optional description of this resource. Provide this
       property when you create the resource.
     displayName: Deprecated, please use short name instead. User-provided name
-      of the Organization firewall plicy. The name should be unique in the
+      of the Organization firewall policy. The name should be unique in the
       organization in which the firewall policy is created. This name must be
       set on creation and cannot be changed. The name must be 1-63 characters
       long, and comply with RFC1035. Specifically, the name must be 1-63
@@ -46972,6 +46972,11 @@ class RouterBgpPeer(_messages.Message):
       use a different value.
     peerIpAddress: IP address of the BGP interface outside Google Cloud
       Platform. Only IPv4 is supported.
+    routerApplianceInstance: URI of the VM instance that is used as third-
+      party router appliances such as Next Gen Firewalls, Virtual Routers, or
+      Router Appliances. The VM instance must be located in zones contained in
+      the same region as this Cloud Router. The VM instance is the peer side
+      of the BGP session.
   """
 
   class AdvertiseModeValueValuesEnum(_messages.Enum):
@@ -47040,6 +47045,7 @@ class RouterBgpPeer(_messages.Message):
   name = _messages.StringField(9)
   peerAsn = _messages.IntegerField(10, variant=_messages.Variant.UINT32)
   peerIpAddress = _messages.StringField(11)
+  routerApplianceInstance = _messages.StringField(12)
 
 
 class RouterInterface(_messages.Message):
@@ -47080,6 +47086,26 @@ class RouterInterface(_messages.Message):
       means the first character must be a lowercase letter, and all following
       characters must be a dash, lowercase letter, or digit, except the last
       character, which cannot be a dash.
+    privateIpAddress: The regional private internal IP address that is used to
+      establish BGP sessions to a VM instance acting as a third-party Router
+      Appliance, such as a Next Gen Firewall, a Virtual Router, or an SD-WAN
+      VM.
+    redundantInterface: Name of the interface that will be redundant with the
+      current interface you are creating. The redundantInterface must belong
+      to the same Cloud Router as the interface here. To establish the BGP
+      session to a Router Appliance VM, you must create two BGP peers. The two
+      BGP peers must be attached to two separate interfaces that are redundant
+      with each other. The redundant_interface must be 1-63 characters long,
+      and comply with RFC1035. Specifically, the redundant_interface must be
+      1-63 characters long and match the regular expression
+      `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a
+      lowercase letter, and all following characters must be a dash, lowercase
+      letter, or digit, except the last character, which cannot be a dash.
+    subnetwork: The URI of the subnetwork resource that this interface belongs
+      to, which must be in the same region as the Cloud Router. When you
+      establish a BGP session to a VM instance using this interface, the VM
+      instance must belong to the same subnetwork as the subnetwork specified
+      here.
   """
 
   class ManagementTypeValueValuesEnum(_messages.Enum):
@@ -47108,6 +47134,9 @@ class RouterInterface(_messages.Message):
   linkedVpnTunnel = _messages.StringField(3)
   managementType = _messages.EnumField('ManagementTypeValueValuesEnum', 4)
   name = _messages.StringField(5)
+  privateIpAddress = _messages.StringField(6)
+  redundantInterface = _messages.StringField(7)
+  subnetwork = _messages.StringField(8)
 
 
 class RouterList(_messages.Message):
@@ -47497,6 +47526,10 @@ class RouterStatusBgpPeerStatus(_messages.Message):
     name: Name of this BGP peer. Unique within the Routers resource.
     numLearnedRoutes: Number of routes learned from the remote BGP Peer.
     peerIpAddress: IP address of the remote BGP interface.
+    routerApplianceInstance: [Output only] URI of the VM instance that is used
+      as third-party router appliances such as Next Gen Firewalls, Virtual
+      Routers, or Router Appliances. The VM instance is the peer side of the
+      BGP session.
     state: BGP state as specified in RFC1771.
     status: Status of the BGP peer: {UP, DOWN}
     uptime: Time this session has been up. Format: 14 years, 51 weeks, 6 days,
@@ -47522,10 +47555,11 @@ class RouterStatusBgpPeerStatus(_messages.Message):
   name = _messages.StringField(4)
   numLearnedRoutes = _messages.IntegerField(5, variant=_messages.Variant.UINT32)
   peerIpAddress = _messages.StringField(6)
-  state = _messages.StringField(7)
-  status = _messages.EnumField('StatusValueValuesEnum', 8)
-  uptime = _messages.StringField(9)
-  uptimeSeconds = _messages.StringField(10)
+  routerApplianceInstance = _messages.StringField(7)
+  state = _messages.StringField(8)
+  status = _messages.EnumField('StatusValueValuesEnum', 9)
+  uptime = _messages.StringField(10)
+  uptimeSeconds = _messages.StringField(11)
 
 
 class RouterStatusNatStatus(_messages.Message):

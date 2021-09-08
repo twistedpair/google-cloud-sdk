@@ -2008,7 +2008,7 @@ class GoogleCloudGkemulticloudV1AzureProxyConfig(_messages.Message):
   r"""Details of a proxy config stored in Azure Key Vault.
 
   Fields:
-    resourceGroupId: The ARM ID the of the resourcegroup containing proxy
+    resourceGroupId: The ARM ID the of the resource group containing proxy
       keyvault. Resource group ids are formatted as
       `/subscriptions//resourceGroups/`.
     secretId: The URL the of the proxy setting secret with its version. Secret

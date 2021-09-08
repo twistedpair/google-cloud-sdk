@@ -427,10 +427,45 @@ class Settings(DataObject):
       new_envs = args.env_vars
     else:
       new_envs = getattr(args, 'env_vars_file', {}) or {}
-    replacements.update(
-        _MergedEnvVars(self.env_vars, self.env_vars_secrets, new_envs, {}))
 
+    new_env_secrets, new_sec_volumes = self._GetSecrets(
+        getattr(args, 'secrets', {}) or {})
+    replacements.update(
+        _MergedEnvVars(self.env_vars, self.env_vars_secrets, new_envs,
+                       new_env_secrets))
+
+    replacements['volumes_secrets'] = _MergeSecretVolumes(
+        self.volumes_secrets, new_sec_volumes)
     return self.replace(**replacements)
+
+  def _GetSecrets(self, secrets_args):
+    env_vars = {}
+    volumes = {}
+    for key, secret in secrets_args.items():
+      parts = secret.split(':')
+      if len(parts) != 2:
+        raise exceptions.Error('Expected secret to be of form '
+                               '<secretName>:<version>, got {}'.format(secret))
+      if secret.startswith('/projects/'):
+        raise exceptions.Error('Referencing secrets from other projects is '
+                               'not currently supported by local dev.')
+      secret_name, version = parts
+      if key.startswith('/'):  # it's a volume
+        # the volume path is all but the last segment
+        mount_path, filename = os.path.split(key)
+        if mount_path not in volumes:
+          volume = _SecretVolume(
+              name=secret,
+              mount_path=mount_path,
+              secret_name=secret_name,
+              items=[])
+          volumes[mount_path] = volume
+        else:
+          volume = volumes[mount_path]
+        volume.items.append(_SecretPath(key=version, path=filename))
+      else:
+        env_vars[key] = {'name': secret_name, 'key': version}
+    return env_vars, list(volumes.values())
 
   def Build(self):
     """Validate and compute settings after all user inputs have been read."""
@@ -499,6 +534,25 @@ def _MergedEnvVars(env_vars, env_vars_secrets, new_env_vars,
       del env_vars[new_secret]
     env_vars_secrets[new_secret] = val
   return {'env_vars': env_vars, 'env_vars_secrets': env_vars_secrets}
+
+
+def _MergeSecretVolumes(cur_vols, new_vols):
+  """Combine the secret volumes from existing source with new volumes."""
+  vol_map = {vol.mount_path: vol for vol in cur_vols}
+  for new_vol in new_vols:
+    if new_vol.mount_path not in vol_map:
+      vol_map[new_vol.mount_path] = new_vol
+    else:
+      cur_vol = vol_map[new_vol.mount_path]
+      if cur_vol.secret_name == new_vol.secret_name:
+        cur_items = {item.path: item for item in cur_vol.items}
+        new_items = {item.path: item for item in new_vol.items}
+        cur_items.update(new_items)
+        cur_vol.items[:] = list(cur_items.values())
+      else:
+        # replace the previous secret with the new secret
+        vol_map[new_vol.mount_path] = new_vol
+  return list(vol_map.values())
 
 
 def AssembleSettings(args, release_track):

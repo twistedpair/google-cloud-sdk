@@ -78,6 +78,12 @@ class _AzureClientBase(object):
     msg = 'GoogleCloudGkemulticloud{}AzureDiskTemplate'.format(version)
     return getattr(self.messages, msg)(sizeGib=size_gib)
 
+  def _CreateProxyConfig(self, **kwargs):
+    # Using this to hide the 'v1alpha' that shows up in the type.
+    version = util.GetApiVersionForTrack(self.track).capitalize()
+    msg = 'GoogleCloudGkemulticloud{}AzureProxyConfig'.format(version)
+    return getattr(self.messages, msg)(**kwargs)
+
 
 class ClustersClient(_AzureClientBase):
   """Client for Azure Clusters in the gkemulticloud API."""
@@ -94,13 +100,16 @@ class ClustersClient(_AzureClientBase):
              subnet_id=None,
              vm_size=None,
              ssh_public_key=None,
+             proxy_resource_group_id=None,
+             proxy_secret_id=None,
              main_volume_size=None,
              root_volume_size=None,
              validate_only=False,
              tags=None,
              admin_users=None,
              db_resource_group_id=None,
-             db_kms_key_id=None):
+             db_kms_key_id=None,
+             replica_placements=None):
     """Create a new Azure Cluster."""
     req = self._service.GetRequestType('Create')(
         azureClusterId=cluster_ref.azureClustersId,
@@ -131,6 +140,13 @@ class ClustersClient(_AzureClientBase):
     cp.subnetId = subnet_id
     cp.version = cluster_version
     cp.vmSize = vm_size
+
+    if proxy_resource_group_id is not None and proxy_secret_id is not None:
+      cp.proxyConfig = self._CreateProxyConfig(
+          resourceGroupId=proxy_resource_group_id, secretId=proxy_secret_id)
+
+    if replica_placements:
+      cp.replicaPlacements.extend(replica_placements)
 
     if db_resource_group_id is not None and db_kms_key_id is not None:
       db_encryption = self._AddAzureDatabaseEncryption(cp)
@@ -249,6 +265,8 @@ class NodePoolsClient(_AzureClientBase):
              subnet_id=None,
              vm_size=None,
              ssh_public_key=None,
+             proxy_resource_group_id=None,
+             proxy_secret_id=None,
              root_volume_size=None,
              tags=None,
              validate_only=None,
@@ -284,6 +302,10 @@ class NodePoolsClient(_AzureClientBase):
     nodeconfig.sshConfig = type(nodeconfig).sshConfig.type(
         authorizedKey=ssh_public_key)
     nodeconfig.taints.extend(taints)
+
+    if proxy_resource_group_id is not None and proxy_secret_id is not None:
+      nodeconfig.proxyConfig = self._CreateProxyConfig(
+          resourceGroupId=proxy_resource_group_id, secretId=proxy_secret_id)
 
     if root_volume_size:
       nodeconfig.rootVolume = self._CreateAzureDiskTemplate(root_volume_size)

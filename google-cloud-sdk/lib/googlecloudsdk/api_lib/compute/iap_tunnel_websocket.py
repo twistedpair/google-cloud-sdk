@@ -28,7 +28,6 @@ from googlecloudsdk.api_lib.compute import iap_tunnel_websocket_utils as utils
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
-from googlecloudsdk.core import transport
 from googlecloudsdk.core.util import retry
 import six
 from six.moves import queue
@@ -87,12 +86,13 @@ class IapTunnelWebSocket(object):
 
   def __init__(self, tunnel_target, get_access_token_callback,
                data_handler_callback, close_handler_callback,
-               ignore_certs=False):
+               user_agent, ignore_certs=False):
     self._tunnel_target = tunnel_target
     self._get_access_token_callback = get_access_token_callback
     self._data_handler_callback = data_handler_callback
     self._close_handler_callback = close_handler_callback
     self._ignore_certs = ignore_certs
+    self._user_agent = user_agent
 
     self._websocket_helper = None
     self._connect_msg_received = False
@@ -251,7 +251,7 @@ class IapTunnelWebSocket(object):
 
   def _StartNewWebSocket(self):
     """Start a new WebSocket and thread to listen for incoming data."""
-    headers = ['User-Agent: ' + transport.MakeUserAgentString()]
+    headers = ['User-Agent: ' + self._user_agent]
     request_reason = properties.VALUES.core.request_reason.Get()
     if request_reason:
       headers += ['X-Goog-Request-Reason: ' + request_reason]

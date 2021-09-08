@@ -80,20 +80,6 @@ release:
       The name of the Cloud Deploy release.
   disable_auto_completers: false
 
-less_shared_target:
-  name: target
-  collection: clouddeploy.projects.locations.deliveryPipelines.targets
-  request_id_field: targetId
-  attributes:
-  - *project
-  - *location
-  - *delivery_pipeline
-  - parameter_name: targetsId
-    attribute_name: target
-    help: |
-      The name of the Cloud Deploy less shared target.
-  disable_auto_completers: false
-
 target:
   name: target
   collection: clouddeploy.projects.locations.targets

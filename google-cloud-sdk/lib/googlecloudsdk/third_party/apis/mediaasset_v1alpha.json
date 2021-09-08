@@ -882,6 +882,54 @@
         }
       }
     },
+    "Catalog": {
+      "id": "Catalog",
+      "description": "A catalog specifies a search index for a collection of assets.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The resource name of the catalog, in the following form: `projects\/{project}\/locations\/{location}\/catalogs\/{catalog}`.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. The creation time of the catalog.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The last-modified time of the catalog.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "ListCatalogsResponse": {
+      "id": "ListCatalogsResponse",
+      "description": "Response message for CatalogsService.ListCatalogs.",
+      "type": "object",
+      "properties": {
+        "catalogs": {
+          "description": "The list of catalogs.",
+          "type": "array",
+          "items": {
+            "$ref": "Catalog"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results, or empty if there are no more results in the list.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "ComplexType": {
       "id": "ComplexType",
       "description": "A complex type resource. A complex type describes the schema for asset metadata.",
@@ -3346,6 +3394,173 @@
                       "description": "Deletes a single rule."
                     }
                   }
+                }
+              }
+            },
+            "catalogs": {
+              "methods": {
+                "create": {
+                  "id": "mediaasset.projects.locations.catalogs.create",
+                  "path": "v1alpha/{+parent}/catalogs",
+                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/catalogs",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent resource name, in the following form: `projects\/{project}\/locations\/{location}`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "catalogId": {
+                      "description": "The ID of the catalog resource to be created.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "Catalog"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a new catalog in a given project and location."
+                },
+                "delete": {
+                  "id": "mediaasset.projects.locations.catalogs.delete",
+                  "path": "v1alpha/{+name}",
+                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/catalogs/{catalogsId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the catalog to delete, in the following form: `projects\/{project}\/locations\/{location}\/catalogs\/{catalog}`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/catalogs\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes a single catalog."
+                },
+                "get": {
+                  "id": "mediaasset.projects.locations.catalogs.get",
+                  "path": "v1alpha/{+name}",
+                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/catalogs/{catalogsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the catalog to retrieve, in the following form: `projects\/{project}\/locations\/{location}\/catalogs\/{catalog}`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/catalogs\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Catalog"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets details of a single catalog."
+                },
+                "list": {
+                  "id": "mediaasset.projects.locations.catalogs.list",
+                  "path": "v1alpha/{+parent}/catalogs",
+                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/catalogs",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent resource name, in the following form: `projects\/{project}\/locations\/{location}`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The maximum number of items to return. If unspecified, server will pick an appropriate default. Server may return fewer items than requested. A caller should only rely on response's next_page_token to determine if there are more realms left to be queried.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "The next_page_token value returned from a previous List request, if any.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "The filter to apply to list results.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "orderBy": {
+                      "description": "Specifies the ordering of results following syntax at https:\/\/cloud.google.com\/apis\/design\/design_patterns#sorting_order.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListCatalogsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists catalogs in a given project and location."
+                },
+                "patch": {
+                  "id": "mediaasset.projects.locations.catalogs.patch",
+                  "path": "v1alpha/{+name}",
+                  "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/catalogs/{catalogsId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "The resource name of the catalog, in the following form: `projects\/{project}\/locations\/{location}\/catalogs\/{catalog}`.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/catalogs\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Field mask is used to specify the fields to be overwritten in the Catalog resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "Catalog"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Updates the parameters of a single catalog."
                 }
               }
             },

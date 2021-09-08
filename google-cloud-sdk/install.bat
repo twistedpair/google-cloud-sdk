@@ -139,8 +139,17 @@ SETLOCAL DisableDelayedExpansion
 
 rem </cloud-sdk-cmd-preamble>
 
-echo %CmdCmdLine% | %WINDIR%\System32\find /i "%~0" >nul
+SETLOCAL EnableDelayedExpansion
+
+SET FIND=%WINDIR%\System32\find
+if exist %WINDIR%\Sysnative\find.exe (
+  SET FIND=%WINDIR%\Sysnative\find
+)
+echo %CmdCmdLine% | !FIND! /i "%~0" >nul
 SET INTERACTIVE=%ERRORLEVEL%
+
+SETLOCAL DisableDelayedExpansion
+
 rem install.bat lives in the root of the Cloud SDK installation directory.
 
 echo Welcome to the Google Cloud SDK!

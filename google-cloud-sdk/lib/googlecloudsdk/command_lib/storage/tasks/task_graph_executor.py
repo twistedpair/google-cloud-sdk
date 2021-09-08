@@ -35,6 +35,7 @@ from googlecloudsdk.command_lib.storage.tasks import task_buffer
 from googlecloudsdk.command_lib.storage.tasks import task_graph as task_graph_module
 from googlecloudsdk.command_lib.storage.tasks import task_status
 from googlecloudsdk.core import log
+from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.credentials import creds_context_managers
 from googlecloudsdk.core.util import platforms
 
@@ -438,7 +439,13 @@ class TaskGraphExecutor:
       handle_task_output_thread.start()
 
       get_tasks_from_iterator_thread.join()
-      self._task_graph.is_empty.wait()
+      try:
+        self._task_graph.is_empty.wait()
+      except console_io.OperationCancelledError:
+        # If user hits ctrl-c, there will be no thread to pop tasks from the
+        # graph. Python garbage collection will remove unstarted tasks in the
+        # graph if we skip this endless wait.
+        pass
 
       self._executable_tasks.put(_SHUTDOWN)
       self._task_output_queue.put(_SHUTDOWN)

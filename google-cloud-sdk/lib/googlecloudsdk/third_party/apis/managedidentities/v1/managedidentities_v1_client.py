@@ -654,6 +654,87 @@ class ManagedidentitiesV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Create(self, request, global_params=None):
+      r"""Creates a Peering for Managed AD instance.
+
+      Args:
+        request: (ManagedidentitiesProjectsLocationsGlobalPeeringsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/global/peerings',
+        http_method='POST',
+        method_id='managedidentities.projects.locations.global.peerings.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['peeringId'],
+        relative_path='v1/{+parent}/peerings',
+        request_field='peering',
+        request_type_name='ManagedidentitiesProjectsLocationsGlobalPeeringsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes identified Peering.
+
+      Args:
+        request: (ManagedidentitiesProjectsLocationsGlobalPeeringsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/global/peerings/{peeringsId}',
+        http_method='DELETE',
+        method_id='managedidentities.projects.locations.global.peerings.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ManagedidentitiesProjectsLocationsGlobalPeeringsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single Peering.
+
+      Args:
+        request: (ManagedidentitiesProjectsLocationsGlobalPeeringsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Peering) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/global/peerings/{peeringsId}',
+        http_method='GET',
+        method_id='managedidentities.projects.locations.global.peerings.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ManagedidentitiesProjectsLocationsGlobalPeeringsGetRequest',
+        response_type_name='Peering',
+        supports_download=False,
+    )
+
     def GetIamPolicy(self, request, global_params=None):
       r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
 
@@ -678,6 +759,60 @@ class ManagedidentitiesV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='ManagedidentitiesProjectsLocationsGlobalPeeringsGetIamPolicyRequest',
         response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists Peerings in a given project.
+
+      Args:
+        request: (ManagedidentitiesProjectsLocationsGlobalPeeringsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListPeeringsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/global/peerings',
+        http_method='GET',
+        method_id='managedidentities.projects.locations.global.peerings.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/peerings',
+        request_field='',
+        request_type_name='ManagedidentitiesProjectsLocationsGlobalPeeringsListRequest',
+        response_type_name='ListPeeringsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the labels for specified Peering.
+
+      Args:
+        request: (ManagedidentitiesProjectsLocationsGlobalPeeringsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/global/peerings/{peeringsId}',
+        http_method='PATCH',
+        method_id='managedidentities.projects.locations.global.peerings.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='peering',
+        request_type_name='ManagedidentitiesProjectsLocationsGlobalPeeringsPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

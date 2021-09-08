@@ -220,6 +220,15 @@ class CommonFlags(FlagDefs):
         help=('Suppress warnings if secrets need to be pulled from secret '
               'manager'))
 
+  def AddSecrets(self):
+    self._AddFlag(
+        '--secrets',
+        metavar='KEY=VALUE',
+        action=arg_parsers.UpdateAction,
+        type=arg_parsers.ArgDict(
+            key_type=six.text_type, value_type=six.text_type),
+        help='List of key-value pairs to set as secrets.')
+
   def _GetGroup(self, klass):
     if klass not in self._group_cache:
       group = klass()
@@ -268,6 +277,7 @@ class CommonFlags(FlagDefs):
     self.EnvVarsGroup().AddEnvVars()
     self.EnvVarsGroup().AddEnvVarsFile()
     self.AddAllowSecretManagerFlag()
+    self.AddSecrets()
 
 
 class InvalidFlagError(exceptions.Error):

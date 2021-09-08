@@ -1,0 +1,54 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: networkservices v1alpha1 HttpRoute export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+required:
+- hostnames
+- name
+- rules
+additionalProperties: false
+properties:
+  COMMENT:
+    type: object
+    description: User specified info ignored by gcloud import.
+    additionalProperties: false
+    properties:
+      template-id:
+        type: string
+      region:
+        type: string
+      description:
+        type: string
+      date:
+        type: string
+      version:
+        type: string
+  UNKNOWN:
+    type: array
+    description: Unknown API fields that cannot be imported.
+    items:
+      type: string
+  description:
+    description: |-
+      A free-text description of the resource. Max length 1024 characters.
+    type: string
+  hostnames:
+    description: |-
+      Hostnames define a set of hosts that should match against the HTTP host
+      header to select a HttpRoute to process the request. Hostname is the fully
+      qualified domain name of a network host, as defined by RFC 3986. Wildcard
+      hosts are supported in prefix form or suffix form.
+    type: array
+    items:
+      type: string
+  name:
+    description: |-
+      Name of the HttpRoute resource. It matches pattern
+      `projects/*/locations/global/httpRoutes/http_route_name>`.
+    type: string
+  rules:
+    description: Rules that define how traffic is routed and handled.
+    type: array
+    items:
+      $ref: HttpRouteRouteRule.yaml

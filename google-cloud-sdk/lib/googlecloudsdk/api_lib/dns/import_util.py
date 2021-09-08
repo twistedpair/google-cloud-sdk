@@ -50,47 +50,6 @@ class ConflictingRecordsFound(Error):
   """Conflicts found between records being imported and current records."""
 
 
-def _AddressTranslation(rdata, unused_origin):
-  """Returns the address of the given rdata.
-
-  Args:
-    rdata: Rdata, The data to be translated.
-    unused_origin: Name, The origin domain name.
-
-  Returns:
-    str, The address of the given rdata.
-  """
-  return rdata.address
-
-
-def _CAATranslation(rdata, unused_origin):
-  """Returns the translation of the given CAA rdata.
-
-  Args:
-    rdata: Rdata, The data to be translated.
-    unused_origin: Name, The origin domain name.
-
-  Returns:
-    str, The translation of the given CAA rdata. See RFC 6844.
-  """
-  return '{0} {1} {2}'.format(rdata.flags, encoding.Decode(rdata.tag),
-                              QuotedText(rdata.value))
-
-
-def _MXTranslation(rdata, origin):
-  """Returns the translation of the given MX rdata.
-
-  Args:
-    rdata: Rdata, The data to be translated.
-    origin: Name, The origin domain name.
-
-  Returns:
-    str, The translation of the given MX rdata which includes the preference and
-    qualified exchange name.
-  """
-  return '{0} {1}'.format(rdata.preference, rdata.exchange.derelativize(origin))
-
-
 def _SOATranslation(rdata, origin):
   """Returns the translation of the given SOA rdata.
 
@@ -116,40 +75,6 @@ def _SOATranslation(rdata, origin):
   # pylint: enable=g-complex-comprehension
 
 
-def _SRVTranslation(rdata, origin):
-  """Returns the translation of the given SRV rdata.
-
-  Args:
-    rdata: Rdata, The data to be translated.
-    origin: Name, The origin domain name.
-
-  Returns:
-    str, The translation of the given SRV rdata which includes all the required
-    SRV fields. Note that the translated target name is always qualified.
-  """
-  # pylint: disable=g-complex-comprehension
-  return ' '.join(
-      six.text_type(x) for x in [
-          rdata.priority,
-          rdata.weight,
-          rdata.port,
-          rdata.target.derelativize(origin)])
-  # pylint: enable=g-complex-comprehension
-
-
-def _TargetTranslation(rdata, origin):
-  """Returns the qualified target of the given rdata.
-
-  Args:
-    rdata: Rdata, The data to be translated.
-    origin: Name, The origin domain name.
-
-  Returns:
-    str, The qualified target of the given rdata.
-  """
-  return rdata.target.derelativize(origin).to_text()
-
-
 def QuotedText(text):
   """Returns the given text within quotes.
 
@@ -169,22 +94,6 @@ def QuotedText(text):
     return '"{0}"'.format(text)
 
 
-def _QuotedTextTranslation(rdata, unused_origin=None):
-  """Returns the escaped translation of the given text rdata.
-
-  Args:
-    rdata: Rdata, The data to be translated.
-    unused_origin: Name, The origin domain name.
-
-  Returns:
-    str, The translation of the given text rdata, which is the concatenation of
-    all its strings. The result is escaped with quotes. For further details,
-    please refer to the TXT section at:
-    https://cloud.google.com/dns/what-is-cloud-dns#supported_record_types.
-  """
-  return ' '.join([QuotedText(string) for string in rdata.strings])
-
-
 def _NullTranslation(rdata, origin=None):
   """Returns the given rdata as text (formatted by its .to_text() method).
 
@@ -195,7 +104,7 @@ def _NullTranslation(rdata, origin=None):
   Returns:
     str, The textual presentation form of the given rdata.
   """
-  return rdata.to_text(origin=origin)
+  return rdata.to_text(origin=origin, relativize=False)
 
 
 def GetRdataTranslation(rr_type):
@@ -207,33 +116,32 @@ def GetRdataTranslation(rr_type):
   Returns:
     The record type's translation function.
   """
-  rdata_translations = {
-      rdatatype.A: _AddressTranslation,
-      rdatatype.AAAA: _AddressTranslation,
-      rdatatype.CNAME: _TargetTranslation,
-      rdatatype.DNSKEY: _NullTranslation,
-      rdatatype.DS: _NullTranslation,
-      rdatatype.IPSECKEY: _NullTranslation,
-      rdatatype.MX: _MXTranslation,
-      rdatatype.PTR: _TargetTranslation,
-      rdatatype.SOA: _SOATranslation,
-      rdatatype.SPF: _QuotedTextTranslation,
-      rdatatype.SRV: _SRVTranslation,
-      rdatatype.SSHFP: _NullTranslation,
-      rdatatype.TXT: _QuotedTextTranslation,
-      rdatatype.TLSA: _NullTranslation,
-      rdatatype.NAPTR: _NullTranslation,
-      rdatatype.NS: _TargetTranslation,
-  }
-  # This is needed for the rest of gcloud to work when dnspython doesn't support
-  # CAA records.  Otherwise, this fails when we try to access the rdatatype.CAA
-  # attribute, making anything that calls this code fail.
-  try:
-    rdata_translations[rdatatype.CAA] = _CAATranslation
-  except AttributeError:
-    pass
+  if rr_type == rdatatype.SOA:
+    return _SOATranslation
+  return _NullTranslation
 
-  return rdata_translations.get(rr_type)
+
+# Record types supported by Cloud DNS. See
+# https://cloud.google.com/dns/docs/overview#supported_dns_record_types
+SUPPORTED_TYPES = frozenset((
+    rdatatype.A,
+    rdatatype.AAAA,
+    rdatatype.CAA,
+    rdatatype.CNAME,
+    rdatatype.DNSKEY,
+    rdatatype.DS,
+    rdatatype.IPSECKEY,
+    rdatatype.MX,
+    rdatatype.NAPTR,
+    rdatatype.NS,
+    rdatatype.PTR,
+    rdatatype.SOA,
+    rdatatype.SPF,
+    rdatatype.SRV,
+    rdatatype.SSHFP,
+    rdatatype.TLSA,
+    rdatatype.TXT,
+))
 
 
 def _FilterOutRecord(name, rdtype, origin, replace_origin_ns=False):
@@ -270,7 +178,7 @@ def _RecordSetFromZoneRecord(name, rdset, origin, api_version='v1'):
     The ResourceRecordSet equivalent for the given zone record, or None for
     unsupported record types.
   """
-  if GetRdataTranslation(rdset.rdtype) is None:
+  if rdset.rdtype not in SUPPORTED_TYPES:
     return None
 
   messages = core_apis.GetMessagesModule('dns', api_version)
@@ -297,9 +205,8 @@ def RecordSetsFromZoneFile(zone_file, domain, api_version='v1'):
 
   Returns:
     A (name, type) keyed dict of ResourceRecordSets that were obtained from the
-    zone file. Note that only A, AAAA, CNAME, MX, PTR, SOA, SPF, SRV, and TXT
-    record-sets are retrieved. Other record-set types are not supported by Cloud
-    DNS. Also, the primary NS field for SOA records is discarded since that is
+    zone file. Note that only records of supported types are retrieved. Also,
+    the primary NS field for SOA records is discarded since that is
     provided by Cloud DNS.
   """
   zone_contents = zone.from_file(zone_file, domain, check_origin=False)
@@ -321,9 +228,8 @@ def RecordSetsFromYamlFile(yaml_file, api_version='v1'):
 
   Returns:
     A (name, type) keyed dict of ResourceRecordSets that were obtained from the
-    yaml file. Note that only A, AAAA, CNAME, MX, PTR, SOA, SPF, SRV, and TXT
-    record-sets are retrieved. Other record-set types are not supported by Cloud
-    DNS. Also, the primary NS field for SOA records is discarded since that is
+    yaml file. Note that only records of supported types are retrieved. Also,
+    the primary NS field for SOA records is discarded since that is
     provided by Cloud DNS.
   """
   record_sets = {}
@@ -332,7 +238,7 @@ def RecordSetsFromYamlFile(yaml_file, api_version='v1'):
   yaml_record_sets = yaml.load_all(yaml_file)
   for yaml_record_set in yaml_record_sets:
     rdata_type = rdatatype.from_text(yaml_record_set['type'])
-    if GetRdataTranslation(rdata_type) is None:
+    if rdata_type not in SUPPORTED_TYPES:
       continue
 
     record_set = messages.ResourceRecordSet()
@@ -414,27 +320,19 @@ def _RDataReplacement(current_record, record_to_be_imported, api_version='v1'):
     return replacement
 
 
-# Map of functions for replacing rdata of a record-set with rdata from another
-# record-set with the same name and type.
-_RDATA_REPLACEMENTS = {
-    rdatatype.A: _RDataReplacement,
-    rdatatype.AAAA: _RDataReplacement,
-    rdatatype.CAA: _RDataReplacement,
-    rdatatype.CNAME: _RDataReplacement,
-    rdatatype.DNSKEY: _RDataReplacement,
-    rdatatype.DS: _RDataReplacement,
-    rdatatype.IPSECKEY: _RDataReplacement,
-    rdatatype.MX: _RDataReplacement,
-    rdatatype.PTR: _RDataReplacement,
-    rdatatype.SOA: _SOAReplacement,
-    rdatatype.SPF: _RDataReplacement,
-    rdatatype.SRV: _RDataReplacement,
-    rdatatype.SSHFP: _RDataReplacement,
-    rdatatype.TXT: _RDataReplacement,
-    rdatatype.TLSA: _RDataReplacement,
-    rdatatype.NAPTR: _RDataReplacement,
-    rdatatype.NS: _RDataReplacement,
-}
+def _GetRDataReplacement(rdtype):
+  """Gets the RData replacement function for this type.
+
+  Args:
+    rdtype: RDataType, the type for which to fetch a replacement function.
+
+  Returns:
+    A function for replacing rdata of a record-set with rdata from another
+    record-set with the same name and type.
+  """
+  if rdtype == rdatatype.SOA:
+    return _SOAReplacement
+  return _RDataReplacement
 
 
 def NextSOARecordSet(soa_record_set, api_version='v1'):
@@ -517,7 +415,7 @@ def ComputeChange(current, to_be_imported, replace_all=False,
                             rdtype,
                             origin,
                             replace_origin_ns):
-      replacement = _RDATA_REPLACEMENTS[rdtype](
+      replacement = _GetRDataReplacement(rdtype)(
           current_record, record_to_be_imported, api_version=api_version)
       if replacement:
         change.deletions.append(current_record)

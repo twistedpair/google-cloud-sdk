@@ -54,6 +54,12 @@ _INFO = {
             api='cloudbuild.googleapis.com',
             cmd_group='build',
         ),
+    'clouddeploy':
+        Info(
+            display_name='Cloud Deploy',
+            api='clouddeploy.googleapis.com',
+            cmd_group='deploy',
+        ),
     'configmanagement':
         Info(
             display_name='Config Management',

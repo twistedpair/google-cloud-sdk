@@ -218,6 +218,33 @@ class AccesscontextmanagerV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns the IAM permissions that the caller has on the specified Access Context Manager resource. The resource may be an Access Policy, Access Level, or Service Perimeter. No other resources are supported.
+
+      Args:
+        request: (AccesscontextmanagerAccessPoliciesAccessLevelsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/accessPolicies/{accessPoliciesId}/accessLevels/{accessLevelsId}:testIamPermissions',
+        http_method='POST',
+        method_id='accesscontextmanager.accessPolicies.accessLevels.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1alpha/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='AccesscontextmanagerAccessPoliciesAccessLevelsTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
   class AccessPoliciesServicePerimetersService(base_api.BaseApiService):
     """Service class for the accessPolicies_servicePerimeters resource."""
 
@@ -417,6 +444,33 @@ class AccesscontextmanagerV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns the IAM permissions that the caller has on the specified Access Context Manager resource. The resource may be an Access Policy, Access Level, or Service Perimeter. No other resources are supported.
+
+      Args:
+        request: (AccesscontextmanagerAccessPoliciesServicePerimetersTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/accessPolicies/{accessPoliciesId}/servicePerimeters/{servicePerimetersId}:testIamPermissions',
+        http_method='POST',
+        method_id='accesscontextmanager.accessPolicies.servicePerimeters.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1alpha/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='AccesscontextmanagerAccessPoliciesServicePerimetersTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
   class AccessPoliciesService(base_api.BaseApiService):
     """Service class for the accessPolicies resource."""
 
@@ -507,6 +561,33 @@ class AccesscontextmanagerV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the IAM policy for the specified Access Context Manager Access Policy.
+
+      Args:
+        request: (AccesscontextmanagerAccessPoliciesGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/accessPolicies/{accessPoliciesId}:getIamPolicy',
+        http_method='POST',
+        method_id='accesscontextmanager.accessPolicies.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1alpha/{+resource}:getIamPolicy',
+        request_field='getIamPolicyRequest',
+        request_type_name='AccesscontextmanagerAccessPoliciesGetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""List all AccessPolicies under a container.
 
@@ -557,6 +638,60 @@ class AccesscontextmanagerV1alpha(base_api.BaseApiClient):
         request_field='accessPolicy',
         request_type_name='AccesscontextmanagerAccessPoliciesPatchRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the IAM policy for the specified Access Context Manager Access Policy. Replaces any existing IAM policy. The IAM policy controls the set of users who are allowed to perform specific operations on the Access Context Manager AccessPolicy.
+
+      Args:
+        request: (AccesscontextmanagerAccessPoliciesSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/accessPolicies/{accessPoliciesId}:setIamPolicy',
+        http_method='POST',
+        method_id='accesscontextmanager.accessPolicies.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1alpha/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='AccesscontextmanagerAccessPoliciesSetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns the IAM permissions that the caller has on the specified Access Context Manager resource. The resource may be an Access Policy, Access Level, or Service Perimeter. No other resources are supported.
+
+      Args:
+        request: (AccesscontextmanagerAccessPoliciesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/accessPolicies/{accessPoliciesId}:testIamPermissions',
+        http_method='POST',
+        method_id='accesscontextmanager.accessPolicies.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1alpha/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='AccesscontextmanagerAccessPoliciesTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 

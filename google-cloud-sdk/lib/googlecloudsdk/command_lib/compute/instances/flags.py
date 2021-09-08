@@ -3133,6 +3133,18 @@ def AddNumaNodeCountArgs(parser):
       """)
 
 
+def AddVisibleCoreCountArgs(parser):
+  parser.add_argument(
+      '--visible-core-count',
+      type=int,
+      help="""
+      The number of physical cores to expose to the instance's guest operating
+      system. The number of virtual CPUs visible to the instance's guest
+      operating system is this number of cores multiplied by the instance's
+      count of visible threads per physical core.
+    """)
+
+
 def AddStackTypeArgs(parser):
   """Adds stack type arguments for instance."""
   parser.add_argument(

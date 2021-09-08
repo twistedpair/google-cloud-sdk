@@ -330,7 +330,8 @@ def CreateConfidentialInstanceMessage(messages, enable_confidential_compute):
 def CreateAdvancedMachineFeaturesMessage(messages,
                                          enable_nested_virtualization=None,
                                          threads_per_core=None,
-                                         numa_node_count=None):
+                                         numa_node_count=None,
+                                         visible_core_count=None):
   """Create AdvancedMachineFeatures message for an Instance."""
   # Start with an empty AdvancedMachineFeatures and optionally add on
   # the features we have like CreateSchedulingMessage does. This lets us
@@ -345,6 +346,9 @@ def CreateAdvancedMachineFeaturesMessage(messages,
 
   if numa_node_count is not None:
     features.numaNodeCount = numa_node_count
+
+  if visible_core_count is not None:
+    features.visibleCoreCount = visible_core_count
 
   return features
 

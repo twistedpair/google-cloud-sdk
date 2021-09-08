@@ -75,3 +75,12 @@ class RolloutIDExhaustedError(exceptions.Error):
     super(RolloutIDExhaustedError, self).__init__(
         'Rollout name space exhausted in release {}. Use --rollout-id to specify rollout ID.'
         .format(release_name))
+
+
+class RolloutInProgressError(exceptions.Error):
+  """Error when there is a rollout in progress, no to-target value is given and a promote is attempted."""
+
+  def __init__(self, release_name, target_name):
+    super(RolloutInProgressError, self).__init__(
+        'Unable to promote release {} to target {}. A rollout is already in progress.'
+        .format(release_name, target_name))

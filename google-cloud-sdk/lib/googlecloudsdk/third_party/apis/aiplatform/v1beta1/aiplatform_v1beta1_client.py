@@ -3488,32 +3488,6 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def QueryFeatureValues(self, request, global_params=None):
-      r"""Query Feature values from a Featurestore. Featurestore runs a managed query and combines multiple Features, possibly from multiple EntityTypes, according to the provided Entity IDs in the request.
-
-      Args:
-        request: (AiplatformProjectsLocationsFeaturestoresQueryFeatureValuesRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleLongrunningOperation) The response message.
-      """
-      config = self.GetMethodConfig('QueryFeatureValues')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    QueryFeatureValues.method_config = lambda: base_api.ApiMethodInfo(
-        http_method='POST',
-        method_id='aiplatform.projects.locations.featurestores.queryFeatureValues',
-        ordered_params=['projectsId', 'locationsId', 'featurestoresId'],
-        path_params=['featurestoresId', 'locationsId', 'projectsId'],
-        query_params=[],
-        relative_path='v1beta1/projects/{projectsId}/locations/{locationsId}/featurestores/{featurestoresId}:queryFeatureValues',
-        request_field='googleCloudAiplatformV1beta1QueryFeatureValuesRequest',
-        request_type_name='AiplatformProjectsLocationsFeaturestoresQueryFeatureValuesRequest',
-        response_type_name='GoogleLongrunningOperation',
-        supports_download=False,
-    )
-
     def SearchFeatures(self, request, global_params=None):
       r"""Searches Features matching a query in a given project.
 

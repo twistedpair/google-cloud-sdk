@@ -110,6 +110,10 @@ class ResourceNameTranslator(object):
           self.collection_map[
               resource.get_full_collection_name()] = wrapped_resource
 
+  def find_krmkinds_by_kind(self, kind):
+    """Gets a list of KrmKind keys based on krm kind values."""
+    return [x for x in self.krm_map.keys() if x.krm_kind == kind]
+
   def get_resource(self,
                    asset_inventory_type=None,
                    krm_kind=None,

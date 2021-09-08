@@ -546,7 +546,8 @@ class GoogleCloudVideointelligenceV1ShotChangeDetectionConfig(_messages.Message)
 
   Fields:
     model: Model to use for shot change detection. Supported values:
-      "builtin/stable" (the default if unset) and "builtin/latest".
+      "builtin/stable" (the default if unset), "builtin/latest", and
+      "builtin/legacy".
   """
 
   model = _messages.StringField(1)

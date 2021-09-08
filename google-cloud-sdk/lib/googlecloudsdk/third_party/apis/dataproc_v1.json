@@ -449,6 +449,14 @@
           "description": "Output only. The resource name of the operation associated with this batch.",
           "readOnly": true,
           "type": "string"
+        },
+        "stateHistory": {
+          "description": "Output only. Historical state information for the batch.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "StateHistory"
+          }
         }
       }
     },
@@ -727,6 +735,47 @@
         "dataprocCluster": {
           "description": "Optional. Resource name of an existing Dataproc Cluster to act as a Spark History Server for the workload.Example: projects\/[project_id]\/regions\/[region]\/clusters\/[cluster_name]",
           "type": "string"
+        }
+      }
+    },
+    "StateHistory": {
+      "id": "StateHistory",
+      "description": "Historical state information.",
+      "type": "object",
+      "properties": {
+        "state": {
+          "description": "Output only. The state of the batch at this point in history.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "The batch state is unknown.",
+            "The batch is created before running.",
+            "The batch is running.",
+            "The batch is cancelling.",
+            "The batch cancellation was successful.",
+            "The batch completed successfully.",
+            "The batch is no longer running due to an error."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "PENDING",
+            "RUNNING",
+            "CANCELLING",
+            "CANCELLED",
+            "SUCCEEDED",
+            "FAILED"
+          ]
+        },
+        "stateMessage": {
+          "description": "Output only. Details about the state at this point in history.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "stateStartTime": {
+          "description": "Output only. The time when the batch entered the historical state.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },

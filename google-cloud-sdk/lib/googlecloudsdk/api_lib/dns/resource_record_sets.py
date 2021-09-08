@@ -45,7 +45,7 @@ def CreateRecordSetFromArgs(args, api_version='v1'):
   """
   messages = apis.GetMessagesModule('dns', api_version)
   rd_type = rdatatype.from_text(args.type)
-  if import_util.GetRdataTranslation(rd_type) is None:
+  if rd_type not in import_util.SUPPORTED_TYPES:
     raise UnsupportedRecordType(
         'Unsupported record-set type [{0}]'.format(args.type))
 

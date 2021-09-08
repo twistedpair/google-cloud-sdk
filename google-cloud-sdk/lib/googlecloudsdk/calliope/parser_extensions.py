@@ -588,7 +588,10 @@ class ArgumentParser(argparse.ArgumentParser):
     have_optional = []  # The specified optional (not required) args.
     have_required = []  # The specified required args.
     need_required = []  # The required args in group that must be specified.
-    for arg in sorted(ai.arguments, key=usage_text.GetArgSortKey):
+    arguments = (
+        sorted(ai.arguments, key=usage_text.GetArgSortKey)
+        if ai.sort_args else ai.arguments)
+    for arg in arguments:
       if arg.is_group:
         arg_was_specified = self.validate_specified_args(
             arg,
@@ -611,16 +614,19 @@ class ArgumentParser(argparse.ArgumentParser):
 
     if need_required:
       if top or have_required and not (have_optional or also_optional):
-        args = parser_arguments.Argument(arguments=need_required, is_group=True)
+        need_args = parser_arguments.Argument(
+            arguments=need_required, is_group=True, sort_args=ai.sort_args)
         self._Error(parser_errors.RequiredError(
             parser=self,
             argument=usage_text.GetArgUsage(
-                args, value=False, hidden=True, top=top)))
+                need_args, value=False, hidden=True, top=top)))
       if have_optional or have_required:
         have_args = parser_arguments.Argument(
-            arguments=have_optional + have_required, is_group=True)
+            arguments=have_optional + have_required, is_group=True,
+            sort_args=ai.sort_args)
         need_args = parser_arguments.Argument(
-            arguments=need_required, is_group=True)
+            arguments=need_required, is_group=True,
+            sort_args=ai.sort_args)
         self._Error(parser_errors.ModalGroupError(
             parser=self,
             argument=usage_text.GetArgUsage(

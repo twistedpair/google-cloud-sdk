@@ -75,17 +75,6 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  PROJECTS_LOCATIONS_DELIVERYPIPELINES_TARGETS = (
-      'projects.locations.deliveryPipelines.targets',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/'
-              'deliveryPipelines/{deliveryPipelinesId}/targets/{targetsId}',
-      },
-      ['name'],
-      True
-  )
   PROJECTS_LOCATIONS_OPERATIONS = (
       'projects.locations.operations',
       '{+name}',

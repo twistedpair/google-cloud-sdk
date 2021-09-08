@@ -141,6 +141,7 @@ def DatabaseDialect(help_text):
   return base.Argument(
       '--database-dialect',
       required=False,
+      hidden=True,
       help=help_text,
   )
 

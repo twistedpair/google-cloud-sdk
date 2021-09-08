@@ -231,6 +231,29 @@ class EventFilter(_messages.Message):
   value = _messages.StringField(3)
 
 
+class EventType(_messages.Message):
+  r"""A representation of the event type resource.
+
+  Fields:
+    description: Output only. Human friendly description of what the event
+      type is about. For example "Bucket created in Cloud Storage".
+    eventSchemaUri: Output only. URI for the event schema. For example
+      "https://github.com/googleapis/google-cloudevents/blob/master/proto/goog
+      le/events/cloud/storage/v1/events.proto"
+    filteringAttributes: Output only. Filtering attributes for the event type.
+    type: Output only. The full name of the event type (e.g.
+      "google.cloud.storage.object.v1.finalized"). In the form of {provider-
+      id}.{resource}.{version}.{verb}. Types MUST be versioned and event
+      schemas are guaranteed to remain backward compatible within one version.
+      Note that event type versions and API versions do not need to match.
+  """
+
+  description = _messages.StringField(1)
+  eventSchemaUri = _messages.StringField(2)
+  filteringAttributes = _messages.MessageField('FilteringAttribute', 3, repeated=True)
+  type = _messages.StringField(4)
+
+
 class EventarcProjectsLocationsChannelsCreateRequest(_messages.Message):
   r"""A EventarcProjectsLocationsChannelsCreateRequest object.
 
@@ -447,6 +470,38 @@ class EventarcProjectsLocationsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class EventarcProjectsLocationsProvidersGetRequest(_messages.Message):
+  r"""A EventarcProjectsLocationsProvidersGetRequest object.
+
+  Fields:
+    name: Required. The name of the provider to get.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class EventarcProjectsLocationsProvidersListRequest(_messages.Message):
+  r"""A EventarcProjectsLocationsProvidersListRequest object.
+
+  Fields:
+    orderBy: The sorting order of the resources returned. Value should be a
+      comma separated list of fields. The default sorting oder is ascending.
+      To specify descending order for a field, append a ` desc` suffix; for
+      example: `name desc, _id`.
+    pageSize: The maximum number of providers to return on each page.
+    pageToken: The page token; provide the value from the `next_page_token`
+      field in a previous `ListProviders` call to retrieve the subsequent
+      page. When paginating, all other parameters provided to `ListProviders`
+      must match the call that provided the page token.
+    parent: Required. The parent of the provider to get.
+  """
+
+  orderBy = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
 class EventarcProjectsLocationsTriggersCreateRequest(_messages.Message):
   r"""A EventarcProjectsLocationsTriggersCreateRequest object.
 
@@ -626,6 +681,26 @@ class Expr(_messages.Message):
   expression = _messages.StringField(2)
   location = _messages.StringField(3)
   title = _messages.StringField(4)
+
+
+class FilteringAttribute(_messages.Message):
+  r"""A representation of the FilteringAttribute resource. Filtering
+  attributes are per event type.
+
+  Fields:
+    attribute: Output only. Attribute used for filtering the event type.
+    description: Output only. Description of the purpose of the attribute.
+    pathPatternSupported: Output only. If true, the attribute accepts matching
+      expressions in the Eventarc PathPattern format.
+    required: Output only. If true, the triggers for this provider should
+      always specify a filter on these attributes. Trigger creation will fail
+      otherwise.
+  """
+
+  attribute = _messages.StringField(1)
+  description = _messages.StringField(2)
+  pathPatternSupported = _messages.BooleanField(3)
+  required = _messages.BooleanField(4)
 
 
 class GKE(_messages.Message):
@@ -858,6 +933,22 @@ class ListLocationsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class ListProvidersResponse(_messages.Message):
+  r"""The response message for the ListProviders method.
+
+  Fields:
+    nextPageToken: A page token that can be sent to ListProviders to request
+      the next page. If this is empty, then there are no more pages.
+    providers: The requested providers, up to the number specified in
+      `page_size`.
+    unreachable: Unreachable resources, if any.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  providers = _messages.MessageField('Provider', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
 class ListTriggersResponse(_messages.Message):
   r"""The response message for the ListTriggers method.
 
@@ -1051,6 +1142,26 @@ class Policy(_messages.Message):
   bindings = _messages.MessageField('Binding', 2, repeated=True)
   etag = _messages.BytesField(3)
   version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
+class Provider(_messages.Message):
+  r"""A representation of the Provider resource.
+
+  Fields:
+    displayName: Output only. Human friendly name for the Provider. For
+      example "Cloud Storage".
+    eventTypes: Output only. Event types for this provider.
+    name: Output only. In
+      `projects/{project}/locations/{location}/providers/{provider-id}`
+      format.
+    service: Output only. The service hostname. Only available for Google
+      event providers. (e.g. "storage.googleapis.com")
+  """
+
+  displayName = _messages.StringField(1)
+  eventTypes = _messages.MessageField('EventType', 2, repeated=True)
+  name = _messages.StringField(3)
+  service = _messages.StringField(4)
 
 
 class Pubsub(_messages.Message):

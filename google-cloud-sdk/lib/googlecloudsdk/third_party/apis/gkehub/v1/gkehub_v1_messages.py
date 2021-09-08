@@ -2044,8 +2044,7 @@ class MembershipEndpoint(_messages.Message):
   API, endpoint and any additional Kubernetes metadata.
 
   Fields:
-    gkeCluster: Optional. GKE-specific information. Only present if this
-      Membership is a GKE cluster.
+    gkeCluster: Optional. Specific information for a GKE-on-GCP cluster.
     kubernetesMetadata: Output only. Useful Kubernetes-specific metadata.
     kubernetesResource: Optional. The in-cluster Kubernetes Resources that
       should be applied for a correctly registered cluster, in the steady
@@ -2053,11 +2052,16 @@ class MembershipEndpoint(_messages.Message):
       registered to one and only one Hub Membership. * Propagate Workload Pool
       Information available in the Membership Authority field. * Ensure proper
       initial configuration of default Hub Features.
+    multiCloudCluster: Optional. Specific information for a GKE Multi-Cloud
+      cluster.
+    onPremCluster: Optional. Specific information for a GKE On-Prem cluster.
   """
 
   gkeCluster = _messages.MessageField('GkeCluster', 1)
   kubernetesMetadata = _messages.MessageField('KubernetesMetadata', 2)
   kubernetesResource = _messages.MessageField('KubernetesResource', 3)
+  multiCloudCluster = _messages.MessageField('MultiCloudCluster', 4)
+  onPremCluster = _messages.MessageField('OnPremCluster', 5)
 
 
 class MembershipFeatureSpec(_messages.Message):
@@ -2120,6 +2124,25 @@ class MembershipState(_messages.Message):
   code = _messages.EnumField('CodeValueValuesEnum', 1)
 
 
+class MultiCloudCluster(_messages.Message):
+  r"""MultiCloudCluster contains information specific to GKE Multi-Cloud
+  clusters.
+
+  Fields:
+    clusterMissing: Output only. If cluster_missing is set then it denotes
+      that API(gkemulticloud.googleapis.com) resource for this GKE Multi-Cloud
+      cluster no longer exists.
+    resourceLink: Immutable. Self-link of the GCP resource for the GKE Multi-
+      Cloud cluster. For example: //gkemulticloud.googleapis.com/projects/my-
+      project/locations/us-west1-a/awsClusters/my-cluster
+      //gkemulticloud.googleapis.com/projects/my-project/locations/us-
+      west1-a/azureClusters/my-cluster
+  """
+
+  clusterMissing = _messages.BooleanField(1)
+  resourceLink = _messages.StringField(2)
+
+
 class MultiClusterIngressFeatureSpec(_messages.Message):
   r"""**Multi-cluster Ingress**: The configuration for the MultiClusterIngress
   feature.
@@ -2131,6 +2154,26 @@ class MultiClusterIngressFeatureSpec(_messages.Message):
   """
 
   configMembership = _messages.StringField(1)
+
+
+class OnPremCluster(_messages.Message):
+  r"""OnPremCluster contains information specific to GKE On-Prem clusters.
+
+  Fields:
+    adminCluster: Immutable. Whether the cluster is an admin cluster.
+    clusterMissing: Output only. If cluster_missing is set then it denotes
+      that API(gkeonprem.googleapis.com) resource for this GKE On-Prem cluster
+      no longer exists.
+    resourceLink: Immutable. Self-link of the GCP resource for the GKE On-Prem
+      cluster. For example: //gkeonprem.googleapis.com/projects/my-
+      project/locations/us-west1-a/vmwareClusters/my-cluster
+      //gkeonprem.googleapis.com/projects/my-project/locations/us-
+      west1-a/bareMetalClusters/my-cluster
+  """
+
+  adminCluster = _messages.BooleanField(1)
+  clusterMissing = _messages.BooleanField(2)
+  resourceLink = _messages.StringField(3)
 
 
 class Operation(_messages.Message):

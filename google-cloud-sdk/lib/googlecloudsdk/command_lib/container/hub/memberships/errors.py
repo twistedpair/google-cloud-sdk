@@ -34,3 +34,17 @@ class UnknownApiEndpointOverrideError(exceptions.Error):
   def __init__(self, api_name):
     message = 'Unknown api_endpoint_overrides value for {}'.format(api_name)
     super(UnknownApiEndpointOverrideError, self).__init__(message)
+
+
+class ServiceNotEnabledError(exceptions.Error):
+  """An error raised when a necessary API is not enabled."""
+
+  def __init__(self, service_friendly_name, service_name, project_id):
+    message = (
+        '{} has not been used in project {project_id} '
+        'before or it is disabled. Enable it by visiting '
+        'https://console.developers.google.com/apis/api/{}/overview?project={project_id}'
+        ' then retry. If you enabled this API recently, wait a few minutes for'
+        ' the action to propagate to our systems and retry.').format(
+            service_friendly_name, service_name, project_id=project_id)
+    super(ServiceNotEnabledError, self).__init__(message)

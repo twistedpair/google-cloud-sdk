@@ -3040,7 +3040,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/logging.admin"
                       ],
-                      "description": "Updates a view on a log bucket. This method replaces the following fields in the existing view with values from the new view: filter."
+                      "description": "Updates a view on a log bucket. This method replaces the following fields in the existing view with values from the new view: filter. If an UNAVAILABLE error is returned, this indicates that system is not in a state where it can update the view. If this occurs, please try again in a few minutes."
                     },
                     "delete": {
                       "id": "logging.projects.locations.buckets.views.delete",
@@ -3066,7 +3066,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/logging.admin"
                       ],
-                      "description": "Deletes a view on a log bucket."
+                      "description": "Deletes a view on a log bucket. If an UNAVAILABLE error is returned, this indicates that system is not in a state where it can delete the view. If this occurs, please try again in a few minutes."
                     }
                   }
                 }
@@ -4234,7 +4234,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/logging.admin"
                       ],
-                      "description": "Updates a view on a log bucket. This method replaces the following fields in the existing view with values from the new view: filter."
+                      "description": "Updates a view on a log bucket. This method replaces the following fields in the existing view with values from the new view: filter. If an UNAVAILABLE error is returned, this indicates that system is not in a state where it can update the view. If this occurs, please try again in a few minutes."
                     },
                     "delete": {
                       "id": "logging.folders.locations.buckets.views.delete",
@@ -4260,7 +4260,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/logging.admin"
                       ],
-                      "description": "Deletes a view on a log bucket."
+                      "description": "Deletes a view on a log bucket. If an UNAVAILABLE error is returned, this indicates that system is not in a state where it can delete the view. If this occurs, please try again in a few minutes."
                     }
                   }
                 }
@@ -5285,7 +5285,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/logging.admin"
                       ],
-                      "description": "Updates a view on a log bucket. This method replaces the following fields in the existing view with values from the new view: filter."
+                      "description": "Updates a view on a log bucket. This method replaces the following fields in the existing view with values from the new view: filter. If an UNAVAILABLE error is returned, this indicates that system is not in a state where it can update the view. If this occurs, please try again in a few minutes."
                     },
                     "delete": {
                       "id": "logging.billingAccounts.locations.buckets.views.delete",
@@ -5311,7 +5311,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/logging.admin"
                       ],
-                      "description": "Deletes a view on a log bucket."
+                      "description": "Deletes a view on a log bucket. If an UNAVAILABLE error is returned, this indicates that system is not in a state where it can delete the view. If this occurs, please try again in a few minutes."
                     }
                   }
                 }
@@ -6902,7 +6902,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/logging.admin"
                       ],
-                      "description": "Updates a view on a log bucket. This method replaces the following fields in the existing view with values from the new view: filter."
+                      "description": "Updates a view on a log bucket. This method replaces the following fields in the existing view with values from the new view: filter. If an UNAVAILABLE error is returned, this indicates that system is not in a state where it can update the view. If this occurs, please try again in a few minutes."
                     },
                     "delete": {
                       "id": "logging.organizations.locations.buckets.views.delete",
@@ -6928,7 +6928,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/logging.admin"
                       ],
-                      "description": "Deletes a view on a log bucket."
+                      "description": "Deletes a view on a log bucket. If an UNAVAILABLE error is returned, this indicates that system is not in a state where it can delete the view. If this occurs, please try again in a few minutes."
                     }
                   }
                 }
@@ -7586,7 +7586,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/logging.admin"
                   ],
-                  "description": "Updates a view on a log bucket. This method replaces the following fields in the existing view with values from the new view: filter."
+                  "description": "Updates a view on a log bucket. This method replaces the following fields in the existing view with values from the new view: filter. If an UNAVAILABLE error is returned, this indicates that system is not in a state where it can update the view. If this occurs, please try again in a few minutes."
                 },
                 "delete": {
                   "id": "logging.locations.buckets.views.delete",
@@ -7612,7 +7612,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/logging.admin"
                   ],
-                  "description": "Deletes a view on a log bucket."
+                  "description": "Deletes a view on a log bucket. If an UNAVAILABLE error is returned, this indicates that system is not in a state where it can delete the view. If this occurs, please try again in a few minutes."
                 }
               }
             }

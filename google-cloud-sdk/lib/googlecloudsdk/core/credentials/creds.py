@@ -32,12 +32,12 @@ from google.auth import compute_engine as google_auth_compute_engine
 from google.auth import credentials as google_auth_creds
 from google.auth import external_account as google_auth_external_account
 from google.auth import impersonated_credentials as google_auth_impersonated
-from googlecloudsdk.api_lib.auth import external_account as auth_external_account
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.credentials import devshell as c_devshell
+from googlecloudsdk.core.credentials import introspect as c_introspect
 from googlecloudsdk.core.util import files
 from oauth2client import client
 from oauth2client import service_account
@@ -57,6 +57,7 @@ DEVSHELL_CREDS_NAME = 'devshell'
 GCE_CREDS_NAME = 'gce'
 IMPERSONATED_ACCOUNT_CREDS_NAME = 'impersonated_account'
 EXTERNAL_ACCOUNT_CREDS_NAME = 'external_account'
+EXTERNAL_ACCOUNT_USER_CREDS_NAME = 'external_account_user'
 
 
 class Error(exceptions.Error):
@@ -65,6 +66,10 @@ class Error(exceptions.Error):
 
 class UnknownCredentialsType(Error):
   """An error for when we fail to determine the type of the credentials."""
+
+
+class InvalidCredentialsError(Error):
+  """Exception for when the provided credentials are invalid or unsupported."""
 
 
 class CredentialFileSaveError(Error):
@@ -129,6 +134,13 @@ def IsExternalAccountCredentials(creds):
   if IsGoogleAuthCredentials(creds):
     return (CredentialTypeGoogleAuth.FromCredentials(creds) ==
             CredentialTypeGoogleAuth.EXTERNAL_ACCOUNT)
+  return False
+
+
+def IsExternalAccountUserCredentials(creds):
+  if IsGoogleAuthCredentials(creds):
+    return (CredentialTypeGoogleAuth.FromCredentials(creds) ==
+            CredentialTypeGoogleAuth.EXTERNAL_ACCOUNT_USER)
   return False
 
 
@@ -475,6 +487,10 @@ def MaybeAttachAccessTokenCacheStoreGoogleAuth(credentials,
   this whenever access token caching is desired, yet credentials themselves
   should not be persisted.
 
+  For external account non-impersonated credentials, the provided credentials
+  should have been instantiated with the client_id and client_secret in order
+  to retrieve the account ID from the 3PI token instrospection endpoint.
+
   Args:
     credentials: google.auth.credentials.Credentials.
     access_token_file: str, optional path to use for access token storage.
@@ -483,7 +499,12 @@ def MaybeAttachAccessTokenCacheStoreGoogleAuth(credentials,
     google.auth.credentials.Credentials, reloaded credentials.
   """
   account_id = getattr(credentials, 'service_account_email', None)
-  if not account_id:
+  # External account credentials without service account impersonation.
+  # Use token introspection to get the account ID.
+  if not account_id and isinstance(credentials,
+                                   google_auth_external_account.Credentials):
+    account_id = c_introspect.GetExternalAccountId(credentials)
+  elif not account_id:
     account_id = hashlib.sha256(six.ensure_binary(
         credentials.refresh_token)).hexdigest()
 
@@ -686,10 +707,14 @@ class CredentialTypeGoogleAuth(enum.Enum):
   DEVSHELL = (4, DEVSHELL_CREDS_NAME, True, True)
   GCE = (5, GCE_CREDS_NAME, True, False)
   IMPERSONATED_ACCOUNT = (6, IMPERSONATED_ACCOUNT_CREDS_NAME, True, False)
-  # Currently only workload identity pool credentials are supported.
+  # Workload identity pool credentials (impersonated and non-impersonated) or
+  # impersonated workforce pool credentials.
   # These behave similarly to service accounts.
-  # For workforce pool users, a new credential type will be added.
   EXTERNAL_ACCOUNT = (7, EXTERNAL_ACCOUNT_CREDS_NAME, True, False)
+  # Workforce pool credentials. These are non-Google end user credentials.
+  # No service account impersonation is used with these credentials, otherwise
+  # they are considered EXTERNAL_ACCOUNT credentials.
+  EXTERNAL_ACCOUNT_USER = (8, EXTERNAL_ACCOUNT_USER_CREDS_NAME, True, True)
 
   def __init__(self, type_id, key, is_serializable, is_user):
     """Builds a credentials type instance given the credentials information.
@@ -731,8 +756,12 @@ class CredentialTypeGoogleAuth(enum.Enum):
       return CredentialTypeGoogleAuth.GCE
     if isinstance(creds, google_auth_impersonated.Credentials):
       return CredentialTypeGoogleAuth.IMPERSONATED_ACCOUNT
-    if isinstance(creds, google_auth_external_account.Credentials):
+    if (isinstance(creds, google_auth_external_account.Credentials) and
+        not creds.is_user):
       return CredentialTypeGoogleAuth.EXTERNAL_ACCOUNT
+    if (isinstance(creds, google_auth_external_account.Credentials) and
+        creds.is_user):
+      return CredentialTypeGoogleAuth.EXTERNAL_ACCOUNT_USER
     # Import only when necessary to decrease the startup time. Move it to
     # global once google-auth is ready to replace oauth2client.
     # pylint: disable=g-import-not-at-top
@@ -804,7 +833,8 @@ def ToJsonGoogleAuth(credentials):
         'token_uri': credentials._token_uri,  # pylint: disable=protected-access
         'project_id': credentials.project_id,
     }
-  elif creds_type == CredentialTypeGoogleAuth.EXTERNAL_ACCOUNT:
+  elif (creds_type == CredentialTypeGoogleAuth.EXTERNAL_ACCOUNT or
+        creds_type == CredentialTypeGoogleAuth.EXTERNAL_ACCOUNT_USER):
     # The credentials should already have the JSON representation set on info
     # property.
     creds_dict = credentials.info
@@ -944,9 +974,10 @@ def FromJson(json_value):
 def FromJsonGoogleAuth(json_value):
   """Returns google-auth credentials from library independent json format.
 
-  The type of the credentials could be service account, external account, user
-  account, or p12 service account. p12 service account was deprecated and is not
-  supported by google-auth, so we raise an exception for the callers to handle.
+  The type of the credentials could be service account, external account
+  (workload identity pool or workforce pool), user account, or p12 service
+  account. p12 service account was deprecated and is not supported by
+  google-auth, so we raise an exception for the callers to handle.
 
   Args:
     json_value: string, A string of the JSON representation of the credentials.
@@ -957,7 +988,9 @@ def FromJsonGoogleAuth(json_value):
 
   Raises:
     UnknownCredentialsType: when the type of the credentials is not service
-      account or user account.
+      account, user account or external account.
+    InvalidCredentialsError: when the provided credentials are malformed or
+      unsupported external account credentials.
   """
   json_key = json.loads(json_value)
   cred_type = CredentialTypeGoogleAuth.FromTypeKey(json_key['type'])
@@ -981,8 +1014,41 @@ def FromJsonGoogleAuth(json_value):
   if cred_type == CredentialTypeGoogleAuth.EXTERNAL_ACCOUNT:
     # token_uri is not applicable to external account credentials.
     # A different endpoint is used for token exchange (GCP STS).
-    cred = auth_external_account.CredentialsFromAdcDictGoogleAuth(json_key)
-    return cred
+    # These credentials can also be user credentials EXTERNAL_ACCOUNT_USER.
+    # Both credentials use "exernal_account" as "type" in the JSON file.
+
+    # Use client authentication when no impersonation is used. This is needed
+    # in order to call 3PI token introspection which requires the provided
+    # token be authenticated with gcloud client auth.
+    if 'service_account_impersonation_url' not in json_key:
+      json_key['client_id'] = config.CLOUDSDK_CLIENT_ID
+      json_key['client_secret'] = config.CLOUDSDK_CLIENT_NOTSOSECRET
+
+    cred = None
+    try:
+      # pylint: disable=g-import-not-at-top
+      from google.auth import aws
+
+      # Check if configuration corresponds to an AWS credentials.
+      cred = aws.Credentials.from_info(json_key, scopes=config.CLOUDSDK_SCOPES)
+    except ValueError:
+      pass
+
+    try:
+      # pylint: disable=g-import-not-at-top
+      from google.auth import identity_pool
+
+      cred = identity_pool.Credentials.from_info(
+          json_key, scopes=config.CLOUDSDK_SCOPES)
+    except ValueError:
+      pass
+
+    if cred:
+      return cred
+    else:
+      raise InvalidCredentialsError(
+          'The provided external account credentials are invalid or '
+          'unsupported')
   if cred_type == CredentialTypeGoogleAuth.USER_ACCOUNT:
     json_key['token_uri'] = GetEffectiveTokenUri(json_key)
     # Import only when necessary to decrease the startup time. Move it to
@@ -1176,8 +1242,15 @@ def _ConvertGoogleAuthCredentialsToADC(credentials):
         'private_key': credentials.private_key,
         'client_id': credentials.client_id
     }
-  if creds_type == CredentialTypeGoogleAuth.EXTERNAL_ACCOUNT:
-    return credentials.info
+  if (creds_type == CredentialTypeGoogleAuth.EXTERNAL_ACCOUNT or
+      creds_type == CredentialTypeGoogleAuth.EXTERNAL_ACCOUNT_USER):
+    # These credentials will be used by the client libraries. We do not need
+    # to keep the gcloud client ID and secret in the generated credentials as
+    # account ID determination is not required there.
+    adc_json = credentials.info
+    adc_json.pop('client_id', None)
+    adc_json.pop('client_secret', None)
+    return adc_json
   raise ADCError('Cannot convert credentials of type {} to application '
                  'default credentials.'.format(type(credentials)))
 

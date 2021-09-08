@@ -30,9 +30,12 @@ import six
 class LinterRenderer(text_renderer.TextRenderer):
   """Renders markdown to a list of lines where there is a linter error."""
 
-  _HEADINGS_TO_LINT = ('NAME', 'EXAMPLES', 'DESCRIPTION')
+  _HEADINGS_TO_LINT = (
+      'NAME', 'EXAMPLES', 'DESCRIPTION', 'POSITIONAL ARGUMENTS',
+      'REQUIRED FLAGS', 'OPTIONAL FLAGS', 'FLAGS', 'LIST COMMAND FLAGS')
   _NAME_WORD_LIMIT = 20
   _PERSONAL_PRONOUNS = ('me', 'we', 'I', 'us', 'he', 'she', 'him', 'her')
+  _ARTICLES = ('the', 'a', 'an')
   # gcloud does not recognize the following flags as not requiring a value so
   # they would be marked as violations in _analyze_example_flags_equals.
   _NON_BOOL_FLAGS_ALLOWLIST = ('--quiet', '--help')
@@ -51,7 +54,12 @@ class LinterRenderer(text_renderer.TextRenderer):
     self._out = self._buffer
     self._analyze = {'NAME': self._analyze_name,
                      'EXAMPLES': self._analyze_examples,
-                     'DESCRIPTION': self._analyze_description}
+                     'DESCRIPTION': self._analyze_description,
+                     'POSITIONAL ARGUMENTS': self._analyze_argument_sections,
+                     'REQUIRED FLAGS': self._analyze_argument_sections,
+                     'OPTIONAL FLAGS': self._analyze_argument_sections,
+                     'FLAGS': self._analyze_argument_sections,
+                     'LIST COMMAND FLAGS': self._analyze_argument_sections}
     self._heading = ''
     self._prev_heading = ''
     self._example_errors = False
@@ -67,11 +75,13 @@ class LinterRenderer(text_renderer.TextRenderer):
 
   def _CaptureOutput(self, heading):
     # check if buffer is full from previous heading
+    self.check_indentation_for_examples()
     if self._buffer.getvalue() and self._prev_heading:
       self._Analyze(self._prev_heading, self._buffer.getvalue())
       # refresh the StringIO()
       self._buffer = io.StringIO()
-    self.check_indentation_for_examples()
+    if self._prev_heading == 'EXAMPLES':
+      self.check_example_section_errors()
     self._out = self._buffer
     # save heading so can get it in next section
     self._prev_heading = self._heading
@@ -80,7 +90,7 @@ class LinterRenderer(text_renderer.TextRenderer):
     self._out = self._null_out
 
   def _Analyze(self, heading, section):
-    self._analyze[heading](section)
+    self._analyze[heading](heading, section)
 
   def _check_name(self, heading, check):
     return '{}_{}_CHECK'.format(heading, check)
@@ -94,6 +104,46 @@ class LinterRenderer(text_renderer.TextRenderer):
   def _add_no_errors_summary(self, heading):
     self.findings['There are no errors for the {} section.'.format(
         heading)] = ''
+
+  def check_example_section_errors(self):
+    """Raise violation if the examples section does not contain a valid example.
+
+    Also, wrap up the examples section by specifying there are no errors in the
+    section.
+
+    See go/cloud-sdk-help-text#formatting.
+    """
+    if self.needs_example() and not self.example:
+      self._add_failure(
+          self._check_name('EXAMPLES', 'PRESENT'),
+          'You have not included an example in the Examples section.')
+    elif self._has_example_section and not self._example_errors:
+      self._add_no_errors_summary('EXAMPLES')
+    # Do not print the example failing sentence again
+    self.example = True
+
+  def check_for_articles(self, heading, section):
+    """Raise violation if the section begins with an article.
+
+    See go/cloud-sdk-help-text#formatting.
+
+    Arguments:
+      heading: str, the name of the section.
+      section: str, the contents of the section.
+
+    Returns:
+      True if there was a violation. False otherwise.
+    """
+    check_name = self._check_name(heading, 'ARTICLES')
+    first_word = section.split()[0]
+    if first_word.lower() in self._ARTICLES:
+      self._add_failure(check_name, ('Please do not start the {} section with '
+                                     'an article.').format(heading))
+      found_article = True
+    else:
+      self._add_success(check_name)
+      found_article = False
+    return found_article
 
   def check_for_personal_pronouns(self, heading, section):
     """Raise violation if the section contains personal pronouns."""
@@ -165,12 +215,7 @@ class LinterRenderer(text_renderer.TextRenderer):
     self.check_indentation_for_examples()
     self._buffer.close()
     self._null_out.close()
-    if self.needs_example() and not self.example:
-      self._add_failure(
-          self._check_name('EXAMPLES', 'PRESENT'),
-          'You have not included an example in the Examples section.')
-    elif self._has_example_section and not self._example_errors:
-      self._add_no_errors_summary('EXAMPLES')
+    self.check_example_section_errors()
     for element in self.findings:
       if self.findings[element]:
         self._file_out.write(
@@ -230,8 +275,51 @@ class LinterRenderer(text_renderer.TextRenderer):
           flag not in self._NON_BOOL_FLAGS_ALLOWLIST):
         self.equals_violation_flags.append(flag)
 
-  def _analyze_name(self, section):
-    has_errors = self.check_for_personal_pronouns('NAME', section)
+  def _analyze_argument_sections(self, heading, section):
+    """Raise violation if the section contains unmatched double backticks.
+
+    This check confirms that argument sections follow our help text style guide.
+    The help text for individual arguments should not begin with an article.
+    See go/cloud-sdk-help-text#formatting.
+
+    Arguments:
+      heading: str, the name of the section.
+      section: str, the contents of the section.
+
+    Returns:
+      None.
+    """
+    has_errors = (self.check_for_personal_pronouns(heading, section) or
+                  self.check_for_articles(heading, section))
+    check_name = self._check_name(heading, 'ARG_ARTICLES')
+    flags_with_articles = []
+    all_lines_in_section = section.split('\n')
+    non_empty_lines_in_section = [
+        line.strip() for line in all_lines_in_section if (
+            not line.isspace() and line)]
+    prev_line = ''
+    for line in non_empty_lines_in_section:
+      if prev_line and (prev_line.startswith('--') or re.match(
+          '[A-Z_]', prev_line.split()[0])) and len(prev_line.split()) < 5 and (
+              line.split()[0].lower() in self._ARTICLES):
+        flags_with_articles.append(prev_line)
+      prev_line = line
+
+    if flags_with_articles:
+      has_errors = True
+      self._add_failure(check_name, ('Please fix the help text for the '
+                                     'following arguments which begin with an '
+                                     'article in the {} section:\n{}').format(
+                                         heading,
+                                         '\n'.join(flags_with_articles)))
+    else:
+      self._add_success(check_name)
+    if not has_errors:
+      self._add_no_errors_summary(heading)
+
+  def _analyze_name(self, heading, section):
+    has_errors = (self.check_for_personal_pronouns(heading, section) or
+                  self.check_for_articles(heading, section))
 
     # The section should look like 'command name - command description' but
     # there may be a newline depending on length of the command.
@@ -265,17 +353,17 @@ class LinterRenderer(text_renderer.TextRenderer):
       self._add_success(check_name)
 
     if not has_errors:
-      self._add_no_errors_summary('NAME')
+      self._add_no_errors_summary(heading)
 
-  def _analyze_examples(self, section):
+  def _analyze_examples(self, heading, section):
     self._has_example_section = True
+    has_errors = self.check_for_articles(heading, section)
     if not self.command_metadata.is_group:
-      has_errors = self.check_for_personal_pronouns('EXAMPLES', section)
-
-      if self.check_for_unmatched_double_backticks('EXAMPLES', section):
+      if self.check_for_personal_pronouns(heading, section):
         has_errors = True
-
-      check_name = self._check_name('EXAMPLES', 'FLAG_EQUALS')
+      if self.check_for_unmatched_double_backticks(heading, section):
+        has_errors = True
+      check_name = self._check_name(heading, 'FLAG_EQUALS')
       if self.equals_violation_flags:
         has_errors = True
         list_contents = ''
@@ -290,8 +378,7 @@ class LinterRenderer(text_renderer.TextRenderer):
         has_errors = True
       else:
         self._add_success(check_name)
-
-      check_name = self._check_name('EXAMPLES', 'NONEXISTENT_FLAG')
+      check_name = self._check_name(heading, 'NONEXISTENT_FLAG')
       if self.nonexistent_violation_flags:
         has_errors = True
         list_contents = ''
@@ -307,10 +394,11 @@ class LinterRenderer(text_renderer.TextRenderer):
         self._add_success(check_name)
       self._example_errors = has_errors
 
-  def _analyze_description(self, section):
-    has_errors = (self.check_for_personal_pronouns('DESCRIPTION', section),
+  def _analyze_description(self, heading, section):
+    has_errors = (self.check_for_personal_pronouns(heading, section),
                   self.check_for_unmatched_double_backticks(
-                      'DESCRIPTION', section))
+                      heading, section),
+                  self.check_for_articles(heading, section))
 
     if not any(has_errors):
-      self._add_no_errors_summary('DESCRIPTION')
+      self._add_no_errors_summary(heading)

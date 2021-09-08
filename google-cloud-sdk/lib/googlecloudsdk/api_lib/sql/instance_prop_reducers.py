@@ -44,6 +44,20 @@ def ActiveDirectoryConfig(sql_messages, domain=None):
   return config
 
 
+def SqlServerAuditConfig(sql_messages, bucket=None):
+  """Generates the Audit configuration for the instance.
+
+  Args:
+    sql_messages: module, The messages module that should be used.
+    bucket: string, the GCS bucket name.
+
+  Returns:
+    sql_messages.SqlServerAuditConfig object.
+  """
+  config = sql_messages.SqlServerAuditConfig(bucket=bucket)
+  return config
+
+
 def BackupConfiguration(sql_messages,
                         instance=None,
                         backup_enabled=None,

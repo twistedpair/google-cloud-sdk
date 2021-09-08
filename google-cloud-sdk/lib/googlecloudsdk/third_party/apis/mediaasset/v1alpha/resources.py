@@ -109,6 +109,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_CATALOGS = (
+      'projects.locations.catalogs',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/catalogs/'
+              '{catalogsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_COMPLEXTYPES = (
       'projects.locations.complexTypes',
       '{+name}',

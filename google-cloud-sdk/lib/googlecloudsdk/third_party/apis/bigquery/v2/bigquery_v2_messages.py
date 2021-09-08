@@ -15,6 +15,18 @@ from apitools.base.py import extra_types
 package = 'bigquery'
 
 
+class AvroOptions(_messages.Message):
+  r"""A AvroOptions object.
+
+  Fields:
+    useAvroLogicalTypes: [Optional] If set to true will enable interpreting
+      logical types into their corresponding types (ie. TIMESTAMP), instead of
+      only using their raw types (ie. INTEGER).
+  """
+
+  useAvroLogicalTypes = _messages.BooleanField(1)
+
+
 class BiEngineReason(_messages.Message):
   r"""A BiEngineReason object.
 
@@ -1223,6 +1235,7 @@ class ExternalDataConfiguration(_messages.Message):
   Fields:
     autodetect: Try to detect schema and format options automatically. Any
       option specified explicitly will be honored.
+    avroOptions: Additional properties to set if sourceFormat is set to Avro.
     bigtableOptions: [Optional] Additional options if sourceFormat is set to
       BIGTABLE.
     compression: [Optional] The compression type of the data source. Possible
@@ -1291,19 +1304,20 @@ class ExternalDataConfiguration(_messages.Message):
   """
 
   autodetect = _messages.BooleanField(1)
-  bigtableOptions = _messages.MessageField('BigtableOptions', 2)
-  compression = _messages.StringField(3)
-  connectionId = _messages.StringField(4)
-  csvOptions = _messages.MessageField('CsvOptions', 5)
-  decimalTargetTypes = _messages.StringField(6, repeated=True)
-  googleSheetsOptions = _messages.MessageField('GoogleSheetsOptions', 7)
-  hivePartitioningOptions = _messages.MessageField('HivePartitioningOptions', 8)
-  ignoreUnknownValues = _messages.BooleanField(9)
-  maxBadRecords = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  parquetOptions = _messages.MessageField('ParquetOptions', 11)
-  schema = _messages.MessageField('TableSchema', 12)
-  sourceFormat = _messages.StringField(13)
-  sourceUris = _messages.StringField(14, repeated=True)
+  avroOptions = _messages.MessageField('AvroOptions', 2)
+  bigtableOptions = _messages.MessageField('BigtableOptions', 3)
+  compression = _messages.StringField(4)
+  connectionId = _messages.StringField(5)
+  csvOptions = _messages.MessageField('CsvOptions', 6)
+  decimalTargetTypes = _messages.StringField(7, repeated=True)
+  googleSheetsOptions = _messages.MessageField('GoogleSheetsOptions', 8)
+  hivePartitioningOptions = _messages.MessageField('HivePartitioningOptions', 9)
+  ignoreUnknownValues = _messages.BooleanField(10)
+  maxBadRecords = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  parquetOptions = _messages.MessageField('ParquetOptions', 12)
+  schema = _messages.MessageField('TableSchema', 13)
+  sourceFormat = _messages.StringField(14)
+  sourceUris = _messages.StringField(15, repeated=True)
 
 
 class GetQueryResultsResponse(_messages.Message):

@@ -247,6 +247,7 @@ CLOUDBUILD = 'CloudBuild'
 BACKUPRESTORE = 'BackupRestore'
 CONFIGCONNECTOR = 'ConfigConnector'
 GCEPDCSIDRIVER = 'GcePersistentDiskCsiDriver'
+GCPFILESTORECSIDRIVER = 'GcpFilestoreCsiDriver'
 ISTIO = 'Istio'
 NETWORK_POLICY = 'NetworkPolicy'
 NODELOCALDNS = 'NodeLocalDNS'
@@ -278,6 +279,7 @@ ADDONS_OPTIONS = DEFAULT_ADDONS + [
     NODELOCALDNS,
     CONFIGCONNECTOR,
     GCEPDCSIDRIVER,
+    GCPFILESTORECSIDRIVER,
 ]
 BETA_ADDONS_OPTIONS = ADDONS_OPTIONS + [
     ISTIO,
@@ -477,6 +479,7 @@ class CreateClusterOptions(object):
       enable_kubernetes_alpha=None,
       enable_cloud_run_alpha=None,
       preemptible=None,
+      spot=None,
       enable_autorepair=None,
       enable_autoupgrade=None,
       service_account=None,
@@ -625,6 +628,7 @@ class CreateClusterOptions(object):
     self.enable_kubernetes_alpha = enable_kubernetes_alpha
     self.enable_cloud_run_alpha = enable_cloud_run_alpha
     self.preemptible = preemptible
+    self.spot = spot
     self.enable_autorepair = enable_autorepair
     self.enable_autoupgrade = enable_autoupgrade
     self.service_account = service_account
@@ -965,6 +969,7 @@ class CreateNodePoolOptions(object):
                image_project=None,
                image_family=None,
                preemptible=None,
+               spot=None,
                enable_autorepair=None,
                enable_autoupgrade=None,
                service_account=None,
@@ -1014,6 +1019,7 @@ class CreateNodePoolOptions(object):
     self.image_project = image_project
     self.image_family = image_family
     self.preemptible = preemptible
+    self.spot = spot
     self.enable_autorepair = enable_autorepair
     self.enable_autoupgrade = enable_autoupgrade
     self.service_account = service_account
@@ -1351,6 +1357,7 @@ class APIAdapter(object):
           disable_network_policy=(NETWORK_POLICY not in options.addons),
           enable_node_local_dns=(NODELOCALDNS in options.addons or None),
           enable_gcepd_csi_driver=(GCEPDCSIDRIVER in options.addons),
+          enable_filestore_csi_driver=(GCPFILESTORECSIDRIVER in options.addons),
           enable_application_manager=(APPLICATIONMANAGER in options.addons),
           enable_cloud_build=(CLOUDBUILD in options.addons),
           enable_backup_restore=(BACKUPRESTORE in options.addons),
@@ -1591,6 +1598,9 @@ class APIAdapter(object):
 
     if options.preemptible:
       node_config.preemptible = options.preemptible
+
+    if options.spot:
+      node_config.spot = options.spot
 
     self.ParseAcceleratorOptions(options, node_config)
 
@@ -2244,6 +2254,9 @@ class APIAdapter(object):
         addons.gcePersistentDiskCsiDriverConfig = (
             self.messages.GcePersistentDiskCsiDriverConfig(
                 enabled=not options.disable_addons.get(GCEPDCSIDRIVER)))
+      if options.disable_addons.get(GCPFILESTORECSIDRIVER) is not None:
+        addons.gcpFilestoreCsiDriverConfig = self.messages.GcpFilestoreCsiDriverConfig(
+            enabled=not options.disable_addons.get(GCPFILESTORECSIDRIVER))
       update = self.messages.ClusterUpdate(desiredAddonsConfig=addons)
     elif options.enable_autoscaling is not None:
       # For update, we can either enable or disable.
@@ -2395,9 +2408,9 @@ class APIAdapter(object):
 
     if options.security_group is not None:
       update = self.messages.ClusterUpdate(
-          desiredAuthenticatorGroupsConfig=self.messages.
-          AuthenticatorGroupsConfig(enabled=True,
-                                    securityGroup=options.security_group))
+          desiredAuthenticatorGroupsConfig=self.messages
+          .AuthenticatorGroupsConfig(
+              enabled=True, securityGroup=options.security_group))
 
     if options.enable_gcfs is not None:
       update = self.messages.ClusterUpdate(
@@ -2487,6 +2500,7 @@ class APIAdapter(object):
                     disable_network_policy=None,
                     enable_node_local_dns=None,
                     enable_gcepd_csi_driver=None,
+                    enable_filestore_csi_driver=None,
                     enable_application_manager=None,
                     enable_cloud_build=None,
                     enable_backup_restore=None):
@@ -2499,6 +2513,7 @@ class APIAdapter(object):
       disable_network_policy: whether to disable NetworkPolicy enforcement.
       enable_node_local_dns: whether to enable NodeLocalDNS cache.
       enable_gcepd_csi_driver: whether to enable GcePersistentDiskCsiDriver.
+      enable_filestore_csi_driver: wherher to enable GcpFilestoreCsiDriver.
       enable_application_manager: whether to enable ApplicationManager.
       enable_cloud_build: whether to enable CloudBuild.
       enable_backup_restore: whether to enable BackupRestore.
@@ -2526,6 +2541,9 @@ class APIAdapter(object):
           enabled=enable_node_local_dns)
     if enable_gcepd_csi_driver:
       addons.gcePersistentDiskCsiDriverConfig = self.messages.GcePersistentDiskCsiDriverConfig(
+          enabled=True)
+    if enable_filestore_csi_driver:
+      addons.gcpFilestoreCsiDriverConfig = self.messages.GcpFilestoreCsiDriverConfig(
           enabled=True)
     if enable_application_manager:
       addons.kalmConfig = self.messages.KalmConfig(enabled=True)
@@ -2804,6 +2822,9 @@ class APIAdapter(object):
 
     if options.preemptible:
       node_config.preemptible = options.preemptible
+
+    if options.spot:
+      node_config.spot = options.spot
 
     if options.min_cpu_platform is not None:
       node_config.minCpuPlatform = options.min_cpu_platform
@@ -4739,9 +4760,8 @@ def _GetLoggingConfig(options, messages):
   # TODO(b/195524749): Validate the input in flags.py after Control Plane
   # Signals is GA.
   if any(c not in LOGGING_OPTIONS for c in options.logging):
-    raise util.Error(
-        '[' + ', '.join(options.logging) +
-        '] contains option(s) that are not supported for logging.')
+    raise util.Error('[' + ', '.join(options.logging) +
+                     '] contains option(s) that are not supported for logging.')
 
   config = messages.LoggingComponentConfig()
   if NONE in options.logging:
@@ -4755,24 +4775,24 @@ def _GetLoggingConfig(options, messages):
       .SYSTEM_COMPONENTS)
   if WORKLOAD in options.logging:
     config.enableComponents.append(
-        messages.LoggingComponentConfig
-        .EnableComponentsValueListEntryValuesEnum.WORKLOADS)
+        messages.LoggingComponentConfig.EnableComponentsValueListEntryValuesEnum
+        .WORKLOADS)
   if API_SERVER in options.logging:
     config.enableComponents.append(
-        messages.LoggingComponentConfig
-        .EnableComponentsValueListEntryValuesEnum.APISERVER)
+        messages.LoggingComponentConfig.EnableComponentsValueListEntryValuesEnum
+        .APISERVER)
   if SCHEDULER in options.logging:
     config.enableComponents.append(
-        messages.LoggingComponentConfig
-        .EnableComponentsValueListEntryValuesEnum.SCHEDULER)
+        messages.LoggingComponentConfig.EnableComponentsValueListEntryValuesEnum
+        .SCHEDULER)
   if CONTROLLER_MANAGER in options.logging:
     config.enableComponents.append(
         messages.LoggingComponentConfig.EnableComponentsValueListEntryValuesEnum
         .CONTROLLER_MANAGER)
   if ADDON_MANAGER in options.logging:
     config.enableComponents.append(
-        messages.LoggingComponentConfig
-        .EnableComponentsValueListEntryValuesEnum.ADDON_MANAGER)
+        messages.LoggingComponentConfig.EnableComponentsValueListEntryValuesEnum
+        .ADDON_MANAGER)
 
   return messages.LoggingConfig(componentConfig=config)
 

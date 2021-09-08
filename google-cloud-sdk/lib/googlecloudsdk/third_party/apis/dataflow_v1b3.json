@@ -2644,6 +2644,10 @@
         "saveHeapDumpsToGcsPath": {
           "description": "Cloud Storage bucket (directory) to upload heap dumps to the given location. Enabling this implies that heap dumps should be generated on OOM (dump_heap_on_oom is set to true).",
           "type": "string"
+        },
+        "launcherMachineType": {
+          "description": "The machine type to use for launching the job. The default is n1-standard-1.",
+          "type": "string"
         }
       }
     },

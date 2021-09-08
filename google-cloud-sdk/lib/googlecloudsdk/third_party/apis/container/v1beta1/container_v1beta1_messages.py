@@ -463,6 +463,8 @@ class Cluster(_messages.Message):
       addresses to the master or set of masters, as well as the ILB VIP. This
       field is deprecated, use private_cluster_config.master_ipv4_cidr_block
       instead.
+    meshCertificates: Configuration for issuance of mTLS keys and certificates
+      to Kubernetes pods.
     monitoringConfig: Monitoring configuration for the cluster.
     monitoringService: The monitoring service the cluster should use to write
       metrics. Currently available options: *
@@ -642,37 +644,38 @@ class Cluster(_messages.Message):
   masterAuth = _messages.MessageField('MasterAuth', 39)
   masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 40)
   masterIpv4CidrBlock = _messages.StringField(41)
-  monitoringConfig = _messages.MessageField('MonitoringConfig', 42)
-  monitoringService = _messages.StringField(43)
-  name = _messages.StringField(44)
-  network = _messages.StringField(45)
-  networkConfig = _messages.MessageField('NetworkConfig', 46)
-  networkPolicy = _messages.MessageField('NetworkPolicy', 47)
-  nodeConfig = _messages.MessageField('NodeConfig', 48)
-  nodeIpv4CidrSize = _messages.IntegerField(49, variant=_messages.Variant.INT32)
-  nodePoolDefaults = _messages.MessageField('NodePoolDefaults', 50)
-  nodePools = _messages.MessageField('NodePool', 51, repeated=True)
-  notificationConfig = _messages.MessageField('NotificationConfig', 52)
-  podSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 53)
-  privateCluster = _messages.BooleanField(54)
-  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 55)
-  releaseChannel = _messages.MessageField('ReleaseChannel', 56)
-  resourceLabels = _messages.MessageField('ResourceLabelsValue', 57)
-  resourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 58)
-  selfLink = _messages.StringField(59)
-  servicesIpv4Cidr = _messages.StringField(60)
-  shieldedNodes = _messages.MessageField('ShieldedNodes', 61)
-  status = _messages.EnumField('StatusValueValuesEnum', 62)
-  statusMessage = _messages.StringField(63)
-  subnetwork = _messages.StringField(64)
-  tpuConfig = _messages.MessageField('TpuConfig', 65)
-  tpuIpv4CidrBlock = _messages.StringField(66)
-  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 67)
-  workloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 68)
-  workloadCertificates = _messages.MessageField('WorkloadCertificates', 69)
-  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 70)
-  workloadMonitoringEnabledEap = _messages.BooleanField(71)
-  zone = _messages.StringField(72)
+  meshCertificates = _messages.MessageField('MeshCertificates', 42)
+  monitoringConfig = _messages.MessageField('MonitoringConfig', 43)
+  monitoringService = _messages.StringField(44)
+  name = _messages.StringField(45)
+  network = _messages.StringField(46)
+  networkConfig = _messages.MessageField('NetworkConfig', 47)
+  networkPolicy = _messages.MessageField('NetworkPolicy', 48)
+  nodeConfig = _messages.MessageField('NodeConfig', 49)
+  nodeIpv4CidrSize = _messages.IntegerField(50, variant=_messages.Variant.INT32)
+  nodePoolDefaults = _messages.MessageField('NodePoolDefaults', 51)
+  nodePools = _messages.MessageField('NodePool', 52, repeated=True)
+  notificationConfig = _messages.MessageField('NotificationConfig', 53)
+  podSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 54)
+  privateCluster = _messages.BooleanField(55)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 56)
+  releaseChannel = _messages.MessageField('ReleaseChannel', 57)
+  resourceLabels = _messages.MessageField('ResourceLabelsValue', 58)
+  resourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 59)
+  selfLink = _messages.StringField(60)
+  servicesIpv4Cidr = _messages.StringField(61)
+  shieldedNodes = _messages.MessageField('ShieldedNodes', 62)
+  status = _messages.EnumField('StatusValueValuesEnum', 63)
+  statusMessage = _messages.StringField(64)
+  subnetwork = _messages.StringField(65)
+  tpuConfig = _messages.MessageField('TpuConfig', 66)
+  tpuIpv4CidrBlock = _messages.StringField(67)
+  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 68)
+  workloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 69)
+  workloadCertificates = _messages.MessageField('WorkloadCertificates', 70)
+  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 71)
+  workloadMonitoringEnabledEap = _messages.BooleanField(72)
+  zone = _messages.StringField(73)
 
 
 class ClusterAutoscaling(_messages.Message):
@@ -815,6 +818,8 @@ class ClusterUpdate(_messages.Message):
       patch+gke.N patch in the 1.X version - "1.X.Y": picks the highest valid
       gke.N patch in the 1.X.Y version - "1.X.Y-gke.N": picks an explicit
       Kubernetes version - "-": picks the default Kubernetes version
+    desiredMeshCertificates: Configuration for issuance of mTLS keys and
+      certificates to Kubernetes pods.
     desiredMonitoringConfig: The desired monitoring configuration.
     desiredMonitoringService: The monitoring service the cluster should use to
       write metrics. Currently available options: *
@@ -926,26 +931,27 @@ class ClusterUpdate(_messages.Message):
   desiredMaster = _messages.MessageField('Master', 25)
   desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 26)
   desiredMasterVersion = _messages.StringField(27)
-  desiredMonitoringConfig = _messages.MessageField('MonitoringConfig', 28)
-  desiredMonitoringService = _messages.StringField(29)
-  desiredNodeNetworkPolicy = _messages.MessageField('NodeNetworkPolicy', 30)
-  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 31)
-  desiredNodePoolId = _messages.StringField(32)
-  desiredNodeVersion = _messages.StringField(33)
-  desiredNotificationConfig = _messages.MessageField('NotificationConfig', 34)
-  desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 35)
-  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 36)
-  desiredPrivateIpv6GoogleAccess = _messages.EnumField('DesiredPrivateIpv6GoogleAccessValueValuesEnum', 37)
-  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 38)
-  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 39)
-  desiredServiceExternalIpsConfig = _messages.MessageField('ServiceExternalIPsConfig', 40)
-  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 41)
-  desiredTpuConfig = _messages.MessageField('TpuConfig', 42)
-  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 43)
-  desiredWorkloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 44)
-  desiredWorkloadCertificates = _messages.MessageField('WorkloadCertificates', 45)
-  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 46)
-  desiredWorkloadMonitoringEapConfig = _messages.MessageField('WorkloadMonitoringEapConfig', 47)
+  desiredMeshCertificates = _messages.MessageField('MeshCertificates', 28)
+  desiredMonitoringConfig = _messages.MessageField('MonitoringConfig', 29)
+  desiredMonitoringService = _messages.StringField(30)
+  desiredNodeNetworkPolicy = _messages.MessageField('NodeNetworkPolicy', 31)
+  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 32)
+  desiredNodePoolId = _messages.StringField(33)
+  desiredNodeVersion = _messages.StringField(34)
+  desiredNotificationConfig = _messages.MessageField('NotificationConfig', 35)
+  desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 36)
+  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 37)
+  desiredPrivateIpv6GoogleAccess = _messages.EnumField('DesiredPrivateIpv6GoogleAccessValueValuesEnum', 38)
+  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 39)
+  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 40)
+  desiredServiceExternalIpsConfig = _messages.MessageField('ServiceExternalIPsConfig', 41)
+  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 42)
+  desiredTpuConfig = _messages.MessageField('TpuConfig', 43)
+  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 44)
+  desiredWorkloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 45)
+  desiredWorkloadCertificates = _messages.MessageField('WorkloadCertificates', 46)
+  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 47)
+  desiredWorkloadMonitoringEapConfig = _messages.MessageField('WorkloadMonitoringEapConfig', 48)
 
 
 class CompleteIPRotationRequest(_messages.Message):
@@ -2559,6 +2565,21 @@ class MaxPodsConstraint(_messages.Message):
   """
 
   maxPodsPerNode = _messages.IntegerField(1)
+
+
+class MeshCertificates(_messages.Message):
+  r"""Configuration for issuance of mTLS keys and certificates to Kubernetes
+  pods.
+
+  Fields:
+    enableCertificates: enable_certificates controls issuance of workload mTLS
+      certificates. If set, the GKE Workload Identity Certificates controller
+      and node agent will be deployed in the cluster, which can then be
+      configured by creating a WorkloadCertificateConfig Custom Resource.
+      Requires Workload Identity (workload_pool must be non-empty).
+  """
+
+  enableCertificates = _messages.BooleanField(1)
 
 
 class Metric(_messages.Message):

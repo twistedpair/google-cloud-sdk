@@ -890,24 +890,27 @@ class _BaseStagedProgressTracker(collections.Mapping):
     return
 
   def CompleteStageWithWarning(self, key, warning_message):
-    """Informs the progress tracker that this stage completed with a warning.
+    self.CompleteStageWithWarnings(key, [warning_message])
+
+  def CompleteStageWithWarnings(self, key, warning_messages):
+    """Informs the progress tracker that this stage completed with warnings.
 
     Args:
       key: str, key for the stage to fail.
-      warning_message: str, user visible warning message.
+      warning_messages: list of str, user visible warning messages.
     """
     stage = self._ValidateStage(key)
     with self._lock:
       stage.status = StageCompletionStatus.WARNING
       stage._is_done = True  # pylint: disable=protected-access
       self._running_stages.discard(key)
-      self._exit_output_warnings.append(warning_message)
+      self._exit_output_warnings.extend(warning_messages)
       self._completed_with_warnings_stages.append(stage.key)
-      self._CompleteStageWithWarning(stage, warning_message)
+      self._CompleteStageWithWarnings(stage, warning_messages)
     self.Tick()  # This ensures output is properly flushed out.
 
-  def _CompleteStageWithWarning(self, stage, warning_message):
-    """Override to customize behavior on completing a stage with a warning."""
+  def _CompleteStageWithWarnings(self, stage, warning_messages):
+    """Override to customize behavior on completing a stage with warnings."""
     pass
 
   def FailStage(self, key, failure_exception, message=None):
@@ -1212,7 +1215,7 @@ class _MultilineStagedProgressTracker(_BaseStagedProgressTracker):
   def _CompleteStage(self, stage):
     self._UpdateStageTickMark(stage)
 
-  def _CompleteStageWithWarning(self, stage, warning_message):
+  def _CompleteStageWithWarnings(self, stage, warning_messages):
     self._UpdateStageTickMark(stage)
 
   def Tick(self):

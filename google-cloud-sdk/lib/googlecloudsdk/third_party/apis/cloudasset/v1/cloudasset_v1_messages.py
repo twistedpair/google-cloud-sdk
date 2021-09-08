@@ -1028,6 +1028,31 @@ class CreateFeedRequest(_messages.Message):
   feedId = _messages.StringField(2)
 
 
+class Date(_messages.Message):
+  r"""Represents a whole or partial calendar date, such as a birthday. The
+  time of day and time zone are either specified elsewhere or are
+  insignificant. The date is relative to the Gregorian Calendar. This can
+  represent one of the following: * A full date, with non-zero year, month,
+  and day values * A month and day value, with a zero year, such as an
+  anniversary * A year on its own, with zero month and day values * A year and
+  month value, with a zero day, such as a credit card expiration date Related
+  types are google.type.TimeOfDay and `google.protobuf.Timestamp`.
+
+  Fields:
+    day: Day of a month. Must be from 1 to 31 and valid for the year and
+      month, or 0 to specify a year by itself or a year and month where the
+      day isn't significant.
+    month: Month of a year. Must be from 1 to 12, or 0 to specify a year
+      without a month and day.
+    year: Year of the date. Must be from 1 to 9999, or 0 to specify a date
+      without a year.
+  """
+
+  day = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  month = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  year = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -3406,6 +3431,31 @@ class RelatedAssets(_messages.Message):
   relationshipAttributes = _messages.MessageField('RelationshipAttributes', 2)
 
 
+class RelatedResource(_messages.Message):
+  r"""The detailed related resource.
+
+  Fields:
+    assetType: The type of the asset. Example:
+      `compute.googleapis.com/Instance`
+    fullResourceName: The full resource name of the related resource. Example:
+      `//compute.googleapis.com/projects/my_proj_123/zones/instance/instance12
+      3`
+  """
+
+  assetType = _messages.StringField(1)
+  fullResourceName = _messages.StringField(2)
+
+
+class RelatedResources(_messages.Message):
+  r"""The related resources of the primary resource.
+
+  Fields:
+    relatedResources: The detailed related resources of the primary resource.
+  """
+
+  relatedResources = _messages.MessageField('RelatedResource', 1, repeated=True)
+
+
 class RelationshipAttributes(_messages.Message):
   r"""The relationship attributes which include `type`,
   `source_resource_type`, `target_resource_type` and `action`.
@@ -3523,6 +3573,12 @@ class ResourceSearchResult(_messages.Message):
       key or value. Example: `labels:prod` - query by a given label. Example:
       `labels.env:prod` - query by a given label's existence. Example:
       `labels.env:*` * use a free text query. Example: `prod`
+    RelationshipsValue: A map of related resources of this resource, keyed by
+      the relationship type. A relationship type is in the format of
+      {SourceType}_{ACTION}_{DestType}. Example: `DISK_TO_INSTANCE`,
+      `DISK_TO_NETWORK`, `INSTANCE_TO_INSTANCEGROUP`. See [supported
+      relationship types](https://cloud.google.com/asset-
+      inventory/docs/supported-asset-types#supported_relationship_types).
 
   Fields:
     additionalAttributes: The additional searchable attributes of this
@@ -3626,6 +3682,12 @@ class ResourceSearchResult(_messages.Message):
       belongs to a project. To search against `project`: * use a field query.
       Example: `project:12345` * use a free text query. Example: `12345` *
       specify the `scope` field as this project in your search request.
+    relationships: A map of related resources of this resource, keyed by the
+      relationship type. A relationship type is in the format of
+      {SourceType}_{ACTION}_{DestType}. Example: `DISK_TO_INSTANCE`,
+      `DISK_TO_NETWORK`, `INSTANCE_TO_INSTANCEGROUP`. See [supported
+      relationship types](https://cloud.google.com/asset-
+      inventory/docs/supported-asset-types#supported_relationship_types).
     state: The state of this resource. Different resources types have
       different state definitions that are mapped from various fields of
       different resource types. This field is available only when the
@@ -3726,6 +3788,36 @@ class ResourceSearchResult(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class RelationshipsValue(_messages.Message):
+    r"""A map of related resources of this resource, keyed by the relationship
+    type. A relationship type is in the format of
+    {SourceType}_{ACTION}_{DestType}. Example: `DISK_TO_INSTANCE`,
+    `DISK_TO_NETWORK`, `INSTANCE_TO_INSTANCEGROUP`. See [supported
+    relationship types](https://cloud.google.com/asset-
+    inventory/docs/supported-asset-types#supported_relationship_types).
+
+    Messages:
+      AdditionalProperty: An additional property for a RelationshipsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type RelationshipsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a RelationshipsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A RelatedResources attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('RelatedResources', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   additionalAttributes = _messages.MessageField('AdditionalAttributesValue', 1)
   assetType = _messages.StringField(2)
   attachedResources = _messages.MessageField('AttachedResource', 3, repeated=True)
@@ -3742,9 +3834,10 @@ class ResourceSearchResult(_messages.Message):
   parentAssetType = _messages.StringField(14)
   parentFullResourceName = _messages.StringField(15)
   project = _messages.StringField(16)
-  state = _messages.StringField(17)
-  updateTime = _messages.StringField(18)
-  versionedResources = _messages.MessageField('VersionedResource', 19, repeated=True)
+  relationships = _messages.MessageField('RelationshipsValue', 17)
+  state = _messages.StringField(18)
+  updateTime = _messages.StringField(19)
+  versionedResources = _messages.MessageField('VersionedResource', 20, repeated=True)
 
 
 class ResourceSelector(_messages.Message):
@@ -3807,6 +3900,7 @@ class SoftwarePackage(_messages.Message):
       https://docs.microsoft.com/en-
       us/windows/win32/cimwin32prov/win32-quickfixengineering for info in
       Windows Quick Fix Engineering.
+    windowsApplication: Details of Windows Application.
     wuaPackage: Details of a Windows Update package. See
       https://docs.microsoft.com/en-us/windows/win32/api/_wua/ for information
       about Windows Update.
@@ -3823,10 +3917,11 @@ class SoftwarePackage(_messages.Message):
   cosPackage = _messages.MessageField('VersionedPackage', 2)
   googetPackage = _messages.MessageField('VersionedPackage', 3)
   qfePackage = _messages.MessageField('WindowsQuickFixEngineeringPackage', 4)
-  wuaPackage = _messages.MessageField('WindowsUpdatePackage', 5)
-  yumPackage = _messages.MessageField('VersionedPackage', 6)
-  zypperPackage = _messages.MessageField('VersionedPackage', 7)
-  zypperPatch = _messages.MessageField('ZypperPatch', 8)
+  windowsApplication = _messages.MessageField('WindowsApplication', 5)
+  wuaPackage = _messages.MessageField('WindowsUpdatePackage', 6)
+  yumPackage = _messages.MessageField('VersionedPackage', 7)
+  zypperPackage = _messages.MessageField('VersionedPackage', 8)
+  zypperPatch = _messages.MessageField('ZypperPatch', 9)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -4091,6 +4186,31 @@ class VersionedResource(_messages.Message):
 
   resource = _messages.MessageField('ResourceValue', 1)
   version = _messages.StringField(2)
+
+
+class WindowsApplication(_messages.Message):
+  r"""Contains information about a Windows application as retrieved from the
+  Windows Registry. For more information about these fields, see [Windows
+  Installer Properties for the Uninstall
+  Registry](https://docs.microsoft.com/en-us/windows/win32/msi/uninstall-
+  registry-key){: class="external" }
+
+  Fields:
+    displayName: The name of the application or product.
+    displayVersion: The version of the product or application in string
+      format.
+    helpLink: The internet address for technical support.
+    installDate: The last time this product received service. The value of
+      this property is replaced each time a patch is applied or removed from
+      the product or the command-line option is used to repair the product.
+    publisher: The name of the manufacturer for the product or application.
+  """
+
+  displayName = _messages.StringField(1)
+  displayVersion = _messages.StringField(2)
+  helpLink = _messages.StringField(3)
+  installDate = _messages.MessageField('Date', 4)
+  publisher = _messages.StringField(5)
 
 
 class WindowsQuickFixEngineeringPackage(_messages.Message):

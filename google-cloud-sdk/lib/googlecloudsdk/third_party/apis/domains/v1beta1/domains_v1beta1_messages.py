@@ -650,6 +650,8 @@ class DsRecord(_messages.Message):
 
     Values:
       ALGORITHM_UNSPECIFIED: The algorithm is unspecified.
+      RSAMD5: RSA/MD5. Cannot be used for new deployments.
+      DH: Diffie-Hellman. Cannot be used for new deployments.
       DSA: DSA/SHA1. Not recommended for new deployments.
       ECC: ECC. Not recommended for new deployments.
       RSASHA1: RSA/SHA-1. Not recommended for new deployments.
@@ -663,20 +665,29 @@ class DsRecord(_messages.Message):
       ECDSAP384SHA384: ECDSA Curve P-384 with SHA-384.
       ED25519: Ed25519.
       ED448: Ed448.
+      INDIRECT: Reserved for Indirect Keys. Cannot be used for new
+        deployments.
+      PRIVATEDNS: Private algorithm. Cannot be used for new deployments.
+      PRIVATEOID: Private algorithm OID. Cannot be used for new deployments.
     """
     ALGORITHM_UNSPECIFIED = 0
-    DSA = 1
-    ECC = 2
-    RSASHA1 = 3
-    DSANSEC3SHA1 = 4
-    RSASHA1NSEC3SHA1 = 5
-    RSASHA256 = 6
-    RSASHA512 = 7
-    ECCGOST = 8
-    ECDSAP256SHA256 = 9
-    ECDSAP384SHA384 = 10
-    ED25519 = 11
-    ED448 = 12
+    RSAMD5 = 1
+    DH = 2
+    DSA = 3
+    ECC = 4
+    RSASHA1 = 5
+    DSANSEC3SHA1 = 6
+    RSASHA1NSEC3SHA1 = 7
+    RSASHA256 = 8
+    RSASHA512 = 9
+    ECCGOST = 10
+    ECDSAP256SHA256 = 11
+    ECDSAP384SHA384 = 12
+    ED25519 = 13
+    ED448 = 14
+    INDIRECT = 15
+    PRIVATEDNS = 16
+    PRIVATEOID = 17
 
   class DigestTypeValueValuesEnum(_messages.Enum):
     r"""The hash function used to generate the digest of the referenced

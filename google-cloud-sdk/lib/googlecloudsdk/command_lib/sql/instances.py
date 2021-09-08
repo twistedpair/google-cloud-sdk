@@ -386,6 +386,10 @@ class _BaseInstances(object):
           settings.ipConfiguration = sql_messages.IpConfiguration()
         settings.ipConfiguration.allocatedIpRange = args.allocated_ip_range_name
 
+      if args.audit_bucket_path is not None:
+        settings.sqlServerAuditConfig = (
+            reducers.SqlServerAuditConfig(sql_messages, args.audit_bucket_path))
+
     return settings
 
   @classmethod
@@ -488,6 +492,12 @@ class _BaseInstances(object):
                                         instance.settings.userLabels)
       if labels_update.needs_update:
         settings.userLabels = labels_update.labels
+
+    # ALPHA args.
+    if _IsAlpha(release_track):
+      if args.audit_bucket_path is not None:
+        settings.sqlServerAuditConfig = (
+            reducers.SqlServerAuditConfig(sql_messages, args.audit_bucket_path))
 
     return settings
 

@@ -91,3 +91,27 @@ router:
     parameter_name: routersId
     attribute_name: router
     help: Id of the router.
+
+httpRoute:
+  name: http route
+  collection: networkservices.projects.locations.httpRoutes
+  request_id_field: httpRouteId
+  attributes:
+  - *project
+  - *location
+  - &httpRoute
+    parameter_name: httpRoutesId
+    attribute_name: http_route
+    help: Id of the http route.
+
+tcpRoute:
+  name: tcp route
+  collection: networkservices.projects.locations.tcpRoutes
+  request_id_field: tcpRouteId
+  attributes:
+  - *project
+  - *location
+  - &tcpRoute
+    parameter_name: tcpRoutesId
+    attribute_name: tcp_route
+    help: Id of the tcp route.

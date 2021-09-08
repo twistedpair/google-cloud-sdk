@@ -2467,6 +2467,8 @@ class FlexTemplateRuntimeEnvironment(_messages.Message):
     ipConfiguration: Configuration for VM IPs.
     kmsKeyName: Name for the Cloud KMS key for the job. Key format is:
       projects//locations//keyRings//cryptoKeys/
+    launcherMachineType: The machine type to use for launching the job. The
+      default is n1-standard-1.
     machineType: The machine type to use for the job. Defaults to the value
       from the template if not specified.
     maxWorkers: The maximum number of Google Compute Engine instances to be
@@ -2588,19 +2590,20 @@ class FlexTemplateRuntimeEnvironment(_messages.Message):
   flexrsGoal = _messages.EnumField('FlexrsGoalValueValuesEnum', 7)
   ipConfiguration = _messages.EnumField('IpConfigurationValueValuesEnum', 8)
   kmsKeyName = _messages.StringField(9)
-  machineType = _messages.StringField(10)
-  maxWorkers = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  network = _messages.StringField(12)
-  numWorkers = _messages.IntegerField(13, variant=_messages.Variant.INT32)
-  saveHeapDumpsToGcsPath = _messages.StringField(14)
-  sdkContainerImage = _messages.StringField(15)
-  serviceAccountEmail = _messages.StringField(16)
-  stagingLocation = _messages.StringField(17)
-  subnetwork = _messages.StringField(18)
-  tempLocation = _messages.StringField(19)
-  workerRegion = _messages.StringField(20)
-  workerZone = _messages.StringField(21)
-  zone = _messages.StringField(22)
+  launcherMachineType = _messages.StringField(10)
+  machineType = _messages.StringField(11)
+  maxWorkers = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  network = _messages.StringField(13)
+  numWorkers = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  saveHeapDumpsToGcsPath = _messages.StringField(15)
+  sdkContainerImage = _messages.StringField(16)
+  serviceAccountEmail = _messages.StringField(17)
+  stagingLocation = _messages.StringField(18)
+  subnetwork = _messages.StringField(19)
+  tempLocation = _messages.StringField(20)
+  workerRegion = _messages.StringField(21)
+  workerZone = _messages.StringField(22)
+  zone = _messages.StringField(23)
 
 
 class FloatingPointList(_messages.Message):

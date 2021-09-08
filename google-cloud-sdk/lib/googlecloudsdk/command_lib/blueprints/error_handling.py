@@ -133,7 +133,21 @@ def GetApplyResultsPathInGCS(artifacts_path):
     A string representing the full Cloud Storage path to the apply-results JSON
     file.
   """
-  return '{0}/results/apply-results.json'.format(artifacts_path)
+  return '{0}/apply-results.json'.format(artifacts_path)
+
+
+def GetDeleteResultsPathInGCS(artifacts_path):
+  """Gets a full Cloud Storage path to a destroy-results file.
+
+  Args:
+    artifacts_path: string, the full Cloud Storage path to the folder containing
+      deletion artifacts, e.g. 'gs://my-bucket/artifacts'.
+
+  Returns:
+    A string representing the full Cloud Storage path to the destroy-results
+    JSON file.
+  """
+  return '{0}/destroy-results.json'.format(artifacts_path)
 
 
 def GetPipelineResultsPathInGCS(artifacts_path):
@@ -152,53 +166,57 @@ def GetPipelineResultsPathInGCS(artifacts_path):
   return '{0}/results.yaml'.format(artifacts_path)
 
 
-def PrintKptApplyResultsError(artifacts_folder, max_resource_errors=25):
+def PrintKptApplyResultsError(artifacts_folder,
+                              action='apply',
+                              max_resource_errors=25):
   """Prints information about a failed `kpt apply`.
 
   Args:
     artifacts_folder: string, the full Cloud Storage path to the folder
       containing the revision's apply artifacts,
       e.g. 'gs://my-bucket/artifacts'.
+    action: The type of action performed. Valid values: 'apply', 'delete'.
     max_resource_errors: int, the maximum number of kpt resource errors to
       display before truncating.
 
   Returns:
     bool indicating whether an error was printed or not.
   """
-  apply_results_path = GetApplyResultsPathInGCS(artifacts_folder)
+  if action == 'apply':
+    results_path = GetApplyResultsPathInGCS(artifacts_folder)
+  elif action == 'delete':
+    results_path = GetDeleteResultsPathInGCS(artifacts_folder)
   try:
-    apply_results_content = GetTextFileContentsFromStorageBucket(
-        apply_results_path)
+    results_content = GetTextFileContentsFromStorageBucket(results_path)
   except exceptions.BadFileException as e:
-    log.debug('Unable to fetch kpt apply results: %s', e)
+    log.debug('Unable to fetch kpt results from path "%s": %s', results_path, e)
     return False
 
   try:
-    apply_results_data = [
-        json.loads(line) for line in apply_results_content.splitlines()
-    ]
+    results_data = [json.loads(line) for line in results_content.splitlines()]
   except ValueError as e:
-    log.debug('Unable to parse apply results JSON: {}'.format(e))
+    log.debug('Unable to parse kpt results JSON: {}'.format(e))
     return False
 
   resource_failures = [
-      event for event in apply_results_data
-      if (event.get('type') == 'apply' and
-          event.get('eventType') == 'resourceFailed')
+      event for event in results_data
+      if (event.get('type') == action and
+          event.get('eventType') in ('resourceDeleted', 'resourceFailed'))
   ]
 
   if resource_failures:
     num_resource_failures = len(resource_failures)
-    log.error('[kpt] {0} {1} failed to apply:'.format(
+    log.error('[kpt] {0} {1} failed to {2}:'.format(
         num_resource_failures,
-        text.Pluralize(len(resource_failures), 'resource')))
+        text.Pluralize(len(resource_failures), 'resource'),
+        action))
     for failure_event in resource_failures[:max_resource_errors]:
       log.status.Print('- "{0}" ({1}) failed:\n    "{2}"\n'.format(
           failure_event.get('name'), failure_event.get('kind'),
           failure_event.get('error')))
     if num_resource_failures > max_resource_errors:
       log.status.Print('Some errors were truncated.')
-    log.status.Print('See {0} for details.'.format(apply_results_path))
+    log.status.Print('See {0} for details.'.format(results_path))
   return bool(resource_failures)
 
 
@@ -253,8 +271,8 @@ def PrintKptPipelineResultsError(artifacts_folder):
       for msg in error_messages:
         log.status.Print('  - Error: "{}"'.format(msg))
     elif stderr:
-      log.status.Print('  - Stderr:\n{}'.format(
-          '\n'.join(textwrap.wrap(
+      log.status.Print('  - Stderr:\n{}'.format('\n'.join(
+          textwrap.wrap(
               stderr, initial_indent=' ' * 6, subsequent_indent=' ' * 6))))
     log.status.Print()
   if printed_error:
@@ -272,9 +290,26 @@ def PrintApplyRunError(apply_results):
     apply_results: ApplyResults proto, the apply results from the failed
       revision.
   """
-  kpt_error_found = PrintKptApplyResultsError(apply_results.artifacts)
+  kpt_error_found = PrintKptApplyResultsError(
+      apply_results.artifacts, action='apply')
   if not kpt_error_found:
     PrintCloudBuildResults(apply_results.logs, apply_results.build)
+
+
+def PrintDeleteRunError(delete_results):
+  """Prints error details for a failed delete run.
+
+  Attempts to display kpt-specific errors, and falls back to displaying Cloud
+  Build logs if kpt errors are inaccessible.
+
+  Args:
+    delete_results: ApplyResults proto, the delete results from the delete
+      operation.
+  """
+  kpt_error_found = PrintKptApplyResultsError(
+      delete_results.artifacts, action='delete')
+  if not kpt_error_found:
+    PrintCloudBuildResults(delete_results.logs, delete_results.build)
 
 
 def PrintPipelineRunError(pipeline_results):
@@ -334,5 +369,4 @@ def DeploymentFailed(deployment_ref):
     revision_ref = blueprints_util.GetRevision(deployment_ref.latestRevision)
     RevisionFailed(revision_ref)
   elif deployment_error_code == messages.Deployment.ErrorCodeValueValuesEnum.DELETE_BUILD_RUN_FAILED:
-    PrintCloudBuildResults(deployment_ref.deleteResults.logs,
-                           deployment_ref.deleteResults.build)
+    PrintDeleteRunError(deployment_ref.deleteResults)
