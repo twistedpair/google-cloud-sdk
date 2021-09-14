@@ -343,7 +343,6 @@ class CloudApi(object):
                     source_stream,
                     destination_resource,
                     request_config,
-                    progress_callback=None,
                     serialization_data=None,
                     tracker_callback=None,
                     upload_strategy=UploadStrategy.SIMPLE):
@@ -355,9 +354,6 @@ class CloudApi(object):
         Contains the correct metadata to upload.
       request_config (RequestConfig): Object containing general API function
         arguments. Subclasses for specific cloud providers are available.
-      progress_callback (function): Callback function for progress
-        notifications. Receives calls with arguments (bytes_transferred,
-        total_size).
       serialization_data (dict): API-specific data needed to resume an upload.
         Only used with UploadStrategy.RESUMABLE.
       tracker_callback (Callable[[dict], None]): Function that writes a tracker

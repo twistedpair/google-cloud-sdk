@@ -146,7 +146,7 @@ class AssuredworkloadsV1beta1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the workload. Make sure that workload's direct children are already in a deleted state, otherwise the request will fail with a FAILED_PRECONDITION error.
+      r"""Deletes the workload. Make sure that workload's direct children are already in a deleted state, otherwise the request will fail with a FAILED_PRECONDITION error. In addition to assuredworkloads.workload.delete permission, the user should also have orgpolicy.policy.set permission on the deleted folder to remove Assured Workloads OrgPolicies.
 
       Args:
         request: (AssuredworkloadsOrganizationsLocationsWorkloadsDeleteRequest) input message
@@ -254,7 +254,7 @@ class AssuredworkloadsV1beta1(base_api.BaseApiClient):
     )
 
     def RestrictAllowedServices(self, request, global_params=None):
-      r"""Restrict the list of services allowed in the Workload environment. The current list of allowed services can be found at https://cloud.google.com/assured-workloads/docs/supported-products.
+      r"""Restrict the list of services allowed in the Workload environment. The current list of allowed services can be found at https://cloud.google.com/assured-workloads/docs/supported-products In addition to assuredworkloads.workload.create permission, the user should also have orgpolicy.policy.set permission on the folder resource to use this functionality.
 
       Args:
         request: (AssuredworkloadsOrganizationsLocationsWorkloadsRestrictAllowedServicesRequest) input message

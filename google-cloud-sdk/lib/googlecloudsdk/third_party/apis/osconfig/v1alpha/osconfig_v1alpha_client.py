@@ -41,6 +41,8 @@ class OsconfigV1alpha(base_api.BaseApiClient):
         response_encoding=response_encoding)
     self.projects_locations_instanceOSPoliciesCompliances = self.ProjectsLocationsInstanceOSPoliciesCompliancesService(self)
     self.projects_locations_instances_inventories = self.ProjectsLocationsInstancesInventoriesService(self)
+    self.projects_locations_instances_osPolicyAssignments_reports = self.ProjectsLocationsInstancesOsPolicyAssignmentsReportsService(self)
+    self.projects_locations_instances_osPolicyAssignments = self.ProjectsLocationsInstancesOsPolicyAssignmentsService(self)
     self.projects_locations_instances_vulnerabilityReports = self.ProjectsLocationsInstancesVulnerabilityReportsService(self)
     self.projects_locations_instances = self.ProjectsLocationsInstancesService(self)
     self.projects_locations_osPolicyAssignments_operations = self.ProjectsLocationsOsPolicyAssignmentsOperationsService(self)
@@ -173,6 +175,80 @@ class OsconfigV1alpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='OsconfigProjectsLocationsInstancesInventoriesListRequest',
         response_type_name='ListInventoriesResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsInstancesOsPolicyAssignmentsReportsService(base_api.BaseApiService):
+    """Service class for the projects_locations_instances_osPolicyAssignments_reports resource."""
+
+    _NAME = 'projects_locations_instances_osPolicyAssignments_reports'
+
+    def __init__(self, client):
+      super(OsconfigV1alpha.ProjectsLocationsInstancesOsPolicyAssignmentsReportsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""List OS policy asssignment reports for all Compute Engine VM instances in the specified zone.
+
+      Args:
+        request: (OsconfigProjectsLocationsInstancesOsPolicyAssignmentsReportsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListOSPolicyAssignmentReportsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}/osPolicyAssignments/{osPolicyAssignmentsId}/reports',
+        http_method='GET',
+        method_id='osconfig.projects.locations.instances.osPolicyAssignments.reports.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/reports',
+        request_field='',
+        request_type_name='OsconfigProjectsLocationsInstancesOsPolicyAssignmentsReportsListRequest',
+        response_type_name='ListOSPolicyAssignmentReportsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsInstancesOsPolicyAssignmentsService(base_api.BaseApiService):
+    """Service class for the projects_locations_instances_osPolicyAssignments resource."""
+
+    _NAME = 'projects_locations_instances_osPolicyAssignments'
+
+    def __init__(self, client):
+      super(OsconfigV1alpha.ProjectsLocationsInstancesOsPolicyAssignmentsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def GetReport(self, request, global_params=None):
+      r"""Get the OS policy asssignment report for the specified Compute Engine VM instance.
+
+      Args:
+        request: (OsconfigProjectsLocationsInstancesOsPolicyAssignmentsGetReportRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (OSPolicyAssignmentReport) The response message.
+      """
+      config = self.GetMethodConfig('GetReport')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetReport.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}/osPolicyAssignments/{osPolicyAssignmentsId}/report',
+        http_method='GET',
+        method_id='osconfig.projects.locations.instances.osPolicyAssignments.getReport',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='OsconfigProjectsLocationsInstancesOsPolicyAssignmentsGetReportRequest',
+        response_type_name='OSPolicyAssignmentReport',
         supports_download=False,
     )
 

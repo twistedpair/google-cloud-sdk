@@ -496,7 +496,7 @@
     },
     "LocalDisk": {
       "id": "LocalDisk",
-      "description": "An Local attached disk resource.",
+      "description": "A Local attached disk resource.",
       "type": "object",
       "properties": {
         "autoDelete": {
@@ -533,7 +533,7 @@
           "$ref": "LocalDiskInitializeParams"
         },
         "interface": {
-          "description": "Specifies the disk interface to use for attaching this disk, which is either SCSI or NVME. The default is SCSI. Persistent disks must always use SCSI and the request will fail if you attempt to attach a persistent disk in any other format than SCSI. Local SSDs can use either NVME or SCSI. For performance characteristics of SCSI over NVMe, see Local SSD performance. Valid values: NVME SCSI",
+          "description": "Specifies the disk interface to use for attaching this disk, which is either SCSI or NVME. The default is SCSI. Persistent disks must always use SCSI and the request will fail if you attempt to attach a persistent disk in any other format than SCSI. Local SSDs can use either NVME or SCSI. For performance characteristics of SCSI over NVMe, see Local SSD performance. Valid values: * NVME * SCSI",
           "type": "string"
         },
         "kind": {
@@ -550,7 +550,7 @@
           }
         },
         "mode": {
-          "description": "The mode in which to attach this disk, either READ_WRITE or READ_ONLY. If not specified, the default is to attach the disk in READ_WRITE mode. Valid values: READ_ONLY READ_WRITE",
+          "description": "The mode in which to attach this disk, either READ_WRITE or READ_ONLY. If not specified, the default is to attach the disk in READ_WRITE mode. Valid values: * READ_ONLY * READ_WRITE",
           "type": "string"
         },
         "source": {
@@ -558,7 +558,7 @@
           "type": "string"
         },
         "type": {
-          "description": "Specifies the type of the disk, either SCRATCH or PERSISTENT. If not specified, the default is PERSISTENT. Valid values: PERSISTENT SCRATCH",
+          "description": "Specifies the type of the disk, either SCRATCH or PERSISTENT. If not specified, the default is PERSISTENT. Valid values: * PERSISTENT * SCRATCH",
           "type": "string"
         }
       }
@@ -737,7 +737,7 @@
           "type": "boolean"
         },
         "idleShutdownTimeout": {
-          "description": "Time in minutes to wait before shuting down runtime. Default: 180 minutes",
+          "description": "Time in minutes to wait before shutting down runtime. Default: 180 minutes",
           "type": "integer",
           "format": "int32"
         },
@@ -1210,7 +1210,7 @@
           "format": "int64"
         },
         "interface": {
-          "description": "Indicates the disk interface to use for attaching this disk, which is either SCSI or NVME. The default is SCSI. Persistent disks must always use SCSI and the request will fail if you attempt to attach a persistent disk in any other format than SCSI. Local SSDs can use either NVME or SCSI. For performance characteristics of SCSI over NVMe, see Local SSD performance. Valid values: NVME SCSI",
+          "description": "Indicates the disk interface to use for attaching this disk, which is either SCSI or NVME. The default is SCSI. Persistent disks must always use SCSI and the request will fail if you attempt to attach a persistent disk in any other format than SCSI. Local SSDs can use either NVME or SCSI. For performance characteristics of SCSI over NVMe, see Local SSD performance. Valid values: * NVME * SCSI",
           "type": "string"
         },
         "kind": {
@@ -1225,7 +1225,7 @@
           }
         },
         "mode": {
-          "description": "The mode in which to attach this disk, either READ_WRITE or READ_ONLY. If not specified, the default is to attach the disk in READ_WRITE mode. Valid values: READ_ONLY READ_WRITE",
+          "description": "The mode in which to attach this disk, either READ_WRITE or READ_ONLY. If not specified, the default is to attach the disk in READ_WRITE mode. Valid values: * READ_ONLY * READ_WRITE",
           "type": "string"
         },
         "source": {
@@ -1233,7 +1233,7 @@
           "type": "string"
         },
         "type": {
-          "description": "Indicates the type of the disk, either SCRATCH or PERSISTENT. Valid values: PERSISTENT SCRATCH",
+          "description": "Indicates the type of the disk, either SCRATCH or PERSISTENT. Valid values: * PERSISTENT * SCRATCH",
           "type": "string"
         }
       }
@@ -1244,7 +1244,7 @@
       "type": "object",
       "properties": {
         "type": {
-          "description": "The ID of a supported feature. Read Enabling guest operating system features to see a list of available options. Valid values: FEATURE_TYPE_UNSPECIFIED MULTI_IP_SUBNET SECURE_BOOT UEFI_COMPATIBLE VIRTIO_SCSI_MULTIQUEUE WINDOWS",
+          "description": "The ID of a supported feature. Read Enabling guest operating system features to see a list of available options. Valid values: * FEATURE_TYPE_UNSPECIFIED * MULTI_IP_SUBNET * SECURE_BOOT * UEFI_COMPATIBLE * VIRTIO_SCSI_MULTIQUEUE * WINDOWS",
           "type": "string"
         }
       }
@@ -1859,6 +1859,10 @@
         "dataprocParameters": {
           "description": "Parameters used in Dataproc JobType executions.",
           "$ref": "DataprocParameters"
+        },
+        "vertexAiParameters": {
+          "description": "Parameters used in Vertex AI JobType executions.",
+          "$ref": "VertexAIParameters"
         }
       }
     },
@@ -1905,6 +1909,17 @@
       "properties": {
         "cluster": {
           "description": "URI for cluster used to run Dataproc execution. Format: 'projects\/{PROJECT_ID}\/regions\/{REGION}\/clusters\/{CLUSTER_NAME}",
+          "type": "string"
+        }
+      }
+    },
+    "VertexAIParameters": {
+      "id": "VertexAIParameters",
+      "description": "Parameters used in Vertex AI JobType executions.",
+      "type": "object",
+      "properties": {
+        "network": {
+          "description": "The full name of the Compute Engine [network](\/compute\/docs\/networks-and-firewalls#networks) to which the Job should be peered. For example, `projects\/12345\/global\/networks\/myVPC`. [Format](https:\/\/cloud.google.com\/compute\/docs\/reference\/rest\/v1\/networks\/insert) is of the form `projects\/{project}\/global\/networks\/{network}`. Where {project} is a project number, as in `12345`, and {network} is a network name. Private services access must already be configured for the network. If left unspecified, the job is not peered with any network.",
           "type": "string"
         }
       }

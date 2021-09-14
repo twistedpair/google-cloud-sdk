@@ -41,6 +41,7 @@ PURPOSE_MAP = {
     'encryption': PURPOSE_ENUM.ENCRYPT_DECRYPT,
     'asymmetric-signing': PURPOSE_ENUM.ASYMMETRIC_SIGN,
     'asymmetric-encryption': PURPOSE_ENUM.ASYMMETRIC_DECRYPT,
+    'mac': PURPOSE_ENUM.MAC,
 }
 
 PROTECTION_LEVEL_ENUM = (
@@ -77,6 +78,7 @@ VALID_ALGORITHMS_MAP = {
         'rsa-decrypt-oaep-4096-sha256',
         'rsa-decrypt-oaep-4096-sha512',
     ],
+    PURPOSE_ENUM.MAC: ['hmac-sha256',]
 }
 
 # Derive available algorithms from VALID_ALGORITHMS_MAP.

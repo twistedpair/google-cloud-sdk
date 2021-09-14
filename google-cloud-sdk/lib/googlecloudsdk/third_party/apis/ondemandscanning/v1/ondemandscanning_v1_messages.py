@@ -75,13 +75,15 @@ class AnalyzePackagesRequestV1(_messages.Message):
   create Vulnerability Occurrences for it.
 
   Fields:
+    includeOsvData: Whether to include OSV data in the scan.
     packages: The packages to analyze.
     resourceUri: Required. The resource URI of the container image being
       scanned.
   """
 
-  packages = _messages.MessageField('PackageData', 1, repeated=True)
-  resourceUri = _messages.StringField(2)
+  includeOsvData = _messages.BooleanField(1)
+  packages = _messages.MessageField('PackageData', 2, repeated=True)
+  resourceUri = _messages.StringField(3)
 
 
 class AnalyzePackagesResponse(_messages.Message):

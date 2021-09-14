@@ -147,7 +147,11 @@ def RunCsvExportCommand(args, client):
       args.uri,
       args.database,
       args.query,
-      offload=args.offload)
+      offload=args.offload,
+      quote=args.quote,
+      escape=args.escape,
+      fields_terminated_by=args.fields_terminated_by,
+      lines_terminated_by=args.lines_terminated_by)
   return RunExportCommand(args, client, csv_export_context)
 
 

@@ -25,6 +25,7 @@ from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.api_lib.workflows import cache
 from googlecloudsdk.api_lib.workflows import poller_utils
 from googlecloudsdk.calliope import base
+from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.command_lib.workflows import flags
 from googlecloudsdk.core import resources
@@ -137,18 +138,25 @@ class WorkflowExecutionClient(object):
     self.messages = self.client.MESSAGES_MODULE
     self._service = self.client.projects_locations_workflows_executions
 
-  def Create(self, workflow_ref, data):
+  def Create(self, workflow_ref, data, call_log_level=None):
     """Creates a Workflow execution.
 
     Args:
       workflow_ref: Resource reference to the Workflow to execute.
       data: Argments to use for executing the workflow.
+      call_log_level: Level of call logging to apply during execution.
 
     Returns:
       Execution: The workflow execution.
     """
     execution = self.messages.Execution()
     execution.argument = data
+    if call_log_level is not None and call_log_level != 'none':
+      call_log_level_enum = self.messages.Execution.CallLogLevelValueValuesEnum
+      execution.callLogLevel = arg_utils.ChoiceToEnum(
+          call_log_level,
+          call_log_level_enum,
+          valid_choices=['none', 'log-all-calls', 'log-errors-only'])
     create_req = self.messages.WorkflowexecutionsProjectsLocationsWorkflowsExecutionsCreateRequest(
         parent=workflow_ref.RelativeName(),
         execution=execution)

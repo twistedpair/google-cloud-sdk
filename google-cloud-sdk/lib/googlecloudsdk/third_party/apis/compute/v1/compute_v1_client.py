@@ -3081,7 +3081,7 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Retrieves the specified Operations resource. Gets a list of operations by making a `list()` request.
+      r"""Retrieves the specified Operations resource.
 
       Args:
         request: (ComputeGlobalOperationsGetRequest) input message
@@ -4591,7 +4591,7 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is patched even if the instances in the group are still in the process of being patched. You must separately verify the status of the individual instances with the listManagedInstances method. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+      r"""Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is patched even if the instances in the group are still in the process of being patched. You must separately verify the status of the individual instances with the listManagedInstances method. This method supports PATCH semantics and uses the JSON merge patch format and processing rules. If you update your group to specify a new template or instance configuration, it's possible that your intended specification for each VM in the group is different from the current state of that VM. To learn how to apply an updated configuration to the VMs in a MIG, see Updating instances in a MIG.
 
       Args:
         request: (ComputeInstanceGroupManagersPatchRequest) input message
@@ -5271,7 +5271,7 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def AggregatedList(self, request, global_params=None):
-      r"""Retrieves aggregated list of all of the instances in your project across all regions and zones.
+      r"""Retrieves an aggregated list of all of the instances in your project across all regions and zones. The performance of this method degrades when a filter is specified on a project that has a very large number of instances.
 
       Args:
         request: (ComputeInstancesAggregatedListRequest) input message
@@ -10597,7 +10597,7 @@ class ComputeV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is patched even if the instances in the group are still in the process of being patched. You must separately verify the status of the individual instances with the listmanagedinstances method. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
+      r"""Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is patched even if the instances in the group are still in the process of being patched. You must separately verify the status of the individual instances with the listmanagedinstances method. This method supports PATCH semantics and uses the JSON merge patch format and processing rules. If you update your group to specify a new template or instance configuration, it's possible that your intended specification for each VM in the group is different from the current state of that VM. To learn how to apply an updated configuration to the VMs in a MIG, see Updating instances in a MIG.
 
       Args:
         request: (ComputeRegionInstanceGroupManagersPatchRequest) input message

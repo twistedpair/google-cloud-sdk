@@ -42,20 +42,17 @@ def PacketMirroringArgument(required=True, plural=False):
       regional_collection='compute.packetMirrorings')
 
 
-def AddCreateArgs(parser, enable_filter_direction):
+def AddCreateArgs(parser):
   """Adds flags for creating packet mirroring resources."""
-  _AddArgs(parser, enable_filter_direction=enable_filter_direction)
+  _AddArgs(parser)
 
 
-def AddUpdateArgs(parser, enable_filter_direction):
+def AddUpdateArgs(parser):
   """Adds flags for updating packet mirroring resources."""
-  _AddArgs(
-      parser,
-      is_for_update=True,
-      enable_filter_direction=enable_filter_direction)
+  _AddArgs(parser, is_for_update=True)
 
 
-def _AddArgs(parser, is_for_update=False, enable_filter_direction=False):
+def _AddArgs(parser, is_for_update=False):
   """Adds args for create/update subcommands."""
   # Network cannot be updated.
   if not is_for_update:
@@ -79,8 +76,7 @@ def _AddArgs(parser, is_for_update=False, enable_filter_direction=False):
 
   _AddFilterCidrRangesArg(parser, is_for_update)
   _AddFilterProtocolsArg(parser, is_for_update)
-  if enable_filter_direction:
-    _AddFilterDirectionArg(parser)
+  _AddFilterDirectionArg(parser)
 
 
 def _AddNetworkArg(parser):
@@ -319,23 +315,30 @@ def _AddFilterProtocolsArg(parser, is_for_update=False):
         help='Update the filter protocols of this packet mirroring.')
     protocols.add_argument(
         '--add-filter-protocols',
-        type=arg_parsers.ArgList(
-            element_type=str, choices=['tcp', 'udp', 'icmp']),
+        type=arg_parsers.ArgList(element_type=str),
         metavar='PROTOCOL',
-        help='List of filter IP protocols to add to the packet mirroring.')
+        help="""\
+        List of filter IP protocols to add to the packet mirroring.
+        PROTOCOL can be one of tcp, udp, icmp, esp, ah, ipip, sctp, or an IANA
+        protocol number.
+        """)
     protocols.add_argument(
         '--remove-filter-protocols',
-        type=arg_parsers.ArgList(
-            element_type=str, choices=['tcp', 'udp', 'icmp']),
+        type=arg_parsers.ArgList(element_type=str),
         metavar='PROTOCOL',
-        help='List of filter IP protocols to remove from the packet mirroring.')
+        help="""\
+        List of filter IP protocols to remove from the packet mirroring.
+        PROTOCOL can be one of tcp, udp, icmp, esp, ah, ipip, sctp, or an IANA
+        protocol number.
+        """)
     protocols.add_argument(
         '--set-filter-protocols',
-        type=arg_parsers.ArgList(
-            element_type=str, choices=['tcp', 'udp', 'icmp']),
+        type=arg_parsers.ArgList(element_type=str),
         metavar='PROTOCOL',
         help="""\
         List of filter IP protocols to be mirrored on the packet mirroring.
+        PROTOCOL can be one of tcp, udp, icmp, esp, ah, ipip, sctp, or an IANA
+        protocol number.
         """)
     protocols.add_argument(
         '--clear-filter-protocols',
@@ -344,17 +347,17 @@ def _AddFilterProtocolsArg(parser, is_for_update=False):
         help="""\
         If specified, clear the existing filter IP protocols from the packet
         mirroring.
-        """
-    )
+        """)
   else:
     parser.add_argument(
         '--filter-protocols',
-        type=arg_parsers.ArgList(
-            element_type=str, choices=['tcp', 'udp', 'icmp']),
+        type=arg_parsers.ArgList(element_type=str),
         metavar='PROTOCOL',
         help="""\
         List of IP protocols that apply as filters for packet mirroring traffic.
         If unspecified, the packet mirroring applies to all traffic.
+        PROTOCOL can be one of tcp, udp, icmp, esp, ah, ipip, sctp, or an IANA
+        protocol number.
         """,
     )
 

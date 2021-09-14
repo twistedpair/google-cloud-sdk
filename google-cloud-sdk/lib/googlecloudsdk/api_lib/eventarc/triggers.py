@@ -295,7 +295,8 @@ class _TriggersClient(_BaseTriggersClient):
   def BuildUpdateMask(self, event_filters, service_account,
                       destination_run_service, destination_run_path,
                       destination_run_region, destination_gke_namespace,
-                      destination_gke_service, destination_gke_path):
+                      destination_gke_service, destination_gke_path,
+                      destination_workflow, destination_workflow_location):
     """Builds an update mask for updating a Cloud Run trigger.
 
     Args:
@@ -312,6 +313,9 @@ class _TriggersClient(_BaseTriggersClient):
       destination_gke_service: bool, whether to update the destination GKE
         service name.
       destination_gke_path: bool, whether to update the destination GKE path.
+      destination_workflow: bool, whether to update the destination workflow.
+      destination_workflow_location: bool, whether to update the destination
+        workflow location.
 
     Returns:
       The update mask as a string.
@@ -332,6 +336,8 @@ class _TriggersClient(_BaseTriggersClient):
       update_mask.append('destination.gke.service')
     if destination_gke_path:
       update_mask.append('destination.gke.path')
+    if destination_workflow or destination_workflow_location:
+      update_mask.append('destination.workflow')
     if event_filters:
       update_mask.append('eventFilters')
     if service_account:

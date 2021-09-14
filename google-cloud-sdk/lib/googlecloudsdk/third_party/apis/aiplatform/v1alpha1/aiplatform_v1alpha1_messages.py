@@ -4017,8 +4017,8 @@ class AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesCreateRequ
       n}/tensorboards/{tensorboard}/experiments/{experiment}/runs/{run}`
     tensorboardTimeSeriesId: Optional. The user specified unique ID to use for
       the TensorboardTimeSeries, which will become the final component of the
-      TensorboardTimeSeries's resource name. Ref: go/ucaip-user-specified-id
-      This value should match "a-z0-9{0, 127}"
+      TensorboardTimeSeries's resource name. This value should match
+      "a-z0-9{0, 127}"
   """
 
   googleCloudAiplatformV1alpha1TensorboardTimeSeries = _messages.MessageField('GoogleCloudAiplatformV1alpha1TensorboardTimeSeries', 1)
@@ -5780,9 +5780,10 @@ class GoogleCloudAiplatformInternalFeature(_messages.Message):
       prefixed with "aiplatform.googleapis.com/" and are immutable.
     monitoringConfig: Optional. The custom monitoring configuration for this
       Feature, if not set, use the monitoring_config defined for the
-      EntityType this Feature belongs to. If this is populated with
-      FeaturestoreMonitoringConfig.disabled = true, snapshot analysis
-      monitoring is disabled; if
+      EntityType this Feature belongs to. Only Features with type
+      (Feature.ValueType) BOOL, STRING, DOUBLE or INT64 can enable monitoring.
+      If this is populated with FeaturestoreMonitoringConfig.disabled = true,
+      snapshot analysis monitoring is disabled; if
       FeaturestoreMonitoringConfig.monitoring_interval specified, snapshot
       analysis monitoring is enabled. Otherwise, snapshot analysis monitoring
       config is same as the EntityType's this Feature belongs to.
@@ -8038,9 +8039,10 @@ class GoogleCloudAiplatformUiFeature(_messages.Message):
       prefixed with "aiplatform.googleapis.com/" and are immutable.
     monitoringConfig: Optional. The custom monitoring configuration for this
       Feature, if not set, use the monitoring_config defined for the
-      EntityType this Feature belongs to. If this is populated with
-      FeaturestoreMonitoringConfig.disabled = true, snapshot analysis
-      monitoring is disabled; if
+      EntityType this Feature belongs to. Only Features with type
+      (Feature.ValueType) BOOL, STRING, DOUBLE or INT64 can enable monitoring.
+      If this is populated with FeaturestoreMonitoringConfig.disabled = true,
+      snapshot analysis monitoring is disabled; if
       FeaturestoreMonitoringConfig.monitoring_interval specified, snapshot
       analysis monitoring is enabled. Otherwise, snapshot analysis monitoring
       config is same as the EntityType's this Feature belongs to.
@@ -10357,6 +10359,26 @@ class GoogleCloudAiplatformV1AutoscalingMetricSpec(_messages.Message):
   target = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
+class GoogleCloudAiplatformV1BatchCreateFeaturesOperationMetadata(_messages.Message):
+  r"""Details of operations that perform batch create Features.
+
+  Fields:
+    genericMetadata: Operation metadata for Feature.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1GenericOperationMetadata', 1)
+
+
+class GoogleCloudAiplatformV1BatchCreateFeaturesResponse(_messages.Message):
+  r"""Response message for FeaturestoreService.BatchCreateFeatures.
+
+  Fields:
+    features: The Features created.
+  """
+
+  features = _messages.MessageField('GoogleCloudAiplatformV1Feature', 1, repeated=True)
+
+
 class GoogleCloudAiplatformV1BatchMigrateResourcesOperationMetadata(_messages.Message):
   r"""Runtime operation information for
   MigrationService.BatchMigrateResources.
@@ -10399,6 +10421,21 @@ class GoogleCloudAiplatformV1BatchMigrateResourcesResponse(_messages.Message):
   migrateResourceResponses = _messages.MessageField('GoogleCloudAiplatformV1MigrateResourceResponse', 1, repeated=True)
 
 
+class GoogleCloudAiplatformV1BatchReadFeatureValuesOperationMetadata(_messages.Message):
+  r"""Details of operations that batch reads Feature values.
+
+  Fields:
+    genericMetadata: Operation metadata for Featurestore batch read Features
+      values.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1GenericOperationMetadata', 1)
+
+
+class GoogleCloudAiplatformV1BatchReadFeatureValuesResponse(_messages.Message):
+  r"""Response message for FeaturestoreService.BatchReadFeatureValues."""
+
+
 class GoogleCloudAiplatformV1CheckTrialEarlyStoppingStateMetatdata(_messages.Message):
   r"""This message will be placed in the metadata field of a
   google.longrunning.Operation associated with a CheckTrialEarlyStoppingState
@@ -10413,6 +10450,16 @@ class GoogleCloudAiplatformV1CheckTrialEarlyStoppingStateMetatdata(_messages.Mes
   genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1GenericOperationMetadata', 1)
   study = _messages.StringField(2)
   trial = _messages.StringField(3)
+
+
+class GoogleCloudAiplatformV1CheckTrialEarlyStoppingStateResponse(_messages.Message):
+  r"""Response message for VizierService.CheckTrialEarlyStoppingState.
+
+  Fields:
+    shouldStop: True if the Trial should stop.
+  """
+
+  shouldStop = _messages.BooleanField(1)
 
 
 class GoogleCloudAiplatformV1ContainerSpec(_messages.Message):
@@ -10449,6 +10496,36 @@ class GoogleCloudAiplatformV1CreateEndpointOperationMetadata(_messages.Message):
 
   Fields:
     genericMetadata: The operation generic information.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1GenericOperationMetadata', 1)
+
+
+class GoogleCloudAiplatformV1CreateEntityTypeOperationMetadata(_messages.Message):
+  r"""Details of operations that perform create EntityType.
+
+  Fields:
+    genericMetadata: Operation metadata for EntityType.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1GenericOperationMetadata', 1)
+
+
+class GoogleCloudAiplatformV1CreateFeatureOperationMetadata(_messages.Message):
+  r"""Details of operations that perform create Feature.
+
+  Fields:
+    genericMetadata: Operation metadata for Feature.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1GenericOperationMetadata', 1)
+
+
+class GoogleCloudAiplatformV1CreateFeaturestoreOperationMetadata(_messages.Message):
+  r"""Details of operations that perform create Featurestore.
+
+  Fields:
+    genericMetadata: Operation metadata for Featurestore.
   """
 
   genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1GenericOperationMetadata', 1)
@@ -11314,6 +11391,21 @@ class GoogleCloudAiplatformV1ExportDataResponse(_messages.Message):
   exportedFiles = _messages.StringField(1, repeated=True)
 
 
+class GoogleCloudAiplatformV1ExportFeatureValuesOperationMetadata(_messages.Message):
+  r"""Details of operations that exports Features values.
+
+  Fields:
+    genericMetadata: Operation metadata for Featurestore export Feature
+      values.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1GenericOperationMetadata', 1)
+
+
+class GoogleCloudAiplatformV1ExportFeatureValuesResponse(_messages.Message):
+  r"""Response message for FeaturestoreService.ExportFeatureValues."""
+
+
 class GoogleCloudAiplatformV1ExportModelOperationMetadata(_messages.Message):
   r"""Details of ModelService.ExportModel operation.
 
@@ -11348,6 +11440,127 @@ class GoogleCloudAiplatformV1ExportModelResponse(_messages.Message):
   r"""Response message of ModelService.ExportModel operation."""
 
 
+class GoogleCloudAiplatformV1Feature(_messages.Message):
+  r"""Feature Metadata information that describes an attribute of an entity
+  type. For example, apple is an entity type, and color is a feature that
+  describes apple.
+
+  Enums:
+    ValueTypeValueValuesEnum: Required. Immutable. Type of Feature value.
+
+  Messages:
+    LabelsValue: Optional. The labels with user-defined metadata to organize
+      your Features. Label keys and values can be no longer than 64 characters
+      (Unicode codepoints), can only contain lowercase letters, numeric
+      characters, underscores and dashes. International characters are
+      allowed. See https://goo.gl/xmQnxf for more information on and examples
+      of labels. No more than 64 user labels can be associated with one
+      Feature (System labels are excluded)." System reserved label keys are
+      prefixed with "aiplatform.googleapis.com/" and are immutable.
+
+  Fields:
+    createTime: Output only. Timestamp when this EntityType was created.
+    description: Description of the Feature.
+    etag: Used to perform a consistent read-modify-write updates. If not set,
+      a blind "overwrite" update happens.
+    labels: Optional. The labels with user-defined metadata to organize your
+      Features. Label keys and values can be no longer than 64 characters
+      (Unicode codepoints), can only contain lowercase letters, numeric
+      characters, underscores and dashes. International characters are
+      allowed. See https://goo.gl/xmQnxf for more information on and examples
+      of labels. No more than 64 user labels can be associated with one
+      Feature (System labels are excluded)." System reserved label keys are
+      prefixed with "aiplatform.googleapis.com/" and are immutable.
+    monitoringConfig: Optional. The custom monitoring configuration for this
+      Feature, if not set, use the monitoring_config defined for the
+      EntityType this Feature belongs to. Only Features with type
+      (Feature.ValueType) BOOL, STRING, DOUBLE or INT64 can enable monitoring.
+      If this is populated with FeaturestoreMonitoringConfig.disabled = true,
+      snapshot analysis monitoring is disabled; if
+      FeaturestoreMonitoringConfig.monitoring_interval specified, snapshot
+      analysis monitoring is enabled. Otherwise, snapshot analysis monitoring
+      config is same as the EntityType's this Feature belongs to.
+    monitoringStats: Output only. A list of historical Snapshot Analysis stats
+      requested by user, sorted by FeatureStatsAnomaly.start_time descending.
+    name: Immutable. Name of the Feature. Format: `projects/{project}/location
+      s/{location}/featurestores/{featurestore}/entityTypes/{entity_type}/feat
+      ures/{feature}` The last part feature is assigned by the client. The
+      feature can be up to 64 characters long and can consist only of ASCII
+      Latin letters A-Z and a-z, underscore(_), and ASCII digits 0-9 starting
+      with a letter. The value will be unique given an entity type.
+    updateTime: Output only. Timestamp when this EntityType was most recently
+      updated.
+    valueType: Required. Immutable. Type of Feature value.
+  """
+
+  class ValueTypeValueValuesEnum(_messages.Enum):
+    r"""Required. Immutable. Type of Feature value.
+
+    Values:
+      VALUE_TYPE_UNSPECIFIED: The value type is unspecified.
+      BOOL: Used for Feature that is a boolean.
+      BOOL_ARRAY: Used for Feature that is a list of boolean.
+      DOUBLE: Used for Feature that is double.
+      DOUBLE_ARRAY: Used for Feature that is a list of double.
+      INT64: Used for Feature that is INT64.
+      INT64_ARRAY: Used for Feature that is a list of INT64.
+      STRING: Used for Feature that is string.
+      STRING_ARRAY: Used for Feature that is a list of String.
+      BYTES: Used for Feature that is bytes.
+    """
+    VALUE_TYPE_UNSPECIFIED = 0
+    BOOL = 1
+    BOOL_ARRAY = 2
+    DOUBLE = 3
+    DOUBLE_ARRAY = 4
+    INT64 = 5
+    INT64_ARRAY = 6
+    STRING = 7
+    STRING_ARRAY = 8
+    BYTES = 9
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. The labels with user-defined metadata to organize your
+    Features. Label keys and values can be no longer than 64 characters
+    (Unicode codepoints), can only contain lowercase letters, numeric
+    characters, underscores and dashes. International characters are allowed.
+    See https://goo.gl/xmQnxf for more information on and examples of labels.
+    No more than 64 user labels can be associated with one Feature (System
+    labels are excluded)." System reserved label keys are prefixed with
+    "aiplatform.googleapis.com/" and are immutable.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  etag = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  monitoringConfig = _messages.MessageField('GoogleCloudAiplatformV1FeaturestoreMonitoringConfig', 5)
+  monitoringStats = _messages.MessageField('GoogleCloudAiplatformV1FeatureStatsAnomaly', 6, repeated=True)
+  name = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
+  valueType = _messages.EnumField('ValueTypeValueValuesEnum', 9)
+
+
 class GoogleCloudAiplatformV1FeatureNoiseSigma(_messages.Message):
   r"""Noise sigma by features. Noise sigma represents the standard deviation
   of the gaussian kernel that will be used to add noise to interpolated inputs
@@ -11375,6 +11588,103 @@ class GoogleCloudAiplatformV1FeatureNoiseSigmaNoiseSigmaForFeature(_messages.Mes
 
   name = _messages.StringField(1)
   sigma = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+
+
+class GoogleCloudAiplatformV1FeatureStatsAnomaly(_messages.Message):
+  r"""Stats and Anomaly generated at specific timestamp for specific Feature.
+  The start_time and end_time are used to define the time range of the dataset
+  that current stats belongs to, e.g. prediction traffic is bucketed into
+  prediction datasets by time window. If the Dataset is not defined by time
+  window, start_time = end_time. Timestamp of the stats and anomalies always
+  refers to end_time. Raw stats and anomalies are stored in stats_uri or
+  anomaly_uri in the tensorflow defined protos. Field data_stats contains
+  almost identical information with the raw stats in Vertex AI defined proto,
+  for UI to display.
+
+  Fields:
+    anomalyDetectionThreshold: This is the threshold used when detecting
+      anomalies. The threshold can be changed by user, so this one might be
+      different from ThresholdConfig.value.
+    anomalyUri: Path of the anomaly file for current feature values in Cloud
+      Storage bucket. Format: gs:////anomalies. Example:
+      gs://monitoring_bucket/feature_name/anomalies. Stats are stored as
+      binary format with Protobuf message Anoamlies are stored as binary
+      format with Protobuf message [tensorflow.metadata.v0.AnomalyInfo] (https
+      ://github.com/tensorflow/metadata/blob/master/tensorflow_metadata/proto/
+      v0/anomalies.proto).
+    distributionDeviation: Deviation from the current stats to baseline stats.
+      1. For categorical feature, the distribution distance is calculated by
+      L-inifinity norm. 2. For numerical feature, the distribution distance is
+      calculated by Jensen\u2013Shannon divergence.
+    endTime: The end timestamp of window where stats were generated. For
+      objectives where time window doesn't make sense (e.g. Featurestore
+      Snapshot Monitoring), end_time indicates the timestamp of the data used
+      to generate stats (e.g. timestamp we take snapshots for feature values).
+    score: Feature importance score, only populated when cross-feature
+      monitoring is enabled. For now only used to represent feature
+      attribution score within range [0, 1] for
+      ModelDeploymentMonitoringObjectiveType.FEATURE_ATTRIBUTION_SKEW and
+      ModelDeploymentMonitoringObjectiveType.FEATURE_ATTRIBUTION_DRIFT.
+    startTime: The start timestamp of window where stats were generated. For
+      objectives where time window doesn't make sense (e.g. Featurestore
+      Snapshot Monitoring), start_time is only used to indicate the monitoring
+      intervals, so it always equals to (end_time - monitoring_interval).
+    statsUri: Path of the stats file for current feature values in Cloud
+      Storage bucket. Format: gs:////stats. Example:
+      gs://monitoring_bucket/feature_name/stats. Stats are stored as binary
+      format with Protobuf message [tensorflow.metadata.v0.FeatureNameStatisti
+      cs](https://github.com/tensorflow/metadata/blob/master/tensorflow_metada
+      ta/proto/v0/statistics.proto).
+  """
+
+  anomalyDetectionThreshold = _messages.FloatField(1)
+  anomalyUri = _messages.StringField(2)
+  distributionDeviation = _messages.FloatField(3)
+  endTime = _messages.StringField(4)
+  score = _messages.FloatField(5)
+  startTime = _messages.StringField(6)
+  statsUri = _messages.StringField(7)
+
+
+class GoogleCloudAiplatformV1FeaturestoreMonitoringConfig(_messages.Message):
+  r"""Configuration of how features in Featurestore are monitored.
+
+  Fields:
+    snapshotAnalysis: The config for Snapshot Analysis Based Feature
+      Monitoring.
+  """
+
+  snapshotAnalysis = _messages.MessageField('GoogleCloudAiplatformV1FeaturestoreMonitoringConfigSnapshotAnalysis', 1)
+
+
+class GoogleCloudAiplatformV1FeaturestoreMonitoringConfigSnapshotAnalysis(_messages.Message):
+  r"""Configuration of the Featurestore's Snapshot Analysis Based Monitoring.
+  This type of analysis generates statistics for each Feature based on a
+  snapshot of the latest feature value of each entities every
+  monitoring_interval.
+
+  Fields:
+    disabled: The monitoring schedule for snapshot analysis. For EntityType-
+      level config: unset / disabled = true indicates disabled by default for
+      Features under it; otherwise by default enable snapshot analysis
+      monitoring with monitoring_interval for Features under it. Feature-level
+      config: disabled = true indicates disabled regardless of the EntityType-
+      level config; unset monitoring_interval indicates going with EntityType-
+      level config; otherwise run snapshot analysis monitoring with
+      monitoring_interval regardless of the EntityType-level config.
+      Explicitly Disable the snapshot analysis based monitoring.
+    monitoringIntervalDays: Configuration of the snapshot analysis based
+      monitoring pipeline running interval. The value indicates number of
+      days. If both
+      FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval_days
+      and FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval
+      are set when creating/updating EntityTypes/Features,
+      FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval_days
+      will be used.
+  """
+
+  disabled = _messages.BooleanField(1)
+  monitoringIntervalDays = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudAiplatformV1GcsDestination(_messages.Message):
@@ -11419,6 +11729,47 @@ class GoogleCloudAiplatformV1ImportDataOperationMetadata(_messages.Message):
 
 class GoogleCloudAiplatformV1ImportDataResponse(_messages.Message):
   r"""Response message for DatasetService.ImportData."""
+
+
+class GoogleCloudAiplatformV1ImportFeatureValuesOperationMetadata(_messages.Message):
+  r"""Details of operations that perform import feature values.
+
+  Fields:
+    genericMetadata: Operation metadata for Featurestore import feature
+      values.
+    importedEntityCount: Number of entities that have been imported by the
+      operation.
+    importedFeatureValueCount: Number of feature values that have been
+      imported by the operation.
+    invalidRowCount: The number of rows in input source that weren't imported
+      due to either * Not having any featureValues. * Having a null entityId.
+      * Having a null timestamp. * Not being parsable (applicable for CSV
+      sources).
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1GenericOperationMetadata', 1)
+  importedEntityCount = _messages.IntegerField(2)
+  importedFeatureValueCount = _messages.IntegerField(3)
+  invalidRowCount = _messages.IntegerField(4)
+
+
+class GoogleCloudAiplatformV1ImportFeatureValuesResponse(_messages.Message):
+  r"""Response message for FeaturestoreService.ImportFeatureValues.
+
+  Fields:
+    importedEntityCount: Number of entities that have been imported by the
+      operation.
+    importedFeatureValueCount: Number of Feature values that have been
+      imported by the operation.
+    invalidRowCount: The number of rows in input source that weren't imported
+      due to either * Not having any featureValues. * Having a null entityId.
+      * Having a null timestamp. * Not being parsable (applicable for CSV
+      sources).
+  """
+
+  importedEntityCount = _messages.IntegerField(1)
+  importedFeatureValueCount = _messages.IntegerField(2)
+  invalidRowCount = _messages.IntegerField(3)
 
 
 class GoogleCloudAiplatformV1IndexPrivateEndpoints(_messages.Message):
@@ -11504,6 +11855,37 @@ class GoogleCloudAiplatformV1MachineSpec(_messages.Message):
   acceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   acceleratorType = _messages.EnumField('AcceleratorTypeValueValuesEnum', 2)
   machineType = _messages.StringField(3)
+
+
+class GoogleCloudAiplatformV1Measurement(_messages.Message):
+  r"""A message representing a Measurement of a Trial. A Measurement contains
+  the Metrics got by executing a Trial using suggested hyperparameter values.
+
+  Fields:
+    elapsedDuration: Output only. Time that the Trial has been running at the
+      point of this Measurement.
+    metrics: Output only. A list of metrics got by evaluating the objective
+      functions using suggested Parameter values.
+    stepCount: Output only. The number of steps the machine learning model has
+      been trained for. Must be non-negative.
+  """
+
+  elapsedDuration = _messages.StringField(1)
+  metrics = _messages.MessageField('GoogleCloudAiplatformV1MeasurementMetric', 2, repeated=True)
+  stepCount = _messages.IntegerField(3)
+
+
+class GoogleCloudAiplatformV1MeasurementMetric(_messages.Message):
+  r"""A message representing a metric in the measurement.
+
+  Fields:
+    metricId: Output only. The ID of the Metric. The Metric should be defined
+      in StudySpec's Metrics.
+    value: Output only. The value for this metric.
+  """
+
+  metricId = _messages.StringField(1)
+  value = _messages.FloatField(2)
 
 
 class GoogleCloudAiplatformV1MigratableResource(_messages.Message):
@@ -14647,6 +15029,179 @@ class GoogleCloudAiplatformV1SuggestTrialsMetadata(_messages.Message):
   genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1GenericOperationMetadata', 2)
 
 
+class GoogleCloudAiplatformV1SuggestTrialsResponse(_messages.Message):
+  r"""Response message for VizierService.SuggestTrials.
+
+  Enums:
+    StudyStateValueValuesEnum: The state of the Study.
+
+  Fields:
+    endTime: The time at which operation processing completed.
+    startTime: The time at which the operation was started.
+    studyState: The state of the Study.
+    trials: A list of Trials.
+  """
+
+  class StudyStateValueValuesEnum(_messages.Enum):
+    r"""The state of the Study.
+
+    Values:
+      STATE_UNSPECIFIED: The study state is unspecified.
+      ACTIVE: The study is active.
+      INACTIVE: The study is stopped due to an internal error.
+      COMPLETED: The study is done when the service exhausts the parameter
+        search space or max_trial_count is reached.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    INACTIVE = 2
+    COMPLETED = 3
+
+  endTime = _messages.StringField(1)
+  startTime = _messages.StringField(2)
+  studyState = _messages.EnumField('StudyStateValueValuesEnum', 3)
+  trials = _messages.MessageField('GoogleCloudAiplatformV1Trial', 4, repeated=True)
+
+
+class GoogleCloudAiplatformV1Trial(_messages.Message):
+  r"""A message representing a Trial. A Trial contains a unique set of
+  Parameters that has been or will be evaluated, along with the objective
+  metrics got by running the Trial.
+
+  Enums:
+    StateValueValuesEnum: Output only. The detailed state of the Trial.
+
+  Messages:
+    WebAccessUrisValue: Output only. URIs for accessing [interactive
+      shells](https://cloud.google.com/vertex-ai/docs/training/monitor-debug-
+      interactive-shell) (one URI for each training node). Only available if
+      this trial is part of a HyperparameterTuningJob and the job's
+      trial_job_spec.enable_web_access field is `true`. The keys are names of
+      each node used for the trial; for example, `workerpool0-0` for the
+      primary node, `workerpool1-0` for the first node in the second worker
+      pool, and `workerpool1-1` for the second node in the second worker pool.
+      The values are the URIs for each node's interactive shell.
+
+  Fields:
+    clientId: Output only. The identifier of the client that originally
+      requested this Trial. Each client is identified by a unique client_id.
+      When a client asks for a suggestion, Vizier will assign it a Trial. The
+      client should evaluate the Trial, complete it, and report back to
+      Vizier. If suggestion is asked again by same client_id before the Trial
+      is completed, the same Trial will be returned. Multiple clients with
+      different client_ids can ask for suggestions simultaneously, each of
+      them will get their own Trial.
+    customJob: Output only. The CustomJob name linked to the Trial. It's set
+      for a HyperparameterTuningJob's Trial.
+    endTime: Output only. Time when the Trial's status changed to `SUCCEEDED`
+      or `INFEASIBLE`.
+    finalMeasurement: Output only. The final measurement containing the
+      objective value.
+    id: Output only. The identifier of the Trial assigned by the service.
+    infeasibleReason: Output only. A human readable string describing why the
+      Trial is infeasible. This is set only if Trial state is `INFEASIBLE`.
+    measurements: Output only. A list of measurements that are strictly
+      lexicographically ordered by their induced tuples (steps,
+      elapsed_duration). These are used for early stopping computations.
+    name: Output only. Resource name of the Trial assigned by the service.
+    parameters: Output only. The parameters of the Trial.
+    startTime: Output only. Time when the Trial was started.
+    state: Output only. The detailed state of the Trial.
+    webAccessUris: Output only. URIs for accessing [interactive
+      shells](https://cloud.google.com/vertex-ai/docs/training/monitor-debug-
+      interactive-shell) (one URI for each training node). Only available if
+      this trial is part of a HyperparameterTuningJob and the job's
+      trial_job_spec.enable_web_access field is `true`. The keys are names of
+      each node used for the trial; for example, `workerpool0-0` for the
+      primary node, `workerpool1-0` for the first node in the second worker
+      pool, and `workerpool1-1` for the second node in the second worker pool.
+      The values are the URIs for each node's interactive shell.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The detailed state of the Trial.
+
+    Values:
+      STATE_UNSPECIFIED: The Trial state is unspecified.
+      REQUESTED: Indicates that a specific Trial has been requested, but it
+        has not yet been suggested by the service.
+      ACTIVE: Indicates that the Trial has been suggested.
+      STOPPING: Indicates that the Trial should stop according to the service.
+      SUCCEEDED: Indicates that the Trial is completed successfully.
+      INFEASIBLE: Indicates that the Trial should not be attempted again. The
+        service will set a Trial to INFEASIBLE when it's done but missing the
+        final_measurement.
+    """
+    STATE_UNSPECIFIED = 0
+    REQUESTED = 1
+    ACTIVE = 2
+    STOPPING = 3
+    SUCCEEDED = 4
+    INFEASIBLE = 5
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class WebAccessUrisValue(_messages.Message):
+    r"""Output only. URIs for accessing [interactive
+    shells](https://cloud.google.com/vertex-ai/docs/training/monitor-debug-
+    interactive-shell) (one URI for each training node). Only available if
+    this trial is part of a HyperparameterTuningJob and the job's
+    trial_job_spec.enable_web_access field is `true`. The keys are names of
+    each node used for the trial; for example, `workerpool0-0` for the primary
+    node, `workerpool1-0` for the first node in the second worker pool, and
+    `workerpool1-1` for the second node in the second worker pool. The values
+    are the URIs for each node's interactive shell.
+
+    Messages:
+      AdditionalProperty: An additional property for a WebAccessUrisValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type WebAccessUrisValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a WebAccessUrisValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  clientId = _messages.StringField(1)
+  customJob = _messages.StringField(2)
+  endTime = _messages.StringField(3)
+  finalMeasurement = _messages.MessageField('GoogleCloudAiplatformV1Measurement', 4)
+  id = _messages.StringField(5)
+  infeasibleReason = _messages.StringField(6)
+  measurements = _messages.MessageField('GoogleCloudAiplatformV1Measurement', 7, repeated=True)
+  name = _messages.StringField(8)
+  parameters = _messages.MessageField('GoogleCloudAiplatformV1TrialParameter', 9, repeated=True)
+  startTime = _messages.StringField(10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  webAccessUris = _messages.MessageField('WebAccessUrisValue', 12)
+
+
+class GoogleCloudAiplatformV1TrialParameter(_messages.Message):
+  r"""A message representing a parameter to be tuned.
+
+  Fields:
+    parameterId: Output only. The ID of the parameter. The parameter should be
+      defined in StudySpec's Parameters.
+    value: Output only. The value of the parameter. `number_value` will be set
+      if a parameter defined in StudySpec is in type 'INTEGER', 'DOUBLE' or
+      'DISCRETE'. `string_value` will be set if a parameter defined in
+      StudySpec is in type 'CATEGORICAL'.
+  """
+
+  parameterId = _messages.StringField(1)
+  value = _messages.MessageField('extra_types.JsonValue', 2)
+
+
 class GoogleCloudAiplatformV1UndeployIndexOperationMetadata(_messages.Message):
   r"""Runtime operation information for IndexEndpointService.UndeployIndex.
 
@@ -14673,6 +15228,16 @@ class GoogleCloudAiplatformV1UndeployModelOperationMetadata(_messages.Message):
 
 class GoogleCloudAiplatformV1UndeployModelResponse(_messages.Message):
   r"""Response message for EndpointService.UndeployModel."""
+
+
+class GoogleCloudAiplatformV1UpdateFeaturestoreOperationMetadata(_messages.Message):
+  r"""Details of operations that perform update Featurestore.
+
+  Fields:
+    genericMetadata: Operation metadata for Featurestore.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1GenericOperationMetadata', 1)
 
 
 class GoogleCloudAiplatformV1UpdateIndexOperationMetadata(_messages.Message):
@@ -16077,8 +16642,8 @@ class GoogleCloudAiplatformV1alpha1CreateTensorboardTimeSeriesRequest(_messages.
     tensorboardTimeSeries: Required. The TensorboardTimeSeries to create.
     tensorboardTimeSeriesId: Optional. The user specified unique ID to use for
       the TensorboardTimeSeries, which will become the final component of the
-      TensorboardTimeSeries's resource name. Ref: go/ucaip-user-specified-id
-      This value should match "a-z0-9{0, 127}"
+      TensorboardTimeSeries's resource name. This value should match
+      "a-z0-9{0, 127}"
   """
 
   parent = _messages.StringField(1)
@@ -19725,6 +20290,10 @@ class GoogleCloudAiplatformV1alpha1ModelDeploymentMonitoringJob(_messages.Messag
       ModelDeploymentMonitoringJob. The name can be up to 128 characters long
       and can be consist of any UTF-8 characters. Display name of a
       ModelDeploymentMonitoringJob.
+    enableMonitoringPipelineLogs: If true, the scheduled monitoring pipeline
+      status logs are sent to StackDriver Logging. Please note the logs incur
+      cost, which are subject to [Cloud Logging
+      pricing](https://cloud.google.com/stackdriver/pricing).
     encryptionSpec: Customer-managed encryption key spec for a
       ModelDeploymentMonitoringJob. If set, this ModelDeploymentMonitoringJob
       and all sub-resources of this ModelDeploymentMonitoringJob will be
@@ -19852,23 +20421,24 @@ class GoogleCloudAiplatformV1alpha1ModelDeploymentMonitoringJob(_messages.Messag
   bigqueryTables = _messages.MessageField('GoogleCloudAiplatformV1alpha1ModelDeploymentMonitoringBigQueryTable', 2, repeated=True)
   createTime = _messages.StringField(3)
   displayName = _messages.StringField(4)
-  encryptionSpec = _messages.MessageField('GoogleCloudAiplatformV1alpha1EncryptionSpec', 5)
-  endpoint = _messages.StringField(6)
-  error = _messages.MessageField('GoogleRpcStatus', 7)
-  labels = _messages.MessageField('LabelsValue', 8)
-  logTtl = _messages.StringField(9)
-  loggingSamplingStrategy = _messages.MessageField('GoogleCloudAiplatformV1alpha1SamplingStrategy', 10)
-  modelDeploymentMonitoringObjectiveConfigs = _messages.MessageField('GoogleCloudAiplatformV1alpha1ModelDeploymentMonitoringObjectiveConfig', 11, repeated=True)
-  modelDeploymentMonitoringScheduleConfig = _messages.MessageField('GoogleCloudAiplatformV1alpha1ModelDeploymentMonitoringScheduleConfig', 12)
-  modelMonitoringAlertConfig = _messages.MessageField('GoogleCloudAiplatformV1alpha1ModelMonitoringAlertConfig', 13)
-  name = _messages.StringField(14)
-  nextScheduleTime = _messages.StringField(15)
-  predictInstanceSchemaUri = _messages.StringField(16)
-  samplePredictInstance = _messages.MessageField('extra_types.JsonValue', 17)
-  scheduleState = _messages.EnumField('ScheduleStateValueValuesEnum', 18)
-  state = _messages.EnumField('StateValueValuesEnum', 19)
-  statsAnomaliesBaseDirectory = _messages.MessageField('GoogleCloudAiplatformV1alpha1GcsDestination', 20)
-  updateTime = _messages.StringField(21)
+  enableMonitoringPipelineLogs = _messages.BooleanField(5)
+  encryptionSpec = _messages.MessageField('GoogleCloudAiplatformV1alpha1EncryptionSpec', 6)
+  endpoint = _messages.StringField(7)
+  error = _messages.MessageField('GoogleRpcStatus', 8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  logTtl = _messages.StringField(10)
+  loggingSamplingStrategy = _messages.MessageField('GoogleCloudAiplatformV1alpha1SamplingStrategy', 11)
+  modelDeploymentMonitoringObjectiveConfigs = _messages.MessageField('GoogleCloudAiplatformV1alpha1ModelDeploymentMonitoringObjectiveConfig', 12, repeated=True)
+  modelDeploymentMonitoringScheduleConfig = _messages.MessageField('GoogleCloudAiplatformV1alpha1ModelDeploymentMonitoringScheduleConfig', 13)
+  modelMonitoringAlertConfig = _messages.MessageField('GoogleCloudAiplatformV1alpha1ModelMonitoringAlertConfig', 14)
+  name = _messages.StringField(15)
+  nextScheduleTime = _messages.StringField(16)
+  predictInstanceSchemaUri = _messages.StringField(17)
+  samplePredictInstance = _messages.MessageField('extra_types.JsonValue', 18)
+  scheduleState = _messages.EnumField('ScheduleStateValueValuesEnum', 19)
+  state = _messages.EnumField('StateValueValuesEnum', 20)
+  statsAnomaliesBaseDirectory = _messages.MessageField('GoogleCloudAiplatformV1alpha1GcsDestination', 21)
+  updateTime = _messages.StringField(22)
 
 
 class GoogleCloudAiplatformV1alpha1ModelDeploymentMonitoringObjectiveConfig(_messages.Message):
@@ -24485,9 +25055,10 @@ class GoogleCloudAiplatformV1beta1Feature(_messages.Message):
       prefixed with "aiplatform.googleapis.com/" and are immutable.
     monitoringConfig: Optional. The custom monitoring configuration for this
       Feature, if not set, use the monitoring_config defined for the
-      EntityType this Feature belongs to. If this is populated with
-      FeaturestoreMonitoringConfig.disabled = true, snapshot analysis
-      monitoring is disabled; if
+      EntityType this Feature belongs to. Only Features with type
+      (Feature.ValueType) BOOL, STRING, DOUBLE or INT64 can enable monitoring.
+      If this is populated with FeaturestoreMonitoringConfig.disabled = true,
+      snapshot analysis monitoring is disabled; if
       FeaturestoreMonitoringConfig.monitoring_interval specified, snapshot
       analysis monitoring is enabled. Otherwise, snapshot analysis monitoring
       config is same as the EntityType's this Feature belongs to.

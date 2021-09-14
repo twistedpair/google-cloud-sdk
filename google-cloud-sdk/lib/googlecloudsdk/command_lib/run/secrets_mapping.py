@@ -64,11 +64,12 @@ def _SetSecretsAnnotation(resource, value):
       pass
 
 
-def _ParseAnnotation(formatted_annotation):
+def ParseAnnotation(formatted_annotation, force_managed=False):
   """Parse existing secrets annotation.
 
   Args:
     formatted_annotation: str
+    force_managed: bool
 
   Returns:
     Dict[local_alias_str, ReachableSecret]
@@ -85,7 +86,7 @@ def _ParseAnnotation(formatted_annotation):
       raise ValueError('Invalid secret path %r in annotation' % remote_path)
     # TODO(b/183051152) This could fail to parse existing annotations.
     reachable_secrets[local_alias] = ReachableSecret(
-        remote_path, SpecialConnector.PATH_OR_ENV)
+        remote_path, SpecialConnector.PATH_OR_ENV, force_managed=force_managed)
   return reachable_secrets
 
 
@@ -124,7 +125,7 @@ def PruneAnnotation(resource):
   formatted_annotation = _GetSecretsAnnotation(resource)
   to_keep = {
       alias: rs
-      for alias, rs in _ParseAnnotation(formatted_annotation).items()
+      for alias, rs in ParseAnnotation(formatted_annotation).items()
       if alias in in_use
   }
 
@@ -158,7 +159,7 @@ class ReachableSecret(object):
     return bool(
         re.search(ReachableSecret._REMOTE_SECRET_FLAG_VALUE, secret_name))
 
-  def __init__(self, flag_value, connector_name):
+  def __init__(self, flag_value, connector_name, force_managed=False):
     """Parse flag value to make a ReachableSecret.
 
     Args:
@@ -167,10 +168,12 @@ class ReachableSecret(object):
       connector_name: Union[str, PATH_OR_ENV].  An env var ('ENV1') or a mount
         point ('/a/b') for use in error messages. Also used in validation since
         you can only use MOUNT_ALL mode with a mount path.
+      force_managed: bool. If True, always use the behavior of managed Cloud Run
+        even if the platform is set to gke. Used by Cloud Run local development.
     """
     self._connector = connector_name
-
-    if platforms.IsManaged():
+    self.force_managed = force_managed
+    if force_managed or platforms.IsManaged():
       match = re.search(self._REMOTE_SECRET_FLAG_VALUE, flag_value)
       if match:
         self.remote_project_number = match.group('project')
@@ -246,7 +249,7 @@ class ReachableSecret(object):
     Raises:
       ConfigurationError: If the key is required on this platform.
     """
-    if platforms.IsManaged():
+    if self.force_managed or platforms.IsManaged():
       # Service returns an error for this, but we can make a better one.
       raise exceptions.ConfigurationError(
           'No secret version specified for {name}. '
@@ -304,7 +307,7 @@ class ReachableSecret(object):
       return self.secret_name
 
     formatted_annotation = _GetSecretsAnnotation(resource)
-    remotes = _ParseAnnotation(formatted_annotation)
+    remotes = ParseAnnotation(formatted_annotation)
     for alias, other_rs in remotes.items():
       if self == other_rs:
         return alias

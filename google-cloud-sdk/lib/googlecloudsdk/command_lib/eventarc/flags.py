@@ -193,6 +193,7 @@ def AddUpdateDestinationArgs(parser, release_track, required=False):
   _AddUpdateCloudRunDestinationArgs(dest_group)
   if release_track == base.ReleaseTrack.GA:
     _AddUpdateGKEDestinationArgs(dest_group, hidden=True)
+    _AddUpdateWorkflowDestinationArgs(dest_group, hidden=True)
 
 
 def _AddUpdateCloudRunDestinationArgs(parser, required=False):
@@ -218,6 +219,16 @@ def _AddUpdateGKEDestinationArgs(parser, required=False, hidden=False):
   destination_gke_path_group = gke_group.add_mutually_exclusive_group()
   _AddDestinationGKEPathArg(destination_gke_path_group)
   _AddClearDestinationGKEPathArg(destination_gke_path_group)
+
+
+def _AddUpdateWorkflowDestinationArgs(parser, required=False, hidden=False):
+  """Adds arguments related to trigger's Workflow destination for update operations."""
+  workflow_group = parser.add_group(
+      required=required,
+      hidden=hidden,
+      help='Flags for updating a Workflow destination.')
+  _AddDestinationWorkflowArg(workflow_group)
+  _AddDestinationWorkflowLocationArg(workflow_group)
 
 
 def AddDestinationRunServiceArg(parser, required=False):

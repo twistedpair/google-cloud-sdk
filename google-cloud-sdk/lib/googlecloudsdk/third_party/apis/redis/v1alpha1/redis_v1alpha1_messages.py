@@ -203,6 +203,7 @@ class Instance(_messages.Message):
       which specific zone (or collection of zones for cross zone instances) an
       instance should be provisioned in. Refer to [location_id] and
       [alternative_location_id] fields for more details.
+    nodes: Output only. Info per node.
     persistenceConfig: Optional. Persistence configuration parameters
     persistenceIamIdentity: Output only. Cloud IAM identity used by import /
       export operations to transfer data to/from Cloud Storage. Format is
@@ -238,6 +239,12 @@ class Instance(_messages.Message):
       address ranges associated with this private service access connection.
       If not provided, the service will choose an unused /29 block, for
       example, 10.0.0.0/29 or 192.168.0.0/29.
+    secondaryIpRange: Optional. Additional ip ranges for node placement,
+      beyond those specified in reserved_ip_range. At most 1 secondary IP
+      range is supported. The mask value must not exceed /28. Not supported
+      for BASIC tier. Updates can only add new ranges, once added ranges
+      cannot be changed or deleted. Values in this list cannot overlap with
+      the reserved_ip_range. Not supported during instance creation.
     serverCaCerts: Output only. List of server CA certificates for the
       instance.
     state: Output only. The current state of this instance.
@@ -404,21 +411,23 @@ class Instance(_messages.Message):
   maintenanceSchedule = _messages.MessageField('MaintenanceSchedule', 13)
   memorySizeGb = _messages.IntegerField(14, variant=_messages.Variant.INT32)
   name = _messages.StringField(15)
-  persistenceConfig = _messages.MessageField('PersistenceConfig', 16)
-  persistenceIamIdentity = _messages.StringField(17)
-  port = _messages.IntegerField(18, variant=_messages.Variant.INT32)
-  readEndpoint = _messages.StringField(19)
-  readEndpointPort = _messages.IntegerField(20, variant=_messages.Variant.INT32)
-  readReplicasMode = _messages.EnumField('ReadReplicasModeValueValuesEnum', 21)
-  redisConfigs = _messages.MessageField('RedisConfigsValue', 22)
-  redisVersion = _messages.StringField(23)
-  replicaCount = _messages.IntegerField(24, variant=_messages.Variant.INT32)
-  reservedIpRange = _messages.StringField(25)
-  serverCaCerts = _messages.MessageField('TlsCertificate', 26, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 27)
-  statusMessage = _messages.StringField(28)
-  tier = _messages.EnumField('TierValueValuesEnum', 29)
-  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 30)
+  nodes = _messages.MessageField('NodeInfo', 16, repeated=True)
+  persistenceConfig = _messages.MessageField('PersistenceConfig', 17)
+  persistenceIamIdentity = _messages.StringField(18)
+  port = _messages.IntegerField(19, variant=_messages.Variant.INT32)
+  readEndpoint = _messages.StringField(20)
+  readEndpointPort = _messages.IntegerField(21, variant=_messages.Variant.INT32)
+  readReplicasMode = _messages.EnumField('ReadReplicasModeValueValuesEnum', 22)
+  redisConfigs = _messages.MessageField('RedisConfigsValue', 23)
+  redisVersion = _messages.StringField(24)
+  replicaCount = _messages.IntegerField(25, variant=_messages.Variant.INT32)
+  reservedIpRange = _messages.StringField(26)
+  secondaryIpRange = _messages.StringField(27)
+  serverCaCerts = _messages.MessageField('TlsCertificate', 28, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 29)
+  statusMessage = _messages.StringField(30)
+  tier = _messages.EnumField('TierValueValuesEnum', 31)
+  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 32)
 
 
 class InstanceAuthString(_messages.Message):
@@ -688,6 +697,19 @@ class MetricHealth(_messages.Message):
   reason = _messages.StringField(2)
   state = _messages.EnumField('StateValueValuesEnum', 3)
   suggestion = _messages.StringField(4)
+
+
+class NodeInfo(_messages.Message):
+  r"""Node specific properties.
+
+  Fields:
+    id: Output only. Output Only. Node identifying string. e.g. 'node-0',
+      'node-1'
+    zone: Output only. Output Only. Location of the node.
+  """
+
+  id = _messages.StringField(1)
+  zone = _messages.StringField(2)
 
 
 class Operation(_messages.Message):

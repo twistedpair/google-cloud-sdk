@@ -1046,20 +1046,6 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
-class GKECluster(_messages.Message):
-  r"""Information specifying a GKE Cluster.
-
-  Fields:
-    cluster: Name of the cluster.
-    location: Location of the cluster.
-    project: Project in which the cluster is located.
-  """
-
-  cluster = _messages.StringField(1)
-  location = _messages.StringField(2)
-  project = _messages.StringField(3)
-
-
 class GkeCluster(_messages.Message):
   r"""Information specifying a GKE Cluster.
 
@@ -2070,7 +2056,6 @@ class Target(_messages.Message):
       and used by the user, and not by Cloud Deploy. See
       https://google.aip.dev/128#annotations for more details such as format
       and size limitations.
-    cluster: Information specifying a GKE Cluster.
     createTime: Output only. Time at which the `Target` was created.
     description: Optional. Description of the `Target`. Max length is 255
       characters.
@@ -2085,7 +2070,6 @@ class Target(_messages.Message):
       configurations are specified, execution will use the default specified
       in `DefaultPool`.
     gke: Information specifying a GKE Cluster.
-    gkeCluster: Information specifying a GKE Cluster.
     labels: Optional. Labels are attributes that can be set and used by both
       the user and by Cloud Deploy. Labels must meet the following
       constraints: Each resource is limited to 64 labels. Keys must conform to
@@ -2159,29 +2143,23 @@ class Target(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   annotations = _messages.MessageField('AnnotationsValue', 1)
-  cluster = _messages.MessageField('GkeCluster', 2)
-  createTime = _messages.StringField(3)
-  description = _messages.StringField(4)
-  etag = _messages.StringField(5)
-  executionConfigs = _messages.MessageField('ExecutionConfig', 6, repeated=True)
-  gke = _messages.MessageField('GkeCluster', 7)
-  gkeCluster = _messages.MessageField('GKECluster', 8)
-  labels = _messages.MessageField('LabelsValue', 9)
-  name = _messages.StringField(10)
-  requireApproval = _messages.BooleanField(11)
-  targetId = _messages.StringField(12)
-  uid = _messages.StringField(13)
-  updateTime = _messages.StringField(14)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  etag = _messages.StringField(4)
+  executionConfigs = _messages.MessageField('ExecutionConfig', 5, repeated=True)
+  gke = _messages.MessageField('GkeCluster', 6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  name = _messages.StringField(8)
+  requireApproval = _messages.BooleanField(9)
+  targetId = _messages.StringField(10)
+  uid = _messages.StringField(11)
+  updateTime = _messages.StringField(12)
 
 
 class TargetArtifact(_messages.Message):
   r"""The artifacts produced by a target render operation.
 
   Fields:
-    archiveUri: Output only. URI of the tar.gz archive containing the
-      artifacts. This archive contains deployment configuration used by
-      Skaffold during a rollout, and all paths are relative to the root of the
-      contents.
     artifactUri: Output only. URI of a directory containing the artifacts.
       This contains deployment configuration used by Skaffold during a
       rollout, and all paths are relative to this location.
@@ -2191,10 +2169,9 @@ class TargetArtifact(_messages.Message):
       configuration relative to the URI.
   """
 
-  archiveUri = _messages.StringField(1)
-  artifactUri = _messages.StringField(2)
-  manifestPath = _messages.StringField(3)
-  skaffoldConfigPath = _messages.StringField(4)
+  artifactUri = _messages.StringField(1)
+  manifestPath = _messages.StringField(2)
+  skaffoldConfigPath = _messages.StringField(3)
 
 
 class TargetRender(_messages.Message):

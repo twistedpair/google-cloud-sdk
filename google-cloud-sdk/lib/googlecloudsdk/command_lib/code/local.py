@@ -53,6 +53,8 @@ IAM_MESSAGE_MODULE = apis.GetMessagesModule('iam', 'v1')
 CRM_MESSAGE_MODULE = apis.GetMessagesModule('cloudresourcemanager', 'v1')
 RUN_MESSAGES_MODULE = apis.GetMessagesModule('run', 'v1')
 
+_DEFAULT_BUILDPACK_BUILDER = 'gcr.io/buildpacks/builder'
+
 _C_IDENTIFIER = r'^[a-zA-Z_][a-zA-Z_0-9]*$'
 
 
@@ -182,7 +184,7 @@ def _IsGcpBaseBuilder(builder):
   Returns:
     True if the builder is the GCP base builder.
   """
-  return builder == 'gcr.io/buildpack/builder:v1'
+  return builder == _DEFAULT_BUILDPACK_BUILDER
 
 
 class _SecretPath(DataObject):
@@ -203,9 +205,11 @@ class _SecretVolume(DataObject):
       name: (str) The name of the volume to be referenced in the k8s resource.
       mount_path: (str) The filesystem location where the volume is mounted.
       secret_name: (str) The secret manager reference.
+      mapped_secret: (str) If set, the name of the secret in another project to
+        use.
       items: (List[SecretPath]) The list of keys and paths for the secret.
   """
-  NAMES = ('name', 'mount_path', 'secret_name', 'items')
+  NAMES = ('name', 'mapped_secret', 'mount_path', 'secret_name', 'items')
 
   @classmethod
   def FromParsedYaml(cls, mount, volume_secret):
@@ -218,6 +222,19 @@ class _SecretVolume(DataObject):
         mount_path=mount.mountPath,
         secret_name=volume_secret.secretName,
         items=items)
+
+
+class _SecretEnvVar(DataObject):
+  """Configuration for a single env var that's pulled from a secret.
+
+  Attributes:
+    name: (str) the name of the secret in the resource
+    key: (str) the secret version to use
+    mapped_secret: (str) if set, the name of the secret from the other project
+      that this secret will pull from. If not set, will pull from the secret
+      called 'name' in the current project.
+  """
+  NAMES = ('name', 'key', 'mapped_secret')
 
 
 class Settings(DataObject):
@@ -256,7 +273,6 @@ class Settings(DataObject):
     dir_name = os.path.basename(files.GetCWD())
     # Service names may not include _ and upper case characters.
     service_name = dir_name.replace('_', '-').lower()
-
     dockerfile_arg_default = 'Dockerfile'
     builder = DockerfileBuilder(dockerfile=dockerfile_arg_default)
 
@@ -295,13 +311,13 @@ class Settings(DataObject):
     except ValueError:
       raise exceptions.Error('knative Service must have exactly one container.')
 
-    # Aliased secrets from other projects are currently not supported
-    # so check for the label and fail if that's the case
-    # TODO(b/187972361): support secrets from other projects.
-    for label in knative_service.annotations:
-      if label == container_resource.SECRETS_ANNOTATION:
-        raise exceptions.Error('Referencing secrets from other projects is '
-                               'not currently supported by local dev.')
+    # If there are any secrets referenced from other projects, there will be
+    # an alias specified
+    secret_aliases = {}
+    aliases = knative_service.annotations.get(
+        container_resource.SECRETS_ANNOTATION, '')
+    secret_aliases = secrets_mapping.ParseAnnotation(aliases, True)
+
     new_env_vars = {}
     new_env_vars_secrets = {}
     for var in container.env:
@@ -309,10 +325,15 @@ class Settings(DataObject):
         if var.valueFrom.configMapKeyRef:
           raise exceptions.Error('env_vars from config_maps are not supported')
         elif var.valueFrom.secretKeyRef:
-          new_env_vars_secrets[var.name] = {
-              'key': var.valueFrom.secretKeyRef.key,
-              'name': var.valueFrom.secretKeyRef.name
-          }
+          reachable_secret = secret_aliases.get(var.valueFrom.secretKeyRef.name,
+                                                None)
+          mapped_path = (
+              reachable_secret.FormatAnnotationItem()
+              if reachable_secret else None)
+          new_env_vars_secrets[var.name] = _SecretEnvVar(
+              key=var.valueFrom.secretKeyRef.key,
+              name=var.valueFrom.secretKeyRef.name,
+              mapped_secret=mapped_path)
       else:
         new_env_vars[var.name] = var.value
     replacements.update(
@@ -412,9 +433,10 @@ class Settings(DataObject):
     elif args.IsSpecified('service_account'):
       replacements['credential'] = ServiceAccountSetting(
           name=args.service_account)
-
+    context = self.context
     if args.source:
-      replacements['context'] = os.path.abspath(args.source)
+      context = os.path.abspath(args.source)
+    replacements['context'] = context
 
     if getattr(args, 'no_skaffold_file', False):
       replacements['builder'] = None
@@ -423,6 +445,16 @@ class Settings(DataObject):
         replacements['builder'] = _BuilderFromArg(args.builder)
       elif args.IsKnownAndSpecified('dockerfile'):
         replacements['builder'] = DockerfileBuilder(dockerfile=args.dockerfile)
+      else:
+        if isinstance(self.builder, DockerfileBuilder):
+          try:
+            replacements['builder'] = self.builder
+            replacements['builder'].Validate(context)
+          except InvalidLocationError:
+            log.status.Print('No Dockerfile detected. '
+                             'Using GCP buildpacks to build the container')
+            replacements['builder'] = _BuilderFromArg(
+                _DEFAULT_BUILDPACK_BUILDER)
     if getattr(args, 'env_vars', None):
       new_envs = args.env_vars
     else:
@@ -464,7 +496,7 @@ class Settings(DataObject):
           volume = volumes[mount_path]
         volume.items.append(_SecretPath(key=version, path=filename))
       else:
-        env_vars[key] = {'name': secret_name, 'key': version}
+        env_vars[key] = _SecretEnvVar(name=secret_name, key=version)
     return env_vars, list(volumes.values())
 
   def Build(self):
@@ -760,7 +792,15 @@ def _AddSecretEnvironmentVariables(container, env_vars_secrets):
   """
   env_list = yaml_helper.GetOrCreate(container, ('env',), constructor=list)
   for key, value in sorted(env_vars_secrets.items()):
-    env_list.append({'name': key, 'valueFrom': {'secretKeyRef': value.copy()}})
+    env_list.append({
+        'name': key,
+        'valueFrom': {
+            'secretKeyRef': {
+                'name': value.name,
+                'key': value.key
+            }
+        }
+    })
 
 
 def CreateDevelopmentServiceAccount(service_account_email):
@@ -1137,37 +1177,52 @@ class SecretsGenerator(KubeConfigGenerator):
     self.project_name = properties.VALUES.core.project.Get()
     self.service_name = service_name
     self.secret_volumes = secret_volumes
-    self.secret_map = collections.defaultdict(list)
+    self.all_secrets = {}
+
+    secrets_builder = collections.defaultdict(set)
     for _, secret in env_secrets.items():
-      self.secret_map[secret['name']].append(secret['key'])
+      secrets_builder[(secret.name, secret.mapped_secret)].add(secret.key)
 
     for secret in secret_volumes:
       if not secret.items:
         # This is currently unsupported for secrets pulled from secret manager.
-        self.secret_map[secret.secret_name].append(
+        secrets_builder[(secret.secret_name, secret.mapped_secret)].add(
             secrets_mapping.SpecialVersion.MOUNT_ALL)
       else:
         for item in secret.items:
-          self.secret_map[secret.secret_name].append(item.key)
+          secrets_builder[(secret.secret_name,
+                           secret.mapped_secret)].add(item.key)
+
+    for (secret_name, mapped_secret), versions in secrets_builder.items():
+      self.all_secrets[secret_name] = secrets.SecretManagerSecret(
+          name=secret_name,
+          versions=frozenset(versions),
+          mapped_secret=mapped_secret)
     self.namespace = namespace
     self.allow_secret_manager = allow_secret_manager
 
   def CreateConfigs(self):
-    if not self.secret_map:
+    if not self.all_secrets:
       return []
     # If secret manager was unspecified, prompt to continue
     if self.allow_secret_manager is None:
+      requested = []
+      for key, sec in self.all_secrets.items():
+        if sec.mapped_secret:
+          requested.append(sec.mapped_secret)
+        else:
+          requested.append(key)
       secrets_msg = ('This config references secrets stored in secret manager.'
                      ' Continuing will fetch the secret values and download '
                      'the secrets to your local machine.')
-      prompt_string = ('Fetch secrets from secret manager for {}?'.format(
-          list(self.secret_map.keys())))
+      prompt_string = (
+          'Fetch secrets from secret manager for {}?'.format(requested))
       # Make the service account an editor on the project
       if console_io.CanPrompt() and console_io.PromptContinue(
           message=secrets_msg, prompt_string=prompt_string):
         log.status.Print(
             'You can skip this message in the future by passing the '
-            'flag --use-secret-manager=true')
+            'flag --allow-secret-manager=true')
         self.allow_secret_manager = True
 
     if not self.allow_secret_manager:
@@ -1175,8 +1230,8 @@ class SecretsGenerator(KubeConfigGenerator):
           'Config requires secrets but access to secret manager was not '
           'allowed. Replace secrets with environment variables or '
           'allow secret manager with --allow-secret-manager to proceed.')
-    return secrets.BuildSecrets(self.project_name, self.secret_map,
-                                self.namespace)
+    return secrets.BuildSecrets(self.project_name,
+                                set(self.all_secrets.values()), self.namespace)
 
   def ModifyDeployment(self, deployment):
     # There's only one deployment for now, but let's make sure it's the right

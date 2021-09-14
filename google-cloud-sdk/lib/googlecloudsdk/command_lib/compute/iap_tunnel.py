@@ -47,6 +47,9 @@ import six
 from six.moves import queue
 
 
+READ_FROM_STDIN_TIMEOUT_SECS = 3
+
+
 class LocalPortUnavailableError(exceptions.Error):
   pass
 
@@ -356,7 +359,6 @@ class _StdinSocket(object):
 
       new_thread = threading.Thread(target=
                                     self._ReadFromStdinAndEnqueueMessageUnix)
-      new_thread.daemon = True
       new_thread.start()
 
   def send(self, data):  # pylint: disable=invalid-name
@@ -431,6 +433,8 @@ class _StdinSocket(object):
       raise socket.error(errno.EIO, 'stdin ReadFile failed')
     return buf.raw[:number_of_bytes_read.value]
 
+  # TODO(b/198682299): This method is not needed anymore, we should refactor
+  # it out.
   def _ReadFromStdinAndEnqueueMessageUnix(self):
     """Reads data from stdin on Unix, blocking on the first byte.
 
@@ -440,9 +444,13 @@ class _StdinSocket(object):
 
     try:
       while not self._stdin_closed:
-        # On Unix, the way to quickly read bytes without unnecessary blocking
-        # is to make stdin non-blocking. To ensure at least 1 byte is
-        # received, we read the first byte blocking.
+
+        # We have a timeout here because of b/197960494
+        stdin_ready = select.select([sys.stdin], (), (),
+                                    READ_FROM_STDIN_TIMEOUT_SECS)
+        if not stdin_ready[0]:
+          continue
+
         if six.PY2:
           first_byte = sys.stdin.read(1)
         else:
@@ -452,6 +460,8 @@ class _StdinSocket(object):
         if first_byte == b'':  # pylint: disable=g-explicit-bool-comparison
           raise _StdinSocket._EOFError
 
+        # On Unix, the way to quickly read bytes without unnecessary blocking
+        # is to make stdin non-blocking.
         complete_msg = first_byte + self._ReadUnixNonBlocking(self._bufsize - 1)
         msg = self._StdinSocketMessage(self._DataMessageType, complete_msg)
         self._message_queue.put(msg)

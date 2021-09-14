@@ -4,7 +4,7 @@
   "id": "compute:alpha",
   "name": "compute",
   "version": "alpha",
-  "revision": "20210813",
+  "revision": "20210908",
   "title": "Compute Engine API",
   "description": "Creates and runs virtual machines on Google Cloud Platform. ",
   "ownerDomain": "google.com",
@@ -824,7 +824,7 @@
           "type": "string"
         },
         "name": {
-          "description": "Name of the resource; provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?. The first character must be a lowercase letter, and all following characters (except for the last character) must be a dash, lowercase letter, or digit. The last character must be a lowercase letter or digit.",
+          "description": "Name of the resource; provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression [a-z]([-a-z0-9]*[a-z0-9])?. The first character must be a lowercase letter, and all following characters (except for the last character) must be a dash, lowercase letter, or digit. The last character must be a lowercase letter or digit.",
           "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
           "annotations": {
             "required": [
@@ -1188,7 +1188,7 @@
           "type": "string"
         },
         "displayName": {
-          "description": "Deprecated, please use short name instead. User-provided name of the Organization firewall plicy. The name should be unique in the organization in which the firewall policy is created. This name must be set on creation and cannot be changed. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash.",
+          "description": "Deprecated, please use short name instead. User-provided name of the Organization firewall policy. The name should be unique in the organization in which the firewall policy is created. This name must be set on creation and cannot be changed. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a lowercase letter, and all following characters must be a dash, lowercase letter, or digit, except the last character, which cannot be a dash.",
           "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
           "type": "string"
         },
@@ -1301,6 +1301,13 @@
             "type": "string"
           }
         },
+        "destAddressGroups": {
+          "description": "Address groups which should be matched against the traffic destination. Maximum number of destination address groups is 10.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "layer4Configs": {
           "description": "Pairs of IP protocols and ports that the rule should match.",
           "type": "array",
@@ -1313,6 +1320,13 @@
           "type": "array",
           "items": {
             "$ref": "FirewallPolicyRuleSecureTag"
+          }
+        },
+        "srcAddressGroups": {
+          "description": "Address groups which should be matched against the traffic source. Maximum number of source address groups is 10.",
+          "type": "array",
+          "items": {
+            "type": "string"
           }
         }
       }
@@ -2344,15 +2358,15 @@
       "type": "object",
       "properties": {
         "rawKey": {
-          "description": "Specifies a 256-bit customer-supplied encryption key, encoded in RFC 4648 base64 to either encrypt or decrypt this resource.",
+          "description": "Specifies a 256-bit customer-supplied encryption key, encoded in RFC 4648 base64 to either encrypt or decrypt this resource. You can provide either the rawKey or the rsaEncryptedKey. For example: \"rawKey\": \"SGVsbG8gZnJvbSBHb29nbGUgQ2xvdWQgUGxhdGZvcm0=\" ",
           "type": "string"
         },
         "rsaEncryptedKey": {
-          "description": "Specifies an RFC 4648 base64 encoded, RSA-wrapped 2048-bit customer-supplied encryption key to either encrypt or decrypt this resource. The key must meet the following requirements before you can provide it to Compute Engine: 1. The key is wrapped using a RSA public key certificate provided by Google. 2. After being wrapped, the key must be encoded in RFC 4648 base64 encoding. Gets the RSA public key certificate provided by Google at: https:\/\/cloud-certs.storage.googleapis.com\/google-cloud-csek-ingress.pem ",
+          "description": "Specifies an RFC 4648 base64 encoded, RSA-wrapped 2048-bit customer-supplied encryption key to either encrypt or decrypt this resource. You can provide either the rawKey or the rsaEncryptedKey. For example: \"rsaEncryptedKey\": \"ieCx\/NcW06PcT7Ep1X6LUTc\/hLvUDYyzSZPPVCVPTVEohpeHASqC8uw5TzyO9U+Fka9JFH z0mBibXUInrC\/jEk014kCK\/NPjYgEMOyssZ4ZINPKxlUh2zn1bV+MCaTICrdmuSBTWlUUiFoD D6PYznLwh8ZNdaheCeZ8ewEXgFQ8V+sDroLaN3Xs3MDTXQEMMoNUXMCZEIpg9Vtp9x2oe==\" The key must meet the following requirements before you can provide it to Compute Engine: 1. The key is wrapped using a RSA public key certificate provided by Google. 2. After being wrapped, the key must be encoded in RFC 4648 base64 encoding. Gets the RSA public key certificate provided by Google at: https:\/\/cloud-certs.storage.googleapis.com\/google-cloud-csek-ingress.pem ",
           "type": "string"
         },
         "kmsKeyName": {
-          "description": "The name of the encryption key that is stored in Google Cloud KMS.",
+          "description": "The name of the encryption key that is stored in Google Cloud KMS. For example: \"kmsKeyName\": \"projects\/kms_project_id\/locations\/region\/keyRings\/ key_region\/cryptoKeys\/key ",
           "type": "string"
         },
         "sha256": {
@@ -2360,7 +2374,7 @@
           "type": "string"
         },
         "kmsKeyServiceAccount": {
-          "description": "The service account being used for the encryption request for the given KMS key. If absent, the Compute Engine default service account is used.",
+          "description": "The service account being used for the encryption request for the given KMS key. If absent, the Compute Engine default service account is used. For example: \"kmsKeyServiceAccount\": \"name@project_id.iam.gserviceaccount.com\/ ",
           "type": "string"
         }
       }
@@ -4689,7 +4703,7 @@
     },
     "UpcomingMaintenance": {
       "id": "UpcomingMaintenance",
-      "description": "Upcoming Maintenance notification information.",
+      "description": "Upcoming Maintenance notification information. TODO(b\/196881882) Deprecate this proto once it's fully migrated to be under proto ResourceStatus.UpcomingMaintenance.",
       "type": "object",
       "properties": {
         "type": {
@@ -4756,6 +4770,10 @@
           "description": "The number of physical cores to expose to an instance. Multiply by the number of threads per core to compute the total number of virtual CPUs to expose to the instance. If unset, the number of cores is inferred from the instance's nominal CPU count and the underlying platform's SMT width.",
           "type": "integer",
           "format": "int32"
+        },
+        "enableUefiNetworking": {
+          "description": "Whether to enable UEFI networking for instance creation.",
+          "type": "boolean"
         }
       }
     },
@@ -5378,7 +5396,7 @@
       "type": "object",
       "properties": {
         "source": {
-          "description": "Specifies a valid partial or full URL to an existing Persistent Disk resource. This field is only applicable for persistent disks.",
+          "description": "Specifies a valid partial or full URL to an existing Persistent Disk resource. This field is only applicable for persistent disks. For example: \"source\": \"\/compute\/v1\/projects\/project_id\/zones\/zone\/disks\/ disk_name ",
           "type": "string"
         },
         "diskEncryptionKey": {
@@ -6205,12 +6223,30 @@
             "type": "string"
           }
         },
+        "projectMap": {
+          "description": "A map of project id and project config. Using map format to ease add-to\/remove-from the Project list in PATCH command. In future we will deprecate (And later remove) the array one.",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "ShareSettingsProjectConfig"
+          }
+        },
         "folderMap": {
           "description": "A map of folder id and folder config to specify consumer projects for this shared-reservation. This is only valid when share_type's value is DIRECT_PROJECTS_UNDER_SPECIFIC_FOLDERS.",
           "type": "object",
           "additionalProperties": {
             "$ref": "ShareSettingsFolderConfig"
           }
+        }
+      }
+    },
+    "ShareSettingsProjectConfig": {
+      "id": "ShareSettingsProjectConfig",
+      "description": "Config for each project in the share settings.",
+      "type": "object",
+      "properties": {
+        "projectId": {
+          "description": "The project ID, should be same as the key of this project config in the parent map.",
+          "type": "string"
         }
       }
     },
@@ -8479,6 +8515,10 @@
             "$ref": "InstanceGroupManagerVersion"
           }
         },
+        "allInstancesConfig": {
+          "description": "Specifies the instances configs overrides that should be applied for all instances in the MIG.",
+          "$ref": "InstanceGroupManagerAllInstancesConfig"
+        },
         "instanceGroup": {
           "description": "[Output Only] The URL of the Instance Group resource.",
           "type": "string"
@@ -8535,7 +8575,7 @@
           "format": "int32"
         },
         "standbyPolicy": {
-          "description": "Stanby policy for stopped and suspended instances.",
+          "description": "Standby policy for stopped and suspended instances.",
           "$ref": "InstanceGroupManagerStandbyPolicy"
         },
         "selfLink": {
@@ -8682,6 +8722,37 @@
         }
       }
     },
+    "InstanceGroupManagerAllInstancesConfig": {
+      "id": "InstanceGroupManagerAllInstancesConfig",
+      "type": "object",
+      "properties": {
+        "properties": {
+          "description": "Properties for instances that are created using this instances config. You can add or modify properties using the instanceGroupManagers.patch or regionInstanceGroupManagers.patch. After setting instances_config, you must update your instances to use it; for example, you can use the applyUpdatesToInstances method.",
+          "$ref": "InstancePropertiesPatch"
+        }
+      }
+    },
+    "InstancePropertiesPatch": {
+      "id": "InstancePropertiesPatch",
+      "description": "Represents the change that you want to make to the instance properties.",
+      "type": "object",
+      "properties": {
+        "metadata": {
+          "description": "The metadata key-value pairs that you want to patch onto the instance. For more information, see Project and instance metadata.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "labels": {
+          "description": "The label key-value pairs that you want to patch onto the instance.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "InstanceGroupManagerActionsSummary": {
       "id": "InstanceGroupManagerActionsSummary",
       "type": "object",
@@ -8761,6 +8832,10 @@
           "description": "[Output Only] A bit indicating whether the managed instance group is in a stable state. A stable state means that: none of the instances in the managed instance group is currently undergoing any type of change (for example, creation, restart, or deletion); no future changes are scheduled for instances in the managed instance group; and the managed instance group itself is not being modified.",
           "type": "boolean"
         },
+        "allInstancesConfig": {
+          "description": "[Output Only] A status of consistency of Instances' config applied to instances with Instances' config defined in managed instance group.",
+          "$ref": "InstanceGroupManagerStatusAllInstancesConfig"
+        },
         "versionTarget": {
           "description": "[Output Only] A status of consistency of Instances' versions with their target version specified by version field on Instance Group Manager.",
           "$ref": "InstanceGroupManagerStatusVersionTarget"
@@ -8771,6 +8846,20 @@
         },
         "autoscaler": {
           "description": "[Output Only] The URL of the Autoscaler that targets this instance group manager.",
+          "type": "string"
+        }
+      }
+    },
+    "InstanceGroupManagerStatusAllInstancesConfig": {
+      "id": "InstanceGroupManagerStatusAllInstancesConfig",
+      "type": "object",
+      "properties": {
+        "effective": {
+          "description": "[Output Only] A bit indicating whether instances' config has been applied to all managed instances in managed instance group.",
+          "type": "boolean"
+        },
+        "currentRevision": {
+          "description": "[Output Only] Current instances' config revision. This value is in RFC3339 text format.",
           "type": "string"
         }
       }
@@ -8839,6 +8928,17 @@
         "maxUnavailable": {
           "description": "Maximum number of instances that can be unavailable when autohealing. When 'percent' is used, the value is rounded if necessary. The instance is considered available if all of the following conditions are satisfied: 1. Instance's status is RUNNING. 2. Instance's currentAction is NONE (in particular its liveness health check result was observed to be HEALTHY at least once as it passed VERIFYING). 3. There is no outgoing action on an instance triggered by IGM. By default, number of concurrently autohealed instances is smaller than the managed instance group target size. However, if a zonal managed instance group has only one instance, or a regional managed instance group has only one instance per zone, autohealing will recreate these instances when they become unhealthy.",
           "$ref": "FixedOrPercent"
+        },
+        "updateInstances": {
+          "type": "string",
+          "enumDescriptions": [
+            "Autohealer always updates instances with a new version for both PROACTIVE and OPPORTUNISTIC updates.",
+            "(Default) Autohealer updates instance with new version according to update policy constraints: - OPPORTUNISTIC: autohealing does not perform updates. - PROACTIVE: autohealing performs updates according to maxSurge and maxUnavailable constraints. "
+          ],
+          "enum": [
+            "ALWAYS",
+            "FOLLOW_UPDATE_POLICY"
+          ]
         }
       }
     },
@@ -9499,6 +9599,10 @@
           "description": "[Output Only] Preserved state applied from per-instance config for this instance.",
           "$ref": "PreservedState"
         },
+        "allInstancesConfig": {
+          "description": "[Output Only] Instances config revision applied to this instance.",
+          "$ref": "ManagedInstanceAllInstancesConfig"
+        },
         "currentAction": {
           "description": "[Output Only] The current action that the managed instance group has scheduled for the instance. Possible values: - NONE The instance is running, and the managed instance group does not have any scheduled actions for this instance. - CREATING The managed instance group is creating this instance. If the group fails to create this instance, it will try again until it is successful. - CREATING_WITHOUT_RETRIES The managed instance group is attempting to create this instance only once. If the group fails to create this instance, it does not try again and the group's targetSize value is decreased instead. - RECREATING The managed instance group is recreating this instance. - DELETING The managed instance group is permanently deleting this instance. - ABANDONING The managed instance group is abandoning this instance. The instance will be removed from the instance group and from any target pools that are associated with this group. - RESTARTING The managed instance group is restarting the instance. - REFRESHING The managed instance group is applying configuration changes to the instance without stopping it. For example, the group can update the target pool list for an instance without stopping that instance. - VERIFYING The managed instance group has created the instance and it is in the process of being verified. ",
           "type": "string",
@@ -9661,6 +9765,16 @@
         },
         "address": {
           "description": "The URL of the reservation for this IP address.",
+          "type": "string"
+        }
+      }
+    },
+    "ManagedInstanceAllInstancesConfig": {
+      "id": "ManagedInstanceAllInstancesConfig",
+      "type": "object",
+      "properties": {
+        "revision": {
+          "description": "[Output Only] Instances config revision. This value is in RFC3339 text format.",
           "type": "string"
         }
       }
@@ -18897,8 +19011,8 @@
         }
       }
     },
-    "ZoneInstantSnapshotsExportRequest": {
-      "id": "ZoneInstantSnapshotsExportRequest",
+    "InstantSnapshotsExportRequest": {
+      "id": "InstantSnapshotsExportRequest",
       "type": "object",
       "properties": {
         "exportParams": {
@@ -21034,7 +21148,7 @@
           "type": "boolean"
         },
         "postKeyRevocationActionType": {
-          "description": "PostKeyRevocationActionType of the instance.",
+          "description": "PostKeyRevocationActionType of the instance. (will be deprecated soon)",
           "type": "string",
           "enumDescriptions": [
             "Indicates user chose no operation.",
@@ -22952,6 +23066,14 @@
         },
         "firewallPolicy": {
           "description": "[Output Only] URL of the firewall policy the network is associated with.",
+          "type": "string"
+        },
+        "enableUlaInternalIpv6": {
+          "description": "Enable ULA internal ipv6 on this network. Enabling this feature will assign a \/48 from google defined ULA prefix fd20::\/20. .",
+          "type": "boolean"
+        },
+        "internalIpv6Range": {
+          "description": "When enabling ula internal ipv6, caller optionally can specify the \/48 range they want from the google defined ULA prefix fd20::\/20. The input must be a valid \/48 ULA IPv6 address and must be within the fd20::\/20. Operation will fail if the speficied \/48 is already in used by another resource. If the field is not speficied, then a \/48 range will be randomly allocated from fd20::\/20 and returned via this field. .",
           "type": "string"
         },
         "kind": {
@@ -26525,6 +26647,8 @@
             "",
             "",
             "",
+            "",
+            "",
             "Guest CPUs",
             "",
             "",
@@ -26640,10 +26764,12 @@
             "BACKEND_SERVICES",
             "C2D_CPUS",
             "C2_CPUS",
+            "C3_CPUS",
             "COMMITMENTS",
             "COMMITTED_A2_CPUS",
             "COMMITTED_C2D_CPUS",
             "COMMITTED_C2_CPUS",
+            "COMMITTED_C3_CPUS",
             "COMMITTED_CPUS",
             "COMMITTED_E2_CPUS",
             "COMMITTED_LICENSES",
@@ -29053,10 +29179,63 @@
           "description": "[Output Only] Server-defined URL for this resource with the resource id.",
           "type": "string"
         },
+        "routeType": {
+          "description": "[Output Only] The type of this route, which can be one of the following values: - 'TRANSIT' for a transit route that this router learned from another Cloud Router and will readvertise to one of its BGP peers - 'SUBNET' for a route from a subnet of the VPC - 'BGP' for a route learned from a BGP peer of this router - 'STATIC' for a static route",
+          "type": "string",
+          "enumDescriptions": [
+            "",
+            "",
+            "",
+            ""
+          ],
+          "enum": [
+            "BGP",
+            "STATIC",
+            "SUBNET",
+            "TRANSIT"
+          ]
+        },
+        "asPaths": {
+          "description": "[Output Only] AS path.",
+          "type": "array",
+          "items": {
+            "$ref": "RouteAsPath"
+          }
+        },
         "kind": {
           "description": "[Output Only] Type of this resource. Always compute#routes for Route resources.",
           "default": "compute#route",
           "type": "string"
+        }
+      }
+    },
+    "RouteAsPath": {
+      "id": "RouteAsPath",
+      "type": "object",
+      "properties": {
+        "pathSegmentType": {
+          "description": "[Output Only] The type of the AS Path, which can be one of the following values: - 'AS_SET': unordered set of autonomous systems that the route in has traversed - 'AS_SEQUENCE': ordered set of autonomous systems that the route has traversed - 'AS_CONFED_SEQUENCE': ordered set of Member Autonomous Systems in the local confederation that the route has traversed - 'AS_CONFED_SET': unordered set of Member Autonomous Systems in the local confederation that the route has traversed ",
+          "type": "string",
+          "enumDescriptions": [
+            "",
+            "",
+            "",
+            ""
+          ],
+          "enum": [
+            "AS_CONFED_SEQUENCE",
+            "AS_CONFED_SET",
+            "AS_SEQUENCE",
+            "AS_SET"
+          ]
+        },
+        "asLists": {
+          "description": "[Output Only] The AS numbers of the AS Path.",
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "format": "uint32"
+          }
         }
       }
     },
@@ -29301,7 +29480,7 @@
           ]
         },
         "bfd": {
-          "description": "BFD configuration for the BGP peering. Not currently available publicly.",
+          "description": "BFD configuration for the BGP peering.",
           "$ref": "RouterBgpPeerBfd"
         },
         "routerApplianceInstance": {
@@ -29356,7 +29535,7 @@
           ]
         },
         "sessionInitializationMode": {
-          "description": "The BFD session initialization mode for this BGP peer. Not currently available publicly. If set to ACTIVE, the Cloud Router will initiate the BFD session for this BGP peer. If set to PASSIVE, the Cloud Router will wait for the peer router to initiate the BFD session for this BGP peer. If set to DISABLED, BFD is disabled for this BGP peer. The default is PASSIVE.",
+          "description": "The BFD session initialization mode for this BGP peer. If set to ACTIVE, the Cloud Router will initiate the BFD session for this BGP peer. If set to PASSIVE, the Cloud Router will wait for the peer router to initiate the BFD session for this BGP peer. If set to DISABLED, BFD is disabled for this BGP peer. The default is PASSIVE.",
           "type": "string",
           "enumDescriptions": [
             "",
@@ -29370,12 +29549,12 @@
           ]
         },
         "minTransmitInterval": {
-          "description": "The minimum interval, in milliseconds, between BFD control packets transmitted to the peer router. The actual value is negotiated between the two routers and is equal to the greater of this value and the corresponding receive interval of the other router. Not currently available publicly. If set, this value must be between 1000 and 30000. The default is 1000.",
+          "description": "The minimum interval, in milliseconds, between BFD control packets transmitted to the peer router. The actual value is negotiated between the two routers and is equal to the greater of this value and the corresponding receive interval of the other router. If set, this value must be between 1000 and 30000. The default is 1000.",
           "type": "integer",
           "format": "uint32"
         },
         "minReceiveInterval": {
-          "description": "The minimum interval, in milliseconds, between BFD control packets received from the peer router. The actual value is negotiated between the two routers and is equal to the greater of this value and the transmit interval of the other router. Not currently available publicly. If set, this value must be between 1000 and 30000. The default is 1000.",
+          "description": "The minimum interval, in milliseconds, between BFD control packets received from the peer router. The actual value is negotiated between the two routers and is equal to the greater of this value and the transmit interval of the other router. If set, this value must be between 1000 and 30000. The default is 1000.",
           "type": "integer",
           "format": "uint32"
         },
@@ -29397,7 +29576,7 @@
           "format": "uint32"
         },
         "multiplier": {
-          "description": "The number of consecutive BFD packets that must be missed before BFD declares that a peer is unavailable. Not currently available publicly. If set, the value must be a value between 5 and 16. The default is 5.",
+          "description": "The number of consecutive BFD packets that must be missed before BFD declares that a peer is unavailable. If set, the value must be a value between 5 and 16. The default is 5.",
           "type": "integer",
           "format": "uint32"
         }
@@ -32468,7 +32647,7 @@
           "type": "string"
         },
         "network": {
-          "description": "The URL of the network to which this subnetwork belongs, provided by the client when initially creating the subnetwork. Only networks that are in the distributed mode can have subnetworks. This field can be set only at resource creation time.",
+          "description": "The URL of the network to which this subnetwork belongs, provided by the client when initially creating the subnetwork. This field can be set only at resource creation time.",
           "type": "string"
         },
         "ipCidrRange": {
@@ -38563,7 +38742,7 @@
             "https://www.googleapis.com/auth/compute",
             "https://www.googleapis.com/auth/compute.readonly"
           ],
-          "description": "Retrieves the specified Operations resource. Gets a list of operations by making a `list()` request."
+          "description": "Retrieves the specified Operations resource."
         },
         "wait": {
           "id": "compute.globalOperations.wait",
@@ -38896,7 +39075,7 @@
             "https://www.googleapis.com/auth/compute",
             "https://www.googleapis.com/auth/compute.readonly"
           ],
-          "description": "Waits for the specified Operation resource to return as `DONE` or for the request to approach the 2 minute deadline, and retrieves the specified Operation resource. This method differs from the `GET` method in that it waits for no more than the default deadline (2 minutes) and then returns the current state of the operation, which might be `DONE` or still in progress. This method is called on a best-effort basis. Specifically: - In uncommon cases, when the server is overloaded, the request might return before the default deadline is reached, or might return after zero seconds. - If the default deadline is reached, there is no guarantee that the operation is actually done when the method returns. Be prepared to retry if the operation is not `DONE`. "
+          "description": "Waits for the specified Operation resource to return as `DONE` or for the request to approach the 2 minute deadline, and retrieves the specified Operation resource. This method waits for no more than the 2 minutes and then returns the current state of the operation, which might be `DONE` or still in progress. This method is called on a best-effort basis. Specifically: - In uncommon cases, when the server is overloaded, the request might return before the default deadline is reached, or might return after zero seconds. - If the default deadline is reached, there is no guarantee that the operation is actually done when the method returns. Be prepared to retry if the operation is not `DONE`. "
         },
         "delete": {
           "id": "compute.zoneOperations.delete",
@@ -43550,7 +43729,7 @@
             "https://www.googleapis.com/auth/compute",
             "https://www.googleapis.com/auth/compute.readonly"
           ],
-          "description": "Retrieves aggregated list of all of the instances in your project across all regions and zones."
+          "description": "Retrieves an aggregated list of all of the instances in your project across all regions and zones. The performance of this method degrades when a filter is specified on a project that has a very large number of instances."
         },
         "listReferrers": {
           "id": "compute.instances.listReferrers",
@@ -48405,7 +48584,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/compute"
           ],
-          "description": "Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is updated even if the instances in the group have not yet been updated. You must separately verify the status of the individual instances with the listManagedInstances method."
+          "description": "Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is updated even if the instances in the group have not yet been updated. You must separately verify the status of the individual instances with the listManagedInstances method. If you update your group to specify a new template or instance configuration, it's possible that your intended specification for each VM in the group is different from the current state of that VM. To learn how to apply an updated configuration to the VMs in a MIG, see Updating instances in a MIG."
         },
         "patch": {
           "id": "compute.instanceGroupManagers.patch",
@@ -48453,7 +48632,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/compute"
           ],
-          "description": "Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is patched even if the instances in the group are still in the process of being patched. You must separately verify the status of the individual instances with the listManagedInstances method. This method supports PATCH semantics and uses the JSON merge patch format and processing rules."
+          "description": "Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is patched even if the instances in the group are still in the process of being patched. You must separately verify the status of the individual instances with the listManagedInstances method. This method supports PATCH semantics and uses the JSON merge patch format and processing rules. If you update your group to specify a new template or instance configuration, it's possible that your intended specification for each VM in the group is different from the current state of that VM. To learn how to apply an updated configuration to the VMs in a MIG, see Updating instances in a MIG."
         },
         "delete": {
           "id": "compute.instanceGroupManagers.delete",
@@ -49758,7 +49937,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/compute"
           ],
-          "description": "Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is updated even if the instances in the group have not yet been updated. You must separately verify the status of the individual instances with the listmanagedinstances method."
+          "description": "Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is updated even if the instances in the group have not yet been updated. You must separately verify the status of the individual instances with the listmanagedinstances method. If you update your group to specify a new template or instance configuration, it's possible that your intended specification for each VM in the group is different from the current state of that VM. To learn how to apply an updated configuration to the VMs in a MIG, see Updating instances in a MIG."
         },
         "patch": {
           "id": "compute.regionInstanceGroupManagers.patch",
@@ -49806,7 +49985,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/compute"
           ],
-          "description": "Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is patched even if the instances in the group are still in the process of being patched. You must separately verify the status of the individual instances with the listmanagedinstances method. This method supports PATCH semantics and uses the JSON merge patch format and processing rules."
+          "description": "Updates a managed instance group using the information that you specify in the request. This operation is marked as DONE when the group is patched even if the instances in the group are still in the process of being patched. You must separately verify the status of the individual instances with the listmanagedinstances method. This method supports PATCH semantics and uses the JSON merge patch format and processing rules. If you update your group to specify a new template or instance configuration, it's possible that your intended specification for each VM in the group is different from the current state of that VM. To learn how to apply an updated configuration to the VMs in a MIG, see Updating instances in a MIG."
         },
         "delete": {
           "id": "compute.regionInstanceGroupManagers.delete",
@@ -58664,10 +58843,10 @@
         }
       }
     },
-    "zoneInstantSnapshots": {
+    "instantSnapshots": {
       "methods": {
         "list": {
-          "id": "compute.zoneInstantSnapshots.list",
+          "id": "compute.instantSnapshots.list",
           "path": "projects/{project}/zones/{zone}/instantSnapshots",
           "flatPath": "projects/{project}/zones/{zone}/instantSnapshots",
           "httpMethod": "GET",
@@ -58730,7 +58909,7 @@
           "description": "Retrieves the list of InstantSnapshot resources contained within the specified zone."
         },
         "get": {
-          "id": "compute.zoneInstantSnapshots.get",
+          "id": "compute.instantSnapshots.get",
           "path": "projects/{project}/zones/{zone}/instantSnapshots/{instantSnapshot}",
           "flatPath": "projects/{project}/zones/{zone}/instantSnapshots/{instantSnapshot}",
           "httpMethod": "GET",
@@ -58773,7 +58952,7 @@
           "description": "Returns the specified InstantSnapshot resource in the specified zone."
         },
         "insert": {
-          "id": "compute.zoneInstantSnapshots.insert",
+          "id": "compute.instantSnapshots.insert",
           "path": "projects/{project}/zones/{zone}/instantSnapshots",
           "flatPath": "projects/{project}/zones/{zone}/instantSnapshots",
           "httpMethod": "POST",
@@ -58815,7 +58994,7 @@
           "description": "Creates an instant snapshot in the specified zone."
         },
         "setLabels": {
-          "id": "compute.zoneInstantSnapshots.setLabels",
+          "id": "compute.instantSnapshots.setLabels",
           "path": "projects/{project}/zones/{zone}/instantSnapshots/{resource}/setLabels",
           "flatPath": "projects/{project}/zones/{zone}/instantSnapshots/{resource}/setLabels",
           "httpMethod": "POST",
@@ -58865,7 +59044,7 @@
           "description": "Sets the labels on a instantSnapshot in the given zone. To learn more about labels, read the Labeling Resources documentation."
         },
         "delete": {
-          "id": "compute.zoneInstantSnapshots.delete",
+          "id": "compute.instantSnapshots.delete",
           "path": "projects/{project}/zones/{zone}/instantSnapshots/{instantSnapshot}",
           "flatPath": "projects/{project}/zones/{zone}/instantSnapshots/{instantSnapshot}",
           "httpMethod": "DELETE",
@@ -58912,7 +59091,7 @@
           "description": "Deletes the specified InstantSnapshot resource. Keep in mind that deleting a single instantSnapshot might not necessarily delete all the data on that instantSnapshot. If any data on the instantSnapshot that is marked for deletion is needed for subsequent instantSnapshots, the data will be moved to the next corresponding instantSnapshot. For more information, see Deleting instantSnapshots."
         },
         "getIamPolicy": {
-          "id": "compute.zoneInstantSnapshots.getIamPolicy",
+          "id": "compute.instantSnapshots.getIamPolicy",
           "path": "projects/{project}/zones/{zone}/instantSnapshots/{resource}/getIamPolicy",
           "flatPath": "projects/{project}/zones/{zone}/instantSnapshots/{resource}/getIamPolicy",
           "httpMethod": "GET",
@@ -58961,7 +59140,7 @@
           "description": "Gets the access control policy for a resource. May be empty if no such policy or resource exists."
         },
         "setIamPolicy": {
-          "id": "compute.zoneInstantSnapshots.setIamPolicy",
+          "id": "compute.instantSnapshots.setIamPolicy",
           "path": "projects/{project}/zones/{zone}/instantSnapshots/{resource}/setIamPolicy",
           "flatPath": "projects/{project}/zones/{zone}/instantSnapshots/{resource}/setIamPolicy",
           "httpMethod": "POST",
@@ -59006,7 +59185,7 @@
           "description": "Sets the access control policy on the specified resource. Replaces any existing policy."
         },
         "testIamPermissions": {
-          "id": "compute.zoneInstantSnapshots.testIamPermissions",
+          "id": "compute.instantSnapshots.testIamPermissions",
           "path": "projects/{project}/zones/{zone}/instantSnapshots/{resource}/testIamPermissions",
           "flatPath": "projects/{project}/zones/{zone}/instantSnapshots/{resource}/testIamPermissions",
           "httpMethod": "POST",
@@ -59052,7 +59231,7 @@
           "description": "Returns permissions that a caller has on the specified resource."
         },
         "export": {
-          "id": "compute.zoneInstantSnapshots.export",
+          "id": "compute.instantSnapshots.export",
           "path": "projects/{project}/zones/{zone}/instantSnapshots/{instantSnapshot}/export",
           "flatPath": "projects/{project}/zones/{zone}/instantSnapshots/{instantSnapshot}/export",
           "httpMethod": "POST",
@@ -59090,7 +59269,7 @@
             "instantSnapshot"
           ],
           "request": {
-            "$ref": "ZoneInstantSnapshotsExportRequest"
+            "$ref": "InstantSnapshotsExportRequest"
           },
           "response": {
             "$ref": "Operation"

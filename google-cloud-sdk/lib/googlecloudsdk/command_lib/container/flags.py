@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import textwrap
+
 from googlecloudsdk.api_lib.compute import constants as compute_constants
 from googlecloudsdk.api_lib.container import api_adapter
 from googlecloudsdk.api_lib.container import util
@@ -2715,6 +2717,24 @@ the Kubernetes API.
 To disable Workload Certificates in an existing cluster, explicitly set flag
 `--no-enable-workload-certificates`.
 """)
+
+
+def AddMeshCertificatesFlags(parser):
+  """Adds Mesh Certificates flags to the parser."""
+  parser.add_argument(
+      '--enable-mesh-certificates',
+      default=None,
+      hidden=True,
+      action='store_true',
+      help=textwrap.dedent("""\
+    Enable Mesh Certificates.
+
+    After the cluster is created, configure an issuing certificate authority using
+    the Kubernetes API.
+
+    To disable Mesh Certificates in an existing cluster, explicitly set flag
+    `--no-enable-mesh-certificates`.
+    """))
 
 
 def AddWorkloadAltsFlags(parser):

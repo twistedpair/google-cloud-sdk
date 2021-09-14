@@ -528,6 +528,7 @@ class CreateClusterOptions(object):
       workload_pool=None,
       identity_provider=None,
       enable_workload_certificates=None,
+      enable_mesh_certificates=None,
       enable_alts=None,
       enable_gke_oidc=None,
       enable_identity_service=None,
@@ -678,6 +679,7 @@ class CreateClusterOptions(object):
     self.workload_pool = workload_pool
     self.identity_provider = identity_provider
     self.enable_workload_certificates = enable_workload_certificates
+    self.enable_mesh_certificates = enable_mesh_certificates
     self.enable_alts = enable_alts
     self.enable_gke_oidc = enable_gke_oidc
     self.enable_identity_service = enable_identity_service
@@ -786,6 +788,7 @@ class UpdateClusterOptions(object):
       identity_provider=None,
       disable_workload_identity=None,
       enable_workload_certificates=None,
+      enable_mesh_certificates=None,
       enable_alts=None,
       enable_gke_oidc=None,
       enable_identity_service=None,
@@ -876,6 +879,7 @@ class UpdateClusterOptions(object):
     self.identity_provider = identity_provider
     self.disable_workload_identity = disable_workload_identity
     self.enable_workload_certificates = enable_workload_certificates
+    self.enable_mesh_certificates = enable_mesh_certificates
     self.enable_alts = enable_alts
     self.enable_gke_oidc = enable_gke_oidc
     self.enable_identity_service = enable_identity_service
@@ -1556,6 +1560,16 @@ class APIAdapter(object):
             self.messages.NodeConfigDefaults())
       cluster.nodePoolDefaults.nodeConfigDefaults.gcfsConfig = (
           self.messages.GcfsConfig(enabled=options.enable_image_streaming))
+
+    if options.enable_mesh_certificates:
+      if not options.workload_pool:
+        raise util.Error(
+            PREREQUISITE_OPTION_ERROR_MSG.format(
+                prerequisite='workload-pool',
+                opt='enable-mesh-certificates'))
+      if cluster.meshCertificates is None:
+        cluster.meshCertificates = self.messages.MeshCertificates()
+      cluster.meshCertificates.enableCertificates = options.enable_mesh_certificates
 
     _AddNotificationConfigToCluster(cluster, options, self.messages)
 
@@ -2421,6 +2435,11 @@ class APIAdapter(object):
       update = self.messages.ClusterUpdate(
           desiredGcfsConfig=self.messages.GcfsConfig(
               enabled=options.enable_image_streaming))
+
+    if options.enable_mesh_certificates is not None:
+      update = self.messages.ClusterUpdate(
+          desiredMeshCertificates=self.messages.MeshCertificates(
+              enableCertificates=options.enable_mesh_certificates))
 
     return update
 

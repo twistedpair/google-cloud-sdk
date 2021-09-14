@@ -394,9 +394,9 @@ class GoogleRpcStatus(_messages.Message):
 
 
 class Hub(_messages.Message):
-  r"""A hub is essentially a collection of spokes. A single hub can contain
-  spokes from multiple regions. However, all of a hub's spokes must be
-  associated with resources that reside in the same VPC network.
+  r"""A hub is a collection of spokes. A single hub can contain spokes from
+  multiple regions. However, all of a hub's spokes must be associated with
+  resources that reside in the same VPC network.
 
   Enums:
     StateValueValuesEnum: Output only. The current lifecycle state of this
@@ -1261,11 +1261,11 @@ class RouterApplianceInstance(_messages.Message):
 
 
 class RoutingVPC(_messages.Message):
-  r"""RoutingsVPC contains information about a VPC network that is associated
+  r"""RoutingVPC contains information about the VPC network that is associated
   with a hub's spokes.
 
   Fields:
-    uri: The URI of a VPC network.
+    uri: The URI of the VPC network.
   """
 
   uri = _messages.StringField(1)

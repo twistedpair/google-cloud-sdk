@@ -243,6 +243,33 @@ class MemcacheV1beta2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def RescheduleMaintenance(self, request, global_params=None):
+      r"""Performs the apply phase of the RescheduleMaintenance verb.
+
+      Args:
+        request: (MemcacheProjectsLocationsInstancesRescheduleMaintenanceRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('RescheduleMaintenance')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RescheduleMaintenance.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta2/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:rescheduleMaintenance',
+        http_method='POST',
+        method_id='memcache.projects.locations.instances.rescheduleMaintenance',
+        ordered_params=['instance'],
+        path_params=['instance'],
+        query_params=[],
+        relative_path='v1beta2/{+instance}:rescheduleMaintenance',
+        request_field='rescheduleMaintenanceRequest',
+        request_type_name='MemcacheProjectsLocationsInstancesRescheduleMaintenanceRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def UpdateParameters(self, request, global_params=None):
       r"""Updates the defined Memcached parameters for an existing instance. This method only stages the parameters, it must be followed by `ApplyParameters` to apply the parameters to nodes of the Memcached instance.
 

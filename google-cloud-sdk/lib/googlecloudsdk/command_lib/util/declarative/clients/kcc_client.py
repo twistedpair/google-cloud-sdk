@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import collections
+import errno
 import io
 import os
 import re
@@ -94,8 +95,7 @@ class KrmGroupValueKind(object):
   def __eq__(self, o):
     if not isinstance(o, KrmGroupValueKind):
       return False
-    return (self.kind == o.kind and
-            self.group == o.group and
+    return (self.kind == o.kind and self.group == o.group and
             self.version == o.version and
             self.bulk_export_supported == o.bulk_export_supported and
             self.export_supported == o.export_supported and
@@ -104,9 +104,8 @@ class KrmGroupValueKind(object):
   def __hash__(self):
     return sum(
         map(hash, [
-            self.kind, self.group, self.version,
-            self.bulk_export_supported, self.export_supported,
-            self.resource_name_format
+            self.kind, self.group, self.version, self.bulk_export_supported,
+            self.export_supported, self.resource_name_format
         ]))
 
 
@@ -116,6 +115,10 @@ class ResourceNotFoundException(client_base.ClientException):
 
 class AssetInventoryNotEnabledException(client_base.ClientException):
   """Exception for when Asset Inventory Is Not Enabled."""
+
+
+class ExportPathException(client_base.ClientException):
+  """Exception for any errors raised creating export Path."""
 
 
 # TODO(b/181223251): Remove this workaround once config-connector is updated.
@@ -207,10 +210,10 @@ def _GetAssetInventoryListInput(folder,
       results are returned as string.
     asset_types_filter: [string], list of asset types to include in the output
       file.
-    filter_expression: string, a valid gcloud filter expression.
-      See `gcloud topic filter` for more details.
-    krm_kind_filter: [string], list of KrmKinds corresponding to asset
-    types to include in the output.
+    filter_expression: string, a valid gcloud filter expression. See `gcloud
+      topic filter` for more details.
+    krm_kind_filter: [string], list of KrmKinds corresponding to asset types to
+      include in the output.
 
   Returns:
     string: file path where AssetInventory data has been written or raw data if
@@ -222,12 +225,12 @@ def _GetAssetInventoryListInput(folder,
       filtering.
     ClientException: Writing file to disk.
   """
-  root_asset = asset_utils.GetParentNameForExport(organization=org,
-                                                  project=project,
-                                                  folder=folder)
+  root_asset = asset_utils.GetParentNameForExport(
+      organization=org, project=project, folder=folder)
   asset_client = client_util.AssetListClient(root_asset)
-  filter_func = (resource_filter.Compile(filter_expression.strip()).Evaluate
-                 if filter_expression else None)
+  filter_func = (
+      resource_filter.Compile(filter_expression.strip()).Evaluate
+      if filter_expression else None)
   asset_filter = asset_types_filter or []
   if krm_kind_filter:
     kind_filters = _BuildAssetTypeFilterFromKind(krm_kind_filter)
@@ -287,9 +290,8 @@ def _ExecuteBinary(cmd, in_str=None):
 
 
 def _ExecuteBinaryWithStreaming(cmd, in_str=None):
-  exit_code = execution_utils.ExecWithStreamingOutput(args=cmd,
-                                                      no_exit=True,
-                                                      in_str=in_str)
+  exit_code = execution_utils.ExecWithStreamingOutput(
+      args=cmd, no_exit=True, in_str=in_str)
   if exit_code != 0:
     raise client_base.ClientException(
         'The bulk-export command could not finish correctly.')
@@ -359,10 +361,33 @@ class KccClient(client_base.DeclarativeClient):
       raise client_base.ClientException(
           'Error Configuring KCC Client: [{}]'.format(e))
 
-  def _OutputToFileOrDir(self, args):
-    if args.path.strip() == '-':
+  def _OutputToFileOrDir(self, path):
+    if path.strip() == '-':
       return False
     return True
+
+  def _TryCreateOutputPath(self, path):
+    """Try to create output directory if it doesnt exists."""
+    directory = os.path.abspath(path.strip())
+    try:
+      if os.path.isdir(directory) and files.HasWriteAccessInDir(directory):
+        return
+      if files.HasWriteAccessInDir(os.path.dirname(directory)):
+        console_io.PromptContinue(
+            'Path {} does not exists. Do you want to create it?'.format(path),
+            default=True,
+            cancel_on_no=True,
+            cancel_string='Export aborted. No files written.')
+        files.MakeDir(path)
+      else:
+        raise OSError(errno.EACCES)  # e.g. ../Path Is not writeable
+    except ValueError:
+      raise ExportPathException('Can not export to path. [{}] is not a '
+                                'directory.'.format(path))
+    except OSError:
+      raise ExportPathException('Can not export to path [{}]. '
+                                'Ensure that enclosing path '
+                                'exists and is writeable.'.format(path))
 
   def _GetBinaryCommand(self, args, command_name, resource_uri=None):
     # Populate universal flags to command.
@@ -405,7 +430,7 @@ class KccClient(client_base.DeclarativeClient):
         cmd.extend(['--iam-format', 'none'])
 
     # If a file or directory path is specified, add path to command.
-    if self._OutputToFileOrDir(args):
+    if self._OutputToFileOrDir(args.path):
       cmd.extend(['--output', args.path])
 
     return cmd
@@ -425,10 +450,15 @@ class KccClient(client_base.DeclarativeClient):
         raise client_base.ResourceNotFoundException(
             'Could not fetch resource: \n - The resource [{}] does not exist.'
             .format(normalized_resource_uri))
+      elif 'Error 403' in error_value:
+        raise client_base.ClientException(
+            'Permission Denied during export. Please ensure resource API '
+            'is enabled for resource [{}] and Cloud IAM permissions are '
+            'set properly.'.format(resource_uri))
       else:
         raise client_base.ClientException(
             'Error executing export:: [{}]'.format(error_value))
-    if not self._OutputToFileOrDir(args):
+    if not self._OutputToFileOrDir(args.path):
       log.out.Print(output_value)
     log.status.Print('Exported successfully.')
     return exit_code
@@ -448,17 +478,8 @@ class KccClient(client_base.DeclarativeClient):
 
   def _CallBulkExport(self, cmd, args, asset_list_input=None):
     """Execute actual bulk-export command on config-connector binary."""
-    if self._OutputToFileOrDir(args):
-      try:
-        if not files.HasWriteAccessInDir(args.path):
-          raise client_base.ClientException(
-              'Can not export to path [{}]. Ensure that path exists and '
-              'is writeable.'.format(args.path)
-              )
-      except ValueError:
-        raise client_base.ClientException(
-            'Can not export to path [{}]. Path not found.'.format(args.path))
-
+    if self._OutputToFileOrDir(args.path):
+      self._TryCreateOutputPath(args.path)
       preexisting_file_count = sum(
           [len(files_in_dir) for r, d, files_in_dir in os.walk(args.path)])
       with progress_tracker.ProgressTracker(
@@ -468,8 +489,18 @@ class KccClient(client_base.DeclarativeClient):
             cmd=cmd, in_str=asset_list_input)
 
       if exit_code != 0:
-        raise client_base.ClientException(
-            'Error executing export:: [{}]'.format(error_value))
+        if 'Error 403' in error_value:
+          msg = ('Permission denied during export. Please ensure the '
+                 'Cloud Asset Inventory API is enabled.')
+          if args.storage_path:
+            msg += (' Also check that Cloud IAM permissions '
+                    'are set for `--storage-path` [{}]').format(
+                        args.storage_path)
+
+          raise client_base.ClientException(msg)
+        else:
+          raise client_base.ClientException(
+              'Error executing export:: [{}]'.format(error_value))
       else:
         _BulkExportPostStatus(preexisting_file_count, args.path)
 
@@ -480,8 +511,7 @@ class KccClient(client_base.DeclarativeClient):
       return _ExecuteBinaryWithStreaming(cmd=cmd, in_str=asset_list_input)
 
   def BulkExport(self, args):
-    CheckForAssetInventoryEnablementWithPrompt(
-        getattr(args, 'project', None))
+    CheckForAssetInventoryEnablementWithPrompt(getattr(args, 'project', None))
     cmd = self._GetBinaryCommand(args, 'bulk-export')
     return self._CallBulkExport(cmd, args, asset_list_input=None)
 
@@ -493,8 +523,7 @@ class KccClient(client_base.DeclarativeClient):
 
   def BulkExportFromAssetList(self, args):
     """BulkExport with support for resource kind/asset type and filtering."""
-    CheckForAssetInventoryEnablementWithPrompt(
-        getattr(args, 'project', None))
+    CheckForAssetInventoryEnablementWithPrompt(getattr(args, 'project', None))
     args.all = True  # Remove scope (e.g. project, org & folder) from cmd.
     kind_args = (
         getattr(args, 'resource_types', None) or self._ParseKindTypesFileData(
@@ -521,10 +550,7 @@ class KccClient(client_base.DeclarativeClient):
               error_value))
     return output_value
 
-  def ListResources(self,
-                    project=None,
-                    organization=None,
-                    folder=None):
+  def ListResources(self, project=None, organization=None, folder=None):
     """List all exportable resources.
 
     If parent (e.g. project, organization or folder) is passed then only list
@@ -551,7 +577,7 @@ class KccClient(client_base.DeclarativeClient):
       msg_sfx = ' for folder [{}]'.format(folder)
 
     with progress_tracker.ProgressTracker(
-        message='Listing exportable resource types'+ msg_sfx,
+        message='Listing exportable resource types' + msg_sfx,
         aborted_message='Aborted Export.'):
       supported_kinds = self.ListSupportedResourcesForParent(
           project=project, organization=organization, folder=folder)
@@ -572,17 +598,15 @@ class KccClient(client_base.DeclarativeClient):
         folder=folder, org=organization, project=project)
     # Extract unique asset types from list data string
     asset_types = set([
-        x.replace('\"', '')
-        for x in _ASSET_TYPE_REGEX.findall(asset_list_data)
+        x.replace('\"', '') for x in _ASSET_TYPE_REGEX.findall(asset_list_data)
     ])
     exportable_kinds = []
     for asset in asset_types:
       try:
-        meta_resource = name_translator.get_resource(
-            asset_inventory_type=asset)
+        meta_resource = name_translator.get_resource(asset_inventory_type=asset)
         gvk = KrmGroupValueKind(
             kind=meta_resource.krm_kind.krm_kind,
-            group=meta_resource.krm_kind.krm_group+_KRM_GROUP_SUFFIX,
+            group=meta_resource.krm_kind.krm_group + _KRM_GROUP_SUFFIX,
             bulk_export_supported=meta_resource.resource_data
             .support_bulk_export,
             export_supported=meta_resource.resource_data.support_single_export)

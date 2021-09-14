@@ -60,18 +60,6 @@ def _GetIndexFromCapsule(capsule):
   return capsule.rstrip('.')
 
 
-def GetFlagHeading(category):
-  """Returns the flag section heading name for a flag category.
-
-  Args:
-    category: The flags category name.
-
-  Returns:
-    The flag section heading name for a flag category.
-  """
-  return category if 'FLAGS' in category else category + ' FLAGS'
-
-
 class ExampleCommandLineSplitter(object):
   """Example command line splitter.
 

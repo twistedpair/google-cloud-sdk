@@ -20,8 +20,9 @@ from __future__ import unicode_literals
 
 import json
 
-from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core.credentials import creds as c_creds
+from googlecloudsdk.core.credentials import introspect as c_introspect
 from googlecloudsdk.core.util import files
 
 _EXTERNAL_ACCOUNT_TYPE = 'external_account'
@@ -29,10 +30,6 @@ _EXTERNAL_ACCOUNT_TYPE = 'external_account'
 
 class Error(exceptions.Error):
   """Errors raised by this module."""
-
-
-class UnsupportedCredentialsType(Error):
-  """Raised when given type credentials cannot be created."""
 
 
 class BadCredentialFileException(Error):
@@ -96,48 +93,31 @@ def CredentialsFromAdcDictGoogleAuth(external_config):
 
   Raises:
     BadCredentialJsonFileException: If the config format is invalid.
-    UnsupportedCredentialsType: If the underlying external account credentials
-      are unsupported.
+    googlecloudsdk.core.credentials.creds.InvalidCredentialsError: If the
+      provided configuration is invalid or unsupported.
   """
   if ('type' not in external_config or
       external_config['type'] != _EXTERNAL_ACCOUNT_TYPE):
     raise BadCredentialJsonFileException(
         'The provided credentials configuration is not in a valid format.')
 
-  # Some non-cloud scopes will need to be removed when gcloud starts supporting
-  # external account creds without service account impersonation.
-  # This includes: openid and https://www.googleapis.com/auth/userinfo.email.
-  scopes = config.CLOUDSDK_SCOPES
-  # There are currently 2 types of external_account credentials.
-  creds = None
-  try:
-    # pylint: disable=g-import-not-at-top
-    from google.auth import aws
+  return c_creds.FromJsonGoogleAuth(json.dumps(external_config))
 
-    # Check if configuration corresponds to an AWS credentials.
-    creds = aws.Credentials.from_info(external_config, scopes=scopes)
-  except ValueError:
-    pass
 
-  try:
-    # pylint: disable=g-import-not-at-top
-    from google.auth import identity_pool
+def GetExternalAccountId(creds):
+  """Returns the account identifier corresponding to the external account creds.
 
-    creds = identity_pool.Credentials.from_info(external_config, scopes=scopes)
-  except ValueError:
-    pass
+  Args:
+    creds (google.auth.credentials.Credentials): The credentials whose account
+      ID is to be returned.
 
-  if not creds:
-    # If the configuration is invalid or does not correspond to any
-    # supported external_account credentials, raise an error.
-    raise BadCredentialJsonFileException(
-        'The credentials configuration has to correspond to either a '
-        'URL-sourced, file-sourced or AWS external account credentials.')
+  Returns:
+    Optional(str): The corresponding account ID, or None if the credentials are
+      not external_account credentials.
+  """
 
-  # Currently only 3PI workload identity pool credentials with service account
-  # impersonation are supported.
-  if not creds.service_account_email:
-    raise UnsupportedCredentialsType(
-        'Workload identity pools without service account impersonation are not '
-        'supported.')
-  return creds
+  if (c_creds.IsExternalAccountCredentials(creds) or
+      c_creds.IsExternalAccountUserCredentials(creds)):
+    return (creds.service_account_email or
+            c_introspect.GetExternalAccountId(creds))
+  return None

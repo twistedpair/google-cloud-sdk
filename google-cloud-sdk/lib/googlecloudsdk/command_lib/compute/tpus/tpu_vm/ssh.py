@@ -62,6 +62,39 @@ def AddTPUSSHArgs(parser):
           """)
 
 
+def ValidateTPUState(state, state_enum):
+  """Validates the TPU's state.
+
+  Prints warnings or throws exceptions when appropriate.
+
+  Args:
+    state: the state of the TPU.
+    state_enum: the enum for all TPU states.
+  """
+  if state is state_enum.READY:
+    # This is the base case.
+    pass
+  elif state is state_enum.STATE_UNSPECIFIED:
+    log.warning(
+        'The TPU VM is in state "{}", therefore the TPU may not be available '
+        'or reachable.'.format(state))
+  elif state in [
+      state_enum.CREATING, state_enum.STARTING, state_enum.REPAIRING,
+      state_enum.HIDING, state_enum.UNHIDING
+  ]:
+    log.warning(
+        'The TPU VM is in state "{}", therefore the TPU may not be available '
+        'or reachable. If the connection fails, please try again later.'.format(
+            state))
+  elif state in [
+      state_enum.STOPPED, state_enum.STOPPING, state_enum.DELETING,
+      state_enum.HIDDEN
+  ]:
+    raise tpu_exceptions.TPUInUnusableState(state)
+  elif state in [state_enum.PREEMPTED, state_enum.TERMINATED]:
+    raise tpu_exceptions.TPUInUnusableTerminalState(state)
+
+
 class IPAddresses():
   """Worker is a holder for the worker IP addresses."""
 
@@ -153,8 +186,8 @@ def GetHostKeySuffixes(tpu_helper, tpu_name, worker_ips, worker_count, zone):
     worker_id = list(worker_ips)[0]
     guest_attributes_response = tpu_helper.GetGuestAttributes(
         tpu_name, zone, str(worker_id))
-    host_key_suffixes = _ParseSingleHostKeySuffix(
-        guest_attributes_response, worker_count, worker_id)
+    host_key_suffixes = _ParseSingleHostKeySuffix(guest_attributes_response,
+                                                  worker_count, worker_id)
   else:
     guest_attributes_response = tpu_helper.GetGuestAttributes(tpu_name, zone)
     host_key_suffixes = _ParseHostKeySuffixes(guest_attributes_response)

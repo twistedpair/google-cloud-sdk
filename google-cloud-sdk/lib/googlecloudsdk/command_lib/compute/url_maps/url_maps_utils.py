@@ -18,8 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from googlecloudsdk.api_lib.compute.operations import poller
-from googlecloudsdk.api_lib.util import waiter
+from googlecloudsdk.command_lib.compute import operation_utils
 
 
 def ResolveUrlMapDefaultService(args, backend_service_arg, url_map_ref,
@@ -86,13 +85,10 @@ def WaitForOperation(resources, service, operation, url_map_ref, message):
   Returns:
     The operation result.
   """
-  params = {'project': url_map_ref.project}
   if url_map_ref.Collection() == 'compute.regionUrlMaps':
-    collection = 'compute.regionOperations'
-    params['region'] = url_map_ref.region
+    collection = operation_utils.GetRegionalOperationsCollection()
   else:
-    collection = 'compute.globalOperations'
-  operation_ref = resources.Parse(
-      operation.name, params=params, collection=collection)
-  operation_poller = poller.Poller(service, url_map_ref)
-  return waiter.WaitFor(operation_poller, operation_ref, message)
+    collection = operation_utils.GetGlobalOperationsCollection()
+
+  return operation_utils.WaitForOperation(resources, service, operation,
+                                          collection, url_map_ref, message)

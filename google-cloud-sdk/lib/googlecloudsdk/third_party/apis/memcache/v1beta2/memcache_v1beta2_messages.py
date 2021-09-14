@@ -164,6 +164,25 @@ class GoogleCloudMemcacheV1beta2LocationMetadata(_messages.Message):
   availableZones = _messages.MessageField('AvailableZonesValue', 1)
 
 
+class GoogleCloudMemcacheV1beta2MaintenancePolicy(_messages.Message):
+  r"""Maintenance policy per instance.
+
+  Fields:
+    createTime: Output only. The time when the policy was created.
+    description: Description of what this policy is for. Create/Update methods
+      return INVALID_ARGUMENT if the length is greater than 512.
+    updateTime: Output only. The time when the policy was updated.
+    weeklyMaintenanceWindow: Required. Maintenance window that is applied to
+      resources covered by this policy. Minimum 1. For the current version,
+      the maximum number of weekly_maintenance_windows is expected to be one.
+  """
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  updateTime = _messages.StringField(3)
+  weeklyMaintenanceWindow = _messages.MessageField('WeeklyMaintenanceWindow', 4, repeated=True)
+
+
 class GoogleCloudMemcacheV1beta2OperationMetadata(_messages.Message):
   r"""Represents the metadata of a long-running operation.
 
@@ -711,6 +730,10 @@ class Instance(_messages.Message):
     labels: Resource labels to represent user-provided metadata. Refer to
       cloud documentation on labels for more details.
       https://cloud.google.com/compute/docs/labeling-resources
+    maintenancePolicy: The maintenance policy for the instance. If not
+      provided, the maintenance event will be performed based on Memorystore
+      internal rollout schedule.
+    maintenanceSchedule: Output only. Published maintenance schedule.
     memcacheFullVersion: Output only. The full version of memcached server
       running on this instance. System automatically determines the full
       memcached version for an instance based on the input MemcacheVersion.
@@ -807,17 +830,19 @@ class Instance(_messages.Message):
   displayName = _messages.StringField(4)
   instanceMessages = _messages.MessageField('InstanceMessage', 5, repeated=True)
   labels = _messages.MessageField('LabelsValue', 6)
-  memcacheFullVersion = _messages.StringField(7)
-  memcacheNodes = _messages.MessageField('Node', 8, repeated=True)
-  memcacheVersion = _messages.EnumField('MemcacheVersionValueValuesEnum', 9)
-  name = _messages.StringField(10)
-  nodeConfig = _messages.MessageField('NodeConfig', 11)
-  nodeCount = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  parameters = _messages.MessageField('MemcacheParameters', 13)
-  state = _messages.EnumField('StateValueValuesEnum', 14)
-  updateAvailable = _messages.BooleanField(15)
-  updateTime = _messages.StringField(16)
-  zones = _messages.StringField(17, repeated=True)
+  maintenancePolicy = _messages.MessageField('GoogleCloudMemcacheV1beta2MaintenancePolicy', 7)
+  maintenanceSchedule = _messages.MessageField('MaintenanceSchedule', 8)
+  memcacheFullVersion = _messages.StringField(9)
+  memcacheNodes = _messages.MessageField('Node', 10, repeated=True)
+  memcacheVersion = _messages.EnumField('MemcacheVersionValueValuesEnum', 11)
+  name = _messages.StringField(12)
+  nodeConfig = _messages.MessageField('NodeConfig', 13)
+  nodeCount = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  parameters = _messages.MessageField('MemcacheParameters', 15)
+  state = _messages.EnumField('StateValueValuesEnum', 16)
+  updateAvailable = _messages.BooleanField(17)
+  updateTime = _messages.StringField(18)
+  zones = _messages.StringField(19, repeated=True)
 
 
 class InstanceMessage(_messages.Message):
@@ -1094,6 +1119,20 @@ class MaintenancePolicy(_messages.Message):
   updateTime = _messages.StringField(7)
 
 
+class MaintenanceSchedule(_messages.Message):
+  r"""Upcoming maintenance schedule.
+
+  Fields:
+    endTime: Output only. The end time of any upcoming scheduled maintenance
+      for this instance.
+    startTime: Output only. The start time of any upcoming scheduled
+      maintenance for this instance.
+  """
+
+  endTime = _messages.StringField(1)
+  startTime = _messages.StringField(2)
+
+
 class MaintenanceWindow(_messages.Message):
   r"""MaintenanceWindow definition.
 
@@ -1278,6 +1317,21 @@ class MemcacheProjectsLocationsInstancesPatchRequest(_messages.Message):
   instance = _messages.MessageField('Instance', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
+
+
+class MemcacheProjectsLocationsInstancesRescheduleMaintenanceRequest(_messages.Message):
+  r"""A MemcacheProjectsLocationsInstancesRescheduleMaintenanceRequest object.
+
+  Fields:
+    instance: Required. Memcache instance resource name using the form:
+      `projects/{project_id}/locations/{location_id}/instances/{instance_id}`
+      where `location_id` refers to a GCP region.
+    rescheduleMaintenanceRequest: A RescheduleMaintenanceRequest resource to
+      be passed as the request body.
+  """
+
+  instance = _messages.StringField(1, required=True)
+  rescheduleMaintenanceRequest = _messages.MessageField('RescheduleMaintenanceRequest', 2)
 
 
 class MemcacheProjectsLocationsInstancesUpdateParametersRequest(_messages.Message):
@@ -1553,6 +1607,42 @@ class OperationMetadata(_messages.Message):
   verb = _messages.StringField(7)
 
 
+class RescheduleMaintenanceRequest(_messages.Message):
+  r"""Request for RescheduleMaintenance.
+
+  Enums:
+    RescheduleTypeValueValuesEnum: Required. If reschedule type is
+      SPECIFIC_TIME, must set up schedule_time as well.
+
+  Fields:
+    rescheduleType: Required. If reschedule type is SPECIFIC_TIME, must set up
+      schedule_time as well.
+    scheduleTime: Timestamp when the maintenance shall be rescheduled to if
+      reschedule_type=SPECIFIC_TIME, in RFC 3339 format, for example
+      `2012-11-15T16:19:00.094Z`.
+  """
+
+  class RescheduleTypeValueValuesEnum(_messages.Enum):
+    r"""Required. If reschedule type is SPECIFIC_TIME, must set up
+    schedule_time as well.
+
+    Values:
+      RESCHEDULE_TYPE_UNSPECIFIED: Not set.
+      IMMEDIATE: If the user wants to schedule the maintenance to happen now.
+      NEXT_AVAILABLE_WINDOW: If the user wants to use the existing maintenance
+        policy to find the next available window.
+      SPECIFIC_TIME: If the user wants to reschedule the maintenance to a
+        specific time.
+    """
+    RESCHEDULE_TYPE_UNSPECIFIED = 0
+    IMMEDIATE = 1
+    NEXT_AVAILABLE_WINDOW = 2
+    SPECIFIC_TIME = 3
+
+  rescheduleType = _messages.EnumField('RescheduleTypeValueValuesEnum', 1)
+  scheduleTime = _messages.StringField(2)
+
+
 class Schedule(_messages.Message):
   r"""Configure the schedule.
 
@@ -1784,6 +1874,48 @@ class WeeklyCycle(_messages.Message):
   """
 
   schedule = _messages.MessageField('Schedule', 1, repeated=True)
+
+
+class WeeklyMaintenanceWindow(_messages.Message):
+  r"""Time window specified for weekly operations.
+
+  Enums:
+    DayValueValuesEnum: Required. Allows to define schedule that runs
+      specified day of the week.
+
+  Fields:
+    day: Required. Allows to define schedule that runs specified day of the
+      week.
+    duration: Required. Duration of the time window.
+    startTime: Required. Start time of the window in UTC.
+  """
+
+  class DayValueValuesEnum(_messages.Enum):
+    r"""Required. Allows to define schedule that runs specified day of the
+    week.
+
+    Values:
+      DAY_OF_WEEK_UNSPECIFIED: The day of the week is unspecified.
+      MONDAY: Monday
+      TUESDAY: Tuesday
+      WEDNESDAY: Wednesday
+      THURSDAY: Thursday
+      FRIDAY: Friday
+      SATURDAY: Saturday
+      SUNDAY: Sunday
+    """
+    DAY_OF_WEEK_UNSPECIFIED = 0
+    MONDAY = 1
+    TUESDAY = 2
+    WEDNESDAY = 3
+    THURSDAY = 4
+    FRIDAY = 5
+    SATURDAY = 6
+    SUNDAY = 7
+
+  day = _messages.EnumField('DayValueValuesEnum', 1)
+  duration = _messages.StringField(2)
+  startTime = _messages.MessageField('TimeOfDay', 3)
 
 
 class ZoneMetadata(_messages.Message):

@@ -3410,10 +3410,11 @@ class NodePoolAutoscaling(_messages.Message):
   Fields:
     autoprovisioned: Can this node pool be deleted automatically.
     enabled: Is autoscaling enabled for this node pool.
-    maxNodeCount: Maximum number of nodes in the NodePool. Must be >=
-      min_node_count. There has to be enough quota to scale up the cluster.
-    minNodeCount: Minimum number of nodes in the NodePool. Must be >= 1 and <=
-      max_node_count.
+    maxNodeCount: Maximum number of nodes for one location in the NodePool.
+      Must be >= min_node_count. There has to be enough quota to scale up the
+      cluster.
+    minNodeCount: Minimum number of nodes for one location in the NodePool.
+      Must be >= 1 and <= max_node_count.
   """
 
   autoprovisioned = _messages.BooleanField(1)

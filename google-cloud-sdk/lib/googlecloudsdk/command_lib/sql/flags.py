@@ -766,6 +766,56 @@ def AddOffloadArgument(parser):
       ))
 
 
+def AddQuoteArgument(parser):
+  """Add the 'quote' argument to the parser."""
+  parser.add_argument(
+      '--quote',
+      help=(
+          'Specifies the character that encloses values from columns that have '
+          'string data type. The value of this argument has to be a character '
+          'in Hex ASCII Code. For example, "22" represents double quotes. '
+          'This flag is only available for MySQL and Postgres. If this flag is '
+          'not provided, double quotes character will be used as the default '
+          'value.'))
+
+
+def AddEscapeArgument(parser):
+  """Add the 'escape' argument to the parser."""
+  parser.add_argument(
+      '--escape',
+      help=(
+          'Specifies the character that should appear before a data character '
+          'that needs to be escaped. The value of this argument has to be a '
+          'character in Hex ASCII Code. For example, "22" represents double '
+          'quotes. This flag is only available for MySQL and Postgres. If this '
+          'flag is not provided, double quotes character will be used as the '
+          'default value.'))
+
+
+def AddFieldsDelimiterArgument(parser):
+  """Add the 'fields-terminated-by' argument to the parser."""
+  parser.add_argument(
+      '--fields-terminated-by',
+      help=(
+          'Specifies the character that splits column values. The value of this '
+          'argument has to be a character in Hex ASCII Code. For example, '
+          '"2C" represents a comma. This flag is only available for MySQL '
+          'and Postgres. If this flag is not provided, a comma character will '
+          'be used as the default value.'))
+
+
+def AddLinesDelimiterArgument(parser):
+  """Add the 'lines-terminated-by' argument to the parser."""
+  parser.add_argument(
+      '--lines-terminated-by',
+      help=(
+          'Specifies the character that split line records. The value of this '
+          'argument has to be a character in Hex ASCII Code. For example, '
+          '"0A" represents a new line. This flag is only available for MySQL. '
+          'If this flag is not provided, a new line character will be used as '
+          'the default value.'))
+
+
 DEFAULT_DATABASE_IMPORT_HELP_TEXT = (
     'Database to which the import is made. If not set, it is assumed that '
     'the database is specified in the file to be imported. If your SQL '

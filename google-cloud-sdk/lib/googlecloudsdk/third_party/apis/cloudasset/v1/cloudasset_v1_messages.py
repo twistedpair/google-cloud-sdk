@@ -3628,12 +3628,12 @@ class ResourceSearchResult(_messages.Message):
       Example: `123` * specify the `scope` field as this folder in your search
       request.
     kmsKey: The Cloud KMS [CryptoKey](https://cloud.google.com/kms/docs/refere
-      nce/rest/v1/projects.locations.keyRings.cryptoKeys?hl=en) name or [Crypt
-      oKeyVersion](https://cloud.google.com/kms/docs/reference/rest/v1/project
-      s.locations.keyRings.cryptoKeys.cryptoKeyVersions?hl=en) name. This
-      field is available only when the resource's proto contains it. To search
-      against the `kms_key`: * use a field query. Example: `kmsKey:key` * use
-      a free text query. Example: `key`
+      nce/rest/v1/projects.locations.keyRings.cryptoKeys) name or [CryptoKeyVe
+      rsion](https://cloud.google.com/kms/docs/reference/rest/v1/projects.loca
+      tions.keyRings.cryptoKeys.cryptoKeyVersions) name. This field is
+      available only when the resource's proto contains it. To search against
+      the `kms_key`: * use a field query. Example: `kmsKey:key` * use a free
+      text query. Example: `key`
     labels: Labels associated with this resource. See [Labelling and grouping
       GCP resources](https://cloud.google.com/blog/products/gcp/labelling-and-
       grouping-your-google-cloud-platform-resources) for more information.

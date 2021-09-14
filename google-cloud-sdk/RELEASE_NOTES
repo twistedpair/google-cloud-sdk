@@ -5,6 +5,86 @@ Copyright 2014-2021 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 357.0.0 (2021-09-14)
+
+### AI
+
+* Added `--kms-key` flag to `gcloud beta ai model-monitoring-jobs create` to support configuring Customer-managed encryption key spec.
+* Fixed issue where `gcloud beta ai custom-jobs local-run` unexpectedly used python2 with Vertex AI pre-built training images.
+
+### AI Platform
+
+* Added `--enable-web-access` to `gcloud ai-platform jobs submit training` to
+  allow enabling interactive shell terminal access for a training job.
+
+### App Engine Flexible Environment
+
+* Added support for specifying the instance IP mode for each App Engine Flexible version during deployment. This can be done by adding 'instance_ip_mode: INTERNAL|EXTERNAL' in the `Network` field of the `app.yaml` file.
+
+### Cloud Dataflow
+
+* Added runtime environment parameter `temp-location` support in `gcloud dataflow flex-template run/build`.
+  When this parameter is not set, defaults to value of `staging-location`.
+* Updated `--additional-experiments` parser used by run command `gcloud dataflow flex-template run` so the option can be specified multiple times and their values are concatenated.
+
+### Cloud Dataproc
+
+*  Added `--action-on-failed-primary-workers` enum flag to `gcloud dataproc clusters create` to allow users to delete the failed primary workers during cluster creation.
+
+### Cloud Key Management Service
+
+* Added `gcloud kms mac-sign` and `gcloud kms mac-verify` which allow users to
+  perform MAC signing and verification.
+* Added `--import-only` and `--destroy-scheduled-duration` to `gcloud kms keys
+  create` to support import-only keys and user-specified variable key
+  destruction.
+* Added `--version` to `gcloud kms keys versions import` to add key reimport
+  functionality.
+
+### Cloud Pub/Sub
+
+* Promoted `gcloud pubsub lite-reservations` to GA.
+
+### Cloud Run
+
+* Promoted `gcloud run replace` to GA. This command supports deploying from a yaml file.
+
+### Cloud SQL
+
+*   Promoted `--allocated-ip-range-name` flag of `gcloud sql instances create`
+    to beta.
+
+### Cloud Services
+
+* Added support for additional services in `services identity create`.
+
+### Cloud Workflows
+
+* Added `--call-log-level` flag to `gcloud workflows <execute|run>` to enable
+  automatic call logging.
+
+### Compute Engine
+
+*   Changed the behavior of `gcloud compute target-http-proxy import` and `gcloud compute target-https-proxy import` to wait for the import operation to finish.
+*   Updated `--set-filter-protocols`, `--add-filter-protocols` and `--remove-filter-protocols` to accept numeric protocols for all `packet-mirrorings update` commands.
+*   Added `--service-project` flag to `gcloud beta compute networks subnets list-usable`.
+
+### Eventarc
+
+*   Modified `gcloud beta eventarc attributes types list` to include Google Cloud Storage CloudEvent types and updated the descriptions for the existing event types.
+
+### Kpt
+
+* Added autocomplete image completion support in `kpt fn eval`.
+* Relaxed KRM check for kustomization files.
+* Added `json` output format for `kpt live status` command.
+* Added support for preserving field order/indendation `kpt fn eval` and `kpt fn render`.
+* Added support for referring SHA in image tags in `kpt fn eval` and `kpt fn render`.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 356.0.0 (2021-09-08)
 
 ### Assured Workloads

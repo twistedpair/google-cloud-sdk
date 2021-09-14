@@ -21,6 +21,24 @@ from __future__ import unicode_literals
 from googlecloudsdk.core import exceptions
 
 
+class TPUInUnusableTerminalState(exceptions.Error):
+  """Error when the TPU is in an unusable, terminal state."""
+
+  def __init__(self, state):
+    super(TPUInUnusableTerminalState, self).__init__(
+        'This TPU has terminal state "{}", so it cannot be used anymore.'
+        .format(state))
+
+
+class TPUInUnusableState(exceptions.Error):
+  """Error when the TPU is in an unusable state."""
+
+  def __init__(self, state):
+    super(TPUInUnusableState, self).__init__(
+        'This TPU has state "{}", so it cannot be currently connected to.'
+        .format(state))
+
+
 class SSHKeyNotInAgent(exceptions.Error):
   """Error when the SSH key is not in the SSH agent."""
 

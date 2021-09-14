@@ -126,7 +126,7 @@ class ClusterUser(_messages.Message):
   r"""A user principal for an RBAC policy.
 
   Fields:
-    username: An active Google username.
+    username: Required. An active Google username.
   """
 
   username = _messages.StringField(1)

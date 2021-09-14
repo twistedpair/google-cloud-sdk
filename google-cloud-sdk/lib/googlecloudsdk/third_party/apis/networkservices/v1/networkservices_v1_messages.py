@@ -359,6 +359,14 @@ class CDNPolicyCacheKeyPolicy(_messages.Message):
       between 1 and 32 characters long (inclusive).
     includeProtocol: Optional. If true, http and https requests will be cached
       separately.
+    includedCookieNames: Optional. Names of Cookies to include in cache keys.
+      The cookie name and cookie value of each cookie named will be used as
+      part of the cache key. Cookie names: - must be valid RFC 6265 "cookie-
+      name" tokens - are case sensitive - cannot start with "Edge-Cache-"
+      (case insensitive) Note that specifying several cookies, and/or cookies
+      that have a large range of values (e.g., per-user) will dramatically
+      impact the cache hit rate, and may result in a higher eviction rate and
+      reduced performance. You may specify up to three cookie names.
     includedHeaderNames: Optional. Names of HTTP request headers to include in
       cache keys. The value of the header field will be used as part of the
       cache key. - Header names must be valid HTTP RFC 7230 header field
@@ -381,8 +389,9 @@ class CDNPolicyCacheKeyPolicy(_messages.Message):
   excludeQueryString = _messages.BooleanField(2)
   excludedQueryParameters = _messages.StringField(3, repeated=True)
   includeProtocol = _messages.BooleanField(4)
-  includedHeaderNames = _messages.StringField(5, repeated=True)
-  includedQueryParameters = _messages.StringField(6, repeated=True)
+  includedCookieNames = _messages.StringField(5, repeated=True)
+  includedHeaderNames = _messages.StringField(6, repeated=True)
+  includedQueryParameters = _messages.StringField(7, repeated=True)
 
 
 class CORSPolicy(_messages.Message):

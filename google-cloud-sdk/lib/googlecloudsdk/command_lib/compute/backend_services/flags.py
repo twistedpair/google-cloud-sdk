@@ -285,6 +285,16 @@ def AddConnectionTrackingPolicy(parser):
       """)
 
 
+def AddStrongSessionAffinity(parser):
+  parser.add_argument(
+      '--enable-strong-affinity',
+      action=arg_parsers.StoreTrueFalseAction,
+      help="""\
+      Enable or disable strong session affinity.
+      This is only available for loadbalancingScheme EXTERNAL.
+      """)
+
+
 def AddSubsettingSubsetSize(parser):
   parser.add_argument(
       '--subsetting-subset-size',

@@ -304,17 +304,21 @@
           "type": "string"
         },
         "mute": {
-          "description": "Indicates the mute state of a finding (either unspecified, muted, unmuted).",
+          "description": "Indicates the mute state of a finding (either unspecified, muted, unmuted or undefined).",
           "type": "string",
           "enumDescriptions": [
-            "Unspecified i.e. the finding has never been muted\/unmuted.",
+            "Unspecified.",
             "Finding has been muted.",
-            "Finding has been unmuted."
+            "Finding has been unmuted.",
+            "Deprecated.",
+            "Finding has never been muted\/unmuted."
           ],
           "enum": [
             "MUTE_UNSPECIFIED",
             "MUTED",
-            "UNMUTED"
+            "UNMUTED",
+            "NEVER_MUTED",
+            "UNDEFINED"
           ]
         },
         "muteAnnotation": {
@@ -582,11 +586,11 @@
       "type": "object",
       "properties": {
         "name": {
-          "description": "The config id is a server generated unique identifier. This field will be ignored if provided on config creation. Format \"organizations\/{organization}\/muteConfigs\/{mute_config}\" \"folders\/{folder}\/muteConfigs\/{mute_config}\" \"projects\/{project}\/muteConfigs\/{mute_config}\"",
+          "description": "This field will be ignored if provided on config creation. Format \"organizations\/{organization}\/muteConfigs\/{mute_config}\" \"folders\/{folder}\/muteConfigs\/{mute_config}\" \"projects\/{project}\/muteConfigs\/{mute_config}\"",
           "type": "string"
         },
         "displayName": {
-          "description": "Required. The human readable name to be displayed for the mute config.",
+          "description": "The human readable name to be displayed for the mute config.",
           "type": "string"
         },
         "description": {
@@ -1365,14 +1369,18 @@
           "description": "Required. The desired state of the Mute.",
           "type": "string",
           "enumDescriptions": [
-            "Unspecified i.e. the finding has never been muted\/unmuted.",
+            "Unspecified.",
             "Finding has been muted.",
-            "Finding has been unmuted."
+            "Finding has been unmuted.",
+            "Deprecated.",
+            "Finding has never been muted\/unmuted."
           ],
           "enum": [
             "MUTE_UNSPECIFIED",
             "MUTED",
-            "UNMUTED"
+            "UNMUTED",
+            "NEVER_MUTED",
+            "UNDEFINED"
           ]
         }
       }
@@ -1757,6 +1765,11 @@
                   "location": "path",
                   "required": true,
                   "type": "string"
+                },
+                "muteConfigId": {
+                  "description": "Required. Unique identifier provided by the client within the parent scope. It must consist of lower case letters, numbers, and hyphen, with the first character a letter, the last a letter or a number, and a 63 character maximum.",
+                  "location": "query",
+                  "type": "string"
                 }
               },
               "parameterOrder": [
@@ -1866,7 +1879,7 @@
               "httpMethod": "PATCH",
               "parameters": {
                 "name": {
-                  "description": "The config id is a server generated unique identifier. This field will be ignored if provided on config creation. Format \"organizations\/{organization}\/muteConfigs\/{mute_config}\" \"folders\/{folder}\/muteConfigs\/{mute_config}\" \"projects\/{project}\/muteConfigs\/{mute_config}\"",
+                  "description": "This field will be ignored if provided on config creation. Format \"organizations\/{organization}\/muteConfigs\/{mute_config}\" \"folders\/{folder}\/muteConfigs\/{mute_config}\" \"projects\/{project}\/muteConfigs\/{mute_config}\"",
                   "pattern": "^folders\/[^\/]+\/muteConfigs\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -2318,6 +2331,11 @@
                   "location": "path",
                   "required": true,
                   "type": "string"
+                },
+                "muteConfigId": {
+                  "description": "Required. Unique identifier provided by the client within the parent scope. It must consist of lower case letters, numbers, and hyphen, with the first character a letter, the last a letter or a number, and a 63 character maximum.",
+                  "location": "query",
+                  "type": "string"
                 }
               },
               "parameterOrder": [
@@ -2427,7 +2445,7 @@
               "httpMethod": "PATCH",
               "parameters": {
                 "name": {
-                  "description": "The config id is a server generated unique identifier. This field will be ignored if provided on config creation. Format \"organizations\/{organization}\/muteConfigs\/{mute_config}\" \"folders\/{folder}\/muteConfigs\/{mute_config}\" \"projects\/{project}\/muteConfigs\/{mute_config}\"",
+                  "description": "This field will be ignored if provided on config creation. Format \"organizations\/{organization}\/muteConfigs\/{mute_config}\" \"folders\/{folder}\/muteConfigs\/{mute_config}\" \"projects\/{project}\/muteConfigs\/{mute_config}\"",
                   "pattern": "^projects\/[^\/]+\/muteConfigs\/[^\/]+$",
                   "location": "path",
                   "required": true,
@@ -3534,6 +3552,11 @@
                   "location": "path",
                   "required": true,
                   "type": "string"
+                },
+                "muteConfigId": {
+                  "description": "Required. Unique identifier provided by the client within the parent scope. It must consist of lower case letters, numbers, and hyphen, with the first character a letter, the last a letter or a number, and a 63 character maximum.",
+                  "location": "query",
+                  "type": "string"
                 }
               },
               "parameterOrder": [
@@ -3643,7 +3666,7 @@
               "httpMethod": "PATCH",
               "parameters": {
                 "name": {
-                  "description": "The config id is a server generated unique identifier. This field will be ignored if provided on config creation. Format \"organizations\/{organization}\/muteConfigs\/{mute_config}\" \"folders\/{folder}\/muteConfigs\/{mute_config}\" \"projects\/{project}\/muteConfigs\/{mute_config}\"",
+                  "description": "This field will be ignored if provided on config creation. Format \"organizations\/{organization}\/muteConfigs\/{mute_config}\" \"folders\/{folder}\/muteConfigs\/{mute_config}\" \"projects\/{project}\/muteConfigs\/{mute_config}\"",
                   "pattern": "^organizations\/[^\/]+\/muteConfigs\/[^\/]+$",
                   "location": "path",
                   "required": true,

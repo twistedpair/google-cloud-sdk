@@ -734,7 +734,8 @@ def AddConfigMapsFlags(parser):
                   "and mount that volume at '/my/path'. Because no config map "
                   "key was specified, all keys in 'myconfig' will be included. "
                   'An environment variable named ENV will also be created '
-                  "whose value is the value of 'key.json' in 'otherconfig'."),
+                  "whose value is the value of 'key.json' in 'otherconfig. Not "
+                  'supported on the fully managed version of Cloud Run.'),
       flag_name='config-maps')
 
 
@@ -997,6 +998,32 @@ def AddBinAuthzBreakglassFlag(parser):
       'and allow the operation. See '
       'https://cloud.google.com/binary-authorization/docs/using-breakglass '
       'for more information.')
+
+
+def AddCustomAudiencesFlag(parser, with_clear=True):
+  """Add custom audiences flag."""
+  policy_group = parser
+  if with_clear:
+    policy_group = parser.add_mutually_exclusive_group(hidden=True)
+    policy_group.add_argument(
+        '--clear-custom-audiences',
+        default=False,
+        hidden=True,
+        action='store_true',
+        help='Remove any previously set custom audiences.')
+  policy_group.add_argument(
+      '--custom-audiences',
+      hidden=True,
+      help='A non-empty JSON array of non-empty audience strings that can be used in the audience field of ID token for authenticated requests.'
+  )
+
+
+def AddSessionAffinityFlag(parser):
+  """Add session affinity flag to enable session affinity."""
+  parser.add_argument(
+      '--session-affinity',
+      action=arg_parsers.StoreTrueFalseAction,
+      help='Whether to enable session affinity for connections to the service.')
 
 
 def _HasChanges(args, flags):
@@ -1368,6 +1395,14 @@ def _GetConfigurationChanges(args):
     changes.append(
         config_changes.DeleteTemplateAnnotationChange(
             container_resource.POST_CMEK_KEY_REVOCATION_ACTION_TYPE_ANNOTATION))
+  if FlagIsExplicitlySet(args, 'custom_audiences'):
+    changes.append(
+        config_changes.SetAnnotationChange(
+            k8s_object.CUSTOM_AUDIENCES_ANNOTATION, args.custom_audiences))
+  if FlagIsExplicitlySet(args, 'clear_custom_audiences'):
+    changes.append(
+        config_changes.SetAnnotationChange(
+            k8s_object.CUSTOM_AUDIENCES_ANNOTATION))
   return changes
 
 
@@ -1415,6 +1450,16 @@ def GetServiceConfigurationChanges(args):
   if FlagIsExplicitlySet(args, 'confidential'):
     changes.append(
         config_changes.ConfidentialChange(confidential=args.confidential))
+  if FlagIsExplicitlySet(args, 'session_affinity'):
+    if args.session_affinity:
+      changes.append(
+          config_changes.SetTemplateAnnotationChange(
+              revision.SESSION_AFFINITY_ANNOTATION,
+              str(args.session_affinity).lower()))
+    else:
+      changes.append(
+          config_changes.DeleteTemplateAnnotationChange(
+              revision.SESSION_AFFINITY_ANNOTATION))
 
   return changes
 
@@ -1802,6 +1847,30 @@ def VerifyGKEFlags(args, release_track, product):
             platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
                 platforms.PLATFORM_MANAGED]))
 
+  if FlagIsExplicitlySet(args, 'custom_audiences'):
+    raise serverless_exceptions.ConfigurationError(
+        error_msg.format(
+            flag='--custom-audiences',
+            platform=platforms.PLATFORM_MANAGED,
+            platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
+                platforms.PLATFORM_MANAGED]))
+
+  if FlagIsExplicitlySet(args, 'clear_custom_audiences'):
+    raise serverless_exceptions.ConfigurationError(
+        error_msg.format(
+            flag='--clear-custom-audiences',
+            platform=platforms.PLATFORM_MANAGED,
+            platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
+                platforms.PLATFORM_MANAGED]))
+
+  if FlagIsExplicitlySet(args, 'session_affinity'):
+    raise serverless_exceptions.ConfigurationError(
+        error_msg.format(
+            flag='--session-affinity',
+            platform=platforms.PLATFORM_MANAGED,
+            platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
+                platforms.PLATFORM_MANAGED]))
+
   if FlagIsExplicitlySet(args, 'kubeconfig'):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
@@ -1931,6 +2000,30 @@ def VerifyKubernetesFlags(args, release_track, product):
     raise serverless_exceptions.ConfigurationError(
         error_msg.format(
             flag='--clear-post-key-revocation-action-type',
+            platform=platforms.PLATFORM_MANAGED,
+            platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
+                platforms.PLATFORM_MANAGED]))
+
+  if FlagIsExplicitlySet(args, 'custom_audiences'):
+    raise serverless_exceptions.ConfigurationError(
+        error_msg.format(
+            flag='--custom-audiences',
+            platform=platforms.PLATFORM_MANAGED,
+            platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
+                platforms.PLATFORM_MANAGED]))
+
+  if FlagIsExplicitlySet(args, 'clear_custom_audiences'):
+    raise serverless_exceptions.ConfigurationError(
+        error_msg.format(
+            flag='--clear-custom-audiences',
+            platform=platforms.PLATFORM_MANAGED,
+            platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
+                platforms.PLATFORM_MANAGED]))
+
+  if FlagIsExplicitlySet(args, 'session_affinity'):
+    raise serverless_exceptions.ConfigurationError(
+        error_msg.format(
+            flag='--session-affinity',
             platform=platforms.PLATFORM_MANAGED,
             platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
                 platforms.PLATFORM_MANAGED]))

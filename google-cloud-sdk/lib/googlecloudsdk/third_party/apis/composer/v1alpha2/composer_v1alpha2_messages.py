@@ -160,6 +160,134 @@ class ComposerProjectsLocationsEnvironmentsCreateRequest(_messages.Message):
   parent = _messages.StringField(2, required=True)
 
 
+class ComposerProjectsLocationsEnvironmentsDagsDagRunsGetRequest(_messages.Message):
+  r"""A ComposerProjectsLocationsEnvironmentsDagsDagRunsGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the DAG to retrieve. Must be in the
+      form: "projects/{projectId}/locations/{locationId}/environments/{environ
+      mentId}/dags/{dagId}/dagRuns/{dagRunId}".
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ComposerProjectsLocationsEnvironmentsDagsDagRunsListRequest(_messages.Message):
+  r"""A ComposerProjectsLocationsEnvironmentsDagsDagRunsListRequest object.
+
+  Fields:
+    pageSize: The maximum number of DAG runs to return.
+    pageToken: The next_page_token returned from a previous List request.
+    parent: Required. List DAG runs in the given parent resource. Parent must
+      be in the form: "projects/{projectId}/locations/{locationId}/environment
+      s/{environmentId}/dags/{dagId}".
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class ComposerProjectsLocationsEnvironmentsDagsDagRunsTaskInstancesListRequest(_messages.Message):
+  r"""A
+  ComposerProjectsLocationsEnvironmentsDagsDagRunsTaskInstancesListRequest
+  object.
+
+  Fields:
+    pageSize: The maximum number of tasks to return.
+    pageToken: The next_page_token returned from a previous List request.
+    parent: Required. List task instances in the given parent DAG run. Parent
+      must be in the form: "projects/{projectId}/locations/{locationId}/enviro
+      nments/{environmentId}/dags/{dagId}/dagRuns/{dagRunId}".
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class ComposerProjectsLocationsEnvironmentsDagsGetRequest(_messages.Message):
+  r"""A ComposerProjectsLocationsEnvironmentsDagsGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the DAG to retrieve. Must be in the
+      form: "projects/{projectId}/locations/{locationId}/environments/{environ
+      mentId}/dags/{dagId}".
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ComposerProjectsLocationsEnvironmentsDagsListRequest(_messages.Message):
+  r"""A ComposerProjectsLocationsEnvironmentsDagsListRequest object.
+
+  Fields:
+    pageSize: The maximum number of DAGs to return.
+    pageToken: The next_page_token returned from a previous List request.
+    parent: Required. List DAGs in the given parent resource. Parent must be
+      in the form: "projects/{projectId}/locations/{locationId}/environments/{
+      environmentId}".
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class ComposerProjectsLocationsEnvironmentsDagsListStatsRequest(_messages.Message):
+  r"""A ComposerProjectsLocationsEnvironmentsDagsListStatsRequest object.
+
+  Fields:
+    environment: Required. List DAGs in the given Composer environment. Parent
+      must be in the form: "projects/{projectId}/locations/{locationId}/enviro
+      nments/{environmentId}".
+    interval_endTime: Optional. Exclusive end of the interval. If specified, a
+      Timestamp matching this interval will have to be before the end.
+    interval_startTime: Optional. Inclusive start of the interval. If
+      specified, a Timestamp matching this interval will have to be the same
+      or after the start.
+    pageSize: The maximum number of DAGs to return.
+    pageToken: The next_page_token returned from a previous List request.
+  """
+
+  environment = _messages.StringField(1, required=True)
+  interval_endTime = _messages.StringField(2)
+  interval_startTime = _messages.StringField(3)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
+
+
+class ComposerProjectsLocationsEnvironmentsDagsTasksListRequest(_messages.Message):
+  r"""A ComposerProjectsLocationsEnvironmentsDagsTasksListRequest object.
+
+  Fields:
+    pageSize: The maximum number of tasks to return.
+    pageToken: The next_page_token returned from a previous List request.
+    parent: Required. List tasks in the given parent DAG. Parent must be in
+      the form: "projects/{projectId}/locations/{locationId}/environments/{env
+      ironmentId}/dags/{dagId}".
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class ComposerProjectsLocationsEnvironmentsDagsTriggerRequest(_messages.Message):
+  r"""A ComposerProjectsLocationsEnvironmentsDagsTriggerRequest object.
+
+  Fields:
+    dag: Required. The resource name of the DAG to trigger. Must be in the
+      form: "projects/{projectId}/locations/{locationId}/environments/{environ
+      mentId}/dags/{dagId}".
+    triggerDagRequest: A TriggerDagRequest resource to be passed as the
+      request body.
+  """
+
+  dag = _messages.StringField(1, required=True)
+  triggerDagRequest = _messages.MessageField('TriggerDagRequest', 2)
+
+
 class ComposerProjectsLocationsEnvironmentsDeleteRequest(_messages.Message):
   r"""A ComposerProjectsLocationsEnvironmentsDeleteRequest object.
 
@@ -393,6 +521,108 @@ class ComposerProjectsLocationsOperationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class Dag(_messages.Message):
+  r"""A Composer DAG resource.
+
+  Enums:
+    StateValueValuesEnum: Output only. The current state of the DAG.
+
+  Fields:
+    cronSchedule: The DAG's schedule in cron format.
+    dagId: Required. The DAG ID.
+    description: The description of the DAG.
+    durationSchedule: The DAG's schedule as a time duration between runs.
+    fileloc: File location relative to the Cloud Storage bucket root folder.
+    lastRunEndTime: The end timestamp of the last completed DAG run.
+    name: Required. The resource name of the DAG, in the form: "projects/{proj
+      ectId}/locations/{locationId}/environments/{environmentId}/dags/{dagId}"
+      .
+    runningCount: The number of running instances of the DAG.
+    state: Output only. The current state of the DAG.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of the DAG.
+
+    Values:
+      STATE_UNSPECIFIED: The state of the DAG is unknown.
+      ACTIVE: The DAG is available for execution.
+      PAUSED: The DAG is paused.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    PAUSED = 2
+
+  cronSchedule = _messages.StringField(1)
+  dagId = _messages.StringField(2)
+  description = _messages.StringField(3)
+  durationSchedule = _messages.StringField(4)
+  fileloc = _messages.StringField(5)
+  lastRunEndTime = _messages.StringField(6)
+  name = _messages.StringField(7)
+  runningCount = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+
+
+class DagRun(_messages.Message):
+  r"""A single DAG run.
+
+  Enums:
+    StateValueValuesEnum: DAG run state.
+
+  Fields:
+    dagId: The DAG ID of the DAG whose execution is described by this DAG run.
+    dagRunId: The DAG run ID.
+    endDate: Timestamp when the DAG run ended. Set only if the DAG run has
+      finished.
+    executionDate: The logical date and time which the DAG run and its task
+      instances are running for.
+    name: The resource name of the DAG, in the form: "projects/{projectId}/loc
+      ations/{locationId}/environments/{environmentId}/dags/{dagId}/dagRuns/{d
+      agRunId}".
+    startDate: Timestamp when the DAG run started.
+    state: DAG run state.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""DAG run state.
+
+    Values:
+      STATE_UNSPECIFIED: The state of the DAG run is unknown.
+      RUNNING: The DAG run is being executed.
+      SUCCEEDED: The DAG run is finished successfully.
+      FAILED: The DAG run is finished with an error.
+    """
+    STATE_UNSPECIFIED = 0
+    RUNNING = 1
+    SUCCEEDED = 2
+    FAILED = 3
+
+  dagId = _messages.StringField(1)
+  dagRunId = _messages.StringField(2)
+  endDate = _messages.StringField(3)
+  executionDate = _messages.StringField(4)
+  name = _messages.StringField(5)
+  startDate = _messages.StringField(6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+
+
+class DagStats(_messages.Message):
+  r"""Statistics of a DAG in a specific time interval.
+
+  Fields:
+    dag: DAG name.
+    failedRunCount: Number of DAG runs finished with a failure in the time
+      interval.
+    successfulRunCount: Number of DAG runs successfully finished in the time
+      interval.
+  """
+
+  dag = _messages.StringField(1)
+  failedRunCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  successfulRunCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class DatabaseConfig(_messages.Message):
@@ -716,6 +946,45 @@ class ImageVersion(_messages.Message):
   upgradeDisabled = _messages.BooleanField(6)
 
 
+class ListDagRunsResponse(_messages.Message):
+  r"""Response to `ListDagRunsRequest`.
+
+  Fields:
+    dagRuns: The list of DAG runs returned.
+    nextPageToken: The page token used to query for the next page if one
+      exists.
+  """
+
+  dagRuns = _messages.MessageField('DagRun', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListDagStatsResponse(_messages.Message):
+  r"""Response to `ListDagStatsRequest`.
+
+  Fields:
+    dagStats: List of DAGs with statistics.
+    nextPageToken: The page token used to query for the next page if one
+      exists.
+  """
+
+  dagStats = _messages.MessageField('DagStats', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListDagsResponse(_messages.Message):
+  r"""Response to `ListDagsRequest`.
+
+  Fields:
+    dags: The list of DAGs returned.
+    nextPageToken: The page token used to query for the next page if one
+      exists.
+  """
+
+  dags = _messages.MessageField('Dag', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class ListEnvironmentsResponse(_messages.Message):
   r"""The environments in a project and location.
 
@@ -754,6 +1023,32 @@ class ListOperationsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+
+
+class ListTaskInstancesResponse(_messages.Message):
+  r"""Response to `ListTaskInstancesRequest`.
+
+  Fields:
+    nextPageToken: The page token used to query for the next page if one
+      exists.
+    taskInstances: The list of tasks returned.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  taskInstances = _messages.MessageField('TaskInstance', 2, repeated=True)
+
+
+class ListTasksResponse(_messages.Message):
+  r"""Response to `ListTasksRequest`.
+
+  Fields:
+    nextPageToken: The page token used to query for the next page if one
+      exists.
+    tasks: The list of tasks returned.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  tasks = _messages.MessageField('Task', 2, repeated=True)
 
 
 class MaintenanceWindow(_messages.Message):
@@ -1486,6 +1781,205 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class Task(_messages.Message):
+  r"""A single task in a DAG.
+
+  Fields:
+    dagId: The DAG ID of the DAG the task belongs to.
+    dependsOnPast: When set to true, task instances will run sequentially
+      while relying on the previous task's schedule to succeed.
+    doXcomPush: if true, an XCom is pushed containing the Operator's result.
+    downstreamTasks: IDs of downstream tasks from this task, i.e. those that
+      wait on this task.
+    emailOnFailure: Whether email alerts should be sent when a task failed.
+    emailOnRetry: Whether email alerts should be sent when a task is retried.
+    emails: Email addresses used in alerts.
+    endDate: If specified, the scheduler won't go beyond this date.
+    executionTimeout: Maximum time allowed for the execution of this task
+      instance, if it goes beyond it will raise and fail.
+    id: The task ID.
+    maxRetryDelay: Maximum delay interval between retries.
+    name: Required. The resource name of the task, in the form: "projects/{pro
+      jectId}/locations/{locationId}/environments/{environmentId}/dags/{dagId}
+      /tasks/{taskId}".
+    owner: The owner of the task.
+    pool: The slot pool this task should run in.
+    poolSlots: The number of pool slots this task should use.
+    priorityWeight: Priority weight of this task against other tasks.
+    queue: Which queue to target when running this job.
+    retries: The number of retries that should be performed before failing the
+      task.
+    retryDelay: Delay between retries.
+    retryExponentialBackoff: Allow progressive longer waits between retries by
+      using exponential backoff algorithm on retry delay.
+    runAsUser: Unix username to impersonate while running the task.
+    sla: Time by which the job is expected to succeed.
+    startDate: Determines the execution_date for the first task instance.
+    taskConcurrency: When set, a task will be able to limit the concurrent
+      runs across execution dates.
+    taskId: The task ID.
+    taskType: The operator used in this task.
+    triggerRule: Defines the rule by which dependencies are applied for the
+      task to get triggered.
+    upstreamTasks: IDs of upstream tasks from this task, i.e. those that this
+      task waits on.
+    waitForDownstream: When set to true, an instance of task X will wait for
+      tasks immediately downstream of the previous instance of task X to
+      finish successfully before it runs.
+    weightRule: Weighting method used for the effective total priority weight
+      of the task.
+  """
+
+  dagId = _messages.StringField(1)
+  dependsOnPast = _messages.BooleanField(2)
+  doXcomPush = _messages.BooleanField(3)
+  downstreamTasks = _messages.StringField(4, repeated=True)
+  emailOnFailure = _messages.BooleanField(5)
+  emailOnRetry = _messages.BooleanField(6)
+  emails = _messages.StringField(7, repeated=True)
+  endDate = _messages.StringField(8)
+  executionTimeout = _messages.StringField(9)
+  id = _messages.StringField(10)
+  maxRetryDelay = _messages.StringField(11)
+  name = _messages.StringField(12)
+  owner = _messages.StringField(13)
+  pool = _messages.StringField(14)
+  poolSlots = _messages.IntegerField(15, variant=_messages.Variant.INT32)
+  priorityWeight = _messages.IntegerField(16, variant=_messages.Variant.INT32)
+  queue = _messages.StringField(17)
+  retries = _messages.IntegerField(18, variant=_messages.Variant.INT32)
+  retryDelay = _messages.StringField(19)
+  retryExponentialBackoff = _messages.BooleanField(20)
+  runAsUser = _messages.StringField(21)
+  sla = _messages.StringField(22)
+  startDate = _messages.StringField(23)
+  taskConcurrency = _messages.IntegerField(24, variant=_messages.Variant.INT32)
+  taskId = _messages.StringField(25)
+  taskType = _messages.StringField(26)
+  triggerRule = _messages.StringField(27)
+  upstreamTasks = _messages.StringField(28, repeated=True)
+  waitForDownstream = _messages.BooleanField(29)
+  weightRule = _messages.StringField(30)
+
+
+class TaskInstance(_messages.Message):
+  r"""Task instance in a DAG run.
+
+  Enums:
+    StateValueValuesEnum: Task instance state.
+
+  Fields:
+    dagId: The DAG ID of the DAG whose execution is described by the DAG run
+      the taskInstance belongs to.
+    dagRunId: The DAG run ID the task instance belongs to.
+    endDate: Timestamp when the task instance finished execution.
+    hostname: Hostname of the machine or pod the task runs on.
+    id: The task instance ID. It is the same as the task ID of a DAG.
+    maxTries: The number of tries that should be performed before failing the
+      task.
+    name: Required. The resource name of the task instance, in the form: "proj
+      ects/{projectId}/locations/{locationId}/environments/{environmentId}/dag
+      s/{dagId}/dagRuns/{dagRunId}/taskInstances/{taskInstanceId}".
+    pool: The slot pool this task runs in.
+    priorityWeight: Priority weight of this task against other tasks.
+    queue: Which queue to target when running this task.
+    queuedDttm: Timestamp when the task was queued.
+    startDate: Timestamp when the task instance started execution.
+    state: Task instance state.
+    taskId: The task instance ID. It is the same as the task ID in the DAG.
+    taskType: The operator used in this task.
+    tryNumber: The try number that this task number will be when it is
+      actually run.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Task instance state.
+
+    Values:
+      STATE_UNSPECIFIED: The state of the task instance is unknown.
+      SUCCEEDED: Task execution succeeded.
+      FAILED: Task execution failed.
+      UPSTREAM_FAILED: Upstream task failed.
+      SKIPPED: Task skipped.
+      UP_FOR_RETRY: Task waiting to be retried.
+      UP_FOR_RESCHEDULE: Task waiting to be rescheduled.
+      QUEUED: Task queued.
+      SCHEDULED: Task scheduled for execution.
+      SENSING: Task in sensing mode.
+    """
+    STATE_UNSPECIFIED = 0
+    SUCCEEDED = 1
+    FAILED = 2
+    UPSTREAM_FAILED = 3
+    SKIPPED = 4
+    UP_FOR_RETRY = 5
+    UP_FOR_RESCHEDULE = 6
+    QUEUED = 7
+    SCHEDULED = 8
+    SENSING = 9
+
+  dagId = _messages.StringField(1)
+  dagRunId = _messages.StringField(2)
+  endDate = _messages.StringField(3)
+  hostname = _messages.StringField(4)
+  id = _messages.StringField(5)
+  maxTries = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  name = _messages.StringField(7)
+  pool = _messages.StringField(8)
+  priorityWeight = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  queue = _messages.StringField(10)
+  queuedDttm = _messages.StringField(11)
+  startDate = _messages.StringField(12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
+  taskId = _messages.StringField(14)
+  taskType = _messages.StringField(15)
+  tryNumber = _messages.IntegerField(16, variant=_messages.Variant.INT32)
+
+
+class TriggerDagRequest(_messages.Message):
+  r"""Request to trigger a DAG run.
+
+  Messages:
+    ConfValue: The key-value pairs get pickled into the conf attribute in the
+      DAG run.
+
+  Fields:
+    conf: The key-value pairs get pickled into the conf attribute in the DAG
+      run.
+    dagRunId: The dag_run_id to be assigned to the triggered DAG run.
+    executionDate: The execution date of the DAG run.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ConfValue(_messages.Message):
+    r"""The key-value pairs get pickled into the conf attribute in the DAG
+    run.
+
+    Messages:
+      AdditionalProperty: An additional property for a ConfValue object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ConfValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  conf = _messages.MessageField('ConfValue', 1)
+  dagRunId = _messages.StringField(2)
+  executionDate = _messages.StringField(3)
 
 
 class WebServerConfig(_messages.Message):

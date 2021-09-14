@@ -265,3 +265,20 @@ def AddZone(parser):
       type=str,
       help=('Primary Compute Engine zone '
             '(e.g. us-central1, us-central1, etc.'))
+
+
+def AddForce(parser):
+  """Adds a --force flag to parser.
+
+  Args:
+    parser: argparse.Parser: Parser object for command line inputs.
+  """
+  parser.add_argument(
+      '--force',
+      required=False,
+      action='store_true',
+      help=('Default value is false.'
+            '\n\nIf flag is specified, deletes instances (if any) within this '
+            'cluster, before deleting the cluster.'
+            '\n\nIf flag is not specified, cluster delete will fail if there '
+            'are instances present in the cluster.'))

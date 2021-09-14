@@ -7,7 +7,7 @@
   "version": "v1alpha1",
   "revision": "0",
   "title": "Public Certificate Authority API",
-  "description": "The Public Certificate Authority API may be used to create and manage ACME external account binding keys associated with Google Trust Service's publicly trusted certificate authority. ",
+  "description": "The Public Certificate Authority API may be used to create and manage ACME external account binding keys associated with Google Trust Services' publicly trusted certificate authority.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {

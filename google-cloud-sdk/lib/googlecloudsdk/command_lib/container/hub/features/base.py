@@ -214,4 +214,15 @@ def ListMemberships():
       client.MESSAGES_MODULE.GkehubProjectsLocationsMembershipsListRequest(
           parent=hub_base.HubCommand.LocationResourceName()))
 
-  return [util.MembershipShortname(m.name) for m in response.resources]
+  return [
+      util.MembershipShortname(m.name)
+      for m in response.resources
+      if not _ClusterMissing(m.endpoint)
+  ]
+
+
+def _ClusterMissing(m):
+  for t in ['gkeCluster', 'multiCloudCluster', 'onPremCluster']:
+    if hasattr(m, t):
+      return getattr(getattr(m, t), 'clusterMissing', False)
+

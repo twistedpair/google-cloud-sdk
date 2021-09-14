@@ -722,6 +722,20 @@ class ListInventoriesResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class ListOSPolicyAssignmentReportsResponse(_messages.Message):
+  r"""A response message for listing OS Policy assignment reports including
+  the page of results and page token.
+
+  Fields:
+    nextPageToken: The pagination token to retrieve the next page of OS policy
+      assignment report objects.
+    osPolicyAssignmentReports: List of OS policy assignment reports.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  osPolicyAssignmentReports = _messages.MessageField('OSPolicyAssignmentReport', 2, repeated=True)
+
+
 class ListOSPolicyAssignmentRevisionsResponse(_messages.Message):
   r"""A response message for listing all revisions for a OS policy assignment.
 
@@ -1032,6 +1046,184 @@ class OSPolicyAssignmentOperationMetadata(_messages.Message):
   rolloutStartTime = _messages.StringField(3)
   rolloutState = _messages.EnumField('RolloutStateValueValuesEnum', 4)
   rolloutUpdateTime = _messages.StringField(5)
+
+
+class OSPolicyAssignmentReport(_messages.Message):
+  r"""A report of the OS policy assignment status for a given instance.
+
+  Fields:
+    instance: The Compute Engine VM instance name.
+    lastRunId: Unique identifier of the last attempted run to apply the OS
+      policies associated with this assignment on the VM. This ID is logged by
+      the OS Config agent while applying the OS policies associated with this
+      assignment on the VM. NOTE: If the service is unable to successfully
+      connect to the agent for this run, then this id will not be available in
+      the agent logs.
+    name: The `OSPolicyAssignmentReport` API resource name. Format: `projects/
+      {project_number}/locations/{location}/instances/{instance_id}/osPolicyAs
+      signments/{os_policy_assignment_id}/report`
+    osPolicyAssignment: Reference to the `OSPolicyAssignment` API resource
+      that the `OSPolicy` belongs to. Format: `projects/{project_number}/locat
+      ions/{location}/osPolicyAssignments/{os_policy_assignment_id@revision_id
+      }`
+    osPolicyCompliances: Compliance data for each `OSPolicy` that is applied
+      to the VM.
+    updateTime: Timestamp for when the report was last generated.
+  """
+
+  instance = _messages.StringField(1)
+  lastRunId = _messages.StringField(2)
+  name = _messages.StringField(3)
+  osPolicyAssignment = _messages.StringField(4)
+  osPolicyCompliances = _messages.MessageField('OSPolicyAssignmentReportOSPolicyCompliance', 5, repeated=True)
+  updateTime = _messages.StringField(6)
+
+
+class OSPolicyAssignmentReportOSPolicyCompliance(_messages.Message):
+  r"""Compliance data for an OS policy
+
+  Enums:
+    ComplianceStateValueValuesEnum: The compliance state of the OS policy.
+
+  Fields:
+    complianceState: The compliance state of the OS policy.
+    complianceStateReason: The reason for the OS policy to be in an unknown
+      compliance state. This field is always populated when `compliance_state`
+      is `UNKNOWN`. If populated, the field can contain one of the following
+      values: * `vm-not-running`: The VM was not running. * `os-policies-not-
+      supported-by-agent`: The version of the OS Config agent running on the
+      VM does not support running OS policies. * `no-agent-detected`: The OS
+      Config agent is not detected for the VM. * `resource-execution-errors`:
+      The OS Config agent encountered errors while executing one or more
+      resources in the policy. See `os_policy_resource_compliances` for
+      details. * `task-timeout`: The task sent to the agent to apply the
+      policy timed out. * `unexpected-agent-state`: The OS Config agent did
+      not report the final status of the task that attempted to apply the
+      policy. Instead, the agent unexpectedly started working on a different
+      task. This mostly happens when the agent or VM unexpectedly restarts
+      while applying OS policies. * `internal-service-errors`: Internal
+      service errors were encountered while attempting to apply the policy.
+    osPolicyId: The OS policy id
+    osPolicyResourceCompliances: Compliance data for each resource within the
+      policy that is applied to the VM.
+  """
+
+  class ComplianceStateValueValuesEnum(_messages.Enum):
+    r"""The compliance state of the OS policy.
+
+    Values:
+      UNKNOWN: The policy is in an unknown compliance state. Refer to the
+        field `compliance_state_reason` to learn the exact reason for the
+        policy to be in this compliance state.
+      COMPLIANT: Policy is compliant. The policy is compliant if all the
+        underlying resources are also compliant.
+      NON_COMPLIANT: Policy is non-compliant. The policy is non-compliant if
+        one or more underlying resources are non-compliant.
+    """
+    UNKNOWN = 0
+    COMPLIANT = 1
+    NON_COMPLIANT = 2
+
+  complianceState = _messages.EnumField('ComplianceStateValueValuesEnum', 1)
+  complianceStateReason = _messages.StringField(2)
+  osPolicyId = _messages.StringField(3)
+  osPolicyResourceCompliances = _messages.MessageField('OSPolicyAssignmentReportOSPolicyComplianceOSPolicyResourceCompliance', 4, repeated=True)
+
+
+class OSPolicyAssignmentReportOSPolicyComplianceOSPolicyResourceCompliance(_messages.Message):
+  r"""Compliance data for an OS policy resource.
+
+  Enums:
+    ComplianceStateValueValuesEnum: The compliance state of the resource.
+
+  Fields:
+    complianceState: The compliance state of the resource.
+    complianceStateReason: A reason for the resource to be in the given
+      compliance state. This field is always populated when `compliance_state`
+      is `UNKNOWN`. The following values are supported when `compliance_state
+      == UNKNOWN` * `execution-errors`: Errors were encountered by the agent
+      while executing the resource and the compliance state couldn't be
+      determined. * `execution-skipped-by-agent`: Resource execution was
+      skipped by the agent because errors were encountered while executing
+      prior resources in the OS policy. * `os-policy-execution-attempt-
+      failed`: The execution of the OS policy containing this resource failed
+      and the compliance state couldn't be determined.
+    configSteps: Ordered list of configuration completed by the agent for the
+      OS policy resource.
+    execResourceOutput: ExecResource specific output.
+    osPolicyResourceId: The ID of the OS policy resource.
+  """
+
+  class ComplianceStateValueValuesEnum(_messages.Enum):
+    r"""The compliance state of the resource.
+
+    Values:
+      UNKNOWN: The resource is in an unknown compliance state. To get more
+        details about why the policy is in this state, review the output of
+        the `compliance_state_reason` field.
+      COMPLIANT: Resource is compliant.
+      NON_COMPLIANT: Resource is non-compliant.
+    """
+    UNKNOWN = 0
+    COMPLIANT = 1
+    NON_COMPLIANT = 2
+
+  complianceState = _messages.EnumField('ComplianceStateValueValuesEnum', 1)
+  complianceStateReason = _messages.StringField(2)
+  configSteps = _messages.MessageField('OSPolicyAssignmentReportOSPolicyComplianceOSPolicyResourceComplianceOSPolicyResourceConfigStep', 3, repeated=True)
+  execResourceOutput = _messages.MessageField('OSPolicyAssignmentReportOSPolicyComplianceOSPolicyResourceComplianceExecResourceOutput', 4)
+  osPolicyResourceId = _messages.StringField(5)
+
+
+class OSPolicyAssignmentReportOSPolicyComplianceOSPolicyResourceComplianceExecResourceOutput(_messages.Message):
+  r"""ExecResource specific output.
+
+  Fields:
+    enforcementOutput: Output from enforcement phase output file (if run).
+      Output size is limited to 100K bytes.
+  """
+
+  enforcementOutput = _messages.BytesField(1)
+
+
+class OSPolicyAssignmentReportOSPolicyComplianceOSPolicyResourceComplianceOSPolicyResourceConfigStep(_messages.Message):
+  r"""Step performed by the OS Config agent for configuring an `OSPolicy`
+  resource to its desired state.
+
+  Enums:
+    TypeValueValuesEnum: Configuration step type.
+
+  Fields:
+    errorMessage: An error message recorded during the execution of this step.
+      Only populated if errors were encountered during this step execution.
+    type: Configuration step type.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Configuration step type.
+
+    Values:
+      TYPE_UNSPECIFIED: Default value. This value is unused.
+      VALIDATION: Checks for resource conflicts such as schema errors.
+      DESIRED_STATE_CHECK: Checks the current status of the desired state for
+        a resource.
+      DESIRED_STATE_ENFORCEMENT: Enforces the desired state for a resource
+        that is not in desired state.
+      DESIRED_STATE_CHECK_POST_ENFORCEMENT: Re-checks the status of the
+        desired state. This check is done for a resource after the enforcement
+        of all OS policies. This step is used to determine the final desired
+        state status for the resource. It accounts for any resources that
+        might have drifted from their desired state due to side effects from
+        executing other resources.
+    """
+    TYPE_UNSPECIFIED = 0
+    VALIDATION = 1
+    DESIRED_STATE_CHECK = 2
+    DESIRED_STATE_ENFORCEMENT = 3
+    DESIRED_STATE_CHECK_POST_ENFORCEMENT = 4
+
+  errorMessage = _messages.StringField(1)
+  type = _messages.EnumField('TypeValueValuesEnum', 2)
 
 
 class OSPolicyAssignmentRollout(_messages.Message):
@@ -1865,6 +2057,59 @@ class OsconfigProjectsLocationsInstancesInventoriesListRequest(_messages.Message
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4, required=True)
   view = _messages.EnumField('ViewValueValuesEnum', 5)
+
+
+class OsconfigProjectsLocationsInstancesOsPolicyAssignmentsGetReportRequest(_messages.Message):
+  r"""A OsconfigProjectsLocationsInstancesOsPolicyAssignmentsGetReportRequest
+  object.
+
+  Fields:
+    name: Required. API resource name for OS policy assignment report. Format:
+      `/projects/{project}/locations/{location}/instances/{instance}/osPolicyA
+      ssignments/{assignment}/report` For `{project}`, either `project-number`
+      or `project-id` can be provided. For `{instance_id}`, either Compute
+      Engine `instance-id` or `instance-name` can be provided. For
+      `{assignment_id}`, the OSPolicyAssignment id must be provided.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class OsconfigProjectsLocationsInstancesOsPolicyAssignmentsReportsListRequest(_messages.Message):
+  r"""A
+  OsconfigProjectsLocationsInstancesOsPolicyAssignmentsReportsListRequest
+  object.
+
+  Fields:
+    filter: If provided, this field specifies the criteria that must be met by
+      the `OSPolicyAssignmentReport` API resource that is included in the
+      response.
+    pageSize: The maximum number of results to return.
+    pageToken: A pagination token returned from a previous call to the
+      `ListOSPolicyAssignmentReports` method that indicates where this listing
+      should continue from.
+    parent: Required. The parent resource name. Format: `projects/{project}/lo
+      cations/{location}/instances/{instance}/osPolicyAssignments/{assignment}
+      /reports` For `{project}`, either `project-number` or `project-id` can
+      be provided. For `{instance}`, either `instance-name`, `instance-id`, or
+      `-` can be provided. If '-' is provided, the response will include
+      OSPolicyAssignmentReports for all instances in the project/location. For
+      `{assignment}`, either `assignment-id` or `-` can be provided. If '-' is
+      provided, the response will include OSPolicyAssignmentReports for all
+      OSPolicyAssignments in the project/location. Either {instance} or
+      {assignment} must be `-`. For example: `projects/{project}/locations/{lo
+      cation}/instances/{instance}/osPolicyAssignments/-/reports` returns all
+      reports for the instance `projects/{project}/locations/{location}/instan
+      ces/-/osPolicyAssignments/{assignment-id}/reports` returns all the
+      reports for the given assignment across all instances. `projects/{projec
+      t}/locations/{location}/instances/-/osPolicyAssignments/-/reports`
+      returns all the reports for all assignments across all instances.
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class OsconfigProjectsLocationsInstancesVulnerabilityReportsGetRequest(_messages.Message):

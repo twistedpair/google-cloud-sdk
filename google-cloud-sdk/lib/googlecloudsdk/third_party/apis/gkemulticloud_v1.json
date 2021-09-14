@@ -6,8 +6,8 @@
   "canonicalName": "Gkemulticloud",
   "version": "v1",
   "revision": "0",
-  "title": "GKE Multi-cloud API",
-  "description": " Anthos clusters on Azure provides a way to manage Kubernetes clusters that run on Azure infrastructure using the Anthos Multi-Cloud API. Combined with Connect, you can manage Kubernetes clusters on Google Cloud and Azure from the Google Cloud Console. When you create a cluster with Anthos clusters on Azure, Google creates the Azure resources needed and brings up a cluster on your behalf. You can deploy workloads to Anthos clusters on Azure using the API or the gcloud and kubectl command-line tools.",
+  "title": "Anthos Multi-Cloud API",
+  "description": " Anthos Multi-Cloud provides a way to manage Kubernetes clusters that run on AWS and Azure infrastructure using the Anthos Multi-Cloud API. Combined with Connect, you can manage Kubernetes clusters on Google Cloud, AWS, and Azure from the Google Cloud Console. When you create a cluster with Anthos Multi-Cloud, Google creates the resources needed and brings up a cluster on your behalf. You can deploy workloads with the Anthos Multi-Cloud API or the gcloud and kubectl command-line tools.",
   "ownerDomain": "google.com",
   "ownerName": "Google",
   "icons": {
@@ -1865,7 +1865,7 @@
                       "type": "boolean"
                     },
                     "updateMask": {
-                      "description": "Mask of fields to update. At least one path must be supplied in this field. The elements of the repeated paths field may only include these fields from AwsCluster: * `description`. * `annotations`.",
+                      "description": "Required. Mask of fields to update. At least one path must be supplied in this field. The elements of the repeated paths field may only include these fields from AwsCluster: * `description`. * `annotations`. * `control_plane.version`.",
                       "location": "query",
                       "type": "string",
                       "format": "google-fieldmask"
@@ -2123,7 +2123,7 @@
                           "type": "boolean"
                         },
                         "updateMask": {
-                          "description": "Required. Mask of fields to update. At least one path must be supplied in this field. The elements of the repeated paths field may only include these fields from AzureNodePool: * `description`.",
+                          "description": "Required. Mask of fields to update. At least one path must be supplied in this field. The elements of the repeated paths field may only include these fields from AwsNodePool: * `annotations`.",
                           "location": "query",
                           "type": "string",
                           "format": "google-fieldmask"

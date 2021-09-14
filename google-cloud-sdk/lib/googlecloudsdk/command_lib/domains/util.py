@@ -292,7 +292,8 @@ def ParseYearlyPrice(api_version, price_string):
     units, cents, currency = _ParseMoney(price_string)
   except ValueError:
     raise exceptions.Error(
-        'Yearly price \'{}\' is not valid.'.format(price_string))
+        ('Yearly price \'{}\' is invalid. Please specify the amount followed '
+         'by the currency code.').format(price_string))
 
   if currency == '$':
     currency = 'USD'

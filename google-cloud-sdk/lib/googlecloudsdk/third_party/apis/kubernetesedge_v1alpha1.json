@@ -329,7 +329,7 @@
       "type": "object",
       "properties": {
         "username": {
-          "description": "An active Google username.",
+          "description": "Required. An active Google username.",
           "type": "string"
         }
       }

@@ -5182,6 +5182,44 @@
         "encrypted": {
           "description": "Optional. If `true` entry values will be encrypted.",
           "type": "boolean"
+        },
+        "resourceName": {
+          "description": "Output only. name refers to the resource URI on which the key value map is based on.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudApigeeV1ListKeyValueEntriesResponse": {
+      "id": "GoogleCloudApigeeV1ListKeyValueEntriesResponse",
+      "description": "The request structure for listing Key value map keys and its corrresponding values.",
+      "type": "object",
+      "properties": {
+        "keyValueEntries": {
+          "description": "One or more Key value map key and its value.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudApigeeV1KeyValueEntry"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token that can be sent as `next_page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudApigeeV1KeyValueEntry": {
+      "id": "GoogleCloudApigeeV1KeyValueEntry",
+      "description": "Key value map pair, where the value represents the data associated with the corresponding key.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The name points to the resource URI which helps in identifying the scope of the key value map entries.",
+          "type": "string"
+        },
+        "value": {
+          "description": "Required. The data or the payload that is being retrieved and associated with the unique key.",
+          "type": "string"
         }
       }
     },
@@ -6669,6 +6707,49 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Delete a key value map in an api proxy."
+                }
+              }
+              ,
+              "resources": {
+                "entries": {
+                  "methods": {
+                    "list": {
+                      "id": "apigee.organizations.apis.keyvaluemaps.entries.list",
+                      "path": "v1/{+parent}/entries",
+                      "flatPath": "v1/organizations/{organizationsId}/apis/{apisId}/keyvaluemaps/{keyvaluemapsId}/entries",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The scope as indicated by the URI in which to list key value maps. Must be one of the form `organizations\/{organization}\/apis\/{api}\/keyvaluemaps\/{keyvaluemap}`. `organizations\/{organization}\/environments\/{environment}\/keyvaluemaps\/{keyvaluemap}` `organizations\/{organization}\/keyvaluemaps\/{keyvaluemap}`.",
+                          "pattern": "^organizations\/[^\/]+\/apis\/[^\/]+\/keyvaluemaps\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "Optional. Maximum number of key value entries to return. If unspecified, at most 100 entries will be returned.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "Optional. Page token, a KeyValueEntry returned from a previous call, that we can use to retrieve the next page.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "GoogleCloudApigeeV1ListKeyValueEntriesResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "List key value entries for any one of org, env or proxy scoped key value maps."
+                    }
+                  }
                 }
               }
             }
@@ -9720,6 +9801,49 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Delete a key value map in an environment."
+                }
+              }
+              ,
+              "resources": {
+                "entries": {
+                  "methods": {
+                    "list": {
+                      "id": "apigee.organizations.environments.keyvaluemaps.entries.list",
+                      "path": "v1/{+parent}/entries",
+                      "flatPath": "v1/organizations/{organizationsId}/environments/{environmentsId}/keyvaluemaps/{keyvaluemapsId}/entries",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The scope as indicated by the URI in which to list key value maps. Must be one of the form `organizations\/{organization}\/apis\/{api}\/keyvaluemaps\/{keyvaluemap}`. `organizations\/{organization}\/environments\/{environment}\/keyvaluemaps\/{keyvaluemap}` `organizations\/{organization}\/keyvaluemaps\/{keyvaluemap}`.",
+                          "pattern": "^organizations\/[^\/]+\/environments\/[^\/]+\/keyvaluemaps\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "Optional. Maximum number of key value entries to return. If unspecified, at most 100 entries will be returned.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "Optional. Page token, a KeyValueEntry returned from a previous call, that we can use to retrieve the next page.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "GoogleCloudApigeeV1ListKeyValueEntriesResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "List key value entries for any one of org, env or proxy scoped key value maps."
+                    }
+                  }
                 }
               }
             }
@@ -13451,6 +13575,49 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Delete a key value map in an organization."
+            }
+          }
+          ,
+          "resources": {
+            "entries": {
+              "methods": {
+                "list": {
+                  "id": "apigee.organizations.keyvaluemaps.entries.list",
+                  "path": "v1/{+parent}/entries",
+                  "flatPath": "v1/organizations/{organizationsId}/keyvaluemaps/{keyvaluemapsId}/entries",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The scope as indicated by the URI in which to list key value maps. Must be one of the form `organizations\/{organization}\/apis\/{api}\/keyvaluemaps\/{keyvaluemap}`. `organizations\/{organization}\/environments\/{environment}\/keyvaluemaps\/{keyvaluemap}` `organizations\/{organization}\/keyvaluemaps\/{keyvaluemap}`.",
+                      "pattern": "^organizations\/[^\/]+\/keyvaluemaps\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Optional. Maximum number of key value entries to return. If unspecified, at most 100 entries will be returned.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "Optional. Page token, a KeyValueEntry returned from a previous call, that we can use to retrieve the next page.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "GoogleCloudApigeeV1ListKeyValueEntriesResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "List key value entries for any one of org, env or proxy scoped key value maps."
+                }
+              }
             }
           }
         },

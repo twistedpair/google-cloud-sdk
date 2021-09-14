@@ -29,12 +29,12 @@ from googlecloudsdk.core import yaml
 import six
 
 
-def GetClientInstance(no_http=False):
-  return apis.GetClientInstance('iam', 'v2alpha1', no_http=no_http)
+def GetClientInstance(api_version, no_http=False):
+  return apis.GetClientInstance('iam', api_version, no_http=no_http)
 
 
-def GetMessagesModule(client=None):
-  client = client or GetClientInstance()
+def GetMessagesModule(api_version, client=None):
+  client = client or GetClientInstance(api_version)
   return client.MESSAGES_MODULE
 
 

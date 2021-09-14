@@ -110,6 +110,495 @@
     }
   },
   "schemas": {
+    "Dag": {
+      "id": "Dag",
+      "description": "A Composer DAG resource.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. The resource name of the DAG, in the form: \"projects\/{projectId}\/locations\/{locationId}\/environments\/{environmentId}\/dags\/{dagId}\".",
+          "type": "string"
+        },
+        "dagId": {
+          "description": "Required. The DAG ID.",
+          "type": "string"
+        },
+        "state": {
+          "description": "Output only. The current state of the DAG.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "The state of the DAG is unknown.",
+            "The DAG is available for execution.",
+            "The DAG is paused."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "ACTIVE",
+            "PAUSED"
+          ]
+        },
+        "description": {
+          "description": "The description of the DAG.",
+          "type": "string"
+        },
+        "cronSchedule": {
+          "description": "The DAG's schedule in cron format.",
+          "type": "string"
+        },
+        "durationSchedule": {
+          "description": "The DAG's schedule as a time duration between runs.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "runningCount": {
+          "description": "The number of running instances of the DAG.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "lastRunEndTime": {
+          "description": "The end timestamp of the last completed DAG run.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "fileloc": {
+          "description": "File location relative to the Cloud Storage bucket root folder.",
+          "type": "string"
+        }
+      }
+    },
+    "ListDagsResponse": {
+      "id": "ListDagsResponse",
+      "description": "Response to `ListDagsRequest`.",
+      "type": "object",
+      "properties": {
+        "dags": {
+          "description": "The list of DAGs returned.",
+          "type": "array",
+          "items": {
+            "$ref": "Dag"
+          }
+        },
+        "nextPageToken": {
+          "description": "The page token used to query for the next page if one exists.",
+          "type": "string"
+        }
+      }
+    },
+    "ListTasksResponse": {
+      "id": "ListTasksResponse",
+      "description": "Response to `ListTasksRequest`.",
+      "type": "object",
+      "properties": {
+        "tasks": {
+          "description": "The list of tasks returned.",
+          "type": "array",
+          "items": {
+            "$ref": "Task"
+          }
+        },
+        "nextPageToken": {
+          "description": "The page token used to query for the next page if one exists.",
+          "type": "string"
+        }
+      }
+    },
+    "Task": {
+      "id": "Task",
+      "description": "A single task in a DAG.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. The resource name of the task, in the form: \"projects\/{projectId}\/locations\/{locationId}\/environments\/{environmentId}\/dags\/{dagId}\/tasks\/{taskId}\".",
+          "type": "string"
+        },
+        "id": {
+          "description": "The task ID.",
+          "type": "string"
+        },
+        "taskId": {
+          "description": "The task ID.",
+          "type": "string"
+        },
+        "dagId": {
+          "description": "The DAG ID of the DAG the task belongs to.",
+          "type": "string"
+        },
+        "taskType": {
+          "description": "The operator used in this task.",
+          "type": "string"
+        },
+        "upstreamTasks": {
+          "description": "IDs of upstream tasks from this task, i.e. those that this task waits on.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "downstreamTasks": {
+          "description": "IDs of downstream tasks from this task, i.e. those that wait on this task.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "owner": {
+          "description": "The owner of the task.",
+          "type": "string"
+        },
+        "emails": {
+          "description": "Email addresses used in alerts.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "emailOnRetry": {
+          "description": "Whether email alerts should be sent when a task is retried.",
+          "type": "boolean"
+        },
+        "emailOnFailure": {
+          "description": "Whether email alerts should be sent when a task failed.",
+          "type": "boolean"
+        },
+        "retries": {
+          "description": "The number of retries that should be performed before failing the task.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "retryDelay": {
+          "description": "Delay between retries.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "retryExponentialBackoff": {
+          "description": "Allow progressive longer waits between retries by using exponential backoff algorithm on retry delay.",
+          "type": "boolean"
+        },
+        "maxRetryDelay": {
+          "description": "Maximum delay interval between retries.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "startDate": {
+          "description": "Determines the execution_date for the first task instance.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endDate": {
+          "description": "If specified, the scheduler won\u2019t go beyond this date.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "dependsOnPast": {
+          "description": "When set to true, task instances will run sequentially while relying on the previous task\u2019s schedule to succeed.",
+          "type": "boolean"
+        },
+        "waitForDownstream": {
+          "description": "When set to true, an instance of task X will wait for tasks immediately downstream of the previous instance of task X to finish successfully before it runs.",
+          "type": "boolean"
+        },
+        "priorityWeight": {
+          "description": "Priority weight of this task against other tasks.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "weightRule": {
+          "description": "Weighting method used for the effective total priority weight of the task.",
+          "type": "string"
+        },
+        "queue": {
+          "description": "Which queue to target when running this job.",
+          "type": "string"
+        },
+        "pool": {
+          "description": "The slot pool this task should run in.",
+          "type": "string"
+        },
+        "poolSlots": {
+          "description": "The number of pool slots this task should use.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "sla": {
+          "description": "Time by which the job is expected to succeed.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "executionTimeout": {
+          "description": "Maximum time allowed for the execution of this task instance, if it goes beyond it will raise and fail.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "triggerRule": {
+          "description": "Defines the rule by which dependencies are applied for the task to get triggered.",
+          "type": "string"
+        },
+        "runAsUser": {
+          "description": "Unix username to impersonate while running the task.",
+          "type": "string"
+        },
+        "taskConcurrency": {
+          "description": "When set, a task will be able to limit the concurrent runs across execution dates.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "doXcomPush": {
+          "description": "if true, an XCom is pushed containing the Operator\u2019s result.",
+          "type": "boolean"
+        }
+      }
+    },
+    "ListDagStatsResponse": {
+      "id": "ListDagStatsResponse",
+      "description": "Response to `ListDagStatsRequest`.",
+      "type": "object",
+      "properties": {
+        "dagStats": {
+          "description": "List of DAGs with statistics.",
+          "type": "array",
+          "items": {
+            "$ref": "DagStats"
+          }
+        },
+        "nextPageToken": {
+          "description": "The page token used to query for the next page if one exists.",
+          "type": "string"
+        }
+      }
+    },
+    "DagStats": {
+      "id": "DagStats",
+      "description": "Statistics of a DAG in a specific time interval.",
+      "type": "object",
+      "properties": {
+        "dag": {
+          "description": "DAG name.",
+          "type": "string"
+        },
+        "successfulRunCount": {
+          "description": "Number of DAG runs successfully finished in the time interval.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "failedRunCount": {
+          "description": "Number of DAG runs finished with a failure in the time interval.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "DagRun": {
+      "id": "DagRun",
+      "description": "A single DAG run.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The resource name of the DAG, in the form: \"projects\/{projectId}\/locations\/{locationId}\/environments\/{environmentId}\/dags\/{dagId}\/dagRuns\/{dagRunId}\".",
+          "type": "string"
+        },
+        "dagRunId": {
+          "description": "The DAG run ID.",
+          "type": "string"
+        },
+        "dagId": {
+          "description": "The DAG ID of the DAG whose execution is described by this DAG run.",
+          "type": "string"
+        },
+        "state": {
+          "description": "DAG run state.",
+          "type": "string",
+          "enumDescriptions": [
+            "The state of the DAG run is unknown.",
+            "The DAG run is being executed.",
+            "The DAG run is finished successfully.",
+            "The DAG run is finished with an error."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "RUNNING",
+            "SUCCEEDED",
+            "FAILED"
+          ]
+        },
+        "executionDate": {
+          "description": "The logical date and time which the DAG run and its task instances are running for.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "startDate": {
+          "description": "Timestamp when the DAG run started.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endDate": {
+          "description": "Timestamp when the DAG run ended. Set only if the DAG run has finished.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
+    "ListDagRunsResponse": {
+      "id": "ListDagRunsResponse",
+      "description": "Response to `ListDagRunsRequest`.",
+      "type": "object",
+      "properties": {
+        "dagRuns": {
+          "description": "The list of DAG runs returned.",
+          "type": "array",
+          "items": {
+            "$ref": "DagRun"
+          }
+        },
+        "nextPageToken": {
+          "description": "The page token used to query for the next page if one exists.",
+          "type": "string"
+        }
+      }
+    },
+    "ListTaskInstancesResponse": {
+      "id": "ListTaskInstancesResponse",
+      "description": "Response to `ListTaskInstancesRequest`.",
+      "type": "object",
+      "properties": {
+        "taskInstances": {
+          "description": "The list of tasks returned.",
+          "type": "array",
+          "items": {
+            "$ref": "TaskInstance"
+          }
+        },
+        "nextPageToken": {
+          "description": "The page token used to query for the next page if one exists.",
+          "type": "string"
+        }
+      }
+    },
+    "TaskInstance": {
+      "id": "TaskInstance",
+      "description": "Task instance in a DAG run.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Required. The resource name of the task instance, in the form: \"projects\/{projectId}\/locations\/{locationId}\/environments\/{environmentId}\/dags\/{dagId}\/dagRuns\/{dagRunId}\/taskInstances\/{taskInstanceId}\".",
+          "type": "string"
+        },
+        "id": {
+          "description": "The task instance ID. It is the same as the task ID of a DAG.",
+          "type": "string"
+        },
+        "taskId": {
+          "description": "The task instance ID. It is the same as the task ID in the DAG.",
+          "type": "string"
+        },
+        "dagRunId": {
+          "description": "The DAG run ID the task instance belongs to.",
+          "type": "string"
+        },
+        "dagId": {
+          "description": "The DAG ID of the DAG whose execution is described by the DAG run the taskInstance belongs to.",
+          "type": "string"
+        },
+        "taskType": {
+          "description": "The operator used in this task.",
+          "type": "string"
+        },
+        "startDate": {
+          "description": "Timestamp when the task instance started execution.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endDate": {
+          "description": "Timestamp when the task instance finished execution.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "state": {
+          "description": "Task instance state.",
+          "type": "string",
+          "enumDescriptions": [
+            "The state of the task instance is unknown.",
+            "Task execution succeeded.",
+            "Task execution failed.",
+            "Upstream task failed.",
+            "Task skipped.",
+            "Task waiting to be retried.",
+            "Task waiting to be rescheduled.",
+            "Task queued.",
+            "Task scheduled for execution.",
+            "Task in sensing mode."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "SUCCEEDED",
+            "FAILED",
+            "UPSTREAM_FAILED",
+            "SKIPPED",
+            "UP_FOR_RETRY",
+            "UP_FOR_RESCHEDULE",
+            "QUEUED",
+            "SCHEDULED",
+            "SENSING"
+          ]
+        },
+        "tryNumber": {
+          "description": "The try number that this task number will be when it is actually run.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "hostname": {
+          "description": "Hostname of the machine or pod the task runs on.",
+          "type": "string"
+        },
+        "queuedDttm": {
+          "description": "Timestamp when the task was queued.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "pool": {
+          "description": "The slot pool this task runs in.",
+          "type": "string"
+        },
+        "queue": {
+          "description": "Which queue to target when running this task.",
+          "type": "string"
+        },
+        "priorityWeight": {
+          "description": "Priority weight of this task against other tasks.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "maxTries": {
+          "description": "The number of tries that should be performed before failing the task.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "TriggerDagRequest": {
+      "id": "TriggerDagRequest",
+      "description": "Request to trigger a DAG run.",
+      "type": "object",
+      "properties": {
+        "dagRunId": {
+          "description": "The dag_run_id to be assigned to the triggered DAG run.",
+          "type": "string"
+        },
+        "conf": {
+          "description": "The key-value pairs get pickled into the conf attribute in the DAG run.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "any",
+            "description": "Properties of the object."
+          }
+        },
+        "executionDate": {
+          "description": "The execution date of the DAG run.",
+          "type": "string",
+          "format": "google-datetime"
+        }
+      }
+    },
     "ListOperationsResponse": {
       "id": "ListOperationsResponse",
       "description": "The response message for Operations.ListOperations.",
@@ -1297,6 +1786,301 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Check if an upgrade operation on the environment will succeed. In case of problems detailed info can be found in the returned Operation."
+                }
+              }
+              ,
+              "resources": {
+                "dags": {
+                  "methods": {
+                    "get": {
+                      "id": "composer.projects.locations.environments.dags.get",
+                      "path": "v1alpha2/{+name}",
+                      "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/environments/{environmentsId}/dags/{dagsId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The resource name of the DAG to retrieve. Must be in the form: \"projects\/{projectId}\/locations\/{locationId}\/environments\/{environmentId}\/dags\/{dagId}\".",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/environments\/[^\/]+\/dags\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Dag"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Retrieves a DAG."
+                    },
+                    "list": {
+                      "id": "composer.projects.locations.environments.dags.list",
+                      "path": "v1alpha2/{+parent}/dags",
+                      "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/environments/{environmentsId}/dags",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. List DAGs in the given parent resource. Parent must be in the form: \"projects\/{projectId}\/locations\/{locationId}\/environments\/{environmentId}\".",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/environments\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "The maximum number of DAGs to return.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "The next_page_token returned from a previous List request.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListDagsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Lists DAGs in an environment."
+                    },
+                    "listStats": {
+                      "id": "composer.projects.locations.environments.dags.listStats",
+                      "path": "v1alpha2/{+environment}/dags:listStats",
+                      "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/environments/{environmentsId}/dags:listStats",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "environment": {
+                          "description": "Required. List DAGs in the given Composer environment. Parent must be in the form: \"projects\/{projectId}\/locations\/{locationId}\/environments\/{environmentId}\".",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/environments\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "interval.startTime": {
+                          "description": "Optional. Inclusive start of the interval. If specified, a Timestamp matching this interval will have to be the same or after the start.",
+                          "location": "query",
+                          "type": "string",
+                          "format": "google-datetime"
+                        },
+                        "interval.endTime": {
+                          "description": "Optional. Exclusive end of the interval. If specified, a Timestamp matching this interval will have to be before the end.",
+                          "location": "query",
+                          "type": "string",
+                          "format": "google-datetime"
+                        },
+                        "pageSize": {
+                          "description": "The maximum number of DAGs to return.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "The next_page_token returned from a previous List request.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "environment"
+                      ],
+                      "response": {
+                        "$ref": "ListDagStatsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "List DAGs with statistics for a given time interval."
+                    },
+                    "trigger": {
+                      "id": "composer.projects.locations.environments.dags.trigger",
+                      "path": "v1alpha2/{+dag}:trigger",
+                      "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/environments/{environmentsId}/dags/{dagsId}:trigger",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "dag": {
+                          "description": "Required. The resource name of the DAG to trigger. Must be in the form: \"projects\/{projectId}\/locations\/{locationId}\/environments\/{environmentId}\/dags\/{dagId}\".",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/environments\/[^\/]+\/dags\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "dag"
+                      ],
+                      "request": {
+                        "$ref": "TriggerDagRequest"
+                      },
+                      "response": {
+                        "$ref": "DagRun"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Trigger a DAG run."
+                    }
+                  }
+                  ,
+                  "resources": {
+                    "tasks": {
+                      "methods": {
+                        "list": {
+                          "id": "composer.projects.locations.environments.dags.tasks.list",
+                          "path": "v1alpha2/{+parent}/tasks",
+                          "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/environments/{environmentsId}/dags/{dagsId}/tasks",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "parent": {
+                              "description": "Required. List tasks in the given parent DAG. Parent must be in the form: \"projects\/{projectId}\/locations\/{locationId}\/environments\/{environmentId}\/dags\/{dagId}\".",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/environments\/[^\/]+\/dags\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            },
+                            "pageSize": {
+                              "description": "The maximum number of tasks to return.",
+                              "location": "query",
+                              "type": "integer",
+                              "format": "int32"
+                            },
+                            "pageToken": {
+                              "description": "The next_page_token returned from a previous List request.",
+                              "location": "query",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "parent"
+                          ],
+                          "response": {
+                            "$ref": "ListTasksResponse"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Lists tasks of a DAG."
+                        }
+                      }
+                    },
+                    "dagRuns": {
+                      "methods": {
+                        "get": {
+                          "id": "composer.projects.locations.environments.dags.dagRuns.get",
+                          "path": "v1alpha2/{+name}",
+                          "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/environments/{environmentsId}/dags/{dagsId}/dagRuns/{dagRunsId}",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "name": {
+                              "description": "Required. The resource name of the DAG to retrieve. Must be in the form: \"projects\/{projectId}\/locations\/{locationId}\/environments\/{environmentId}\/dags\/{dagId}\/dagRuns\/{dagRunId}\".",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/environments\/[^\/]+\/dags\/[^\/]+\/dagRuns\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "response": {
+                            "$ref": "DagRun"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Retrieves a DAG run."
+                        },
+                        "list": {
+                          "id": "composer.projects.locations.environments.dags.dagRuns.list",
+                          "path": "v1alpha2/{+parent}/dagRuns",
+                          "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/environments/{environmentsId}/dags/{dagsId}/dagRuns",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "parent": {
+                              "description": "Required. List DAG runs in the given parent resource. Parent must be in the form: \"projects\/{projectId}\/locations\/{locationId}\/environments\/{environmentId}\/dags\/{dagId}\".",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/environments\/[^\/]+\/dags\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            },
+                            "pageSize": {
+                              "description": "The maximum number of DAG runs to return.",
+                              "location": "query",
+                              "type": "integer",
+                              "format": "int32"
+                            },
+                            "pageToken": {
+                              "description": "The next_page_token returned from a previous List request.",
+                              "location": "query",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "parent"
+                          ],
+                          "response": {
+                            "$ref": "ListDagRunsResponse"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Lists DAG runs of a DAG."
+                        }
+                      }
+                      ,
+                      "resources": {
+                        "taskInstances": {
+                          "methods": {
+                            "list": {
+                              "id": "composer.projects.locations.environments.dags.dagRuns.taskInstances.list",
+                              "path": "v1alpha2/{+parent}/taskInstances",
+                              "flatPath": "v1alpha2/projects/{projectsId}/locations/{locationsId}/environments/{environmentsId}/dags/{dagsId}/dagRuns/{dagRunsId}/taskInstances",
+                              "httpMethod": "GET",
+                              "parameters": {
+                                "parent": {
+                                  "description": "Required. List task instances in the given parent DAG run. Parent must be in the form: \"projects\/{projectId}\/locations\/{locationId}\/environments\/{environmentId}\/dags\/{dagId}\/dagRuns\/{dagRunId}\".",
+                                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/environments\/[^\/]+\/dags\/[^\/]+\/dagRuns\/[^\/]+$",
+                                  "location": "path",
+                                  "required": true,
+                                  "type": "string"
+                                },
+                                "pageSize": {
+                                  "description": "The maximum number of tasks to return.",
+                                  "location": "query",
+                                  "type": "integer",
+                                  "format": "int32"
+                                },
+                                "pageToken": {
+                                  "description": "The next_page_token returned from a previous List request.",
+                                  "location": "query",
+                                  "type": "string"
+                                }
+                              },
+                              "parameterOrder": [
+                                "parent"
+                              ],
+                              "response": {
+                                "$ref": "ListTaskInstancesResponse"
+                              },
+                              "scopes": [
+                                "https://www.googleapis.com/auth/cloud-platform"
+                              ],
+                              "description": "Lists task instances for a specified DAG run."
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
                 }
               }
             },

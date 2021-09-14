@@ -408,7 +408,8 @@ def GetBypassCacheOnRequestHeaders(client, args):
   return bypass_cache_on_request_headers
 
 
-def ApplyConnectionTrackingPolicyArgs(client, args, backend_service):
+def ApplyConnectionTrackingPolicyArgs(client, args, backend_service,
+                                      support_strong_session_affinity):
   """Applies the connection tracking policy arguments to the specified backend service.
 
   If there are no arguments related to connection tracking policy, the backend
@@ -418,10 +419,12 @@ def ApplyConnectionTrackingPolicyArgs(client, args, backend_service):
     client: The client used by gcloud.
     args: The arguments passed to the gcloud command.
     backend_service: The backend service object.
+    support_strong_session_affinity: If True, then support
+      enable_strong_affinity.
   """
   if backend_service.connectionTrackingPolicy is not None:
     connection_tracking_policy = encoding.CopyProtoMessage(
-        backend_service.connection_tracking_policy)
+        backend_service.connectionTrackingPolicy)
   else:
     connection_tracking_policy = (
         client.messages.BackendServiceConnectionTrackingPolicy())
@@ -439,6 +442,11 @@ def ApplyConnectionTrackingPolicyArgs(client, args, backend_service):
 
   if args.idle_timeout_sec:
     connection_tracking_policy.idleTimeoutSec = args.idle_timeout_sec
+
+  if support_strong_session_affinity:
+    if args.enable_strong_affinity:
+      connection_tracking_policy.enableStrongAffinity = (
+          args.enable_strong_affinity)
 
   if connection_tracking_policy != (
       client.messages.BackendServiceConnectionTrackingPolicy()):

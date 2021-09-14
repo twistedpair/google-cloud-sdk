@@ -258,6 +258,10 @@
           "description": "Optional. For DIRECT_PEERING mode, the CIDR range of internal addresses that are reserved for this instance. Range must be unique and non-overlapping with existing subnets in an authorized network. For PRIVATE_SERVICE_ACCESS mode, the name of one allocated IP address ranges associated with this private service access connection. If not provided, the service will choose an unused \/29 block, for example, 10.0.0.0\/29 or 192.168.0.0\/29.",
           "type": "string"
         },
+        "secondaryIpRange": {
+          "description": "Optional. Additional ip ranges for node placement, beyond those specified in reserved_ip_range. At most 1 secondary IP range is supported. The mask value must not exceed \/28. Not supported for BASIC tier. Updates can only add new ranges, once added ranges cannot be changed or deleted. Values in this list cannot overlap with the reserved_ip_range. Not supported during instance creation.",
+          "type": "string"
+        },
         "host": {
           "description": "Output only. Hostname or IP address of the exposed redis endpoint used by clients to connect to the service.",
           "type": "string"
@@ -398,6 +402,14 @@
           "description": "Optional. The number of replica nodes. Valid range for standard tier is [1-5] and defaults to 1. Valid value for basic tier is 0 and defaults to 0.",
           "type": "integer",
           "format": "int32"
+        },
+        "nodes": {
+          "description": "Output only. Info per node.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "$ref": "NodeInfo"
+          }
         },
         "readEndpoint": {
           "description": "Output only. Hostname or IP address of the exposed readonly Redis endpoint. Standard tier only. Targets all healthy replica nodes in instance. Replication is asynchronous and replica nodes will exhibit some lag behind the primary. Write requests must target 'host'.",
@@ -639,6 +651,23 @@
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
+        }
+      }
+    },
+    "NodeInfo": {
+      "id": "NodeInfo",
+      "description": "Node specific properties.",
+      "type": "object",
+      "properties": {
+        "id": {
+          "description": "Output only. Output Only. Node identifying string. e.g. 'node-0', 'node-1'",
+          "readOnly": true,
+          "type": "string"
+        },
+        "zone": {
+          "description": "Output only. Output Only. Location of the node.",
+          "readOnly": true,
+          "type": "string"
         }
       }
     },

@@ -9864,7 +9864,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/dialogflow"
                   ],
-                  "description": "Trains the specified agent. Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
+                  "description": "Trains the specified agent. This method is a [long-running operation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/how\/long-running-operations). The returned `Operation` type has the following method-specific fields: - `metadata`: An empty [Struct message](https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#struct) - `response`: An [Empty message](https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#empty) Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
                 },
                 "export": {
                   "id": "dialogflow.projects.locations.agent.export",
@@ -9893,7 +9893,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/dialogflow"
                   ],
-                  "description": "Exports the specified agent to a ZIP file."
+                  "description": "Exports the specified agent to a ZIP file. This method is a [long-running operation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/how\/long-running-operations). The returned `Operation` type has the following method-specific fields: - `metadata`: An empty [Struct message](https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#struct) - `response`: ExportAgentResponse"
                 },
                 "import": {
                   "id": "dialogflow.projects.locations.agent.import",
@@ -9922,7 +9922,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/dialogflow"
                   ],
-                  "description": "Imports the specified agent from a ZIP file. Uploads new intents and entity types without deleting the existing ones. Intents and entity types with the same name are replaced with the new versions from ImportAgentRequest. After the import, the imported draft agent will be trained automatically (unless disabled in agent settings). However, once the import is done, training may not be completed yet. Please call TrainAgent and wait for the operation it returns in order to train explicitly. An operation which tracks when importing is complete. It only tracks when the draft agent is updated not when it is done training. Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
+                  "description": "Imports the specified agent from a ZIP file. Uploads new intents and entity types without deleting the existing ones. Intents and entity types with the same name are replaced with the new versions from ImportAgentRequest. After the import, the imported draft agent will be trained automatically (unless disabled in agent settings). However, once the import is done, training may not be completed yet. Please call TrainAgent and wait for the operation it returns in order to train explicitly. This method is a [long-running operation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/how\/long-running-operations). The returned `Operation` type has the following method-specific fields: - `metadata`: An empty [Struct message](https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#struct) - `response`: An [Empty message](https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#empty) The operation only tracks when importing is complete, not when it is done training. Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
                 },
                 "restore": {
                   "id": "dialogflow.projects.locations.agent.restore",
@@ -9951,7 +9951,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/dialogflow"
                   ],
-                  "description": "Restores the specified agent from a ZIP file. Replaces the current agent version with a new one. All the intents and entity types in the older version are deleted. After the restore, the restored draft agent will be trained automatically (unless disabled in agent settings). However, once the restore is done, training may not be completed yet. Please call TrainAgent and wait for the operation it returns in order to train explicitly. An operation which tracks when restoring is complete. It only tracks when the draft agent is updated not when it is done training. Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
+                  "description": "Restores the specified agent from a ZIP file. Replaces the current agent version with a new one. All the intents and entity types in the older version are deleted. After the restore, the restored draft agent will be trained automatically (unless disabled in agent settings). However, once the restore is done, training may not be completed yet. Please call TrainAgent and wait for the operation it returns in order to train explicitly. This method is a [long-running operation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/how\/long-running-operations). The returned `Operation` type has the following method-specific fields: - `metadata`: An empty [Struct message](https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#struct) - `response`: An [Empty message](https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#empty) The operation only tracks when restoring is complete, not when it is done training. Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
                 },
                 "getValidationResult": {
                   "id": "dialogflow.projects.locations.agent.getValidationResult",
@@ -10678,7 +10678,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/dialogflow"
                       ],
-                      "description": "Updates\/Creates multiple intents in the specified agent. Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
+                      "description": "Updates\/Creates multiple intents in the specified agent. This method is a [long-running operation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/how\/long-running-operations). The returned `Operation` type has the following method-specific fields: - `metadata`: An empty [Struct message](https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#struct) - `response`: BatchUpdateIntentsResponse Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
                     },
                     "batchDelete": {
                       "id": "dialogflow.projects.locations.agent.intents.batchDelete",
@@ -10707,7 +10707,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/dialogflow"
                       ],
-                      "description": "Deletes intents in the specified agent. Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
+                      "description": "Deletes intents in the specified agent. This method is a [long-running operation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/how\/long-running-operations). The returned `Operation` type has the following method-specific fields: - `metadata`: An empty [Struct message](https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#struct) - `response`: An [Empty message](https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#empty) Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
                     }
                   }
                 },
@@ -10913,7 +10913,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/dialogflow"
                       ],
-                      "description": "Updates\/Creates multiple entity types in the specified agent. Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
+                      "description": "Updates\/Creates multiple entity types in the specified agent. This method is a [long-running operation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/how\/long-running-operations). The returned `Operation` type has the following method-specific fields: - `metadata`: An empty [Struct message](https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#struct) - `response`: BatchUpdateEntityTypesResponse Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
                     },
                     "batchDelete": {
                       "id": "dialogflow.projects.locations.agent.entityTypes.batchDelete",
@@ -10942,7 +10942,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/dialogflow"
                       ],
-                      "description": "Deletes entity types in the specified agent. Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
+                      "description": "Deletes entity types in the specified agent. This method is a [long-running operation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/how\/long-running-operations). The returned `Operation` type has the following method-specific fields: - `metadata`: An empty [Struct message](https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#struct) - `response`: An [Empty message](https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#empty) Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
                     }
                   }
                   ,
@@ -10976,7 +10976,7 @@
                             "https://www.googleapis.com/auth/cloud-platform",
                             "https://www.googleapis.com/auth/dialogflow"
                           ],
-                          "description": "Creates multiple new entities in the specified entity type. Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
+                          "description": "Creates multiple new entities in the specified entity type. This method is a [long-running operation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/how\/long-running-operations). The returned `Operation` type has the following method-specific fields: - `metadata`: An empty [Struct message](https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#struct) - `response`: An [Empty message](https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#empty) Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
                         },
                         "batchUpdate": {
                           "id": "dialogflow.projects.locations.agent.entityTypes.entities.batchUpdate",
@@ -11005,7 +11005,7 @@
                             "https://www.googleapis.com/auth/cloud-platform",
                             "https://www.googleapis.com/auth/dialogflow"
                           ],
-                          "description": "Updates or creates multiple entities in the specified entity type. This method does not affect entities in the entity type that aren't explicitly specified in the request. Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
+                          "description": "Updates or creates multiple entities in the specified entity type. This method does not affect entities in the entity type that aren't explicitly specified in the request. This method is a [long-running operation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/how\/long-running-operations). The returned `Operation` type has the following method-specific fields: - `metadata`: An empty [Struct message](https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#struct) - `response`: An [Empty message](https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#empty) Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training). "
                         },
                         "batchDelete": {
                           "id": "dialogflow.projects.locations.agent.entityTypes.entities.batchDelete",
@@ -11034,7 +11034,7 @@
                             "https://www.googleapis.com/auth/cloud-platform",
                             "https://www.googleapis.com/auth/dialogflow"
                           ],
-                          "description": "Deletes entities in the specified entity type. Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
+                          "description": "Deletes entities in the specified entity type. This method is a [long-running operation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/how\/long-running-operations). The returned `Operation` type has the following method-specific fields: - `metadata`: An empty [Struct message](https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#struct) - `response`: An [Empty message](https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#empty) Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
                         }
                       }
                     }
@@ -12747,7 +12747,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/dialogflow"
                       ],
-                      "description": "Creates a new document. Operation "
+                      "description": "Creates a new document. This method is a [long-running operation](https:\/\/cloud.google.com\/dialogflow\/cx\/docs\/how\/long-running-operation). The returned `Operation` type has the following method-specific fields: - `metadata`: KnowledgeOperationMetadata - `response`: Document"
                     },
                     "delete": {
                       "id": "dialogflow.projects.locations.knowledgeBases.documents.delete",
@@ -12773,7 +12773,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/dialogflow"
                       ],
-                      "description": "Deletes the specified document. Operation "
+                      "description": "Deletes the specified document. This method is a [long-running operation](https:\/\/cloud.google.com\/dialogflow\/cx\/docs\/how\/long-running-operation). The returned `Operation` type has the following method-specific fields: - `metadata`: KnowledgeOperationMetadata - `response`: An [Empty message](https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#empty)"
                     },
                     "patch": {
                       "id": "dialogflow.projects.locations.knowledgeBases.documents.patch",
@@ -12808,7 +12808,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/dialogflow"
                       ],
-                      "description": "Updates the specified document. Operation "
+                      "description": "Updates the specified document. This method is a [long-running operation](https:\/\/cloud.google.com\/dialogflow\/cx\/docs\/how\/long-running-operation). The returned `Operation` type has the following method-specific fields: - `metadata`: KnowledgeOperationMetadata - `response`: Document"
                     },
                     "reload": {
                       "id": "dialogflow.projects.locations.knowledgeBases.documents.reload",
@@ -12837,7 +12837,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/dialogflow"
                       ],
-                      "description": "Reloads the specified document from its specified source, content_uri or content. The previously loaded content of the document will be deleted. Note: Even when the content of the document has not changed, there still may be side effects because of internal implementation changes. Note: The `projects.agent.knowledgeBases.documents` resource is deprecated; only use `projects.knowledgeBases.documents`. Operation "
+                      "description": "Reloads the specified document from its specified source, content_uri or content. The previously loaded content of the document will be deleted. Note: Even when the content of the document has not changed, there still may be side effects because of internal implementation changes. This method is a [long-running operation](https:\/\/cloud.google.com\/dialogflow\/cx\/docs\/how\/long-running-operation). The returned `Operation` type has the following method-specific fields: - `metadata`: KnowledgeOperationMetadata - `response`: Document Note: The `projects.agent.knowledgeBases.documents` resource is deprecated; only use `projects.knowledgeBases.documents`."
                     }
                   }
                 }
@@ -12911,7 +12911,7 @@
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/dialogflow"
               ],
-              "description": "Trains the specified agent. Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
+              "description": "Trains the specified agent. This method is a [long-running operation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/how\/long-running-operations). The returned `Operation` type has the following method-specific fields: - `metadata`: An empty [Struct message](https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#struct) - `response`: An [Empty message](https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#empty) Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
             },
             "export": {
               "id": "dialogflow.projects.agent.export",
@@ -12940,7 +12940,7 @@
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/dialogflow"
               ],
-              "description": "Exports the specified agent to a ZIP file."
+              "description": "Exports the specified agent to a ZIP file. This method is a [long-running operation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/how\/long-running-operations). The returned `Operation` type has the following method-specific fields: - `metadata`: An empty [Struct message](https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#struct) - `response`: ExportAgentResponse"
             },
             "import": {
               "id": "dialogflow.projects.agent.import",
@@ -12969,7 +12969,7 @@
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/dialogflow"
               ],
-              "description": "Imports the specified agent from a ZIP file. Uploads new intents and entity types without deleting the existing ones. Intents and entity types with the same name are replaced with the new versions from ImportAgentRequest. After the import, the imported draft agent will be trained automatically (unless disabled in agent settings). However, once the import is done, training may not be completed yet. Please call TrainAgent and wait for the operation it returns in order to train explicitly. An operation which tracks when importing is complete. It only tracks when the draft agent is updated not when it is done training. Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
+              "description": "Imports the specified agent from a ZIP file. Uploads new intents and entity types without deleting the existing ones. Intents and entity types with the same name are replaced with the new versions from ImportAgentRequest. After the import, the imported draft agent will be trained automatically (unless disabled in agent settings). However, once the import is done, training may not be completed yet. Please call TrainAgent and wait for the operation it returns in order to train explicitly. This method is a [long-running operation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/how\/long-running-operations). The returned `Operation` type has the following method-specific fields: - `metadata`: An empty [Struct message](https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#struct) - `response`: An [Empty message](https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#empty) The operation only tracks when importing is complete, not when it is done training. Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
             },
             "restore": {
               "id": "dialogflow.projects.agent.restore",
@@ -12998,7 +12998,7 @@
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/dialogflow"
               ],
-              "description": "Restores the specified agent from a ZIP file. Replaces the current agent version with a new one. All the intents and entity types in the older version are deleted. After the restore, the restored draft agent will be trained automatically (unless disabled in agent settings). However, once the restore is done, training may not be completed yet. Please call TrainAgent and wait for the operation it returns in order to train explicitly. An operation which tracks when restoring is complete. It only tracks when the draft agent is updated not when it is done training. Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
+              "description": "Restores the specified agent from a ZIP file. Replaces the current agent version with a new one. All the intents and entity types in the older version are deleted. After the restore, the restored draft agent will be trained automatically (unless disabled in agent settings). However, once the restore is done, training may not be completed yet. Please call TrainAgent and wait for the operation it returns in order to train explicitly. This method is a [long-running operation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/how\/long-running-operations). The returned `Operation` type has the following method-specific fields: - `metadata`: An empty [Struct message](https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#struct) - `response`: An [Empty message](https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#empty) The operation only tracks when restoring is complete, not when it is done training. Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
             },
             "getValidationResult": {
               "id": "dialogflow.projects.agent.getValidationResult",
@@ -13725,7 +13725,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/dialogflow"
                   ],
-                  "description": "Updates\/Creates multiple intents in the specified agent. Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
+                  "description": "Updates\/Creates multiple intents in the specified agent. This method is a [long-running operation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/how\/long-running-operations). The returned `Operation` type has the following method-specific fields: - `metadata`: An empty [Struct message](https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#struct) - `response`: BatchUpdateIntentsResponse Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
                 },
                 "batchDelete": {
                   "id": "dialogflow.projects.agent.intents.batchDelete",
@@ -13754,7 +13754,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/dialogflow"
                   ],
-                  "description": "Deletes intents in the specified agent. Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
+                  "description": "Deletes intents in the specified agent. This method is a [long-running operation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/how\/long-running-operations). The returned `Operation` type has the following method-specific fields: - `metadata`: An empty [Struct message](https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#struct) - `response`: An [Empty message](https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#empty) Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
                 }
               }
             },
@@ -13960,7 +13960,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/dialogflow"
                   ],
-                  "description": "Updates\/Creates multiple entity types in the specified agent. Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
+                  "description": "Updates\/Creates multiple entity types in the specified agent. This method is a [long-running operation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/how\/long-running-operations). The returned `Operation` type has the following method-specific fields: - `metadata`: An empty [Struct message](https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#struct) - `response`: BatchUpdateEntityTypesResponse Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
                 },
                 "batchDelete": {
                   "id": "dialogflow.projects.agent.entityTypes.batchDelete",
@@ -13989,7 +13989,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/dialogflow"
                   ],
-                  "description": "Deletes entity types in the specified agent. Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
+                  "description": "Deletes entity types in the specified agent. This method is a [long-running operation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/how\/long-running-operations). The returned `Operation` type has the following method-specific fields: - `metadata`: An empty [Struct message](https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#struct) - `response`: An [Empty message](https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#empty) Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
                 }
               }
               ,
@@ -14023,7 +14023,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/dialogflow"
                       ],
-                      "description": "Creates multiple new entities in the specified entity type. Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
+                      "description": "Creates multiple new entities in the specified entity type. This method is a [long-running operation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/how\/long-running-operations). The returned `Operation` type has the following method-specific fields: - `metadata`: An empty [Struct message](https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#struct) - `response`: An [Empty message](https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#empty) Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
                     },
                     "batchUpdate": {
                       "id": "dialogflow.projects.agent.entityTypes.entities.batchUpdate",
@@ -14052,7 +14052,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/dialogflow"
                       ],
-                      "description": "Updates or creates multiple entities in the specified entity type. This method does not affect entities in the entity type that aren't explicitly specified in the request. Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
+                      "description": "Updates or creates multiple entities in the specified entity type. This method does not affect entities in the entity type that aren't explicitly specified in the request. This method is a [long-running operation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/how\/long-running-operations). The returned `Operation` type has the following method-specific fields: - `metadata`: An empty [Struct message](https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#struct) - `response`: An [Empty message](https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#empty) Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training). "
                     },
                     "batchDelete": {
                       "id": "dialogflow.projects.agent.entityTypes.entities.batchDelete",
@@ -14081,7 +14081,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/dialogflow"
                       ],
-                      "description": "Deletes entities in the specified entity type. Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
+                      "description": "Deletes entities in the specified entity type. This method is a [long-running operation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/how\/long-running-operations). The returned `Operation` type has the following method-specific fields: - `metadata`: An empty [Struct message](https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#struct) - `response`: An [Empty message](https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#empty) Note: You should always train an agent prior to sending it queries. See the [training documentation](https:\/\/cloud.google.com\/dialogflow\/es\/docs\/training)."
                     }
                   }
                 }
@@ -14988,7 +14988,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/dialogflow"
                       ],
-                      "description": "Creates a new document. Operation "
+                      "description": "Creates a new document. This method is a [long-running operation](https:\/\/cloud.google.com\/dialogflow\/cx\/docs\/how\/long-running-operation). The returned `Operation` type has the following method-specific fields: - `metadata`: KnowledgeOperationMetadata - `response`: Document"
                     },
                     "delete": {
                       "id": "dialogflow.projects.agent.knowledgeBases.documents.delete",
@@ -15014,7 +15014,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/dialogflow"
                       ],
-                      "description": "Deletes the specified document. Operation "
+                      "description": "Deletes the specified document. This method is a [long-running operation](https:\/\/cloud.google.com\/dialogflow\/cx\/docs\/how\/long-running-operation). The returned `Operation` type has the following method-specific fields: - `metadata`: KnowledgeOperationMetadata - `response`: An [Empty message](https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#empty)"
                     },
                     "patch": {
                       "id": "dialogflow.projects.agent.knowledgeBases.documents.patch",
@@ -15049,7 +15049,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/dialogflow"
                       ],
-                      "description": "Updates the specified document. Operation "
+                      "description": "Updates the specified document. This method is a [long-running operation](https:\/\/cloud.google.com\/dialogflow\/cx\/docs\/how\/long-running-operation). The returned `Operation` type has the following method-specific fields: - `metadata`: KnowledgeOperationMetadata - `response`: Document"
                     },
                     "reload": {
                       "id": "dialogflow.projects.agent.knowledgeBases.documents.reload",
@@ -15078,7 +15078,7 @@
                         "https://www.googleapis.com/auth/cloud-platform",
                         "https://www.googleapis.com/auth/dialogflow"
                       ],
-                      "description": "Reloads the specified document from its specified source, content_uri or content. The previously loaded content of the document will be deleted. Note: Even when the content of the document has not changed, there still may be side effects because of internal implementation changes. Note: The `projects.agent.knowledgeBases.documents` resource is deprecated; only use `projects.knowledgeBases.documents`. Operation "
+                      "description": "Reloads the specified document from its specified source, content_uri or content. The previously loaded content of the document will be deleted. Note: Even when the content of the document has not changed, there still may be side effects because of internal implementation changes. This method is a [long-running operation](https:\/\/cloud.google.com\/dialogflow\/cx\/docs\/how\/long-running-operation). The returned `Operation` type has the following method-specific fields: - `metadata`: KnowledgeOperationMetadata - `response`: Document Note: The `projects.agent.knowledgeBases.documents` resource is deprecated; only use `projects.knowledgeBases.documents`."
                     }
                   }
                 }
@@ -16145,7 +16145,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/dialogflow"
                   ],
-                  "description": "Creates a new document. Operation "
+                  "description": "Creates a new document. This method is a [long-running operation](https:\/\/cloud.google.com\/dialogflow\/cx\/docs\/how\/long-running-operation). The returned `Operation` type has the following method-specific fields: - `metadata`: KnowledgeOperationMetadata - `response`: Document"
                 },
                 "delete": {
                   "id": "dialogflow.projects.knowledgeBases.documents.delete",
@@ -16171,7 +16171,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/dialogflow"
                   ],
-                  "description": "Deletes the specified document. Operation "
+                  "description": "Deletes the specified document. This method is a [long-running operation](https:\/\/cloud.google.com\/dialogflow\/cx\/docs\/how\/long-running-operation). The returned `Operation` type has the following method-specific fields: - `metadata`: KnowledgeOperationMetadata - `response`: An [Empty message](https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#empty)"
                 },
                 "patch": {
                   "id": "dialogflow.projects.knowledgeBases.documents.patch",
@@ -16206,7 +16206,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/dialogflow"
                   ],
-                  "description": "Updates the specified document. Operation "
+                  "description": "Updates the specified document. This method is a [long-running operation](https:\/\/cloud.google.com\/dialogflow\/cx\/docs\/how\/long-running-operation). The returned `Operation` type has the following method-specific fields: - `metadata`: KnowledgeOperationMetadata - `response`: Document"
                 },
                 "reload": {
                   "id": "dialogflow.projects.knowledgeBases.documents.reload",
@@ -16235,7 +16235,7 @@
                     "https://www.googleapis.com/auth/cloud-platform",
                     "https://www.googleapis.com/auth/dialogflow"
                   ],
-                  "description": "Reloads the specified document from its specified source, content_uri or content. The previously loaded content of the document will be deleted. Note: Even when the content of the document has not changed, there still may be side effects because of internal implementation changes. Note: The `projects.agent.knowledgeBases.documents` resource is deprecated; only use `projects.knowledgeBases.documents`. Operation "
+                  "description": "Reloads the specified document from its specified source, content_uri or content. The previously loaded content of the document will be deleted. Note: Even when the content of the document has not changed, there still may be side effects because of internal implementation changes. This method is a [long-running operation](https:\/\/cloud.google.com\/dialogflow\/cx\/docs\/how\/long-running-operation). The returned `Operation` type has the following method-specific fields: - `metadata`: KnowledgeOperationMetadata - `response`: Document Note: The `projects.agent.knowledgeBases.documents` resource is deprecated; only use `projects.knowledgeBases.documents`."
                 }
               }
             }

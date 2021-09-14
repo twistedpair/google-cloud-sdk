@@ -80,6 +80,16 @@ def AddAsyncFlag(parser):
   base.ASYNC_FLAG.AddToParser(parser)
 
 
+def AddForceArg(parser):
+  help_text = """Forces the deletion of an instance and its child resources,
+  such as snapshots."""
+  parser.add_argument(
+      '--force',
+      hidden=True,
+      action='store_true',
+      help=(help_text))
+
+
 def GetTierType(instance_tier):
   tier_type = dict(FILE_TIER_TO_TYPE)
   return tier_type.get(instance_tier, 'BASIC')

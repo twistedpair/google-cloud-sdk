@@ -10,6 +10,7 @@ from __future__ import absolute_import
 
 from apitools.base.protorpclite import messages as _messages
 from apitools.base.py import encoding
+from apitools.base.py import extra_types
 
 
 package = 'run'
@@ -382,6 +383,57 @@ class ExecAction(_messages.Message):
   command = _messages.StringField(1, repeated=True)
 
 
+class GoogleRpcStatus(_messages.Message):
+  r"""The `Status` type defines a logical error model that is suitable for
+  different programming environments, including REST APIs and RPC APIs. It is
+  used by [gRPC](https://github.com/grpc). Each `Status` message contains
+  three pieces of data: error code, error message, and error details. You can
+  find out more about this error model and how to work with it in the [API
+  Design Guide](https://cloud.google.com/apis/design/errors).
+
+  Messages:
+    DetailsValueListEntry: A DetailsValueListEntry object.
+
+  Fields:
+    code: The status code, which should be an enum value of google.rpc.Code.
+    details: A list of messages that carry the error details. There is a
+      common set of message types for APIs to use.
+    message: A developer-facing error message, which should be in English. Any
+      user-facing error message should be localized and sent in the
+      google.rpc.Status.details field, or localized by the client.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DetailsValueListEntry(_messages.Message):
+    r"""A DetailsValueListEntry object.
+
+    Messages:
+      AdditionalProperty: An additional property for a DetailsValueListEntry
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DetailsValueListEntry object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
+  message = _messages.StringField(3)
+
+
 class HTTPGetAction(_messages.Message):
   r"""Not supported by Cloud Run HTTPGetAction describes an action based on
   HTTP Get requests.
@@ -413,6 +465,21 @@ class HTTPHeader(_messages.Message):
 
   name = _messages.StringField(1)
   value = _messages.StringField(2)
+
+
+class InstanceAttemptResult(_messages.Message):
+  r"""Result of an instance attempt.
+
+  Fields:
+    exitCode: Optional. The exit code of this attempt. This may be unset if
+      the container was unable to exit cleanly with a code due to some other
+      failure. See status field for possible failure details.
+    status: Optional. The status of this attempt. If the status code is OK,
+      then the attempt succeeded.
+  """
+
+  exitCode = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  status = _messages.MessageField('GoogleRpcStatus', 2)
 
 
 class InstanceSpec(_messages.Message):
@@ -468,6 +535,8 @@ class InstanceStatus(_messages.Message):
       +optional
     index: Required. Index of the instance, unique per Job, and beginning at
       0.
+    lastAttemptResult: Optional. Result of the last attempt of this instance.
+      +optional
     lastExitCode: Optional. Last exit code seen for this instance. +optional
     restarted: Optional. The number of times this instance was restarted.
       Instances are restarted according the restartPolicy configured in the
@@ -483,10 +552,11 @@ class InstanceStatus(_messages.Message):
   completionTime = _messages.StringField(1)
   failed = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   index = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  lastExitCode = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  restarted = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  startTime = _messages.StringField(6)
-  succeeded = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  lastAttemptResult = _messages.MessageField('InstanceAttemptResult', 4)
+  lastExitCode = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  restarted = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  startTime = _messages.StringField(7)
+  succeeded = _messages.IntegerField(8, variant=_messages.Variant.INT32)
 
 
 class InstanceTemplateSpec(_messages.Message):

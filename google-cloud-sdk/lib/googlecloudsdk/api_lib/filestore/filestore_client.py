@@ -153,6 +153,18 @@ class FilestoreClient(object):
         delete_op.name, collection=OPERATIONS_COLLECTION)
     return self.WaitForOperation(operation_ref)
 
+  def DeleteInstanceBeta(self, instance_ref, async_, force):
+    """Deletes an existing Cloud Filestore instance."""
+    request = self.messages.FileProjectsLocationsInstancesDeleteRequest(
+        name=instance_ref.RelativeName(),
+        force=force)
+    delete_op = self.client.projects_locations_instances.Delete(request)
+    if async_:
+      return delete_op
+    operation_ref = resources.REGISTRY.ParseRelativeName(
+        delete_op.name, collection=OPERATIONS_COLLECTION)
+    return self.WaitForOperation(operation_ref)
+
   def GetOperation(self, operation_ref):
     """Gets description of a long-running operation.
 

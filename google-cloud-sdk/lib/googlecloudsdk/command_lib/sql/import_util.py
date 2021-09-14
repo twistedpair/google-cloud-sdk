@@ -146,10 +146,10 @@ def RunCsvImportCommand(args, client):
     A dict representing the import operation resource, if '--async' is used,
     or else None.
   """
-  csv_import_context = import_util.CsvImportContext(client.sql_messages,
-                                                    args.uri, args.database,
-                                                    args.table, args.columns,
-                                                    args.user)
+  csv_import_context = import_util.CsvImportContext(
+      client.sql_messages, args.uri, args.database, args.table, args.columns,
+      args.user, args.quote, args.escape, args.fields_terminated_by,
+      args.lines_terminated_by)
   return RunImportCommand(args, client, csv_import_context)
 
 

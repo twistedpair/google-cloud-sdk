@@ -452,14 +452,6 @@
           "type": "string",
           "format": "google-datetime"
         },
-        "gkeCluster": {
-          "description": "Information specifying a GKE Cluster.",
-          "$ref": "GKECluster"
-        },
-        "cluster": {
-          "description": "Information specifying a GKE Cluster.",
-          "$ref": "GkeCluster"
-        },
         "gke": {
           "description": "Information specifying a GKE Cluster.",
           "$ref": "GkeCluster"
@@ -474,25 +466,6 @@
           "items": {
             "$ref": "ExecutionConfig"
           }
-        }
-      }
-    },
-    "GKECluster": {
-      "id": "GKECluster",
-      "description": "Information specifying a GKE Cluster.",
-      "type": "object",
-      "properties": {
-        "project": {
-          "description": "Project in which the cluster is located.",
-          "type": "string"
-        },
-        "cluster": {
-          "description": "Name of the cluster.",
-          "type": "string"
-        },
-        "location": {
-          "description": "Location of the cluster.",
-          "type": "string"
         }
       }
     },
@@ -744,11 +717,6 @@
       "description": "The artifacts produced by a target render operation.",
       "type": "object",
       "properties": {
-        "archiveUri": {
-          "description": "Output only. URI of the tar.gz archive containing the artifacts. This archive contains deployment configuration used by Skaffold during a rollout, and all paths are relative to the root of the contents.",
-          "readOnly": true,
-          "type": "string"
-        },
         "artifactUri": {
           "description": "Output only. URI of a directory containing the artifacts. This contains deployment configuration used by Skaffold during a rollout, and all paths are relative to this location.",
           "readOnly": true,

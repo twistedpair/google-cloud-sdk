@@ -51,7 +51,11 @@ def CsvExportContext(sql_messages,
                      uri,
                      database=None,
                      query=None,
-                     offload=False):
+                     offload=False,
+                     quote=None,
+                     escape=None,
+                     fields_terminated_by=None,
+                     lines_terminated_by=None):
   """Generates the ExportContext for the given args, for exporting to CSV.
 
   Args:
@@ -62,6 +66,14 @@ def CsvExportContext(sql_messages,
     query: The query string to use to generate the table; the output of the
       '--query' flag.
     offload: bool, The export offload flag.
+    quote: character in Hex. The quote character for CSV format; the output of
+      the '--quote' flag.
+    escape: character in Hex. The escape character for CSV format; the output of
+      the '--escape' flag.
+    fields_terminated_by: character in Hex. The fields delimiter character for
+      CSV format; the output of the '--fields-terminated-by' flag.
+    lines_terminated_by: character in Hex. The lines delimiter character for CSV
+      format; the output of the '--lines-terminated-by' flag.
 
   Returns:
     ExportContext, for use in InstancesExportRequest.exportContext.
@@ -73,7 +85,11 @@ def CsvExportContext(sql_messages,
       offload=offload,
       fileType=sql_messages.ExportContext.FileTypeValueValuesEnum.CSV,
       csvExportOptions=sql_messages.ExportContext.CsvExportOptionsValue(
-          selectQuery=query))
+          selectQuery=query,
+          quoteCharacter=quote,
+          escapeCharacter=escape,
+          fieldsTerminatedBy=fields_terminated_by,
+          linesTerminatedBy=lines_terminated_by))
 
 
 def BakExportContext(sql_messages, uri, database):

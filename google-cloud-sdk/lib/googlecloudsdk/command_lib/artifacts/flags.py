@@ -313,6 +313,15 @@ def GetOnDemandScanningFakeExtractionFlag():
             'extraction. This flag is for test purposes only.'))
 
 
+def GetOnDemandIncludeOSVDataFlag():
+  return base.Argument(
+      '--include-osv-data',
+      action='store_true',
+      default=False,
+      hidden=True,
+      help=('Whether to include OSV data in the scan.'))
+
+
 def GetAdditionalPackageTypesFlag():
   return base.Argument(
       '--additional-package-types',

@@ -28,6 +28,7 @@ from googlecloudsdk.api_lib.util import messages as messages_util
 from googlecloudsdk.command_lib.ai import constants
 from googlecloudsdk.command_lib.ai import errors
 from googlecloudsdk.command_lib.ai import model_monitoring_jobs_util
+from googlecloudsdk.command_lib.ai import validation as common_validation
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core import yaml
@@ -282,6 +283,11 @@ class ModelMonitoringJobsClient(object):
     endpoint_ref = _ParseEndpoint(args.endpoint, location_ref)
     job_spec = self.messages.GoogleCloudAiplatformV1beta1ModelDeploymentMonitoringJob(
     )
+    kms_key_name = common_validation.GetAndValidateKmsKey(args)
+    if kms_key_name is not None:
+      job_spec.encryptionSpec = self.messages.GoogleCloudAiplatformV1beta1EncryptionSpec(
+          kmsKeyName=kms_key_name)
+
     if args.monitoring_config_from_file:
       data = yaml.load_path(args.monitoring_config_from_file)
       if data:

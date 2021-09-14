@@ -176,7 +176,7 @@ class Disk(_messages.Message):
       always use SCSI and the request will fail if you attempt to attach a
       persistent disk in any other format than SCSI. Local SSDs can use either
       NVME or SCSI. For performance characteristics of SCSI over NVMe, see
-      Local SSD performance. Valid values: NVME SCSI
+      Local SSD performance. Valid values: * NVME * SCSI
     kind: Type of the resource. Always compute#attachedDisk for attached
       disks.
     licenses: A list of publicly visible licenses. Reserved for Google's use.
@@ -184,11 +184,11 @@ class Disk(_messages.Message):
       marketplace images.
     mode: The mode in which to attach this disk, either READ_WRITE or
       READ_ONLY. If not specified, the default is to attach the disk in
-      READ_WRITE mode. Valid values: READ_ONLY READ_WRITE
+      READ_WRITE mode. Valid values: * READ_ONLY * READ_WRITE
     source: Indicates a valid partial or full URL to an existing Persistent
       Disk resource.
     type: Indicates the type of the disk, either SCRATCH or PERSISTENT. Valid
-      values: PERSISTENT SCRATCH
+      values: * PERSISTENT * SCRATCH
   """
 
   autoDelete = _messages.BooleanField(1)
@@ -409,6 +409,7 @@ class ExecutionTemplate(_messages.Message):
     serviceAccount: The email address of a service account to use when running
       the execution. You must have the `iam.serviceAccounts.actAs` permission
       for the specified service account.
+    vertexAiParameters: Parameters used in Vertex AI JobType executions.
   """
 
   class JobTypeValueValuesEnum(_messages.Enum):
@@ -503,6 +504,7 @@ class ExecutionTemplate(_messages.Message):
   paramsYamlFile = _messages.StringField(10)
   scaleTier = _messages.EnumField('ScaleTierValueValuesEnum', 11)
   serviceAccount = _messages.StringField(12)
+  vertexAiParameters = _messages.MessageField('VertexAIParameters', 13)
 
 
 class Expr(_messages.Message):
@@ -617,9 +619,9 @@ class GuestOsFeature(_messages.Message):
 
   Fields:
     type: The ID of a supported feature. Read Enabling guest operating system
-      features to see a list of available options. Valid values:
-      FEATURE_TYPE_UNSPECIFIED MULTI_IP_SUBNET SECURE_BOOT UEFI_COMPATIBLE
-      VIRTIO_SCSI_MULTIQUEUE WINDOWS
+      features to see a list of available options. Valid values: *
+      FEATURE_TYPE_UNSPECIFIED * MULTI_IP_SUBNET * SECURE_BOOT *
+      UEFI_COMPATIBLE * VIRTIO_SCSI_MULTIQUEUE * WINDOWS
   """
 
   type = _messages.StringField(1)
@@ -1047,7 +1049,7 @@ class ListSchedulesResponse(_messages.Message):
 
 
 class LocalDisk(_messages.Message):
-  r"""An Local attached disk resource.
+  r"""A Local attached disk resource.
 
   Fields:
     autoDelete: Optional. Output only. Specifies whether the disk will be
@@ -1081,17 +1083,18 @@ class LocalDisk(_messages.Message):
       always use SCSI and the request will fail if you attempt to attach a
       persistent disk in any other format than SCSI. Local SSDs can use either
       NVME or SCSI. For performance characteristics of SCSI over NVMe, see
-      Local SSD performance. Valid values: NVME SCSI
+      Local SSD performance. Valid values: * NVME * SCSI
     kind: Output only. Type of the resource. Always compute#attachedDisk for
       attached disks.
     licenses: Output only. Any valid publicly visible licenses.
     mode: The mode in which to attach this disk, either READ_WRITE or
       READ_ONLY. If not specified, the default is to attach the disk in
-      READ_WRITE mode. Valid values: READ_ONLY READ_WRITE
+      READ_WRITE mode. Valid values: * READ_ONLY * READ_WRITE
     source: Specifies a valid partial or full URL to an existing Persistent
       Disk resource.
     type: Specifies the type of the disk, either SCRATCH or PERSISTENT. If not
-      specified, the default is PERSISTENT. Valid values: PERSISTENT SCRATCH
+      specified, the default is PERSISTENT. Valid values: * PERSISTENT *
+      SCRATCH
   """
 
   autoDelete = _messages.BooleanField(1)
@@ -2546,7 +2549,7 @@ class RuntimeSoftwareConfig(_messages.Message):
       Default: True
     idleShutdown: Runtime will automatically shutdown after
       idle_shutdown_time. Default: True
-    idleShutdownTimeout: Time in minutes to wait before shuting down runtime.
+    idleShutdownTimeout: Time in minutes to wait before shutting down runtime.
       Default: 180 minutes
     installGpuDriver: Install Nvidia Driver automatically.
     notebookUpgradeSchedule: Cron expression in UTC timezone, used to schedule
@@ -3078,6 +3081,24 @@ class UpgradeInstanceInternalRequest(_messages.Message):
 
 class UpgradeInstanceRequest(_messages.Message):
   r"""Request for upgrading a notebook instance"""
+
+
+class VertexAIParameters(_messages.Message):
+  r"""Parameters used in Vertex AI JobType executions.
+
+  Fields:
+    network: The full name of the Compute Engine
+      [network](/compute/docs/networks-and-firewalls#networks) to which the
+      Job should be peered. For example,
+      `projects/12345/global/networks/myVPC`. [Format](https://cloud.google.co
+      m/compute/docs/reference/rest/v1/networks/insert) is of the form
+      `projects/{project}/global/networks/{network}`. Where {project} is a
+      project number, as in `12345`, and {network} is a network name. Private
+      services access must already be configured for the network. If left
+      unspecified, the job is not peered with any network.
+  """
+
+  network = _messages.StringField(1)
 
 
 class VirtualMachine(_messages.Message):

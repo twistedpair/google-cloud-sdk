@@ -263,6 +263,10 @@
         "alertChart": {
           "description": "A chart of alert policy data.",
           "$ref": "AlertChart"
+        },
+        "timeSeriesTable": {
+          "description": "A widget that displays time series data in a tabular format.",
+          "$ref": "TimeSeriesTable"
         }
       }
     },
@@ -838,6 +842,58 @@
         "name": {
           "description": "Required. The resource name of the alert policy. The format is: projects\/[PROJECT_ID_OR_NUMBER]\/alertPolicies\/[ALERT_POLICY_ID] ",
           "type": "string"
+        }
+      }
+    },
+    "TimeSeriesTable": {
+      "id": "TimeSeriesTable",
+      "description": "A table that displays time series data.",
+      "type": "object",
+      "properties": {
+        "dataSets": {
+          "description": "Required. The data displayed in this table.",
+          "type": "array",
+          "items": {
+            "$ref": "TableDataSet"
+          }
+        }
+      }
+    },
+    "TableDataSet": {
+      "id": "TableDataSet",
+      "description": "Groups a time series query definition with table options.",
+      "type": "object",
+      "properties": {
+        "timeSeriesQuery": {
+          "description": "Required. Fields for querying time series data from the Stackdriver metrics API.",
+          "$ref": "TimeSeriesQuery"
+        },
+        "tableTemplate": {
+          "description": "Optional. A template string for naming TimeSeries in the resulting data set. This should be a string with interpolations of the form ${label_name}, which will resolve to the label's value i.e. \"${resource.labels.project_id}.\"",
+          "type": "string"
+        },
+        "minAlignmentPeriod": {
+          "description": "Optional. The lower bound on data point frequency for this data set, implemented by specifying the minimum alignment period to use in a time series query For example, if the data is published once every 10 minutes, the min_alignment_period should be at least 10 minutes. It would not make sense to fetch and align data at one minute intervals.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "tableDisplayOptions": {
+          "description": "Optional. Table display options for configuring how the table is rendered.",
+          "$ref": "TableDisplayOptions"
+        }
+      }
+    },
+    "TableDisplayOptions": {
+      "id": "TableDisplayOptions",
+      "description": "Table display options that can be reused.",
+      "type": "object",
+      "properties": {
+        "shownColumns": {
+          "description": "Optional. Columns to display in the table. Leave empty to display all available columns.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },

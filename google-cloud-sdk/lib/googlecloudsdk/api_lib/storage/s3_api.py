@@ -525,12 +525,11 @@ class S3Api(cloud_api.CloudApi):
                     source_stream,
                     destination_resource,
                     request_config,
-                    progress_callback=None,
                     serialization_data=None,
                     tracker_callback=None,
                     upload_strategy=cloud_api.UploadStrategy.SIMPLE):
     """See super class."""
-    del progress_callback, serialization_data, tracker_callback
+    del serialization_data, tracker_callback
 
     if upload_strategy != cloud_api.UploadStrategy.SIMPLE:
       raise command_errors.Error(

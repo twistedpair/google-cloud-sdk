@@ -1084,7 +1084,7 @@
     },
     "Rule": {
       "id": "Rule",
-      "description": "A rule resource is associated with an AssetType and manages the workflow pipelines of a collection of Assets under that AssetType.",
+      "description": "A rule resource is associated with an AssetType and manages the workflow pipelines of a collection of Assets under that AssetType. NEXT_ID: 10",
       "type": "object",
       "properties": {
         "transformation": {
@@ -1098,6 +1098,10 @@
         "derivedAsset": {
           "description": "Configures the associated AssetType to manage the derived assets for its Assets.",
           "$ref": "DerivedAssetConfig"
+        },
+        "catalog": {
+          "description": "Configures how to catalog assets.",
+          "$ref": "CatalogConfig"
         },
         "name": {
           "description": "A user-specified resource name of the rule `projects\/{project}\/locations\/{location}\/assetTypes\/{type}\/rules\/{rule}`. Here {rule} is a resource id. Detailed rules for a resource id are: 1. 1 character minimum, 63 characters maximum 2. only contains letters, digits, underscore and hyphen 3. starts with a letter if length == 1, starts with a letter or underscore if length > 1",
@@ -1265,6 +1269,17 @@
         },
         "owningLink": {
           "description": "Required. The link in the owner asset.",
+          "type": "string"
+        }
+      }
+    },
+    "CatalogConfig": {
+      "id": "CatalogConfig",
+      "description": "Configures the catalog of assets.",
+      "type": "object",
+      "properties": {
+        "catalog": {
+          "description": "Required. Reference to a catalog to populate with assets: `projects\/{project}\/locations\/{location}\/catalogs\/{name}`.",
           "type": "string"
         }
       }

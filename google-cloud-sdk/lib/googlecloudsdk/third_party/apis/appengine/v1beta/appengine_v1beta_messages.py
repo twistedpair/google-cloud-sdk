@@ -1419,6 +1419,72 @@ class GoogleAppengineV1betaLocationMetadata(_messages.Message):
   standardEnvironmentAvailable = _messages.BooleanField(3)
 
 
+class GoogleAppengineV2OperationMetadata(_messages.Message):
+  r"""Represents the metadata of the long-running operation.
+
+  Fields:
+    apiVersion: Output only. API version used to start the operation.
+    createTime: Output only. The time the operation was created.
+    endTime: Output only. The time the operation finished running.
+    ephemeralMessage: Output only. Ephemeral message that may change every
+      time the operation is polled.
+    requestedCancellation: Output only. Identifies whether the user has
+      requested cancellation of the operation. Operations that have been
+      cancelled successfully have Operation.error value with a
+      google.rpc.Status.code of 1, corresponding to Code.CANCELLED.
+    statusMessage: Output only. Human-readable status of the operation, if
+      any.
+    target: Output only. Server-defined resource path for the target of the
+      operation.
+    verb: Output only. Name of the verb executed by the operation.
+    warning: Output only. Durable messages that persist on every operation
+      poll.
+  """
+
+  apiVersion = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  endTime = _messages.StringField(3)
+  ephemeralMessage = _messages.StringField(4)
+  requestedCancellation = _messages.BooleanField(5)
+  statusMessage = _messages.StringField(6)
+  target = _messages.StringField(7)
+  verb = _messages.StringField(8)
+  warning = _messages.StringField(9, repeated=True)
+
+
+class GoogleAppengineV2mainOperationMetadata(_messages.Message):
+  r"""Represents the metadata of the long-running operation.
+
+  Fields:
+    apiVersion: Output only. API version used to start the operation.
+    createTime: Output only. The time the operation was created.
+    endTime: Output only. The time the operation finished running.
+    ephemeralMessage: Output only. Ephemeral message that may change every
+      time the operation is polled.
+    requestedCancellation: Output only. Identifies whether the user has
+      requested cancellation of the operation. Operations that have been
+      cancelled successfully have Operation.error value with a
+      google.rpc.Status.code of 1, corresponding to Code.CANCELLED.
+    statusMessage: Output only. Human-readable status of the operation, if
+      any.
+    target: Output only. Server-defined resource path for the target of the
+      operation.
+    verb: Output only. Name of the verb executed by the operation.
+    warning: Output only. Durable messages that persist on every operation
+      poll.
+  """
+
+  apiVersion = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  endTime = _messages.StringField(3)
+  ephemeralMessage = _messages.StringField(4)
+  requestedCancellation = _messages.BooleanField(5)
+  statusMessage = _messages.StringField(6)
+  target = _messages.StringField(7)
+  verb = _messages.StringField(8)
+  warning = _messages.StringField(9, repeated=True)
+
+
 class HealthCheck(_messages.Message):
   r"""Health checking configuration for VM instances. Unhealthy instances are
   killed and replaced with new instances. Only applicable for instances in App

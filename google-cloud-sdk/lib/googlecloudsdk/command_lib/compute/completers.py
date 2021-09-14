@@ -329,7 +329,7 @@ class ZoneInstantSnapshotsCompleter(ListCommandCompleter):
 
   def __init__(self, **kwargs):
     super(ZoneInstantSnapshotsCompleter, self).__init__(
-        collection='compute.zoneInstantSnapshots',
+        collection='compute.instantSnapshots',
         list_command='alpha compute instant-snapshots list --uri',
         api_version='alpha',
         **kwargs)

@@ -163,6 +163,8 @@ GCE_RESOURCE_PATH_REGEX = r'^[a-z\d-]+(/[a-z\d-]+)*$'
 
 GCE_RESOURCE_NAME_REGEX = r'^[a-z]([a-z\d-]{0,61}[a-z\d])?$'
 
+FLEX_INSTANCE_IP_MODE_REGEX = r'^EXTERNAL|INTERNAL$'
+
 VPC_ACCESS_CONNECTOR_NAME_REGEX = r'^[a-z\d-]+(/.+)*$'
 
 ALTERNATE_HOSTNAME_SEPARATOR = '-dot-'
@@ -399,6 +401,7 @@ INSTANCE_TAG = 'instance_tag'
 NETWORK_NAME = 'name'
 SUBNETWORK_NAME = 'subnetwork_name'
 SESSION_AFFINITY = 'session_affinity'
+INSTANCE_IP_MODE = 'instance_ip_mode'
 
 # Attributes for Scheduler Settings
 STANDARD_MIN_INSTANCES = 'min_instances'
@@ -2020,20 +2023,20 @@ class Network(validation.Validated):
 
   ATTRIBUTES = {
       # A list of port mappings in the form 'port' or 'external:internal'.
-      FORWARDED_PORTS: validation.Optional(validation.Repeated(validation.Regex(
-          '[0-9]+(:[0-9]+)?(/(udp|tcp))?'))),
-
-      INSTANCE_TAG: validation.Optional(validation.Regex(
-          GCE_RESOURCE_NAME_REGEX)),
-
-      NETWORK_NAME: validation.Optional(validation.Regex(
-          GCE_RESOURCE_PATH_REGEX)),
-
-      SUBNETWORK_NAME: validation.Optional(validation.Regex(
-          GCE_RESOURCE_NAME_REGEX)),
-
+      FORWARDED_PORTS:
+          validation.Optional(
+              validation.Repeated(
+                  validation.Regex('[0-9]+(:[0-9]+)?(/(udp|tcp))?'))),
+      INSTANCE_TAG:
+          validation.Optional(validation.Regex(GCE_RESOURCE_NAME_REGEX)),
+      NETWORK_NAME:
+          validation.Optional(validation.Regex(GCE_RESOURCE_PATH_REGEX)),
+      SUBNETWORK_NAME:
+          validation.Optional(validation.Regex(GCE_RESOURCE_NAME_REGEX)),
       SESSION_AFFINITY:
-          validation.Optional(bool)
+          validation.Optional(bool),
+      INSTANCE_IP_MODE:
+          validation.Optional(validation.Regex(FLEX_INSTANCE_IP_MODE_REGEX))
   }
 
 

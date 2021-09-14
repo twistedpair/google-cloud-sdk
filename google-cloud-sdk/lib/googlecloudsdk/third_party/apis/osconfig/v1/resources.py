@@ -67,6 +67,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_OSPOLICYASSIGNMENTS = (
+      'projects.locations.osPolicyAssignments',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'osPolicyAssignments/{osPolicyAssignmentsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_PATCHDEPLOYMENTS = (
       'projects.patchDeployments',
       '{+name}',

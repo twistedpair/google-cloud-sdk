@@ -101,7 +101,7 @@ class DialogflowV2(base_api.BaseApiClient):
           }
 
     def BatchCreate(self, request, global_params=None):
-      r"""Creates multiple new entities in the specified entity type. Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
+      r"""Creates multiple new entities in the specified entity type. This method is a [long-running operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations). The returned `Operation` type has the following method-specific fields: - `metadata`: An empty [Struct message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct) - `response`: An [Empty message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty) Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
 
       Args:
         request: (DialogflowProjectsAgentEntityTypesEntitiesBatchCreateRequest) input message
@@ -128,7 +128,7 @@ class DialogflowV2(base_api.BaseApiClient):
     )
 
     def BatchDelete(self, request, global_params=None):
-      r"""Deletes entities in the specified entity type. Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
+      r"""Deletes entities in the specified entity type. This method is a [long-running operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations). The returned `Operation` type has the following method-specific fields: - `metadata`: An empty [Struct message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct) - `response`: An [Empty message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty) Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
 
       Args:
         request: (DialogflowProjectsAgentEntityTypesEntitiesBatchDeleteRequest) input message
@@ -155,7 +155,7 @@ class DialogflowV2(base_api.BaseApiClient):
     )
 
     def BatchUpdate(self, request, global_params=None):
-      r"""Updates or creates multiple entities in the specified entity type. This method does not affect entities in the entity type that aren't explicitly specified in the request. Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
+      r"""Updates or creates multiple entities in the specified entity type. This method does not affect entities in the entity type that aren't explicitly specified in the request. This method is a [long-running operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations). The returned `Operation` type has the following method-specific fields: - `metadata`: An empty [Struct message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct) - `response`: An [Empty message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty) Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training). .
 
       Args:
         request: (DialogflowProjectsAgentEntityTypesEntitiesBatchUpdateRequest) input message
@@ -192,7 +192,7 @@ class DialogflowV2(base_api.BaseApiClient):
           }
 
     def BatchDelete(self, request, global_params=None):
-      r"""Deletes entity types in the specified agent. Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
+      r"""Deletes entity types in the specified agent. This method is a [long-running operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations). The returned `Operation` type has the following method-specific fields: - `metadata`: An empty [Struct message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct) - `response`: An [Empty message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty) Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
 
       Args:
         request: (DialogflowProjectsAgentEntityTypesBatchDeleteRequest) input message
@@ -219,7 +219,7 @@ class DialogflowV2(base_api.BaseApiClient):
     )
 
     def BatchUpdate(self, request, global_params=None):
-      r"""Updates/Creates multiple entity types in the specified agent. Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
+      r"""Updates/Creates multiple entity types in the specified agent. This method is a [long-running operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations). The returned `Operation` type has the following method-specific fields: - `metadata`: An empty [Struct message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct) - `response`: BatchUpdateEntityTypesResponse Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
 
       Args:
         request: (DialogflowProjectsAgentEntityTypesBatchUpdateRequest) input message
@@ -964,7 +964,7 @@ class DialogflowV2(base_api.BaseApiClient):
           }
 
     def BatchDelete(self, request, global_params=None):
-      r"""Deletes intents in the specified agent. Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
+      r"""Deletes intents in the specified agent. This method is a [long-running operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations). The returned `Operation` type has the following method-specific fields: - `metadata`: An empty [Struct message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct) - `response`: An [Empty message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty) Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
 
       Args:
         request: (DialogflowProjectsAgentIntentsBatchDeleteRequest) input message
@@ -991,7 +991,7 @@ class DialogflowV2(base_api.BaseApiClient):
     )
 
     def BatchUpdate(self, request, global_params=None):
-      r"""Updates/Creates multiple intents in the specified agent. Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
+      r"""Updates/Creates multiple intents in the specified agent. This method is a [long-running operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations). The returned `Operation` type has the following method-specific fields: - `metadata`: An empty [Struct message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct) - `response`: BatchUpdateIntentsResponse Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
 
       Args:
         request: (DialogflowProjectsAgentIntentsBatchUpdateRequest) input message
@@ -1163,7 +1163,7 @@ class DialogflowV2(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new document. Operation .
+      r"""Creates a new document. This method is a [long-running operation](https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation). The returned `Operation` type has the following method-specific fields: - `metadata`: KnowledgeOperationMetadata - `response`: Document.
 
       Args:
         request: (DialogflowProjectsAgentKnowledgeBasesDocumentsCreateRequest) input message
@@ -1190,7 +1190,7 @@ class DialogflowV2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified document. Operation .
+      r"""Deletes the specified document. This method is a [long-running operation](https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation). The returned `Operation` type has the following method-specific fields: - `metadata`: KnowledgeOperationMetadata - `response`: An [Empty message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty).
 
       Args:
         request: (DialogflowProjectsAgentKnowledgeBasesDocumentsDeleteRequest) input message
@@ -1271,7 +1271,7 @@ class DialogflowV2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the specified document. Operation .
+      r"""Updates the specified document. This method is a [long-running operation](https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation). The returned `Operation` type has the following method-specific fields: - `metadata`: KnowledgeOperationMetadata - `response`: Document.
 
       Args:
         request: (DialogflowProjectsAgentKnowledgeBasesDocumentsPatchRequest) input message
@@ -1298,7 +1298,7 @@ class DialogflowV2(base_api.BaseApiClient):
     )
 
     def Reload(self, request, global_params=None):
-      r"""Reloads the specified document from its specified source, content_uri or content. The previously loaded content of the document will be deleted. Note: Even when the content of the document has not changed, there still may be side effects because of internal implementation changes. Note: The `projects.agent.knowledgeBases.documents` resource is deprecated; only use `projects.knowledgeBases.documents`. Operation .
+      r"""Reloads the specified document from its specified source, content_uri or content. The previously loaded content of the document will be deleted. Note: Even when the content of the document has not changed, there still may be side effects because of internal implementation changes. This method is a [long-running operation](https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation). The returned `Operation` type has the following method-specific fields: - `metadata`: KnowledgeOperationMetadata - `response`: Document Note: The `projects.agent.knowledgeBases.documents` resource is deprecated; only use `projects.knowledgeBases.documents`.
 
       Args:
         request: (DialogflowProjectsAgentKnowledgeBasesDocumentsReloadRequest) input message
@@ -1979,7 +1979,7 @@ class DialogflowV2(base_api.BaseApiClient):
           }
 
     def Export(self, request, global_params=None):
-      r"""Exports the specified agent to a ZIP file.
+      r"""Exports the specified agent to a ZIP file. This method is a [long-running operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations). The returned `Operation` type has the following method-specific fields: - `metadata`: An empty [Struct message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct) - `response`: ExportAgentResponse.
 
       Args:
         request: (DialogflowProjectsAgentExportRequest) input message
@@ -2060,7 +2060,7 @@ class DialogflowV2(base_api.BaseApiClient):
     )
 
     def Import(self, request, global_params=None):
-      r"""Imports the specified agent from a ZIP file. Uploads new intents and entity types without deleting the existing ones. Intents and entity types with the same name are replaced with the new versions from ImportAgentRequest. After the import, the imported draft agent will be trained automatically (unless disabled in agent settings). However, once the import is done, training may not be completed yet. Please call TrainAgent and wait for the operation it returns in order to train explicitly. An operation which tracks when importing is complete. It only tracks when the draft agent is updated not when it is done training. Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
+      r"""Imports the specified agent from a ZIP file. Uploads new intents and entity types without deleting the existing ones. Intents and entity types with the same name are replaced with the new versions from ImportAgentRequest. After the import, the imported draft agent will be trained automatically (unless disabled in agent settings). However, once the import is done, training may not be completed yet. Please call TrainAgent and wait for the operation it returns in order to train explicitly. This method is a [long-running operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations). The returned `Operation` type has the following method-specific fields: - `metadata`: An empty [Struct message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct) - `response`: An [Empty message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty) The operation only tracks when importing is complete, not when it is done training. Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
 
       Args:
         request: (DialogflowProjectsAgentImportRequest) input message
@@ -2087,7 +2087,7 @@ class DialogflowV2(base_api.BaseApiClient):
     )
 
     def Restore(self, request, global_params=None):
-      r"""Restores the specified agent from a ZIP file. Replaces the current agent version with a new one. All the intents and entity types in the older version are deleted. After the restore, the restored draft agent will be trained automatically (unless disabled in agent settings). However, once the restore is done, training may not be completed yet. Please call TrainAgent and wait for the operation it returns in order to train explicitly. An operation which tracks when restoring is complete. It only tracks when the draft agent is updated not when it is done training. Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
+      r"""Restores the specified agent from a ZIP file. Replaces the current agent version with a new one. All the intents and entity types in the older version are deleted. After the restore, the restored draft agent will be trained automatically (unless disabled in agent settings). However, once the restore is done, training may not be completed yet. Please call TrainAgent and wait for the operation it returns in order to train explicitly. This method is a [long-running operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations). The returned `Operation` type has the following method-specific fields: - `metadata`: An empty [Struct message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct) - `response`: An [Empty message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty) The operation only tracks when restoring is complete, not when it is done training. Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
 
       Args:
         request: (DialogflowProjectsAgentRestoreRequest) input message
@@ -2141,7 +2141,7 @@ class DialogflowV2(base_api.BaseApiClient):
     )
 
     def Train(self, request, global_params=None):
-      r"""Trains the specified agent. Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
+      r"""Trains the specified agent. This method is a [long-running operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations). The returned `Operation` type has the following method-specific fields: - `metadata`: An empty [Struct message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct) - `response`: An [Empty message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty) Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
 
       Args:
         request: (DialogflowProjectsAgentTrainRequest) input message
@@ -2778,7 +2778,7 @@ class DialogflowV2(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new document. Operation .
+      r"""Creates a new document. This method is a [long-running operation](https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation). The returned `Operation` type has the following method-specific fields: - `metadata`: KnowledgeOperationMetadata - `response`: Document.
 
       Args:
         request: (DialogflowProjectsKnowledgeBasesDocumentsCreateRequest) input message
@@ -2805,7 +2805,7 @@ class DialogflowV2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified document. Operation .
+      r"""Deletes the specified document. This method is a [long-running operation](https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation). The returned `Operation` type has the following method-specific fields: - `metadata`: KnowledgeOperationMetadata - `response`: An [Empty message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty).
 
       Args:
         request: (DialogflowProjectsKnowledgeBasesDocumentsDeleteRequest) input message
@@ -2886,7 +2886,7 @@ class DialogflowV2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the specified document. Operation .
+      r"""Updates the specified document. This method is a [long-running operation](https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation). The returned `Operation` type has the following method-specific fields: - `metadata`: KnowledgeOperationMetadata - `response`: Document.
 
       Args:
         request: (DialogflowProjectsKnowledgeBasesDocumentsPatchRequest) input message
@@ -2913,7 +2913,7 @@ class DialogflowV2(base_api.BaseApiClient):
     )
 
     def Reload(self, request, global_params=None):
-      r"""Reloads the specified document from its specified source, content_uri or content. The previously loaded content of the document will be deleted. Note: Even when the content of the document has not changed, there still may be side effects because of internal implementation changes. Note: The `projects.agent.knowledgeBases.documents` resource is deprecated; only use `projects.knowledgeBases.documents`. Operation .
+      r"""Reloads the specified document from its specified source, content_uri or content. The previously loaded content of the document will be deleted. Note: Even when the content of the document has not changed, there still may be side effects because of internal implementation changes. This method is a [long-running operation](https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation). The returned `Operation` type has the following method-specific fields: - `metadata`: KnowledgeOperationMetadata - `response`: Document Note: The `projects.agent.knowledgeBases.documents` resource is deprecated; only use `projects.knowledgeBases.documents`.
 
       Args:
         request: (DialogflowProjectsKnowledgeBasesDocumentsReloadRequest) input message
@@ -3095,7 +3095,7 @@ class DialogflowV2(base_api.BaseApiClient):
           }
 
     def BatchCreate(self, request, global_params=None):
-      r"""Creates multiple new entities in the specified entity type. Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
+      r"""Creates multiple new entities in the specified entity type. This method is a [long-running operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations). The returned `Operation` type has the following method-specific fields: - `metadata`: An empty [Struct message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct) - `response`: An [Empty message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty) Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
 
       Args:
         request: (DialogflowProjectsLocationsAgentEntityTypesEntitiesBatchCreateRequest) input message
@@ -3122,7 +3122,7 @@ class DialogflowV2(base_api.BaseApiClient):
     )
 
     def BatchDelete(self, request, global_params=None):
-      r"""Deletes entities in the specified entity type. Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
+      r"""Deletes entities in the specified entity type. This method is a [long-running operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations). The returned `Operation` type has the following method-specific fields: - `metadata`: An empty [Struct message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct) - `response`: An [Empty message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty) Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
 
       Args:
         request: (DialogflowProjectsLocationsAgentEntityTypesEntitiesBatchDeleteRequest) input message
@@ -3149,7 +3149,7 @@ class DialogflowV2(base_api.BaseApiClient):
     )
 
     def BatchUpdate(self, request, global_params=None):
-      r"""Updates or creates multiple entities in the specified entity type. This method does not affect entities in the entity type that aren't explicitly specified in the request. Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
+      r"""Updates or creates multiple entities in the specified entity type. This method does not affect entities in the entity type that aren't explicitly specified in the request. This method is a [long-running operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations). The returned `Operation` type has the following method-specific fields: - `metadata`: An empty [Struct message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct) - `response`: An [Empty message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty) Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training). .
 
       Args:
         request: (DialogflowProjectsLocationsAgentEntityTypesEntitiesBatchUpdateRequest) input message
@@ -3186,7 +3186,7 @@ class DialogflowV2(base_api.BaseApiClient):
           }
 
     def BatchDelete(self, request, global_params=None):
-      r"""Deletes entity types in the specified agent. Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
+      r"""Deletes entity types in the specified agent. This method is a [long-running operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations). The returned `Operation` type has the following method-specific fields: - `metadata`: An empty [Struct message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct) - `response`: An [Empty message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty) Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
 
       Args:
         request: (DialogflowProjectsLocationsAgentEntityTypesBatchDeleteRequest) input message
@@ -3213,7 +3213,7 @@ class DialogflowV2(base_api.BaseApiClient):
     )
 
     def BatchUpdate(self, request, global_params=None):
-      r"""Updates/Creates multiple entity types in the specified agent. Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
+      r"""Updates/Creates multiple entity types in the specified agent. This method is a [long-running operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations). The returned `Operation` type has the following method-specific fields: - `metadata`: An empty [Struct message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct) - `response`: BatchUpdateEntityTypesResponse Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
 
       Args:
         request: (DialogflowProjectsLocationsAgentEntityTypesBatchUpdateRequest) input message
@@ -3958,7 +3958,7 @@ class DialogflowV2(base_api.BaseApiClient):
           }
 
     def BatchDelete(self, request, global_params=None):
-      r"""Deletes intents in the specified agent. Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
+      r"""Deletes intents in the specified agent. This method is a [long-running operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations). The returned `Operation` type has the following method-specific fields: - `metadata`: An empty [Struct message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct) - `response`: An [Empty message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty) Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
 
       Args:
         request: (DialogflowProjectsLocationsAgentIntentsBatchDeleteRequest) input message
@@ -3985,7 +3985,7 @@ class DialogflowV2(base_api.BaseApiClient):
     )
 
     def BatchUpdate(self, request, global_params=None):
-      r"""Updates/Creates multiple intents in the specified agent. Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
+      r"""Updates/Creates multiple intents in the specified agent. This method is a [long-running operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations). The returned `Operation` type has the following method-specific fields: - `metadata`: An empty [Struct message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct) - `response`: BatchUpdateIntentsResponse Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
 
       Args:
         request: (DialogflowProjectsLocationsAgentIntentsBatchUpdateRequest) input message
@@ -4656,7 +4656,7 @@ class DialogflowV2(base_api.BaseApiClient):
           }
 
     def Export(self, request, global_params=None):
-      r"""Exports the specified agent to a ZIP file.
+      r"""Exports the specified agent to a ZIP file. This method is a [long-running operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations). The returned `Operation` type has the following method-specific fields: - `metadata`: An empty [Struct message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct) - `response`: ExportAgentResponse.
 
       Args:
         request: (DialogflowProjectsLocationsAgentExportRequest) input message
@@ -4737,7 +4737,7 @@ class DialogflowV2(base_api.BaseApiClient):
     )
 
     def Import(self, request, global_params=None):
-      r"""Imports the specified agent from a ZIP file. Uploads new intents and entity types without deleting the existing ones. Intents and entity types with the same name are replaced with the new versions from ImportAgentRequest. After the import, the imported draft agent will be trained automatically (unless disabled in agent settings). However, once the import is done, training may not be completed yet. Please call TrainAgent and wait for the operation it returns in order to train explicitly. An operation which tracks when importing is complete. It only tracks when the draft agent is updated not when it is done training. Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
+      r"""Imports the specified agent from a ZIP file. Uploads new intents and entity types without deleting the existing ones. Intents and entity types with the same name are replaced with the new versions from ImportAgentRequest. After the import, the imported draft agent will be trained automatically (unless disabled in agent settings). However, once the import is done, training may not be completed yet. Please call TrainAgent and wait for the operation it returns in order to train explicitly. This method is a [long-running operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations). The returned `Operation` type has the following method-specific fields: - `metadata`: An empty [Struct message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct) - `response`: An [Empty message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty) The operation only tracks when importing is complete, not when it is done training. Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
 
       Args:
         request: (DialogflowProjectsLocationsAgentImportRequest) input message
@@ -4764,7 +4764,7 @@ class DialogflowV2(base_api.BaseApiClient):
     )
 
     def Restore(self, request, global_params=None):
-      r"""Restores the specified agent from a ZIP file. Replaces the current agent version with a new one. All the intents and entity types in the older version are deleted. After the restore, the restored draft agent will be trained automatically (unless disabled in agent settings). However, once the restore is done, training may not be completed yet. Please call TrainAgent and wait for the operation it returns in order to train explicitly. An operation which tracks when restoring is complete. It only tracks when the draft agent is updated not when it is done training. Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
+      r"""Restores the specified agent from a ZIP file. Replaces the current agent version with a new one. All the intents and entity types in the older version are deleted. After the restore, the restored draft agent will be trained automatically (unless disabled in agent settings). However, once the restore is done, training may not be completed yet. Please call TrainAgent and wait for the operation it returns in order to train explicitly. This method is a [long-running operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations). The returned `Operation` type has the following method-specific fields: - `metadata`: An empty [Struct message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct) - `response`: An [Empty message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty) The operation only tracks when restoring is complete, not when it is done training. Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
 
       Args:
         request: (DialogflowProjectsLocationsAgentRestoreRequest) input message
@@ -4818,7 +4818,7 @@ class DialogflowV2(base_api.BaseApiClient):
     )
 
     def Train(self, request, global_params=None):
-      r"""Trains the specified agent. Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
+      r"""Trains the specified agent. This method is a [long-running operation](https://cloud.google.com/dialogflow/es/docs/how/long-running-operations). The returned `Operation` type has the following method-specific fields: - `metadata`: An empty [Struct message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#struct) - `response`: An [Empty message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty) Note: You should always train an agent prior to sending it queries. See the [training documentation](https://cloud.google.com/dialogflow/es/docs/training).
 
       Args:
         request: (DialogflowProjectsLocationsAgentTrainRequest) input message
@@ -5455,7 +5455,7 @@ class DialogflowV2(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new document. Operation .
+      r"""Creates a new document. This method is a [long-running operation](https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation). The returned `Operation` type has the following method-specific fields: - `metadata`: KnowledgeOperationMetadata - `response`: Document.
 
       Args:
         request: (DialogflowProjectsLocationsKnowledgeBasesDocumentsCreateRequest) input message
@@ -5482,7 +5482,7 @@ class DialogflowV2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes the specified document. Operation .
+      r"""Deletes the specified document. This method is a [long-running operation](https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation). The returned `Operation` type has the following method-specific fields: - `metadata`: KnowledgeOperationMetadata - `response`: An [Empty message](https://developers.google.com/protocol-buffers/docs/reference/google.protobuf#empty).
 
       Args:
         request: (DialogflowProjectsLocationsKnowledgeBasesDocumentsDeleteRequest) input message
@@ -5563,7 +5563,7 @@ class DialogflowV2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates the specified document. Operation .
+      r"""Updates the specified document. This method is a [long-running operation](https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation). The returned `Operation` type has the following method-specific fields: - `metadata`: KnowledgeOperationMetadata - `response`: Document.
 
       Args:
         request: (DialogflowProjectsLocationsKnowledgeBasesDocumentsPatchRequest) input message
@@ -5590,7 +5590,7 @@ class DialogflowV2(base_api.BaseApiClient):
     )
 
     def Reload(self, request, global_params=None):
-      r"""Reloads the specified document from its specified source, content_uri or content. The previously loaded content of the document will be deleted. Note: Even when the content of the document has not changed, there still may be side effects because of internal implementation changes. Note: The `projects.agent.knowledgeBases.documents` resource is deprecated; only use `projects.knowledgeBases.documents`. Operation .
+      r"""Reloads the specified document from its specified source, content_uri or content. The previously loaded content of the document will be deleted. Note: Even when the content of the document has not changed, there still may be side effects because of internal implementation changes. This method is a [long-running operation](https://cloud.google.com/dialogflow/cx/docs/how/long-running-operation). The returned `Operation` type has the following method-specific fields: - `metadata`: KnowledgeOperationMetadata - `response`: Document Note: The `projects.agent.knowledgeBases.documents` resource is deprecated; only use `projects.knowledgeBases.documents`.
 
       Args:
         request: (DialogflowProjectsLocationsKnowledgeBasesDocumentsReloadRequest) input message

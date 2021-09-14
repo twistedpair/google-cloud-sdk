@@ -120,6 +120,14 @@ share with specific projects or folders.
 """)
 
 
+def AddListingShareSettingsArgToParser(parser):
+  """Add --share-setting flag."""
+  parser.add_argument(
+      '--share-settings',
+      action='store_true',
+      help='If provided, shows details for the share setting')
+
+
 def GetMaintenancePolicyEnumMapper(messages):
   return arg_utils.ChoiceEnumMapper(
       '--maintenance-policy',

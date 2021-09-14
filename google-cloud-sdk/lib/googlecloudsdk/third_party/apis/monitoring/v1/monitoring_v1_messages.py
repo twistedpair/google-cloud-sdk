@@ -1507,6 +1507,43 @@ class Status(_messages.Message):
   message = _messages.StringField(3)
 
 
+class TableDataSet(_messages.Message):
+  r"""Groups a time series query definition with table options.
+
+  Fields:
+    minAlignmentPeriod: Optional. The lower bound on data point frequency for
+      this data set, implemented by specifying the minimum alignment period to
+      use in a time series query For example, if the data is published once
+      every 10 minutes, the min_alignment_period should be at least 10
+      minutes. It would not make sense to fetch and align data at one minute
+      intervals.
+    tableDisplayOptions: Optional. Table display options for configuring how
+      the table is rendered.
+    tableTemplate: Optional. A template string for naming TimeSeries in the
+      resulting data set. This should be a string with interpolations of the
+      form ${label_name}, which will resolve to the label's value i.e.
+      "${resource.labels.project_id}."
+    timeSeriesQuery: Required. Fields for querying time series data from the
+      Stackdriver metrics API.
+  """
+
+  minAlignmentPeriod = _messages.StringField(1)
+  tableDisplayOptions = _messages.MessageField('TableDisplayOptions', 2)
+  tableTemplate = _messages.StringField(3)
+  timeSeriesQuery = _messages.MessageField('TimeSeriesQuery', 4)
+
+
+class TableDisplayOptions(_messages.Message):
+  r"""Table display options that can be reused.
+
+  Fields:
+    shownColumns: Optional. Columns to display in the table. Leave empty to
+      display all available columns.
+  """
+
+  shownColumns = _messages.StringField(1, repeated=True)
+
+
 class Text(_messages.Message):
   r"""A widget that displays textual content.
 
@@ -1700,6 +1737,16 @@ class TimeSeriesQuery(_messages.Message):
   unitOverride = _messages.StringField(4)
 
 
+class TimeSeriesTable(_messages.Message):
+  r"""A table that displays time series data.
+
+  Fields:
+    dataSets: Required. The data displayed in this table.
+  """
+
+  dataSets = _messages.MessageField('TableDataSet', 1, repeated=True)
+
+
 class Type(_messages.Message):
   r"""A protocol buffer message type.
 
@@ -1742,6 +1789,8 @@ class Widget(_messages.Message):
     blank: A blank space.
     scorecard: A scorecard summarizing time series data.
     text: A raw string or markdown displaying textual content.
+    timeSeriesTable: A widget that displays time series data in a tabular
+      format.
     title: Optional. The title of the widget.
     xyChart: A chart of time series data.
   """
@@ -1750,8 +1799,9 @@ class Widget(_messages.Message):
   blank = _messages.MessageField('Empty', 2)
   scorecard = _messages.MessageField('Scorecard', 3)
   text = _messages.MessageField('Text', 4)
-  title = _messages.StringField(5)
-  xyChart = _messages.MessageField('XyChart', 6)
+  timeSeriesTable = _messages.MessageField('TimeSeriesTable', 5)
+  title = _messages.StringField(6)
+  xyChart = _messages.MessageField('XyChart', 7)
 
 
 class XyChart(_messages.Message):

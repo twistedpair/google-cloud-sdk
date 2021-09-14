@@ -661,11 +661,12 @@ class StreamingBinaryBackedOperation(
                default_args=None,
                custom_errors=None,
                capture_output=False,
-               structured_output=False):
+               structured_output=False,
+               install_if_missing=False):
     super(StreamingBinaryBackedOperation,
           self).__init__(binary, binary_version, check_hidden, std_out_func,
                          std_err_func, failure_func, default_args,
-                         custom_errors)
+                         custom_errors, install_if_missing)
     self.capture_output = capture_output
     if structured_output:
       default_out_handler = DefaultStreamStructuredOutHandler

@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
@@ -129,6 +130,23 @@ def AddDataArg(parser):
       '--data',
       help='JSON string with data that will be passed to the workflow '
       'as an argument.')
+
+
+def AddLoggingArg(parser):
+  """Adds argument for specifying the logging level for an execution."""
+  log_level = base.ChoiceArgument(
+      '--call-log-level',
+      choices={
+          'none':
+              'Perform no call logging.',
+          'log-all-calls':
+              'Log all calls to subworkflows or library functions and their results.',
+          'log-errors-only':
+              'Log when a call is stopped due to an exception.',
+      },
+      help_str='Level of call logging to apply during execution.',
+      default='none')
+  log_level.AddToParser(parser)
 
 
 def ParseExecution(args):

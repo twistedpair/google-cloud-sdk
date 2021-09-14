@@ -9,6 +9,7 @@ from __future__ import absolute_import
 
 from apitools.base.protorpclite import messages as _messages
 from apitools.base.py import encoding
+from apitools.base.py import extra_types
 
 
 package = 'osconfig'
@@ -740,6 +741,32 @@ class ListInventoriesResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class ListOSPolicyAssignmentRevisionsResponse(_messages.Message):
+  r"""A response message for listing all revisions for a OS policy assignment.
+
+  Fields:
+    nextPageToken: The pagination token to retrieve the next page of OS policy
+      assignment revisions.
+    osPolicyAssignments: The OS policy assignment revisions
+  """
+
+  nextPageToken = _messages.StringField(1)
+  osPolicyAssignments = _messages.MessageField('OSPolicyAssignment', 2, repeated=True)
+
+
+class ListOSPolicyAssignmentsResponse(_messages.Message):
+  r"""A response message for listing all assignments under given parent.
+
+  Fields:
+    nextPageToken: The pagination token to retrieve the next page of OS policy
+      assignments.
+    osPolicyAssignments: The list of assignments
+  """
+
+  nextPageToken = _messages.StringField(1)
+  osPolicyAssignments = _messages.MessageField('OSPolicyAssignment', 2, repeated=True)
+
+
 class ListPatchDeploymentsResponse(_messages.Message):
   r"""A response message for listing patch deployments.
 
@@ -809,6 +836,219 @@ class MonthlySchedule(_messages.Message):
   weekDayOfMonth = _messages.MessageField('WeekDayOfMonth', 2)
 
 
+class OSPolicy(_messages.Message):
+  r"""An OS policy defines the desired state configuration for a VM.
+
+  Enums:
+    ModeValueValuesEnum: Required. Policy mode
+
+  Fields:
+    allowNoResourceGroupMatch: This flag determines the OS policy compliance
+      status when none of the resource groups within the policy are applicable
+      for a VM. Set this value to `true` if the policy needs to be reported as
+      compliant even if the policy has nothing to validate or enforce.
+    description: Policy description. Length of the description is limited to
+      1024 characters.
+    id: Required. The id of the OS policy with the following restrictions: *
+      Must contain only lowercase letters, numbers, and hyphens. * Must start
+      with a letter. * Must be between 1-63 characters. * Must end with a
+      number or a letter. * Must be unique within the assignment.
+    mode: Required. Policy mode
+    resourceGroups: Required. List of resource groups for the policy. For a
+      particular VM, resource groups are evaluated in the order specified and
+      the first resource group that is applicable is selected and the rest are
+      ignored. If none of the resource groups are applicable for a VM, the VM
+      is considered to be non-compliant w.r.t this policy. This behavior can
+      be toggled by the flag `allow_no_resource_group_match`
+  """
+
+  class ModeValueValuesEnum(_messages.Enum):
+    r"""Required. Policy mode
+
+    Values:
+      MODE_UNSPECIFIED: Invalid mode
+      VALIDATION: This mode checks if the configuration resources in the
+        policy are in their desired state. No actions are performed if they
+        are not in the desired state. This mode is used for reporting
+        purposes.
+      ENFORCEMENT: This mode checks if the configuration resources in the
+        policy are in their desired state, and if not, enforces the desired
+        state.
+    """
+    MODE_UNSPECIFIED = 0
+    VALIDATION = 1
+    ENFORCEMENT = 2
+
+  allowNoResourceGroupMatch = _messages.BooleanField(1)
+  description = _messages.StringField(2)
+  id = _messages.StringField(3)
+  mode = _messages.EnumField('ModeValueValuesEnum', 4)
+  resourceGroups = _messages.MessageField('OSPolicyResourceGroup', 5, repeated=True)
+
+
+class OSPolicyAssignment(_messages.Message):
+  r"""OS policy assignment is an API resource that is used to apply a set of
+  OS policies to a dynamically targeted group of Compute Engine VM instances.
+  An OS policy is used to define the desired state configuration for a Compute
+  Engine VM instance through a set of configuration resources that provide
+  capabilities such as installing or removing software packages, or executing
+  a script. For more information, see [OS policy and OS policy
+  assignment](https://cloud.google.com/compute/docs/os-configuration-
+  management/working-with-os-policies).
+
+  Enums:
+    RolloutStateValueValuesEnum: Output only. OS policy assignment rollout
+      state
+
+  Fields:
+    baseline: Output only. Indicates that this revision has been successfully
+      rolled out in this zone and new VMs will be assigned OS policies from
+      this revision. For a given OS policy assignment, there is only one
+      revision with a value of `true` for this field.
+    deleted: Output only. Indicates that this revision deletes the OS policy
+      assignment.
+    description: OS policy assignment description. Length of the description
+      is limited to 1024 characters.
+    etag: The etag for this OS policy assignment. If this is provided on
+      update, it must match the server's etag.
+    instanceFilter: Required. Filter to select VMs.
+    name: Resource name. Format: `projects/{project_number}/locations/{locatio
+      n}/osPolicyAssignments/{os_policy_assignment_id}` This field is ignored
+      when you create an OS policy assignment.
+    osPolicies: Required. List of OS policies to be applied to the VMs.
+    reconciling: Output only. Indicates that reconciliation is in progress for
+      the revision. This value is `true` when the `rollout_state` is one of: *
+      IN_PROGRESS * CANCELLING
+    revisionCreateTime: Output only. The timestamp that the revision was
+      created.
+    revisionId: Output only. The assignment revision ID A new revision is
+      committed whenever a rollout is triggered for a OS policy assignment
+    rollout: Required. Rollout to deploy the OS policy assignment. A rollout
+      is triggered in the following situations: 1) OSPolicyAssignment is
+      created. 2) OSPolicyAssignment is updated and the update contains
+      changes to one of the following fields: - instance_filter - os_policies
+      3) OSPolicyAssignment is deleted.
+    rolloutState: Output only. OS policy assignment rollout state
+    uid: Output only. Server generated unique id for the OS policy assignment
+      resource.
+  """
+
+  class RolloutStateValueValuesEnum(_messages.Enum):
+    r"""Output only. OS policy assignment rollout state
+
+    Values:
+      ROLLOUT_STATE_UNSPECIFIED: Invalid value
+      IN_PROGRESS: The rollout is in progress.
+      CANCELLING: The rollout is being cancelled.
+      CANCELLED: The rollout is cancelled.
+      SUCCEEDED: The rollout has completed successfully.
+    """
+    ROLLOUT_STATE_UNSPECIFIED = 0
+    IN_PROGRESS = 1
+    CANCELLING = 2
+    CANCELLED = 3
+    SUCCEEDED = 4
+
+  baseline = _messages.BooleanField(1)
+  deleted = _messages.BooleanField(2)
+  description = _messages.StringField(3)
+  etag = _messages.StringField(4)
+  instanceFilter = _messages.MessageField('OSPolicyAssignmentInstanceFilter', 5)
+  name = _messages.StringField(6)
+  osPolicies = _messages.MessageField('OSPolicy', 7, repeated=True)
+  reconciling = _messages.BooleanField(8)
+  revisionCreateTime = _messages.StringField(9)
+  revisionId = _messages.StringField(10)
+  rollout = _messages.MessageField('OSPolicyAssignmentRollout', 11)
+  rolloutState = _messages.EnumField('RolloutStateValueValuesEnum', 12)
+  uid = _messages.StringField(13)
+
+
+class OSPolicyAssignmentInstanceFilter(_messages.Message):
+  r"""Filters to select target VMs for an assignment. If more than one filter
+  criteria is specified below, a VM will be selected if and only if it
+  satisfies all of them.
+
+  Fields:
+    all: Target all VMs in the project. If true, no other criteria is
+      permitted.
+    exclusionLabels: List of label sets used for VM exclusion. If the list has
+      more than one label set, the VM is excluded if any of the label sets are
+      applicable for the VM.
+    inclusionLabels: List of label sets used for VM inclusion. If the list has
+      more than one `LabelSet`, the VM is included if any of the label sets
+      are applicable for the VM.
+    inventories: List of inventories to select VMs. A VM is selected if its
+      inventory data matches at least one of the following inventories.
+  """
+
+  all = _messages.BooleanField(1)
+  exclusionLabels = _messages.MessageField('OSPolicyAssignmentLabelSet', 2, repeated=True)
+  inclusionLabels = _messages.MessageField('OSPolicyAssignmentLabelSet', 3, repeated=True)
+  inventories = _messages.MessageField('OSPolicyAssignmentInstanceFilterInventory', 4, repeated=True)
+
+
+class OSPolicyAssignmentInstanceFilterInventory(_messages.Message):
+  r"""VM inventory details.
+
+  Fields:
+    osShortName: Required. The OS short name
+    osVersion: The OS version Prefix matches are supported if asterisk(*) is
+      provided as the last character. For example, to match all versions with
+      a major version of `7`, specify the following value for this field `7.*`
+      An empty string matches all OS versions.
+  """
+
+  osShortName = _messages.StringField(1)
+  osVersion = _messages.StringField(2)
+
+
+class OSPolicyAssignmentLabelSet(_messages.Message):
+  r"""Message representing label set. * A label is a key value pair set for a
+  VM. * A LabelSet is a set of labels. * Labels within a LabelSet are ANDed.
+  In other words, a LabelSet is applicable for a VM only if it matches all the
+  labels in the LabelSet. * Example: A LabelSet with 2 labels: `env=prod` and
+  `type=webserver` will only be applicable for those VMs with both labels
+  present.
+
+  Messages:
+    LabelsValue: Labels are identified by key/value pairs in this map. A VM
+      should contain all the key/value pairs specified in this map to be
+      selected.
+
+  Fields:
+    labels: Labels are identified by key/value pairs in this map. A VM should
+      contain all the key/value pairs specified in this map to be selected.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Labels are identified by key/value pairs in this map. A VM should
+    contain all the key/value pairs specified in this map to be selected.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  labels = _messages.MessageField('LabelsValue', 1)
+
+
 class OSPolicyAssignmentOperationMetadata(_messages.Message):
   r"""OS policy assignment operation metadata provided by OS policy assignment
   API methods that return long running operations.
@@ -864,6 +1104,491 @@ class OSPolicyAssignmentOperationMetadata(_messages.Message):
   rolloutUpdateTime = _messages.StringField(5)
 
 
+class OSPolicyAssignmentRollout(_messages.Message):
+  r"""Message to configure the rollout at the zonal level for the OS policy
+  assignment.
+
+  Fields:
+    disruptionBudget: Required. The maximum number (or percentage) of VMs per
+      zone to disrupt at any given moment.
+    minWaitDuration: Required. This determines the minimum duration of time to
+      wait after the configuration changes are applied through the current
+      rollout. A VM continues to count towards the `disruption_budget` at
+      least until this duration of time has passed after configuration changes
+      are applied.
+  """
+
+  disruptionBudget = _messages.MessageField('FixedOrPercent', 1)
+  minWaitDuration = _messages.StringField(2)
+
+
+class OSPolicyInventoryFilter(_messages.Message):
+  r"""Filtering criteria to select VMs based on inventory details.
+
+  Fields:
+    osShortName: Required. The OS short name
+    osVersion: The OS version Prefix matches are supported if asterisk(*) is
+      provided as the last character. For example, to match all versions with
+      a major version of `7`, specify the following value for this field `7.*`
+      An empty string matches all OS versions.
+  """
+
+  osShortName = _messages.StringField(1)
+  osVersion = _messages.StringField(2)
+
+
+class OSPolicyResource(_messages.Message):
+  r"""An OS policy resource is used to define the desired state configuration
+  and provides a specific functionality like installing/removing packages,
+  executing a script etc. The system ensures that resources are always in
+  their desired state by taking necessary actions if they have drifted from
+  their desired state.
+
+  Fields:
+    exec_: Exec resource
+    file: File resource
+    id: Required. The id of the resource with the following restrictions: *
+      Must contain only lowercase letters, numbers, and hyphens. * Must start
+      with a letter. * Must be between 1-63 characters. * Must end with a
+      number or a letter. * Must be unique within the OS policy.
+    pkg: Package resource
+    repository: Package repository resource
+  """
+
+  exec_ = _messages.MessageField('OSPolicyResourceExecResource', 1)
+  file = _messages.MessageField('OSPolicyResourceFileResource', 2)
+  id = _messages.StringField(3)
+  pkg = _messages.MessageField('OSPolicyResourcePackageResource', 4)
+  repository = _messages.MessageField('OSPolicyResourceRepositoryResource', 5)
+
+
+class OSPolicyResourceExecResource(_messages.Message):
+  r"""A resource that allows executing scripts on the VM. The `ExecResource`
+  has 2 stages: `validate` and `enforce` and both stages accept a script as an
+  argument to execute. When the `ExecResource` is applied by the agent, it
+  first executes the script in the `validate` stage. The `validate` stage can
+  signal that the `ExecResource` is already in the desired state by returning
+  an exit code of `100`. If the `ExecResource` is not in the desired state, it
+  should return an exit code of `101`. Any other exit code returned by this
+  stage is considered an error. If the `ExecResource` is not in the desired
+  state based on the exit code from the `validate` stage, the agent proceeds
+  to execute the script from the `enforce` stage. If the `ExecResource` is
+  already in the desired state, the `enforce` stage will not be run. Similar
+  to `validate` stage, the `enforce` stage should return an exit code of `100`
+  to indicate that the resource in now in its desired state. Any other exit
+  code is considered an error. NOTE: An exit code of `100` was chosen over `0`
+  (and `101` vs `1`) to have an explicit indicator of `in desired state`, `not
+  in desired state` and errors. Because, for example, Powershell will always
+  return an exit code of `0` unless an `exit` statement is provided in the
+  script. So, for reasons of consistency and being explicit, exit codes `100`
+  and `101` were chosen.
+
+  Fields:
+    enforce: What to run to bring this resource into the desired state. An
+      exit code of 100 indicates "success", any other exit code indicates a
+      failure running enforce.
+    validate: Required. What to run to validate this resource is in the
+      desired state. An exit code of 100 indicates "in desired state", and
+      exit code of 101 indicates "not in desired state". Any other exit code
+      indicates a failure running validate.
+  """
+
+  enforce = _messages.MessageField('OSPolicyResourceExecResourceExec', 1)
+  validate = _messages.MessageField('OSPolicyResourceExecResourceExec', 2)
+
+
+class OSPolicyResourceExecResourceExec(_messages.Message):
+  r"""A file or script to execute.
+
+  Enums:
+    InterpreterValueValuesEnum: Required. The script interpreter to use.
+
+  Fields:
+    args: Optional arguments to pass to the source during execution.
+    file: A remote or local file.
+    interpreter: Required. The script interpreter to use.
+    outputFilePath: Only recorded for enforce Exec. Path to an output file
+      (that is created by this Exec) whose content will be recorded in
+      OSPolicyResourceCompliance after a successful run. Absence or failure to
+      read this file will result in this ExecResource being non-compliant.
+      Output file size is limited to 100K bytes.
+    script: An inline script. The size of the script is limited to 1024
+      characters.
+  """
+
+  class InterpreterValueValuesEnum(_messages.Enum):
+    r"""Required. The script interpreter to use.
+
+    Values:
+      INTERPRETER_UNSPECIFIED: Defaults to NONE.
+      NONE: If an interpreter is not specified, the source is executed
+        directly. This execution, without an interpreter, only succeeds for
+        executables and scripts that have shebang lines.
+      SHELL: Indicates that the script runs with `/bin/sh` on Linux and
+        `cmd.exe` on Windows.
+      POWERSHELL: Indicates that the script runs with PowerShell.
+    """
+    INTERPRETER_UNSPECIFIED = 0
+    NONE = 1
+    SHELL = 2
+    POWERSHELL = 3
+
+  args = _messages.StringField(1, repeated=True)
+  file = _messages.MessageField('OSPolicyResourceFile', 2)
+  interpreter = _messages.EnumField('InterpreterValueValuesEnum', 3)
+  outputFilePath = _messages.StringField(4)
+  script = _messages.StringField(5)
+
+
+class OSPolicyResourceFile(_messages.Message):
+  r"""A remote or local file.
+
+  Fields:
+    allowInsecure: Defaults to false. When false, files are subject to
+      validations based on the file type: Remote: A checksum must be
+      specified. Cloud Storage: An object generation number must be specified.
+    gcs: A Cloud Storage object.
+    localPath: A local path within the VM to use.
+    remote: A generic remote file.
+  """
+
+  allowInsecure = _messages.BooleanField(1)
+  gcs = _messages.MessageField('OSPolicyResourceFileGcs', 2)
+  localPath = _messages.StringField(3)
+  remote = _messages.MessageField('OSPolicyResourceFileRemote', 4)
+
+
+class OSPolicyResourceFileGcs(_messages.Message):
+  r"""Specifies a file available as a Cloud Storage Object.
+
+  Fields:
+    bucket: Required. Bucket of the Cloud Storage object.
+    generation: Generation number of the Cloud Storage object.
+    object: Required. Name of the Cloud Storage object.
+  """
+
+  bucket = _messages.StringField(1)
+  generation = _messages.IntegerField(2)
+  object = _messages.StringField(3)
+
+
+class OSPolicyResourceFileRemote(_messages.Message):
+  r"""Specifies a file available via some URI.
+
+  Fields:
+    sha256Checksum: SHA256 checksum of the remote file.
+    uri: Required. URI from which to fetch the object. It should contain both
+      the protocol and path following the format `{protocol}://{location}`.
+  """
+
+  sha256Checksum = _messages.StringField(1)
+  uri = _messages.StringField(2)
+
+
+class OSPolicyResourceFileResource(_messages.Message):
+  r"""A resource that manages the state of a file.
+
+  Enums:
+    StateValueValuesEnum: Required. Desired state of the file.
+
+  Fields:
+    content: A a file with this content. The size of the content is limited to
+      1024 characters.
+    file: A remote or local source.
+    path: Required. The absolute path of the file within the VM.
+    permissions: Consists of three octal digits which represent, in order, the
+      permissions of the owner, group, and other users for the file (similarly
+      to the numeric mode used in the linux chmod utility). Each digit
+      represents a three bit number with the 4 bit corresponding to the read
+      permissions, the 2 bit corresponds to the write bit, and the one bit
+      corresponds to the execute permission. Default behavior is 755. Below
+      are some examples of permissions and their associated values: read,
+      write, and execute: 7 read and execute: 5 read and write: 6 read only: 4
+    state: Required. Desired state of the file.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Required. Desired state of the file.
+
+    Values:
+      DESIRED_STATE_UNSPECIFIED: Unspecified is invalid.
+      PRESENT: Ensure file at path is present.
+      ABSENT: Ensure file at path is absent.
+      CONTENTS_MATCH: Ensure the contents of the file at path matches. If the
+        file does not exist it will be created.
+    """
+    DESIRED_STATE_UNSPECIFIED = 0
+    PRESENT = 1
+    ABSENT = 2
+    CONTENTS_MATCH = 3
+
+  content = _messages.StringField(1)
+  file = _messages.MessageField('OSPolicyResourceFile', 2)
+  path = _messages.StringField(3)
+  permissions = _messages.StringField(4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
+
+
+class OSPolicyResourceGroup(_messages.Message):
+  r"""Resource groups provide a mechanism to group OS policy resources.
+  Resource groups enable OS policy authors to create a single OS policy to be
+  applied to VMs running different operating Systems. When the OS policy is
+  applied to a target VM, the appropriate resource group within the OS policy
+  is selected based on the `OSFilter` specified within the resource group.
+
+  Fields:
+    inventoryFilters: List of inventory filters for the resource group. The
+      resources in this resource group are applied to the target VM if it
+      satisfies at least one of the following inventory filters. For example,
+      to apply this resource group to VMs running either `RHEL` or `CentOS`
+      operating systems, specify 2 items for the list with following values:
+      inventory_filters[0].os_short_name='rhel' and
+      inventory_filters[1].os_short_name='centos' If the list is empty, this
+      resource group will be applied to the target VM unconditionally.
+    resources: Required. List of resources configured for this resource group.
+      The resources are executed in the exact order specified here.
+  """
+
+  inventoryFilters = _messages.MessageField('OSPolicyInventoryFilter', 1, repeated=True)
+  resources = _messages.MessageField('OSPolicyResource', 2, repeated=True)
+
+
+class OSPolicyResourcePackageResource(_messages.Message):
+  r"""A resource that manages a system package.
+
+  Enums:
+    DesiredStateValueValuesEnum: Required. The desired state the agent should
+      maintain for this package.
+
+  Fields:
+    apt: A package managed by Apt.
+    deb: A deb package file.
+    desiredState: Required. The desired state the agent should maintain for
+      this package.
+    googet: A package managed by GooGet.
+    msi: An MSI package.
+    rpm: An rpm package file.
+    yum: A package managed by YUM.
+    zypper: A package managed by Zypper.
+  """
+
+  class DesiredStateValueValuesEnum(_messages.Enum):
+    r"""Required. The desired state the agent should maintain for this
+    package.
+
+    Values:
+      DESIRED_STATE_UNSPECIFIED: Unspecified is invalid.
+      INSTALLED: Ensure that the package is installed.
+      REMOVED: The agent ensures that the package is not installed and
+        uninstalls it if detected.
+    """
+    DESIRED_STATE_UNSPECIFIED = 0
+    INSTALLED = 1
+    REMOVED = 2
+
+  apt = _messages.MessageField('OSPolicyResourcePackageResourceAPT', 1)
+  deb = _messages.MessageField('OSPolicyResourcePackageResourceDeb', 2)
+  desiredState = _messages.EnumField('DesiredStateValueValuesEnum', 3)
+  googet = _messages.MessageField('OSPolicyResourcePackageResourceGooGet', 4)
+  msi = _messages.MessageField('OSPolicyResourcePackageResourceMSI', 5)
+  rpm = _messages.MessageField('OSPolicyResourcePackageResourceRPM', 6)
+  yum = _messages.MessageField('OSPolicyResourcePackageResourceYUM', 7)
+  zypper = _messages.MessageField('OSPolicyResourcePackageResourceZypper', 8)
+
+
+class OSPolicyResourcePackageResourceAPT(_messages.Message):
+  r"""A package managed by APT. - install: `apt-get update && apt-get -y
+  install [name]` - remove: `apt-get -y remove [name]`
+
+  Fields:
+    name: Required. Package name.
+  """
+
+  name = _messages.StringField(1)
+
+
+class OSPolicyResourcePackageResourceDeb(_messages.Message):
+  r"""A deb package file. dpkg packages only support INSTALLED state.
+
+  Fields:
+    pullDeps: Whether dependencies should also be installed. - install when
+      false: `dpkg -i package` - install when true: `apt-get update && apt-get
+      -y install package.deb`
+    source: Required. A deb package.
+  """
+
+  pullDeps = _messages.BooleanField(1)
+  source = _messages.MessageField('OSPolicyResourceFile', 2)
+
+
+class OSPolicyResourcePackageResourceGooGet(_messages.Message):
+  r"""A package managed by GooGet. - install: `googet -noconfirm install
+  package` - remove: `googet -noconfirm remove package`
+
+  Fields:
+    name: Required. Package name.
+  """
+
+  name = _messages.StringField(1)
+
+
+class OSPolicyResourcePackageResourceMSI(_messages.Message):
+  r"""An MSI package. MSI packages only support INSTALLED state.
+
+  Fields:
+    properties: Additional properties to use during installation. This should
+      be in the format of Property=Setting. Appended to the defaults of
+      `ACTION=INSTALL REBOOT=ReallySuppress`.
+    source: Required. The MSI package.
+  """
+
+  properties = _messages.StringField(1, repeated=True)
+  source = _messages.MessageField('OSPolicyResourceFile', 2)
+
+
+class OSPolicyResourcePackageResourceRPM(_messages.Message):
+  r"""An RPM package file. RPM packages only support INSTALLED state.
+
+  Fields:
+    pullDeps: Whether dependencies should also be installed. - install when
+      false: `rpm --upgrade --replacepkgs package.rpm` - install when true:
+      `yum -y install package.rpm` or `zypper -y install package.rpm`
+    source: Required. An rpm package.
+  """
+
+  pullDeps = _messages.BooleanField(1)
+  source = _messages.MessageField('OSPolicyResourceFile', 2)
+
+
+class OSPolicyResourcePackageResourceYUM(_messages.Message):
+  r"""A package managed by YUM. - install: `yum -y install package` - remove:
+  `yum -y remove package`
+
+  Fields:
+    name: Required. Package name.
+  """
+
+  name = _messages.StringField(1)
+
+
+class OSPolicyResourcePackageResourceZypper(_messages.Message):
+  r"""A package managed by Zypper. - install: `zypper -y install package` -
+  remove: `zypper -y rm package`
+
+  Fields:
+    name: Required. Package name.
+  """
+
+  name = _messages.StringField(1)
+
+
+class OSPolicyResourceRepositoryResource(_messages.Message):
+  r"""A resource that manages a package repository.
+
+  Fields:
+    apt: An Apt Repository.
+    goo: A Goo Repository.
+    yum: A Yum Repository.
+    zypper: A Zypper Repository.
+  """
+
+  apt = _messages.MessageField('OSPolicyResourceRepositoryResourceAptRepository', 1)
+  goo = _messages.MessageField('OSPolicyResourceRepositoryResourceGooRepository', 2)
+  yum = _messages.MessageField('OSPolicyResourceRepositoryResourceYumRepository', 3)
+  zypper = _messages.MessageField('OSPolicyResourceRepositoryResourceZypperRepository', 4)
+
+
+class OSPolicyResourceRepositoryResourceAptRepository(_messages.Message):
+  r"""Represents a single apt package repository. These will be added to a
+  repo file that will be managed at
+  `/etc/apt/sources.list.d/google_osconfig.list`.
+
+  Enums:
+    ArchiveTypeValueValuesEnum: Required. Type of archive files in this
+      repository.
+
+  Fields:
+    archiveType: Required. Type of archive files in this repository.
+    components: Required. List of components for this repository. Must contain
+      at least one item.
+    distribution: Required. Distribution of this repository.
+    gpgKey: URI of the key file for this repository. The agent maintains a
+      keyring at `/etc/apt/trusted.gpg.d/osconfig_agent_managed.gpg`.
+    uri: Required. URI for this repository.
+  """
+
+  class ArchiveTypeValueValuesEnum(_messages.Enum):
+    r"""Required. Type of archive files in this repository.
+
+    Values:
+      ARCHIVE_TYPE_UNSPECIFIED: Unspecified is invalid.
+      DEB: Deb indicates that the archive contains binary files.
+      DEB_SRC: Deb-src indicates that the archive contains source files.
+    """
+    ARCHIVE_TYPE_UNSPECIFIED = 0
+    DEB = 1
+    DEB_SRC = 2
+
+  archiveType = _messages.EnumField('ArchiveTypeValueValuesEnum', 1)
+  components = _messages.StringField(2, repeated=True)
+  distribution = _messages.StringField(3)
+  gpgKey = _messages.StringField(4)
+  uri = _messages.StringField(5)
+
+
+class OSPolicyResourceRepositoryResourceGooRepository(_messages.Message):
+  r"""Represents a Goo package repository. These are added to a repo file that
+  is managed at `C:/ProgramData/GooGet/repos/google_osconfig.repo`.
+
+  Fields:
+    name: Required. The name of the repository.
+    url: Required. The url of the repository.
+  """
+
+  name = _messages.StringField(1)
+  url = _messages.StringField(2)
+
+
+class OSPolicyResourceRepositoryResourceYumRepository(_messages.Message):
+  r"""Represents a single yum package repository. These are added to a repo
+  file that is managed at `/etc/yum.repos.d/google_osconfig.repo`.
+
+  Fields:
+    baseUrl: Required. The location of the repository directory.
+    displayName: The display name of the repository.
+    gpgKeys: URIs of GPG keys.
+    id: Required. A one word, unique name for this repository. This is the
+      `repo id` in the yum config file and also the `display_name` if
+      `display_name` is omitted. This id is also used as the unique identifier
+      when checking for resource conflicts.
+  """
+
+  baseUrl = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  gpgKeys = _messages.StringField(3, repeated=True)
+  id = _messages.StringField(4)
+
+
+class OSPolicyResourceRepositoryResourceZypperRepository(_messages.Message):
+  r"""Represents a single zypper package repository. These are added to a repo
+  file that is managed at `/etc/zypp/repos.d/google_osconfig.repo`.
+
+  Fields:
+    baseUrl: Required. The location of the repository directory.
+    displayName: The display name of the repository.
+    gpgKeys: URIs of GPG keys.
+    id: Required. A one word, unique name for this repository. This is the
+      `repo id` in the zypper config file and also the `display_name` if
+      `display_name` is omitted. This id is also used as the unique identifier
+      when checking for GuestPolicy conflicts.
+  """
+
+  baseUrl = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  gpgKeys = _messages.StringField(3, repeated=True)
+  id = _messages.StringField(4)
+
+
 class OneTimeSchedule(_messages.Message):
   r"""Sets the time for a one time patch deployment. Timestamp is in
   [RFC3339](https://www.ietf.org/rfc/rfc3339.txt) text format.
@@ -873,6 +1598,114 @@ class OneTimeSchedule(_messages.Message):
   """
 
   executeTime = _messages.StringField(1)
+
+
+class Operation(_messages.Message):
+  r"""This resource represents a long-running operation that is the result of
+  a network API call.
+
+  Messages:
+    MetadataValue: Service-specific metadata associated with the operation. It
+      typically contains progress information and common metadata such as
+      create time. Some services might not provide such metadata. Any method
+      that returns a long-running operation should document the metadata type,
+      if any.
+    ResponseValue: The normal response of the operation in case of success. If
+      the original method returns no data on success, such as `Delete`, the
+      response is `google.protobuf.Empty`. If the original method is standard
+      `Get`/`Create`/`Update`, the response should be the resource. For other
+      methods, the response should have the type `XxxResponse`, where `Xxx` is
+      the original method name. For example, if the original method name is
+      `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
+
+  Fields:
+    done: If the value is `false`, it means the operation is still in
+      progress. If `true`, the operation is completed, and either `error` or
+      `response` is available.
+    error: The error result of the operation in case of failure or
+      cancellation.
+    metadata: Service-specific metadata associated with the operation. It
+      typically contains progress information and common metadata such as
+      create time. Some services might not provide such metadata. Any method
+      that returns a long-running operation should document the metadata type,
+      if any.
+    name: The server-assigned name, which is only unique within the same
+      service that originally returns it. If you use the default HTTP mapping,
+      the `name` should be a resource name ending with
+      `operations/{unique_id}`.
+    response: The normal response of the operation in case of success. If the
+      original method returns no data on success, such as `Delete`, the
+      response is `google.protobuf.Empty`. If the original method is standard
+      `Get`/`Create`/`Update`, the response should be the resource. For other
+      methods, the response should have the type `XxxResponse`, where `Xxx` is
+      the original method name. For example, if the original method name is
+      `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MetadataValue(_messages.Message):
+    r"""Service-specific metadata associated with the operation. It typically
+    contains progress information and common metadata such as create time.
+    Some services might not provide such metadata. Any method that returns a
+    long-running operation should document the metadata type, if any.
+
+    Messages:
+      AdditionalProperty: An additional property for a MetadataValue object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ResponseValue(_messages.Message):
+    r"""The normal response of the operation in case of success. If the
+    original method returns no data on success, such as `Delete`, the response
+    is `google.protobuf.Empty`. If the original method is standard
+    `Get`/`Create`/`Update`, the response should be the resource. For other
+    methods, the response should have the type `XxxResponse`, where `Xxx` is
+    the original method name. For example, if the original method name is
+    `TakeSnapshot()`, the inferred response type is `TakeSnapshotResponse`.
+
+    Messages:
+      AdditionalProperty: An additional property for a ResponseValue object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ResponseValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  done = _messages.BooleanField(1)
+  error = _messages.MessageField('Status', 2)
+  metadata = _messages.MessageField('MetadataValue', 3)
+  name = _messages.StringField(4)
+  response = _messages.MessageField('ResponseValue', 5)
 
 
 class OsconfigProjectsLocationsInstancesInventoriesGetRequest(_messages.Message):
@@ -989,6 +1822,100 @@ class OsconfigProjectsLocationsInstancesVulnerabilityReportsListRequest(_message
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4, required=True)
+
+
+class OsconfigProjectsLocationsOsPolicyAssignmentsCreateRequest(_messages.Message):
+  r"""A OsconfigProjectsLocationsOsPolicyAssignmentsCreateRequest object.
+
+  Fields:
+    oSPolicyAssignment: A OSPolicyAssignment resource to be passed as the
+      request body.
+    osPolicyAssignmentId: Required. The logical name of the OS policy
+      assignment in the project with the following restrictions: * Must
+      contain only lowercase letters, numbers, and hyphens. * Must start with
+      a letter. * Must be between 1-63 characters. * Must end with a number or
+      a letter. * Must be unique within the project.
+    parent: Required. The parent resource name in the form:
+      projects/{project}/locations/{location}
+  """
+
+  oSPolicyAssignment = _messages.MessageField('OSPolicyAssignment', 1)
+  osPolicyAssignmentId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class OsconfigProjectsLocationsOsPolicyAssignmentsDeleteRequest(_messages.Message):
+  r"""A OsconfigProjectsLocationsOsPolicyAssignmentsDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the OS policy assignment to be deleted
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class OsconfigProjectsLocationsOsPolicyAssignmentsGetRequest(_messages.Message):
+  r"""A OsconfigProjectsLocationsOsPolicyAssignmentsGetRequest object.
+
+  Fields:
+    name: Required. The resource name of OS policy assignment. Format: `projec
+      ts/{project}/locations/{location}/osPolicyAssignments/{os_policy_assignm
+      ent}@{revisionId}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class OsconfigProjectsLocationsOsPolicyAssignmentsListRequest(_messages.Message):
+  r"""A OsconfigProjectsLocationsOsPolicyAssignmentsListRequest object.
+
+  Fields:
+    pageSize: The maximum number of assignments to return.
+    pageToken: A pagination token returned from a previous call to
+      `ListOSPolicyAssignments` that indicates where this listing should
+      continue from.
+    parent: Required. The parent resource name.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class OsconfigProjectsLocationsOsPolicyAssignmentsListRevisionsRequest(_messages.Message):
+  r"""A OsconfigProjectsLocationsOsPolicyAssignmentsListRevisionsRequest
+  object.
+
+  Fields:
+    name: Required. The name of the OS policy assignment to list revisions
+      for.
+    pageSize: The maximum number of revisions to return.
+    pageToken: A pagination token returned from a previous call to
+      `ListOSPolicyAssignmentRevisions` that indicates where this listing
+      should continue from.
+  """
+
+  name = _messages.StringField(1, required=True)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+
+
+class OsconfigProjectsLocationsOsPolicyAssignmentsPatchRequest(_messages.Message):
+  r"""A OsconfigProjectsLocationsOsPolicyAssignmentsPatchRequest object.
+
+  Fields:
+    name: Resource name. Format: `projects/{project_number}/locations/{locatio
+      n}/osPolicyAssignments/{os_policy_assignment_id}` This field is ignored
+      when you create an OS policy assignment.
+    oSPolicyAssignment: A OSPolicyAssignment resource to be passed as the
+      request body.
+    updateMask: Optional. Field mask that controls which fields of the
+      assignment should be updated.
+  """
+
+  name = _messages.StringField(1, required=True)
+  oSPolicyAssignment = _messages.MessageField('OSPolicyAssignment', 2)
+  updateMask = _messages.StringField(3)
 
 
 class OsconfigProjectsPatchDeploymentsCreateRequest(_messages.Message):
@@ -1659,6 +2586,57 @@ class StandardQueryParameters(_messages.Message):
   upload_protocol = _messages.StringField(12)
 
 
+class Status(_messages.Message):
+  r"""The `Status` type defines a logical error model that is suitable for
+  different programming environments, including REST APIs and RPC APIs. It is
+  used by [gRPC](https://github.com/grpc). Each `Status` message contains
+  three pieces of data: error code, error message, and error details. You can
+  find out more about this error model and how to work with it in the [API
+  Design Guide](https://cloud.google.com/apis/design/errors).
+
+  Messages:
+    DetailsValueListEntry: A DetailsValueListEntry object.
+
+  Fields:
+    code: The status code, which should be an enum value of google.rpc.Code.
+    details: A list of messages that carry the error details. There is a
+      common set of message types for APIs to use.
+    message: A developer-facing error message, which should be in English. Any
+      user-facing error message should be localized and sent in the
+      google.rpc.Status.details field, or localized by the client.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DetailsValueListEntry(_messages.Message):
+    r"""A DetailsValueListEntry object.
+
+    Messages:
+      AdditionalProperty: An additional property for a DetailsValueListEntry
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DetailsValueListEntry object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
+  message = _messages.StringField(3)
+
+
 class TimeOfDay(_messages.Message):
   r"""Represents a time of day. The date and time zone are either not
   significant or are specified elsewhere. An API may choose to allow leap
@@ -1970,6 +2948,8 @@ class ZypperSettings(_messages.Message):
   withUpdate = _messages.BooleanField(6)
 
 
+encoding.AddCustomJsonFieldMapping(
+    OSPolicyResource, 'exec_', 'exec')
 encoding.AddCustomJsonFieldMapping(
     StandardQueryParameters, 'f__xgafv', '$.xgafv')
 encoding.AddCustomJsonEnumMapping(

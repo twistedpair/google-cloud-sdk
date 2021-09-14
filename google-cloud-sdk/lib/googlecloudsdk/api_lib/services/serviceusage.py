@@ -259,7 +259,9 @@ def GenerateServiceIdentity(project, service):
     apitools_exceptions.HttpError: Another miscellaneous error with the service.
 
   Returns:
-    A dict with the email and uniqueId of the generated service identity.
+    A dict with the email and uniqueId of the generated service identity. If
+    service does not have a default identity, the response will be an empty
+    dictionary.
   """
   client = _GetClientInstance(version=_V1BETA1_VERSION)
   messages = client.MESSAGES_MODULE
@@ -270,7 +272,9 @@ def GenerateServiceIdentity(project, service):
     op = client.services.GenerateServiceIdentity(request)
     response = encoding.MessageToDict(op.response)
     # Only keep email and uniqueId from the response.
-    return {k: response[k] for k in ('email', 'uniqueId')}
+    # If the response doesn't contain these keys, the returned dictionary will
+    # not contain them either.
+    return {k: response[k] for k in ('email', 'uniqueId') if k in response}
   except (apitools_exceptions.HttpForbiddenError,
           apitools_exceptions.HttpNotFoundError) as e:
     exceptions.ReraiseError(

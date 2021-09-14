@@ -27,25 +27,49 @@ SECRETS_MESSAGE_MODULE = apis.GetMessagesModule('secretmanager', 'v1')
 RUN_MESSAGE_MODULE = apis.GetMessagesModule('run', 'v1')
 
 
-def BuildSecrets(project_name, secret_map, namespace, client=None):
+class SecretManagerSecret(object):
+  """A secret to be fetched from Secret Manager."""
+
+  def __init__(self, name, versions, mapped_secret=None):
+    self.name = name
+    self.versions = versions
+    self.mapped_secret = mapped_secret
+
+  def __eq__(self, other):
+    return (self.name == other.name and self.versions == other.versions and
+            self.mapped_secret == other.mapped_secret)
+
+  def __repr__(self):
+    return '<Secret: (name="{}", versions={}, mapped_secret="{}")>'.format(
+        self.name, self.versions, self.mapped_secret)
+
+  def __hash__(self):
+    return hash((self.name, self.versions, self.mapped_secret))
+
+
+def BuildSecrets(project_name, secret_list, namespace, client=None):
   """Fetch secrets from Secret Manager and create k8s secrets with the data."""
   if client is None:
     client = _SecretsClient()
   secrets = []
-  for secret, versions in secret_map.items():
+  for secret in secret_list:
     secrets.append(
-        _BuildSecret(client, project_name, secret, versions, namespace))
+        _BuildSecret(client, project_name, secret.name, secret.mapped_secret,
+                     secret.versions, namespace))
   return secrets
 
 
-def _BuildSecret(client, project, secret_name, versions, namespace):
+def _BuildSecret(client, project, secret_name, mapped_secret, versions,
+                 namespace):
+  """Build the k8s secret resource for minikube from Secret Manager data."""
   if secrets_mapping.SpecialVersion.MOUNT_ALL in versions:
     # TODO(b/187972361): Do we need to load all secret versions for the secret?
     raise ValueError('local development requires you to specify all secret '
                      'versions that you need to use.')
   secrets = {}
   for version in versions:
-    secrets[version] = client.GetSecretData(project, secret_name, version)
+    secrets[version] = client.GetSecretData(project, secret_name, mapped_secret,
+                                            version)
   return _BuildK8sSecret(secret_name, secrets, namespace)
 
 
@@ -74,13 +98,18 @@ def _DeleteSecrets(secret_map, namespace, context_name):
 
 
 class _SecretsClient(object):
+  """Client implementation for calling Secret Manager to fetch secrets."""
 
   def __init__(self):
     self.secrets_client = apis.GetClientInstance('secretmanager', 'v1')
 
-  def GetSecretData(self, project, secret_name, version):
-    resource_template = 'projects/{}/secrets/{}/versions/{}'
+  def GetSecretData(self, project, secret_name, mapped_secret, version):
+
+    if mapped_secret:
+      resource_name = '{}/versions/{}'.format(mapped_secret, version)
+    else:
+      resource_name = 'projects/{}/secrets/{}/versions/{}'.format(
+          project, secret_name, version)
     return self.secrets_client.projects_secrets_versions.Access(
         SECRETS_MESSAGE_MODULE
-        .SecretmanagerProjectsSecretsVersionsAccessRequest(
-            name=resource_template.format(project, secret_name, version)))
+        .SecretmanagerProjectsSecretsVersionsAccessRequest(name=resource_name))

@@ -1498,7 +1498,7 @@
       "type": "object",
       "properties": {
         "replaceConfig": {
-          "description": "Replace",
+          "description": "Replace with a specified value.",
           "$ref": "GooglePrivacyDlpV2ReplaceValueConfig"
         },
         "redactConfig": {

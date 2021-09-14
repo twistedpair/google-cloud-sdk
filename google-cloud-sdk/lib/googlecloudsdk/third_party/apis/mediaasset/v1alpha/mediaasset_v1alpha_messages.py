@@ -820,6 +820,17 @@ class Catalog(_messages.Message):
   updateTime = _messages.StringField(3)
 
 
+class CatalogConfig(_messages.Message):
+  r"""Configures the catalog of assets.
+
+  Fields:
+    catalog: Required. Reference to a catalog to populate with assets:
+      `projects/{project}/locations/{location}/catalogs/{name}`.
+  """
+
+  catalog = _messages.StringField(1)
+
+
 class ComplexFieldAllowedValues(_messages.Message):
   r"""A ComplexFieldAllowedValues object.
 
@@ -3608,13 +3619,14 @@ class PubSubDestination(_messages.Message):
 
 class Rule(_messages.Message):
   r"""A rule resource is associated with an AssetType and manages the workflow
-  pipelines of a collection of Assets under that AssetType.
+  pipelines of a collection of Assets under that AssetType. NEXT_ID: 10
 
   Messages:
     LabelsValue: The labels associated with this resource. Each label is a
       key-value pair.
 
   Fields:
+    catalog: Configures how to catalog assets.
     createTime: Output only. The creation time of the rule.
     derivedAsset: Configures the associated AssetType to manage the derived
       assets for its Assets.
@@ -3658,13 +3670,14 @@ class Rule(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  createTime = _messages.StringField(1)
-  derivedAsset = _messages.MessageField('DerivedAssetConfig', 2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  name = _messages.StringField(4)
-  notification = _messages.MessageField('NotificationConfig', 5)
-  transformation = _messages.MessageField('TransformationConfig', 6)
-  updateTime = _messages.StringField(7)
+  catalog = _messages.MessageField('CatalogConfig', 1)
+  createTime = _messages.StringField(2)
+  derivedAsset = _messages.MessageField('DerivedAssetConfig', 3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  notification = _messages.MessageField('NotificationConfig', 6)
+  transformation = _messages.MessageField('TransformationConfig', 7)
+  updateTime = _messages.StringField(8)
 
 
 class SortOrderConfig(_messages.Message):

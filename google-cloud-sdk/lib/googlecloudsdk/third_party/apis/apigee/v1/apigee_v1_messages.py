@@ -392,6 +392,26 @@ class ApigeeOrganizationsApisKeyvaluemapsDeleteRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class ApigeeOrganizationsApisKeyvaluemapsEntriesListRequest(_messages.Message):
+  r"""A ApigeeOrganizationsApisKeyvaluemapsEntriesListRequest object.
+
+  Fields:
+    pageSize: Optional. Maximum number of key value entries to return. If
+      unspecified, at most 100 entries will be returned.
+    pageToken: Optional. Page token, a KeyValueEntry returned from a previous
+      call, that we can use to retrieve the next page.
+    parent: Required. The scope as indicated by the URI in which to list key
+      value maps. Must be one of the form
+      `organizations/{organization}/apis/{api}/keyvaluemaps/{keyvaluemap}`. `o
+      rganizations/{organization}/environments/{environment}/keyvaluemaps/{key
+      valuemap}` `organizations/{organization}/keyvaluemaps/{keyvaluemap}`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class ApigeeOrganizationsApisListRequest(_messages.Message):
   r"""A ApigeeOrganizationsApisListRequest object.
 
@@ -2043,6 +2063,26 @@ class ApigeeOrganizationsEnvironmentsKeyvaluemapsDeleteRequest(_messages.Message
   name = _messages.StringField(1, required=True)
 
 
+class ApigeeOrganizationsEnvironmentsKeyvaluemapsEntriesListRequest(_messages.Message):
+  r"""A ApigeeOrganizationsEnvironmentsKeyvaluemapsEntriesListRequest object.
+
+  Fields:
+    pageSize: Optional. Maximum number of key value entries to return. If
+      unspecified, at most 100 entries will be returned.
+    pageToken: Optional. Page token, a KeyValueEntry returned from a previous
+      call, that we can use to retrieve the next page.
+    parent: Required. The scope as indicated by the URI in which to list key
+      value maps. Must be one of the form
+      `organizations/{organization}/apis/{api}/keyvaluemaps/{keyvaluemap}`. `o
+      rganizations/{organization}/environments/{environment}/keyvaluemaps/{key
+      valuemap}` `organizations/{organization}/keyvaluemaps/{keyvaluemap}`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class ApigeeOrganizationsEnvironmentsOptimizedStatsGetRequest(_messages.Message):
   r"""A ApigeeOrganizationsEnvironmentsOptimizedStatsGetRequest object.
 
@@ -3245,6 +3285,26 @@ class ApigeeOrganizationsKeyvaluemapsDeleteRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class ApigeeOrganizationsKeyvaluemapsEntriesListRequest(_messages.Message):
+  r"""A ApigeeOrganizationsKeyvaluemapsEntriesListRequest object.
+
+  Fields:
+    pageSize: Optional. Maximum number of key value entries to return. If
+      unspecified, at most 100 entries will be returned.
+    pageToken: Optional. Page token, a KeyValueEntry returned from a previous
+      call, that we can use to retrieve the next page.
+    parent: Required. The scope as indicated by the URI in which to list key
+      value maps. Must be one of the form
+      `organizations/{organization}/apis/{api}/keyvaluemaps/{keyvaluemap}`. `o
+      rganizations/{organization}/environments/{environment}/keyvaluemaps/{key
+      valuemap}` `organizations/{organization}/keyvaluemaps/{keyvaluemap}`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class ApigeeOrganizationsListRequest(_messages.Message):
@@ -6061,16 +6121,34 @@ class GoogleCloudApigeeV1KeyAliasReference(_messages.Message):
   reference = _messages.StringField(2)
 
 
+class GoogleCloudApigeeV1KeyValueEntry(_messages.Message):
+  r"""Key value map pair, where the value represents the data associated with
+  the corresponding key.
+
+  Fields:
+    name: The name points to the resource URI which helps in identifying the
+      scope of the key value map entries.
+    value: Required. The data or the payload that is being retrieved and
+      associated with the unique key.
+  """
+
+  name = _messages.StringField(1)
+  value = _messages.StringField(2)
+
+
 class GoogleCloudApigeeV1KeyValueMap(_messages.Message):
   r"""A collection of key, value string pairs
 
   Fields:
     encrypted: Optional. If `true` entry values will be encrypted.
     name: Required. The id of the key value map.
+    resourceName: Output only. name refers to the resource URI on which the
+      key value map is based on.
   """
 
   encrypted = _messages.BooleanField(1)
   name = _messages.StringField(2)
+  resourceName = _messages.StringField(3)
 
 
 class GoogleCloudApigeeV1Keystore(_messages.Message):
@@ -6338,6 +6416,20 @@ class GoogleCloudApigeeV1ListInstancesResponse(_messages.Message):
   """
 
   instances = _messages.MessageField('GoogleCloudApigeeV1Instance', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class GoogleCloudApigeeV1ListKeyValueEntriesResponse(_messages.Message):
+  r"""The request structure for listing Key value map keys and its
+  corrresponding values.
+
+  Fields:
+    keyValueEntries: One or more Key value map key and its value.
+    nextPageToken: A token that can be sent as `next_page_token` to retrieve
+      the next page. If this field is omitted, there are no subsequent pages.
+  """
+
+  keyValueEntries = _messages.MessageField('GoogleCloudApigeeV1KeyValueEntry', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
 
 

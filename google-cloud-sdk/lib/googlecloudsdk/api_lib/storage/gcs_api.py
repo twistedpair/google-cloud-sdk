@@ -793,12 +793,10 @@ class GcsApi(cloud_api.CloudApi):
                     source_stream,
                     destination_resource,
                     request_config,
-                    progress_callback=None,
                     serialization_data=None,
                     tracker_callback=None,
                     upload_strategy=cloud_api.UploadStrategy.SIMPLE):
     """See CloudApi class for function doc strings."""
-    del progress_callback  # Unused.
     if self._upload_http_client is None:
       self._upload_http_client = transports.GetApitoolsTransport(
           redact_request_body_reason=(

@@ -526,7 +526,7 @@ class Finding(_messages.Message):
   Enums:
     FindingClassValueValuesEnum: The class of the finding.
     MuteValueValuesEnum: Indicates the mute state of a finding (either
-      unspecified, muted, unmuted).
+      unspecified, muted, unmuted or undefined).
     SeverityValueValuesEnum: The severity of the finding. This field is
       managed by the source that writes the finding.
     StateValueValuesEnum: The state of the finding.
@@ -568,7 +568,7 @@ class Finding(_messages.Message):
       computer intrusion. Reference:
       https://en.wikipedia.org/wiki/Indicator_of_compromise
     mute: Indicates the mute state of a finding (either unspecified, muted,
-      unmuted).
+      unmuted or undefined).
     muteAnnotation: Records additional information about the mute operation
       e.g. mute config that muted the finding etc.
     name: The relative resource name of this finding. See:
@@ -622,17 +622,20 @@ class Finding(_messages.Message):
 
   class MuteValueValuesEnum(_messages.Enum):
     r"""Indicates the mute state of a finding (either unspecified, muted,
-    unmuted).
+    unmuted or undefined).
 
     Values:
-      MUTE_UNSPECIFIED: Unspecified i.e. the finding has never been
-        muted/unmuted.
+      MUTE_UNSPECIFIED: Unspecified.
       MUTED: Finding has been muted.
       UNMUTED: Finding has been unmuted.
+      NEVER_MUTED: Deprecated.
+      UNDEFINED: Finding has never been muted/unmuted.
     """
     MUTE_UNSPECIFIED = 0
     MUTED = 1
     UNMUTED = 2
+    NEVER_MUTED = 3
+    UNDEFINED = 4
 
   class SeverityValueValuesEnum(_messages.Enum):
     r"""The severity of the finding. This field is managed by the source that
@@ -795,8 +798,7 @@ class GoogleCloudSecuritycenterV1MuteConfig(_messages.Message):
       This field is set by the server and will be ignored if provided on
       config creation.
     description: A description of the mute config.
-    displayName: Required. The human readable name to be displayed for the
-      mute config.
+    displayName: The human readable name to be displayed for the mute config.
     filter: Required. An expression that defines the filter to apply across
       create/update events of findings. While creating a filter string, be
       mindful of the scope in which the mute configuration is being created.
@@ -812,8 +814,7 @@ class GoogleCloudSecuritycenterV1MuteConfig(_messages.Message):
     mostRecentEditor: Output only. Email address of the user who last edited
       the mute config. This field is set by the server and will be ignored if
       provided on config creation or update.
-    name: The config id is a server generated unique identifier. This field
-      will be ignored if provided on config creation. Format
+    name: This field will be ignored if provided on config creation. Format
       "organizations/{organization}/muteConfigs/{mute_config}"
       "folders/{folder}/muteConfigs/{mute_config}"
       "projects/{project}/muteConfigs/{mute_config}"
@@ -2187,13 +2188,18 @@ class SecuritycenterFoldersMuteConfigsCreateRequest(_messages.Message):
     googleCloudSecuritycenterV1MuteConfig: A
       GoogleCloudSecuritycenterV1MuteConfig resource to be passed as the
       request body.
+    muteConfigId: Required. Unique identifier provided by the client within
+      the parent scope. It must consist of lower case letters, numbers, and
+      hyphen, with the first character a letter, the last a letter or a
+      number, and a 63 character maximum.
     parent: Required. Resource name of the new mute configs's parent. Its
       format is "organizations/[organization_id]", "folders/[folder_id]", or
       "projects/[project_id]".
   """
 
   googleCloudSecuritycenterV1MuteConfig = _messages.MessageField('GoogleCloudSecuritycenterV1MuteConfig', 1)
-  parent = _messages.StringField(2, required=True)
+  muteConfigId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class SecuritycenterFoldersMuteConfigsDeleteRequest(_messages.Message):
@@ -2251,8 +2257,7 @@ class SecuritycenterFoldersMuteConfigsPatchRequest(_messages.Message):
     googleCloudSecuritycenterV1MuteConfig: A
       GoogleCloudSecuritycenterV1MuteConfig resource to be passed as the
       request body.
-    name: The config id is a server generated unique identifier. This field
-      will be ignored if provided on config creation. Format
+    name: This field will be ignored if provided on config creation. Format
       "organizations/{organization}/muteConfigs/{mute_config}"
       "folders/{folder}/muteConfigs/{mute_config}"
       "projects/{project}/muteConfigs/{mute_config}"
@@ -2646,13 +2651,18 @@ class SecuritycenterOrganizationsMuteConfigsCreateRequest(_messages.Message):
     googleCloudSecuritycenterV1MuteConfig: A
       GoogleCloudSecuritycenterV1MuteConfig resource to be passed as the
       request body.
+    muteConfigId: Required. Unique identifier provided by the client within
+      the parent scope. It must consist of lower case letters, numbers, and
+      hyphen, with the first character a letter, the last a letter or a
+      number, and a 63 character maximum.
     parent: Required. Resource name of the new mute configs's parent. Its
       format is "organizations/[organization_id]", "folders/[folder_id]", or
       "projects/[project_id]".
   """
 
   googleCloudSecuritycenterV1MuteConfig = _messages.MessageField('GoogleCloudSecuritycenterV1MuteConfig', 1)
-  parent = _messages.StringField(2, required=True)
+  muteConfigId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class SecuritycenterOrganizationsMuteConfigsDeleteRequest(_messages.Message):
@@ -2710,8 +2720,7 @@ class SecuritycenterOrganizationsMuteConfigsPatchRequest(_messages.Message):
     googleCloudSecuritycenterV1MuteConfig: A
       GoogleCloudSecuritycenterV1MuteConfig resource to be passed as the
       request body.
-    name: The config id is a server generated unique identifier. This field
-      will be ignored if provided on config creation. Format
+    name: This field will be ignored if provided on config creation. Format
       "organizations/{organization}/muteConfigs/{mute_config}"
       "folders/{folder}/muteConfigs/{mute_config}"
       "projects/{project}/muteConfigs/{mute_config}"
@@ -3326,13 +3335,18 @@ class SecuritycenterProjectsMuteConfigsCreateRequest(_messages.Message):
     googleCloudSecuritycenterV1MuteConfig: A
       GoogleCloudSecuritycenterV1MuteConfig resource to be passed as the
       request body.
+    muteConfigId: Required. Unique identifier provided by the client within
+      the parent scope. It must consist of lower case letters, numbers, and
+      hyphen, with the first character a letter, the last a letter or a
+      number, and a 63 character maximum.
     parent: Required. Resource name of the new mute configs's parent. Its
       format is "organizations/[organization_id]", "folders/[folder_id]", or
       "projects/[project_id]".
   """
 
   googleCloudSecuritycenterV1MuteConfig = _messages.MessageField('GoogleCloudSecuritycenterV1MuteConfig', 1)
-  parent = _messages.StringField(2, required=True)
+  muteConfigId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class SecuritycenterProjectsMuteConfigsDeleteRequest(_messages.Message):
@@ -3390,8 +3404,7 @@ class SecuritycenterProjectsMuteConfigsPatchRequest(_messages.Message):
     googleCloudSecuritycenterV1MuteConfig: A
       GoogleCloudSecuritycenterV1MuteConfig resource to be passed as the
       request body.
-    name: The config id is a server generated unique identifier. This field
-      will be ignored if provided on config creation. Format
+    name: This field will be ignored if provided on config creation. Format
       "organizations/{organization}/muteConfigs/{mute_config}"
       "folders/{folder}/muteConfigs/{mute_config}"
       "projects/{project}/muteConfigs/{mute_config}"
@@ -3675,14 +3688,17 @@ class SetMuteRequest(_messages.Message):
     r"""Required. The desired state of the Mute.
 
     Values:
-      MUTE_UNSPECIFIED: Unspecified i.e. the finding has never been
-        muted/unmuted.
+      MUTE_UNSPECIFIED: Unspecified.
       MUTED: Finding has been muted.
       UNMUTED: Finding has been unmuted.
+      NEVER_MUTED: Deprecated.
+      UNDEFINED: Finding has never been muted/unmuted.
     """
     MUTE_UNSPECIFIED = 0
     MUTED = 1
     UNMUTED = 2
+    NEVER_MUTED = 3
+    UNDEFINED = 4
 
   mute = _messages.EnumField('MuteValueValuesEnum', 1)
 

@@ -5384,7 +5384,7 @@ class GooglePrivacyDlpV2PrimitiveTransformation(_messages.Message):
     dateShiftConfig: Date Shift
     fixedSizeBucketingConfig: Fixed size bucketing
     redactConfig: Redact
-    replaceConfig: Replace
+    replaceConfig: Replace with a specified value.
     replaceWithInfoTypeConfig: Replace with infotype
     timePartConfig: Time extraction
   """

@@ -21,27 +21,6 @@ from __future__ import unicode_literals
 from googlecloudsdk.command_lib.eventarc import types
 
 
-# TODO(b/195970381): Temporarily added until `gcloud eventarc attributes types
-# list` publicly adds GCS types.
-_GCS_TYPES = [
-    types.EventType(
-        'google.cloud.storage.object.v1.finalized',
-        'Sent when a new object (or a new generation of an existing object).',
-        'bucket'),
-    types.EventType(
-        'google.cloud.storage.object.v1.archived',
-        'Sent when a live version of an (object versioned) object is archived or deleted.',
-        'bucket'),
-    types.EventType(
-        'google.cloud.storage.object.v1.deleted',
-        'Sent when an object has been permanently deleted.',
-        'bucket'),
-    types.EventType('google.cloud.storage.object.v1.metadataUpdated',
-                    'Sent when the metadata of an existing object changes.',
-                    'bucket'),
-]
-
-
 def Run(args, release_track):
   """Lists GCF v2 available event_types.
 
@@ -56,4 +35,4 @@ def Run(args, release_track):
   del args
   del release_track
 
-  return types.EVENT_TYPES + _GCS_TYPES
+  return types.EVENT_TYPES

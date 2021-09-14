@@ -585,6 +585,15 @@ class Secret(_messages.Message):
       long, have a UTF-8 encoding of maximum 128 bytes, and must conform to
       the following PCRE regular expression: `[\p{Ll}\p{Lo}\p{N}_-]{0,63}` No
       more than 64 labels can be assigned to a given resource.
+    VersionAliasesValue: Optional. Mapping from version alias to version name.
+      A version alias is a string with a maximum length of 63 characters and
+      can contain uppercase and lowercase letters, numerals, and the hyphen
+      (`-`) and underscore ('_') characters. An alias string must start with a
+      letter and cannot be the string 'latest' or 'NEW'. No more than 50
+      aliases can be assigned to a given secret. Version-Alias pairs will be
+      viewable via GetSecret and modifiable via UpdateSecret. At launch Access
+      by Allias will only be supported on GetSecretVersion and
+      AccessSecretVersion.
 
   Fields:
     createTime: Output only. The time at which the Secret was created.
@@ -610,6 +619,15 @@ class Secret(_messages.Message):
       published when control plane operations are called on the secret or its
       versions.
     ttl: Input only. The TTL for the Secret.
+    versionAliases: Optional. Mapping from version alias to version name. A
+      version alias is a string with a maximum length of 63 characters and can
+      contain uppercase and lowercase letters, numerals, and the hyphen (`-`)
+      and underscore ('_') characters. An alias string must start with a
+      letter and cannot be the string 'latest' or 'NEW'. No more than 50
+      aliases can be assigned to a given secret. Version-Alias pairs will be
+      viewable via GetSecret and modifiable via UpdateSecret. At launch Access
+      by Allias will only be supported on GetSecretVersion and
+      AccessSecretVersion.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -642,6 +660,38 @@ class Secret(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class VersionAliasesValue(_messages.Message):
+    r"""Optional. Mapping from version alias to version name. A version alias
+    is a string with a maximum length of 63 characters and can contain
+    uppercase and lowercase letters, numerals, and the hyphen (`-`) and
+    underscore ('_') characters. An alias string must start with a letter and
+    cannot be the string 'latest' or 'NEW'. No more than 50 aliases can be
+    assigned to a given secret. Version-Alias pairs will be viewable via
+    GetSecret and modifiable via UpdateSecret. At launch Access by Allias will
+    only be supported on GetSecretVersion and AccessSecretVersion.
+
+    Messages:
+      AdditionalProperty: An additional property for a VersionAliasesValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type VersionAliasesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a VersionAliasesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.IntegerField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   createTime = _messages.StringField(1)
   etag = _messages.StringField(2)
   expireTime = _messages.StringField(3)
@@ -651,6 +701,7 @@ class Secret(_messages.Message):
   rotation = _messages.MessageField('Rotation', 7)
   topics = _messages.MessageField('Topic', 8, repeated=True)
   ttl = _messages.StringField(9)
+  versionAliases = _messages.MessageField('VersionAliasesValue', 10)
 
 
 class SecretPayload(_messages.Message):

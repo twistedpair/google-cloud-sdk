@@ -1048,6 +1048,85 @@ class DataprocProjectsLocationsBatchesListRequest(_messages.Message):
   parent = _messages.StringField(4, required=True)
 
 
+class DataprocProjectsLocationsSessionsCreateRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsSessionsCreateRequest object.
+
+  Fields:
+    parent: Required. The parent resource where this session will be created.
+    requestId: Optional. A unique ID used to identify the request. If the
+      service receives two CreateSessionRequest (https://cloud.google.com/data
+      proc/docs/reference/rpc/google.cloud.dataproc.v1#google.cloud.dataproc.v
+      1.CreateSessionRequest)s with the same ID, the second request is ignored
+      and the first Session is created and stored in the backend is
+      returned.Recommendation: Set this value to a UUID
+      (https://en.wikipedia.org/wiki/Universally_unique_identifier).The value
+      must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
+      and hyphens (-). The maximum length is 40 characters.
+    session: A Session resource to be passed as the request body.
+    sessionId: Optional. The ID to use for the session, which becomes the
+      final component of the session's resource name.This value must be 4-63
+      characters. Valid characters are /a-z-/.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  session = _messages.MessageField('Session', 3)
+  sessionId = _messages.StringField(4)
+
+
+class DataprocProjectsLocationsSessionsDeleteRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsSessionsDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the session resource to delete.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DataprocProjectsLocationsSessionsGetRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsSessionsGetRequest object.
+
+  Fields:
+    name: Required. The name of the session to retrieve.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DataprocProjectsLocationsSessionsListRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsSessionsListRequest object.
+
+  Fields:
+    filter: Optional. A filter constraining the sessions to list. Filters are
+      case-sensitive and have the following syntax:[field = value] AND [field
+      [= value]] ...
+    pageSize: Optional. The maximum number of sessions to return in each
+      response. The service may return fewer than this value.
+    pageToken: Optional. A page token received from a previous ListSessions
+      call. Provide this token to retrieve the subsequent page.
+    parent: Required. The parent, which owns this collection of sessions.
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
+class DataprocProjectsLocationsSessionsTerminateRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsSessionsTerminateRequest object.
+
+  Fields:
+    name: Required. The name of the session resource to terminate.
+    terminateSessionRequest: A TerminateSessionRequest resource to be passed
+      as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  terminateSessionRequest = _messages.MessageField('TerminateSessionRequest', 2)
+
+
 class DataprocProjectsLocationsWorkflowTemplatesCreateRequest(_messages.Message):
   r"""A DataprocProjectsLocationsWorkflowTemplatesCreateRequest object.
 
@@ -3370,6 +3449,10 @@ class JobStatus(_messages.Message):
   substate = _messages.EnumField('SubstateValueValuesEnum', 4)
 
 
+class JupyterConfig(_messages.Message):
+  r"""Jupyter configuration for an interactive session."""
+
+
 class KerberosConfig(_messages.Message):
   r"""Specifies Kerberos related configuration.
 
@@ -3542,6 +3625,19 @@ class ListOperationsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+
+
+class ListSessionsResponse(_messages.Message):
+  r"""A list of interactive sessions.
+
+  Fields:
+    nextPageToken: A token, which can be sent as page_token to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    sessions: The sessions from the specified collection.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  sessions = _messages.MessageField('Session', 2, repeated=True)
 
 
 class ListWorkflowTemplatesResponse(_messages.Message):
@@ -4491,6 +4587,175 @@ class SecurityConfig(_messages.Message):
   kerberosConfig = _messages.MessageField('KerberosConfig', 2)
 
 
+class Session(_messages.Message):
+  r"""A representation of a session in the service.
+
+  Enums:
+    StateValueValuesEnum: Output only. A state of the session.
+
+  Messages:
+    LabelsValue: Optional. The labels to associate with this session. Label
+      keys must contain 1 to 63 characters, and must conform to RFC 1035
+      (https://www.ietf.org/rfc/rfc1035.txt). Label values may be empty, but,
+      if present, must contain 1 to 63 characters, and must conform to RFC
+      1035 (https://www.ietf.org/rfc/rfc1035.txt). No more than 32 labels can
+      be associated with a session.
+
+  Fields:
+    createTime: Output only. The time when the session was created.
+    creator: Output only. The email address of the user who created the
+      session.
+    environmentConfig: Optional. Environment configuration for the session
+      execution.
+    jupyterSession: Optional. Jupyter session config.
+    labels: Optional. The labels to associate with this session. Label keys
+      must contain 1 to 63 characters, and must conform to RFC 1035
+      (https://www.ietf.org/rfc/rfc1035.txt). Label values may be empty, but,
+      if present, must contain 1 to 63 characters, and must conform to RFC
+      1035 (https://www.ietf.org/rfc/rfc1035.txt). No more than 32 labels can
+      be associated with a session.
+    name: Optional. The resource name of the session.
+    runtimeConfig: Optional. Runtime configuration for the session execution.
+    runtimeInfo: Output only. Runtime information about session execution.
+    spark: Optional. Spark engine config.
+    state: Output only. A state of the session.
+    stateMessage: Output only. Session state details, such as a failure
+      description if the state is FAILED.
+    stateTime: Output only. The time when the session entered a current state.
+    uuid: Output only. A session UUID (Unique Universal Identifier). The
+      service generates this value when it creates the session.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. A state of the session.
+
+    Values:
+      STATE_UNSPECIFIED: The session state is unknown.
+      CREATING: The session is created before running.
+      ACTIVE: The session is running.
+      TERMINATING: The session is terminating.
+      SUCCEEDED: The session completed successfully.
+      FAILED: The session is no longer running due to an error.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    ACTIVE = 2
+    TERMINATING = 3
+    SUCCEEDED = 4
+    FAILED = 5
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. The labels to associate with this session. Label keys must
+    contain 1 to 63 characters, and must conform to RFC 1035
+    (https://www.ietf.org/rfc/rfc1035.txt). Label values may be empty, but, if
+    present, must contain 1 to 63 characters, and must conform to RFC 1035
+    (https://www.ietf.org/rfc/rfc1035.txt). No more than 32 labels can be
+    associated with a session.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  creator = _messages.StringField(2)
+  environmentConfig = _messages.MessageField('EnvironmentConfig', 3)
+  jupyterSession = _messages.MessageField('JupyterConfig', 4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  runtimeConfig = _messages.MessageField('RuntimeConfig', 7)
+  runtimeInfo = _messages.MessageField('RuntimeInfo', 8)
+  spark = _messages.MessageField('SparkConfig', 9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  stateMessage = _messages.StringField(11)
+  stateTime = _messages.StringField(12)
+  uuid = _messages.StringField(13)
+
+
+class SessionOperationMetadata(_messages.Message):
+  r"""Metadata describing the Session operation.
+
+  Enums:
+    OperationTypeValueValuesEnum: The operation type.
+
+  Messages:
+    LabelsValue: Labels associated with the operation.
+
+  Fields:
+    createTime: The time when the operation was created.
+    description: Short description of the operation.
+    doneTime: The time when the operation was finished.
+    labels: Labels associated with the operation.
+    operationType: The operation type.
+    session: Name of the session for the operation.
+    sessionUuid: Session UUID for the operation.
+    warnings: Warnings encountered during operation execution.
+  """
+
+  class OperationTypeValueValuesEnum(_messages.Enum):
+    r"""The operation type.
+
+    Values:
+      SESSION_OPERATION_TYPE_UNSPECIFIED: Session operation type is unknown.
+      CREATE: Create Session operation type.
+      TERMINATE: Terminate Session operation type.
+      DELETE: Delete Session operation type.
+    """
+    SESSION_OPERATION_TYPE_UNSPECIFIED = 0
+    CREATE = 1
+    TERMINATE = 2
+    DELETE = 3
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Labels associated with the operation.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  doneTime = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  operationType = _messages.EnumField('OperationTypeValueValuesEnum', 5)
+  session = _messages.StringField(6)
+  sessionUuid = _messages.StringField(7)
+  warnings = _messages.StringField(8, repeated=True)
+
+
 class SetIamPolicyRequest(_messages.Message):
   r"""Request message for SetIamPolicy method.
 
@@ -4664,6 +4929,25 @@ class SparkBatch(_messages.Message):
   jarFileUris = _messages.StringField(4, repeated=True)
   mainClass = _messages.StringField(5)
   mainJarFileUri = _messages.StringField(6)
+
+
+class SparkConfig(_messages.Message):
+  r"""Apache Spark (https://spark.apache.org) engine for an interactive
+  session.
+
+  Fields:
+    archiveUris: Optional. HCFS URIs of archives to be extracted into the
+      working directory of each executor. Supported file types: .jar, .tar,
+      .tar.gz, .tgz, and .zip.
+    fileUris: Optional. HCFS URIs of files to be placed in the working
+      directory of each executor.
+    jarFileUris: Optional. HCFS URIs of jar files to add to the classpath of
+      the Spark driver and tasks.
+  """
+
+  archiveUris = _messages.StringField(1, repeated=True)
+  fileUris = _messages.StringField(2, repeated=True)
+  jarFileUris = _messages.StringField(3, repeated=True)
 
 
 class SparkHistoryServerConfig(_messages.Message):
@@ -5272,6 +5556,10 @@ class TemplateParameter(_messages.Message):
   fields = _messages.StringField(2, repeated=True)
   name = _messages.StringField(3)
   validation = _messages.MessageField('ParameterValidation', 4)
+
+
+class TerminateSessionRequest(_messages.Message):
+  r"""A request to terminate an interactive session."""
 
 
 class TestIamPermissionsRequest(_messages.Message):

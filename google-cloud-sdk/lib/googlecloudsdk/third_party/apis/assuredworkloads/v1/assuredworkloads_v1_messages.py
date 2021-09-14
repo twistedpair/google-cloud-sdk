@@ -156,6 +156,8 @@ class GoogleCloudAssuredworkloadsV1CreateWorkloadOperationMetadata(_messages.Mes
       HITRUST: Health Information Trust Alliance controls
       EU_REGIONS_AND_SUPPORT: Assured Workloads For EU Regions and Support
         controls
+      CA_REGIONS_AND_SUPPORT: Assured Workloads For Canada Regions and Support
+        controls
     """
     COMPLIANCE_REGIME_UNSPECIFIED = 0
     IL4 = 1
@@ -166,6 +168,7 @@ class GoogleCloudAssuredworkloadsV1CreateWorkloadOperationMetadata(_messages.Mes
     HIPAA = 6
     HITRUST = 7
     EU_REGIONS_AND_SUPPORT = 8
+    CA_REGIONS_AND_SUPPORT = 9
 
   complianceRegime = _messages.EnumField('ComplianceRegimeValueValuesEnum', 1)
   createTime = _messages.StringField(2)
@@ -250,6 +253,8 @@ class GoogleCloudAssuredworkloadsV1Workload(_messages.Message):
       HITRUST: Health Information Trust Alliance controls
       EU_REGIONS_AND_SUPPORT: Assured Workloads For EU Regions and Support
         controls
+      CA_REGIONS_AND_SUPPORT: Assured Workloads For Canada Regions and Support
+        controls
     """
     COMPLIANCE_REGIME_UNSPECIFIED = 0
     IL4 = 1
@@ -260,6 +265,7 @@ class GoogleCloudAssuredworkloadsV1Workload(_messages.Message):
     HIPAA = 6
     HITRUST = 7
     EU_REGIONS_AND_SUPPORT = 8
+    CA_REGIONS_AND_SUPPORT = 9
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):

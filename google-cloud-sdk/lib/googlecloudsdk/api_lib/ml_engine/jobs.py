@@ -132,7 +132,8 @@ class JobsClient(object):
                        service_account=None,
                        labels=None,
                        kms_key=None,
-                       custom_train_server_config=None):
+                       custom_train_server_config=None,
+                       enable_web_access=None):
     """Builds a Cloud ML Engine Job from a config file and/or flag values.
 
     Args:
@@ -160,6 +161,7 @@ class JobsClient(object):
         kms_key: A customer-managed encryption key to use for the job.
         custom_train_server_config: jobs_util.CustomTrainingInputServerConfig,
           configuration object for custom server parameters.
+        enable_web_access: whether to enable the interactive shell for the job.
     Raises:
       NoPackagesSpecifiedError: if a non-custom job was specified without any
         trainer_uris.
@@ -192,7 +194,8 @@ class JobsClient(object):
         'runtimeVersion': runtime_version,
         'pythonVersion': python_version,
         'network': network,
-        'serviceAccount': service_account
+        'serviceAccount': service_account,
+        'enableWebAccess': enable_web_access,
     }
     for field_name, value in additional_fields.items():
       if value is not None:

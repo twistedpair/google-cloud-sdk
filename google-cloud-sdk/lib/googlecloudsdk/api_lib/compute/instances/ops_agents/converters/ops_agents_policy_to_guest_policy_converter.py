@@ -27,16 +27,16 @@ from googlecloudsdk.api_lib.compute.instances.ops_agents import ops_agents_polic
 class _PackageTemplates(
     collections.namedtuple(
         '_PackageTemplates',
-        ('repo', 'clear_prev_repo', 'install_with_version'))):
+        ('repo', 'clear_prev_repo'))):
   pass
 
 
 class _AgentRuleTemplates(
     collections.namedtuple(
         '_AgentRuleTemplates',
-        ('yum_package', 'apt_package', 'zypper_package', 'goo_package',
-         'run_agent', 'win_run_agent', 'repo_id', 'display_name', 'recipe_name',
-         'current_major_version'))):
+        ('install_with_version', 'yum_package', 'apt_package',
+         'zypper_package', 'goo_package', 'run_agent', 'win_run_agent',
+         'repo_id', 'display_name', 'recipe_name', 'current_major_version'))):
   pass
 
 _EMPTY_SOFTWARE_RECIPE_SCRIPT = textwrap.dedent("""\
@@ -45,16 +45,16 @@ _EMPTY_SOFTWARE_RECIPE_SCRIPT = textwrap.dedent("""\
 _AGENT_RULE_TEMPLATES = {
     'logging':
         _AgentRuleTemplates(
+            install_with_version=(
+                'curl -sSO https://dl.google.com/cloudagents/add-logging-agent-repo.sh; '
+                'sudo bash add-logging-agent-repo.sh --also-install --version=%s'
+                ),
             yum_package=_PackageTemplates(
                 repo='google-cloud-logging-el%s-x86_64-%s',
                 clear_prev_repo=(
                     'sudo rm /etc/yum.repos.d/google-cloud-logging.repo || '
                     "true; find /var/cache/{yum,dnf} -name '*google-cloud-logging*' "
                     '| xargs sudo rm -rf || true'),
-                install_with_version=(
-                    "sudo yum remove -y google-fluentd || true; "
-                    "sudo yum install -y 'google-fluentd%s'; "
-                    "sudo yum install -y google-fluentd-catch-all-config"),
             ),
             zypper_package=_PackageTemplates(
                 repo='google-cloud-logging-sles%s-x86_64-%s',
@@ -62,10 +62,6 @@ _AGENT_RULE_TEMPLATES = {
                     'sudo rm /etc/zypp/repos.d/google-cloud-logging.repo || '
                     "true; find /var/cache/zypp -name '*google-cloud-logging*' "
                     '| xargs sudo rm -rf || true'),
-                install_with_version=(
-                    "sudo zypper remove -y google-fluentd || true; "
-                    "sudo zypper install -y 'google-fluentd%s'; "
-                    "sudo zypper install -y google-fluentd-catch-all-config"),
             ),
             apt_package=_PackageTemplates(
                 repo='google-cloud-logging-%s-%s',
@@ -73,11 +69,6 @@ _AGENT_RULE_TEMPLATES = {
                     'sudo rm /etc/apt/sources.list.d/google-cloud-logging.list '
                     '|| true; find /var/cache/apt -name '
                     "'*google-fluentd*' | xargs sudo rm -rf || true"),
-                install_with_version=(
-                    "sudo apt-get remove -y google-fluentd || true; "
-                    "sudo apt-get update; "
-                    "sudo apt-get install -y 'google-fluentd%s'; "
-                    "sudo apt-get install -y google-fluentd-catch-all-config"),
             ),
             goo_package=None,
             repo_id='google-cloud-logging',
@@ -97,15 +88,16 @@ _AGENT_RULE_TEMPLATES = {
         ),
     'metrics':
         _AgentRuleTemplates(
+            install_with_version=(
+                'curl -sSO https://dl.google.com/cloudagents/add-monitoring-agent-repo.sh; '
+                'sudo bash add-monitoring-agent-repo.sh --also-install --version=%s'
+                ),
             yum_package=_PackageTemplates(
                 repo='google-cloud-monitoring-el%s-x86_64-%s',
                 clear_prev_repo=(
                     'sudo rm /etc/yum.repos.d/google-cloud-monitoring.repo || '
                     'true; find /var/cache/{yum,dnf} -name '
                     "'*google-cloud-monitoring*' | xargs sudo rm -rf || true"),
-                install_with_version=(
-                    "sudo yum remove -y stackdriver-agent || true; "
-                    "sudo yum install -y 'stackdriver-agent%s'"),
             ),
             zypper_package=_PackageTemplates(
                 repo='google-cloud-monitoring-sles%s-x86_64-%s',
@@ -113,9 +105,6 @@ _AGENT_RULE_TEMPLATES = {
                     'sudo rm /etc/zypp/repos.d/google-cloud-monitoring.repo || '
                     'true; find /var/cache/zypp -name '
                     "'*google-cloud-monitoring*' | xargs sudo rm -rf || true"),
-                install_with_version=(
-                    "sudo zypper remove -y stackdriver-agent || true; "
-                    "sudo zypper install -y 'stackdriver-agent%s'"),
             ),
             apt_package=_PackageTemplates(
                 repo='google-cloud-monitoring-%s-%s',
@@ -124,10 +113,6 @@ _AGENT_RULE_TEMPLATES = {
                     '/etc/apt/sources.list.d/google-cloud-monitoring.list || '
                     'true; find /var/cache/apt -name '
                     "'*stackdriver-agent*' | xargs sudo rm -rf || true"),
-                install_with_version=(
-                    "sudo apt-get remove -y stackdriver-agent || true; "
-                    "sudo apt-get update; "
-                    "sudo apt-get install -y 'stackdriver-agent%s'"),
             ),
             goo_package=None,
             repo_id='google-cloud-monitoring',
@@ -147,15 +132,16 @@ _AGENT_RULE_TEMPLATES = {
         ),
     'ops-agent':
         _AgentRuleTemplates(
+            install_with_version=(
+                'curl -sSO https://dl.google.com/cloudagents/add-google-cloud-ops-agent-repo.sh; '
+                'sudo bash add-google-cloud-ops-agent-repo.sh --also-install --version=%s'
+                ),
             yum_package=_PackageTemplates(
                 repo='google-cloud-ops-agent-el%s-x86_64-%s',
                 clear_prev_repo=(
                     'sudo rm /etc/yum.repos.d/google-cloud-ops-agent.repo || '
                     'true; find /var/cache/{yum,dnf} -name '
                     "'*google-cloud-ops-agent*' | xargs sudo rm -rf || true"),
-                install_with_version=(
-                    "sudo yum remove -y google-cloud-ops-agent || true; "
-                    "sudo yum install -y 'google-cloud-ops-agent%s'"),
             ),
             zypper_package=_PackageTemplates(
                 repo='google-cloud-ops-agent-sles%s-x86_64-%s',
@@ -163,9 +149,6 @@ _AGENT_RULE_TEMPLATES = {
                     'sudo rm /etc/zypp/repos.d/google-cloud-ops-agent.repo || '
                     'true; find /var/cache/zypp -name '
                     "'*google-cloud-ops-agent*' | xargs sudo rm -rf || true"),
-                install_with_version=(
-                    "sudo zypper remove -y google-cloud-ops-agent || true; "
-                    "sudo zypper install -y 'google-cloud-ops-agent%s'"),
             ),
             apt_package=_PackageTemplates(
                 repo='google-cloud-ops-agent-%s-%s',
@@ -174,15 +157,10 @@ _AGENT_RULE_TEMPLATES = {
                     '/etc/apt/sources.list.d/google-cloud-ops-agent.list || '
                     'true; find /var/cache/apt -name '
                     "'*google-cloud-ops-agent*' | xargs sudo rm -rf || true"),
-                install_with_version=(
-                    "sudo apt-get remove -y google-cloud-ops-agent || true; "
-                    "sudo apt-get update; "
-                    "sudo apt-get install -y 'google-cloud-ops-agent%s'"),
             ),
             goo_package=_PackageTemplates(
                 repo='google-cloud-ops-agent-%s-%s',
                 clear_prev_repo=None,
-                install_with_version=None,
             ),
             repo_id='google-cloud-ops-agent',
             display_name='Google Cloud Ops Agent Repository',
@@ -573,45 +551,23 @@ def _CreateStepInScript(messages, agent_rule, os_type):
   """
   step = messages.SoftwareRecipeStep()
   step.scriptRun = messages.SoftwareRecipeStepRunScript()
-
-  version_with_build = (
-      agent_rule.version
-      if '-' in agent_rule.version else agent_rule.version + '-1')
+  agent_version = '' if agent_rule.version == 'latest' else agent_rule.version
   if os_type.short_name in {'centos', 'rhel'}:
-    if agent_rule.version == 'latest':
-      agent_version = ''
-    elif '*.*' in agent_rule.version:
-      agent_version = '-%s' % agent_rule.version.replace('*.*', '*')
-    else:
-      agent_version = '-%s*' % version_with_build
     clear_prev_repo = _AGENT_RULE_TEMPLATES[
         agent_rule.type].yum_package.clear_prev_repo
     install_with_version = _AGENT_RULE_TEMPLATES[
-        agent_rule.type].yum_package.install_with_version % agent_version
+        agent_rule.type].install_with_version % agent_version
   if os_type.short_name in _APT_OS:
-    if agent_rule.version == 'latest':
-      agent_version = ''
-    elif '*.*' in agent_rule.version:
-      agent_version = '=%s' % agent_rule.version.replace('*.*', '*')
-    elif agent_rule.type is agent_policy.OpsAgentPolicy.AgentRule.Type.OPS_AGENT:
-      agent_version = '=%s~*' % agent_rule.version
-    else:
-      agent_version = '=%s*' % version_with_build
+
     clear_prev_repo = _AGENT_RULE_TEMPLATES[
         agent_rule.type].apt_package.clear_prev_repo
     install_with_version = _AGENT_RULE_TEMPLATES[
-        agent_rule.type].apt_package.install_with_version % agent_version
+        agent_rule.type].install_with_version % agent_version
   if os_type.short_name in _SUSE_OS:
-    if agent_rule.version == 'latest':
-      agent_version = ''
-    elif '*.*' in agent_rule.version:
-      agent_version = '<%d.*' % (int(agent_rule.version.split('.')[0]) + 1)
-    else:
-      agent_version = '=%s*' % version_with_build
     clear_prev_repo = _AGENT_RULE_TEMPLATES[
         agent_rule.type].zypper_package.clear_prev_repo
     install_with_version = _AGENT_RULE_TEMPLATES[
-        agent_rule.type].zypper_package.install_with_version % agent_version
+        agent_rule.type].install_with_version % agent_version
   if os_type.short_name in _WINDOWS_OS:
     if agent_rule.version == 'latest' or '*.*' in agent_rule.version:
       agent_version = ''

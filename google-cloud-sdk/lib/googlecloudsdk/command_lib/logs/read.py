@@ -28,7 +28,7 @@ _LOG_FILTER_HELP_TEXT = ('Filter expression that specifies the '
                          'log entries to return. Detailed information about '
                          'filters can be found at: '
                          'https://cloud.google.com/logging/docs/view/'
-                         'logging-query-language)')
+                         'logging-query-language')
 
 
 def LogFilterPositionalArgs(parser):

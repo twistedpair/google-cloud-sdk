@@ -342,6 +342,24 @@ def AddSkipIntegrityVerification(parser):
       help=('Skip integrity verification on request and response API fields.'))
 
 
+def AddDestroyScheduledDurationFlag(parser):
+  parser.add_argument(
+      '--destroy-scheduled-duration',
+      type=arg_parsers.Duration(upper_bound='120d'),
+      help='The amount of time that versions of the key should spend in the '
+      'DESTROY_SCHEDULED state before transitioning to DESTROYED. See '
+      '$ gcloud topic datetimes for information on duration formats.')
+
+
+def AddImportOnlyFlag(parser):
+  parser.add_argument(
+      '--import-only',
+      default=None,
+      action='store_true',
+      dest='import_only',
+      help=('Restrict this key to imported versions only.'))
+
+
 # Arguments
 def AddKeyRingArgument(parser, help_action):
   parser.add_argument(
@@ -468,3 +486,9 @@ def SetRotationPeriod(args, crypto_key):
 def SetNextRotationTime(args, crypto_key):
   if args.next_rotation_time is not None:
     crypto_key.nextRotationTime = times.FormatDateTime(args.next_rotation_time)
+
+
+def SetDestroyScheduledDuration(args, crypto_key):
+  if args.destroy_scheduled_duration is not None:
+    crypto_key.destroyScheduledDuration = '{0}s'.format(
+        args.destroy_scheduled_duration)

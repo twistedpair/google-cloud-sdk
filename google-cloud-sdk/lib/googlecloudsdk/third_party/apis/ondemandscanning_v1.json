@@ -212,6 +212,10 @@
           "items": {
             "$ref": "PackageData"
           }
+        },
+        "includeOsvData": {
+          "description": "Whether to include OSV data in the scan.",
+          "type": "boolean"
         }
       }
     },

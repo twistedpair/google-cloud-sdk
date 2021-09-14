@@ -47,6 +47,7 @@ class ApigeeV1(base_api.BaseApiClient):
     self.organizations_apiproducts_rateplans = self.OrganizationsApiproductsRateplansService(self)
     self.organizations_apiproducts = self.OrganizationsApiproductsService(self)
     self.organizations_apis_deployments = self.OrganizationsApisDeploymentsService(self)
+    self.organizations_apis_keyvaluemaps_entries = self.OrganizationsApisKeyvaluemapsEntriesService(self)
     self.organizations_apis_keyvaluemaps = self.OrganizationsApisKeyvaluemapsService(self)
     self.organizations_apis_revisions_deployments = self.OrganizationsApisRevisionsDeploymentsService(self)
     self.organizations_apis_revisions = self.OrganizationsApisRevisionsService(self)
@@ -80,6 +81,7 @@ class ApigeeV1(base_api.BaseApiClient):
     self.organizations_environments_flowhooks = self.OrganizationsEnvironmentsFlowhooksService(self)
     self.organizations_environments_keystores_aliases = self.OrganizationsEnvironmentsKeystoresAliasesService(self)
     self.organizations_environments_keystores = self.OrganizationsEnvironmentsKeystoresService(self)
+    self.organizations_environments_keyvaluemaps_entries = self.OrganizationsEnvironmentsKeyvaluemapsEntriesService(self)
     self.organizations_environments_keyvaluemaps = self.OrganizationsEnvironmentsKeyvaluemapsService(self)
     self.organizations_environments_optimizedStats = self.OrganizationsEnvironmentsOptimizedStatsService(self)
     self.organizations_environments_queries = self.OrganizationsEnvironmentsQueriesService(self)
@@ -101,6 +103,7 @@ class ApigeeV1(base_api.BaseApiClient):
     self.organizations_instances_canaryevaluations = self.OrganizationsInstancesCanaryevaluationsService(self)
     self.organizations_instances_natAddresses = self.OrganizationsInstancesNatAddressesService(self)
     self.organizations_instances = self.OrganizationsInstancesService(self)
+    self.organizations_keyvaluemaps_entries = self.OrganizationsKeyvaluemapsEntriesService(self)
     self.organizations_keyvaluemaps = self.OrganizationsKeyvaluemapsService(self)
     self.organizations_operations = self.OrganizationsOperationsService(self)
     self.organizations_optimizedHostStats = self.OrganizationsOptimizedHostStatsService(self)
@@ -812,6 +815,43 @@ class ApigeeV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='ApigeeOrganizationsApisDeploymentsListRequest',
         response_type_name='GoogleCloudApigeeV1ListDeploymentsResponse',
+        supports_download=False,
+    )
+
+  class OrganizationsApisKeyvaluemapsEntriesService(base_api.BaseApiService):
+    """Service class for the organizations_apis_keyvaluemaps_entries resource."""
+
+    _NAME = 'organizations_apis_keyvaluemaps_entries'
+
+    def __init__(self, client):
+      super(ApigeeV1.OrganizationsApisKeyvaluemapsEntriesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""List key value entries for any one of org, env or proxy scoped key value maps.
+
+      Args:
+        request: (ApigeeOrganizationsApisKeyvaluemapsEntriesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1ListKeyValueEntriesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/apis/{apisId}/keyvaluemaps/{keyvaluemapsId}/entries',
+        http_method='GET',
+        method_id='apigee.organizations.apis.keyvaluemaps.entries.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/entries',
+        request_field='',
+        request_type_name='ApigeeOrganizationsApisKeyvaluemapsEntriesListRequest',
+        response_type_name='GoogleCloudApigeeV1ListKeyValueEntriesResponse',
         supports_download=False,
     )
 
@@ -3926,6 +3966,43 @@ class ApigeeV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class OrganizationsEnvironmentsKeyvaluemapsEntriesService(base_api.BaseApiService):
+    """Service class for the organizations_environments_keyvaluemaps_entries resource."""
+
+    _NAME = 'organizations_environments_keyvaluemaps_entries'
+
+    def __init__(self, client):
+      super(ApigeeV1.OrganizationsEnvironmentsKeyvaluemapsEntriesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""List key value entries for any one of org, env or proxy scoped key value maps.
+
+      Args:
+        request: (ApigeeOrganizationsEnvironmentsKeyvaluemapsEntriesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1ListKeyValueEntriesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/environments/{environmentsId}/keyvaluemaps/{keyvaluemapsId}/entries',
+        http_method='GET',
+        method_id='apigee.organizations.environments.keyvaluemaps.entries.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/entries',
+        request_field='',
+        request_type_name='ApigeeOrganizationsEnvironmentsKeyvaluemapsEntriesListRequest',
+        response_type_name='GoogleCloudApigeeV1ListKeyValueEntriesResponse',
+        supports_download=False,
+    )
+
   class OrganizationsEnvironmentsKeyvaluemapsService(base_api.BaseApiService):
     """Service class for the organizations_environments_keyvaluemaps resource."""
 
@@ -6212,6 +6289,43 @@ class ApigeeV1(base_api.BaseApiClient):
         request_field='googleCloudApigeeV1ReportInstanceStatusRequest',
         request_type_name='ApigeeOrganizationsInstancesReportStatusRequest',
         response_type_name='GoogleCloudApigeeV1ReportInstanceStatusResponse',
+        supports_download=False,
+    )
+
+  class OrganizationsKeyvaluemapsEntriesService(base_api.BaseApiService):
+    """Service class for the organizations_keyvaluemaps_entries resource."""
+
+    _NAME = 'organizations_keyvaluemaps_entries'
+
+    def __init__(self, client):
+      super(ApigeeV1.OrganizationsKeyvaluemapsEntriesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""List key value entries for any one of org, env or proxy scoped key value maps.
+
+      Args:
+        request: (ApigeeOrganizationsKeyvaluemapsEntriesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1ListKeyValueEntriesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/keyvaluemaps/{keyvaluemapsId}/entries',
+        http_method='GET',
+        method_id='apigee.organizations.keyvaluemaps.entries.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/entries',
+        request_field='',
+        request_type_name='ApigeeOrganizationsKeyvaluemapsEntriesListRequest',
+        response_type_name='GoogleCloudApigeeV1ListKeyValueEntriesResponse',
         supports_download=False,
     )
 

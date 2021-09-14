@@ -34,13 +34,33 @@ class EventType(object):
 
 
 _AUDIT_LOG_TYPE = EventType('google.cloud.audit.log.v1.written',
-                            'Cloud Audit Log written',
+                            'Cloud Audit Log: Sent when a log is written.',
                             'type,serviceName,methodName,resourceName')
 
 _PUBSUB_TYPE = EventType('google.cloud.pubsub.topic.v1.messagePublished',
-                         'Cloud Pub/Sub message published', 'type')
+                         'Cloud Pub/Sub: Sent when a message is published.',
+                         'type')
 
-EVENT_TYPES = [_AUDIT_LOG_TYPE, _PUBSUB_TYPE]
+_GCS_ARCHIVED_TYPE = EventType(
+    'google.cloud.storage.object.v1.archived',
+    'Cloud Storage: Sent when a live version of an (object versioned) object is archived or deleted.',
+    'type,bucket')
+_GCS_DELETED_TYPE = EventType(
+    'google.cloud.storage.object.v1.deleted',
+    'Cloud Storage: Sent when an object has been permanently deleted.',
+    'type,bucket')
+_GCS_FINALIZED_TYPE = EventType(
+    'google.cloud.storage.object.v1.finalized',
+    'Cloud Storage: Sent when a new object (or a new generation of an existing object).',
+    'type,bucket')
+_GCS_METADATA_UPDATED_TYPE = EventType(
+    'google.cloud.storage.object.v1.metadataUpdated',
+    'Cloud Storage: Sent when the metadata of an existing object changes.',
+    'type,bucket')
+EVENT_TYPES = [
+    _AUDIT_LOG_TYPE, _PUBSUB_TYPE, _GCS_ARCHIVED_TYPE, _GCS_DELETED_TYPE,
+    _GCS_FINALIZED_TYPE, _GCS_METADATA_UPDATED_TYPE
+]
 
 
 def Get(name):

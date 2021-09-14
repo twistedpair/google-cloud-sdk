@@ -22979,19 +22979,30 @@ class CustomerEncryptionKey(_messages.Message):
 
   Fields:
     kmsKeyName: The name of the encryption key that is stored in Google Cloud
-      KMS.
+      KMS. For example: "kmsKeyName":
+      "projects/kms_project_id/locations/region/keyRings/
+      key_region/cryptoKeys/key
     kmsKeyServiceAccount: The service account being used for the encryption
       request for the given KMS key. If absent, the Compute Engine default
-      service account is used.
+      service account is used. For example: "kmsKeyServiceAccount":
+      "name@project_id.iam.gserviceaccount.com/
     rawKey: Specifies a 256-bit customer-supplied encryption key, encoded in
-      RFC 4648 base64 to either encrypt or decrypt this resource.
+      RFC 4648 base64 to either encrypt or decrypt this resource. You can
+      provide either the rawKey or the rsaEncryptedKey. For example: "rawKey":
+      "SGVsbG8gZnJvbSBHb29nbGUgQ2xvdWQgUGxhdGZvcm0="
     rsaEncryptedKey: Specifies an RFC 4648 base64 encoded, RSA-wrapped
       2048-bit customer-supplied encryption key to either encrypt or decrypt
-      this resource. The key must meet the following requirements before you
-      can provide it to Compute Engine: 1. The key is wrapped using a RSA
-      public key certificate provided by Google. 2. After being wrapped, the
-      key must be encoded in RFC 4648 base64 encoding. Gets the RSA public key
-      certificate provided by Google at: https://cloud-
+      this resource. You can provide either the rawKey or the rsaEncryptedKey.
+      For example: "rsaEncryptedKey":
+      "ieCx/NcW06PcT7Ep1X6LUTc/hLvUDYyzSZPPVCVPTVEohpeHASqC8uw5TzyO9U+Fka9JFH
+      z0mBibXUInrC/jEk014kCK/NPjYgEMOyssZ4ZINPKxlUh2zn1bV+MCaTICrdmuSBTWlUUiFo
+      D
+      D6PYznLwh8ZNdaheCeZ8ewEXgFQ8V+sDroLaN3Xs3MDTXQEMMoNUXMCZEIpg9Vtp9x2oe=="
+      The key must meet the following requirements before you can provide it
+      to Compute Engine: 1. The key is wrapped using a RSA public key
+      certificate provided by Google. 2. After being wrapped, the key must be
+      encoded in RFC 4648 base64 encoding. Gets the RSA public key certificate
+      provided by Google at: https://cloud-
       certs.storage.googleapis.com/google-cloud-csek-ingress.pem
     sha256: [Output only] The RFC 4648 base64 encoded SHA-256 hash of the
       customer-supplied encryption key that protects this resource.
@@ -23011,7 +23022,9 @@ class CustomerEncryptionKeyProtectedDisk(_messages.Message):
     diskEncryptionKey: Decrypts data associated with the disk with a customer-
       supplied encryption key.
     source: Specifies a valid partial or full URL to an existing Persistent
-      Disk resource. This field is only applicable for persistent disks.
+      Disk resource. This field is only applicable for persistent disks. For
+      example: "source": "/compute/v1/projects/project_id/zones/zone/disks/
+      disk_name
   """
 
   diskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 1)
@@ -25149,7 +25162,7 @@ class Firewall(_messages.Message):
     name: Name of the resource; provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
-      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?. The first character must
+      regular expression [a-z]([-a-z0-9]*[a-z0-9])?. The first character must
       be a lowercase letter, and all following characters (except for the last
       character) must be a dash, lowercase letter, or digit. The last
       character must be a lowercase letter or digit.
@@ -33225,6 +33238,9 @@ class Interconnect(_messages.Message):
       in this interconnect.
     requestedLinkCount: Target number of physical links in the link bundle, as
       requested by the customer.
+    satisfiesPzs: [Output Only] Set to true if the resource satisfies the zone
+      separation organization policy constraints and false otherwise. Defaults
+      to false if the field is not present.
     selfLink: [Output Only] Server-defined URL for the resource.
     state: [Output Only] The current state of Interconnect functionality,
       which can take one of the following values: - ACTIVE: The Interconnect
@@ -33325,8 +33341,9 @@ class Interconnect(_messages.Message):
   peerIpAddress = _messages.StringField(18)
   provisionedLinkCount = _messages.IntegerField(19, variant=_messages.Variant.INT32)
   requestedLinkCount = _messages.IntegerField(20, variant=_messages.Variant.INT32)
-  selfLink = _messages.StringField(21)
-  state = _messages.EnumField('StateValueValuesEnum', 22)
+  satisfiesPzs = _messages.BooleanField(21)
+  selfLink = _messages.StringField(22)
+  state = _messages.EnumField('StateValueValuesEnum', 23)
 
 
 class InterconnectAttachment(_messages.Message):
@@ -33504,6 +33521,9 @@ class InterconnectAttachment(_messages.Message):
       router must be in the same region as this InterconnectAttachment. The
       InterconnectAttachment will automatically connect the Interconnect to
       the network & region within which the Cloud Router is configured.
+    satisfiesPzs: [Output Only] Set to true if the resource satisfies the zone
+      separation organization policy constraints and false otherwise. Defaults
+      to false if the field is not present.
     selfLink: [Output Only] Server-defined URL for the resource.
     state: [Output Only] The current state of this attachment's functionality.
       Enum values ACTIVE and UNPROVISIONED are shared by DEDICATED/PRIVATE,
@@ -33715,10 +33735,11 @@ class InterconnectAttachment(_messages.Message):
   privateInterconnectInfo = _messages.MessageField('InterconnectAttachmentPrivateInfo', 22)
   region = _messages.StringField(23)
   router = _messages.StringField(24)
-  selfLink = _messages.StringField(25)
-  state = _messages.EnumField('StateValueValuesEnum', 26)
-  type = _messages.EnumField('TypeValueValuesEnum', 27)
-  vlanTag8021q = _messages.IntegerField(28, variant=_messages.Variant.INT32)
+  satisfiesPzs = _messages.BooleanField(25)
+  selfLink = _messages.StringField(26)
+  state = _messages.EnumField('StateValueValuesEnum', 27)
+  type = _messages.EnumField('TypeValueValuesEnum', 28)
+  vlanTag8021q = _messages.IntegerField(29, variant=_messages.Variant.INT32)
 
 
 class InterconnectAttachmentAggregatedList(_messages.Message):
@@ -34603,6 +34624,8 @@ class InterconnectLocation(_messages.Message):
       closed and is unavailable for provisioning new Interconnects. -
       AVAILABLE: The InterconnectLocation is available for provisioning new
       Interconnects.
+    supportsPzs: [Output Only] Set to true for locations that support physical
+      zone separation. Defaults to false if the field is not present.
   """
 
   class ContinentValueValuesEnum(_messages.Enum):
@@ -34663,6 +34686,7 @@ class InterconnectLocation(_messages.Message):
   regionInfos = _messages.MessageField('InterconnectLocationRegionInfo', 13, repeated=True)
   selfLink = _messages.StringField(14)
   status = _messages.EnumField('StatusValueValuesEnum', 15)
+  supportsPzs = _messages.BooleanField(16)
 
 
 class InterconnectLocationList(_messages.Message):
@@ -46256,10 +46280,19 @@ class Route(_messages.Message):
   the VPC network to a specific destination. This destination can be inside or
   outside the VPC network. For more information, read the Routes overview.
 
+  Enums:
+    RouteTypeValueValuesEnum: [Output Only] The type of this route, which can
+      be one of the following values: - 'TRANSIT' for a transit route that
+      this router learned from another Cloud Router and will readvertise to
+      one of its BGP peers - 'SUBNET' for a route from a subnet of the VPC -
+      'BGP' for a route learned from a BGP peer of this router - 'STATIC' for
+      a static route
+
   Messages:
     WarningsValueListEntry: A WarningsValueListEntry object.
 
   Fields:
+    asPaths: [Output Only] AS path.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this field
@@ -46305,12 +46338,36 @@ class Route(_messages.Message):
       length. In cases where multiple routes have equal prefix length, the one
       with the lowest-numbered priority value wins. The default value is
       `1000`. The priority value must be from `0` to `65535`, inclusive.
+    routeType: [Output Only] The type of this route, which can be one of the
+      following values: - 'TRANSIT' for a transit route that this router
+      learned from another Cloud Router and will readvertise to one of its BGP
+      peers - 'SUBNET' for a route from a subnet of the VPC - 'BGP' for a
+      route learned from a BGP peer of this router - 'STATIC' for a static
+      route
     selfLink: [Output Only] Server-defined fully-qualified URL for this
       resource.
     tags: A list of instance tags to which this route applies.
     warnings: [Output Only] If potential misconfigurations are detected for
       this route, this field will be populated with warning messages.
   """
+
+  class RouteTypeValueValuesEnum(_messages.Enum):
+    r"""[Output Only] The type of this route, which can be one of the
+    following values: - 'TRANSIT' for a transit route that this router learned
+    from another Cloud Router and will readvertise to one of its BGP peers -
+    'SUBNET' for a route from a subnet of the VPC - 'BGP' for a route learned
+    from a BGP peer of this router - 'STATIC' for a static route
+
+    Values:
+      BGP: <no description>
+      STATIC: <no description>
+      SUBNET: <no description>
+      TRANSIT: <no description>
+    """
+    BGP = 0
+    STATIC = 1
+    SUBNET = 2
+    TRANSIT = 3
 
   class WarningsValueListEntry(_messages.Message):
     r"""A WarningsValueListEntry object.
@@ -46434,24 +46491,75 @@ class Route(_messages.Message):
     data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
     message = _messages.StringField(3)
 
-  creationTimestamp = _messages.StringField(1)
-  description = _messages.StringField(2)
-  destRange = _messages.StringField(3)
-  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(5, default='compute#route')
-  name = _messages.StringField(6)
-  network = _messages.StringField(7)
-  nextHopGateway = _messages.StringField(8)
-  nextHopIlb = _messages.StringField(9)
-  nextHopInstance = _messages.StringField(10)
-  nextHopIp = _messages.StringField(11)
-  nextHopNetwork = _messages.StringField(12)
-  nextHopPeering = _messages.StringField(13)
-  nextHopVpnTunnel = _messages.StringField(14)
-  priority = _messages.IntegerField(15, variant=_messages.Variant.UINT32)
-  selfLink = _messages.StringField(16)
-  tags = _messages.StringField(17, repeated=True)
-  warnings = _messages.MessageField('WarningsValueListEntry', 18, repeated=True)
+  asPaths = _messages.MessageField('RouteAsPath', 1, repeated=True)
+  creationTimestamp = _messages.StringField(2)
+  description = _messages.StringField(3)
+  destRange = _messages.StringField(4)
+  id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(6, default='compute#route')
+  name = _messages.StringField(7)
+  network = _messages.StringField(8)
+  nextHopGateway = _messages.StringField(9)
+  nextHopIlb = _messages.StringField(10)
+  nextHopInstance = _messages.StringField(11)
+  nextHopIp = _messages.StringField(12)
+  nextHopNetwork = _messages.StringField(13)
+  nextHopPeering = _messages.StringField(14)
+  nextHopVpnTunnel = _messages.StringField(15)
+  priority = _messages.IntegerField(16, variant=_messages.Variant.UINT32)
+  routeType = _messages.EnumField('RouteTypeValueValuesEnum', 17)
+  selfLink = _messages.StringField(18)
+  tags = _messages.StringField(19, repeated=True)
+  warnings = _messages.MessageField('WarningsValueListEntry', 20, repeated=True)
+
+
+class RouteAsPath(_messages.Message):
+  r"""A RouteAsPath object.
+
+  Enums:
+    PathSegmentTypeValueValuesEnum: [Output Only] The type of the AS Path,
+      which can be one of the following values: - 'AS_SET': unordered set of
+      autonomous systems that the route in has traversed - 'AS_SEQUENCE':
+      ordered set of autonomous systems that the route has traversed -
+      'AS_CONFED_SEQUENCE': ordered set of Member Autonomous Systems in the
+      local confederation that the route has traversed - 'AS_CONFED_SET':
+      unordered set of Member Autonomous Systems in the local confederation
+      that the route has traversed
+
+  Fields:
+    asLists: [Output Only] The AS numbers of the AS Path.
+    pathSegmentType: [Output Only] The type of the AS Path, which can be one
+      of the following values: - 'AS_SET': unordered set of autonomous systems
+      that the route in has traversed - 'AS_SEQUENCE': ordered set of
+      autonomous systems that the route has traversed - 'AS_CONFED_SEQUENCE':
+      ordered set of Member Autonomous Systems in the local confederation that
+      the route has traversed - 'AS_CONFED_SET': unordered set of Member
+      Autonomous Systems in the local confederation that the route has
+      traversed
+  """
+
+  class PathSegmentTypeValueValuesEnum(_messages.Enum):
+    r"""[Output Only] The type of the AS Path, which can be one of the
+    following values: - 'AS_SET': unordered set of autonomous systems that the
+    route in has traversed - 'AS_SEQUENCE': ordered set of autonomous systems
+    that the route has traversed - 'AS_CONFED_SEQUENCE': ordered set of Member
+    Autonomous Systems in the local confederation that the route has traversed
+    - 'AS_CONFED_SET': unordered set of Member Autonomous Systems in the local
+    confederation that the route has traversed
+
+    Values:
+      AS_CONFED_SEQUENCE: <no description>
+      AS_CONFED_SET: <no description>
+      AS_SEQUENCE: <no description>
+      AS_SET: <no description>
+    """
+    AS_CONFED_SEQUENCE = 0
+    AS_CONFED_SET = 1
+    AS_SEQUENCE = 2
+    AS_SET = 3
+
+  asLists = _messages.IntegerField(1, repeated=True, variant=_messages.Variant.UINT32)
+  pathSegmentType = _messages.EnumField('PathSegmentTypeValueValuesEnum', 2)
 
 
 class RouteList(_messages.Message):
@@ -46948,6 +47056,7 @@ class RouterBgpPeer(_messages.Message):
     advertisedRoutePriority: The priority of routes advertised to this BGP
       peer. Where there is more than one matching route of maximum length, the
       routes with the lowest priority value win.
+    bfd: BFD configuration for the BGP peering.
     enable: The status of the BGP peer connection. If set to FALSE, any active
       session with the peer is terminated and all associated routing
       information is removed. If set to TRUE, the peer connection can be
@@ -47038,14 +47147,70 @@ class RouterBgpPeer(_messages.Message):
   advertisedGroups = _messages.EnumField('AdvertisedGroupsValueListEntryValuesEnum', 2, repeated=True)
   advertisedIpRanges = _messages.MessageField('RouterAdvertisedIpRange', 3, repeated=True)
   advertisedRoutePriority = _messages.IntegerField(4, variant=_messages.Variant.UINT32)
-  enable = _messages.EnumField('EnableValueValuesEnum', 5)
-  interfaceName = _messages.StringField(6)
-  ipAddress = _messages.StringField(7)
-  managementType = _messages.EnumField('ManagementTypeValueValuesEnum', 8)
-  name = _messages.StringField(9)
-  peerAsn = _messages.IntegerField(10, variant=_messages.Variant.UINT32)
-  peerIpAddress = _messages.StringField(11)
-  routerApplianceInstance = _messages.StringField(12)
+  bfd = _messages.MessageField('RouterBgpPeerBfd', 5)
+  enable = _messages.EnumField('EnableValueValuesEnum', 6)
+  interfaceName = _messages.StringField(7)
+  ipAddress = _messages.StringField(8)
+  managementType = _messages.EnumField('ManagementTypeValueValuesEnum', 9)
+  name = _messages.StringField(10)
+  peerAsn = _messages.IntegerField(11, variant=_messages.Variant.UINT32)
+  peerIpAddress = _messages.StringField(12)
+  routerApplianceInstance = _messages.StringField(13)
+
+
+class RouterBgpPeerBfd(_messages.Message):
+  r"""A RouterBgpPeerBfd object.
+
+  Enums:
+    SessionInitializationModeValueValuesEnum: The BFD session initialization
+      mode for this BGP peer. If set to ACTIVE, the Cloud Router will initiate
+      the BFD session for this BGP peer. If set to PASSIVE, the Cloud Router
+      will wait for the peer router to initiate the BFD session for this BGP
+      peer. If set to DISABLED, BFD is disabled for this BGP peer. The default
+      is PASSIVE.
+
+  Fields:
+    minReceiveInterval: The minimum interval, in milliseconds, between BFD
+      control packets received from the peer router. The actual value is
+      negotiated between the two routers and is equal to the greater of this
+      value and the transmit interval of the other router. If set, this value
+      must be between 1000 and 30000. The default is 1000.
+    minTransmitInterval: The minimum interval, in milliseconds, between BFD
+      control packets transmitted to the peer router. The actual value is
+      negotiated between the two routers and is equal to the greater of this
+      value and the corresponding receive interval of the other router. If
+      set, this value must be between 1000 and 30000. The default is 1000.
+    multiplier: The number of consecutive BFD packets that must be missed
+      before BFD declares that a peer is unavailable. If set, the value must
+      be a value between 5 and 16. The default is 5.
+    sessionInitializationMode: The BFD session initialization mode for this
+      BGP peer. If set to ACTIVE, the Cloud Router will initiate the BFD
+      session for this BGP peer. If set to PASSIVE, the Cloud Router will wait
+      for the peer router to initiate the BFD session for this BGP peer. If
+      set to DISABLED, BFD is disabled for this BGP peer. The default is
+      PASSIVE.
+  """
+
+  class SessionInitializationModeValueValuesEnum(_messages.Enum):
+    r"""The BFD session initialization mode for this BGP peer. If set to
+    ACTIVE, the Cloud Router will initiate the BFD session for this BGP peer.
+    If set to PASSIVE, the Cloud Router will wait for the peer router to
+    initiate the BFD session for this BGP peer. If set to DISABLED, BFD is
+    disabled for this BGP peer. The default is PASSIVE.
+
+    Values:
+      ACTIVE: <no description>
+      DISABLED: <no description>
+      PASSIVE: <no description>
+    """
+    ACTIVE = 0
+    DISABLED = 1
+    PASSIVE = 2
+
+  minReceiveInterval = _messages.IntegerField(1, variant=_messages.Variant.UINT32)
+  minTransmitInterval = _messages.IntegerField(2, variant=_messages.Variant.UINT32)
+  multiplier = _messages.IntegerField(3, variant=_messages.Variant.UINT32)
+  sessionInitializationMode = _messages.EnumField('SessionInitializationModeValueValuesEnum', 4)
 
 
 class RouterInterface(_messages.Message):
@@ -47338,6 +47503,7 @@ class RouterNat(_messages.Message):
     natIps: A list of URLs of the IP resources used for this Nat service.
       These IP addresses must be valid static external IP addresses assigned
       to the project.
+    rules: A list of rules associated with this NAT.
     sourceSubnetworkIpRangesToNat: Specify the Nat option, which can take one
       of the following values: - ALL_SUBNETWORKS_ALL_IP_RANGES: All of the IP
       ranges in every Subnetwork are allowed to Nat. -
@@ -47353,6 +47519,8 @@ class RouterNat(_messages.Message):
       selected for the SubnetworkIpRangeToNatOption above.
     tcpEstablishedIdleTimeoutSec: Timeout (in seconds) for TCP established
       connections. Defaults to 1200s if not set.
+    tcpTimeWaitTimeoutSec: Timeout (in seconds) for TCP connections that are
+      in TIME_WAIT state. Defaults to 120s if not set.
     tcpTransitoryIdleTimeoutSec: Timeout (in seconds) for TCP transitory
       connections. Defaults to 30s if not set.
     udpIdleTimeoutSec: Timeout (in seconds) for UDP connections. Defaults to
@@ -47408,11 +47576,13 @@ class RouterNat(_messages.Message):
   name = _messages.StringField(6)
   natIpAllocateOption = _messages.EnumField('NatIpAllocateOptionValueValuesEnum', 7)
   natIps = _messages.StringField(8, repeated=True)
-  sourceSubnetworkIpRangesToNat = _messages.EnumField('SourceSubnetworkIpRangesToNatValueValuesEnum', 9)
-  subnetworks = _messages.MessageField('RouterNatSubnetworkToNat', 10, repeated=True)
-  tcpEstablishedIdleTimeoutSec = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  tcpTransitoryIdleTimeoutSec = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  udpIdleTimeoutSec = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  rules = _messages.MessageField('RouterNatRule', 9, repeated=True)
+  sourceSubnetworkIpRangesToNat = _messages.EnumField('SourceSubnetworkIpRangesToNatValueValuesEnum', 10)
+  subnetworks = _messages.MessageField('RouterNatSubnetworkToNat', 11, repeated=True)
+  tcpEstablishedIdleTimeoutSec = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  tcpTimeWaitTimeoutSec = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  tcpTransitoryIdleTimeoutSec = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  udpIdleTimeoutSec = _messages.IntegerField(15, variant=_messages.Variant.INT32)
 
 
 class RouterNatLogConfig(_messages.Message):
@@ -47455,6 +47625,48 @@ class RouterNatLogConfig(_messages.Message):
 
   enable = _messages.BooleanField(1)
   filter = _messages.EnumField('FilterValueValuesEnum', 2)
+
+
+class RouterNatRule(_messages.Message):
+  r"""A RouterNatRule object.
+
+  Fields:
+    action: The action to be enforced for traffic that matches this rule.
+    description: An optional description of this rule.
+    match: CEL expression that specifies the match condition that egress
+      traffic from a VM is evaluated against. If it evaluates to true, the
+      corresponding `action` is enforced. The following examples are valid
+      match expressions for public NAT: "inIpRange(destination.ip,
+      '1.1.0.0/16') || inIpRange(destination.ip, '2.2.0.0/16')"
+      "destination.ip == '1.1.0.1' || destination.ip == '8.8.8.8'" The
+      following example is a valid match expression for private NAT:
+      "nexthop.hub == '/projects/my-project/global/hub/hub-1'"
+    ruleNumber: An integer uniquely identifying a rule in the list. The rule
+      number must be a positive value between 0 and 65000, and must be unique
+      among rules within a NAT.
+  """
+
+  action = _messages.MessageField('RouterNatRuleAction', 1)
+  description = _messages.StringField(2)
+  match = _messages.StringField(3)
+  ruleNumber = _messages.IntegerField(4, variant=_messages.Variant.UINT32)
+
+
+class RouterNatRuleAction(_messages.Message):
+  r"""A RouterNatRuleAction object.
+
+  Fields:
+    sourceNatActiveIps: A list of URLs of the IP resources used for this NAT
+      rule. These IP addresses must be valid static external IP addresses
+      assigned to the project. This field is used for public NAT.
+    sourceNatDrainIps: A list of URLs of the IP resources to be drained. These
+      IPs must be valid static external IPs that have been assigned to the
+      NAT. These IPs should be used for updating/patching a NAT rule only.
+      This field is used for public NAT.
+  """
+
+  sourceNatActiveIps = _messages.StringField(1, repeated=True)
+  sourceNatDrainIps = _messages.StringField(2, repeated=True)
 
 
 class RouterNatSubnetworkToNat(_messages.Message):
@@ -47579,6 +47791,7 @@ class RouterStatusNatStatus(_messages.Message):
     name: Unique name of this NAT.
     numVmEndpointsWithNatMappings: Number of VM endpoints (i.e., Nics) that
       can use NAT.
+    ruleStatus: Status of rules in this NAT.
     userAllocatedNatIpResources: A list of fully qualified URLs of reserved IP
       address resources.
     userAllocatedNatIps: A list of IPs user-allocated for NAT. They will be
@@ -47591,8 +47804,32 @@ class RouterStatusNatStatus(_messages.Message):
   minExtraNatIpsNeeded = _messages.IntegerField(4, variant=_messages.Variant.INT32)
   name = _messages.StringField(5)
   numVmEndpointsWithNatMappings = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  userAllocatedNatIpResources = _messages.StringField(7, repeated=True)
-  userAllocatedNatIps = _messages.StringField(8, repeated=True)
+  ruleStatus = _messages.MessageField('RouterStatusNatStatusNatRuleStatus', 7, repeated=True)
+  userAllocatedNatIpResources = _messages.StringField(8, repeated=True)
+  userAllocatedNatIps = _messages.StringField(9, repeated=True)
+
+
+class RouterStatusNatStatusNatRuleStatus(_messages.Message):
+  r"""Status of a NAT Rule contained in this NAT.
+
+  Fields:
+    activeNatIps: A list of active IPs for NAT. Example: ["1.1.1.1",
+      "179.12.26.133"].
+    drainNatIps: A list of IPs for NAT that are in drain mode. Example:
+      ["1.1.1.1", "179.12.26.133"].
+    minExtraIpsNeeded: The number of extra IPs to allocate. This will be
+      greater than 0 only if the existing IPs in this NAT Rule are NOT enough
+      to allow all configured VMs to use NAT.
+    numVmEndpointsWithNatMappings: Number of VM endpoints (i.e., NICs) that
+      have NAT Mappings from this NAT Rule.
+    ruleNumber: Rule number of the rule.
+  """
+
+  activeNatIps = _messages.StringField(1, repeated=True)
+  drainNatIps = _messages.StringField(2, repeated=True)
+  minExtraIpsNeeded = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  numVmEndpointsWithNatMappings = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  ruleNumber = _messages.IntegerField(5, variant=_messages.Variant.INT32)
 
 
 class RouterStatusResponse(_messages.Message):
@@ -50859,9 +51096,8 @@ class Subnetwork(_messages.Message):
       characters must be a dash, lowercase letter, or digit, except the last
       character, which cannot be a dash.
     network: The URL of the network to which this subnetwork belongs, provided
-      by the client when initially creating the subnetwork. Only networks that
-      are in the distributed mode can have subnetworks. This field can be set
-      only at resource creation time.
+      by the client when initially creating the subnetwork. This field can be
+      set only at resource creation time.
     privateIpGoogleAccess: Whether the VMs in this subnet can access Google
       services without assigned external IP addresses. This field can be both
       set at resource creation time and updated using
@@ -53016,6 +53252,9 @@ class TargetInstance(_messages.Message):
       cannot be a dash.
     natPolicy: NAT option controlling how IPs are NAT'ed to the instance.
       Currently only NO_NAT (default value) is supported.
+    network: The URL of the network this target instance uses to forward
+      traffic. If not specified, the traffic will be forwarded to the network
+      that the default network interface belongs to.
     selfLink: [Output Only] Server-defined URL for the resource.
     zone: [Output Only] URL of the zone where the target instance resides. You
       must specify this field as part of the HTTP request URL. It is not
@@ -53038,8 +53277,9 @@ class TargetInstance(_messages.Message):
   kind = _messages.StringField(5, default='compute#targetInstance')
   name = _messages.StringField(6)
   natPolicy = _messages.EnumField('NatPolicyValueValuesEnum', 7)
-  selfLink = _messages.StringField(8)
-  zone = _messages.StringField(9)
+  network = _messages.StringField(8)
+  selfLink = _messages.StringField(9)
+  zone = _messages.StringField(10)
 
 
 class TargetInstanceAggregatedList(_messages.Message):

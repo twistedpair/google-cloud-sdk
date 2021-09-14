@@ -258,6 +258,7 @@ class TemplateArguments(object):
   subnetwork = None
   worker_machine_type = None
   staging_location = None
+  temp_location = None
   kms_key_name = None
   disable_public_ips = None
   parameters = None
@@ -283,6 +284,7 @@ class TemplateArguments(object):
                subnetwork=None,
                worker_machine_type=None,
                staging_location=None,
+               temp_location=None,
                kms_key_name=None,
                disable_public_ips=None,
                parameters=None,
@@ -306,6 +308,7 @@ class TemplateArguments(object):
     self.subnetwork = subnetwork
     self.worker_machine_type = worker_machine_type
     self.staging_location = staging_location
+    self.temp_location = temp_location
     self.kms_key_name = kms_key_name
     self.disable_public_ips = disable_public_ips
     self.parameters = parameters
@@ -787,7 +790,9 @@ class Templates(object):
           network=template_args.network,
           subnetwork=template_args.subnetwork,
           machineType=template_args.worker_machine_type,
-          tempLocation=template_args.staging_location,
+          tempLocation=template_args.temp_location
+          if template_args.temp_location else template_args.staging_location,
+          stagingLocation=template_args.staging_location,
           kmsKeyName=template_args.kms_key_name,
           ipConfiguration=ip_configuration,
           workerRegion=template_args.worker_region,
@@ -931,7 +936,9 @@ class Templates(object):
                 network=template_args.network,
                 subnetwork=template_args.subnetwork,
                 machineType=template_args.worker_machine_type,
-                tempLocation=template_args.staging_location,
+                tempLocation=template_args.temp_location if template_args
+                .temp_location else template_args.staging_location,
+                stagingLocation=template_args.staging_location,
                 kmsKeyName=template_args.kms_key_name,
                 ipConfiguration=ip_configuration,
                 workerRegion=template_args.worker_region,

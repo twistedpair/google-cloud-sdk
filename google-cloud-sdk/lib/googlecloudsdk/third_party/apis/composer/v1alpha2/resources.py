@@ -49,6 +49,28 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_ENVIRONMENTS_DAGS = (
+      'projects.locations.environments.dags',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/environments/'
+              '{environmentsId}/dags/{dagsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_ENVIRONMENTS_DAGS_DAGRUNS = (
+      'projects.locations.environments.dags.dagRuns',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/environments/'
+              '{environmentsId}/dags/{dagsId}/dagRuns/{dagRunsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_OPERATIONS = (
       'projects.locations.operations',
       '{+name}',

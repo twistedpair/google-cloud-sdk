@@ -1433,6 +1433,14 @@ MAP = {
                 default_version=False,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
+        'v2beta':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.iam.v2beta',
+                client_classpath='iam_v2beta_client.IamV2beta',
+                messages_modulepath='iam_v2beta_messages',
+                default_version=False,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
     },
     'iamcredentials': {
         'v1':

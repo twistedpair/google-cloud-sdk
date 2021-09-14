@@ -48,3 +48,8 @@ def GetEtagFlag():
 def GetPolicyFileFlag():
   return base.Argument(
       '--policy-file', required=True, help='The contents of the policy.')
+
+
+def GetPageTokenFlag():
+  return base.Argument(
+      '--page_token', help='The page token received from a previous call.')

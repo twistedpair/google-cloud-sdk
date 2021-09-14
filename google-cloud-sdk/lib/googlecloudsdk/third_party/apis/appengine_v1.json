@@ -2268,6 +2268,120 @@
           "type": "boolean"
         }
       }
+    },
+    "GoogleAppengineV2OperationMetadata": {
+      "id": "GoogleAppengineV2OperationMetadata",
+      "description": "Represents the metadata of the long-running operation.",
+      "type": "object",
+      "properties": {
+        "createTime": {
+          "description": "Output only. The time the operation was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "Output only. The time the operation finished running.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "target": {
+          "description": "Output only. Server-defined resource path for the target of the operation.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "verb": {
+          "description": "Output only. Name of the verb executed by the operation.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "statusMessage": {
+          "description": "Output only. Human-readable status of the operation, if any.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "requestedCancellation": {
+          "description": "Output only. Identifies whether the user has requested cancellation of the operation. Operations that have been cancelled successfully have Operation.error value with a google.rpc.Status.code of 1, corresponding to Code.CANCELLED.",
+          "readOnly": true,
+          "type": "boolean"
+        },
+        "apiVersion": {
+          "description": "Output only. API version used to start the operation.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "ephemeralMessage": {
+          "description": "Output only. Ephemeral message that may change every time the operation is polled.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "warning": {
+          "description": "Output only. Durable messages that persist on every operation poll.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GoogleAppengineV2mainOperationMetadata": {
+      "id": "GoogleAppengineV2mainOperationMetadata",
+      "description": "Represents the metadata of the long-running operation.",
+      "type": "object",
+      "properties": {
+        "createTime": {
+          "description": "Output only. The time the operation was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "Output only. The time the operation finished running.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "target": {
+          "description": "Output only. Server-defined resource path for the target of the operation.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "verb": {
+          "description": "Output only. Name of the verb executed by the operation.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "statusMessage": {
+          "description": "Output only. Human-readable status of the operation, if any.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "requestedCancellation": {
+          "description": "Output only. Identifies whether the user has requested cancellation of the operation. Operations that have been cancelled successfully have Operation.error value with a google.rpc.Status.code of 1, corresponding to Code.CANCELLED.",
+          "readOnly": true,
+          "type": "boolean"
+        },
+        "apiVersion": {
+          "description": "Output only. API version used to start the operation.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "ephemeralMessage": {
+          "description": "Output only. Ephemeral message that may change every time the operation is polled.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "warning": {
+          "description": "Output only. Durable messages that persist on every operation poll.",
+          "readOnly": true,
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
     }
   },
   "resources": {

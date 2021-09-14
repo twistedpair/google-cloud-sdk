@@ -2633,6 +2633,153 @@
       "properties": {
       }
     },
+    "Session": {
+      "id": "Session",
+      "description": "A representation of a session in the service.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Optional. The resource name of the session.",
+          "type": "string"
+        },
+        "uuid": {
+          "description": "Output only. A session UUID (Unique Universal Identifier). The service generates this value when it creates the session.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. The time when the session was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "jupyterSession": {
+          "description": "Optional. Jupyter session config.",
+          "$ref": "JupyterConfig"
+        },
+        "spark": {
+          "description": "Optional. Spark engine config.",
+          "$ref": "SparkConfig"
+        },
+        "runtimeInfo": {
+          "description": "Output only. Runtime information about session execution.",
+          "readOnly": true,
+          "$ref": "RuntimeInfo"
+        },
+        "state": {
+          "description": "Output only. A state of the session.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "The session state is unknown.",
+            "The session is created before running.",
+            "The session is running.",
+            "The session is terminating.",
+            "The session completed successfully.",
+            "The session is no longer running due to an error."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "CREATING",
+            "ACTIVE",
+            "TERMINATING",
+            "SUCCEEDED",
+            "FAILED"
+          ]
+        },
+        "stateMessage": {
+          "description": "Output only. Session state details, such as a failure description if the state is FAILED.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "stateTime": {
+          "description": "Output only. The time when the session entered a current state.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "creator": {
+          "description": "Output only. The email address of the user who created the session.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "labels": {
+          "description": "Optional. The labels to associate with this session. Label keys must contain 1 to 63 characters, and must conform to RFC 1035 (https:\/\/www.ietf.org\/rfc\/rfc1035.txt). Label values may be empty, but, if present, must contain 1 to 63 characters, and must conform to RFC 1035 (https:\/\/www.ietf.org\/rfc\/rfc1035.txt). No more than 32 labels can be associated with a session.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "runtimeConfig": {
+          "description": "Optional. Runtime configuration for the session execution.",
+          "$ref": "RuntimeConfig"
+        },
+        "environmentConfig": {
+          "description": "Optional. Environment configuration for the session execution.",
+          "$ref": "EnvironmentConfig"
+        }
+      }
+    },
+    "JupyterConfig": {
+      "id": "JupyterConfig",
+      "description": "Jupyter configuration for an interactive session.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "SparkConfig": {
+      "id": "SparkConfig",
+      "description": "Apache Spark (https:\/\/spark.apache.org) engine for an interactive session.",
+      "type": "object",
+      "properties": {
+        "jarFileUris": {
+          "description": "Optional. HCFS URIs of jar files to add to the classpath of the Spark driver and tasks.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "fileUris": {
+          "description": "Optional. HCFS URIs of files to be placed in the working directory of each executor.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "archiveUris": {
+          "description": "Optional. HCFS URIs of archives to be extracted into the working directory of each executor. Supported file types: .jar, .tar, .tar.gz, .tgz, and .zip.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "ListSessionsResponse": {
+      "id": "ListSessionsResponse",
+      "description": "A list of interactive sessions.",
+      "type": "object",
+      "properties": {
+        "sessions": {
+          "description": "The sessions from the specified collection.",
+          "type": "array",
+          "items": {
+            "$ref": "Session"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token, which can be sent as page_token to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "type": "string"
+        }
+      }
+    },
+    "TerminateSessionRequest": {
+      "id": "TerminateSessionRequest",
+      "description": "A request to terminate an interactive session.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "WorkflowTemplate": {
       "id": "WorkflowTemplate",
       "description": "A Dataproc workflow template resource.",
@@ -3245,6 +3392,65 @@
         }
       }
     },
+    "SessionOperationMetadata": {
+      "id": "SessionOperationMetadata",
+      "description": "Metadata describing the Session operation.",
+      "type": "object",
+      "properties": {
+        "session": {
+          "description": "Name of the session for the operation.",
+          "type": "string"
+        },
+        "sessionUuid": {
+          "description": "Session UUID for the operation.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "The time when the operation was created.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "doneTime": {
+          "description": "The time when the operation was finished.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "operationType": {
+          "description": "The operation type.",
+          "type": "string",
+          "enumDescriptions": [
+            "Session operation type is unknown.",
+            "Create Session operation type.",
+            "Terminate Session operation type.",
+            "Delete Session operation type."
+          ],
+          "enum": [
+            "SESSION_OPERATION_TYPE_UNSPECIFIED",
+            "CREATE",
+            "TERMINATE",
+            "DELETE"
+          ]
+        },
+        "description": {
+          "description": "Short description of the operation.",
+          "type": "string"
+        },
+        "labels": {
+          "description": "Labels associated with the operation.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "warnings": {
+          "description": "Warnings encountered during operation execution.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "WorkflowMetadata": {
       "id": "WorkflowMetadata",
       "description": "A Dataproc workflow template resource.",
@@ -3796,6 +4002,167 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Deletes the batch workload resource. If the batch is not in terminal state, the delete fails and the response returns FAILED_PRECONDITION."
+                }
+              }
+            },
+            "sessions": {
+              "methods": {
+                "create": {
+                  "id": "dataproc.projects.locations.sessions.create",
+                  "path": "v1/{+parent}/sessions",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/sessions",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent resource where this session will be created.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "sessionId": {
+                      "description": "Optional. The ID to use for the session, which becomes the final component of the session's resource name.This value must be 4-63 characters. Valid characters are \/a-z-\/.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "description": "Optional. A unique ID used to identify the request. If the service receives two CreateSessionRequest (https:\/\/cloud.google.com\/dataproc\/docs\/reference\/rpc\/google.cloud.dataproc.v1#google.cloud.dataproc.v1.CreateSessionRequest)s with the same ID, the second request is ignored and the first Session is created and stored in the backend is returned.Recommendation: Set this value to a UUID (https:\/\/en.wikipedia.org\/wiki\/Universally_unique_identifier).The value must contain only letters (a-z, A-Z), numbers (0-9), underscores (_), and hyphens (-). The maximum length is 40 characters.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "Session"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Create an interactive session asynchronously."
+                },
+                "get": {
+                  "id": "dataproc.projects.locations.sessions.get",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the session to retrieve.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/sessions\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Session"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets the resource representation for an interactive session."
+                },
+                "list": {
+                  "id": "dataproc.projects.locations.sessions.list",
+                  "path": "v1/{+parent}/sessions",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/sessions",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The parent, which owns this collection of sessions.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "Optional. The maximum number of sessions to return in each response. The service may return fewer than this value.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "Optional. A page token received from a previous ListSessions call. Provide this token to retrieve the subsequent page.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "Optional. A filter constraining the sessions to list. Filters are case-sensitive and have the following syntax:[field = value] AND [field [= value]] ...",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListSessionsResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists interactive sessions."
+                },
+                "terminate": {
+                  "id": "dataproc.projects.locations.sessions.terminate",
+                  "path": "v1/{+name}:terminate",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}:terminate",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the session resource to terminate.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/sessions\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "TerminateSessionRequest"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Terminates the interactive session."
+                },
+                "delete": {
+                  "id": "dataproc.projects.locations.sessions.delete",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/sessions/{sessionsId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The name of the session resource to delete.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/sessions\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes the interactive session resource. If the session is not in terminal state, it will be terminated and deleted afterwards."
                 }
               }
             },

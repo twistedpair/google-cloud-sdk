@@ -293,12 +293,24 @@ TRAINING_SERVICE_ACCOUNT = base.Argument(
       is used by default.
       """))
 
+ENABLE_WEB_ACCESS = base.Argument(
+    '--enable-web-access',
+    action='store_true',
+    required=False,
+    default=False,
+    help=textwrap.dedent("""\
+      Whether you want AI Platform Training to enable [interactive shell
+      access]
+      (https://cloud.google.com/ai-platform/training/docs/monitor-debug-interactive-shell)
+      to training containers. If set to `true`, you can access interactive
+      shells at the URIs given by TrainingOutput.web_access_uris or
+      HyperparameterOutput.web_access_uris (within TrainingOutput.trials).
+      """))
+
 
 def GetModuleNameFlag(required=True):
   return base.Argument(
-      '--module-name',
-      required=required,
-      help='Name of the module to run.')
+      '--module-name', required=required, help='Name of the module to run.')
 
 
 def GetJobDirFlag(upload_help=True, allow_local=False):

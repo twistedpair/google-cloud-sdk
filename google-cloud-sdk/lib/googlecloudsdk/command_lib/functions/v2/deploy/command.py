@@ -32,6 +32,7 @@ from googlecloudsdk.api_lib.functions.v2 import util as api_util
 from googlecloudsdk.api_lib.run import global_methods
 from googlecloudsdk.api_lib.storage import storage_api
 from googlecloudsdk.api_lib.storage import storage_util
+from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.command_lib.functions import flags
 from googlecloudsdk.command_lib.functions import labels_util
 from googlecloudsdk.command_lib.run import connection_context
@@ -117,12 +118,6 @@ _ZIP_MIME_TYPE = 'application/zip'
 
 _DEPLOYMENT_TOOL_LABEL = 'deployment-tool'
 _DEPLOYMENT_TOOL_VALUE = 'cli-gcloud'
-
-
-def _IsHttpTriggered(args):
-  return args.IsSpecified('trigger_http') or not (
-      args.trigger_topic or args.trigger_bucket or args.trigger_event_filters or
-      args.trigger_event)
 
 
 def _GcloudIgnoreCreationPredicate(directory):
@@ -378,20 +373,21 @@ def _GetServiceConfig(args, messages, existing_function):
           ])), service_updated_fields
 
 
-def _GetEventTrigger(args, messages):
-  """Constructs an EventTrigger message from the command-line arguments.
+def _GetEventTrigger(args, messages, existing_function):
+  """Gets an EventTrigger message from the command-line arguments.
 
   Args:
     args: argparse.Namespace, arguments that this command was invoked with
     messages: messages module, the GCFv2 message stubs
+    existing_function: cloudfunctions_v2alpha_messages.Function | None
 
   Returns:
     event_trigger: cloudfunctions_v2alpha_messages.EventTrigger, used to request
       events sent from another service
     updated_fields_set: frozenset, set of update mask fields
   """
-  if _IsHttpTriggered(args):
-    return None, frozenset()
+  if args.trigger_http:
+    return None, frozenset(['event_trigger'] if existing_function else [])
 
   event_filters = []
   event_type = None
@@ -417,8 +413,14 @@ def _GetEventTrigger(args, messages):
         if attr != 'type'
     ]
   else:
-    # Not expected given the implementation of _IsHttpTriggered
-    raise NotImplementedError('unknown trigger type')
+    if existing_function:
+      return existing_function.eventTrigger, frozenset()
+
+    raise calliope_exceptions.OneOfArgumentsRequiredException([
+        '--trigger-topic', '--trigger-bucket', '--trigger-http',
+        '--trigger-event', '--trigger-event-filters'
+    ], 'You must specify a trigger when deploying a new function.')
+
   event_trigger = messages.EventTrigger(
       eventFilters=event_filters,
       eventType=event_type,
@@ -713,9 +715,6 @@ def _SetInvokerPermissions(args, function, is_new_function):
       function.serviceConfig.service,
       _CLOUD_RUN_SERVICE_COLLECTION_ONE_PLATFORM)
 
-  if not _IsHttpTriggered(args):
-    return
-
   # This condition will be truthy if the user provided either
   # `--allow-unauthenticated` or `--no-allow-unauthenticated`. In other
   # words, it is only falsey when neither of those two flags is provided.
@@ -852,7 +851,9 @@ def Run(args, release_track):
   existing_function = _GetFunction(client, messages, function_ref)
   is_new_function = existing_function is None
 
-  event_trigger, trigger_updated_fields = _GetEventTrigger(args, messages)
+  event_trigger, trigger_updated_fields = _GetEventTrigger(
+      args, messages, existing_function)
+
   build_config, build_updated_fields = _GetBuildConfig(args, client, messages,
                                                        function_ref.locationsId,
                                                        function_ref.Name(),
@@ -885,7 +886,8 @@ def Run(args, release_track):
       messages.CloudfunctionsProjectsLocationsFunctionsGetRequest(
           name=function_ref.RelativeName()))
 
-  _SetInvokerPermissions(args, function, is_new_function)
+  if event_trigger is None:
+    _SetInvokerPermissions(args, function, is_new_function)
 
   log.status.Print(
       'You can view your function in the Cloud Console here: ' +

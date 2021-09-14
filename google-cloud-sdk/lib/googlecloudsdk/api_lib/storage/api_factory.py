@@ -25,6 +25,10 @@ from googlecloudsdk.api_lib.storage import s3_api
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.core import properties
 
+_INVALID_PROVIDER_PREFIX_MESSAGE = (
+    'Invalid provider. Valid provider prefixes: {}'.format(', '.join(
+        sorted([scheme.value for scheme in storage_url.VALID_CLOUD_SCHEMES]))))
+
 # Module variable for holding one API instance per thread per provider.
 _cloud_api_thread_local_storage = threading.local()
 
@@ -46,7 +50,7 @@ def _get_api_class(provider):
   elif provider == storage_url.ProviderPrefix.S3:
     return s3_api.S3Api
   else:
-    raise ValueError('Provider must be a valid storage_url.ProviderPrefix.')
+    raise ValueError(_INVALID_PROVIDER_PREFIX_MESSAGE)
 
 
 def get_api(provider):

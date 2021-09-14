@@ -288,6 +288,7 @@ def ParseUpdateOptionsBase(args, locations):
       disable_database_encryption=args.disable_database_encryption,
       enable_vertical_pod_autoscaling=args.enable_vertical_pod_autoscaling,
       enable_autoprovisioning=args.enable_autoprovisioning,
+      enable_mesh_certificates=args.enable_mesh_certificates,
       autoprovisioning_config_file=args.autoprovisioning_config_file,
       autoprovisioning_service_account=args.autoprovisioning_service_account,
       autoprovisioning_scopes=args.autoprovisioning_scopes,
