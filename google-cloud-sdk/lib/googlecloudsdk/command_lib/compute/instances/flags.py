@@ -1575,6 +1575,31 @@ def AddHostErrorTimeoutSecondsArgs(parser):
     """)
 
 
+def AddInstanceTerminationActionVmArgs(parser):
+  """Set arguments for specifing the termination action for the instance."""
+  parser.add_argument(
+      '--instance-termination-action',
+      choices={
+          'STOP': 'Stop the VM without preserving memory. '
+                  'The VM can be restarted later.',
+          'DELETE': 'Permanently delete the VM.'
+      },
+      type=arg_utils.ChoiceToEnumName,
+      help="""\
+      Specifies the termination action that will be taken upon VM preemption.
+      """)
+
+
+def ValidateInstanceScheduling(args):
+  """Validates instance scheduling related flags."""
+
+  if args.IsSpecified('instance_termination_action'):
+    if not args.IsSpecified('provisioning_model'):
+      raise exceptions.RequiredArgumentException(
+          '--provisioning-model',
+          'required with argument `--instance-termination-action`.')
+
+
 def AddNetworkArgs(parser):
   """Set arguments for choosing the network/subnetwork."""
   parser.add_argument(

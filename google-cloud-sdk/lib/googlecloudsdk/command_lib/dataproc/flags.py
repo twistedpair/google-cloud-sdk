@@ -108,6 +108,39 @@ def AddClusterResourceArg(parser, verb, api_version):
       required=True).AddToParser(parser)
 
 
+def GkeClusterConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='gke-cluster',
+      help_text='The GKE Cluster path.',
+  )
+
+
+def _GkeLocationAttributeConfig():
+  fallthroughs = [deps.PropertyFallthrough(properties.VALUES.dataproc.region)]
+  return concepts.ResourceParameterAttributeConfig(
+      name='gke-cluster-location',
+      help_text='GKE region for the {resource}.',
+      fallthroughs=fallthroughs)
+
+
+def _GetGkeClusterResourceSpec():
+  return concepts.ResourceSpec(
+      'container.projects.locations.clusters',
+      resource_name='gke-cluster',
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=_GkeLocationAttributeConfig(),
+      clustersId=GkeClusterConfig(),
+  )
+
+
+def AddGkeClusterResourceArg(parser):
+  concept_parsers.ConceptParser.ForResource(
+      '--gke-cluster',
+      _GetGkeClusterResourceSpec(),
+      'The GKE cluster to install Dataproc on.',
+      required=True).AddToParser(parser)
+
+
 def AddZoneFlag(parser, short_flags=True):
   """Add zone flag."""
   parser.add_argument(

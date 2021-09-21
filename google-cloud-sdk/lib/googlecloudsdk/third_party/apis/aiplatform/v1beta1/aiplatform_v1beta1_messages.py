@@ -4753,6 +4753,32 @@ class AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesBatchCreat
   runsId = _messages.StringField(3, required=True)
 
 
+class AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesBatchReadRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesBatchR
+  eadRequest object.
+
+  Fields:
+    experimentsId: A string attribute.
+    runsId: A string attribute.
+    tensorboard: Required. The resource name of the Tensorboard containing
+      TensorboardTimeSeries to read data from. Format:
+      `projects/{project}/locations/{location}/tensorboards/{tensorboard}`.
+      The TensorboardTimeSeries referenced by time_series must be sub
+      resources of this Tensorboard.
+    timeSeries: Required. The resource names of the TensorboardTimeSeries to
+      read data from. Format: `projects/{project}/locations/{location}/tensorb
+      oards/{tensorboard}/experiments/{experiment}/runs/{run}/timeSeries/{time
+      _series}`
+    timeSeriesId: A string attribute.
+  """
+
+  experimentsId = _messages.StringField(1, required=True)
+  runsId = _messages.StringField(2, required=True)
+  tensorboard = _messages.StringField(3, required=True)
+  timeSeries = _messages.StringField(4, repeated=True)
+  timeSeriesId = _messages.StringField(5, required=True)
+
+
 class AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesCreateRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesCreate
   Request object.
@@ -11304,6 +11330,16 @@ class GoogleCloudAiplatformV1CreateIndexOperationMetadata(_messages.Message):
   nearestNeighborSearchOperationMetadata = _messages.MessageField('GoogleCloudAiplatformV1NearestNeighborSearchOperationMetadata', 2)
 
 
+class GoogleCloudAiplatformV1CreateMetadataStoreOperationMetadata(_messages.Message):
+  r"""Details of operations that perform MetadataService.CreateMetadataStore.
+
+  Fields:
+    genericMetadata: Operation metadata for creating a MetadataStore.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1GenericOperationMetadata', 1)
+
+
 class GoogleCloudAiplatformV1CreateSpecialistPoolOperationMetadata(_messages.Message):
   r"""Runtime operation information for
   SpecialistPoolService.CreateSpecialistPool.
@@ -11405,6 +11441,16 @@ class GoogleCloudAiplatformV1DedicatedResources(_messages.Message):
   machineSpec = _messages.MessageField('GoogleCloudAiplatformV1MachineSpec', 2)
   maxReplicaCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   minReplicaCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudAiplatformV1DeleteMetadataStoreOperationMetadata(_messages.Message):
+  r"""Details of operations that perform MetadataService.DeleteMetadataStore.
+
+  Fields:
+    genericMetadata: Operation metadata for deleting a MetadataStore.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1GenericOperationMetadata', 1)
 
 
 class GoogleCloudAiplatformV1DeleteOperationMetadata(_messages.Message):
@@ -12941,6 +12987,84 @@ class GoogleCloudAiplatformV1NearestNeighborSearchOperationMetadataRecordError(_
   errorType = _messages.EnumField('ErrorTypeValueValuesEnum', 3)
   rawRecord = _messages.StringField(4)
   sourceGcsUri = _messages.StringField(5)
+
+
+class GoogleCloudAiplatformV1PurgeArtifactsMetadata(_messages.Message):
+  r"""Details of operations that perform MetadataService.PurgeArtifacts.
+
+  Fields:
+    genericMetadata: Operation metadata for purging Artifacts.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1GenericOperationMetadata', 1)
+
+
+class GoogleCloudAiplatformV1PurgeArtifactsResponse(_messages.Message):
+  r"""Response message for MetadataService.PurgeArtifacts.
+
+  Fields:
+    purgeCount: The number of Artifacts that this request deleted (or, if
+      `force` is false, the number of Artifacts that will be deleted). This
+      can be an estimate.
+    purgeSample: A sample of the Artifact names that will be deleted. Only
+      populated if `force` is set to false. The maximum number of samples is
+      100 (it is possible to return fewer).
+  """
+
+  purgeCount = _messages.IntegerField(1)
+  purgeSample = _messages.StringField(2, repeated=True)
+
+
+class GoogleCloudAiplatformV1PurgeContextsMetadata(_messages.Message):
+  r"""Details of operations that perform MetadataService.PurgeContexts.
+
+  Fields:
+    genericMetadata: Operation metadata for purging Contexts.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1GenericOperationMetadata', 1)
+
+
+class GoogleCloudAiplatformV1PurgeContextsResponse(_messages.Message):
+  r"""Response message for MetadataService.PurgeContexts.
+
+  Fields:
+    purgeCount: The number of Contexts that this request deleted (or, if
+      `force` is false, the number of Contexts that will be deleted). This can
+      be an estimate.
+    purgeSample: A sample of the Context names that will be deleted. Only
+      populated if `force` is set to false. The maximum number of samples is
+      100 (it is possible to return fewer).
+  """
+
+  purgeCount = _messages.IntegerField(1)
+  purgeSample = _messages.StringField(2, repeated=True)
+
+
+class GoogleCloudAiplatformV1PurgeExecutionsMetadata(_messages.Message):
+  r"""Details of operations that perform MetadataService.PurgeExecutions.
+
+  Fields:
+    genericMetadata: Operation metadata for purging Executions.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1GenericOperationMetadata', 1)
+
+
+class GoogleCloudAiplatformV1PurgeExecutionsResponse(_messages.Message):
+  r"""Response message for MetadataService.PurgeExecutions.
+
+  Fields:
+    purgeCount: The number of Executions that this request deleted (or, if
+      `force` is false, the number of Executions that will be deleted). This
+      can be an estimate.
+    purgeSample: A sample of the Execution names that will be deleted. Only
+      populated if `force` is set to false. The maximum number of samples is
+      100 (it is possible to return fewer).
+  """
+
+  purgeCount = _messages.IntegerField(1)
+  purgeSample = _messages.StringField(2, repeated=True)
 
 
 class GoogleCloudAiplatformV1PythonPackageSpec(_messages.Message):
@@ -14942,12 +15066,15 @@ class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlTablesMetadata(_me
   r"""Model metadata specific to AutoML Tables.
 
   Fields:
+    evaluatedDataItemsBigqueryUri: BigQuery destination uri for exported
+      evaluated examples.
     trainCostMilliNodeHours: Output only. The actual training cost of the
       model, expressed in milli node hours, i.e. 1,000 value in this field
       means 1 node hour. Guaranteed to not exceed the train budget.
   """
 
-  trainCostMilliNodeHours = _messages.IntegerField(1)
+  evaluatedDataItemsBigqueryUri = _messages.StringField(1)
+  trainCostMilliNodeHours = _messages.IntegerField(2)
 
 
 class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlTextClassification(_messages.Message):
@@ -18984,6 +19111,17 @@ class GoogleCloudAiplatformV1beta1BatchReadFeatureValuesResponse(_messages.Messa
   r"""Response message for FeaturestoreService.BatchReadFeatureValues."""
 
 
+class GoogleCloudAiplatformV1beta1BatchReadTensorboardTimeSeriesDataResponse(_messages.Message):
+  r"""Response message for
+  TensorboardService.BatchReadTensorboardTimeSeriesData.
+
+  Fields:
+    timeSeriesData: The returned time series data.
+  """
+
+  timeSeriesData = _messages.MessageField('GoogleCloudAiplatformV1beta1TimeSeriesData', 1, repeated=True)
+
+
 class GoogleCloudAiplatformV1beta1BigQueryDestination(_messages.Message):
   r"""The BigQuery location for the output content.
 
@@ -22011,6 +22149,9 @@ class GoogleCloudAiplatformV1beta1Featurestore(_messages.Message):
 
   Fields:
     createTime: Output only. Timestamp when this Featurestore was created.
+    encryptionSpec: Optional. Customer-managed encryption key spec for data
+      storage. If set, both of the online and offline data storage will be
+      secured by this key.
     etag: Optional. Used to perform consistent read-modify-write updates. If
       not set, a blind "overwrite" update happens.
     labels: Optional. The labels with user-defined metadata to organize your
@@ -22082,12 +22223,13 @@ class GoogleCloudAiplatformV1beta1Featurestore(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  etag = _messages.StringField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  name = _messages.StringField(4)
-  onlineServingConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1FeaturestoreOnlineServingConfig', 5)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
-  updateTime = _messages.StringField(7)
+  encryptionSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1EncryptionSpec', 2)
+  etag = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  onlineServingConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1FeaturestoreOnlineServingConfig', 6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  updateTime = _messages.StringField(8)
 
 
 class GoogleCloudAiplatformV1beta1FeaturestoreMonitoringConfig(_messages.Message):
@@ -27767,12 +27909,15 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlTablesMetadat
   r"""Model metadata specific to AutoML Tables.
 
   Fields:
+    evaluatedDataItemsBigqueryUri: BigQuery destination uri for exported
+      evaluated examples.
     trainCostMilliNodeHours: Output only. The actual training cost of the
       model, expressed in milli node hours, i.e. 1,000 value in this field
       means 1 node hour. Guaranteed to not exceed the train budget.
   """
 
-  trainCostMilliNodeHours = _messages.IntegerField(1)
+  evaluatedDataItemsBigqueryUri = _messages.StringField(1)
+  trainCostMilliNodeHours = _messages.IntegerField(2)
 
 
 class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlTextClassification(_messages.Message):

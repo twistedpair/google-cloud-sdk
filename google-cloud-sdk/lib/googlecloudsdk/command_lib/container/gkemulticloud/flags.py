@@ -113,10 +113,10 @@ def GetValidateOnly(args):
   return args.validate_only
 
 
-def AddClusterVersion(parser):
+def AddClusterVersion(parser, required=True):
   parser.add_argument(
       '--cluster-version',
-      required=True,
+      required=required,
       help='Kubernetes version to use for the cluster.')
 
 
@@ -462,3 +462,4 @@ def AddProxyConfig(parser):
       '--proxy-secret-id',
       required=True,
       help=('The URL the of the proxy setting secret with its version.'))
+

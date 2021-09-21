@@ -223,13 +223,27 @@ def User(name,
           (cert_data and key_data)):
     raise Error('either auth_provider or cert & key must be provided')
   user = {}
+  # Setup ExecAuth if USE_GKE_GCLOUD_AUTH_PLUGIN is True
+  use_exec_auth = False
+  use_gke_gcloud_auth_plugin = encoding.GetEncodedValue(
+      os.environ, 'USE_GKE_GCLOUD_AUTH_PLUGIN')
+  if use_gke_gcloud_auth_plugin == 'True':
+    use_exec_auth = True
+
   if auth_provider:
-    user['auth-provider'] = _AuthProvider(
-        name=auth_provider,
-        cmd_path=auth_provider_cmd_path,
-        cmd_args=auth_provider_cmd_args,
-        expiry_key=auth_provider_expiry_key,
-        token_key=auth_provider_token_key)
+    # Setup authprovider
+    # if certain 'auth_provider_' fields are "present" OR
+    # if use_exec_auth is set to False
+    if auth_provider_cmd_path or auth_provider_cmd_args or auth_provider_expiry_key or auth_provider_token_key or not use_exec_auth:
+      # auth-provider is being deprecated in favor of "exec" in k8s 1.25.
+      user['auth-provider'] = _AuthProvider(
+          name=auth_provider,
+          cmd_path=auth_provider_cmd_path,
+          cmd_args=auth_provider_cmd_args,
+          expiry_key=auth_provider_expiry_key,
+          token_key=auth_provider_token_key)
+    else:
+      user['exec'] = _ExecAuthPlugin()
 
   if cert_path and cert_data:
     raise Error('cannot specify both cert_path and cert_data')
@@ -257,6 +271,44 @@ credentials using one of
 
 $ gcloud config set container/use_application_default_credentials true
 $ export CLOUDSDK_CONTAINER_USE_APPLICATION_DEFAULT_CREDENTIALS=true'''
+
+
+def _ExecAuthPlugin():
+  """Generate and return an exec auth plugin config.
+
+  Constructs an exec auth plugin config entry readable by kubectl.
+  This tells kubectl to call out to gke-gcloud-auth-plugin and
+  parse the output to retrieve access tokens to authenticate to
+  the kubernetes master.
+
+  Kubernetes GKE Auth Provider plugin is defined at
+  https://kubernetes.io/docs/reference/access-authn-authz/authentication/#client-go-credential-plugins
+
+  GKE GCloud Exec Auth Plugin code is at
+  https://github.com/kubernetes/cloud-provider-gcp/tree/master/cmd/gke-gcloud-auth-plugin
+
+  Returns:
+    dict, valid exec auth plugin config entry.
+  """
+  bin_name = 'gke-gcloud-auth-plugin'
+  if platforms.OperatingSystem.IsWindows():
+    bin_name = 'gke-gcloud-auth-plugin.exe'
+  command = bin_name
+
+  sdk_bin_path = config.Paths().sdk_bin_path
+  if sdk_bin_path is not None:
+    command = os.path.join(sdk_bin_path, bin_name)
+  exec_cfg = {
+      'command': command,
+      'apiVersion': 'client.authentication.k8s.io/v1beta1',
+      'installHint': 'Install gke-gcloud-auth-plugin by running: '
+                     'gcloud components install gke-gcloud-auth-plugin',
+      'provideClusterInfo': True,
+  }
+
+  if properties.VALUES.container.use_app_default_credentials.GetBool():
+    exec_cfg['args'] = ['--use_application_default_credentials']
+  return exec_cfg
 
 
 def _AuthProvider(name='gcp',

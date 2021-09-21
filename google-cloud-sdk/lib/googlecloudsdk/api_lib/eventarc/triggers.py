@@ -20,8 +20,8 @@ from __future__ import unicode_literals
 
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.eventarc import common
+from googlecloudsdk.api_lib.eventarc.base import EventarcClientBase
 from googlecloudsdk.api_lib.util import apis
-from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.eventarc import types
 from googlecloudsdk.core import exceptions
@@ -71,10 +71,12 @@ def TriggerActiveTime(event_type, update_time):
   return times.FormatDateTime(active_dt, fmt='%H:%M:%S', tzinfo=times.LOCAL)
 
 
-class _BaseTriggersClient(object):
+class _BaseTriggersClient(EventarcClientBase):
   """Base Triggers Client with common methods for v1 and v1beta1 clients."""
 
   def __init__(self, api_version):
+    super(_BaseTriggersClient, self).__init__(common.API_NAME, api_version,
+                                              'trigger')
     client = apis.GetClientInstance(common.API_NAME, api_version)
     self._messages = client.MESSAGES_MODULE
     self._service = client.projects_locations_triggers
@@ -163,39 +165,13 @@ class _BaseTriggersClient(object):
         updateMask=update_mask)
     return self._service.Patch(patch_req)
 
-  def WaitFor(self, operation, operation_type, trigger_ref, loading_msg=''):
-    """Waits until the given long-running operation is complete.
-
-    Args:
-      operation: the long-running operation to wait for.
-      operation_type: str, the type of operation (Creating, Updating or
-        Deleting).
-      trigger_ref: Resource, the Trigger to reference.
-      loading_msg: str, the message prompt to the user for a long-running
-        operation.
-
-    Returns:
-      The long-running operation's response.
-    """
-    poller = waiter.CloudOperationPollerNoResources(self._operation_service)
-    operation_ref = resources.REGISTRY.Parse(
-        operation.name, collection='eventarc.projects.locations.operations')
-    trigger_name = trigger_ref.Name()
-    project_name = trigger_ref.Parent().Parent().Name()
-    location_name = trigger_ref.Parent().Name()
-    message = ('{} trigger [{}] in project [{}], '
-               'location [{}]').format(operation_type, trigger_name,
-                                       project_name, location_name)
-    if loading_msg:
-      message = '{}, {}'.format(message, loading_msg)
-    return waiter.WaitFor(poller, operation_ref, message)
-
 
 class _TriggersClient(_BaseTriggersClient):
   """Client for Triggers service in the Eventarc GA API."""
 
   def BuildTriggerMessage(self, trigger_ref, event_filters, service_account,
-                          destination_message, transport_topic_ref):
+                          destination_message, transport_topic_ref,
+                          channel_ref):
     """Builds a Trigger message with the given data.
 
     Args:
@@ -205,6 +181,7 @@ class _TriggersClient(_BaseTriggersClient):
       destination_message: Destination message or None, the Trigger's
         destination.
       transport_topic_ref: Resource or None, the user-provided transport topic.
+      channel_ref: Resource or None, the channel for 3p events
 
     Returns:
       A Trigger message with a destination service.
@@ -218,12 +195,14 @@ class _TriggersClient(_BaseTriggersClient):
 
     pubsub = self._messages.Pubsub(topic=transport_topic_name)
     transport = self._messages.Transport(pubsub=pubsub)
+    channel = channel_ref.RelativeName() if channel_ref else None
     return self._messages.Trigger(
         name=trigger_ref.RelativeName(),
         eventFilters=filter_messages,
         serviceAccount=service_account,
         destination=destination_message,
-        transport=transport)
+        transport=transport,
+        channel=channel)
 
   def BuildCloudRunDestinationMessage(self, destination_run_service,
                                       destination_run_path,
@@ -355,7 +334,8 @@ class _TriggersClientBeta(_BaseTriggersClient):
   """Client for Triggers service in the Eventarc beta API."""
 
   def BuildTriggerMessage(self, trigger_ref, event_filters, service_account,
-                          destination_message, transport_topic_ref):
+                          destination_message, transport_topic_ref,
+                          channel_ref):
     """Builds a Trigger message with the given data.
 
     Args:
@@ -365,6 +345,7 @@ class _TriggersClientBeta(_BaseTriggersClient):
       destination_message: Destination message or None, the Trigger's
         destination.
       transport_topic_ref: Resource or None, the user-provided transport topic.
+      channel_ref: Resource or None, the channel for 3p events. Ignored in Beta.
 
     Returns:
       A Trigger message with a destination service.

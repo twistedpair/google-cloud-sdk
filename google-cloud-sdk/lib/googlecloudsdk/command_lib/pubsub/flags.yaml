@@ -98,12 +98,12 @@ throughput-capacity:
     published messages or 2 MiB/s of subscribed messages.
 
 
-# TODO(b/183139642): Make starting-offset flag case-insensitive
 starting-offset:
   arg_name: starting-offset
   choices:
   - arg_value: beginning
   - arg_value: end
+  type: googlecloudsdk.command_lib.util.hooks.types:LowerCaseType
   help_text: |
     The offset at which a newly created or seeked subscription will start receiving messages. A
     subscription can be initialized at the offset of the oldest retained message (`beginning`), or

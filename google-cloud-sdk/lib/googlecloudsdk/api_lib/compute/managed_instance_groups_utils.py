@@ -298,6 +298,20 @@ def AddScaleInControlFlag(parser, include_clear=False):
         """)
 
 
+def AddClearScaleDownControlFlag(parser):
+  """Adds --clear-scale-down-control flag to the given parser."""
+  arg_group = parser
+  arg_group.add_argument(
+      '--clear-scale-down-control',
+      action='store_true',
+      help="""\
+        If specified, the scale-down-control field will be cleared. Using this
+        flag will remove any configuration set by the now-deprecated
+        `--scale-down-control` flag. This is only useful if the MIG
+        configuration had scale-down-control set in the past.
+      """)
+
+
 def AddPredictiveAutoscaling(parser, standard=True):
   """Add Predictive autoscaling arguments to the parser."""
   choices = {

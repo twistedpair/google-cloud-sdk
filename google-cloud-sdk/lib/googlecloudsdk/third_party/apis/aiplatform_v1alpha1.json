@@ -5953,14 +5953,17 @@
         }
       }
     },
-    "GoogleCloudAiplatformV1alpha1ReadTensorboardTimeSeriesDataResponse": {
-      "id": "GoogleCloudAiplatformV1alpha1ReadTensorboardTimeSeriesDataResponse",
-      "description": "Response message for TensorboardService.ReadTensorboardTimeSeriesData.",
+    "GoogleCloudAiplatformV1alpha1BatchReadTensorboardTimeSeriesDataResponse": {
+      "id": "GoogleCloudAiplatformV1alpha1BatchReadTensorboardTimeSeriesDataResponse",
+      "description": "Response message for TensorboardService.BatchReadTensorboardTimeSeriesData.",
       "type": "object",
       "properties": {
         "timeSeriesData": {
           "description": "The returned time series data.",
-          "$ref": "GoogleCloudAiplatformV1alpha1TimeSeriesData"
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudAiplatformV1alpha1TimeSeriesData"
+          }
         }
       }
     },
@@ -6084,6 +6087,17 @@
           "description": "Optional. The bytes of the blob is not present unless it's returned by the ReadTensorboardBlobData endpoint.",
           "type": "string",
           "format": "byte"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1alpha1ReadTensorboardTimeSeriesDataResponse": {
+      "id": "GoogleCloudAiplatformV1alpha1ReadTensorboardTimeSeriesDataResponse",
+      "description": "Response message for TensorboardService.ReadTensorboardTimeSeriesData.",
+      "type": "object",
+      "properties": {
+        "timeSeriesData": {
+          "description": "The returned time series data.",
+          "$ref": "GoogleCloudAiplatformV1alpha1TimeSeriesData"
         }
       }
     },
@@ -16321,6 +16335,10 @@
           "description": "Output only. The actual training cost of the model, expressed in milli node hours, i.e. 1,000 value in this field means 1 node hour. Guaranteed to not exceed the train budget.",
           "type": "string",
           "format": "int64"
+        },
+        "evaluatedDataItemsBigqueryUri": {
+          "description": "BigQuery destination uri for exported evaluated examples.",
+          "type": "string"
         }
       }
     },
@@ -18146,6 +18164,17 @@
         }
       }
     },
+    "GoogleCloudAiplatformV1CreateMetadataStoreOperationMetadata": {
+      "id": "GoogleCloudAiplatformV1CreateMetadataStoreOperationMetadata",
+      "description": "Details of operations that perform MetadataService.CreateMetadataStore.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "Operation metadata for creating a MetadataStore.",
+          "$ref": "GoogleCloudAiplatformV1GenericOperationMetadata"
+        }
+      }
+    },
     "GoogleCloudAiplatformV1CreateSpecialistPoolOperationMetadata": {
       "id": "GoogleCloudAiplatformV1CreateSpecialistPoolOperationMetadata",
       "description": "Runtime operation information for SpecialistPoolService.CreateSpecialistPool.",
@@ -18463,6 +18492,17 @@
       "properties": {
         "genericMetadata": {
           "description": "The common part of the operation metadata.",
+          "$ref": "GoogleCloudAiplatformV1GenericOperationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1DeleteMetadataStoreOperationMetadata": {
+      "id": "GoogleCloudAiplatformV1DeleteMetadataStoreOperationMetadata",
+      "description": "Details of operations that perform MetadataService.DeleteMetadataStore.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "Operation metadata for deleting a MetadataStore.",
           "$ref": "GoogleCloudAiplatformV1GenericOperationMetadata"
         }
       }
@@ -19302,6 +19342,96 @@
           "description": "The number of rows in input source that weren't imported due to either * Not having any featureValues. * Having a null entityId. * Having a null timestamp. * Not being parsable (applicable for CSV sources).",
           "type": "string",
           "format": "int64"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1PurgeArtifactsResponse": {
+      "id": "GoogleCloudAiplatformV1PurgeArtifactsResponse",
+      "description": "Response message for MetadataService.PurgeArtifacts.",
+      "type": "object",
+      "properties": {
+        "purgeCount": {
+          "description": "The number of Artifacts that this request deleted (or, if `force` is false, the number of Artifacts that will be deleted). This can be an estimate.",
+          "type": "string",
+          "format": "int64"
+        },
+        "purgeSample": {
+          "description": "A sample of the Artifact names that will be deleted. Only populated if `force` is set to false. The maximum number of samples is 100 (it is possible to return fewer).",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1PurgeArtifactsMetadata": {
+      "id": "GoogleCloudAiplatformV1PurgeArtifactsMetadata",
+      "description": "Details of operations that perform MetadataService.PurgeArtifacts.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "Operation metadata for purging Artifacts.",
+          "$ref": "GoogleCloudAiplatformV1GenericOperationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1PurgeContextsMetadata": {
+      "id": "GoogleCloudAiplatformV1PurgeContextsMetadata",
+      "description": "Details of operations that perform MetadataService.PurgeContexts.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "Operation metadata for purging Contexts.",
+          "$ref": "GoogleCloudAiplatformV1GenericOperationMetadata"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1PurgeContextsResponse": {
+      "id": "GoogleCloudAiplatformV1PurgeContextsResponse",
+      "description": "Response message for MetadataService.PurgeContexts.",
+      "type": "object",
+      "properties": {
+        "purgeCount": {
+          "description": "The number of Contexts that this request deleted (or, if `force` is false, the number of Contexts that will be deleted). This can be an estimate.",
+          "type": "string",
+          "format": "int64"
+        },
+        "purgeSample": {
+          "description": "A sample of the Context names that will be deleted. Only populated if `force` is set to false. The maximum number of samples is 100 (it is possible to return fewer).",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1PurgeExecutionsResponse": {
+      "id": "GoogleCloudAiplatformV1PurgeExecutionsResponse",
+      "description": "Response message for MetadataService.PurgeExecutions.",
+      "type": "object",
+      "properties": {
+        "purgeCount": {
+          "description": "The number of Executions that this request deleted (or, if `force` is false, the number of Executions that will be deleted). This can be an estimate.",
+          "type": "string",
+          "format": "int64"
+        },
+        "purgeSample": {
+          "description": "A sample of the Execution names that will be deleted. Only populated if `force` is set to false. The maximum number of samples is 100 (it is possible to return fewer).",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1PurgeExecutionsMetadata": {
+      "id": "GoogleCloudAiplatformV1PurgeExecutionsMetadata",
+      "description": "Details of operations that perform MetadataService.PurgeExecutions.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "Operation metadata for purging Executions.",
+          "$ref": "GoogleCloudAiplatformV1GenericOperationMetadata"
         }
       }
     },
@@ -20938,6 +21068,10 @@
           "description": "Output only. The actual training cost of the model, expressed in milli node hours, i.e. 1,000 value in this field means 1 node hour. Guaranteed to not exceed the train budget.",
           "type": "string",
           "format": "int64"
+        },
+        "evaluatedDataItemsBigqueryUri": {
+          "description": "BigQuery destination uri for exported evaluated examples.",
+          "type": "string"
         }
       }
     },
@@ -30611,6 +30745,55 @@
                               ],
                               "description": "Deletes a TensorboardTimeSeries."
                             },
+                            "batchRead": {
+                              "id": "aiplatform.projects.locations.tensorboards.experiments.runs.timeSeries.batchRead",
+                              "path": "v1alpha1/{+tensorboard}/experiments/{experimentsId}/runs/{runsId}/timeSeries/{timeSeriesId}:batchRead",
+                              "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/runs/{runsId}/timeSeries/{timeSeriesId}:batchRead",
+                              "httpMethod": "GET",
+                              "parameters": {
+                                "tensorboard": {
+                                  "description": "Required. The resource name of the Tensorboard containing TensorboardTimeSeries to read data from. Format: `projects\/{project}\/locations\/{location}\/tensorboards\/{tensorboard}`. The TensorboardTimeSeries referenced by time_series must be sub resources of this Tensorboard.",
+                                  "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/tensorboards\/[^\/]+$",
+                                  "location": "path",
+                                  "required": true,
+                                  "type": "string"
+                                },
+                                "experimentsId": {
+                                  "location": "path",
+                                  "required": true,
+                                  "type": "string"
+                                },
+                                "runsId": {
+                                  "location": "path",
+                                  "required": true,
+                                  "type": "string"
+                                },
+                                "timeSeriesId": {
+                                  "location": "path",
+                                  "required": true,
+                                  "type": "string"
+                                },
+                                "timeSeries": {
+                                  "description": "Required. The resource names of the TensorboardTimeSeries to read data from. Format: `projects\/{project}\/locations\/{location}\/tensorboards\/{tensorboard}\/experiments\/{experiment}\/runs\/{run}\/timeSeries\/{time_series}`",
+                                  "location": "query",
+                                  "repeated": true,
+                                  "type": "string"
+                                }
+                              },
+                              "parameterOrder": [
+                                "tensorboard",
+                                "experimentsId",
+                                "runsId",
+                                "timeSeriesId"
+                              ],
+                              "response": {
+                                "$ref": "GoogleCloudAiplatformV1alpha1BatchReadTensorboardTimeSeriesDataResponse"
+                              },
+                              "scopes": [
+                                "https://www.googleapis.com/auth/cloud-platform"
+                              ],
+                              "description": "Reads multiple TensorboardTimeSeries' data. The data point number limit is 1000 for scalars, 100 for tensors and blob references. If the number of data points stored is less than the limit, all data will be returned. Otherwise, that limit number of data points will be randomly selected from this time series and returned."
+                            },
                             "read": {
                               "id": "aiplatform.projects.locations.tensorboards.experiments.runs.timeSeries.read",
                               "path": "v1alpha1/{+tensorboardTimeSeries}:read",
@@ -30646,7 +30829,7 @@
                                 "https://www.googleapis.com/auth/cloud-platform",
                                 "https://www.googleapis.com/auth/cloud-platform.read-only"
                               ],
-                              "description": "Reads a TensorboardTimeSeries' data. Data is returned in paginated responses. By default, if the number of data points stored is less than 1000, all data will be returned. Otherwise, 1000 data points will be randomly selected from this time series and returned. This value can be changed by changing max_data_points."
+                              "description": "Reads a TensorboardTimeSeries' data. By default, if the number of data points stored is less than 1000, all data will be returned. Otherwise, 1000 data points will be randomly selected from this time series and returned. This value can be changed by changing max_data_points, which can't be greater than 10k."
                             },
                             "readBlobData": {
                               "id": "aiplatform.projects.locations.tensorboards.experiments.runs.timeSeries.readBlobData",

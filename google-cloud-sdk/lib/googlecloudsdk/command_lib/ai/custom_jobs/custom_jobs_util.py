@@ -195,6 +195,7 @@ def ConstructCustomJobSpec(aiplatform_client,
                            base_config=None,
                            network=None,
                            service_account=None,
+                           enable_web_access=None,
                            worker_pool_specs=None,
                            **kwargs):
   """Constructs the spec of a custom job to be used in job creation request.
@@ -207,6 +208,7 @@ def ConstructCustomJobSpec(aiplatform_client,
       file)
     service_account: A service account (email address string) to use for the
       job.
+    enable_web_access: Whether to enable the interactive shell for the job.
     worker_pool_specs: A dict of worker pool specification, usually derived from
       the gcloud command argument values.
     **kwargs: The keyword args to pass to construct the worker pool specs.
@@ -220,6 +222,8 @@ def ConstructCustomJobSpec(aiplatform_client,
     job_spec.network = network
   if service_account is not None:
     job_spec.serviceAccount = service_account
+  if enable_web_access is not None:
+    job_spec.enableWebAccess = enable_web_access
 
   if worker_pool_specs:
     job_spec.workerPoolSpecs = _ConstructWorkerPoolSpecs(

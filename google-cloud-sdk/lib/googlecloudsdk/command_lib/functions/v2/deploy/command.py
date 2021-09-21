@@ -26,7 +26,7 @@ import string
 from apitools.base.py import exceptions as apitools_exceptions
 from apitools.base.py import http_wrapper
 from apitools.base.py import transfer
-from googlecloudsdk.api_lib.compute import utils
+from googlecloudsdk.api_lib.functions.v1 import util as api_util_v1
 from googlecloudsdk.api_lib.functions.v2 import exceptions
 from googlecloudsdk.api_lib.functions.v2 import util as api_util
 from googlecloudsdk.api_lib.run import global_methods
@@ -106,9 +106,6 @@ _UNSUPPORTED_V2_FLAGS = [
 ]
 _UNSUPPORTED_V2_FLAG_ERROR = '`%s` is not yet supported in Cloud Functions V2.'
 
-_EVENT_TYPE_STORAGE_OBJECT_FINALIZED = 'google.cloud.storage.object.v1.finalized'
-_EVENT_TYPE_PUBSUB_MESSAGE_PUBLISHED = 'google.cloud.pubsub.topic.v1.messagePublished'
-
 _CLOUD_RUN_SERVICE_COLLECTION_K8S = 'run.namespaces.services'
 _CLOUD_RUN_SERVICE_COLLECTION_ONE_PLATFORM = 'run.projects.locations.services'
 
@@ -118,6 +115,28 @@ _ZIP_MIME_TYPE = 'application/zip'
 
 _DEPLOYMENT_TOOL_LABEL = 'deployment-tool'
 _DEPLOYMENT_TOOL_VALUE = 'cli-gcloud'
+
+
+# GCF 2nd generation control plane valid memory units
+_GCF_GEN2_UNITS = [
+    'k',
+    'Ki',
+    'M',
+    'Mi',
+    'G',
+    'Gi',
+    'T',
+    'Ti',
+    'P',
+    'Pi',
+]
+
+_VALUE_PATTERN = r"""
+    ^                               # Beginning of input marker.
+    (?P<amount>\d+)                 # Amount (no dot allowed)
+    ((?P<suffix>[-/ac-zAC-Z]+)([bB])?)?  # Optional scale and optional 'b'.
+    $                               # End of input marker.
+"""
 
 
 def _GcloudIgnoreCreationPredicate(directory):
@@ -340,7 +359,7 @@ def _GetServiceConfig(args, messages, existing_function):
   updated_fields = set()
 
   if args.memory is not None:
-    updated_fields.add('service_config.available_memory_mb')
+    updated_fields.add('service_config.available_memory')
   if args.max_instances is not None or args.clear_max_instances:
     updated_fields.add('service_config.max_instance_count')
   if args.min_instances is not None or args.clear_min_instances:
@@ -357,7 +376,7 @@ def _GetServiceConfig(args, messages, existing_function):
                                            updated_fields)
 
   return messages.ServiceConfig(
-      availableMemoryMb=utils.BytesToMb(args.memory) if args.memory else None,
+      availableMemory=_ParseMemoryStrToK8sMemory(args.memory),
       maxInstanceCount=None if args.clear_max_instances else args.max_instances,
       minInstanceCount=None if args.clear_min_instances else args.min_instances,
       serviceAccountEmail=args.run_service_account or args.service_account,
@@ -373,8 +392,55 @@ def _GetServiceConfig(args, messages, existing_function):
           ])), service_updated_fields
 
 
+def _ParseMemoryStrToK8sMemory(memory):
+  """Parses user provided memory to kubernetes expected format.
+
+  Ensure --v2 continues to parse v1 --memory passed in arguments. Defaults as M
+  if no unit was specified.
+
+  k8s format:
+  https://github.com/kubernetes/kubernetes/blob/master/staging/src/k8s.io/apimachinery/pkg/api/resource/generated.proto
+
+  Args:
+    memory: str, input from `args.memory`
+
+  Returns:
+    k8s_memory: str|None, in kubernetes memory format. GCF 2nd Gen control plane
+      is case-sensitive and only accepts: value + m, k, M, G, T, Ki, Mi, Gi, Ti.
+
+  Raises:
+    InvalidArgumentException: User provided invalid input for flag.
+  """
+  if memory is None or not memory:
+    return None
+
+  match = re.match(_VALUE_PATTERN, memory, re.VERBOSE)
+  if not match:
+    raise exceptions.InvalidArgumentException(
+        '--memory', 'Invalid memory value for: {} specified.'.format(memory))
+
+  suffix = match.group('suffix')
+  amount = match.group('amount')
+
+  # Default to megabytes (decimal-base) if suffix not provided.
+  if suffix is None:
+    suffix = 'M'
+
+  # No case enforced since previously didn't enforce case sensitivity.
+  uppercased_gen2_units = dict([(unit.upper(), unit) for unit in _GCF_GEN2_UNITS
+                               ])
+  corrected_suffix = uppercased_gen2_units.get(suffix.upper())
+
+  if not corrected_suffix:
+    raise exceptions.InvalidArgumentException(
+        '--memory', 'Invalid suffix for: {} specified.'.format(memory))
+
+  parsed_memory = amount + corrected_suffix
+  return parsed_memory
+
+
 def _GetEventTrigger(args, messages, existing_function):
-  """Gets an EventTrigger message from the command-line arguments.
+  """Constructs an EventTrigger message from the command-line arguments.
 
   Args:
     args: argparse.Namespace, arguments that this command was invoked with
@@ -399,11 +465,11 @@ def _GetEventTrigger(args, messages, existing_function):
                                         messages), frozenset(['event_trigger'])
 
   if args.trigger_topic:
-    event_type = _EVENT_TYPE_PUBSUB_MESSAGE_PUBLISHED
+    event_type = api_util.EA_PUBSUB_MESSAGE_PUBLISHED
     pubsub_topic = _BuildFullPubsubTopic(args.trigger_topic)
   elif args.trigger_bucket:
     bucket = args.trigger_bucket[5:].rstrip('/')  # strip 'gs://' and final '/'
-    event_type = _EVENT_TYPE_STORAGE_OBJECT_FINALIZED
+    event_type = api_util.EA_STORAGE_FINALIZE
     event_filters = [messages.EventFilter(attribute='bucket', value=bucket)]
   elif args.trigger_event_filters:
     event_type = args.trigger_event_filters.get('type')
@@ -446,32 +512,28 @@ def _GetEventTriggerForEventType(args, messages):
   trigger_resource = args.trigger_resource
   service_account_email = args.trigger_service_account or args.service_account
 
-  # TODO(b/195973812): add gcf v1 type conversion
-  if trigger_event == 'google.cloud.pubsub.topic.v1.messagePublished':
-    pubsub_topic = trigger_resource
+  if trigger_event in api_util.PUBSUB_MESSAGE_PUBLISH_TYPES:
+    pubsub_topic = api_util_v1.ValidatePubsubTopicNameOrRaise(trigger_resource)
     return messages.EventTrigger(
-        eventType=_EVENT_TYPE_PUBSUB_MESSAGE_PUBLISHED,
+        eventType=api_util.EA_PUBSUB_MESSAGE_PUBLISHED,
         pubsubTopic=_BuildFullPubsubTopic(pubsub_topic),
         serviceAccountEmail=service_account_email,
         triggerRegion=args.trigger_location)
 
-  elif trigger_event in [
-      'google.cloud.storage.object.v1.archived',
-      'google.cloud.storage.object.v1.deleted',
-      'google.cloud.storage.object.v1.finalized',
-      'google.cloud.storage.object.v1.metadataUpdated',
-  ]:
+  elif (trigger_event in api_util.EVENTARC_STORAGE_TYPES or
+        trigger_event in api_util.EVENTFLOW_TO_EVENTARC_STORAGE_MAP):
+
     # name without prefix gs://
-    bucket_name = storage_util.BucketReference.FromUrl(
-        trigger_resource).bucket
+    bucket_name = storage_util.BucketReference.FromUrl(trigger_resource).bucket
+    storage_event_type = api_util.EVENTFLOW_TO_EVENTARC_STORAGE_MAP.get(
+        trigger_event, trigger_event)
     return messages.EventTrigger(
-        eventType=trigger_event,
+        eventType=storage_event_type,
         eventFilters=[
             messages.EventFilter(attribute='bucket', value=bucket_name)
         ],
         serviceAccountEmail=service_account_email,
         triggerRegion=args.trigger_location)
-
   else:
     raise exceptions.InvalidArgumentException(
         '--trigger-event',
@@ -850,6 +912,9 @@ def Run(args, release_track):
 
   existing_function = _GetFunction(client, messages, function_ref)
   is_new_function = existing_function is None
+  if is_new_function and not args.runtime:
+    raise calliope_exceptions.RequiredArgumentException(
+        'runtime', 'Flag `--runtime` is required for new functions.')
 
   event_trigger, trigger_updated_fields = _GetEventTrigger(
       args, messages, existing_function)

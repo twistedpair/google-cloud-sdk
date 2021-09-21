@@ -23,6 +23,7 @@ import re
 
 from apitools.base.py import encoding
 from apitools.base.py import exceptions as apitools_exceptions
+import frozendict
 from googlecloudsdk.api_lib.functions.v2 import exceptions
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import base as calliope_base
@@ -33,7 +34,10 @@ import six
 
 _API_NAME = 'cloudfunctions'
 
-_RELEASE_TRACK_TO_API_VERSION = {
+_V2_ALPHA = 'v2alpha'
+_V2_BETA = 'v2beta'
+
+RELEASE_TRACK_TO_API_VERSION = {
     calliope_base.ReleaseTrack.ALPHA: 'v2alpha',
     calliope_base.ReleaseTrack.BETA: 'v2beta',
     calliope_base.ReleaseTrack.GA: 'v2'
@@ -42,18 +46,74 @@ _RELEASE_TRACK_TO_API_VERSION = {
 MAX_WAIT_MS = 1820000
 SLEEP_MS = 1000
 
-# TODO(b/197300386) this util is using v2alpha specific deserializations/enums
+# EventArc types
+EA_PUBSUB_MESSAGE_PUBLISHED = 'google.cloud.pubsub.topic.v1.messagePublished'
+EA_STORAGE_ARCHIVE = 'google.cloud.storage.object.v1.archived'
+EA_STORAGE_DELETE = 'google.cloud.storage.object.v1.deleted'
+EA_STORAGE_FINALIZE = 'google.cloud.storage.object.v1.finalized'
+EA_STORAGE_UPDATE = 'google.cloud.storage.object.v1.metadataUpdated'
+
+EVENTARC_STORAGE_TYPES = (
+    EA_STORAGE_ARCHIVE,
+    EA_STORAGE_DELETE,
+    EA_STORAGE_FINALIZE,
+    EA_STORAGE_UPDATE,
+)
+
+# EventFlow types
+EF_PUBSUB_MESSAGE_PUBLISH = 'google.pubsub.topic.publish'
+EF_STORAGE_ARCHIVE = 'google.storage.object.archive'
+EF_STORAGE_DELETE = 'google.storage.object.delete'
+EF_STORAGE_FINALIZE = 'google.storage.object.finalize'
+EF_STORAGE_METADATA_UPDATE = 'google.storage.object.metadataUpdate'
+
+EVENTFLOW_TO_EVENTARC_STORAGE_MAP = frozendict.frozendict({
+    EF_STORAGE_ARCHIVE: EA_STORAGE_ARCHIVE,
+    EF_STORAGE_DELETE: EA_STORAGE_DELETE,
+    EF_STORAGE_FINALIZE: EA_STORAGE_FINALIZE,
+    EF_STORAGE_METADATA_UPDATE: EA_STORAGE_UPDATE,
+})
+
+# Legacy types
+LEGACY_PUBSUB_MESSAGE_PUBLISH = (
+    'providers/cloud.pubsub/eventTypes/topic.publish')
+
+PUBSUB_MESSAGE_PUBLISH_TYPES = (
+    EA_PUBSUB_MESSAGE_PUBLISHED,
+    EF_PUBSUB_MESSAGE_PUBLISH,
+    LEGACY_PUBSUB_MESSAGE_PUBLISH,
+)
 
 
 def GetMessagesModule(release_track):
   """Returns the API messages module for GCFv2."""
-  api_version = _RELEASE_TRACK_TO_API_VERSION.get(release_track)
+  api_version = RELEASE_TRACK_TO_API_VERSION.get(release_track)
   return apis.GetMessagesModule(_API_NAME, api_version)
+
+
+def GetStage(messages):
+  """Returns corresponding GoogleCloudFunctionsV2(alpha|beta)Stage."""
+  if messages is apis.GetMessagesModule(_API_NAME, _V2_ALPHA):
+    return messages.GoogleCloudFunctionsV2alphaStage
+  elif messages is apis.GetMessagesModule(_API_NAME, _V2_BETA):
+    return messages.GoogleCloudFunctionsV2betaStage
+  else:
+    return messages.GoogleCloudFunctionsV2Stage
+
+
+def GetStateMessage(messages):
+  """Returns corresponding GoogleCloudFunctionsV2(alpha|beta)stateMessage."""
+  if messages is apis.GetMessagesModule(_API_NAME, _V2_ALPHA):
+    return messages.GoogleCloudFunctionsV2alphaStateMessage
+  elif messages is apis.GetMessagesModule(_API_NAME, _V2_BETA):
+    return messages.GoogleCloudFunctionsV2betaStateMessage
+  else:
+    return messages.GoogleCloudFunctionsV2stateMessage
 
 
 def GetClientInstance(release_track):
   """Returns an API client for GCFv2."""
-  api_version = _RELEASE_TRACK_TO_API_VERSION.get(release_track)
+  api_version = RELEASE_TRACK_TO_API_VERSION.get(release_track)
   return apis.GetClientInstance(_API_NAME, api_version)
 
 
@@ -68,9 +128,19 @@ def _GetStageName(name_enum):
   return str(name_enum).replace('_', ' ').title()
 
 
+def _BuildOperationMetadata(messages):
+  """Returns corresponding GoogleCloudFunctionsV2(alpha|beta)OperationMetadata."""
+  if messages is apis.GetMessagesModule(_API_NAME, _V2_ALPHA):
+    return messages.GoogleCloudFunctionsV2alphaOperationMetadata
+  elif messages is apis.GetMessagesModule(_API_NAME, _V2_BETA):
+    return messages.GoogleCloudFunctionsV2betaOperationMetadata
+  else:
+    raise NotImplementedError('Invalid messages module.')
+
+
 def _GetOperationMetadata(messages, operation):
   return encoding.PyValueToMessage(
-      messages.GoogleCloudFunctionsV2alphaOperationMetadata,
+      _BuildOperationMetadata(messages),
       encoding.MessageToPyValue(operation.metadata))
 
 
@@ -112,33 +182,43 @@ def _GetOperationStatus(client, request, tracker, messages):
 
   operation_metadata = _GetOperationMetadata(messages, operation)
   for stage in operation_metadata.stages:
+    stage_in_progress = (
+        stage.state is GetStage(messages)
+        .StateValueValuesEnum.IN_PROGRESS)
+    stage_complete = (
+        stage.state is GetStage(messages).StateValueValuesEnum.COMPLETE)
+
+    if not stage_in_progress and not stage_complete:
+      continue
+
     stage_key = str(stage.name)
+    if tracker.IsComplete(stage_key):
+      # Cannot update a completed stage in the tracker
+      continue
+
     # Start running a stage
-    if stage.state == messages.GoogleCloudFunctionsV2alphaStage.StateValueValuesEnum.IN_PROGRESS and not tracker.IsRunning(
-        stage_key):
+    if tracker.IsWaiting(stage_key):
       tracker.StartStage(stage_key)
-      tracker.UpdateStage(stage_key, stage.message + '...')
-    # Output Build logs URL
-    if stage.resourceUri and stage_key == 'BUILD' and tracker.IsRunning(
-        stage_key):
-      tracker.UpdateStage(
-          stage_key, stage.message +
-          '... Logs are available at [{}]'.format(stage.resourceUri))
+
+    # Update stage message, including Build logs URL if applicable
+    stage_message = stage.message or ''
+    if stage_in_progress:
+      stage_message = (stage_message or 'In progress') + '... '
+    else:
+      stage_message = ''
+
+    if stage.resourceUri and stage_key == 'BUILD':
+      stage_message += 'Logs are available at [{}]'.format(stage.resourceUri)
+
+    tracker.UpdateStage(stage_key, stage_message)
+
     # Complete a finished stage
-    if stage.state == messages.GoogleCloudFunctionsV2alphaStage.StateValueValuesEnum.COMPLETE:
-      if tracker.IsWaiting(stage_key):
-        tracker.StartStage(stage_key)
-      if tracker.IsRunning(stage_key):
-        if stage_key == 'BUILD':
-          tracker.UpdateStage(
-              stage_key, 'Logs are available at [{}]'.format(stage.resourceUri))
-        else:
-          tracker.UpdateStage(stage_key, '')
-        if stage.stateMessages:
-          tracker.CompleteStageWithWarnings(
-              stage_key, GetStateMessagesStrings(stage.stateMessages))
-        else:
-          tracker.CompleteStage(stage_key)
+    if stage_complete:
+      if stage.stateMessages:
+        tracker.CompleteStageWithWarnings(
+            stage_key, GetStateMessagesStrings(stage.stateMessages))
+      else:
+        tracker.CompleteStage(stage_key)
   return operation.done
 
 

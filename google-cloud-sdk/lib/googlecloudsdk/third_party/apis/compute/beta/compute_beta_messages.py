@@ -4392,14 +4392,14 @@ class BackendServiceConnectionTrackingPolicy(_messages.Message):
       existing connections always persist on unhealthy backends regardless of
       protocol and session affinity. It is generally not recommended to use
       this mode overriding the default.
-    enableStrongAffinity: Enable Strong Session Affinity. This is only
-      available in External TCP/UDP load balancer.
+    enableStrongAffinity: Enable Strong Session Affinity for Network Load
+      Balancing. This option is not available publicly.
     idleTimeoutSec: Specifies how long to keep a Connection Tracking entry
       while there is no matching traffic (in seconds). For L4 ILB the
-      minimum(default) is 10 minutes and maximum is 16 hours. For NLB the
-      minimum(default) is 60 seconds and the maximum is 16 hours. This field
-      will be supported only if the Connection Tracking key is less than
-      5-tuple.
+      minimum(default) is 10 minutes and maximum is 16 hours. For Network Load
+      Balancer the default is 60 seconds. This option is not available
+      publicly. This field will be supported only if the Connection Tracking
+      key is less than 5-tuple.
     trackingMode: Specifies the key used for connection tracking. There are
       two options: PER_CONNECTION: This is the default mode. The Connection
       Tracking is performed as per the Connection Key (default Hash Method)
@@ -35365,7 +35365,7 @@ class InstanceProperties(_messages.Message):
 
   Enums:
     PostKeyRevocationActionTypeValueValuesEnum: PostKeyRevocationActionType of
-      the instance.
+      the instance.(will be deprecated soon)
     PrivateIpv6GoogleAccessValueValuesEnum: The private IPv6 google access
       type for VMs. If not specified, use INHERIT_FROM_SUBNETWORK as default.
 
@@ -35407,7 +35407,8 @@ class InstanceProperties(_messages.Message):
     networkInterfaces: An array of network access configurations for this
       interface.
     networkPerformanceConfig: A NetworkPerformanceConfig attribute.
-    postKeyRevocationActionType: PostKeyRevocationActionType of the instance.
+    postKeyRevocationActionType: PostKeyRevocationActionType of the
+      instance.(will be deprecated soon)
     privateIpv6GoogleAccess: The private IPv6 google access type for VMs. If
       not specified, use INHERIT_FROM_SUBNETWORK as default.
     reservationAffinity: Specifies the reservations that instances can consume
@@ -35430,7 +35431,7 @@ class InstanceProperties(_messages.Message):
   """
 
   class PostKeyRevocationActionTypeValueValuesEnum(_messages.Enum):
-    r"""PostKeyRevocationActionType of the instance.
+    r"""PostKeyRevocationActionType of the instance.(will be deprecated soon)
 
     Values:
       NOOP: Indicates user chose no operation.

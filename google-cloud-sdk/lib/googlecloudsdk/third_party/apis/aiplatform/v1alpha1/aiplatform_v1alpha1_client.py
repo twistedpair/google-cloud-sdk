@@ -7430,6 +7430,33 @@ class AiplatformV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def BatchRead(self, request, global_params=None):
+      r"""Reads multiple TensorboardTimeSeries' data. The data point number limit is 1000 for scalars, 100 for tensors and blob references. If the number of data points stored is less than the limit, all data will be returned. Otherwise, that limit number of data points will be randomly selected from this time series and returned.
+
+      Args:
+        request: (AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesBatchReadRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1alpha1BatchReadTensorboardTimeSeriesDataResponse) The response message.
+      """
+      config = self.GetMethodConfig('BatchRead')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    BatchRead.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/runs/{runsId}/timeSeries/{timeSeriesId}:batchRead',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.tensorboards.experiments.runs.timeSeries.batchRead',
+        ordered_params=['tensorboard', 'experimentsId', 'runsId', 'timeSeriesId'],
+        path_params=['experimentsId', 'runsId', 'tensorboard', 'timeSeriesId'],
+        query_params=['timeSeries'],
+        relative_path='v1alpha1/{+tensorboard}/experiments/{experimentsId}/runs/{runsId}/timeSeries/{timeSeriesId}:batchRead',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesBatchReadRequest',
+        response_type_name='GoogleCloudAiplatformV1alpha1BatchReadTensorboardTimeSeriesDataResponse',
+        supports_download=False,
+    )
+
     def Create(self, request, global_params=None):
       r"""Creates a TensorboardTimeSeries.
 
@@ -7593,7 +7620,7 @@ class AiplatformV1alpha1(base_api.BaseApiClient):
     )
 
     def Read(self, request, global_params=None):
-      r"""Reads a TensorboardTimeSeries' data. Data is returned in paginated responses. By default, if the number of data points stored is less than 1000, all data will be returned. Otherwise, 1000 data points will be randomly selected from this time series and returned. This value can be changed by changing max_data_points.
+      r"""Reads a TensorboardTimeSeries' data. By default, if the number of data points stored is less than 1000, all data will be returned. Otherwise, 1000 data points will be randomly selected from this time series and returned. This value can be changed by changing max_data_points, which can't be greater than 10k.
 
       Args:
         request: (AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesReadRequest) input message

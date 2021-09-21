@@ -50,13 +50,12 @@ properties:
     type: string
   edgeSslCertificates:
     description: |-
-      URLs to sslCertificate resources that are used to authenticate connections
-      between users and the EdgeCacheService. Note that only "global"
-      certificates with a "scope" of "EDGE_CACHE" can be attached to an
-      EdgeCacheService. The following are both valid URLs to a Certificate
-      resource: - /v1/projects/project/locations/global/certificates/media-
-      example-com- cert - /global/certificates/media-example-com-cert You may
-      specify up to 5 SSL certificates.
+      Certificate resources that are used to authenticate connections between
+      users and the EdgeCacheService. Note that only "global" certificates with
+      a "scope" of "EDGE_CACHE" can be attached to an EdgeCacheService. The
+      following are both valid paths to a Certificate resource: *
+      projects/project/locations/global/certificates/media-example-com-cert *
+      media-example-com-cert You may specify up to 5 SSL certificates.
     type: array
     items:
       type: string

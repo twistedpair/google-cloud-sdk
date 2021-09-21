@@ -67,21 +67,33 @@ def SecurityPolicyFromFile(input_file, messages, file_format):
             layer7DdosDefenseConfig=messages
             .SecurityPolicyAdaptiveProtectionConfigLayer7DdosDefenseConfig(
                 enable=parsed_security_policy['adaptiveProtectionConfig']
-                ['layer7DdosDefenseConfig']['enable'],
-                ruleVisibility=messages
-                .SecurityPolicyAdaptiveProtectionConfigLayer7DdosDefenseConfig
-                .RuleVisibilityValueValuesEnum(
-                    parsed_security_policy['adaptiveProtectionConfig']
-                    ['layer7DdosDefenseConfig']['ruleVisibility']))))
+                ['layer7DdosDefenseConfig']['enable'])))
+    if 'ruleVisibility' in parsed_security_policy['adaptiveProtectionConfig'][
+        'layer7DdosDefenseConfig']:
+      security_policy.adaptiveProtectionConfig.layer7DdosDefenseConfig.ruleVisibility = (
+          messages.SecurityPolicyAdaptiveProtectionConfigLayer7DdosDefenseConfig
+          .RuleVisibilityValueValuesEnum(
+              parsed_security_policy['adaptiveProtectionConfig']
+              ['layer7DdosDefenseConfig']['ruleVisibility']))
   if 'advancedOptionsConfig' in parsed_security_policy:
     security_policy.advancedOptionsConfig = (
-        messages.SecurityPolicyAdvancedOptionsConfig(
-            jsonParsing=messages.SecurityPolicyAdvancedOptionsConfig
-            .JsonParsingValueValuesEnum(
-                parsed_security_policy['advancedOptionsConfig']['jsonParsing']),
-            logLevel=messages.SecurityPolicyAdvancedOptionsConfig
-            .LogLevelValueValuesEnum(
-                parsed_security_policy['advancedOptionsConfig']['logLevel'])))
+        messages.SecurityPolicyAdvancedOptionsConfig())
+    if 'jsonParsing' in parsed_security_policy['advancedOptionsConfig']:
+      security_policy.advancedOptionsConfig.jsonParsing = (
+          messages.SecurityPolicyAdvancedOptionsConfig
+          .JsonParsingValueValuesEnum(
+              parsed_security_policy['advancedOptionsConfig']['jsonParsing']))
+    if 'logLevel' in parsed_security_policy['advancedOptionsConfig']:
+      security_policy.advancedOptionsConfig.logLevel = (
+          messages.SecurityPolicyAdvancedOptionsConfig.LogLevelValueValuesEnum(
+              parsed_security_policy['advancedOptionsConfig']['logLevel']))
+  if 'ddosProtectionConfig' in parsed_security_policy:
+    security_policy.ddosProtectionConfig = (
+        messages.SecurityPolicyDdosProtectionConfig(
+            ddosProtection=messages.SecurityPolicyDdosProtectionConfig
+            .DdosProtectionValueValuesEnum(
+                parsed_security_policy['ddosProtectionConfig']
+                ['ddosProtection'])))
 
   rules = []
   for rule in parsed_security_policy['rules']:
@@ -140,14 +152,18 @@ def SecurityPolicyFromFile(input_file, messages, file_format):
                   ['intervalSec']),
               conformAction=rate_limit_options['conformAction'],
               exceedAction=rate_limit_options['exceedAction'],
-              enforceOnKey=messages.SecurityPolicyRuleRateLimitOptions
-              .EnforceOnKeyValueValuesEnum(rate_limit_options['enforceOnKey']),
-              enforceOnKeyName=rate_limit_options['enforceOnKeyName'],
               banThreshold=messages.SecurityPolicyRuleRateLimitOptionsThreshold(
                   count=rate_limit_options['banThreshold']['count'],
                   intervalSec=rate_limit_options['banThreshold']
                   ['intervalSec']),
               banDurationSec=rate_limit_options['banDurationSec']))
+      if 'enforceOnKey' in rate_limit_options:
+        security_policy_rule.rateLimitOptions.enforceOnKey = (
+            messages.SecurityPolicyRuleRateLimitOptions
+            .EnforceOnKeyValueValuesEnum(rate_limit_options['enforceOnKey']))
+      if 'enforceOnKeyName' in rate_limit_options:
+        security_policy_rule.rateLimitOptions.enforceOnKeyName = (
+            rate_limit_options['enforceOnKeyName'])
 
   security_policy.rules = rules
 
@@ -239,6 +255,22 @@ def CreateAdvancedOptionsConfig(client, args, existing_advanced_options_config):
             args.log_level))
 
   return advanced_options_config
+
+
+def CreateDdosProtectionConfig(client, args, existing_ddos_protection_config):
+  """Returns a SecurityPolicyDdosProtectionConfig message."""
+
+  messages = client.messages
+  ddos_protection_config = (
+      existing_ddos_protection_config if existing_ddos_protection_config
+      is not None else messages.SecurityPolicyDdosProtectionConfig())
+
+  if args.IsSpecified('ddos_protection'):
+    ddos_protection_config.ddosProtection = (
+        messages.SecurityPolicyDdosProtectionConfig
+        .DdosProtectionValueValuesEnum(args.ddos_protection))
+
+  return ddos_protection_config
 
 
 def CreateRateLimitOptions(client, args):

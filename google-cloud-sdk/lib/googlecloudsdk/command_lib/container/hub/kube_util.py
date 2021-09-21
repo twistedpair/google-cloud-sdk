@@ -37,18 +37,18 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core import requests
 from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files
-
 from kubernetes import client as kube_client_lib
 from kubernetes import config as kube_client_config
-
-
-# import urljoin in a Python 2 and 3 compatible way
 from six.moves.urllib.parse import urljoin
 
+# import urljoin in a Python 2 and 3 compatible way
 NAMESPACE_DELETION_INITIAL_WAIT_MS = 0
 NAMESPACE_DELETION_TIMEOUT_MS = 1000 * 60 * 2
 NAMESPACE_DELETION_MAX_POLL_INTERVAL_MS = 1000 * 15
 NAMESPACE_DELETION_INITIAL_POLL_INTERVAL_MS = 1000 * 5
+RBAC_IMPERSONATE_POLICY_NAME = 'gateway-impersonate-{metadata}'
+RBAC_PERMISSION_POLICY_NAME = 'gateway-permission-{metadata}'
+RBAC_ANTHOS_SUPPORT_POLICY_NAME = 'gateway-anthos-support-permission-{metadata}'
 
 
 class RBACError(exceptions.Error):
@@ -146,8 +146,8 @@ class KubeconfigProcessor(object):
     Args:
       gke_uri: the URI of the GKE cluster; for example,
                'https://container.googleapis.com/v1/projects/my-project/locations/us-central1-a/clusters/my-cluster'
-      gke_cluster: the "location/name" of the GKE cluster. The location can
-                   be a zone or a region for e.g `us-central1-a/my-cluster`
+      gke_cluster: the "location/name" of the GKE cluster. The location can be a
+        zone or a region for e.g `us-central1-a/my-cluster`
       kubeconfig: the kubeconfig path
       context: the context to use
 
@@ -206,8 +206,8 @@ class KubeconfigProcessor(object):
       return None, None
 
     kubeconfig_file = (
-        self.kubeconfig or encoding.GetEncodedValue(os.environ, 'KUBECONFIG')
-        or '~/.kube/config')
+        self.kubeconfig or encoding.GetEncodedValue(os.environ, 'KUBECONFIG') or
+        '~/.kube/config')
 
     kubeconfig = files.ExpandHomeDir(kubeconfig_file)
     if not kubeconfig:
@@ -240,8 +240,8 @@ class KubeconfigProcessor(object):
     # path, that indicates we should be using in-cluster config. Otherwise,
     # the first return value is the path to the kubeconfig file.
     if kubeconfig is not None:
-      kube_client_config.load_kube_config(config_file=kubeconfig,
-                                          context=context)
+      kube_client_config.load_kube_config(
+          config_file=kubeconfig, context=context)
       return kube_client_lib.ApiClient()
     else:
       kube_client_config.load_incluster_config()
@@ -278,8 +278,8 @@ class KubernetesClient(object):
     Args:
       gke_uri: the URI of the GKE cluster; for example,
                'https://container.googleapis.com/v1/projects/my-project/locations/us-central1-a/clusters/my-cluster'
-      gke_cluster: the "location/name" of the GKE cluster. The location can
-                   be a zone or a region for e.g `us-central1-a/my-cluster`
+      gke_cluster: the "location/name" of the GKE cluster. The location can be a
+        zone or a region for e.g `us-central1-a/my-cluster`
       kubeconfig: the kubeconfig path
       context: the context to use
       public_issuer_url: the public issuer url
@@ -319,8 +319,8 @@ class KubernetesClient(object):
       return
 
     if enable_workload_identity or manage_workload_identity_bucket:
-      self.kube_client = self.processor.GetKubeClient(
-          self.kubeconfig, self.context)
+      self.kube_client = self.processor.GetKubeClient(self.kubeconfig,
+                                                      self.context)
 
   def __enter__(self):
     return self
@@ -384,8 +384,9 @@ class KubernetesClient(object):
       The first namespace with the label selector.
     """
     # Check if any namespace with label exists.
-    out, err = self._RunKubectl(['get', 'namespaces', '--selector', label,
-                                 '-o', 'jsonpath={.items}'], None)
+    out, err = self._RunKubectl(
+        ['get', 'namespaces', '--selector', label, '-o', 'jsonpath={.items}'],
+        None)
     if err:
       raise exceptions.Error(
           'Failed to list namespaces in the cluster: {}'.format(err))
@@ -404,11 +405,65 @@ class KubernetesClient(object):
     _, err = self._RunKubectl(['delete', 'membership', 'membership'])
     return err
 
+  def RbacPolicyName(self, policy_name, project_id, membership):
+    """Generate RBAC policy name."""
+    metadata_name = project_id + '-' + membership
+    if policy_name == 'impersonate':
+      return RBAC_IMPERSONATE_POLICY_NAME.format(metadata=metadata_name)
+    if policy_name == 'permission':
+      return RBAC_PERMISSION_POLICY_NAME.format(metadata=metadata_name)
+    if policy_name == 'anthos':
+      return RBAC_ANTHOS_SUPPORT_POLICY_NAME.format(metadata=metadata_name)
+
+  def GetRbacPolicy(self, membership, role, project_id, anthos_support):
+    """Get the RBAC cluster role binding policy."""
+    not_found = False
+    # TODO(b/200192930): Remove the regex in next change.
+    cluster_pattern = re.compile('^clusterrole/')
+    namespace_pattern = re.compile('^role/')
+
+    rbac_to_check = [('clusterrole',
+                      self.RbacPolicyName('impersonate', project_id,
+                                          membership)),
+                     ('clusterrolebinding',
+                      self.RbacPolicyName('impersonate', project_id,
+                                          membership))]
+    # Check anthos-support permission policy when '--anthos-support' specified.
+    if anthos_support:
+      rbac_to_check.append(
+          ('clusterrole', self.RbacPolicyName('anthos', project_id,
+                                              membership)))
+    # Check namespace permission policy when role is specified as
+    # 'role/namespace/namespace-permission'.
+    elif cluster_pattern.match(role.lower()):
+      rbac_to_check.append(('clusterrole',
+                            self.RbacPolicyName('permission', project_id,
+                                                membership)))
+    # Check RBAC permission policy for general clusterrole.
+    elif namespace_pattern.match(role.lower()):
+      rbac_to_check.append(('rolebinding',
+                            self.RbacPolicyName('permission', project_id,
+                                                membership)))
+
+    for rbac_policy_pair in rbac_to_check:
+      rbac_type = rbac_policy_pair[0]
+      rbac_name = rbac_policy_pair[1]
+      out, err = self._RunKubectl(['get', rbac_type, rbac_name])
+      if err:
+        if 'NotFound' in err:
+          not_found = True
+        else:
+          raise exceptions.Error('Error retrieving RBAC policy: {}'.format(err))
+      else:
+        return rbac_name, rbac_type, out
+    if not_found:
+      return None, None, None
+
   def MembershipCRDExists(self):
-    _, err = self._RunKubectl(
-        ['get',
-         'customresourcedefinitions.v1beta1.apiextensions.k8s.io',
-         'memberships.hub.gke.io'], None)
+    _, err = self._RunKubectl([
+        'get', 'customresourcedefinitions.v1beta1.apiextensions.k8s.io',
+        'memberships.hub.gke.io'
+    ], None)
     if err:
       if 'NotFound' in err:
         return False
@@ -473,6 +528,13 @@ class KubernetesClient(object):
         raise exceptions.Error(
             'Failed to apply Membership CR to cluster: {}'.format(err))
 
+  def ApplyRbacPolicy(self, rbac_policy_file):
+    """Applying RBAC policy to Cluster."""
+    _, err = self.ApplyRbac(rbac_policy_file)
+    if err:
+      raise exceptions.Error(
+          'Failed to apply rbac policy file to cluster: {}'.format(err))
+
   def NamespaceExists(self, namespace):
     _, err = self._RunKubectl(['get', 'namespace', namespace])
     return err is None
@@ -498,6 +560,10 @@ class KubernetesClient(object):
     cmd = ['-n', namespace] if namespace else []
     cmd.extend(['get', resource, '-o', 'jsonpath={{{}}}'.format(json_path)])
     return self._RunKubectl(cmd)
+
+  def ApplyRbac(self, rbac_policy):
+    out, err = self._RunKubectl(['apply', '-f', rbac_policy])
+    return out, err
 
   def Apply(self, manifest):
     out, err = self._RunKubectl(['apply', '-f', '-'], stdin=manifest)
@@ -535,8 +601,7 @@ class KubernetesClient(object):
       Error: If the response has a status code >= 400.
     """
     if base.UseRequests():
-      r = requests.GetSession().request(
-          method, url, headers=headers)
+      r = requests.GetSession().request(method, url, headers=headers)
       content = r.content
       status = r.status_code
     else:
@@ -583,8 +648,7 @@ class KubernetesClient(object):
 
     Args:
       issuer_url: string, the issuer URL to query for the OpenID Provider
-                  Configuration. If None, queries the custer's built-in
-                  endpoint.
+        Configuration. If None, queries the custer's built-in endpoint.
 
     Returns:
       The JSON response as a string.
@@ -612,7 +676,7 @@ class KubernetesClient(object):
 
     Args:
       jwks_uri: string, the JWKS URI to query for the JSON Web Key Set. If None,
-                queries the cluster's built-in endpoint.
+        queries the cluster's built-in endpoint.
 
     Returns:
       The JSON response as a string.
@@ -658,8 +722,7 @@ class KubernetesClient(object):
     out = io.StringIO()
     err = io.StringIO()
     returncode = execution_utils.Exec(
-        cmd, no_exit=True, out_func=out.write, err_func=err.write, in_str=stdin
-    )
+        cmd, no_exit=True, out_func=out.write, err_func=err.write, in_str=stdin)
 
     if returncode != 0 and not err.getvalue():
       err.write('kubectl exited with return code {}'.format(returncode))
@@ -817,8 +880,7 @@ def _ParseGKEURI(gke_uri):
       'argument --gke-uri: {} is invalid. '
       '--gke-uri must be of format: `https://container.googleapis.com/v1/projects/my-project/locations/us-central1-a/clusters/my-cluster`. '
       'You can use command: `gcloud container clusters list --uri` to view the '
-      'current GKE clusters in your project.'
-      .format(gke_uri))
+      'current GKE clusters in your project.'.format(gke_uri))
 
 
 def _ParseGKECluster(gke_cluster):
@@ -831,9 +893,7 @@ def _ParseGKECluster(gke_cluster):
       '`{{REGION OR ZONE}}/{{CLUSTER_NAME`}}`'.format(gke_cluster))
 
 
-def _GetGKEKubeconfig(project, location_id,
-                      cluster_id,
-                      temp_kubeconfig_dir):
+def _GetGKEKubeconfig(project, location_id, cluster_id, temp_kubeconfig_dir):
   """The kubeconfig of GKE Cluster is fetched using the GKE APIs.
 
   The 'KUBECONFIG' value in `os.environ` will be temporarily updated with
@@ -846,8 +906,8 @@ def _GetGKEKubeconfig(project, location_id,
   persisted in the temporarily updated 'KUBECONFIG'.
 
   Args:
-    project: string, the project id of the cluster for which kube config is
-      to be fetched
+    project: string, the project id of the cluster for which kube config is to
+      be fetched
     location_id: string, the id of the location to which the cluster belongs
     cluster_id: string, the id of the cluster
     temp_kubeconfig_dir: TemporaryDirectory object
@@ -859,8 +919,7 @@ def _GetGKEKubeconfig(project, location_id,
     the path to the kubeconfig file
   """
   kubeconfig = os.path.join(temp_kubeconfig_dir.path, 'kubeconfig')
-  old_kubeconfig = encoding.GetEncodedValue(os.environ,
-                                            'KUBECONFIG')
+  old_kubeconfig = encoding.GetEncodedValue(os.environ, 'KUBECONFIG')
   try:
     encoding.SetEncodedValue(os.environ, 'KUBECONFIG', kubeconfig)
     gke_api = gke_api_adapter.NewAPIAdapter('v1')

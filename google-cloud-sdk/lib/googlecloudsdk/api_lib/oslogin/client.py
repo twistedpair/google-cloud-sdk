@@ -45,10 +45,10 @@ class OsloginClient(object):
   """Class for working with oslogin users."""
 
   def __init__(self, release_track):
-    version = VERSION_MAP[release_track]
+    self.version = VERSION_MAP[release_track]
     self.project = properties.VALUES.core.project.Get()
     try:
-      self.client = _GetClient(version)
+      self.client = _GetClient(self.version)
       self.messages = self.client.MESSAGES_MODULE
     except apis_util.UnknownVersionError:
       self.client = None
@@ -60,7 +60,8 @@ class OsloginClient(object):
   def __bool__(self):
     return bool(self.client)
 
-  def GetLoginProfile(self, user, project=None, system_id=None):
+  def GetLoginProfile(self, user, project=None, system_id=None,
+                      include_security_keys=False):
     """Return the OS Login profile for a user.
 
     The login profile includes some information about the user, a list of
@@ -72,15 +73,31 @@ class OsloginClient(object):
       project: str, The project ID associated with the desired profile.
       system_id: str, If supplied, only return profiles associated with the
         given system ID.
+      include_security_keys: bool, If true, include security key information.
 
     Returns:
       The login profile for the user.
     """
     # TODO(b/70287338): Update these calls to use Resource references.
-    message = self.messages.OsloginUsersGetLoginProfileRequest(
-        name='users/{0}'.format(user),
-        projectId=project,
-        systemId=system_id)
+    profile_request = self.messages.OsloginUsersGetLoginProfileRequest
+    if self.version == 'v1':
+      message = profile_request(
+          name='users/{0}'.format(user),
+          projectId=project,
+          systemId=system_id)
+
+    else:
+      if include_security_keys:
+        view = profile_request.ViewValueValuesEnum.SECURITY_KEY
+      else:
+        view = None
+
+      message = profile_request(
+          name='users/{0}'.format(user),
+          projectId=project,
+          systemId=system_id,
+          view=view)
+
     res = self.client.users.GetLoginProfile(message)
     return res
 
@@ -106,23 +123,41 @@ class OsloginClient(object):
 
     self.client.users_projects.Delete(message)
 
-  def ImportSshPublicKey(self, user, public_key, expiration_time=None):
+  def ImportSshPublicKey(self, user, public_key, expiration_time=None,
+                         include_security_keys=False):
     """Upload an SSH public key to the user's login profile.
 
     Args:
       user: str, The email address of the OS Login user.
       public_key: str, An SSH public key.
       expiration_time: int, microseconds since epoch.
+      include_security_keys: bool, If true, return security key information.
     Returns:
       The login profile for the user.
     """
+    import_request = self.messages.OsloginUsersImportSshPublicKeyRequest
+
     public_key_message = self.messages.SshPublicKey(
         key=public_key,
         expirationTimeUsec=expiration_time)
-    message = self.messages.OsloginUsersImportSshPublicKeyRequest(
-        parent='users/{0}'.format(user),
-        projectId=self.project,
-        sshPublicKey=public_key_message)
+
+    if self.version == 'v1':
+      message = import_request(
+          parent='users/{0}'.format(user),
+          projectId=self.project,
+          sshPublicKey=public_key_message)
+    else:
+      if include_security_keys:
+        view = import_request.ViewValueValuesEnum.SECURITY_KEY
+      else:
+        view = None
+
+      message = import_request(
+          parent='users/{0}'.format(user),
+          projectId=self.project,
+          sshPublicKey=public_key_message,
+          view=view)
+
     res = self.client.users.ImportSshPublicKey(message)
     return res
 

@@ -1253,9 +1253,9 @@ class Cluster(_messages.Message):
     createTime: Output only. Create time stamp
     databaseVersion: The database engine major version. Specified by customer
       at creation time. This field cannot be changed after cluster creation.
-    initialUsers: Input only. Initial users to setup during cluster creation.
-      Must be non-empty. We intend to deprecate this post private preview,
-      once we have separate User resources.
+    initialUser: Input only. Initial user to setup during cluster creation.
+      Required. We intend to deprecate this post private preview, once we have
+      separate User resources.
     labels: Labels as key value pairs
     name: Output only. The name of the cluster resource with the format: *
       projects/{project}/locations/{region}/clusters/{cluster_id} where the
@@ -1334,7 +1334,7 @@ class Cluster(_messages.Message):
 
   createTime = _messages.StringField(1)
   databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 2)
-  initialUsers = _messages.MessageField('UserPassword', 3, repeated=True)
+  initialUser = _messages.MessageField('UserPassword', 3)
   labels = _messages.MessageField('LabelsValue', 4)
   name = _messages.StringField(5)
   network = _messages.StringField(6)

@@ -58,6 +58,87 @@ class VmwareengineV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Create(self, request, global_params=None):
+      r"""Creates a new network policy in a given consumer VPC network of a project and location (region). A new network policy cannot be created if another network policy already exists in the same scope.
+
+      Args:
+        request: (VmwareengineProjectsLocationsNetworkPoliciesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/networkPolicies',
+        http_method='POST',
+        method_id='vmwareengine.projects.locations.networkPolicies.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['networkPolicyId', 'requestId'],
+        relative_path='v1/{+parent}/networkPolicies',
+        request_field='networkPolicy',
+        request_type_name='VmwareengineProjectsLocationsNetworkPoliciesCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a `NetworkPolicy` resource. A network policy cannot be deleted when `NetworkService.state` is set to `RECONCILING` for either its external IP or internet access service.
+
+      Args:
+        request: (VmwareengineProjectsLocationsNetworkPoliciesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/networkPolicies/{networkPoliciesId}',
+        http_method='DELETE',
+        method_id='vmwareengine.projects.locations.networkPolicies.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='VmwareengineProjectsLocationsNetworkPoliciesDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Retrieves a `NetworkPolicy` resource by its resource name.
+
+      Args:
+        request: (VmwareengineProjectsLocationsNetworkPoliciesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (NetworkPolicy) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/networkPolicies/{networkPoliciesId}',
+        http_method='GET',
+        method_id='vmwareengine.projects.locations.networkPolicies.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='VmwareengineProjectsLocationsNetworkPoliciesGetRequest',
+        response_type_name='NetworkPolicy',
+        supports_download=False,
+    )
+
     def GetIamPolicy(self, request, global_params=None):
       r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
 
@@ -82,6 +163,60 @@ class VmwareengineV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='VmwareengineProjectsLocationsNetworkPoliciesGetIamPolicyRequest',
         response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists `NetworkPolicy` resources in a specified project and location.
+
+      Args:
+        request: (VmwareengineProjectsLocationsNetworkPoliciesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListNetworkPoliciesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/networkPolicies',
+        http_method='GET',
+        method_id='vmwareengine.projects.locations.networkPolicies.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/networkPolicies',
+        request_field='',
+        request_type_name='VmwareengineProjectsLocationsNetworkPoliciesListRequest',
+        response_type_name='ListNetworkPoliciesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Modifies a `NetworkPolicy` resource. Only the following fields can be updated: `labels`, `internet_access`, `external_ip`, `edge_services_cidr`. Only fields specified in `updateMask` are applied. When updating a network policy, the external IP network service can only be disabled if there are no external IP addresses present in the scope of the policy. Also, a `NetworkService` cannot be updated when `NetworkService.state` is set to `RECONCILING`.
+
+      Args:
+        request: (VmwareengineProjectsLocationsNetworkPoliciesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/networkPolicies/{networkPoliciesId}',
+        http_method='PATCH',
+        method_id='vmwareengine.projects.locations.networkPolicies.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1/{+name}',
+        request_field='networkPolicy',
+        request_type_name='VmwareengineProjectsLocationsNetworkPoliciesPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -293,33 +428,6 @@ class VmwareengineV1(base_api.BaseApiClient):
       super(VmwareengineV1.ProjectsLocationsOperationsService, self).__init__(client)
       self._upload_configs = {
           }
-
-    def Cancel(self, request, global_params=None):
-      r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
-
-      Args:
-        request: (VmwareengineProjectsLocationsOperationsCancelRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Empty) The response message.
-      """
-      config = self.GetMethodConfig('Cancel')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Cancel.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel',
-        http_method='POST',
-        method_id='vmwareengine.projects.locations.operations.cancel',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1/{+name}:cancel',
-        request_field='cancelOperationRequest',
-        request_type_name='VmwareengineProjectsLocationsOperationsCancelRequest',
-        response_type_name='Empty',
-        supports_download=False,
-    )
 
     def Delete(self, request, global_params=None):
       r"""Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`.
@@ -638,6 +746,33 @@ class VmwareengineV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Create(self, request, global_params=None):
+      r"""Creates a new HCX activation key in a given private cloud.
+
+      Args:
+        request: (VmwareengineProjectsLocationsPrivateCloudsHcxActivationKeysCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/hcxActivationKeys',
+        http_method='POST',
+        method_id='vmwareengine.projects.locations.privateClouds.hcxActivationKeys.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['hcxActivationKeyId', 'requestId'],
+        relative_path='v1/{+parent}/hcxActivationKeys',
+        request_field='hcxActivationKey',
+        request_type_name='VmwareengineProjectsLocationsPrivateCloudsHcxActivationKeysCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def GetIamPolicy(self, request, global_params=None):
       r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
 
@@ -662,6 +797,33 @@ class VmwareengineV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='VmwareengineProjectsLocationsPrivateCloudsHcxActivationKeysGetIamPolicyRequest',
         response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists `HcxActivationKey` resources in a given private cloud.
+
+      Args:
+        request: (VmwareengineProjectsLocationsPrivateCloudsHcxActivationKeysListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListHcxActivationKeysResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/hcxActivationKeys',
+        http_method='GET',
+        method_id='vmwareengine.projects.locations.privateClouds.hcxActivationKeys.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/hcxActivationKeys',
+        request_field='',
+        request_type_name='VmwareengineProjectsLocationsPrivateCloudsHcxActivationKeysListRequest',
+        response_type_name='ListHcxActivationKeysResponse',
         supports_download=False,
     )
 
@@ -775,7 +937,7 @@ class VmwareengineV1(base_api.BaseApiClient):
         method_id='vmwareengine.projects.locations.privateClouds.delete',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['force', 'requestId'],
+        query_params=['delayHours', 'force', 'requestId'],
         relative_path='v1/{+name}',
         request_field='',
         request_type_name='VmwareengineProjectsLocationsPrivateCloudsDeleteRequest',

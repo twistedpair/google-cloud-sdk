@@ -118,7 +118,7 @@ Model monitoring Job [{id}] submitted successfully.
 
 Your job is still active. You may view the status of your job with the command
 
-  $ gcloud beta ai model-monitoring-jobs describe {id}
+  $ {cmd_prefix} ai model-monitoring-jobs describe {id}
 
 Job State: {state}\
 """
@@ -128,7 +128,7 @@ Request to pause model deployment monitoring job [{id}] has been sent
 
 You may view the status of your job with the command
 
-  $ gcloud beta ai model-monitoring-jobs describe {id}
+  $ {cmd_prefix} ai model-monitoring-jobs describe {id}
 """
 
 MODEL_MONITORING_JOB_RESUME_DISPLAY_MESSAGE = """\
@@ -136,5 +136,5 @@ Request to resume model deployment monitoring job [{id}] has been sent
 
 You may view the status of your job with the command
 
-  $ gcloud beta ai model-monitoring-jobs describe {id}
+  $ {cmd_prefix} ai model-monitoring-jobs describe {id}
 """

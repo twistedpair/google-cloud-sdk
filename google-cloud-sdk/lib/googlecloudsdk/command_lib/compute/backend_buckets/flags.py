@@ -102,3 +102,26 @@ def AddUpdatableArgs(cls, parser, operation_type):
       Enable Cloud CDN for the backend bucket. Cloud CDN can cache HTTP
       responses from a backend bucket at the edge of the network, close to
       users.""")
+
+
+def AddCacheKeyExtendedCachingArgs(parser):
+  """Adds cache key includeHttpHeader and includeNamedCookie flags to the argparse."""
+  parser.add_argument(
+      '--cache-key-include-http-header',
+      type=arg_parsers.ArgList(),
+      metavar='HEADER_FIELD_NAME',
+      help="""\
+      Specifies a comma-separated list of HTTP headers, by field name, to
+      include in cache keys. Only the request URL is included in the cache
+      key by default.
+      """)
+
+  parser.add_argument(
+      '--cache-key-query-string-whitelist',
+      type=arg_parsers.ArgList(),
+      metavar='QUERY_STRING',
+      help="""\
+      Specifies a comma-separated list of query string parameters to include
+      in cache keys. All other parameters are excluded. '&' and '=' are
+      percent encoded and not treated as delimiters.
+      """)

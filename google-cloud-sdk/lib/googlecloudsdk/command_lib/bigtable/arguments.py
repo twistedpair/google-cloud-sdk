@@ -241,8 +241,7 @@ class ArgAdder(object):
           type=arg_parsers.ArgList(),
           help='Cluster IDs to route to using the Multi Cluster Routing Policy.'
           ' If unset, all clusters in the instance will be eligible.',
-          metavar='RESTRICT_TO',
-          hidden=True)
+          metavar='RESTRICT_TO')
     if allow_failover_radius:
       choices = {
           'ANY_REGION':

@@ -30,7 +30,7 @@ properties:
       Describes a header to add. You may add a maximum of 5 request headers.
     type: array
     items:
-      $ref: AddHeader.yaml
+      $ref: HeaderActionAddHeader.yaml
   requestHeadersToRemove:
     description: |-
       A list of header names for headers that need to be removed from the
@@ -38,7 +38,7 @@ properties:
       up to 10 request headers to remove.
     type: array
     items:
-      $ref: RemoveHeader.yaml
+      $ref: HeaderActionRemoveHeader.yaml
   responseHeadersToAdd:
     description: |-
       Headers to add to the response prior to sending it back to the
@@ -47,7 +47,7 @@ properties:
       the cache serving the response.
     type: array
     items:
-      $ref: AddHeader.yaml
+      $ref: HeaderActionAddHeader.yaml
   responseHeadersToRemove:
     description: |-
       Headers to remove from the response prior to sending it back
@@ -56,4 +56,4 @@ properties:
       You may specify up to 10 response headers to remove.
     type: array
     items:
-      $ref: RemoveHeader.yaml
+      $ref: HeaderActionRemoveHeader.yaml

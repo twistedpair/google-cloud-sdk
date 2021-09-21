@@ -136,6 +136,13 @@ def ValidateArgs(args):
         'Please specify either --role or --anthos-support in the flags.')
   if args.role:
     ValidateRole(args.role)
+  if args.apply:
+    if not args.membership:
+      raise InvalidArgsError('Please specify the --membership in flags.')
+    if not args.kubeconfig:
+      raise InvalidArgsError('Please specify the --kubeconfig in flags.')
+    if not args.context:
+      raise InvalidArgsError('Please specify the --context in flags.')
 
 
 def GenerateRBAC(args, project_id):

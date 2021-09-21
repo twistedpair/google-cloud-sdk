@@ -19,9 +19,10 @@ class AvroOptions(_messages.Message):
   r"""A AvroOptions object.
 
   Fields:
-    useAvroLogicalTypes: [Optional] If set to true will enable interpreting
-      logical types into their corresponding types (ie. TIMESTAMP), instead of
-      only using their raw types (ie. INTEGER).
+    useAvroLogicalTypes: [Optional] If sourceFormat is set to "AVRO",
+      indicates whether to interpret logical types as the corresponding
+      BigQuery data type (for example, TIMESTAMP), instead of using the raw
+      type (for example, INTEGER).
   """
 
   useAvroLogicalTypes = _messages.BooleanField(1)
@@ -1738,9 +1739,9 @@ class JobConfigurationLoad(_messages.Message):
       destination table. Only one of timePartitioning and rangePartitioning
       should be specified.
     useAvroLogicalTypes: [Optional] If sourceFormat is set to "AVRO",
-      indicates whether to enable interpreting logical types into their
-      corresponding types (ie. TIMESTAMP), instead of only using their raw
-      types (ie. INTEGER).
+      indicates whether to interpret logical types as the corresponding
+      BigQuery data type (for example, TIMESTAMP), instead of using the raw
+      type (for example, INTEGER).
     writeDisposition: [Optional] Specifies the action that occurs if the
       destination table already exists. The following values are supported:
       WRITE_TRUNCATE: If the table already exists, BigQuery overwrites the

@@ -197,13 +197,6 @@
       "properties": {
       }
     },
-    "CancelOperationRequest": {
-      "id": "CancelOperationRequest",
-      "description": "The request message for Operations.CancelOperation.",
-      "type": "object",
-      "properties": {
-      }
-    },
     "ListPrivateCloudsResponse": {
       "id": "ListPrivateCloudsResponse",
       "description": "Response message for VmwareEngine.ListPrivateClouds",
@@ -334,6 +327,10 @@
           "readOnly": true,
           "type": "string"
         },
+        "externalIpAccess": {
+          "description": "True if vCenter and NSX can be accessed via internet; false otherwise. FQDNs resolve to the allocated external IPs for private cloud domain, but remain mapped to the internal IP within consumer subnets. NAT is set up on NSX for external IP ingress traffic, and users must manually configure NSX firewall to allow HTTPS traffic.",
+          "type": "boolean"
+        },
         "managementCidr": {
           "description": "Required. Management CIDR used by VMware management appliances.",
           "type": "string"
@@ -346,7 +343,7 @@
       "type": "object",
       "properties": {
         "clusterId": {
-          "description": "Required. The user-provided identifier of the new `Cluster`. The identifier must be 1-63 characters long, comply with [RFC 1034](https:\/\/datatracker.ietf.org\/doc\/html\/rfc1034){: .external} (section 3.5), and not be formatted as a UUID. For example, a name that is 1-63 characters long, matches the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?`, and otherwise complies with RFC 1034. This regular expression describes a name where the first character is a lowercase letter, and all following characters are a dash, lowercase letter, or digit, except the last character, which isn't a dash. @pattern (^[a-z]([-a-z0-9]*[a-z0-9])?$)(?<!(^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$))",
+          "description": "Required. The user-provided identifier of the new `Cluster`. The identifier must meet the following requirements: * Only contains 1-63 alphanumeric characters and hyphens * Begins with an alphabetical character * Ends with a non-hyphen character * Not formatted as a UUID * Complies with [RFC 1034](https:\/\/datatracker.ietf.org\/doc\/html\/rfc1034){: .external} (section 3.5) @pattern (^[a-z]([-a-z0-9]*[a-z0-9])?$)(?<!(^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$))",
           "type": "string"
         },
         "nodeTypeId": {
@@ -362,7 +359,7 @@
     },
     "Hcx": {
       "id": "Hcx",
-      "description": "Describes HCX appliance.",
+      "description": "Details about a HCX Cloud Manager appliance.",
       "type": "object",
       "properties": {
         "fdqn": {
@@ -379,13 +376,32 @@
         },
         "version": {
           "description": "Version of the appliance.",
+          "type": "string"
+        },
+        "state": {
+          "description": "Output only. The state of the appliance.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified appliance state. This is the default value.",
+            "The appliance is operational and can be used.",
+            "The appliance is being deployed."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "ACTIVE",
+            "CREATING"
+          ]
+        },
+        "fqdn": {
+          "description": "Fully qualified domain name of the appliance.",
           "type": "string"
         }
       }
     },
     "Nsx": {
       "id": "Nsx",
-      "description": "Describes NSX appliance.",
+      "description": "Details about a NSX Manager appliance.",
       "type": "object",
       "properties": {
         "fdqn": {
@@ -402,13 +418,32 @@
         },
         "version": {
           "description": "Version of the appliance.",
+          "type": "string"
+        },
+        "state": {
+          "description": "Output only. The state of the appliance.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified appliance state. This is the default value.",
+            "The appliance is operational and can be used.",
+            "The appliance is being deployed."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "ACTIVE",
+            "CREATING"
+          ]
+        },
+        "fqdn": {
+          "description": "Fully qualified domain name of the appliance.",
           "type": "string"
         }
       }
     },
     "Vcenter": {
       "id": "Vcenter",
-      "description": "Describes vCenter appliance.",
+      "description": "Details about a vCenter Server management appliance.",
       "type": "object",
       "properties": {
         "fdqn": {
@@ -425,6 +460,25 @@
         },
         "version": {
           "description": "Version of the appliance.",
+          "type": "string"
+        },
+        "state": {
+          "description": "Output only. The state of the appliance.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified appliance state. This is the default value.",
+            "The appliance is operational and can be used.",
+            "The appliance is being deployed."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "ACTIVE",
+            "CREATING"
+          ]
+        },
+        "fqdn": {
+          "description": "Fully qualified domain name of the appliance.",
           "type": "string"
         }
       }
@@ -630,6 +684,171 @@
         "requestId": {
           "description": "Optional. A request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server guarantees that a request doesn't result in creation of duplicate commitments for at least 60 minutes. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
           "type": "string"
+        }
+      }
+    },
+    "HcxActivationKey": {
+      "id": "HcxActivationKey",
+      "description": "HCX activation key.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The resource name of this HcxActivationKey. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1\/privateClouds\/my-cloud\/hcxActivationKeys\/my-key`",
+          "readOnly": true,
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. Creation time of HCX activation key.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "state": {
+          "description": "Output only. State of HCX activation key.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified state.",
+            "State of a newly generated activation key.",
+            "State of key when it has been used to activate HCX appliance.",
+            "State of key when it is being created."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "AVAILABLE",
+            "CONSUMED",
+            "CREATING"
+          ]
+        },
+        "activationKey": {
+          "description": "Output only. HCX activation key.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "ListHcxActivationKeysResponse": {
+      "id": "ListHcxActivationKeysResponse",
+      "description": "Response message for VmwareEngine.ListHcxActivationKeys",
+      "type": "object",
+      "properties": {
+        "hcxActivationKeys": {
+          "description": "List of HCX activation keys.",
+          "type": "array",
+          "items": {
+            "$ref": "HcxActivationKey"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token, which can be sent as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "NetworkPolicy": {
+      "id": "NetworkPolicy",
+      "description": "Represents a network policy resource. You can use a network policy to enable or disable internet access and external IP access. Network policies are associated with a VPC network, which span across regions. For a given region, a network policy applies to all private clouds in the VPC network associated with the policy.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The resource name of this network policy. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-central1\/networkPolicies\/my-network-policy`",
+          "readOnly": true,
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. Creation time of this resource in RFC3339 text format.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. Last update time of this resource in RFC3339 text format.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "labels": {
+          "description": "Labels are a way to attach lightweight metadata to resources for filtering and querying resource data. No more than 64 user labels can be associated with each resource. Label keys and values can be no longer than 63 characters, can only contain lowercase letters, numeric characters, underscores and dashes, where label keys must start with a letter and international characters are allowed. The empty string is a valid value. Labels are set on creation and updated like any other field. Specifically, to add a new label, you would need to provide all of the existing labels along with the new label. If you only provide a map with the new label, all of the old labels will be removed (probably not what is desired).",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "internetAccess": {
+          "description": "Network service that allows VMware workloads to access the internet.",
+          "$ref": "NetworkService"
+        },
+        "externalIp": {
+          "description": "Network service that allows External IP addresses to be assigned to VMware workloads. This service can only be enabled when `internet_access` is also enabled.",
+          "$ref": "NetworkService"
+        },
+        "network": {
+          "description": "Required. Name of the network in the consumer project which is peered or will be peered with the service network. Provide the network name in the form of `projects\/{project}\/global\/networks\/{network}`, where `{project}` is the project ID or project number of the project containing the network. In case of shared VPC, use the project ID or project number of the host project containing the shared VPC network.",
+          "type": "string"
+        },
+        "edgeServicesCidr": {
+          "description": "Required. IP address range in CIDR notation used to create internet access and external IP access. An RFC 1918 CIDR block, with a \"\/26\" prefix, is required. The range cannot overlap with any prefixes either in the consumer VPC network or in use by the private clouds attached to that VPC network.",
+          "type": "string"
+        }
+      }
+    },
+    "NetworkService": {
+      "id": "NetworkService",
+      "description": "Represents a network service that is managed by a `NetworkPolicy` resource. A network service provides a way to control an aspect of external access to VMware workloads. For example, whether the VMware workloads in the private clouds governed by a network policy can access or be accessed from the internet.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "True if the service is enabled; false otherwise.",
+          "type": "boolean"
+        },
+        "state": {
+          "description": "Output only. State of the service. New values may be added to this enum when appropriate.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified service state. This is the default value.",
+            "Service is not provisioned.",
+            "Service is in the process of being provisioned\/deprovisioned.",
+            "Service is active."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "UNPROVISIONED",
+            "RECONCILING",
+            "ACTIVE"
+          ]
+        }
+      }
+    },
+    "ListNetworkPoliciesResponse": {
+      "id": "ListNetworkPoliciesResponse",
+      "description": "Response message for VmwareEngine.ListNetworkPolicies",
+      "type": "object",
+      "properties": {
+        "networkPolicies": {
+          "description": "A list of network policies.",
+          "type": "array",
+          "items": {
+            "$ref": "NetworkPolicy"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token, which can be send as `page_token` to retrieve the next page. If this field is omitted, there are no subsequent pages.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -1064,34 +1283,6 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`."
-                },
-                "cancel": {
-                  "id": "vmwareengine.projects.locations.operations.cancel",
-                  "path": "v1/{+name}:cancel",
-                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/operations/{operationsId}:cancel",
-                  "httpMethod": "POST",
-                  "parameters": {
-                    "name": {
-                      "description": "The name of the operation resource to be cancelled.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/operations\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "request": {
-                    "$ref": "CancelOperationRequest"
-                  },
-                  "response": {
-                    "$ref": "Empty"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`."
                 }
               }
             },
@@ -1182,7 +1373,7 @@
                       "type": "string"
                     },
                     "privateCloudId": {
-                      "description": "Required. The user-provided identifier of the private cloud to be created. This identifier must be unique among each `PrivateCloud` within the parent and becomes the final token in the name URI. The identifier must be 1-63 characters long, comply with [RFC 1034](https:\/\/datatracker.ietf.org\/doc\/html\/rfc1034){: .external} (section 3.5), and not be formatted as a UUID. For example, a name that is 1-63 characters long, matches the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?`, and otherwise complies with RFC 1034. This regular expression describes a name where the first character is a lowercase letter, and all following characters are a dash, lowercase letter, or digit, except the last character, which isn't a dash. @pattern (^[a-z]([-a-z0-9]*[a-z0-9])?$)(?<!(^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$))",
+                      "description": "Required. The user-provided identifier of the private cloud to be created. This identifier must be unique among each `PrivateCloud` within the parent and becomes the final token in the name URI. The identifier must meet the following requirements: * Only contains 1-63 alphanumeric characters and hyphens * Begins with an alphabetical character * Ends with a non-hyphen character * Not formatted as a UUID * Complies with [RFC 1034](https:\/\/datatracker.ietf.org\/doc\/html\/rfc1034){: .external} (section 3.5) @pattern (^[a-z]([-a-z0-9]*[a-z0-9])?$)(?<!(^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$))",
                       "location": "query",
                       "type": "string"
                     },
@@ -1272,6 +1463,12 @@
                       "description": "Optional. If set to true, cascade delete is enabled and all children of this private cloud resource are also deleted. When this flag is set to false, the private cloud will not be deleted if there are any children other than the management cluster. The management cluster is always deleted.",
                       "location": "query",
                       "type": "boolean"
+                    },
+                    "delayHours": {
+                      "description": "Optional. Time delay of the deletion specified in hours. The default value is `3`. Specifying a non-zero value for this field marks the resource as `DELETED` and sets `expire_time` to the planned deletion time. Deletion can be stopped before `expire_time` elapses using VmwareEngine.UndeletePrivateCloud. Specifying a value of `0` for this field instead begins the deletion process and ceases billing immediately.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
                     }
                   },
                   "parameterOrder": [
@@ -1596,7 +1793,7 @@
                           "type": "string"
                         },
                         "clusterId": {
-                          "description": "Required. The user-provided identifier of the new `Cluster`. This identifier must be unique among clusters within the parent and becomes the final token in the name URI. The identifier must be 1-63 characters long, comply with [RFC 1034](https:\/\/datatracker.ietf.org\/doc\/html\/rfc1034){: .external} (section 3.5), and not be formatted as a UUID. For example, a name that is 1-63 characters long, matches the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?`, and otherwise complies with RFC 1034. This regular expression describes a name where the first character is a lowercase letter, and all following characters are a dash, lowercase letter, or digit, except the last character, which isn't a dash. @pattern (^[a-z]([-a-z0-9]*[a-z0-9])?$)(?<!(^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$))",
+                          "description": "Required. The user-provided identifier of the new `Cluster`. This identifier must be unique among clusters within the parent and becomes the final token in the name URI. The identifier must meet the following requirements: * Only contains 1-63 alphanumeric characters and hyphens * Begins with an alphabetical character * Ends with a non-hyphen character * Not formatted as a UUID * Complies with [RFC 1034](https:\/\/datatracker.ietf.org\/doc\/html\/rfc1034){: .external} (section 3.5) @pattern (^[a-z]([-a-z0-9]*[a-z0-9])?$)(?<!(^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$))",
                           "location": "query",
                           "type": "string"
                         },
@@ -1790,6 +1987,80 @@
                 },
                 "hcxActivationKeys": {
                   "methods": {
+                    "create": {
+                      "id": "vmwareengine.projects.locations.privateClouds.hcxActivationKeys.create",
+                      "path": "v1/{+parent}/hcxActivationKeys",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/hcxActivationKeys",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The resource name of the private cloud to create the key for. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-central1\/privateClouds\/my-cloud`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "hcxActivationKeyId": {
+                          "description": "Required. The user-provided identifier of the `HcxActivationKey` to be created. This identifier must be unique among `HcxActivationKey` resources within the parent and becomes the final token in the name URI. The identifier must meet the following requirements: * Only contains 1-63 alphanumeric characters and hyphens * Begins with an alphabetical character * Ends with a non-hyphen character * Not formatted as a UUID * Complies with [RFC 1034](https:\/\/datatracker.ietf.org\/doc\/html\/rfc1034){: .external} (section 3.5) @pattern (^[a-z]([-a-z0-9]*[a-z0-9])?$)(?<!(^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$))",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "requestId": {
+                          "description": "A request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server guarantees that a request doesn't result in creation of duplicate commitments for at least 60 minutes. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "HcxActivationKey"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Creates a new HCX activation key in a given private cloud."
+                    },
+                    "list": {
+                      "id": "vmwareengine.projects.locations.privateClouds.hcxActivationKeys.list",
+                      "path": "v1/{+parent}/hcxActivationKeys",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/hcxActivationKeys",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The resource name of the private cloud to be queried for HCX activation keys. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-central1\/privateClouds\/my-cloud`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "The maximum number of autoscale policies to return in one page. The service may return fewer than this value. The maximum value is coerced to 50.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "A page token, received from a previous `ListHcxActivationKeys` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListHcxActivationKeys` must match the call that provided the page token.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListHcxActivationKeysResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Lists `HcxActivationKey` resources in a given private cloud."
+                    },
                     "setIamPolicy": {
                       "id": "vmwareengine.projects.locations.privateClouds.hcxActivationKeys.setIamPolicy",
                       "path": "v1/{+resource}:setIamPolicy",
@@ -2040,6 +2311,184 @@
             },
             "networkPolicies": {
               "methods": {
+                "get": {
+                  "id": "vmwareengine.projects.locations.networkPolicies.get",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/networkPolicies/{networkPoliciesId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The resource name of the network policy to retrieve. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-central1\/networkPolicies\/my-network-policy`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/networkPolicies\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "NetworkPolicy"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Retrieves a `NetworkPolicy` resource by its resource name."
+                },
+                "list": {
+                  "id": "vmwareengine.projects.locations.networkPolicies.list",
+                  "path": "v1/{+parent}/networkPolicies",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/networkPolicies",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The resource name of the location (region) to query for network policies. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-central1`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "pageSize": {
+                      "description": "The maximum number of network policies to return in one page. The service may return fewer than this value. The maximum value is 25.",
+                      "location": "query",
+                      "type": "integer",
+                      "format": "int32"
+                    },
+                    "pageToken": {
+                      "description": "A page token, received from a previous `ListNetworkPolicies` call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to `ListNetworkPolicies` must match the call that provided the page token.",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "filter": {
+                      "description": "A filter expression that matches resources returned in the response. The expression must specify the field name, a comparison operator, and the value that you want to use for filtering. The value must be a string, a number, or a boolean. The comparison operator must be `=`, `!=`, `>`, or `<`. For example, if you are filtering a list of network policies, you can exclude the ones named `example-policy` by specifying `name != \"example-policy\"`. To filter on multiple expressions, provide each separate expression within parentheses. For example: ``` (name = \"example-policy\") (createTime > \"2021-04-12T08:15:10.40Z\") ``` By default, each expression is an `AND` expression. However, you can include `AND` and `OR` expressions explicitly. For example: ``` (name = \"example-policy-1\") AND (createTime > \"2021-04-12T08:15:10.40Z\") OR (name = \"example-policy-2\") ```",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "orderBy": {
+                      "description": "Sorts list results by a certain order. By default, returned results are ordered by `name` in ascending order. You can also sort results in descending order based on the `name` value using `orderBy=\"name desc\"`. Currently, only ordering by `name` is supported.",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListNetworkPoliciesResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Lists `NetworkPolicy` resources in a specified project and location."
+                },
+                "create": {
+                  "id": "vmwareengine.projects.locations.networkPolicies.create",
+                  "path": "v1/{+parent}/networkPolicies",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/networkPolicies",
+                  "httpMethod": "POST",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The resource name of the location (region) to create the new network policy in. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-central1`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "networkPolicyId": {
+                      "description": "Required. The user-provided identifier of the network policy to be created. This identifier must be unique within parent `projects\/{my-project}\/locations\/{us-central1}\/networkPolicies` and becomes the final token in the name URI. The identifier must meet the following requirements: * Only contains 1-63 alphanumeric characters and hyphens * Begins with an alphabetical character * Ends with a non-hyphen character * Not formatted as a UUID * Complies with [RFC 1034](https:\/\/datatracker.ietf.org\/doc\/html\/rfc1034){: .external} (section 3.5) @pattern (^[a-z]([-a-z0-9]*[a-z0-9])?$)(?<!(^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$))",
+                      "location": "query",
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "description": "Optional. A request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server guarantees that a request doesn't result in creation of duplicate commitments for at least 60 minutes. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "request": {
+                    "$ref": "NetworkPolicy"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Creates a new network policy in a given consumer VPC network of a project and location (region). A new network policy cannot be created if another network policy already exists in the same scope."
+                },
+                "patch": {
+                  "id": "vmwareengine.projects.locations.networkPolicies.patch",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/networkPolicies/{networkPoliciesId}",
+                  "httpMethod": "PATCH",
+                  "parameters": {
+                    "name": {
+                      "description": "Output only. The resource name of this network policy. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-central1\/networkPolicies\/my-network-policy`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/networkPolicies\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "updateMask": {
+                      "description": "Required. Field mask is used to specify the fields to be overwritten in the `NetworkPolicy` resource by the update. The fields specified in the `update_mask` are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
+                      "location": "query",
+                      "type": "string",
+                      "format": "google-fieldmask"
+                    },
+                    "requestId": {
+                      "description": "Optional. A request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server guarantees that a request doesn't result in creation of duplicate commitments for at least 60 minutes. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "request": {
+                    "$ref": "NetworkPolicy"
+                  },
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Modifies a `NetworkPolicy` resource. Only the following fields can be updated: `labels`, `internet_access`, `external_ip`, `edge_services_cidr`. Only fields specified in `updateMask` are applied. When updating a network policy, the external IP network service can only be disabled if there are no external IP addresses present in the scope of the policy. Also, a `NetworkService` cannot be updated when `NetworkService.state` is set to `RECONCILING`."
+                },
+                "delete": {
+                  "id": "vmwareengine.projects.locations.networkPolicies.delete",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/networkPolicies/{networkPoliciesId}",
+                  "httpMethod": "DELETE",
+                  "parameters": {
+                    "name": {
+                      "description": "Required. The resource name of the network policy to delete. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-central1\/networkPolicies\/my-network-policy`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/networkPolicies\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    },
+                    "requestId": {
+                      "description": "Optional. A request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server guarantees that a request doesn't result in creation of duplicate commitments for at least 60 minutes. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
+                      "location": "query",
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Deletes a `NetworkPolicy` resource. A network policy cannot be deleted when `NetworkService.state` is set to `RECONCILING` for either its external IP or internet access service."
+                },
                 "setIamPolicy": {
                   "id": "vmwareengine.projects.locations.networkPolicies.setIamPolicy",
                   "path": "v1/{+resource}:setIamPolicy",

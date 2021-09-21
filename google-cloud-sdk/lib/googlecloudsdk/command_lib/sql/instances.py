@@ -491,6 +491,12 @@ class _BaseInstances(object):
                                         instance.settings.userLabels)
       if labels_update.needs_update:
         settings.userLabels = labels_update.labels
+      # TODO(b/199412671): merge the logic of assigning ip range to
+      # _ConstructBaseSettingsFromArgs
+      if args.allocated_ip_range_name:
+        if not settings.ipConfiguration:
+          settings.ipConfiguration = sql_messages.IpConfiguration()
+        settings.ipConfiguration.allocatedIpRange = args.allocated_ip_range_name
 
     # ALPHA args.
     if _IsAlpha(release_track):
@@ -630,6 +636,10 @@ class _BaseInstances(object):
     """Constructs Instance for patch request from base instance and args."""
     instance_resource = cls._ConstructBaseInstanceFromArgs(
         sql_messages, args, original, instance_ref)
+
+    if _IsAlpha(release_track):
+      instance_resource.databaseVersion = _ParseDatabaseVersion(
+          sql_messages, args.database_version)
 
     instance_resource.settings = cls._ConstructPatchSettingsFromArgs(
         sql_messages, args, original, release_track)

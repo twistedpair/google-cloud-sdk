@@ -32,18 +32,6 @@ httpFilter:
     attribute_name: http_filter
     help: Id of the http filter.
 
-endpointConfigSelector:
-  name: endpoint config selector
-  collection: networkservices.projects.locations.endpointConfigSelectors
-  request_id_field: endpointConfigSelectorId
-  attributes:
-  - *project
-  - *location
-  - &endpointConfigSelector
-    parameter_name: endpointConfigSelectorsId
-    attribute_name: endpoint_config_selector
-    help: Id of the endpoint config selector.
-
 endpointPolicy:
   name: endpoint policy
   collection: networkservices.projects.locations.endpointPolicies

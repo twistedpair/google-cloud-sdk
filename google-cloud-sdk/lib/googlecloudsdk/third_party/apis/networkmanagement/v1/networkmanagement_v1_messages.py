@@ -65,6 +65,7 @@ class AbortInfo(_messages.Message):
         could not be found.
       MISMATCHED_DESTINATION_NETWORK: Aborted because the destination network
         does not match the destination endpoint.
+      UNSUPPORTED: Aborted because the test scenario is not supported.
     """
     CAUSE_UNSPECIFIED = 0
     UNKNOWN_NETWORK = 1
@@ -81,6 +82,7 @@ class AbortInfo(_messages.Message):
     MISMATCHED_SOURCE_NETWORK = 12
     DESTINATION_ENDPOINT_NOT_FOUND = 13
     MISMATCHED_DESTINATION_NETWORK = 14
+    UNSUPPORTED = 15
 
   cause = _messages.EnumField('CauseValueValuesEnum', 1)
   resourceUri = _messages.StringField(2)

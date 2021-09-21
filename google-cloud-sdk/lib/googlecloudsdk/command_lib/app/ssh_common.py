@@ -147,10 +147,11 @@ def PopulatePublicKey(api_client, service_id, version_id, instance_id,
     console_io.PromptContinue(cancel_on_no=True, throw_if_unattended=True)
   user = ssh.GetDefaultSshUsername()
   project = _GetComputeProject(release_track)
-  user, use_oslogin = ssh.CheckForOsloginAndGetUser(
+  oslogin_state = ssh.GetOsloginState(
       None, project, user, public_key.ToEntry(), None, release_track)
+  user = oslogin_state.user
   remote = ssh.Remote(instance.vmIp, user=user)
-  if not use_oslogin:
+  if not oslogin_state.oslogin_enabled:
     ssh_key = '{user}:{key} {user}'.format(user=user, key=public_key.ToEntry())
     log.status.Print('Sending public key to instance [{}].'.format(rel_name))
     api_client.DebugInstance(res, ssh_key)

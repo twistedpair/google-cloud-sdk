@@ -208,13 +208,15 @@ def ValidateBalancingModeArgs(messages,
           'cannot be set with UTILIZATION balancing mode')
 
 
-def UpdateCacheKeyPolicy(args, cache_key_policy):
+def UpdateCacheKeyPolicy(args, cache_key_policy, support_extended_caching):
   """Sets the cache_key_policy according to the command line arguments.
 
   Args:
     args: Arguments specified through command line.
     cache_key_policy: new CacheKeyPolicy to be set (or preexisting one if using
       update).
+    support_extended_caching: If True, support includeHttpHeaders and
+      includeNamedCookies in cacheKeyPolicy.
   """
   if args.cache_key_include_protocol is not None:
     cache_key_policy.includeProtocol = args.cache_key_include_protocol
@@ -235,6 +237,11 @@ def UpdateCacheKeyPolicy(args, cache_key_policy):
     ) = args.cache_key_query_string_blacklist
     cache_key_policy.includeQueryString = True
     cache_key_policy.queryStringWhitelist = []
+  if support_extended_caching:
+    if args.cache_key_include_http_header is not None:
+      cache_key_policy.includeHttpHeaders = args.cache_key_include_http_header
+    if args.cache_key_include_named_cookie is not None:
+      cache_key_policy.includeNamedCookies = args.cache_key_include_named_cookie
 
 
 def ValidateCacheKeyPolicyArgs(cache_key_policy_args):
@@ -248,11 +255,13 @@ def ValidateCacheKeyPolicyArgs(cache_key_policy_args):
       raise CacheKeyQueryStringException()
 
 
-def HasCacheKeyPolicyArgsForCreate(args):
+def HasCacheKeyPolicyArgsForCreate(args, support_extended_caching=False):
   """Returns true if create request requires a CacheKeyPolicy message.
 
   Args:
     args: The arguments passed to the gcloud command.
+    support_extended_caching: If True, support includeHttpHeaders and
+      includeNamedCookies in cacheKeyPolicy.
 
   Returns:
     True if there are cache key policy related arguments which require adding
@@ -264,11 +273,20 @@ def HasCacheKeyPolicyArgsForCreate(args):
   # specified cache_key_query_string_whitelist,
   # cache_key_query_string_blacklist we need to add a CacheKeyPolicy message
   # in the request.
-  return (not args.cache_key_include_host or
-          not args.cache_key_include_protocol or
-          not args.cache_key_include_query_string or
-          args.IsSpecified('cache_key_query_string_whitelist') or
-          args.IsSpecified('cache_key_query_string_blacklist'))
+  if support_extended_caching:
+    return (not args.cache_key_include_host or
+            not args.cache_key_include_protocol or
+            not args.cache_key_include_query_string or
+            args.IsSpecified('cache_key_query_string_whitelist') or
+            args.IsSpecified('cache_key_query_string_blacklist') or
+            args.IsSpecified('cache_key_include_http_header') or
+            args.IsSpecified('cache_key_include_named_cookie'))
+  else:
+    return (not args.cache_key_include_host or
+            not args.cache_key_include_protocol or
+            not args.cache_key_include_query_string or
+            args.IsSpecified('cache_key_query_string_whitelist') or
+            args.IsSpecified('cache_key_query_string_blacklist'))
 
 
 def HasSubsettingArgs(args):
@@ -295,11 +313,13 @@ def HasSubsettingSubsetSizeArgs(args):
   return args.IsSpecified('subsetting_subset_size')
 
 
-def HasCacheKeyPolicyArgsForUpdate(args):
+def HasCacheKeyPolicyArgsForUpdate(args, support_extended_caching=False):
   """Returns true if update request requires a CacheKeyPolicy message.
 
   Args:
     args: The arguments passed to the gcloud command.
+    support_extended_caching: If True, support includeHttpHeaders and
+      includeNamedCookies in cacheKeyPolicy.
 
   Returns:
     True if there are cache key policy related arguments which require adding
@@ -308,14 +328,26 @@ def HasCacheKeyPolicyArgsForUpdate(args):
   # When doing update, if any of the cache key related fields have been
   # specified by the user in the command line, we need to add a
   # CacheKeyPolicy message in the request.
-  return (args.IsSpecified('cache_key_include_protocol') or
-          args.IsSpecified('cache_key_include_host') or
-          args.IsSpecified('cache_key_include_query_string') or
-          args.IsSpecified('cache_key_query_string_whitelist') or
-          args.IsSpecified('cache_key_query_string_blacklist'))
+  if support_extended_caching:
+    return (args.IsSpecified('cache_key_include_protocol') or
+            args.IsSpecified('cache_key_include_host') or
+            args.IsSpecified('cache_key_include_query_string') or
+            args.IsSpecified('cache_key_query_string_whitelist') or
+            args.IsSpecified('cache_key_query_string_blacklist') or
+            args.IsSpecified('cache_key_include_http_header') or
+            args.IsSpecified('cache_key_include_named_cookie'))
+  else:
+    return (args.IsSpecified('cache_key_include_protocol') or
+            args.IsSpecified('cache_key_include_host') or
+            args.IsSpecified('cache_key_include_query_string') or
+            args.IsSpecified('cache_key_query_string_whitelist') or
+            args.IsSpecified('cache_key_query_string_blacklist'))
 
 
-def GetCacheKeyPolicy(client, args, backend_service):
+def GetCacheKeyPolicy(client,
+                      args,
+                      backend_service,
+                      support_extended_caching=False):
   """Validates and returns the cache key policy.
 
   Args:
@@ -324,6 +356,8 @@ def GetCacheKeyPolicy(client, args, backend_service):
     backend_service: The backend service object. If the backend service object
       contains a cache key policy already, it is used as the base to apply
       changes based on args.
+    support_extended_caching: If True, support includeHttpHeaders and
+      includeNamedCookies in cacheKeyPolicy.
 
   Returns:
     The cache key policy.
@@ -334,7 +368,8 @@ def GetCacheKeyPolicy(client, args, backend_service):
     cache_key_policy = backend_service.cdnPolicy.cacheKeyPolicy
 
   ValidateCacheKeyPolicyArgs(args)
-  UpdateCacheKeyPolicy(args, cache_key_policy)
+  UpdateCacheKeyPolicy(
+      args, cache_key_policy, support_extended_caching=support_extended_caching)
   return cache_key_policy
 
 
@@ -458,7 +493,8 @@ def ApplyCdnPolicyArgs(client,
                        backend_service,
                        is_update=False,
                        apply_signed_url_cache_max_age=False,
-                       cleared_fields=None):
+                       cleared_fields=None,
+                       support_extended_caching=False):
   """Applies the CdnPolicy arguments to the specified backend service.
 
   If there are no arguments related to CdnPolicy, the backend service remains
@@ -475,17 +511,27 @@ def ApplyCdnPolicyArgs(client,
       arguments.
     cleared_fields: Reference to list with fields that should be cleared. Valid
       only for update command.
+    support_extended_caching: If True, support includeHttpHeader and
+      includeNamedCookie in cacheKeyPolicy.
   """
   if backend_service.cdnPolicy is not None:
     cdn_policy = encoding.CopyProtoMessage(backend_service.cdnPolicy)
   else:
     cdn_policy = client.messages.BackendServiceCdnPolicy()
 
-  add_cache_key_policy = (
-      HasCacheKeyPolicyArgsForUpdate(args)
-      if is_update else HasCacheKeyPolicyArgsForCreate(args))
+  if is_update:
+    add_cache_key_policy = HasCacheKeyPolicyArgsForUpdate(
+        args, support_extended_caching=support_extended_caching)
+  else:
+    add_cache_key_policy = HasCacheKeyPolicyArgsForCreate(
+        args, support_extended_caching=support_extended_caching)
+
   if add_cache_key_policy:
-    cdn_policy.cacheKeyPolicy = GetCacheKeyPolicy(client, args, backend_service)
+    cdn_policy.cacheKeyPolicy = GetCacheKeyPolicy(
+        client,
+        args,
+        backend_service,
+        support_extended_caching=support_extended_caching)
   if apply_signed_url_cache_max_age and args.IsSpecified(
       'signed_url_cache_max_age'):
     cdn_policy.signedUrlCacheMaxAgeSec = args.signed_url_cache_max_age

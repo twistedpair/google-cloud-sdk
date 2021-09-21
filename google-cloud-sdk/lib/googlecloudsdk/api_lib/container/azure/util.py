@@ -175,6 +175,43 @@ class ClustersClient(_AzureClientBase):
   def GetListResultsField(self):
     return 'azureClusters'
 
+  def Update(self,
+             cluster_ref,
+             client_ref=None,
+             cluster_version=None,
+             validate_only=False):
+    """Updates an Anthos cluster on Azure.
+
+    Args:
+      cluster_ref: obj, Cluster object to be updated.
+      client_ref: obj, Client to use in the cluster update.
+      cluster_version: str, Cluster version to use in the cluster update.
+      validate_only: bool, Validate the update of the cluster.
+
+    Returns:
+      Response to the update request.
+    """
+    req = self._service.GetRequestType('Patch')(
+        name=cluster_ref.RelativeName(),)
+    if validate_only:
+      req.validateOnly = True
+
+    update_mask = []
+
+    c = self._AddAzureCluster(req)
+    if client_ref:
+      c.azureClient = client_ref.RelativeName()
+      update_mask.append('azure_client')
+
+    cp = self._AddAzureControlPlane(c)
+    if cluster_version:
+      cp.version = cluster_version
+      update_mask.append('control_plane.version')
+
+    req.updateMask = ','.join(update_mask)
+
+    return self._service.Patch(req)
+
   def _GetService(self):
     return self.client.projects_locations_azureClusters
 

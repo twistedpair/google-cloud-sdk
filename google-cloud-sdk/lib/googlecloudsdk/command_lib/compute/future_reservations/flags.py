@@ -83,8 +83,8 @@ def GetDurationHelpText():
 def GetSharedSettingFlag(custom_name=None):
   """Gets the --share-setting flag."""
   help_text = """\
-  Specify if this reservation is shared; and if so, the type of sharing: share
-  with specific projects.
+  Specify if this reservation is shared; and if so, the type of sharing.
+  Currently only sharing with specific projects is supported.
   """
   return base.Argument(
       custom_name if custom_name else '--share-setting',
@@ -95,8 +95,8 @@ def GetSharedSettingFlag(custom_name=None):
 def GetShareWithFlag(custom_name=None):
   """Gets the --share-with flag."""
   help_text = """\
-  A list of specific projects this reservation should be shared with.
-  List must contain all project ID's.
+  A list of all of the specific projects or folders that this reservation is
+  shared with. List must contain project IDs or project numbers.
   """
   return base.Argument(
       custom_name if custom_name else '--share-with',

@@ -37,21 +37,50 @@ class SecurityPolicy(object):
     return self._compute_client.messages
 
   def _MakeDeleteRequestTuple(self):
+    region = getattr(self.ref, 'region', None)
+    if region is not None:
+      return (self._client.regionSecurityPolicies, 'Delete',
+              self._messages.ComputeRegionSecurityPoliciesDeleteRequest(
+                  project=self.ref.project,
+                  region=region,
+                  securityPolicy=self.ref.Name()))
     return (self._client.securityPolicies, 'Delete',
             self._messages.ComputeSecurityPoliciesDeleteRequest(
                 project=self.ref.project, securityPolicy=self.ref.Name()))
 
   def _MakeDescribeRequestTuple(self):
+    region = getattr(self.ref, 'region', None)
+    if region is not None:
+      return (self._client.regionSecurityPolicies, 'Get',
+              self._messages.ComputeRegionSecurityPoliciesGetRequest(
+                  project=self.ref.project,
+                  region=region,
+                  securityPolicy=self.ref.Name()))
     return (self._client.securityPolicies, 'Get',
             self._messages.ComputeSecurityPoliciesGetRequest(
                 project=self.ref.project, securityPolicy=self.ref.Name()))
 
   def _MakeCreateRequestTuple(self, security_policy):
+    region = getattr(self.ref, 'region', None)
+    if region is not None:
+      return (self._client.regionSecurityPolicies, 'Insert',
+              self._messages.ComputeRegionSecurityPoliciesInsertRequest(
+                  project=self.ref.project,
+                  region=region,
+                  securityPolicy=security_policy))
     return (self._client.securityPolicies, 'Insert',
             self._messages.ComputeSecurityPoliciesInsertRequest(
                 project=self.ref.project, securityPolicy=security_policy))
 
   def _MakePatchRequestTuple(self, security_policy):
+    region = getattr(self.ref, 'region', None)
+    if region is not None:
+      return (self._client.regionSecurityPolicies, 'Patch',
+              self._messages.ComputeRegionSecurityPoliciesPatchRequest(
+                  project=self.ref.project,
+                  region=region,
+                  securityPolicy=self.ref.Name(),
+                  securityPolicyResource=security_policy))
     return (self._client.securityPolicies, 'Patch',
             self._messages.ComputeSecurityPoliciesPatchRequest(
                 project=self.ref.project,

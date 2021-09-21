@@ -469,7 +469,8 @@ def SortFirewallPolicyRules(client, rules):
   return ingress_org_firewall_rule + egress_org_firewall_rule
 
 
-def ConvertFirewallPolicyRulesToEffectiveFwRules(client, firewall_policy):
+def ConvertFirewallPolicyRulesToEffectiveFwRules(
+    client, firewall_policy, support_network_firewall_policy):
   """Convert organization firewall policy rules to effective firewall rules."""
   result = []
   for rule in firewall_policy.rules:
@@ -481,16 +482,17 @@ def ConvertFirewallPolicyRulesToEffectiveFwRules(client, firewall_policy):
         .InstancesGetEffectiveFirewallsResponseEffectiveFirewallPolicy
         .TypeValueValuesEnum.HIERARCHY):
       item.update({'type': 'org-firewall'})
-    elif (firewall_policy.type == client.messages
-          .NetworksGetEffectiveFirewallsResponseEffectiveFirewallPolicy
-          .TypeValueValuesEnum.NETWORK
-          or firewall_policy.type == client.messages
-          .InstancesGetEffectiveFirewallsResponseEffectiveFirewallPolicy
-          .TypeValueValuesEnum.NETWORK):
+    elif support_network_firewall_policy and (
+        firewall_policy.type == client.messages
+        .NetworksGetEffectiveFirewallsResponseEffectiveFirewallPolicy
+        .TypeValueValuesEnum.NETWORK or firewall_policy.type == client.messages
+        .InstancesGetEffectiveFirewallsResponseEffectiveFirewallPolicy
+        .TypeValueValuesEnum.NETWORK):
       item.update({'type': 'network-firewall-policy'})
-    elif (firewall_policy.type == client.messages
-          .InstancesGetEffectiveFirewallsResponseEffectiveFirewallPolicy
-          .TypeValueValuesEnum.NETWORK_REGIONAL):
+    elif support_network_firewall_policy and (
+        firewall_policy.type == client.messages
+        .InstancesGetEffectiveFirewallsResponseEffectiveFirewallPolicy
+        .TypeValueValuesEnum.NETWORK_REGIONAL):
       item.update({'type': 'network-regional-firewall-policy'})
     else:
       item.update({'type': 'unknown'})

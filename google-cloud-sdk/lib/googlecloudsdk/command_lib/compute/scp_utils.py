@@ -141,12 +141,13 @@ class BaseScpHelper(ssh_utils.BaseSSHCLIHelper):
         username_requested = False
         remote.user = ssh.GetDefaultSshUsername(warn_on_account_user=True)
       if args.plain:
-        use_oslogin = False
+        oslogin_state = ssh.OsloginState(user=remote.user)
       else:
         public_key = self.keys.GetPublicKey().ToEntry(include_comment=True)
-        remote.user, use_oslogin = ssh.CheckForOsloginAndGetUser(
+        oslogin_state = ssh.GetOsloginState(
             instance, project, remote.user, public_key, expiration_micros,
             release_track, username_requested=username_requested)
+        remote.user = oslogin_state.user
 
       if not args.plain:
         identity_file = self.keys.key_file
@@ -173,7 +174,7 @@ class BaseScpHelper(ssh_utils.BaseSSHCLIHelper):
       log.out.Print(' '.join(cmd.Build(self.env)))
       return
 
-    if args.plain or use_oslogin:
+    if args.plain or oslogin_state.oslogin_enabled:
       keys_newly_added = False
     else:
       keys_newly_added = self.EnsureSSHKeyExists(

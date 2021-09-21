@@ -134,7 +134,8 @@ def PartialUpdate(cluster_ref,
             msgs=msgs,
             name=cluster_ref.RelativeName(),
             nodes=nodes,
-            update_mask='serve_nodes,cluster_config'))
+            update_mask='serve_nodes,cluster_config.cluster_autoscaling_config'
+        ))
 
   changed_fields = []
   if nodes is not None:

@@ -232,7 +232,12 @@ class ComposerProjectsLocationsEnvironmentsPatchRequest(_messages.Message):
       variables. If a replacement environment variable map is not included in
       `environment`, all custom environment variables are cleared. It is an
       error to provide both this mask and a mask specifying one or more
-      individual environment variables.
+      individual environment variables. *
+      `config.softwareConfig.schedulerCount` * Horizontally scale the number
+      of schedulers in Airflow. A positive integer not greater than the number
+      of nodes must be provided in the `config.softwareConfig.schedulerCount`
+      field. Supported for Cloud Composer environments in versions
+      composer-1.*.*-airflow-2.*.*.
   """
 
   environment = _messages.MessageField('Environment', 1)
@@ -978,6 +983,9 @@ class SoftwareConfig(_messages.Message):
     pythonVersion: Optional. The major version of Python used to run the
       Apache Airflow scheduler, worker, and webserver processes. Can be set to
       '2' or '3'. If not specified, the default is '3'. Cannot be updated.
+    schedulerCount: Optional. The number of schedulers for Airflow. This field
+      is supported for Cloud Composer environments in versions
+      composer-1.*.*-airflow-2.*.*.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -1086,6 +1094,7 @@ class SoftwareConfig(_messages.Message):
   imageVersion = _messages.StringField(3)
   pypiPackages = _messages.MessageField('PypiPackagesValue', 4)
   pythonVersion = _messages.StringField(5)
+  schedulerCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
 
 
 class StandardQueryParameters(_messages.Message):

@@ -712,8 +712,6 @@ apis:
       resources:
         iamPolicies:
           path: iamPolicies
-    v2alpha1:
-      discovery_doc: iam_v2alpha1.json
     v2alpha:
       discovery_doc: iam_v2alpha.json
     v2beta:

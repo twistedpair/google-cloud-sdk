@@ -939,13 +939,14 @@ class CreateReferenceRequest(_messages.Message):
       reference). For example: `targetservice.googleapis.com/projects/{my-
       project}/locations/{location}/instances/{my-instance}`.
     reference: Required. The reference to be created.
-    referenceId: The unique id of this resource. Can be any arbitrary string,
-      either GUID or any other string. Must be unique within a scope of a
-      target resource, but does not have to be globally unique. Reference ID
-      is part of resource name of the reference. Resource name is generated in
-      the following way: {parent}/references/{reference_id}. Reference ID
+    referenceId: The unique id of this resource. Must be unique within a scope
+      of a target resource, but does not have to be globally unique. Reference
+      ID is part of resource name of the reference. Resource name is generated
+      in the following way: {parent}/references/{reference_id}. Reference ID
       field is currently required but id auto generation might be added in the
-      future.
+      future. It can be any arbitrary string, either GUID or any other string,
+      however CLHs can use preprocess callbacks to perform a custom
+      validation.
     requestId: Optional. Request ID is an idempotency ID of the request. It
       must be a valid UUID. Zero UUID (00000000-0000-0000-0000-000000000000)
       is not supported.

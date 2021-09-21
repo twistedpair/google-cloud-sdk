@@ -1425,14 +1425,6 @@ MAP = {
                 default_version=False,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
-        'v2alpha1':
-            APIDef(
-                class_path='googlecloudsdk.third_party.apis.iam.v2alpha1',
-                client_classpath='iam_v2alpha1_client.IamV2alpha1',
-                messages_modulepath='iam_v2alpha1_messages',
-                default_version=False,
-                enable_mtls=False,
-                mtls_endpoint_override=''),
         'v2beta':
             APIDef(
                 class_path='googlecloudsdk.third_party.apis.iam.v2beta',

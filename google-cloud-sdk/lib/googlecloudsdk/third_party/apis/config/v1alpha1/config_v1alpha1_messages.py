@@ -18,6 +18,9 @@ class ApplyInput(_messages.Message):
 
   Fields:
     blueprint: Required. Blueprint to preview.
+    configController: The Config Controller instance to preview configurations
+      against. Format:
+      `projects/{project}/locations/{location}/krmApiHosts/{instance}`.
     deployment: Deployment to dry-run modification to during preview. For
       preview of new deployment this could be left empty. For preview
       modifications to existing deployment this must match an existing
@@ -27,7 +30,8 @@ class ApplyInput(_messages.Message):
   """
 
   blueprint = _messages.MessageField('Blueprint', 1)
-  deployment = _messages.StringField(2)
+  configController = _messages.StringField(2)
+  deployment = _messages.StringField(3)
 
 
 class ApplyResults(_messages.Message):
@@ -533,6 +537,9 @@ class Deployment(_messages.Message):
 
   Fields:
     blueprint: Required. Blueprint to deploy.
+    configController: Required. Config Controller instance to deploy to.
+      Format:
+      `projects/{project}/locations/{location}/krmApiHosts/{instance}`.
     createTime: Output only. Time the deployment was created.
     deleteResults: Output only. Locations of outputs from delete operation.
     errorCode: Output only. Code describing any errors that may have occurred.
@@ -632,16 +639,17 @@ class Deployment(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   blueprint = _messages.MessageField('Blueprint', 1)
-  createTime = _messages.StringField(2)
-  deleteResults = _messages.MessageField('ApplyResults', 3)
-  errorCode = _messages.EnumField('ErrorCodeValueValuesEnum', 4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  latestRevision = _messages.StringField(6)
-  name = _messages.StringField(7)
-  reconcileTimeout = _messages.StringField(8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
-  stateDetail = _messages.StringField(10)
-  updateTime = _messages.StringField(11)
+  configController = _messages.StringField(2)
+  createTime = _messages.StringField(3)
+  deleteResults = _messages.MessageField('ApplyResults', 4)
+  errorCode = _messages.EnumField('ErrorCodeValueValuesEnum', 5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  latestRevision = _messages.StringField(7)
+  name = _messages.StringField(8)
+  reconcileTimeout = _messages.StringField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  stateDetail = _messages.StringField(11)
+  updateTime = _messages.StringField(12)
 
 
 class DeploymentOperationMetadata(_messages.Message):
@@ -671,6 +679,7 @@ class DeploymentOperationMetadata(_messages.Message):
       CREATING_REVISION: Creating a revision resource.
       RUNNING_PIPELINE: Blueprint is being processed.
       RUNNING_APPLY: Blueprint is being applied to Config Controller.
+      RUNNING_PREVIEW: Blueprint is being previewed with Config Controller.
     """
     DEPLOYMENT_STEP_UNSPECIFIED = 0
     PREPARING_STORAGE_BUCKET = 1
@@ -678,6 +687,7 @@ class DeploymentOperationMetadata(_messages.Message):
     CREATING_REVISION = 3
     RUNNING_PIPELINE = 4
     RUNNING_APPLY = 5
+    RUNNING_PREVIEW = 6
 
   applyResults = _messages.MessageField('ApplyResults', 1)
   pipelineResults = _messages.MessageField('PipelineResults', 2)
@@ -1158,20 +1168,85 @@ class Policy(_messages.Message):
 class Preview(_messages.Message):
   r"""Preview message contains preview results.
 
+  Enums:
+    ErrorCodeValueValuesEnum: Output only. Code describing any errors that may
+      have occurred.
+    StateValueValuesEnum: Output only. Current state of the preview.
+
   Fields:
     applyInput: Input parameters for preview of apply operation.
     createTime: Output only. Time the preview was created.
     deleteInput: Input parameters for preview of delete operation.
+    errorCode: Output only. Code describing any errors that may have occurred.
     name: Output only. Resource name of the preview. Format:
       `projects/{project}/locations/{location}/previews/{preview}`
+    pipelineResults: Output only. Locations of outputs from kpt pipeline
+      execution.
     previewResults: Output only. Locations of outputs from preview operation.
+    state: Output only. Current state of the preview.
+    stateDetail: Output only. Additional information regarding the current
+      state.
   """
+
+  class ErrorCodeValueValuesEnum(_messages.Enum):
+    r"""Output only. Code describing any errors that may have occurred.
+
+    Values:
+      ERROR_CODE_UNSPECIFIED: No error code was specified.
+      CLUSTER_CREATION_PERMISSION_DENIED: Cluster creation failed due to a
+        permissions issue.
+      CLOUD_BUILD_PERMISSION_DENIED: Cloud Build failed due to a permissions
+        issue.
+      CLUSTER_CREATION_FAILED: Cluster creation failed for a non-permissions-
+        related issue.
+      BUCKET_CREATION_PERMISSION_DENIED: A Cloud Storage bucket failed due to
+        a permissions issue.
+      BUCKET_CREATION_FAILED: A Cloud Storage bucket failed for a non-
+        permissions-related issue.
+      PIPELINE_BUILD_API_FAILED: The pipeline Cloud Build failed before logs
+        could be generated.
+      PIPELINE_BUILD_RUN_FAILED: The pipeline Cloud Build failed after logs
+        could be generated.
+      PREVIEW_BUILD_API_FAILED: The preview Cloud Build failed before logs
+        could be generated.
+      PREVIEW_BUILD_RUN_FAILED: The preview Cloud Build failed after logs
+        could be generated.
+    """
+    ERROR_CODE_UNSPECIFIED = 0
+    CLUSTER_CREATION_PERMISSION_DENIED = 1
+    CLOUD_BUILD_PERMISSION_DENIED = 2
+    CLUSTER_CREATION_FAILED = 3
+    BUCKET_CREATION_PERMISSION_DENIED = 4
+    BUCKET_CREATION_FAILED = 5
+    PIPELINE_BUILD_API_FAILED = 6
+    PIPELINE_BUILD_RUN_FAILED = 7
+    PREVIEW_BUILD_API_FAILED = 8
+    PREVIEW_BUILD_RUN_FAILED = 9
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. Current state of the preview.
+
+    Values:
+      STATE_UNSPECIFIED: The default value. This value is used if the state is
+        omitted.
+      CREATING: The preview is being created.
+      COMPLETED: The preview is completed.
+      FAILED: The preview has encountered an error.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    COMPLETED = 2
+    FAILED = 3
 
   applyInput = _messages.MessageField('ApplyInput', 1)
   createTime = _messages.StringField(2)
   deleteInput = _messages.MessageField('DeleteInput', 3)
-  name = _messages.StringField(4)
-  previewResults = _messages.MessageField('PreviewResults', 5)
+  errorCode = _messages.EnumField('ErrorCodeValueValuesEnum', 4)
+  name = _messages.StringField(5)
+  pipelineResults = _messages.MessageField('PipelineResults', 6)
+  previewResults = _messages.MessageField('PreviewResults', 7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  stateDetail = _messages.StringField(9)
 
 
 class PreviewResults(_messages.Message):

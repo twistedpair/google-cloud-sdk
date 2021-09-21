@@ -5,6 +5,109 @@ Copyright 2014-2021 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 358.0.0 (2021-09-21)
+
+### Breaking Changes
+
+*   **(Compute Engine)** Deprecated `redirect-to-recaptcha` choice of `--action` flag under `gcloud compute security-policies rules`.
+
+
+### AI
+
+* Added `--enable-web-access` flag to `gcloud ai custom-jobs create` and
+  `gcloud ai hp-tuning-jobs create` to allow enabling interactive shell terminal
+  access.
+
+### Apigee
+
+*  Promoted `gcloud apigee archives` command group to beta.
+
+### Artifact Registry
+
+* Added `--version-policy` and `--allow-snapshot-overwrites` flags to `gcloud beta artifacts repositories create` to add version policy and snapshot overwrites to maven repositories.
+
+### Cloud Composer
+
+* Added `gcloud composer environments run my-environment upgrade_check` to run upgrade check to Airflow 2.0 for Composer environments with Airflow 1.10.15+.
+* Added support of CLI commands for Airflow 2.0 to `gcloud composer environments run`.
+
+### Cloud Dataproc
+
+* Fixed bug in `gcloud dataproc clusters enable-personal-auth-session` where
+  the command would fail if the flag `--access-boundary` was provided.
+
+### Cloud Filestore
+
+*   Added `gcloud beta filestore instances snapshots` command group, which is
+    used to create and manage Filestore snapshots.
+*   Added `--force` flag to `gcloud beta filestore instances delete`, which
+    forces the deletion of an instance and its child resources, such as
+    snapshots.
+*   Added `--kms-key` flag to `gcloud beta filestore instances create` command
+    to specify the customer-managed KMS key name to use for encrypting the
+    filestore instance.
+
+### Cloud Run
+
+* Promoted `--binary-authorization` and `--breakglass flags` to GA. These
+  commands may now be used with `gcloud run deploy` and `gcloud run update`.
+
+### Cloud SQL
+
+*   Add `--allocated-ip-range-name` flag of `gcloud sql instances patch` in beta.
+
+### Cloud Storage
+
+* Updated gsutil component to 4.68.
+
+### Compute Engine
+
+* Added `--clear-scale-down-control` flag to `gcloud alpha|beta compute instance-groups managed update-autoscaling`.
+* Promoted `--share-setting` and `--share-with` of 'gcloud compute commitments create` to beta.
+* Promoted the following flags of `gcloud compute routers add-bgp-peer` and `gcloud compute routers update-bgp-peer` to GA:
+  * `--bfd-min-receive-interval`
+  * `--bfd-min-transmit-interval`
+  * `--bfd-multiplier`
+  * `--bfd-session-initialization-mode`
+* Promoted `--enable-layer7-ddos-defense` and `--layer7-ddos-defense-rule-visibility` of 'gcloud compute security-policies update` to GA.
+
+### Compute OS Config
+
+* Promoted `gcloud compute os-config vulnerability-reports describe` and `gcloud compute os-config vulnerability-reports list` to GA.
+* Promoted `gcloud compute os-config inventories` commands `describe` and `list` to GA.
+
+### Config Connector
+
+* Updated Google Cloud Config Connector to version 1.61.0.
+  See Config Connector Overview for more details [https://cloud.google.com/config-connector/docs/overview](https://cloud.google.com/config-connector/docs/overview).
+
+### Config Controller
+
+* The create command will automatically update the kubeconfig to point to the
+  newly created config controller cluster.
+
+### Kubernetes Engine
+
+* Updates default kubectl from 1.18 to 1.20.
+* Additional kubectl versions:
+  * kubectl.1.17 (1.17.17)
+  * kubectl.1.18 (1.18.20)
+  * kubectl.1.19 (1.19.14)
+  * kubectl.1.20 (1.20.10)
+  * kubectl.1.21 (1.21.4)
+  * kubectl.1.22 (1.22.1)
+* darwin/386 version of kubectl is no longer supported.
+* Deprecated and hid `--logging` and `--monitoring` flags from
+  `gcloud container clusters create-auto`.
+
+### Recaptcha
+
+* Added `--allowAllPackageNames` and `--allowAllBundleIds` flags to `gcloud recaptcha keys <create|update>` to create/modify keys without specifying package names.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 357.0.0 (2021-09-14)
 
 ### AI

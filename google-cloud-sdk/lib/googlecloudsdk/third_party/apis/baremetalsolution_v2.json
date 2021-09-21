@@ -383,6 +383,11 @@
       "description": "A network.",
       "type": "object",
       "properties": {
+        "name": {
+          "description": "Output only. The resource name of this `Network`. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. Format: `projects\/{project}\/locations\/{location}\/networks\/{network}` This field will contain the same value as field \"network\", which will soon be deprecated. Please use this field to reference the name of the network resource.",
+          "readOnly": true,
+          "type": "string"
+        },
         "network": {
           "description": "Name of the network.",
           "type": "string"

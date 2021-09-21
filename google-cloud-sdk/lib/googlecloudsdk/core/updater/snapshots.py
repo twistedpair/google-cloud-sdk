@@ -631,6 +631,13 @@ class ComponentSnapshotDiff(object):
   DARWIN_X86_64 = platforms.Platform(platforms.OperatingSystem.MACOSX,
                                      platforms.Architecture.x86_64)
 
+  ROSETTA2_FILES = [
+      '/Library/Apple/System/Library/LaunchDaemons/com.apple.oahd.plist',
+      '/Library/Apple/usr/share/rosetta/rosetta',
+      '/Library/Apple/System/Library/Receipts/com.apple.pkg.RosettaUpdateAuto.bom',
+      '/Library/Apple/System/Library/Receipts/com.apple.pkg.RosettaUpdateAuto.plist'
+  ]
+
   def __init__(self, current, latest, platform_filter=None):
     """Creates a new diff between two ComponentSnapshots.
 
@@ -705,8 +712,7 @@ class ComponentSnapshotDiff(object):
       native_invalid_ids = set(component_ids) - self.__native_all_components
       arm_x86_ids = native_invalid_ids & self.__darwin_x86_64_components
       if arm_x86_ids:
-        rosetta2_installed = os.path.isfile(
-            '/Library/Apple/System/Library/LaunchDaemons/com.apple.oahd.plist')
+        rosetta2_installed = self._CheckRosetta2Exists()
         if not rosetta2_installed:
           log.warning('The ARM versions of the components [{}] are not '
                       'available yet. To download and execute the x86_64 '
@@ -720,6 +726,12 @@ class ComponentSnapshotDiff(object):
           'The platform specific binary does not exist for components [{}].'
           .format(', '.join(missing_platform)))
     return invalid_seeds | missing_platform
+
+  def _CheckRosetta2Exists(self):
+    for path in self.ROSETTA2_FILES:
+      if os.path.isfile(path):
+        return True
+    return False
 
   def AllDiffs(self):
     """Gets all ComponentDiffs for this snapshot comparison.

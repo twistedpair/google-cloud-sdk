@@ -4,7 +4,7 @@
  "id": "bigquery:v2",
  "name": "bigquery",
  "version": "v2",
- "revision": "20210903",
+ "revision": "20210910",
  "title": "BigQuery API",
  "description": "A data platform for customers to create, manage, share and query data.",
  "ownerDomain": "google.com",
@@ -99,7 +99,7 @@
    "properties": {
     "useAvroLogicalTypes": {
      "type": "boolean",
-     "description": "[Optional] If set to true will enable interpreting logical types into their corresponding types (ie. TIMESTAMP), instead of only using their raw types (ie. INTEGER)."
+     "description": "[Optional] If sourceFormat is set to \"AVRO\", indicates whether to interpret logical types as the corresponding BigQuery data type (for example, TIMESTAMP), instead of using the raw type (for example, INTEGER)."
     }
    }
   },
@@ -1332,7 +1332,7 @@
     },
     "useAvroLogicalTypes": {
      "type": "boolean",
-     "description": "[Optional] If sourceFormat is set to \"AVRO\", indicates whether to enable interpreting logical types into their corresponding types (ie. TIMESTAMP), instead of only using their raw types (ie. INTEGER)."
+     "description": "[Optional] If sourceFormat is set to \"AVRO\", indicates whether to interpret logical types as the corresponding BigQuery data type (for example, TIMESTAMP), instead of using the raw type (for example, INTEGER)."
     },
     "writeDisposition": {
      "type": "string",

@@ -282,3 +282,17 @@ def AddForce(parser):
             'cluster, before deleting the cluster.'
             '\n\nIf flag is not specified, cluster delete will fail if there '
             'are instances present in the cluster.'))
+
+
+def AddPassword(parser):
+  """Adds a --password flag to parser.
+
+  Args:
+    parser: argparse.Parser: Parser object for command line inputs.
+  """
+  parser.add_argument(
+      '--password',
+      required=True,
+      type=str,
+      help=('Initial postgres user password to set up during cluster creation.')
+      )

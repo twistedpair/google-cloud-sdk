@@ -1859,7 +1859,7 @@ class ManagedidentitiesProjectsLocationsGlobalPeeringsGetRequest(_messages.Messa
 
   Fields:
     name: Required. Peering resource name using the form:
-      `projects/{project_id}/locations/global/domains/{peering_id}`
+      `projects/{project_id}/locations/global/peerings/{peering_id}`
   """
 
   name = _messages.StringField(1, required=True)

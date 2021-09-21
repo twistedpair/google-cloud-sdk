@@ -26,6 +26,7 @@ import os
 import re
 import string
 import tempfile
+import textwrap
 
 from googlecloudsdk.api_lib.oslogin import client as oslogin_client
 from googlecloudsdk.command_lib.oslogin import oslogin_utils
@@ -45,6 +46,7 @@ import six
 
 PER_USER_SSH_CONFIG_FILE = os.path.join('~', '.ssh', 'config')
 OSLOGIN_ENABLE_METADATA_KEY = 'enable-oslogin'
+OSLOGIN_ENABLE_SK_METADATA_KEY = 'enable-oslogin-sk'
 
 
 class InvalidKeyError(core_exceptions.Error):
@@ -704,28 +706,104 @@ def GetDefaultSshUsername(warn_on_account_user=False):
   return user
 
 
-def MetadataHasOsloginEnable(metadata):
-  """Return true if the metadata has 'oslogin-enable' set and 'true'.
+def MetadataHasEnable(metadata, key_name):
+  """Return true if the metadata has the supplied key and it is set to 'true'.
 
   Args:
     metadata: Instance or Project metadata.
+    key_name: The name of the metadata key to check. e.g. 'oslogin-enable'.
 
   Returns:
-    True if Enabled, False if Disabled, None if key is not present.
+    True if Enabled, False if Disabled, None if key is not presesnt.
   """
   if not (metadata and metadata.items):
     return None
   matching_values = [item.value for item in metadata.items
-                     if item.key == OSLOGIN_ENABLE_METADATA_KEY]
+                     if item.key == key_name]
   if not matching_values:
     return None
   return matching_values[0].lower() == 'true'
 
 
-def CheckForOsloginAndGetUser(instance, project, requested_user, public_key,
-                              expiration_time, release_track,
-                              username_requested=False,
-                              instance_enable_oslogin=False):
+def FeatureEnabledInMetadata(
+    instance, project, key_name, instance_override=False):
+  """Return True if the feature associated with the supplied key is enabled.
+
+  If the key is set to 'true' in instance metadata, will return True.
+  If the key is set to 'false' in instance metadata, will return False.
+  If key is not set in instance metadata, will return the value in project
+  metadata unless instance_override is True.
+
+  Args:
+    instance: The current instance object.
+    project: The current project object.
+    key_name: The name of metadata key to check. e.g. 'oslogin-enable'.
+    instance_override: The value of the instance metadata key. Used if the
+      instance object cannot be passed in.
+
+  Returns:
+    bool, True if the feature associated with the supplied key is enabled
+      in instance/project metadata.
+  """
+  feature_enabled = None
+  if instance is not None:
+    feature_enabled = MetadataHasEnable(instance.metadata, key_name)
+  elif instance_override:
+    feature_enabled = instance_override
+  if feature_enabled is None:
+    project_metadata = project.commonInstanceMetadata
+    feature_enabled = MetadataHasEnable(project_metadata, key_name)
+
+  return feature_enabled
+
+
+class OsloginState(object):
+  """Class for holding OS Login State.
+
+  Attributes:
+    oslogin_enabled: bool, True if OS Login is enabled on the instance.
+    security_keys_enabled: bool, True if Security Keys should be used for SSH
+      authentication.
+    user: str, The username that SSH should use for connecting.
+    security_keys: list, A list of 'private' keys associated with the security
+      keys configured in the user's account.
+  """
+
+  def __init__(self, oslogin_enabled=False, security_keys_enabled=False,
+               user=None, security_keys=None):
+    self.oslogin_enabled = oslogin_enabled
+    self.security_keys_enabled = security_keys_enabled
+    self.user = user
+    if security_keys is None:
+      self.security_keys = []
+    else:
+      self.security_keys = security_keys
+
+  def __str__(self):
+    return textwrap.dedent("""\
+        OS Login Enabled: {0}
+        Security Keys Enabled: {1}
+        Username: {2}
+        Security Keys:
+        {3}
+        """).format(self.oslogin_enabled,
+                    self.security_keys_enabled,
+                    self.user,
+                    '\n'.join(self.security_keys))
+
+  def __repr__(self):
+    return ('OsloginState(oslogin_enabled={0}, security_keys_enabled={1}, '
+            'user={2}, security_keys={3})'.format(self.oslogin_enabled,
+                                                  self.security_keys_enabled,
+                                                  self.user,
+                                                  self.security_keys))
+
+
+def GetOsloginState(instance, project, requested_user, public_key,
+                    expiration_time, release_track,
+                    username_requested=False,
+                    instance_enable_oslogin=False,
+                    instance_enable_security_keys=False):
   """Check instance/project metadata for oslogin and return updated username.
 
   Check to see if OS Login is enabled in metadata and if it is, return
@@ -747,51 +825,58 @@ def CheckForOsloginAndGetUser(instance, project, requested_user, public_key,
     instance_enable_oslogin: bool, True if the instance's metadata indicates
       that OS Login is enabled. Used when the instance cannot be passed through
       the instance object.
+    instance_enable_security_keys: bool, True if the instance's metadata
+      indicates that OS Login is enabled. Used when the instance cannot be
+      passed through the instance object.
 
   Returns:
-    tuple, A string containing the oslogin username and a boolean indicating
-      wheather oslogin is being used.
+    object, An object containing the OS Login state, with values indicating
+      whether OS Login is enabled, Security Keys are enabled, the username to
+      connect as and a list of security keys.
   """
-  # Instance metadata has priority
-  use_oslogin = False
-  oslogin_enabled = None
-  if instance is not None:
-    oslogin_enabled = MetadataHasOsloginEnable(instance.metadata)
-  elif instance_enable_oslogin:
-    oslogin_enabled = instance_enable_oslogin
-  if oslogin_enabled is None:
-    project_metadata = project.commonInstanceMetadata
-    oslogin_enabled = MetadataHasOsloginEnable(project_metadata)
 
-  if not oslogin_enabled:
-    return requested_user, use_oslogin
+  oslogin_state = OsloginState(user=requested_user)
 
-  # Connect to the oslogin API and add public key to oslogin user account.
+  oslogin_state.oslogin_enabled = FeatureEnabledInMetadata(
+      instance, project, OSLOGIN_ENABLE_METADATA_KEY,
+      instance_override=instance_enable_oslogin)
+
+  if not oslogin_state.oslogin_enabled:
+    return oslogin_state
+
+  oslogin_state.security_keys_enabled = FeatureEnabledInMetadata(
+      instance, project, OSLOGIN_ENABLE_SK_METADATA_KEY,
+      instance_override=instance_enable_security_keys)
+
   oslogin = oslogin_client.OsloginClient(release_track)
-  if not oslogin:
-    log.warning(
-        'OS Login is enabled on Instance/Project, but is not available '
-        'in the {0} version of gcloud.'.format(release_track.id))
-    return requested_user, use_oslogin
   user_email = (properties.VALUES.auth.impersonate_service_account.Get()
                 or properties.VALUES.core.account.Get())
 
   # Check to see if public key is already in profile and POSIX information
   # exists associated with the project. If either are not set, import an SSH
   # public key. Otherwise update the expiration time if needed.
-  login_profile = oslogin.GetLoginProfile(user_email, project.name)
-  keys = oslogin_utils.GetKeyDictionaryFromProfile(
-      user_email, oslogin, profile=login_profile)
-  fingerprint = oslogin_utils.FindKeyInKeyList(public_key, keys)
-  if not fingerprint or not login_profile.posixAccounts:
-    import_response = oslogin.ImportSshPublicKey(user_email, public_key,
-                                                 expiration_time)
-    login_profile = import_response.loginProfile
-  elif expiration_time:
-    oslogin.UpdateSshPublicKey(user_email, fingerprint, keys[fingerprint],
-                               'expirationTimeUsec',
-                               expiration_time=expiration_time)
-  use_oslogin = True
+  login_profile = oslogin.GetLoginProfile(
+      user_email, project.name,
+      include_security_keys=oslogin_state.security_keys_enabled)
+  log.warning(login_profile)
+  if oslogin_state.security_keys_enabled:
+    oslogin_state.security_keys = oslogin_utils.GetSecurityKeysFromProfile(
+        user_email, oslogin, profile=login_profile)
+    if not login_profile.posixAccounts:
+      import_response = oslogin.ImportSshPublicKey(user_email, '')
+      login_profile = import_response.loginProfile
+  else:
+    keys = oslogin_utils.GetKeyDictionaryFromProfile(
+        user_email, oslogin, profile=login_profile)
+    fingerprint = oslogin_utils.FindKeyInKeyList(public_key, keys)
+    if not fingerprint or not login_profile.posixAccounts:
+      import_response = oslogin.ImportSshPublicKey(user_email, public_key,
+                                                   expiration_time)
+      login_profile = import_response.loginProfile
+    elif expiration_time:
+      oslogin.UpdateSshPublicKey(user_email, fingerprint, keys[fingerprint],
+                                 'expirationTimeUsec',
+                                 expiration_time=expiration_time)
 
   # Get the username for the oslogin user. If the username is the same as the
   # default user, return that one. Otherwise, return the 'primary' username.
@@ -800,9 +885,11 @@ def CheckForOsloginAndGetUser(instance, project, requested_user, public_key,
   for pa in login_profile.posixAccounts:
     oslogin_user = oslogin_user or pa.username
     if pa.username == requested_user:
-      return requested_user, use_oslogin
+      return oslogin_state
     elif pa.primary:
       oslogin_user = pa.username
+
+  oslogin_state.user = oslogin_user
 
   # If the user passed in a specific username to the command, show a message
   # to the user, otherwise just add a message to the log.
@@ -813,7 +900,7 @@ def CheckForOsloginAndGetUser(instance, project, requested_user, public_key,
   else:
     log.info('Using OS Login user [{0}] instead of default user [{1}]'.format(
         oslogin_user, requested_user))
-  return oslogin_user, use_oslogin
+  return oslogin_state
 
 
 def ParseAndSubstituteSSHFlags(args, remote, instance_address,

@@ -21,8 +21,10 @@ from __future__ import unicode_literals
 from googlecloudsdk.api_lib.filestore import filestore_client
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
+from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.command_lib.filestore import flags
+from googlecloudsdk.command_lib.kms import resource_args as kms_resource_args
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
@@ -85,7 +87,6 @@ def AddForceArg(parser):
   such as snapshots."""
   parser.add_argument(
       '--force',
-      hidden=True,
       action='store_true',
       help=(help_text))
 
@@ -112,6 +113,34 @@ def AddRegionArg(parser):
 def AddDescriptionArg(parser):
   parser.add_argument(
       '--description', help='A description of the Cloud Filestore instance.')
+
+
+def GetAndValidateKmsKeyName(args):
+  """Parse the KMS key resource arg, make sure the key format is correct."""
+  kms_ref = args.CONCEPTS.kms_key.Parse()
+  if kms_ref:
+    return kms_ref.RelativeName()
+  # If parsing fails but args were specified, raise error.
+  for keyword in ['kms-key', 'kms-keyring',
+                  'kms-location', 'kms-project']:
+    if getattr(args, keyword.replace('-', '_'), None):
+      raise exceptions.InvalidArgumentException(
+          '--kms-project --kms-location --kms-keyring --kms-key',
+          'Specify fully qualified KMS key ID with --kms-key, or use '
+          'combination of --kms-project, --kms-location, --kms-keyring and '
+          '--kms-key to specify the key ID in pieces.')
+  return None  # user didn't specify KMS key
+
+
+def AddKmsKeyArg(parser):
+  permission_info = '{} must hold permission {}'.format(
+      "The 'Filestore Service Agent' service account",
+      "'Cloud KMS CryptoKey Encrypter/Decrypter'")
+  kms_resource_args.AddKmsKeyResourceArg(
+      parser=parser,
+      resource='instance',
+      permission_info=permission_info,
+      required=False)
 
 
 def GetTierArg(messages, api_version):
@@ -439,6 +468,8 @@ def AddInstanceCreateArgs(parser, api_version):
       include_snapshot_flags=(
           api_version == filestore_client.ALPHA_API_VERSION),
       include_backup_flags=True)
+  if api_version == filestore_client.BETA_API_VERSION:
+    AddKmsKeyArg(parser)
 
 
 def AddInstanceUpdateArgs(parser, api_version):

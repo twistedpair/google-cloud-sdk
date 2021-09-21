@@ -73,18 +73,18 @@ class PrivateCloudsClient(util.VmwareClientBase):
              labels=None,
              description=None,
              external_ip_access=None):
-    cluster_group = self.Get(resource)
+    private_cloud = self.Get(resource)
     update_mask = ['labels']
     if labels is not None:
-      flags.AddLabelsToMessage(labels, cluster_group)
+      flags.AddLabelsToMessage(labels, private_cloud)
     if description is not None:
-      cluster_group.description = description
+      private_cloud.description = description
       update_mask.append('description')
     if external_ip_access is not None:
-      cluster_group.networkConfig.externalIpAccess = external_ip_access
+      private_cloud.networkConfig.externalIpAccess = external_ip_access
       update_mask.append('network_config.external_ip_access')
-    request = self.messages.SddcProjectsLocationsClusterGroupsPatchRequest(
-        clusterGroup=cluster_group,
+    request = self.messages.VmwareengineProjectsLocationsPrivateCloudsPatchRequest(
+        privateCloud=private_cloud,
         name=resource.RelativeName(),
         updateMask=','.join(update_mask))
     return self.service.Patch(request)

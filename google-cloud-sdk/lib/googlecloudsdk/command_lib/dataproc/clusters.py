@@ -752,8 +752,10 @@ def GetClusterConfig(args,
     gce_cluster_config.tags = args.tags
 
   if args.metadata:
-    flat_metadata = collections.OrderedDict(
-        [(k, v) for d in args.metadata for k, v in d.items()])
+    flat_metadata = collections.OrderedDict()
+    for entry in args.metadata:
+      for k, v in entry.items():
+        flat_metadata[k] = v
     gce_cluster_config.metadata = encoding.DictToAdditionalPropertyMessage(
         flat_metadata, dataproc.messages.GceClusterConfig.MetadataValue)
 
@@ -1067,6 +1069,11 @@ def CreateCluster(dataproc,
           details='Cluster created on GKE cluster {0}'.format(
               cluster.config.gkeClusterConfig.namespacedGkeDeploymentTarget
               .targetGkeCluster))
+    elif cluster.virtualClusterConfig is not None:
+      log.CreatedResource(
+          cluster_ref,
+          details='Virtual Cluster created: {0}'.format(
+              cluster.virtualClusterConfig))
     else:
       zone_uri = cluster.config.gceClusterConfig.zoneUri
       zone_short_name = zone_uri.split('/')[-1]

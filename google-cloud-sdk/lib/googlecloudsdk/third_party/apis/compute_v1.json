@@ -4,7 +4,7 @@
   "id": "compute:v1",
   "name": "compute",
   "version": "v1",
-  "revision": "20210908",
+  "revision": "20210910",
   "title": "Compute Engine API",
   "description": "Creates and runs virtual machines on Google Cloud Platform. ",
   "ownerDomain": "google.com",
@@ -10128,6 +10128,9 @@
           "description": "The URL of the network to which this backend service belongs. This field can only be specified when the load balancing scheme is set to INTERNAL.",
           "type": "string"
         },
+        "subsetting": {
+          "$ref": "Subsetting"
+        },
         "maxStreamDuration": {
           "description": "Specifies the default maximum duration (timeout) for streams to this service. Duration is computed from the beginning of the stream until the response has been completely processed, including all retries. A stream that does not complete in this duration is closed. If not specified, there will be no timeout limit, i.e. the maximum duration is infinite. This value can be overridden in the PathMatcher configuration of the UrlMap that references this backend service. This field is only allowed when the loadBalancingScheme of the backend service is INTERNAL_SELF_MANAGED.",
           "$ref": "Duration"
@@ -10588,6 +10591,24 @@
           "description": "The percentage chance that a host will be actually ejected when an outlier status is detected through consecutive gateway failures. This setting can be used to disable ejection or to ramp it up slowly. Defaults to 100.",
           "type": "integer",
           "format": "int32"
+        }
+      }
+    },
+    "Subsetting": {
+      "id": "Subsetting",
+      "description": "Subsetting configuration for this BackendService. Currently this is applicable only for Internal TCP\/UDP load balancing, Internal HTTP(S) load balancing and Traffic Director.",
+      "type": "object",
+      "properties": {
+        "policy": {
+          "type": "string",
+          "enumDescriptions": [
+            "Subsetting based on consistent hashing. For Traffic Director, the number of backends per backend group (the subset size) is based on the `subset_size` parameter. For Internal HTTP(S) load balancing, the number of backends per backend group (the subset size) is dynamically adjusted in two cases: - As the number of proxy instances participating in Internal HTTP(S) load balancing increases, the subset size decreases. - When the total number of backends in a network exceeds the capacity of a single proxy instance, subset sizes are reduced automatically for each service that has backend subsetting enabled.",
+            "No Subsetting. Clients may open connections and send traffic to all backends of this backend service. This can lead to performance issues if there is substantial imbalance in the count of clients and backends."
+          ],
+          "enum": [
+            "CONSISTENT_HASH_SUBSETTING",
+            "NONE"
+          ]
         }
       }
     },

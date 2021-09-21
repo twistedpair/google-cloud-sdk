@@ -55,6 +55,14 @@ _HUMAN_FRIENDLY_OPERATION_TYPE_SUFFIXES = {
         'past': 'deleted',
         'present': 'delete'
     },
+    'createNetworkEdgeSecurityService': {
+        'past': 'created',
+        'present': 'create'
+    },
+    'deleteNetworkEdgeSecurityService': {
+        'past': 'deleted',
+        'present': 'delete'
+    },
     'createPSCServiceEndpoint': {
         'past': 'created',
         'present': 'create'

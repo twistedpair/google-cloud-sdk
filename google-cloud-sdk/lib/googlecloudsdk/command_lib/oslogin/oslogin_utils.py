@@ -36,6 +36,21 @@ def GetKeyDictionaryFromProfile(user, oslogin_client, profile=None):
   return key_dir
 
 
+def GetSecurityKeysFromProfile(user, oslogin_client, profile=None):
+  """Return a list of 'private' security keys from the OS Login Profile."""
+  if not profile:
+    profile = oslogin_client.GetLoginProfile(user)
+
+  sk_list = []
+  if not hasattr(profile, 'securityKeys') or not profile.securityKeys:
+    return []
+
+  for security_key in profile.securityKeys:
+    sk_list.append(security_key.privateKey)
+
+  return sk_list
+
+
 def GetKeysFromProfile(user, oslogin_client):
   profile = oslogin_client.GetLoginProfile(user)
   if profile.sshPublicKeys:

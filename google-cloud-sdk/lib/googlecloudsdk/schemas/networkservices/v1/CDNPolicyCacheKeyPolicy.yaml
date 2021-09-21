@@ -1,0 +1,96 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: networkservices v1 CDNPolicyCacheKeyPolicy export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+additionalProperties: false
+properties:
+  COMMENT:
+    type: object
+    description: User specified info ignored by gcloud import.
+    additionalProperties: false
+    properties:
+      template-id:
+        type: string
+      region:
+        type: string
+      description:
+        type: string
+      date:
+        type: string
+      version:
+        type: string
+  UNKNOWN:
+    type: array
+    description: Unknown API fields that cannot be imported.
+    items:
+      type: string
+  excludeHost:
+    description: |-
+      If true, requests to different hosts will be cached separately. Note: this
+      should only be enabled if hosts share the same origin and content Removing
+      the host from the cache key may inadvertently result in different objects
+      being cached than intended, depending on which route the first user
+      matched.
+    type: boolean
+  excludeQueryString:
+    description: |-
+      If true, exclude query string parameters from the cache key. If false (the
+      default), include the query string parameters in the cache key according
+      to includeQueryParameters and excludeQueryParameters. If neither
+      includeQueryParameters nor excludeQueryParameters is set, the entire query
+      string will be included.
+    type: boolean
+  excludedQueryParameters:
+    description: |-
+      Names of query string parameters to exclude from cache keys. All other
+      parameters will be included. Either specify includedQueryParameters or
+      excludedQueryParameters, not both. '&' and '=' will be percent encoded and
+      not treated as delimiters. You may exclude up to 10 query parameters. Each
+      query parameter name must be between 1 and 32 characters long (inclusive).
+    type: array
+    items:
+      type: string
+  includeProtocol:
+    description: If true, http and https requests will be cached separately.
+    type: boolean
+  includedCookieNames:
+    description: |-
+      Names of Cookies to include in cache keys. The cookie name and cookie
+      value of each cookie named will be used as part of the cache key.
+      Cookie names: - must be valid RFC 6265 "cookie- name" tokens - are
+      case sensitive - cannot start with "Edge-Cache-" (case insensitive)
+      Note that specifying several cookies, and/or cookies that have a large
+      range of values (e.g., per-user) will dramatically impact the cache
+      hit rate, and may result in a higher eviction rate and reduced
+      performance. You may specify up to three cookie names.
+    type: array
+    items:
+      type: string
+  includedHeaderNames:
+    description: |-
+      Names of HTTP request headers to include in cache keys. The value
+      of the header field will be used as part of the cache key. -
+      Header names must be valid HTTP RFC 7230 header field values. -
+      Header field names are case insensitive - You may specify up to
+      five header names. - To include the HTTP method, use ":method"
+      Refer to the documentation for the allowed list of header names.
+      Note that specifying several headers, and/or headers that have a
+      large range of values (e.g. per-user) will dramatically impact the
+      cache hit rate, and may result in a higher eviction rate and
+      reduced performance. You may specify up to 5 header names.
+    type: array
+    items:
+      type: string
+  includedQueryParameters:
+    description: |-
+      Names of query string parameters to include in cache keys. All
+      other parameters will be excluded. Either specify
+      includedQueryParameters or excludedQueryParameters, not both.
+      '&' and '=' will be percent encoded and not treated as
+      delimiters. You may include up to 10 query parameters. Each
+      query parameter name must be between 1 and 32 characters long
+      (inclusive).
+    type: array
+    items:
+      type: string

@@ -41,6 +41,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_NETWORKPOLICIES = (
+      'projects.locations.networkPolicies',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/networkPolicies/'
+              '{networkPoliciesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_NODETYPES = (
       'projects.locations.nodeTypes',
       '{+name}',

@@ -327,6 +327,10 @@
           "description": "Optional. How long apply attempt should wait for resource reconciliation on the Config Controller cluster to complete. If unset, the Deployment will be ACTIVE as soon as resources are applied successfully to the cluster and final resource actuation status will need to be polled on asynchronously.",
           "type": "string",
           "format": "google-duration"
+        },
+        "configController": {
+          "description": "Required. Config Controller instance to deploy to. Format: `projects\/{project}\/locations\/{location}\/krmApiHosts\/{instance}`.",
+          "type": "string"
         }
       }
     },
@@ -603,6 +607,62 @@
           "description": "Output only. Locations of outputs from preview operation.",
           "readOnly": true,
           "$ref": "PreviewResults"
+        },
+        "pipelineResults": {
+          "description": "Output only. Locations of outputs from kpt pipeline execution.",
+          "readOnly": true,
+          "$ref": "PipelineResults"
+        },
+        "state": {
+          "description": "Output only. Current state of the preview.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "The default value. This value is used if the state is omitted.",
+            "The preview is being created.",
+            "The preview is completed.",
+            "The preview has encountered an error."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "CREATING",
+            "COMPLETED",
+            "FAILED"
+          ]
+        },
+        "stateDetail": {
+          "description": "Output only. Additional information regarding the current state.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "errorCode": {
+          "description": "Output only. Code describing any errors that may have occurred.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "No error code was specified.",
+            "Cluster creation failed due to a permissions issue.",
+            "Cloud Build failed due to a permissions issue.",
+            "Cluster creation failed for a non-permissions-related issue.",
+            "A Cloud Storage bucket failed due to a permissions issue.",
+            "A Cloud Storage bucket failed for a non-permissions-related issue.",
+            "The pipeline Cloud Build failed before logs could be generated.",
+            "The pipeline Cloud Build failed after logs could be generated.",
+            "The preview Cloud Build failed before logs could be generated.",
+            "The preview Cloud Build failed after logs could be generated."
+          ],
+          "enum": [
+            "ERROR_CODE_UNSPECIFIED",
+            "CLUSTER_CREATION_PERMISSION_DENIED",
+            "CLOUD_BUILD_PERMISSION_DENIED",
+            "CLUSTER_CREATION_FAILED",
+            "BUCKET_CREATION_PERMISSION_DENIED",
+            "BUCKET_CREATION_FAILED",
+            "PIPELINE_BUILD_API_FAILED",
+            "PIPELINE_BUILD_RUN_FAILED",
+            "PREVIEW_BUILD_API_FAILED",
+            "PREVIEW_BUILD_RUN_FAILED"
+          ]
         }
       }
     },
@@ -617,6 +677,10 @@
         },
         "deployment": {
           "description": "Deployment to dry-run modification to during preview. For preview of new deployment this could be left empty. For preview modifications to existing deployment this must match an existing deployment, otherwise this will be considered as a new deployment. Format: `projects\/{project}\/locations\/{location}\/deployments\/{deployment}`",
+          "type": "string"
+        },
+        "configController": {
+          "description": "The Config Controller instance to preview configurations against. Format: `projects\/{project}\/locations\/{location}\/krmApiHosts\/{instance}`.",
           "type": "string"
         }
       }
@@ -938,7 +1002,8 @@
             "Checking for existence of a Config Controller instance and creating one in it's absence. This can take up to 20 minutes on the first deployment.",
             "Creating a revision resource.",
             "Blueprint is being processed.",
-            "Blueprint is being applied to Config Controller."
+            "Blueprint is being applied to Config Controller.",
+            "Blueprint is being previewed with Config Controller."
           ],
           "enum": [
             "DEPLOYMENT_STEP_UNSPECIFIED",
@@ -946,7 +1011,8 @@
             "PREPARING_CONFIG_CONTROLLER",
             "CREATING_REVISION",
             "RUNNING_PIPELINE",
-            "RUNNING_APPLY"
+            "RUNNING_APPLY",
+            "RUNNING_PREVIEW"
           ]
         },
         "pipelineResults": {

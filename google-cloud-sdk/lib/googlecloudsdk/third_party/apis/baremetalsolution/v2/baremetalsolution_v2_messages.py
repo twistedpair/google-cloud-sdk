@@ -561,6 +561,13 @@ class Network(_messages.Message):
   Fields:
     ipAddress: IP address configured.
     macAddress: List of physical interfaces.
+    name: Output only. The resource name of this `Network`. Resource names are
+      schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. Format:
+      `projects/{project}/locations/{location}/networks/{network}` This field
+      will contain the same value as field "network", which will soon be
+      deprecated. Please use this field to reference the name of the network
+      resource.
     network: Name of the network.
     type: The type of this network.
   """
@@ -580,8 +587,9 @@ class Network(_messages.Message):
 
   ipAddress = _messages.StringField(1)
   macAddress = _messages.StringField(2, repeated=True)
-  network = _messages.StringField(3)
-  type = _messages.EnumField('TypeValueValuesEnum', 4)
+  name = _messages.StringField(3)
+  network = _messages.StringField(4)
+  type = _messages.EnumField('TypeValueValuesEnum', 5)
 
 
 class Operation(_messages.Message):

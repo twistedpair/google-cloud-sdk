@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.core import resources
+import six
 
 
 def GetClientInstance():
@@ -41,3 +42,12 @@ def WaitForOperation(operation, resource):
   return waiter.WaitFor(
       poller, operation_ref,
       'Waiting for [{0}] to finish'.format(operation_ref.RelativeName()))
+
+
+def CreateLabels(dataplex_resource, args):
+  if getattr(args, 'labels', None):
+    return dataplex_resource.LabelsValue(additionalProperties=[
+        dataplex_resource.LabelsValue.AdditionalProperty(key=key, value=value)
+        for key, value in sorted(six.iteritems(args.labels))
+    ])
+  return None

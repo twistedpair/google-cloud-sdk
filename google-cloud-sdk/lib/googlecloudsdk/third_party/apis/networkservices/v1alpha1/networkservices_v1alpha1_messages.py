@@ -219,11 +219,11 @@ class CDNPolicy(_messages.Message):
       CDNPolicy will not apply any default negative caching when a policy
       exists.
     signedRequestKeyset: Optional. The EdgeCacheKeyset containing the set of
-      public keys used to validate signed requests at the edge. For example,
-      the following are both valid URLs to an EdgeCacheKeyset resource: - netw
-      orkservices/v1alpha1/projects/project/global/edgeCacheKeysets/yourKeyset
-      - /global/edgeCacheKeysets/yourKeyset signedRequestMode must be set to a
-      value other than DISABLED when a keyset is provided.
+      public keys used to validate signed requests at the edge. The following
+      are both valid paths to an EdgeCacheKeyset resource: *
+      projects/project/locations/global/edgeCacheKeysets/yourKeyset *
+      yourKeyset signedRequestMode must be set to a value other than DISABLED
+      when a keyset is provided.
     signedRequestMode: Optional. Whether to enforce signed requests. The
       default value is DISABLED, which means all content is public, and does
       not authorize access. You must also set a signedRequestKeyset to enable
@@ -364,6 +364,14 @@ class CDNPolicyCacheKeyPolicy(_messages.Message):
       excludeQueryParameters. If neither is set, the entire query string will
       be included. If false, the query string will be excluded from the cache
       key entirely.
+    includedCookieNames: Optional. Names of Cookies to include in cache keys.
+      The cookie name and cookie value of each cookie named will be used as
+      part of the cache key. Cookie names: - must be valid RFC 6265 "cookie-
+      name" tokens - are case sensitive - cannot start with "Edge-Cache-"
+      (case insensitive) Note that specifying several cookies, and/or cookies
+      that have a large range of values (e.g., per-user) will dramatically
+      impact the cache hit rate, and may result in a higher eviction rate and
+      reduced performance. You may specify up to three cookie names.
     includedHeaderNames: Optional. Names of HTTP request headers to include in
       cache keys. The value of the header field will be used as part of the
       cache key. - Header names must be valid HTTP RFC 7230 header field
@@ -387,8 +395,9 @@ class CDNPolicyCacheKeyPolicy(_messages.Message):
   excludedQueryParameters = _messages.StringField(3, repeated=True)
   includeProtocol = _messages.BooleanField(4)
   includeQueryString = _messages.BooleanField(5)
-  includedHeaderNames = _messages.StringField(6, repeated=True)
-  includedQueryParameters = _messages.StringField(7, repeated=True)
+  includedCookieNames = _messages.StringField(6, repeated=True)
+  includedHeaderNames = _messages.StringField(7, repeated=True)
+  includedQueryParameters = _messages.StringField(8, repeated=True)
 
 
 class CORSPolicy(_messages.Message):
@@ -517,13 +526,13 @@ class EdgeCacheOrigin(_messages.Message):
     createTime: Output only. A human-readable description of the resource.
       Creation timestamp in RFC3339 text format.
     description: Optional. A human-readable description of the resource.
-    failoverOrigin: Optional. The Origin resource to try when the current
-      origin cannot be reached. After maxAttempts is reached, the configured
-      failoverOrigin will be used to fulfil the request. For example, the
-      following are both valid URLs to an EdgeCacheOrigin resource: - networks
-      ervices/v1alpha1/projects/project/global/edgeCacheOrigins/yourOrigin -
-      /global/edgeCacheOrigins/yourOrigin The value of
-      timeout.maxAttemptsTimeout dictates the timeout across all origins.
+    failoverOrigin: Optional. The EdgeCacheOrigin resource to try when the
+      current origin cannot be reached. After maxAttempts is reached, the
+      configured failoverOrigin will be used to fulfil the request. The
+      following are both valid paths to an EdgeCacheOrigin resource: *
+      projects/my-project/locations/global/edgeCacheOrigins/my-origin * my-
+      origin The value of timeout.maxAttemptsTimeout dictates the timeout
+      across all origins.
     labels: Optional. Set of label tags associated with the EdgeCache
       resource.
     maxAttempts: Optional. The maximum number of attempts to cache fill from
@@ -692,14 +701,13 @@ class EdgeCacheService(_messages.Message):
     edgeSecurityPolicy: Optional. Resource URL that points at the Cloud Armor
       edge security policy that is applied on each request against the
       EdgeCacheService.
-    edgeSslCertificates: Optional. URLs to sslCertificate resources that are
-      used to authenticate connections between users and the EdgeCacheService.
-      Note that only "global" certificates with a "scope" of "EDGE_CACHE" can
-      be attached to an EdgeCacheService. The following are both valid URLs to
-      a Certificate resource: -
-      /v1/projects/project/locations/global/certificates/media-example-com-
-      cert - /global/certificates/media-example-com-cert You may specify up to
-      5 SSL certificates.
+    edgeSslCertificates: Optional. Certificate resources that are used to
+      authenticate connections between users and the EdgeCacheService. Note
+      that only "global" certificates with a "scope" of "EDGE_CACHE" can be
+      attached to an EdgeCacheService. The following are both valid paths to a
+      Certificate resource: *
+      projects/project/locations/global/certificates/media-example-com-cert *
+      media-example-com-cert You may specify up to 5 SSL certificates.
     ipv4Addresses: Output only. The IPv4 addresses associated with this
       service. Addresses are static for the lifetime of the service. IP
       addresses provisioned via Bring-Your-Own-IP (BYOIP) are not supported.
@@ -775,112 +783,6 @@ class Empty(_messages.Message):
 
 
 
-class EndpointConfigSelector(_messages.Message):
-  r"""EndpointConfigSelector is a resource that helps apply desired
-  configuration on the endpoints that match specific criteria. For example,
-  this resource can be used to apply "authentication config" an all endpoints
-  that serve on port 8080.
-
-  Enums:
-    TypeValueValuesEnum: Required. The type of endpoint config. This is
-      primarily used to validate the configuration.
-
-  Messages:
-    LabelsValue: Optional. Set of label tags associated with the
-      EndpointConfigSelector resource.
-
-  Fields:
-    authorizationPolicy: Optional. This field specifies the URL of
-      AuthorizationPolicy resource that applies authorization policies to the
-      inbound traffic at the matched endpoints. Refer to Authorization. If
-      this field is not specified, authorization is disabled(no authz checks)
-      for this endpoint. Applicable only when EndpointConfigSelectorType is
-      SIDECAR_PROXY.
-    clientTlsPolicy: Optional. A URL referring to a ClientTlsPolicy resource.
-      ClientTlsPolicy can be set to specify the authentication for traffic
-      from the proxy to the actual endpoints. More specifically, it is applied
-      to the outgoing traffic from the proxy to the endpoint. This is
-      typically used for sidecar model where the proxy identifies itself as
-      endpoint to the control plane, with the connection between sidecar and
-      endpoint requiring authentication. If this field is not set,
-      authentication is disabled(open). Applicable only when
-      EndpointConfigSelectorType is SIDECAR_PROXY.
-    createTime: Output only. The timestamp when the resource was created.
-    description: Optional. A free-text description of the resource. Max length
-      1024 characters.
-    endpointMatcher: Required. A matcher that selects endpoints to which the
-      policies should be applied.
-    httpFilters: Optional. HTTP filters configuration for the endpoint.
-      Applicable only when EndpointConfigSelectorType is SIDECAR_PROXY.
-    labels: Optional. Set of label tags associated with the
-      EndpointConfigSelector resource.
-    name: Required. Name of the EndpointConfigSelector resource. It matches
-      pattern `projects/*/locations/global/endpointConfigSelectors/`.
-    serverTlsPolicy: Optional. A URL referring to ServerTlsPolicy resource.
-      ServerTlsPolicy is used to determine the authentication policy to be
-      applied to terminate the inbound traffic at the identified backends. If
-      this field is not set, authentication is disabled(open) for this
-      endpoint.
-    trafficPortSelector: Optional. Port selector for the (matched) endpoints.
-      If no port selector is provided, the matched config is applied to all
-      ports.
-    type: Required. The type of endpoint config. This is primarily used to
-      validate the configuration.
-    updateTime: Output only. The timestamp when the resource was updated.
-  """
-
-  class TypeValueValuesEnum(_messages.Enum):
-    r"""Required. The type of endpoint config. This is primarily used to
-    validate the configuration.
-
-    Values:
-      ENDPOINT_CONFIG_SELECTOR_TYPE_UNSPECIFIED: <no description>
-      SIDECAR_PROXY: Represents a proxy deployed as a sidecar.
-      GRPC_SERVER: Represents a proxyless gRPC backend.
-    """
-    ENDPOINT_CONFIG_SELECTOR_TYPE_UNSPECIFIED = 0
-    SIDECAR_PROXY = 1
-    GRPC_SERVER = 2
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LabelsValue(_messages.Message):
-    r"""Optional. Set of label tags associated with the EndpointConfigSelector
-    resource.
-
-    Messages:
-      AdditionalProperty: An additional property for a LabelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a LabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  authorizationPolicy = _messages.StringField(1)
-  clientTlsPolicy = _messages.StringField(2)
-  createTime = _messages.StringField(3)
-  description = _messages.StringField(4)
-  endpointMatcher = _messages.MessageField('EndpointMatcher', 5)
-  httpFilters = _messages.MessageField('HttpFilters', 6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  name = _messages.StringField(8)
-  serverTlsPolicy = _messages.StringField(9)
-  trafficPortSelector = _messages.MessageField('TrafficPortSelector', 10)
-  type = _messages.EnumField('TypeValueValuesEnum', 11)
-  updateTime = _messages.StringField(12)
-
-
 class EndpointMatcher(_messages.Message):
   r"""A definition of a matcher that selects endpoints to which the policies
   should be applied.
@@ -935,6 +837,10 @@ class EndpointPolicy(_messages.Message):
     name: Required. Name of the EndpointPolicy resource. It matches pattern
       `projects/{project}/locations/global/endpointPolicies/{endpoint_policy}`
       .
+    securityPolicy: Optional. A URL referring to a SecurityPolicy resource.
+      SecurityPolicy is used to enforce rate limiting policy on the inbound
+      traffic at the identified backends. If this field is not set, rate
+      limiting is disabled for this endpoint.
     serverTlsPolicy: Optional. A URL referring to ServerTlsPolicy resource.
       ServerTlsPolicy is used to determine the authentication policy to be
       applied to terminate the inbound traffic at the identified backends. If
@@ -994,10 +900,11 @@ class EndpointPolicy(_messages.Message):
   httpFilters = _messages.MessageField('HttpFilters', 6)
   labels = _messages.MessageField('LabelsValue', 7)
   name = _messages.StringField(8)
-  serverTlsPolicy = _messages.StringField(9)
-  trafficPortSelector = _messages.MessageField('TrafficPortSelector', 10)
-  type = _messages.EnumField('TypeValueValuesEnum', 11)
-  updateTime = _messages.StringField(12)
+  securityPolicy = _messages.StringField(9)
+  serverTlsPolicy = _messages.StringField(10)
+  trafficPortSelector = _messages.MessageField('TrafficPortSelector', 11)
+  type = _messages.EnumField('TypeValueValuesEnum', 12)
+  updateTime = _messages.StringField(13)
 
 
 class Expr(_messages.Message):
@@ -1072,6 +979,9 @@ class GrpcRoute(_messages.Message):
       resource.
     name: Required. Name of the GrpcRoute resource. It matches pattern
       `projects/*/locations/global/grpcRoutes/`
+    routers: Optional. Routers define a list of routers this GrpcRoute should
+      be served by. Each router reference should match the pattern:
+      `projects/*/locations/global/routers/`
     rules: Required. A list of detailed rules defining how to route traffic.
       Within a single GrpcRoute, the GrpcRoute.RouteAction associated with the
       first matching GrpcRoute.RouteRule will be executed. At least one rule
@@ -1108,8 +1018,9 @@ class GrpcRoute(_messages.Message):
   hostnames = _messages.StringField(3, repeated=True)
   labels = _messages.MessageField('LabelsValue', 4)
   name = _messages.StringField(5)
-  rules = _messages.MessageField('GrpcRouteRouteRule', 6, repeated=True)
-  updateTime = _messages.StringField(7)
+  routers = _messages.StringField(6, repeated=True)
+  rules = _messages.MessageField('GrpcRouteRouteRule', 7, repeated=True)
+  updateTime = _messages.StringField(8)
 
 
 class GrpcRouteDestination(_messages.Message):
@@ -1463,6 +1374,10 @@ class HttpRoute(_messages.Message):
       suffix form.
     name: Required. Name of the HttpRoute resource. It matches pattern
       `projects/*/locations/global/httpRoutes/http_route_name>`.
+    routers: Optional. Routers define a list of routers this HttpRoute should
+      be served by. Each router reference should match the pattern:
+      `projects/*/locations/global/routers/` The attached Router should be of
+      a type PROXY
     rules: Required. Rules that define how traffic is routed and handled.
     updateTime: Output only. The timestamp when the resource was updated.
   """
@@ -1471,8 +1386,9 @@ class HttpRoute(_messages.Message):
   description = _messages.StringField(2)
   hostnames = _messages.StringField(3, repeated=True)
   name = _messages.StringField(4)
-  rules = _messages.MessageField('HttpRouteRouteRule', 5, repeated=True)
-  updateTime = _messages.StringField(6)
+  routers = _messages.StringField(5, repeated=True)
+  rules = _messages.MessageField('HttpRouteRouteRule', 6, repeated=True)
+  updateTime = _messages.StringField(7)
 
 
 class HttpRouteCorsPolicy(_messages.Message):
@@ -2001,21 +1917,6 @@ class ListEdgeCacheServicesResponse(_messages.Message):
   """
 
   edgeCacheServices = _messages.MessageField('EdgeCacheService', 1, repeated=True)
-  nextPageToken = _messages.StringField(2)
-
-
-class ListEndpointConfigSelectorsResponse(_messages.Message):
-  r"""Response returned by the ListEndpointConfigSelectors method.
-
-  Fields:
-    endpointConfigSelectors: List of EndpointConfigSelector resources.
-    nextPageToken: If there might be more results than those appearing in this
-      response, then `next_page_token` is included. To get the next set of
-      results, call this method again using the value of `next_page_token` as
-      `page_token`.
-  """
-
-  endpointConfigSelectors = _messages.MessageField('EndpointConfigSelector', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
 
 
@@ -2806,36 +2707,6 @@ class NetworkservicesProjectsLocationsEdgeCacheServicesTestIamPermissionsRequest
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
-class NetworkservicesProjectsLocationsEndpointConfigSelectorsCreateRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsEndpointConfigSelectorsCreateRequest
-  object.
-
-  Fields:
-    endpointConfigSelector: A EndpointConfigSelector resource to be passed as
-      the request body.
-    endpointConfigSelectorId: Required. Short name of the
-      EndpointConfigSelector resource to be created. E.g. "CustomECS".
-    parent: Required. The parent resource of the EndpointConfigSelector. Must
-      be in the format `projects/*/locations/global`.
-  """
-
-  endpointConfigSelector = _messages.MessageField('EndpointConfigSelector', 1)
-  endpointConfigSelectorId = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-
-
-class NetworkservicesProjectsLocationsEndpointConfigSelectorsDeleteRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsEndpointConfigSelectorsDeleteRequest
-  object.
-
-  Fields:
-    name: Required. A name of the EndpointConfigSelector to delete. Must be in
-      the format `projects/*/locations/global/endpointConfigSelectors/*`.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
 class NetworkservicesProjectsLocationsEndpointConfigSelectorsGetIamPolicyRequest(_messages.Message):
   r"""A
   NetworkservicesProjectsLocationsEndpointConfigSelectorsGetIamPolicyRequest
@@ -2857,59 +2728,6 @@ class NetworkservicesProjectsLocationsEndpointConfigSelectorsGetIamPolicyRequest
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   resource = _messages.StringField(2, required=True)
-
-
-class NetworkservicesProjectsLocationsEndpointConfigSelectorsGetRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsEndpointConfigSelectorsGetRequest
-  object.
-
-  Fields:
-    name: Required. A name of the EndpointConfigSelector to get. Must be in
-      the format `projects/*/locations/global/endpointConfigSelectors/*`.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class NetworkservicesProjectsLocationsEndpointConfigSelectorsListRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsEndpointConfigSelectorsListRequest
-  object.
-
-  Fields:
-    pageSize: Maximum number of EndpointConfigSelectors to return per call.
-    pageToken: The value returned by the last
-      `ListEndpointConfigSelectorsResponse` Indicates that this is a
-      continuation of a prior `ListEndpointConfigSelectors` call, and that the
-      system should return the next page of data.
-    parent: Required. The project and location from which the
-      EndpointConfigSelectors should be listed, specified in the format
-      `projects/*/locations/global`.
-  """
-
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-
-
-class NetworkservicesProjectsLocationsEndpointConfigSelectorsPatchRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsEndpointConfigSelectorsPatchRequest
-  object.
-
-  Fields:
-    endpointConfigSelector: A EndpointConfigSelector resource to be passed as
-      the request body.
-    name: Required. Name of the EndpointConfigSelector resource. It matches
-      pattern `projects/*/locations/global/endpointConfigSelectors/`.
-    updateMask: Optional. Field mask is used to specify the fields to be
-      overwritten in the EndpointConfigSelector resource by the update. The
-      fields specified in the update_mask are relative to the resource, not
-      the full request. A field will be overwritten if it is in the mask. If
-      the user does not provide a mask then all fields will be overwritten.
-  """
-
-  endpointConfigSelector = _messages.MessageField('EndpointConfigSelector', 1)
-  name = _messages.StringField(2, required=True)
-  updateMask = _messages.StringField(3)
 
 
 class NetworkservicesProjectsLocationsEndpointConfigSelectorsSetIamPolicyRequest(_messages.Message):
@@ -4428,12 +4246,11 @@ class RouteRule(_messages.Message):
       predicates within a given matchRule have AND semantics. All predicates
       within a matchRule must match for the request to match the rule. You may
       specify up to 5 match rules.
-    origin: Optional. The Origin resource that requests to this route should
-      fetch from when a matching response is not in cache. Origins can be
-      defined as short names ("my-origin") or fully-qualified resource URLs -
-      e.g. "networkservices.googleapis.com/projects/my-
-      project/global/edgecacheorigins/my-origin" Only one of origin or
-      urlRedirect can be set.
+    origin: Optional. The EdgeCacheOrigin resource that requests to this route
+      should fetch from when a matching response is not in cache. The
+      following are both valid paths to an EdgeCacheOrigin resource: *
+      projects/my-project/locations/global/edgeCacheOrigins/my-origin * my-
+      origin Only one of origin or urlRedirect can be set.
     priority: Required. The priority of this route rule, where 1 is the
       highest priority. You cannot configure two or more routeRules with the
       same priority. Priority for each rule must be set to a number between 1
@@ -4484,11 +4301,22 @@ class Router(_messages.Message):
       project as the resource by default.
     proxySettings: Optional. Settings specific to proxies. This field is only
       applicable if the Router type is "PROXY".
-    routes: Optional. List of references to routes that this Router must be
-      able to route traffic for. Example:
+    routes: Optional. [Deprecated] Specify target routers from routes to route
+      traffic List of references to routes that this Router must be able to
+      route traffic for. Example:
       projects/12345/locations/global/grpcRoutes/myGrpcRoute Must refer to
       GrpcRoute if Router type is PROXYLESS_GRPC. Must refer to HttpRoute if
       Router type is PROXY.
+    scope: Optional. Scope is used to identify Routers of the same type
+      configuration of which should apply to the same infrastructure
+      component(s). For example: if there are multiple Routers of type PROXY
+      with the same value of the scope, proxies requesting the configuration
+      using this value will receive a joint configuration of all Routers in
+      the scope. Clients can request configuration for a particular scope by
+      specifying its value in their request. Refer to the product
+      documentation for the product-specific way of specifying request
+      parameters. Max length 64 characters. Scope should start with a letter
+      and can only have letters, numbers, hyphens.
     selector: Optional. Defines additional parameters to match data plane
       clients (envoy proxy or grpc client) with the configuration provided by
       this Router. If selector matches - all configuration associated with
@@ -4507,10 +4335,12 @@ class Router(_messages.Message):
       PROXYLESS_GRPC: The Router is used in Proxyless gRPC model. Routes being
         referenced must be gRPC routes for this type.
       PROXY: The Router is used in customer-managed proxy model.
+      SIDECAR: The Router is used in customer-managed sidecar proxy model.
     """
     TYPE_UNSPECIFIED = 0
     PROXYLESS_GRPC = 1
     PROXY = 2
+    SIDECAR = 3
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -4543,9 +4373,10 @@ class Router(_messages.Message):
   network = _messages.StringField(5)
   proxySettings = _messages.MessageField('RouterProxySettings', 6)
   routes = _messages.StringField(7, repeated=True)
-  selector = _messages.MessageField('Selector', 8)
-  type = _messages.EnumField('TypeValueValuesEnum', 9)
-  updateTime = _messages.StringField(10)
+  scope = _messages.StringField(8)
+  selector = _messages.MessageField('Selector', 9)
+  type = _messages.EnumField('TypeValueValuesEnum', 10)
+  updateTime = _messages.StringField(11)
 
 
 class RouterProxySettings(_messages.Message):
@@ -4670,14 +4501,26 @@ class ServiceBinding(_messages.Message):
   to be used in a BackendService resource.
 
   Fields:
+    createTime: Output only. The timestamp when the resource was created.
     description: Optional. A free-text description of the resource. Max length
       1024 characters.
+    endpointFilter: Optional. The endpoint filter associated with the Service
+      Binding. The syntax is described in http://cloud/service-directory/docs/
+      reference/rpc/google.cloud.servicedirectory.v1#google.cloud.servicedirec
+      tory.v1.ResolveServiceRequest
     name: Required. Name of the ServiceBinding resource. It matches pattern
       `projects/*/locations/global/serviceBindings/service_binding_name>`.
+    service: Required. The full service directory service name of the format
+      /projects/*/locations/*/namespaces/*/services/*
+    updateTime: Output only. The timestamp when the resource was updated.
   """
 
-  description = _messages.StringField(1)
-  name = _messages.StringField(2)
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  endpointFilter = _messages.StringField(3)
+  name = _messages.StringField(4)
+  service = _messages.StringField(5)
+  updateTime = _messages.StringField(6)
 
 
 class ServiceGraph(_messages.Message):
@@ -4835,6 +4678,10 @@ class TcpRoute(_messages.Message):
       1024 characters.
     name: Required. Name of the TcpRoute resource. It matches pattern
       `projects/*/locations/global/tcpRoutes/tcp_route_name>`.
+    routers: Optional. Routers define a list of routers this TcpRoute should
+      be served by. Each router reference should match the pattern:
+      `projects/*/locations/global/routers/` The attached Router should be of
+      a type PROXY
     rules: Required. Rules that define how traffic is routed and handled. At
       least one RouteRule must be supplied. If there are multiple rules then
       the action taken will be the first rule to match.
@@ -4844,8 +4691,9 @@ class TcpRoute(_messages.Message):
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
   name = _messages.StringField(3)
-  rules = _messages.MessageField('TcpRouteRouteRule', 4, repeated=True)
-  updateTime = _messages.StringField(5)
+  routers = _messages.StringField(4, repeated=True)
+  rules = _messages.MessageField('TcpRouteRouteRule', 5, repeated=True)
+  updateTime = _messages.StringField(6)
 
 
 class TcpRouteRouteAction(_messages.Message):

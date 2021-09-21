@@ -2719,7 +2719,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "name": {
-                          "description": "Required. Peering resource name using the form: `projects\/{project_id}\/locations\/global\/domains\/{peering_id}`",
+                          "description": "Required. Peering resource name using the form: `projects\/{project_id}\/locations\/global\/peerings\/{peering_id}`",
                           "pattern": "^projects\/[^\/]+\/locations\/global\/peerings\/[^\/]+$",
                           "location": "path",
                           "required": true,

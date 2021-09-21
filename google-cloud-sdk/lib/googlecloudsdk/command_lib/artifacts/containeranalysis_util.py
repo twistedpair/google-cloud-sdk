@@ -34,6 +34,7 @@ class ContainerAnalysisMetadata:
     self.discovery = DiscoverySummary()
     self.deployment = DeploymentSummary()
     self.build = BuildSummary()
+    self.provenance = ProvenanceSummary()
 
   def AddOccurrence(self, occ):
     """Adds occurrences retrieved from containeranalysis API."""
@@ -48,6 +49,8 @@ class ContainerAnalysisMetadata:
       self.deployment.AddOccurrence(occ)
     elif occ.kind == messages.Occurrence.KindValueValuesEnum.DISCOVERY:
       self.discovery.AddOccurrence(occ)
+    elif occ.kind == messages.Occurrence.KindValueValuesEnum.DSSE_ATTESTATION:
+      self.provenance.AddOccurrence(occ)
 
   def ImagesListView(self):
     """Returns a dictionary representing the metadata.
@@ -83,6 +86,8 @@ class ContainerAnalysisMetadata:
     vuln = self.vulnerability.ImagesDescribeView()
     if vuln:
       view['package_vulnerability_summary'] = vuln
+    if self.provenance.provenance:
+      view['provenance_summary'] = self.provenance
     return view
 
 
@@ -183,6 +188,16 @@ class DiscoverySummary:
     self.discovery.append(occ)
 
 
+class ProvenanceSummary:
+  """ProvenanceSummary holds image provenance information."""
+
+  def __init__(self):
+    self.provenance = []
+
+  def AddOccurrence(self, occ):
+    self.provenance.append(occ)
+
+
 def GetContainerAnalysisMetadata(docker_version, args):
   """Retrieves metadata for a docker image."""
   metadata = ContainerAnalysisMetadata()
@@ -273,6 +288,8 @@ def _CreateFilterFromImagesDescribeArgs(image, args):
       filter_kinds.append('IMAGE')
     if args.show_deployment:
       filter_kinds.append('DEPLOYMENT')
+    if args.show_provenance:
+      filter_kinds.append('DSSE_ATTESTATION')
 
     # args include none of the occurrence types, there's no need to call the
     # containeranalysis API.

@@ -12,7 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Flags and helpers for the blueprints command group."""
 
 from __future__ import absolute_import
@@ -51,8 +50,7 @@ Add a label to an existing deployment:
       '--labels',
       metavar='KEY=VALUE',
       type=arg_parsers.ArgDict(),
-      help=help_text
-  )
+      help=help_text)
 
 
 def AddAsyncFlag(parser):
@@ -146,11 +144,7 @@ Create a deployment from the "blueprints/compute" folder:
     --source-git-subdir="blueprints/compute"
 """
 
-  parser.add_argument(
-      '--source',
-      required=True,
-      help=source_help_text
-  )
+  parser.add_argument('--source', required=True, help=source_help_text)
 
   # If the "--source" flag represents a local directory, then "--stage-bucket"
   # can be specified. However, if it represents a Git repository, then
@@ -201,3 +195,37 @@ def AddTimeoutFlag(parser):
       type=arg_parsers.Duration(default_unit='s', parsed_unit='s'),
       default=0,
       help=help_text)
+
+
+def AddPreviewFlags(parser):
+  """Add preview flags."""
+  preview_details = parser.add_mutually_exclusive_group(required=True)
+  preview_details.add_argument(
+      '--delete',
+      default=False,
+      action='store_true',
+      help='Whether or not to preview deployment delete operation')
+  # TODO(b/200083256): Refactor these flags to reuse the same help text as
+  # deployment commands.
+  source_group = preview_details.add_group()
+  source_group.add_argument(
+      '--source', required=True, help='Source of a blueprint')
+  source_details = source_group.add_mutually_exclusive_group()
+  source_details.add_argument(
+      '--stage-bucket',
+      help='Destination storage bucket',
+      type=functions_api_util.ValidateAndStandarizeBucketUriOrRaise,
+  )
+  source_details.add_argument(
+      '--source-git-subdir',
+      help='Subdirectory for blueprints contents',
+  )
+
+
+def AddPreviewFormatFlag(parser):
+  """Add --preview-format flag."""
+  parser.add_argument(
+      '--preview-format',
+      choices=['text', 'json'],
+      default='text',
+      help='Preview results output format')

@@ -12,7 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Flags and helpers for the compute backend-services commands."""
 
 from __future__ import absolute_import
@@ -25,7 +24,6 @@ from googlecloudsdk.command_lib.compute import exceptions as compute_exceptions
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 from googlecloudsdk.command_lib.compute import scope as compute_scope
 from googlecloudsdk.command_lib.util import completers
-
 
 DEFAULT_LIST_FORMAT = """\
     table(
@@ -67,8 +65,9 @@ class BackendServicesCompleter(completers.MultiResourceCompleter):
 
   def __init__(self, **kwargs):
     super(BackendServicesCompleter, self).__init__(
-        completers=[RegionalBackendServicesCompleter,
-                    GlobalBackendServicesCompleter],
+        completers=[
+            RegionalBackendServicesCompleter, GlobalBackendServicesCompleter
+        ],
         **kwargs)
 
 
@@ -79,7 +78,6 @@ ZONAL_INSTANCE_GROUP_ARG = compute_flags.ResourceArgument(
     zonal_collection='compute.instanceGroups',
     zone_explanation=compute_flags.ZONE_PROPERTY_EXPLANATION)
 
-
 MULTISCOPE_INSTANCE_GROUP_ARG = compute_flags.ResourceArgument(
     name='--instance-group',
     resource_name='instance group',
@@ -89,13 +87,11 @@ MULTISCOPE_INSTANCE_GROUP_ARG = compute_flags.ResourceArgument(
     zone_explanation=compute_flags.ZONE_PROPERTY_EXPLANATION,
     region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION)
 
-
 GLOBAL_BACKEND_SERVICE_ARG = compute_flags.ResourceArgument(
     name='backend_service_name',
     resource_name='backend service',
     completer=GlobalBackendServicesCompleter,
     global_collection='compute.backendServices')
-
 
 GLOBAL_MULTI_BACKEND_SERVICE_ARG = compute_flags.ResourceArgument(
     name='backend_service_name',
@@ -104,14 +100,12 @@ GLOBAL_MULTI_BACKEND_SERVICE_ARG = compute_flags.ResourceArgument(
     plural=True,
     global_collection='compute.backendServices')
 
-
 GLOBAL_REGIONAL_BACKEND_SERVICE_ARG = compute_flags.ResourceArgument(
     name='backend_service_name',
     resource_name='backend service',
     completer=BackendServicesCompleter,
     regional_collection='compute.regionBackendServices',
     global_collection='compute.backendServices')
-
 
 GLOBAL_REGIONAL_BACKEND_SERVICE_NOT_REQUIRED_ARG = compute_flags.ResourceArgument(
     name='backend_service_name',
@@ -121,7 +115,6 @@ GLOBAL_REGIONAL_BACKEND_SERVICE_NOT_REQUIRED_ARG = compute_flags.ResourceArgumen
     regional_collection='compute.regionBackendServices',
     global_collection='compute.backendServices')
 
-
 GLOBAL_REGIONAL_MULTI_BACKEND_SERVICE_ARG = compute_flags.ResourceArgument(
     name='backend_service_name',
     resource_name='backend service',
@@ -129,7 +122,6 @@ GLOBAL_REGIONAL_MULTI_BACKEND_SERVICE_ARG = compute_flags.ResourceArgument(
     plural=True,
     regional_collection='compute.regionBackendServices',
     global_collection='compute.backendServices')
-
 
 NETWORK_ARG = compute_flags.ResourceArgument(
     name='--network',
@@ -441,6 +433,29 @@ def AddCacheKeyQueryStringList(parser):
       """)
 
 
+def AddCacheKeyExtendedCachingArgs(parser):
+  """Adds cache key includeHttpHeader and includeNamedCookie flags to the argparse."""
+  parser.add_argument(
+      '--cache-key-include-http-header',
+      type=arg_parsers.ArgList(),
+      metavar='HEADER_FIELD_NAME',
+      help="""\
+      Specifies a comma-separated list of HTTP headers, by field name, to
+      include in cache keys. Only the request URL is included in the cache
+      key by default.
+      """)
+
+  parser.add_argument(
+      '--cache-key-include-named-cookie',
+      type=arg_parsers.ArgList(),
+      metavar='NAMED_COOKIE',
+      help="""\
+      Specifies a comma-separated list of HTTP cookie names to include in cache
+      keys. The name=value pair are used in the cache key Cloud CDN
+      generates. Cookies are not included in cache keys by default.
+      """)
+
+
 def HealthCheckArgument(required=False, support_regional_health_check=False):
   return compute_flags.ResourceArgument(
       resource_name='health check',
@@ -539,10 +554,68 @@ def GetHealthCheckUris(args, resource_resolver, resource_parser):
   if health_check_refs and getattr(args, 'no_health_checks', None):
     raise compute_exceptions.ArgumentError(
         'Combining --health-checks, --http-health-checks, or '
-        '--https-health-checks with --no-health-checks is not supported.'
-    )
+        '--https-health-checks with --no-health-checks is not supported.')
 
   return [health_check_ref.SelfLink() for health_check_ref in health_check_refs]
+
+
+SERVICE_LB_POLICY_HELP = """\
+Service load balancing policy to be applied to this backend service.
+Can only be set if load balancing scheme is EXTERNAL, INTERNAL_MANAGED or
+INTERNAL_SELF_MANAGED. If used with a backend service, must reference a
+global policy. If used with a regional backend service, must reference a
+regional policy.
+"""
+
+
+def AddServiceLoadBalancingPolicy(parser, required=False, is_update=False):
+  """Add support for --service-lb-policy flag."""
+  group = parser.add_mutually_exclusive_group() if is_update else parser
+  group.add_argument(
+      '--service-lb-policy',
+      metavar='SERVICE_LOAD_BALANCING_POLICY',
+      required=required,
+      # TODO(b/199261738): enable when gcloud list command for serviceLbPolicy
+      # is available
+      # completer=(
+      #    network_services_completers.ServiceLoadBalancingPoliciesCompleter),
+      help=SERVICE_LB_POLICY_HELP)
+  if is_update:
+    group.add_argument(
+        '--no-service-lb-policy',
+        required=False,
+        action='store_true',
+        default=None,
+        help='No service load balancing policies should be attached '
+        'to the backend service.')
+
+
+SERVICE_BINDINGS_HELP = """\
+List of service bindings to be attached to this backend service.
+Can only be set if load balancing scheme is INTERNAL_SELF_MANAGED.
+If set, lists of backends and health checks must be both empty.
+"""
+
+
+def AddServiceBindings(parser, required=False, is_update=False):
+  """Add support for --service_bindings flag."""
+  group = parser.add_mutually_exclusive_group() if is_update else parser
+  group.add_argument(
+      '--service-bindings',
+      metavar='SERVICE_BINDING',
+      required=required,
+      type=arg_parsers.ArgList(min_length=1),
+      # TODO(b/199261361): enable when gcloud list command for serviceBindings
+      # is available
+      # completer=network_services_completers.ServiceBindingsCompleter,
+      help=SERVICE_BINDINGS_HELP)
+  if is_update:
+    group.add_argument(
+        '--no-service-bindings',
+        required=False,
+        action='store_true',
+        default=None,
+        help='No service bindings should be attached to the backend service.')
 
 
 def AddIap(parser, help=None):  # pylint: disable=redefined-builtin
@@ -570,14 +643,15 @@ def AddSessionAffinity(parser,
     support_client_only: Indicates if CLIENT_IP_NO_DESTINATION is valid choice.
   """
   choices = {
-      'CLIENT_IP': (
-          "Route requests to instances based on the hash of the client's IP "
-          'address.'),
-      'NONE': 'Session affinity is disabled.',
-      'CLIENT_IP_PROTO': (
-          'Connections from the same client IP with the same IP '
-          'protocol will go to the same VM in the pool while that VM remains'
-          ' healthy.'),
+      'CLIENT_IP':
+          ("Route requests to instances based on the hash of the client's IP "
+           'address.'),
+      'NONE':
+          'Session affinity is disabled.',
+      'CLIENT_IP_PROTO':
+          ('Connections from the same client IP with the same IP '
+           'protocol will go to the same VM in the pool while that VM remains'
+           ' healthy.'),
   }
 
   if not target_pools:
@@ -630,13 +704,12 @@ def AddSessionAffinity(parser,
     })
     if support_client_only:
       choices.update({
-          'CLIENT_IP_NO_DESTINATION': (
-              'Directs a particular client\'s request to the same backend VM '
-              'based on a hash created on the client\'s IP address only. This '
-              'is used in L4 ILB as Next-Hop scenarios. It differs from the '
-              'Client-IP option in that Client-IP uses a hash based on both '
-              'client-IP\'s address and destination address.'
-              )
+          'CLIENT_IP_NO_DESTINATION':
+              ('Directs a particular client\'s request to the same backend VM '
+               'based on a hash created on the client\'s IP address only. This '
+               'is used in L4 ILB as Next-Hop scenarios. It differs from the '
+               'Client-IP option in that Client-IP uses a hash based on both '
+               'client-IP\'s address and destination address.')
       })
   help_str = 'The type of session affinity to use. Supports both TCP and UDP.'
   parser.add_argument(

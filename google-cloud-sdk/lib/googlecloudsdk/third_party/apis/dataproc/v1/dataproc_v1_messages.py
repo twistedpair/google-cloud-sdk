@@ -2236,7 +2236,15 @@ class DataprocProjectsRegionsWorkflowTemplatesTestIamPermissionsRequest(_message
 
 
 class DiagnoseClusterRequest(_messages.Message):
-  r"""A request to collect cluster diagnostic information."""
+  r"""A request to collect cluster diagnostic information.
+
+  Fields:
+    tarballGcsDir: Optional. (Optional) The output Cloud Storage directory for
+      the diagnostic tarball. If not specified, a task-specific directory in
+      the cluster's staging bucket will be used.
+  """
+
+  tarballGcsDir = _messages.StringField(1)
 
 
 class DiagnoseClusterResults(_messages.Message):

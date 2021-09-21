@@ -132,7 +132,7 @@ class IamV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new WorkforcePoolProvider in a WorkforcePool. The name of a deleted WorkforcePoolProvider cannot be reused if it was deleted less than 30 days ago.
+      r"""Creates a new WorkforcePoolProvider in a WorkforcePool. You cannot reuse the name of a deleted provider until 30 days after deletion.
 
       Args:
         request: (IamLocationsWorkforcePoolsProvidersCreateRequest) input message
@@ -159,7 +159,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes an existing WorkforcePoolProvider. A deleted WorkforcePoolProvider cannot be used for exchange of third party credentials for Google Cloud Platform credentials. However, deleting does not revoke credentials that have already been issued. This is a soft delete and can be undeleted for 30 days. After 30 days, the delete is permanent. Deleted items cannot be updated, but they can be viewed and listed.
+      r"""Deletes a WorkforcePoolProvider. Deleting a provider does not revoke credentials that have already been\ issued; they continue to grant access. You can undelete a provider for 30 days. After 30 days, deletion is permanent. You cannot update deleted providers. However, you can view and list them.
 
       Args:
         request: (IamLocationsWorkforcePoolsProvidersDeleteRequest) input message
@@ -186,7 +186,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Reads an individual WorkforcePoolProvider.
+      r"""Gets an individual WorkforcePoolProvider.
 
       Args:
         request: (IamLocationsWorkforcePoolsProvidersGetRequest) input message
@@ -213,7 +213,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists all non-deleted WorkforcePoolProviders in the specified WorkforcePool. If `show_deleted = true`, then deleted WorkforcePoolProviders are also listed.
+      r"""Lists all non-deleted WorkforcePoolProviders in a WorkforcePool. If `show_deleted` is set to `true`, then deleted providers are also listed.
 
       Args:
         request: (IamLocationsWorkforcePoolsProvidersListRequest) input message
@@ -267,7 +267,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def Undelete(self, request, global_params=None):
-      r"""Undeletes a WorkforcePoolProvider as long as it was deleted less than 30 days ago.
+      r"""Undeletes a WorkforcePoolProvider, as long as it was deleted fewer than 30 days ago.
 
       Args:
         request: (IamLocationsWorkforcePoolsProvidersUndeleteRequest) input message
@@ -304,7 +304,7 @@ class IamV1(base_api.BaseApiClient):
           }
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a WorkforcePoolSubject. Subject must not already be in a delete state. A WorkforcePoolSubject is automatically created the first time an external credential is exchanged for a GCP credential with a mapped google.subject attribute. There is no path to manually create WorkforcePoolSubjects. Once deleted, the WorkforcePoolSubject may not be used for 30 days. After 30 days, the WorkforcePoolSubject will be deleted forever and can be reused in token exchanges with GCP STS. This will automatically create a new WorkforcePoolSubject that is independent of the prior WorkforcePoolSubject with the same google.subject value.
+      r"""Deletes a WorkforcePoolSubject. Subject must not already be in a deleted state. A WorkforcePoolSubject is automatically created the first time an external credential is exchanged for a Google Cloud credential with a mapped `google.subject` attribute. There is no path to manually create WorkforcePoolSubjects. Once deleted, the WorkforcePoolSubject may not be used for 30 days. After 30 days, the WorkforcePoolSubject will be deleted forever and can be reused in token exchanges with Google Cloud STS. This will automatically create a new WorkforcePoolSubject that is independent of the previously deleted WorkforcePoolSubject with the same google.subject value.
 
       Args:
         request: (IamLocationsWorkforcePoolsSubjectDeleteRequest) input message
@@ -331,7 +331,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def Undelete(self, request, global_params=None):
-      r"""Undeletes a WorkforcePoolSubject. Subject must be in DELETE state and must have been deleted less than 30 days ago.
+      r"""Undeletes a WorkforcePoolSubject, as long as it was deleted fewer than 30 days ago.
 
       Args:
         request: (IamLocationsWorkforcePoolsSubjectUndeleteRequest) input message
@@ -368,7 +368,7 @@ class IamV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new WorkforcePool. The name of a deleted WorkforcePool cannot be reused if it was deleted less than 30 days ago.
+      r"""Creates a new WorkforcePool. You cannot reuse the name of a deleted pool until 30 days after deletion.
 
       Args:
         request: (IamLocationsWorkforcePoolsCreateRequest) input message
@@ -395,7 +395,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes an existing WorkforcePool. A deleted WorkforcePool cannot be used for exchange of third party credentials for Google Cloud Platform credentials. However, deleting does not revoke credentials that have already been issued. This is a soft delete and can be undeleted for 30 days. After 30 days, the delete is permanent. Deleted items cannot be updated, but they can be viewed and listed. Credentials that were issued for a WorkforcePool will not work while the WorkforcePool is deleted. Once the WorkforcePool is undeleted the credentials will work again if they have not expired.
+      r"""Deletes a WorkforcePool. You cannot use a deleted WorkforcePool to exchange external credentials for Google Cloud credentials. However, deletion does not revoke credentials that have already been issued. Credentials issued for a deleted pool do not grant access to resources. If the pool is undeleted, and the credentials are not expired, they grant access again. You can undelete a pool for 30 days. After 30 days, deletion is permanent. You cannot update deleted pools. However, you can view and list them.
 
       Args:
         request: (IamLocationsWorkforcePoolsDeleteRequest) input message
@@ -422,7 +422,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Reads an individual WorkforcePool.
+      r"""Gets an individual WorkforcePool.
 
       Args:
         request: (IamLocationsWorkforcePoolsGetRequest) input message
@@ -449,7 +449,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def GetIamPolicy(self, request, global_params=None):
-      r"""Reads IAM policies on a WorkforcePool.
+      r"""Gets IAM policies on a WorkforcePool.
 
       Args:
         request: (IamLocationsWorkforcePoolsGetIamPolicyRequest) input message
@@ -476,7 +476,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists all non-deleted WorkforcePools under the specified parent. If `show_deleted = true`, then deleted WorkforcePools are also listed.
+      r"""Lists all non-deleted WorkforcePools under the specified parent. If `show_deleted` is set to `true`, then deleted pools are also listed.
 
       Args:
         request: (IamLocationsWorkforcePoolsListRequest) input message
@@ -557,7 +557,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def TestIamPermissions(self, request, global_params=None):
-      r"""Returns the caller's permissions on the WorkforcePool. If the WorkforcePool does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error.
+      r"""Returns the caller's permissions on the WorkforcePool. If the pool does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error.
 
       Args:
         request: (IamLocationsWorkforcePoolsTestIamPermissionsRequest) input message
@@ -584,7 +584,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def Undelete(self, request, global_params=None):
-      r"""Undeletes a WorkforcePool as long as it was deleted less than 30 days ago.
+      r"""Undeletes a WorkforcePool, as long as it was deleted fewer than 30 days ago.
 
       Args:
         request: (IamLocationsWorkforcePoolsUndeleteRequest) input message

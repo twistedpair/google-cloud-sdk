@@ -20,14 +20,36 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
+from googlecloudsdk.command_lib.util import completers
 
 
-class SecurityPoliciesCompleter(compute_completers.ListCommandCompleter):
+class GlobalSecurityPoliciesCompleter(compute_completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(GlobalSecurityPoliciesCompleter, self).__init__(
+        collection='compute.securityPolicies',
+        list_command='compute security-policies list --uri',
+        **kwargs)
+
+
+class RegionalSecurityPoliciesCompleter(compute_completers.ListCommandCompleter
+                                       ):
+
+  def __init__(self, **kwargs):
+    super(RegionalSecurityPoliciesCompleter, self).__init__(
+        collection='compute.regionSecurityPolicies',
+        list_command=('compute security-policies list '
+                      '--filter=region:* --uri'),
+        **kwargs)
+
+
+class SecurityPoliciesCompleter(completers.MultiResourceCompleter):
 
   def __init__(self, **kwargs):
     super(SecurityPoliciesCompleter, self).__init__(
-        collection='compute.securityPolicies',
-        list_command='compute security-policies list --uri',
+        completers=[
+            GlobalSecurityPoliciesCompleter, RegionalSecurityPoliciesCompleter
+        ],
         **kwargs)
 
 
@@ -41,6 +63,17 @@ def SecurityPolicyArgument(required=True, plural=False):
       global_collection='compute.securityPolicies')
 
 
+def SecurityPolicyMultiScopeArgument(required=True, plural=False):
+  return compute_flags.ResourceArgument(
+      resource_name='security policy',
+      completer=SecurityPoliciesCompleter,
+      plural=plural,
+      custom_plural='security policies',
+      required=required,
+      global_collection='compute.securityPolicies',
+      regional_collection='compute.regionSecurityPolicies')
+
+
 def SecurityPolicyArgumentForTargetResource(resource, required=False):
   return compute_flags.ResourceArgument(
       resource_name='security policy',
@@ -49,6 +82,19 @@ def SecurityPolicyArgumentForTargetResource(resource, required=False):
       plural=False,
       required=required,
       global_collection='compute.securityPolicies',
+      short_help=('The security policy that will be set for this {0}.'.format(
+          resource)))
+
+
+def SecurityPolicyMultiScopeArgumentForTargetResource(resource, required=False):
+  return compute_flags.ResourceArgument(
+      resource_name='security policy',
+      name='--security-policy',
+      completer=SecurityPoliciesCompleter,
+      plural=False,
+      required=required,
+      global_collection='compute.securityPolicies',
+      regional_collection='compute.regionSecurityPolicies',
       short_help=('The security policy that will be set for this {0}.'.format(
           resource)))
 
@@ -109,5 +155,16 @@ def AddAdvancedOptions(parser, required=False):
       choices=['NORMAL', 'VERBOSE'],
       type=lambda x: x.upper(),
       required=required,
-      help=('The level of detail to display for WAF logging. '
-            'Must be one of the following values: [NORMAL, VERBOSE].'))
+      help='The level of detail to display for WAF logging.')
+
+
+def AddDdosProtectionConfig(parser, required=False):
+  """Adds the cloud armor DDoS protection config arguments to the argparse."""
+  parser.add_argument(
+      '--ddos-protection',
+      choices=['STANDARD', 'ADVANCED'],
+      type=lambda x: x.upper(),
+      required=required,
+      help=(
+          'The DDoS protection level for network load balancing and instances '
+          'with external IPs'))

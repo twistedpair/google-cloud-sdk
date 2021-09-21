@@ -721,7 +721,7 @@ class IamProjectsLocationsWorkloadIdentityPoolsPatchRequest(_messages.Message):
     googleIamV1betaWorkloadIdentityPool: A GoogleIamV1betaWorkloadIdentityPool
       resource to be passed as the request body.
     name: Output only. The resource name of the pool.
-    updateMask: Required. The list of fields update.
+    updateMask: Required. The list of fields to update.
   """
 
   googleIamV1betaWorkloadIdentityPool = _messages.MessageField('GoogleIamV1betaWorkloadIdentityPool', 1)

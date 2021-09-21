@@ -699,7 +699,7 @@ class OsconfigV1alpha2(base_api.BaseApiClient):
     )
 
     def Execute(self, request, global_params=None):
-      r"""Patch GCE instances by creating and running a PatchJob.
+      r"""Patch VM instances by creating and running a PatchJob.
 
       Args:
         request: (OsconfigProjectsPatchJobsExecuteRequest) input message
@@ -790,7 +790,7 @@ class OsconfigV1alpha2(base_api.BaseApiClient):
           }
 
     def LookupGuestPolicies(self, request, global_params=None):
-      r"""Lookup the guest policies that are assigned to a GCE VM instance. This lookup will merge all policies that are assigned to the instance. This is usually called by the agent running on the instance, but it can also be called by users to see what configs are assigned to this instance.
+      r"""Lookup the guest policies that are assigned to a VM instance. This lookup will merge all policies that are assigned to the instance. This is usually called by the agent running on the instance, but it can also be called by users to see what configs are assigned to this instance.
 
       Args:
         request: (OsconfigProjectsZonesInstancesLookupGuestPoliciesRequest) input message

@@ -80,7 +80,14 @@ class AppDevExperienceFeatureSpec(_messages.Message):
 
 
 class AppDevExperienceFeatureState(_messages.Message):
-  r"""State for App Dev Exp Feature."""
+  r"""State for App Dev Exp Feature.
+
+  Fields:
+    networkingInstallSucceeded: Status of subcomponent that detects configured
+      Service Mesh resources.
+  """
+
+  networkingInstallSucceeded = _messages.MessageField('Status', 1)
 
 
 class AuditConfig(_messages.Message):
@@ -2362,6 +2369,38 @@ class StandardQueryParameters(_messages.Message):
   trace = _messages.StringField(10)
   uploadType = _messages.StringField(11)
   upload_protocol = _messages.StringField(12)
+
+
+class Status(_messages.Message):
+  r"""Status specifies state for the subcomponent.
+
+  Enums:
+    CodeValueValuesEnum: Code specifies AppDevExperienceFeature's subcomponent
+      ready state.
+
+  Fields:
+    code: Code specifies AppDevExperienceFeature's subcomponent ready state.
+    description: Description is populated if Code is Failed, explaining why it
+      has failed.
+  """
+
+  class CodeValueValuesEnum(_messages.Enum):
+    r"""Code specifies AppDevExperienceFeature's subcomponent ready state.
+
+    Values:
+      CODE_UNSPECIFIED: Not set.
+      OK: AppDevExperienceFeature's specified subcomponent is ready.
+      FAILED: AppDevExperienceFeature's specified subcomponent ready state is
+        false. This means AppDevExperienceFeature has encountered an issue
+        that blocks all, or a portion, of its normal operation. See the
+        `description` for more details.
+    """
+    CODE_UNSPECIFIED = 0
+    OK = 1
+    FAILED = 2
+
+  code = _messages.EnumField('CodeValueValuesEnum', 1)
+  description = _messages.StringField(2)
 
 
 class SyncError(_messages.Message):

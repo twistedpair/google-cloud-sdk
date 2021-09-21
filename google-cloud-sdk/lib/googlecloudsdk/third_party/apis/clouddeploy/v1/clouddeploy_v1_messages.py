@@ -861,24 +861,25 @@ class DefaultPool(_messages.Message):
 
 
 class DeliveryPipeline(_messages.Message):
-  r"""A `DeliveryPipeline` resource in the Cloud Deploy API. A
+  r"""A `DeliveryPipeline` resource in the Google Cloud Deploy API. A
   `DeliveryPipeline` defines a pipeline through which a Skaffold configuration
   can progress.
 
   Messages:
     AnnotationsValue: User annotations. These attributes can only be set and
-      used by the user, and not by Cloud Deploy. See
+      used by the user, and not by Google Cloud Deploy. See
       https://google.aip.dev/128#annotations for more details such as format
       and size limitations.
     LabelsValue: Labels are attributes that can be set and used by both the
-      user and by Cloud Deploy. Labels must meet the following constraints:
-      Each resource is limited to 64 labels. Keys must conform to the regexp:
-      a-zA-Z{0,62} Values must conform to the regexp: [a-zA-Z0-9_-]{0,63} Both
-      keys and values are additionally constrained to be <= 128 bytes in size.
+      user and by Google Cloud Deploy. Labels must meet the following
+      constraints: Each resource is limited to 64 labels. Keys must conform to
+      the regexp: a-zA-Z{0,62} Values must conform to the regexp:
+      [a-zA-Z0-9_-]{0,63} Both keys and values are additionally constrained to
+      be <= 128 bytes in size.
 
   Fields:
     annotations: User annotations. These attributes can only be set and used
-      by the user, and not by Cloud Deploy. See
+      by the user, and not by Google Cloud Deploy. See
       https://google.aip.dev/128#annotations for more details such as format
       and size limitations.
     condition: Output only. Information around the state of the Delivery
@@ -890,8 +891,8 @@ class DeliveryPipeline(_messages.Message):
       fields, and may be sent on update and delete requests to ensure the
       client has an up-to-date value before proceeding.
     labels: Labels are attributes that can be set and used by both the user
-      and by Cloud Deploy. Labels must meet the following constraints: Each
-      resource is limited to 64 labels. Keys must conform to the regexp:
+      and by Google Cloud Deploy. Labels must meet the following constraints:
+      Each resource is limited to 64 labels. Keys must conform to the regexp:
       a-zA-Z{0,62} Values must conform to the regexp: [a-zA-Z0-9_-]{0,63} Both
       keys and values are additionally constrained to be <= 128 bytes in size.
     name: Optional. Name of the `DeliveryPipeline`. Format is
@@ -906,8 +907,9 @@ class DeliveryPipeline(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
     r"""User annotations. These attributes can only be set and used by the
-    user, and not by Cloud Deploy. See https://google.aip.dev/128#annotations
-    for more details such as format and size limitations.
+    user, and not by Google Cloud Deploy. See
+    https://google.aip.dev/128#annotations for more details such as format and
+    size limitations.
 
     Messages:
       AdditionalProperty: An additional property for a AnnotationsValue
@@ -933,10 +935,10 @@ class DeliveryPipeline(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     r"""Labels are attributes that can be set and used by both the user and by
-    Cloud Deploy. Labels must meet the following constraints: Each resource is
-    limited to 64 labels. Keys must conform to the regexp: a-zA-Z{0,62} Values
-    must conform to the regexp: [a-zA-Z0-9_-]{0,63} Both keys and values are
-    additionally constrained to be <= 128 bytes in size.
+    Google Cloud Deploy. Labels must meet the following constraints: Each
+    resource is limited to 64 labels. Keys must conform to the regexp:
+    a-zA-Z{0,62} Values must conform to the regexp: [a-zA-Z0-9_-]{0,63} Both
+    keys and values are additionally constrained to be <= 128 bytes in size.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -1482,8 +1484,8 @@ class PrivatePool(_messages.Message):
 
 
 class Release(_messages.Message):
-  r"""A `Release` resource in the Cloud Deploy API. A `Release` defines a
-  specific Skaffold configuration instance that can be deployed.
+  r"""A `Release` resource in the Google Cloud Deploy API. A `Release` defines
+  a specific Skaffold configuration instance that can be deployed.
 
   Enums:
     RenderStateValueValuesEnum: Output only. Current state of the render
@@ -1491,14 +1493,15 @@ class Release(_messages.Message):
 
   Messages:
     AnnotationsValue: User annotations. These attributes can only be set and
-      used by the user, and not by Cloud Deploy. See
+      used by the user, and not by Google Cloud Deploy. See
       https://google.aip.dev/128#annotations for more details such as format
       and size limitations.
     LabelsValue: Labels are attributes that can be set and used by both the
-      user and by Cloud Deploy. Labels must meet the following constraints:
-      Each resource is limited to 64 labels. Keys must conform to the regexp:
-      a-zA-Z{0,62} Values must conform to the regexp: [a-zA-Z0-9_-]{0,63} Both
-      keys and values are additionally constrained to be <= 128 bytes in size.
+      user and by Google Cloud Deploy. Labels must meet the following
+      constraints: Each resource is limited to 64 labels. Keys must conform to
+      the regexp: a-zA-Z{0,62} Values must conform to the regexp:
+      [a-zA-Z0-9_-]{0,63} Both keys and values are additionally constrained to
+      be <= 128 bytes in size.
     TargetArtifactsValue: Output only. Map from target ID to the target
       artifacts created during the render operation.
     TargetRendersValue: Output only. Map from target ID to details of the
@@ -1506,7 +1509,7 @@ class Release(_messages.Message):
 
   Fields:
     annotations: User annotations. These attributes can only be set and used
-      by the user, and not by Cloud Deploy. See
+      by the user, and not by Google Cloud Deploy. See
       https://google.aip.dev/128#annotations for more details such as format
       and size limitations.
     buildArtifacts: List of artifacts to pass through to Skaffold command.
@@ -1518,8 +1521,8 @@ class Release(_messages.Message):
       fields, and may be sent on update and delete requests to ensure the
       client has an up-to-date value before proceeding.
     labels: Labels are attributes that can be set and used by both the user
-      and by Cloud Deploy. Labels must meet the following constraints: Each
-      resource is limited to 64 labels. Keys must conform to the regexp:
+      and by Google Cloud Deploy. Labels must meet the following constraints:
+      Each resource is limited to 64 labels. Keys must conform to the regexp:
       a-zA-Z{0,62} Values must conform to the regexp: [a-zA-Z0-9_-]{0,63} Both
       keys and values are additionally constrained to be <= 128 bytes in size.
     name: Optional. Name of the `Release`. Format is projects/{project}/
@@ -1528,17 +1531,14 @@ class Release(_messages.Message):
     renderEndTime: Output only. Time at which the render completed.
     renderStartTime: Output only. Time at which the render began.
     renderState: Output only. Current state of the render operation.
-    renderingBuild: Output only. The resource name of the Cloud Build `Build`
-      object that is used to render the manifests. Format is
-      `projects/{project}/locations/{location}/builds/{build}`.
     skaffoldConfigPath: Filepath of the Skaffold config inside of the config
       URI.
     skaffoldConfigUri: Cloud Storage URI of tar.gz archive containing Skaffold
       configuration.
     skaffoldVersion: The Skaffold version to use when operating on this
-      release, such as "1.20.0". Not all versions are valid; Cloud Deploy
-      supports a specific set of versions. If unset, the most recent supported
-      Skaffold version will be used.
+      release, such as "1.20.0". Not all versions are valid; Google Cloud
+      Deploy supports a specific set of versions. If unset, the most recent
+      supported Skaffold version will be used.
     targetArtifacts: Output only. Map from target ID to the target artifacts
       created during the render operation.
     targetRenders: Output only. Map from target ID to details of the render
@@ -1566,8 +1566,9 @@ class Release(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
     r"""User annotations. These attributes can only be set and used by the
-    user, and not by Cloud Deploy. See https://google.aip.dev/128#annotations
-    for more details such as format and size limitations.
+    user, and not by Google Cloud Deploy. See
+    https://google.aip.dev/128#annotations for more details such as format and
+    size limitations.
 
     Messages:
       AdditionalProperty: An additional property for a AnnotationsValue
@@ -1593,10 +1594,10 @@ class Release(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     r"""Labels are attributes that can be set and used by both the user and by
-    Cloud Deploy. Labels must meet the following constraints: Each resource is
-    limited to 64 labels. Keys must conform to the regexp: a-zA-Z{0,62} Values
-    must conform to the regexp: [a-zA-Z0-9_-]{0,63} Both keys and values are
-    additionally constrained to be <= 128 bytes in size.
+    Google Cloud Deploy. Labels must meet the following constraints: Each
+    resource is limited to 64 labels. Keys must conform to the regexp:
+    a-zA-Z{0,62} Values must conform to the regexp: [a-zA-Z0-9_-]{0,63} Both
+    keys and values are additionally constrained to be <= 128 bytes in size.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -1681,19 +1682,18 @@ class Release(_messages.Message):
   renderEndTime = _messages.StringField(9)
   renderStartTime = _messages.StringField(10)
   renderState = _messages.EnumField('RenderStateValueValuesEnum', 11)
-  renderingBuild = _messages.StringField(12)
-  skaffoldConfigPath = _messages.StringField(13)
-  skaffoldConfigUri = _messages.StringField(14)
-  skaffoldVersion = _messages.StringField(15)
-  targetArtifacts = _messages.MessageField('TargetArtifactsValue', 16)
-  targetRenders = _messages.MessageField('TargetRendersValue', 17)
-  targetSnapshots = _messages.MessageField('Target', 18, repeated=True)
-  uid = _messages.StringField(19)
+  skaffoldConfigPath = _messages.StringField(12)
+  skaffoldConfigUri = _messages.StringField(13)
+  skaffoldVersion = _messages.StringField(14)
+  targetArtifacts = _messages.MessageField('TargetArtifactsValue', 15)
+  targetRenders = _messages.MessageField('TargetRendersValue', 16)
+  targetSnapshots = _messages.MessageField('Target', 17, repeated=True)
+  uid = _messages.StringField(18)
 
 
 class Rollout(_messages.Message):
-  r"""A `Rollout` resource in the Cloud Deploy API. A `Rollout` contains
-  information around a specific deployment to a `Target`.
+  r"""A `Rollout` resource in the Google Cloud Deploy API. A `Rollout`
+  contains information around a specific deployment to a `Target`.
 
   Enums:
     ApprovalStateValueValuesEnum: Output only. Approval state of the
@@ -1702,18 +1702,19 @@ class Rollout(_messages.Message):
 
   Messages:
     AnnotationsValue: User annotations. These attributes can only be set and
-      used by the user, and not by Cloud Deploy. See
+      used by the user, and not by Google Cloud Deploy. See
       https://google.aip.dev/128#annotations for more details such as format
       and size limitations.
     LabelsValue: Labels are attributes that can be set and used by both the
-      user and by Cloud Deploy. Labels must meet the following constraints:
-      Each resource is limited to 64 labels. Keys must conform to the regexp:
-      a-zA-Z{0,62} Values must conform to the regexp: [a-zA-Z0-9_-]{0,63} Both
-      keys and values are additionally constrained to be <= 128 bytes in size.
+      user and by Google Cloud Deploy. Labels must meet the following
+      constraints: Each resource is limited to 64 labels. Keys must conform to
+      the regexp: a-zA-Z{0,62} Values must conform to the regexp:
+      [a-zA-Z0-9_-]{0,63} Both keys and values are additionally constrained to
+      be <= 128 bytes in size.
 
   Fields:
     annotations: User annotations. These attributes can only be set and used
-      by the user, and not by Cloud Deploy. See
+      by the user, and not by Google Cloud Deploy. See
       https://google.aip.dev/128#annotations for more details such as format
       and size limitations.
     approvalState: Output only. Approval state of the `Rollout`.
@@ -1735,8 +1736,8 @@ class Rollout(_messages.Message):
     failureReason: Output only. Reason the build failed. Empty if the build
       succeeded.
     labels: Labels are attributes that can be set and used by both the user
-      and by Cloud Deploy. Labels must meet the following constraints: Each
-      resource is limited to 64 labels. Keys must conform to the regexp:
+      and by Google Cloud Deploy. Labels must meet the following constraints:
+      Each resource is limited to 64 labels. Keys must conform to the regexp:
       a-zA-Z{0,62} Values must conform to the regexp: [a-zA-Z0-9_-]{0,63} Both
       keys and values are additionally constrained to be <= 128 bytes in size.
     name: Optional. Name of the `Rollout`. Format is projects/{project}/
@@ -1791,8 +1792,9 @@ class Rollout(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
     r"""User annotations. These attributes can only be set and used by the
-    user, and not by Cloud Deploy. See https://google.aip.dev/128#annotations
-    for more details such as format and size limitations.
+    user, and not by Google Cloud Deploy. See
+    https://google.aip.dev/128#annotations for more details such as format and
+    size limitations.
 
     Messages:
       AdditionalProperty: An additional property for a AnnotationsValue
@@ -1818,10 +1820,10 @@ class Rollout(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     r"""Labels are attributes that can be set and used by both the user and by
-    Cloud Deploy. Labels must meet the following constraints: Each resource is
-    limited to 64 labels. Keys must conform to the regexp: a-zA-Z{0,62} Values
-    must conform to the regexp: [a-zA-Z0-9_-]{0,63} Both keys and values are
-    additionally constrained to be <= 128 bytes in size.
+    Google Cloud Deploy. Labels must meet the following constraints: Each
+    resource is limited to 64 labels. Keys must conform to the regexp:
+    a-zA-Z{0,62} Values must conform to the regexp: [a-zA-Z0-9_-]{0,63} Both
+    keys and values are additionally constrained to be <= 128 bytes in size.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -2036,16 +2038,16 @@ class Status(_messages.Message):
 
 
 class Target(_messages.Message):
-  r"""A `Target` resource in the Cloud Deploy API. A `Target` defines a
+  r"""A `Target` resource in the Google Cloud Deploy API. A `Target` defines a
   location to which a Skaffold configuration can be deployed.
 
   Messages:
     AnnotationsValue: Optional. User annotations. These attributes can only be
-      set and used by the user, and not by Cloud Deploy. See
+      set and used by the user, and not by Google Cloud Deploy. See
       https://google.aip.dev/128#annotations for more details such as format
       and size limitations.
     LabelsValue: Optional. Labels are attributes that can be set and used by
-      both the user and by Cloud Deploy. Labels must meet the following
+      both the user and by Google Cloud Deploy. Labels must meet the following
       constraints: Each resource is limited to 64 labels. Keys must conform to
       the regexp: a-zA-Z{0,62} Values must conform to the regexp:
       [a-zA-Z0-9_-]{0,63} Both keys and values are additionally constrained to
@@ -2053,7 +2055,7 @@ class Target(_messages.Message):
 
   Fields:
     annotations: Optional. User annotations. These attributes can only be set
-      and used by the user, and not by Cloud Deploy. See
+      and used by the user, and not by Google Cloud Deploy. See
       https://google.aip.dev/128#annotations for more details such as format
       and size limitations.
     createTime: Output only. Time at which the `Target` was created.
@@ -2071,7 +2073,7 @@ class Target(_messages.Message):
       in `DefaultPool`.
     gke: Information specifying a GKE Cluster.
     labels: Optional. Labels are attributes that can be set and used by both
-      the user and by Cloud Deploy. Labels must meet the following
+      the user and by Google Cloud Deploy. Labels must meet the following
       constraints: Each resource is limited to 64 labels. Keys must conform to
       the regexp: a-zA-Z{0,62} Values must conform to the regexp:
       [a-zA-Z0-9_-]{0,63} Both keys and values are additionally constrained to
@@ -2089,7 +2091,7 @@ class Target(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
     r"""Optional. User annotations. These attributes can only be set and used
-    by the user, and not by Cloud Deploy. See
+    by the user, and not by Google Cloud Deploy. See
     https://google.aip.dev/128#annotations for more details such as format and
     size limitations.
 
@@ -2117,10 +2119,11 @@ class Target(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     r"""Optional. Labels are attributes that can be set and used by both the
-    user and by Cloud Deploy. Labels must meet the following constraints: Each
-    resource is limited to 64 labels. Keys must conform to the regexp:
-    a-zA-Z{0,62} Values must conform to the regexp: [a-zA-Z0-9_-]{0,63} Both
-    keys and values are additionally constrained to be <= 128 bytes in size.
+    user and by Google Cloud Deploy. Labels must meet the following
+    constraints: Each resource is limited to 64 labels. Keys must conform to
+    the regexp: a-zA-Z{0,62} Values must conform to the regexp:
+    [a-zA-Z0-9_-]{0,63} Both keys and values are additionally constrained to
+    be <= 128 bytes in size.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.

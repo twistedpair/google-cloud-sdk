@@ -1667,6 +1667,35 @@
       "description": "State for App Dev Exp Feature.",
       "type": "object",
       "properties": {
+        "networkingInstallSucceeded": {
+          "description": "Status of subcomponent that detects configured Service Mesh resources.",
+          "$ref": "Status"
+        }
+      }
+    },
+    "Status": {
+      "id": "Status",
+      "description": "Status specifies state for the subcomponent.",
+      "type": "object",
+      "properties": {
+        "code": {
+          "description": "Code specifies AppDevExperienceFeature's subcomponent ready state.",
+          "type": "string",
+          "enumDescriptions": [
+            "Not set.",
+            "AppDevExperienceFeature's specified subcomponent is ready.",
+            "AppDevExperienceFeature's specified subcomponent ready state is false. This means AppDevExperienceFeature has encountered an issue that blocks all, or a portion, of its normal operation. See the `description` for more details."
+          ],
+          "enum": [
+            "CODE_UNSPECIFIED",
+            "OK",
+            "FAILED"
+          ]
+        },
+        "description": {
+          "description": "Description is populated if Code is Failed, explaining why it has failed.",
+          "type": "string"
+        }
       }
     },
     "CloudAuditLoggingFeatureState": {

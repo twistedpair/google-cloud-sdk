@@ -262,17 +262,19 @@ class FilestoreClient(object):
                            network=None,
                            labels=None,
                            zone=None,
-                           nfs_export_options=None):
+                           nfs_export_options=None,
+                           kms_key_name=None):
     """Parses the command line arguments for Create into a config.
 
     Args:
       tier: the tier.
       description: the description of the instance.
       file_share: the config for the file share.
-      network: The network for the instance.
-      labels: The parsed labels value.
-      zone: The parsed zone of the instance.
+      network: the network for the instance.
+      labels: the parsed labels value.
+      zone: the parsed zone of the instance.
       nfs_export_options: the nfs export options for the file share.
+      kms_key_name: the kms key for instance encryption.
 
     Returns:
       the configuration that will be used as the request body for creating a
@@ -283,6 +285,8 @@ class FilestoreClient(object):
     instance.tier = tier
     instance.labels = labels
 
+    if kms_key_name:
+      instance.kmsKeyName = kms_key_name
     if description:
       instance.description = description
     if nfs_export_options:

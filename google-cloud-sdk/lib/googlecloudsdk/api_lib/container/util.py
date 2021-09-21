@@ -282,6 +282,7 @@ class ClusterConfig(object):
     self.server = kwargs['server']
     # auth options are auth-provider, or client certificate.
     self.auth_provider = kwargs.get('auth_provider')
+    self.exec_auth = kwargs.get('exec_auth')
     self.ca_data = kwargs.get('ca_data')
     self.client_cert_data = kwargs.get('client_cert_data')
     self.client_key_data = kwargs.get('client_key_data')
@@ -426,9 +427,7 @@ class ClusterConfig(object):
     log.debug('Loading cluster config for cluster=%s, zone=%s project=%s',
               cluster_name, zone_id, project_id)
     k = kconfig.Kubeconfig.Default()
-
     key = cls.KubeContext(cluster_name, zone_id, project_id)
-
     cluster = k.clusters.get(key) and k.clusters[key].get('cluster')
     user = k.users.get(key) and k.users[key].get('user')
     context = k.contexts.get(key) and k.contexts[key].get('context')
@@ -458,10 +457,11 @@ class ClusterConfig(object):
 
     # Verify user data
     auth_provider = user.get('auth-provider')
+    exec_auth = user.get('exec')
     cert_data = user.get('client-certificate-data')
     key_data = user.get('client-key-data')
     cert_auth = cert_data and key_data
-    has_valid_auth = auth_provider or cert_auth
+    has_valid_auth = auth_provider or exec_auth or cert_auth
     if not has_valid_auth:
       log.debug('missing auth info for user %s: %s', key, user)
       return None
@@ -472,6 +472,7 @@ class ClusterConfig(object):
         'project_id': project_id,
         'server': server,
         'auth_provider': auth_provider,
+        'exec_auth': exec_auth,
         'ca_data': ca_data,
         'client_key_data': key_data,
         'client_cert_data': cert_data,

@@ -1367,7 +1367,7 @@ class FirewallRule(_messages.Message):
   Fields:
     action: The action to take on matched requests.
     description: An optional string description of this rule. This field has a
-      maximum length of 100 characters.
+      maximum length of 400 characters.
     priority: A positive integer between 1, Int32.MaxValue-1 that defines the
       order of rule evaluation. Rules with the lowest priority are evaluated
       first.A default rule at priority Int32.MaxValue matches all IPv4 and

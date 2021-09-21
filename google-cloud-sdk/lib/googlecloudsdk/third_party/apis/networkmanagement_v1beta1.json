@@ -1037,7 +1037,8 @@
             "Aborted because the source endpoint could not be found.",
             "Aborted because the source network does not match the source endpoint.",
             "Aborted because the destination endpoint could not be found.",
-            "Aborted because the destination network does not match the destination endpoint."
+            "Aborted because the destination network does not match the destination endpoint.",
+            "Aborted because the test scenario is not supported."
           ],
           "enum": [
             "CAUSE_UNSPECIFIED",
@@ -1054,7 +1055,8 @@
             "SOURCE_ENDPOINT_NOT_FOUND",
             "MISMATCHED_SOURCE_NETWORK",
             "DESTINATION_ENDPOINT_NOT_FOUND",
-            "MISMATCHED_DESTINATION_NETWORK"
+            "MISMATCHED_DESTINATION_NETWORK",
+            "UNSUPPORTED"
           ]
         },
         "resourceUri": {

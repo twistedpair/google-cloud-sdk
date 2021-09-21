@@ -97,8 +97,7 @@ _PUBSUB_NOTICE_URL = (
     'https://cloud.google.com/functions/docs/writing/background#event_parameter'
 )
 
-# TODO(b/195728382) Change the _FEATURE_FLAG_YAML_URL constant to correct URL
-_FEATURE_FLAG_YAML_URL = 'http://www.gstatic.com/cloudsdk/test_push.yaml'
+_FEATURE_FLAG_YAML_URL = 'http://www.gstatic.com/cloudsdk/feature_flag_config_file.yaml'
 
 
 def Stringize(value):
@@ -977,19 +976,6 @@ class _SectionCompute(_Section):
         'or `global`. ')
 
 
-class _SectionBlueprints(_Section):
-  """Contains the properties for the 'blueprints' section."""
-
-  def __init__(self):
-    super(_SectionBlueprints, self).__init__('blueprints', hidden=True)
-    self.location = self._Add(
-        'location',
-        default='us-central1',
-        help_text='The default region to use when working with'
-        'blueprints-related resources. When a `--location` flag is required '
-        'but not provided, the command will fall back to this value, if set.')
-
-
 class _SectionFunctions(_Section):
   """Contains the properties for the 'functions' section."""
 
@@ -1004,12 +990,20 @@ class _SectionFunctions(_Section):
         'valid choices, run `gcloud beta functions regions list`.',
         completer=('googlecloudsdk.command_lib.functions.flags:'
                    'LocationsCompleter'))
+    self.gen2 = self._AddBool(
+        'gen2',
+        default=False,
+        help_text=(
+            'Default environment to use when working with Cloud Functions '
+            'resources. When neither `--gen2` nor `--no-gen2` is provided, the '
+            'decision of whether to use Generation 2 falls back to this value.'
+        ))
     self.v2 = self._AddBool(
         'v2',
         default=False,
-        help_text='Default product version to use when working with Cloud '
-        'Functions resources. When neither `--v2` nor `--no-v2` is provided, '
-        'the decision of whether to use V2 falls back to this value.')
+        hidden=True,
+        help_text='DEPRECATED. Use `functions/gen2` instead. '
+        'This property will be removed in a future release.')
 
 
 class _SectionGcloudignore(_Section):
@@ -1120,149 +1114,6 @@ class _SectionGameServices(_Section):
             'clusters. When a --realm flag is required in a list command but '
             'not provided, the command will fall back to this value which '
             'envokes aggregated list from the backend.'))
-
-
-class _SectionAccessibility(_Section):
-  """Contains the properties for the 'accessibility' section."""
-
-  def __init__(self):
-    super(_SectionAccessibility, self).__init__('accessibility')
-    self.screen_reader = self._AddBool(
-        'screen_reader',
-        default=False,
-        help_text='Make gcloud more screen reader friendly.')
-
-
-class _SectionApp(_Section):
-  """Contains the properties for the 'app' section."""
-
-  def __init__(self):
-    super(_SectionApp, self).__init__('app')
-    self.promote_by_default = self._AddBool(
-        'promote_by_default',
-        help_text='If True, when deploying a new version of a service, that '
-        'version will be promoted to receive all traffic for the service. '
-        'This property can be overridden via the `--promote-by-default` or '
-        '`--no-promote-by-default` flags.',
-        default=True)
-    self.stop_previous_version = self._AddBool(
-        'stop_previous_version',
-        help_text='If True, when deploying a new version of a service, the '
-        'previously deployed version is stopped. If False, older versions must '
-        'be stopped manually.',
-        default=True)
-    self.trigger_build_server_side = self._AddBool(
-        'trigger_build_server_side', hidden=True, default=None)
-    self.cloud_build_timeout = self._Add(
-        'cloud_build_timeout',
-        validator=_BuildTimeoutValidator,
-        help_text='Timeout, in seconds, to wait for Docker builds to '
-        'complete during deployments. All Docker builds now use the '
-        'Cloud Build API.')
-    self.container_builder_image = self._Add(
-        'container_builder_image',
-        default='gcr.io/cloud-builders/docker',
-        hidden=True)
-    self.use_appengine_api = self._AddBool(
-        'use_appengine_api', default=True, hidden=True)
-    # This property is currently ignored except on OS X Sierra or beta
-    # deployments.
-    # There's a theoretical benefit to exceeding the number of cores available,
-    # since the task is bound by network/API latency among other factors, and
-    # mini-benchmarks validated this (I got speedup from 4 threads to 8 on a
-    # 4-core machine).
-    self.num_file_upload_threads = self._Add(
-        'num_file_upload_threads', default=None, hidden=True)
-
-    def GetRuntimeRoot():
-      sdk_root = config.Paths().sdk_root
-      if sdk_root is None:
-        return None
-      else:
-        return os.path.join(config.Paths().sdk_root, 'platform', 'ext-runtime')
-
-    self.runtime_root = self._Add(
-        'runtime_root', callbacks=[GetRuntimeRoot], hidden=True)
-
-    # Whether or not to use the (currently under-development) Flex Runtime
-    # Builders, as opposed to Externalized Runtimes.
-    #   True  => ALWAYS
-    #   False => NEVER
-    #   Unset => default behavior, which varies between beta/GA commands
-    self.use_runtime_builders = self._Add(
-        'use_runtime_builders',
-        default=None,
-        help_text=('If set, opt in/out to a new code path for building '
-                   'applications using pre-fabricated runtimes that can be '
-                   'updated independently of client tooling. If not set, '
-                   'the default path for each runtime is used.'))
-    # The Cloud Storage path prefix for the Flex Runtime Builder configuration
-    # files. The configuration files will live at
-    # "<PREFIX>/<runtime>-<version>.yaml", with an additional
-    # "<PREFIX>/runtime.version" indicating the latest version.
-    self.runtime_builders_root = self._Add(
-        'runtime_builders_root', default='gs://runtime-builders/', hidden=True)
-
-
-class _SectionBuilds(_Section):
-  """Contains the properties for the 'builds' section."""
-
-  def __init__(self):
-    super(_SectionBuilds, self).__init__('builds')
-
-    self.region = self._Add(
-        'region',
-        help_text='Default region to use when working with Cloud Build '
-        'resources. When a `--region` flag is required but not provided, the '
-        'command will fall back to this value, if set.')
-    self.timeout = self._Add(
-        'timeout',
-        validator=_BuildTimeoutValidator,
-        help_text='Timeout, in seconds, to wait for builds to complete. If '
-        'unset, defaults to 10 minutes.')
-    self.check_tag = self._AddBool(
-        'check_tag',
-        default=True,
-        hidden=True,
-        help_text='If True, validate that the --tag value to builds '
-        'submit is in the gcr.io, *.gcr.io, or *.pkg.dev namespace.')
-    # TODO(b/118509363): Remove this after its default is True.
-    self.use_kaniko = self._AddBool(
-        'use_kaniko',
-        default=False,
-        help_text='If True, kaniko will be used to build images described by '
-        'a Dockerfile, instead of `docker build`.')
-    self.kaniko_cache_ttl = self._Add(
-        'kaniko_cache_ttl',
-        default=6,
-        help_text='TTL, in hours, of cached layers when using Kaniko. If zero, '
-        'layer caching is disabled.')
-    self.kaniko_image = self._Add(
-        'kaniko_image',
-        default='gcr.io/kaniko-project/executor:latest',
-        hidden=True,
-        help_text='Kaniko builder image to use when use_kaniko=True. Defaults '
-        'to gcr.io/kaniko-project/executor:latest')
-
-
-class _SectionArtifacts(_Section):
-  """Contains the properties for the 'artifacts' section."""
-
-  def __init__(self):
-    super(_SectionArtifacts, self).__init__('artifacts')
-
-    self.repository = self._Add(
-        'repository',
-        help_text='Default repository to use when working with Artifact '
-        'Registry resources. When a `repository` value is required but not '
-        'provided, the command will fall back to this value, if set.')
-
-    self.location = self._Add(
-        'location',
-        help_text='Default location to use when working with Artifact Registry '
-        'resources. When a `location` value is required but not provided, the '
-        'command will fall back to this value, if set. If this value is unset, '
-        'the default location is `global` when `location` value is optional.')
 
 
 class _SectionContainer(_Section):
@@ -1619,6 +1470,344 @@ class _SectionScc(_Section):
         help_text='Default parent `gcloud` should use for scc surface.')
 
 
+def AccessPolicyValidator(policy):
+  """Checks to see if the Access Policy string is valid."""
+  if policy is None:
+    return
+  if not policy.isdigit():
+    raise InvalidValueError(
+        'The access_context_manager.policy property must be set '
+        'to the policy number, not a string.')
+
+
+class _SectionAccessContextManager(_Section):
+  """Contains the properties for the 'access_context_manager' section."""
+
+  def OrganizationValidator(self, org):
+    """Checks to see if the Organization string is valid."""
+    if org is None:
+      return
+    if not org.isdigit():
+      raise InvalidValueError(
+          'The access_context_manager.organization property must be set '
+          'to the organization ID number, not a string.')
+
+  def __init__(self):
+    super(_SectionAccessContextManager, self).__init__(
+        'access_context_manager', hidden=True)
+
+    self.policy = self._Add(
+        'policy',
+        validator=AccessPolicyValidator,
+        help_text=('ID of the policy resource to operate on. Can be found '
+                   'by running the `access-context-manager policies list` '
+                   'command.'))
+    self.organization = self._Add(
+        'organization',
+        validator=self.OrganizationValidator,
+        help_text=('Default organization cloud-bindings command group will '
+                   'operate on.'))
+
+
+class _SectionAccessibility(_Section):
+  """Contains the properties for the 'accessibility' section."""
+
+  def __init__(self):
+    super(_SectionAccessibility, self).__init__('accessibility')
+    self.screen_reader = self._AddBool(
+        'screen_reader',
+        default=False,
+        help_text='Make gcloud more screen reader friendly.')
+
+
+class _SectionAi(_Section):
+  """Contains the properties for the command group 'ai' section."""
+
+  def __init__(self):
+    super(_SectionAi, self).__init__('ai')
+    self.region = self._Add(
+        'region',
+        help_text='Default region to use when working with '
+        'AI Platform resources. When a `--region` flag is required '
+        'but not provided, the command will fall back to this value, if set.')
+
+
+class _SectionAiPlatform(_Section):
+  """Contains the properties for the command group 'ai_platform' section."""
+
+  def __init__(self):
+    super(_SectionAiPlatform, self).__init__('ai_platform')
+    self.region = self._Add(
+        'region',
+        help_text='Default region to use when working with AI Platform '
+        'Training and Prediction resources (currently for Prediction only). '
+        'It is ignored for training resources for now. The value should be '
+        'either `global` or one of the supported regions. When a `--region` '
+        'flag is required but not provided, the command will fall back to this '
+        'value, if set.')
+
+
+class _SectionApiClientOverrides(_Section):
+  """Contains the properties for the 'api-client-overrides' section.
+
+  This overrides the API client version to use when talking to this API.
+  """
+
+  def __init__(self):
+    super(_SectionApiClientOverrides, self).__init__(
+        'api_client_overrides', hidden=True)
+    self.alloydb = self._Add('alloydb')
+    self.appengine = self._Add('appengine')
+    self.baremetalsolution = self._Add('baremetalsolution')
+    self.cloudidentity = self._Add('cloudidentity')
+    self.compute = self._Add('compute')
+    self.compute_alpha = self._Add('compute/alpha')
+    self.compute_beta = self._Add('compute/beta')
+    self.compute_v1 = self._Add('compute/v1')
+    self.container = self._Add('container')
+    self.speech = self._Add('speech')
+    self.sql = self._Add('sql')
+    self.run = self._Add('run')
+    self.scc = self._Add('securitycenter')
+
+
+class _SectionApiEndpointOverrides(_Section):
+  """Contains the properties for the 'api-endpoint-overrides' section.
+
+  This overrides what endpoint to use when talking to the given API.
+  """
+
+  def __init__(self):
+    super(_SectionApiEndpointOverrides, self).__init__(
+        'api_endpoint_overrides', hidden=True)
+    self.accessapproval = self._Add('accessapproval')
+    self.accesscontextmanager = self._Add('accesscontextmanager')
+    self.alloydb = self._Add('alloydb')
+    self.anthosevents = self._Add('anthosevents')
+    self.aiplatform = self._Add('aiplatform')
+    self.apigateway = self._Add('apigateway')
+    self.apigee = self._Add('apigee')
+    self.appengine = self._Add('appengine')
+    self.assuredworkloads = self._Add('assuredworkloads')
+    self.baremetalsolution = self._Add('baremetalsolution')
+    self.bigtableadmin = self._Add('bigtableadmin')
+    self.binaryauthorization = self._Add('binaryauthorization')
+    self.blueprints = self._Add('config')
+    self.artifactregistry = self._Add('artifactregistry')
+    self.categorymanager = self._Add('categorymanager')
+    self.certificatemanager = self._Add('certificatemanager')
+    self.cloudasset = self._Add('cloudasset')
+    self.cloudbilling = self._Add('cloudbilling')
+    self.cloudbuild = self._Add('cloudbuild')
+    self.cloudcommerceconsumerprocurement = self._Add(
+        'cloudcommerceconsumerprocurement')
+    self.clouddebugger = self._Add('clouddebugger')
+    self.clouddeploy = self._Add('clouddeploy')
+    self.clouderrorreporting = self._Add('clouderrorreporting')
+    self.cloudfunctions = self._Add('cloudfunctions')
+    self.cloudidentity = self._Add('cloudidentity')
+    self.cloudiot = self._Add('cloudiot')
+    self.cloudkms = self._Add('cloudkms')
+    self.cloudresourcemanager = self._Add('cloudresourcemanager')
+    self.cloudresourcesearch = self._Add('cloudresourcesearch')
+    self.cloudscheduler = self._Add('cloudscheduler')
+    self.cloudtasks = self._Add('cloudtasks')
+    self.cloudtrace = self._Add('cloudtrace')
+    self.composer = self._Add('composer')
+    self.compute = self._Add('compute')
+    self.container = self._Add('container')
+    self.containeranalysis = self._Add('containeranalysis')
+    self.datacatalog = self._Add('datacatalog')
+    self.dataflow = self._Add('dataflow')
+    self.datafusion = self._Add('datafusion')
+    self.datamigration = self._Add('datamigration')
+    self.datapol = self._Add('datapol')
+    self.dataplex = self._Add('dataplex')
+    self.dataproc = self._Add('dataproc')
+    self.datastore = self._Add('datastore')
+    self.datastream = self._Add('datastream')
+    self.deploymentmanager = self._Add('deploymentmanager')
+    self.discovery = self._Add('discovery')
+    self.dns = self._Add('dns')
+    self.domains = self._Add('domains')
+    self.edgecontainer = self._Add('edgecontainer')
+    self.eventarc = self._Add('eventarc')
+    self.events = self._Add('events')
+    self.file = self._Add('file')
+    self.firestore = self._Add('firestore')
+    self.gameservices = self._Add('gameservices')
+    self.genomics = self._Add('genomics')
+    self.gkebackup = self._Add('gkebackup')
+    self.gkehub = self._Add('gkehub')
+    self.gkemulticloud = self._Add('gkemulticloud')
+    self.healthcare = self._Add('healthcare')
+    self.iam = self._Add('iam')
+    self.iap = self._Add('iap')
+    self.ids = self._Add('ids')
+    self.kubernetespolicy = self._Add('kubernetespolicy')
+    self.labelmanager = self._Add('labelmanager')
+    self.language = self._Add('language')
+    self.lifesciences = self._Add('lifesciences')
+    self.logging = self._Add('logging')
+    self.managedidentities = self._Add('managedidentities')
+    self.manager = self._Add('manager')
+    self.mediaasset = self._Add('mediaasset')
+    self.memcache = self._Add('memcache')
+    self.metastore = self._Add('metastore')
+    self.ml = self._Add('ml')
+    self.monitoring = self._Add('monitoring')
+    self.networkconnectivity = self._Add('networkconnectivity')
+    self.networkmanagement = self._Add('networkmanagement')
+    self.networkservices = self._Add('networkservices')
+    self.networksecurity = self._Add('networksecurity')
+    self.notebooks = self._Add('notebooks')
+    self.ondemandscanning = self._Add('ondemandscanning')
+    self.orgpolicy = self._Add('orgpolicy')
+    self.osconfig = self._Add('osconfig')
+    self.oslogin = self._Add('oslogin')
+    self.policyanalyzer = self._Add('policyanalyzer')
+    self.policysimulator = self._Add('policysimulator')
+    self.policytroubleshooter = self._Add('policytroubleshooter')
+    self.privateca = self._Add('privateca')
+    self.publicca = self._Add('publicca')
+    self.pubsub = self._Add('pubsub')
+    self.pubsublite = self._Add('pubsublite')
+    self.recommender = self._Add('recommender')
+    self.remotebuildexecution = self._Add('remotebuildexecution')
+    self.replicapoolupdater = self._Add('replicapoolupdater')
+    self.resourcesettings = self._Add('resourcesettings')
+    self.runtimeconfig = self._Add('runtimeconfig')
+    self.recaptcha = self._Add('recaptchaenterprise')
+    self.redis = self._Add('redis')
+    self.run = self._Add('run')
+    self.scc = self._Add('securitycenter')
+    self.servicemanagement = self._Add('servicemanagement')
+    self.serviceregistry = self._Add('serviceregistry')
+    self.serviceusage = self._Add('serviceusage')
+    self.source = self._Add('source')
+    self.sourcerepo = self._Add('sourcerepo')
+    self.secrets = self._Add('secretmanager')
+    self.servicedirectory = self._Add('servicedirectory')
+    self.spanner = self._Add('spanner')
+    self.speech = self._Add('speech')
+    self.sql = self._Add('sql')
+    self.storage = self._Add('storage')
+    self.testing = self._Add('testing')
+    self.toolresults = self._Add('toolresults')
+    self.tpu = self._Add('tpu')
+    self.vision = self._Add('vision')
+    self.vpcaccess = self._Add('vpcaccess')
+    self.workflowexecutions = self._Add('workflowexecutions')
+    self.workflows = self._Add('workflows')
+    self.sddc = self._Add('sddc')
+    self.vmwareengine = self._Add('vmwareengine')
+
+  def EndpointValidator(self, value):
+    """Checks to see if the endpoint override string is valid."""
+    if value is None:
+      return
+    if not _VALID_ENDPOINT_OVERRIDE_REGEX.match(value):
+      raise InvalidValueError(
+          'The endpoint_overrides property must be an absolute URI beginning '
+          'with http:// or https:// and ending with a trailing \'/\'. '
+          '[{value}] is not a valid endpoint override.'.format(value=value))
+
+  def _Add(self, name):
+    return super(_SectionApiEndpointOverrides, self)._Add(
+        name, validator=self.EndpointValidator)
+
+
+class _SectionApp(_Section):
+  """Contains the properties for the 'app' section."""
+
+  def __init__(self):
+    super(_SectionApp, self).__init__('app')
+    self.promote_by_default = self._AddBool(
+        'promote_by_default',
+        help_text='If True, when deploying a new version of a service, that '
+        'version will be promoted to receive all traffic for the service. '
+        'This property can be overridden via the `--promote-by-default` or '
+        '`--no-promote-by-default` flags.',
+        default=True)
+    self.stop_previous_version = self._AddBool(
+        'stop_previous_version',
+        help_text='If True, when deploying a new version of a service, the '
+        'previously deployed version is stopped. If False, older versions must '
+        'be stopped manually.',
+        default=True)
+    self.trigger_build_server_side = self._AddBool(
+        'trigger_build_server_side', hidden=True, default=None)
+    self.cloud_build_timeout = self._Add(
+        'cloud_build_timeout',
+        validator=_BuildTimeoutValidator,
+        help_text='Timeout, in seconds, to wait for Docker builds to '
+        'complete during deployments. All Docker builds now use the '
+        'Cloud Build API.')
+    self.container_builder_image = self._Add(
+        'container_builder_image',
+        default='gcr.io/cloud-builders/docker',
+        hidden=True)
+    self.use_appengine_api = self._AddBool(
+        'use_appengine_api', default=True, hidden=True)
+    # This property is currently ignored except on OS X Sierra or beta
+    # deployments.
+    # There's a theoretical benefit to exceeding the number of cores available,
+    # since the task is bound by network/API latency among other factors, and
+    # mini-benchmarks validated this (I got speedup from 4 threads to 8 on a
+    # 4-core machine).
+    self.num_file_upload_threads = self._Add(
+        'num_file_upload_threads', default=None, hidden=True)
+
+    def GetRuntimeRoot():
+      sdk_root = config.Paths().sdk_root
+      if sdk_root is None:
+        return None
+      else:
+        return os.path.join(config.Paths().sdk_root, 'platform', 'ext-runtime')
+
+    self.runtime_root = self._Add(
+        'runtime_root', callbacks=[GetRuntimeRoot], hidden=True)
+
+    # Whether or not to use the (currently under-development) Flex Runtime
+    # Builders, as opposed to Externalized Runtimes.
+    #   True  => ALWAYS
+    #   False => NEVER
+    #   Unset => default behavior, which varies between beta/GA commands
+    self.use_runtime_builders = self._Add(
+        'use_runtime_builders',
+        default=None,
+        help_text=('If set, opt in/out to a new code path for building '
+                   'applications using pre-fabricated runtimes that can be '
+                   'updated independently of client tooling. If not set, '
+                   'the default path for each runtime is used.'))
+    # The Cloud Storage path prefix for the Flex Runtime Builder configuration
+    # files. The configuration files will live at
+    # "<PREFIX>/<runtime>-<version>.yaml", with an additional
+    # "<PREFIX>/runtime.version" indicating the latest version.
+    self.runtime_builders_root = self._Add(
+        'runtime_builders_root', default='gs://runtime-builders/', hidden=True)
+
+
+class _SectionArtifacts(_Section):
+  """Contains the properties for the 'artifacts' section."""
+
+  def __init__(self):
+    super(_SectionArtifacts, self).__init__('artifacts')
+
+    self.repository = self._Add(
+        'repository',
+        help_text='Default repository to use when working with Artifact '
+        'Registry resources. When a `repository` value is required but not '
+        'provided, the command will fall back to this value, if set.')
+
+    self.location = self._Add(
+        'location',
+        help_text='Default location to use when working with Artifact Registry '
+        'resources. When a `location` value is required but not provided, the '
+        'command will fall back to this value, if set. If this value is unset, '
+        'the default location is `global` when `location` value is optional.')
+
+
 class _SectionAuth(_Section):
   """Contains the properties for the 'auth' section."""
   DEFAULT_AUTH_HOST = 'https://accounts.google.com/o/oauth2/auth'
@@ -1694,12 +1883,6 @@ class _SectionAuth(_Section):
         help_text='A switch to disable google-auth for a surface or a command '
         'group, in case there are some edge cases or google-auth '
         'does not work for some surface.')
-    self.disable_activate_service_account_google_auth = self._AddBool(
-        'disable_activate_service_account_google_auth',
-        default=False,
-        hidden=True,
-        help_text='True to have activate-service-account command fall back to '
-        'execute against oauth2client library.')
 
 
 class _SectionAws(_Section):
@@ -1760,6 +1943,60 @@ class _SectionBilling(_Section):
         If you need to operate on one project, but
         need quota against a different project, you can use this property to
         specify the alternate project.""")
+
+
+class _SectionBlueprints(_Section):
+  """Contains the properties for the 'blueprints' section."""
+
+  def __init__(self):
+    super(_SectionBlueprints, self).__init__('blueprints', hidden=True)
+    self.location = self._Add(
+        'location',
+        default='us-central1',
+        help_text='The default region to use when working with'
+        'blueprints-related resources. When a `--location` flag is required '
+        'but not provided, the command will fall back to this value, if set.')
+
+
+class _SectionBuilds(_Section):
+  """Contains the properties for the 'builds' section."""
+
+  def __init__(self):
+    super(_SectionBuilds, self).__init__('builds')
+
+    self.region = self._Add(
+        'region',
+        help_text='Default region to use when working with Cloud Build '
+        'resources. When a `--region` flag is required but not provided, the '
+        'command will fall back to this value, if set.')
+    self.timeout = self._Add(
+        'timeout',
+        validator=_BuildTimeoutValidator,
+        help_text='Timeout, in seconds, to wait for builds to complete. If '
+        'unset, defaults to 10 minutes.')
+    self.check_tag = self._AddBool(
+        'check_tag',
+        default=True,
+        hidden=True,
+        help_text='If True, validate that the --tag value to builds '
+        'submit is in the gcr.io, *.gcr.io, or *.pkg.dev namespace.')
+    # TODO(b/118509363): Remove this after its default is True.
+    self.use_kaniko = self._AddBool(
+        'use_kaniko',
+        default=False,
+        help_text='If True, kaniko will be used to build images described by '
+        'a Dockerfile, instead of `docker build`.')
+    self.kaniko_cache_ttl = self._Add(
+        'kaniko_cache_ttl',
+        default=6,
+        help_text='TTL, in hours, of cached layers when using Kaniko. If zero, '
+        'layer caching is disabled.')
+    self.kaniko_image = self._Add(
+        'kaniko_image',
+        default='gcr.io/kaniko-project/executor:latest',
+        hidden=True,
+        help_text='Kaniko builder image to use when use_kaniko=True. Defaults '
+        'to gcr.io/kaniko-project/executor:latest')
 
 
 class _SectionMetrics(_Section):
@@ -2180,176 +2417,6 @@ class _SectionEdgeContainer(_Section):
         'command will fall back to this value, if set.')
 
 
-class _SectionApiEndpointOverrides(_Section):
-  """Contains the properties for the 'api-endpoint-overrides' section.
-
-  This overrides what endpoint to use when talking to the given API.
-  """
-
-  def __init__(self):
-    super(_SectionApiEndpointOverrides, self).__init__(
-        'api_endpoint_overrides', hidden=True)
-    self.accessapproval = self._Add('accessapproval')
-    self.accesscontextmanager = self._Add('accesscontextmanager')
-    self.alloydb = self._Add('alloydb')
-    self.anthosevents = self._Add('anthosevents')
-    self.aiplatform = self._Add('aiplatform')
-    self.apigateway = self._Add('apigateway')
-    self.apigee = self._Add('apigee')
-    self.appengine = self._Add('appengine')
-    self.assuredworkloads = self._Add('assuredworkloads')
-    self.baremetalsolution = self._Add('baremetalsolution')
-    self.bigtableadmin = self._Add('bigtableadmin')
-    self.binaryauthorization = self._Add('binaryauthorization')
-    self.blueprints = self._Add('config')
-    self.artifactregistry = self._Add('artifactregistry')
-    self.categorymanager = self._Add('categorymanager')
-    self.certificatemanager = self._Add('certificatemanager')
-    self.cloudasset = self._Add('cloudasset')
-    self.cloudbilling = self._Add('cloudbilling')
-    self.cloudbuild = self._Add('cloudbuild')
-    self.cloudcommerceconsumerprocurement = self._Add(
-        'cloudcommerceconsumerprocurement')
-    self.clouddebugger = self._Add('clouddebugger')
-    self.clouddeploy = self._Add('clouddeploy')
-    self.clouderrorreporting = self._Add('clouderrorreporting')
-    self.cloudfunctions = self._Add('cloudfunctions')
-    self.cloudidentity = self._Add('cloudidentity')
-    self.cloudiot = self._Add('cloudiot')
-    self.cloudkms = self._Add('cloudkms')
-    self.cloudresourcemanager = self._Add('cloudresourcemanager')
-    self.cloudresourcesearch = self._Add('cloudresourcesearch')
-    self.cloudscheduler = self._Add('cloudscheduler')
-    self.cloudtasks = self._Add('cloudtasks')
-    self.cloudtrace = self._Add('cloudtrace')
-    self.composer = self._Add('composer')
-    self.compute = self._Add('compute')
-    self.container = self._Add('container')
-    self.containeranalysis = self._Add('containeranalysis')
-    self.datacatalog = self._Add('datacatalog')
-    self.dataflow = self._Add('dataflow')
-    self.datafusion = self._Add('datafusion')
-    self.datamigration = self._Add('datamigration')
-    self.datapol = self._Add('datapol')
-    self.dataplex = self._Add('dataplex')
-    self.dataproc = self._Add('dataproc')
-    self.datastore = self._Add('datastore')
-    self.datastream = self._Add('datastream')
-    self.deploymentmanager = self._Add('deploymentmanager')
-    self.discovery = self._Add('discovery')
-    self.dns = self._Add('dns')
-    self.domains = self._Add('domains')
-    self.edgecontainer = self._Add('edgecontainer')
-    self.eventarc = self._Add('eventarc')
-    self.events = self._Add('events')
-    self.file = self._Add('file')
-    self.firestore = self._Add('firestore')
-    self.gameservices = self._Add('gameservices')
-    self.genomics = self._Add('genomics')
-    self.gkebackup = self._Add('gkebackup')
-    self.gkehub = self._Add('gkehub')
-    self.gkemulticloud = self._Add('gkemulticloud')
-    self.healthcare = self._Add('healthcare')
-    self.iam = self._Add('iam')
-    self.iap = self._Add('iap')
-    self.ids = self._Add('ids')
-    self.kubernetespolicy = self._Add('kubernetespolicy')
-    self.labelmanager = self._Add('labelmanager')
-    self.language = self._Add('language')
-    self.lifesciences = self._Add('lifesciences')
-    self.logging = self._Add('logging')
-    self.managedidentities = self._Add('managedidentities')
-    self.manager = self._Add('manager')
-    self.mediaasset = self._Add('mediaasset')
-    self.memcache = self._Add('memcache')
-    self.metastore = self._Add('metastore')
-    self.ml = self._Add('ml')
-    self.monitoring = self._Add('monitoring')
-    self.networkconnectivity = self._Add('networkconnectivity')
-    self.networkmanagement = self._Add('networkmanagement')
-    self.networkservices = self._Add('networkservices')
-    self.networksecurity = self._Add('networksecurity')
-    self.notebooks = self._Add('notebooks')
-    self.ondemandscanning = self._Add('ondemandscanning')
-    self.orgpolicy = self._Add('orgpolicy')
-    self.osconfig = self._Add('osconfig')
-    self.oslogin = self._Add('oslogin')
-    self.policyanalyzer = self._Add('policyanalyzer')
-    self.policysimulator = self._Add('policysimulator')
-    self.policytroubleshooter = self._Add('policytroubleshooter')
-    self.privateca = self._Add('privateca')
-    self.publicca = self._Add('publicca')
-    self.pubsub = self._Add('pubsub')
-    self.pubsublite = self._Add('pubsublite')
-    self.recommender = self._Add('recommender')
-    self.remotebuildexecution = self._Add('remotebuildexecution')
-    self.replicapoolupdater = self._Add('replicapoolupdater')
-    self.resourcesettings = self._Add('resourcesettings')
-    self.runtimeconfig = self._Add('runtimeconfig')
-    self.recaptcha = self._Add('recaptchaenterprise')
-    self.redis = self._Add('redis')
-    self.run = self._Add('run')
-    self.scc = self._Add('securitycenter')
-    self.servicemanagement = self._Add('servicemanagement')
-    self.serviceregistry = self._Add('serviceregistry')
-    self.serviceusage = self._Add('serviceusage')
-    self.source = self._Add('source')
-    self.sourcerepo = self._Add('sourcerepo')
-    self.secrets = self._Add('secretmanager')
-    self.servicedirectory = self._Add('servicedirectory')
-    self.spanner = self._Add('spanner')
-    self.speech = self._Add('speech')
-    self.sql = self._Add('sql')
-    self.storage = self._Add('storage')
-    self.testing = self._Add('testing')
-    self.toolresults = self._Add('toolresults')
-    self.tpu = self._Add('tpu')
-    self.vision = self._Add('vision')
-    self.vpcaccess = self._Add('vpcaccess')
-    self.workflowexecutions = self._Add('workflowexecutions')
-    self.workflows = self._Add('workflows')
-    self.sddc = self._Add('sddc')
-    self.vmwareengine = self._Add('vmwareengine')
-
-  def EndpointValidator(self, value):
-    """Checks to see if the endpoint override string is valid."""
-    if value is None:
-      return
-    if not _VALID_ENDPOINT_OVERRIDE_REGEX.match(value):
-      raise InvalidValueError(
-          'The endpoint_overrides property must be an absolute URI beginning '
-          'with http:// or https:// and ending with a trailing \'/\'. '
-          '[{value}] is not a valid endpoint override.'.format(value=value))
-
-  def _Add(self, name):
-    return super(_SectionApiEndpointOverrides, self)._Add(
-        name, validator=self.EndpointValidator)
-
-
-class _SectionApiClientOverrides(_Section):
-  """Contains the properties for the 'api-client-overrides' section.
-
-  This overrides the API client version to use when talking to this API.
-  """
-
-  def __init__(self):
-    super(_SectionApiClientOverrides, self).__init__(
-        'api_client_overrides', hidden=True)
-    self.alloydb = self._Add('alloydb')
-    self.appengine = self._Add('appengine')
-    self.baremetalsolution = self._Add('baremetalsolution')
-    self.cloudidentity = self._Add('cloudidentity')
-    self.compute = self._Add('compute')
-    self.compute_alpha = self._Add('compute/alpha')
-    self.compute_beta = self._Add('compute/beta')
-    self.compute_v1 = self._Add('compute/v1')
-    self.container = self._Add('container')
-    self.speech = self._Add('speech')
-    self.sql = self._Add('sql')
-    self.run = self._Add('run')
-    self.scc = self._Add('securitycenter')
-
-
 class _SectionEmulator(_Section):
   """Contains the properties for the 'emulator' section.
 
@@ -2367,45 +2434,6 @@ class _SectionEmulator(_Section):
         'pubsub_host_port', default='localhost:8085')
     self.bigtable_host_port = self._Add(
         'bigtable_host_port', default='localhost:8086')
-
-
-def AccessPolicyValidator(policy):
-  """Checks to see if the Access Policy string is valid."""
-  if policy is None:
-    return
-  if not policy.isdigit():
-    raise InvalidValueError(
-        'The access_context_manager.policy property must be set '
-        'to the policy number, not a string.')
-
-
-class _SectionAccessContextManager(_Section):
-  """Contains the properties for the 'access_context_manager' section."""
-
-  def OrganizationValidator(self, org):
-    """Checks to see if the Organization string is valid."""
-    if org is None:
-      return
-    if not org.isdigit():
-      raise InvalidValueError(
-          'The access_context_manager.organization property must be set '
-          'to the organization ID number, not a string.')
-
-  def __init__(self):
-    super(_SectionAccessContextManager, self).__init__(
-        'access_context_manager', hidden=True)
-
-    self.policy = self._Add(
-        'policy',
-        validator=AccessPolicyValidator,
-        help_text=('ID of the policy resource to operate on. Can be found '
-                   'by running the `access-context-manager policies list` '
-                   'command.'))
-    self.organization = self._Add(
-        'organization',
-        validator=self.OrganizationValidator,
-        help_text=('Default organization cloud-bindings command group will '
-                   'operate on.'))
 
 
 class _SectionContextAware(_Section):
@@ -2753,33 +2781,6 @@ class _SectionWorkflows(_Section):
         help_text='The default region to use when working with Cloud '
         'Workflows resources. When a `--location` flag is required '
         'but not provided, the command will fall back to this value, if set.')
-
-
-class _SectionAi(_Section):
-  """Contains the properties for the command group 'ai' section."""
-
-  def __init__(self):
-    super(_SectionAi, self).__init__('ai')
-    self.region = self._Add(
-        'region',
-        help_text='Default region to use when working with '
-        'AI Platform resources. When a `--region` flag is required '
-        'but not provided, the command will fall back to this value, if set.')
-
-
-class _SectionAiPlatform(_Section):
-  """Contains the properties for the command group 'ai_platform' section."""
-
-  def __init__(self):
-    super(_SectionAiPlatform, self).__init__('ai_platform')
-    self.region = self._Add(
-        'region',
-        help_text='Default region to use when working with AI Platform '
-        'Training and Prediction resources (currently for Prediction only). '
-        'It is ignored for training resources for now. The value should be '
-        'either `global` or one of the supported regions. When a `--region` '
-        'flag is required but not provided, the command will fall back to this '
-        'value, if set.')
 
 
 class _SectionVmware(_Section):

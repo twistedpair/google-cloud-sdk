@@ -163,6 +163,25 @@ def DeleteDeployment(deployment_full_name):
           force=True))
 
 
+def CreatePreview(preview, location):
+  """Calls into the CreatePreview API.
+
+  Args:
+    preview: a messages.Preview resource (containing properties like the
+      blueprint).
+    location: string representing the location in which to create the
+      deployment.
+
+  Returns:
+    A messages.OperationMetadata representing the long-running operation.
+  """
+  client = GetClientInstance()
+  messages = client.MESSAGES_MODULE
+  return client.projects_locations_previews.Create(
+      messages.ConfigProjectsLocationsPreviewsCreateRequest(
+          parent=location, preview=preview))
+
+
 def WaitForDeleteDeploymentOperation(operation):
   """Waits for the given "delete deployment" LRO to complete.
 
@@ -207,12 +226,15 @@ def WaitForApplyDeploymentOperation(operation, progress_message):
   poller = waiter.CloudOperationPoller(client.projects_locations_deployments,
                                        client.projects_locations_operations)
 
-  return WaitForApplyDeploymentLROWithStagedTracker(poller, operation_ref,
-                                                    progress_message)
+  return WaitForApplyLROWithStagedTracker(poller, operation_ref,
+                                          progress_message)
 
 
-def ApplyDeploymentProgressStages():
+def ApplyProgressStages(preview=False):
   """Gets an OrderedDict of progress_tracker.Stage keys to message mappings.
+
+  Args:
+    preview: bool, True if it's a preview LRO, False if it's a deployment LRO.
 
   Returns:
     An OrderedDict where the keys are the respective stage keys and the values
@@ -230,30 +252,38 @@ def ApplyDeploymentProgressStages():
   # TODO(b/195148906): Add Cloud Build log URL to pipeline and apply messages.
   stages[step_enum.RUNNING_PIPELINE
          .name] = 'Processing blueprint through kpt pipeline.'
-  stages[
-      step_enum.RUNNING_APPLY.name] = 'Applying blueprint to Config Controller.'
+  if preview:
+    stages[step_enum.RUNNING_PREVIEW
+           .name] = 'Previewing blueprint with Config Controller.'
+  else:
+    stages[step_enum.RUNNING_APPLY
+           .name] = 'Applying blueprint to Config Controller.'
   return stages
 
 
-def WaitForApplyDeploymentLROWithStagedTracker(poller, operation_ref, message):
-  """Waits for an "apply" deployment LRO using a StagedProgressTracker.
+def WaitForApplyLROWithStagedTracker(poller,
+                                     operation_ref,
+                                     message,
+                                     preview=False):
+  """Waits for an "apply" deployment/preview LRO using a StagedProgressTracker.
 
   This function is a wrapper around waiter.PollUntilDone that uses a
   progress_tracker.StagedProgressTracker to display the individual steps of
-  an apply deployment LRO.
+  an apply deployment or preview LRO.
 
   Args:
     poller: a waiter.Poller instance
     operation_ref: Reference to the operation to poll on.
     message: string containing the main progress message to display.
+    preview: bool, True if it's a preview LRO, False if it's a deployment LRO.
 
   Returns:
-    A messages.Deployment resource.
+    A response object message from the LRO (i.e. a messages.Preview or
+    messages.Deployment).
   """
   messages = GetMessagesModule()
-  state_enum = messages.Deployment.StateValueValuesEnum
   stages = []
-  progress_stages = ApplyDeploymentProgressStages()
+  progress_stages = ApplyProgressStages(preview)
   for key, msg in progress_stages.items():
     stages.append(progress_tracker.Stage(msg, key))
 
@@ -294,9 +324,68 @@ def WaitForApplyDeploymentLROWithStagedTracker(poller, operation_ref, message):
         wait_ceiling_ms=_WAIT_CEILING_MS)
     result = poller.GetResult(operation)
 
-    if result is not None and result.state == state_enum.ACTIVE:
+    if preview:
+      # Preview result from the LRO needs to be converted to Message since
+      # there is no Get method for preview and poller doesn't automatically
+      # do this.
+      json = encoding.MessageToJson(result)
+      result = encoding.JsonToMessage(messages.Preview, json)
+      is_complete = (
+          result.state == messages.Preview.StateValueValuesEnum.COMPLETED)
+    else:
+      is_complete = (
+          result.state == messages.Deployment.StateValueValuesEnum.ACTIVE)
+
+    if result is not None and is_complete:
       for stage in stages:
         if not tracker.IsComplete(stage.key):
           tracker.CompleteStage(stage.key)
 
     return result
+
+
+def WaitForApplyPreviewOperation(operation):
+  """Waits for the given "preview apply" LRO to complete.
+
+  Args:
+    operation: the operation to poll.
+
+  Raises:
+    apitools.base.py.HttpError: if the request returns an HTTP error
+
+  Returns:
+    A messages.Preview resource.
+  """
+  client = GetClientInstance()
+  operation_ref = resources.REGISTRY.ParseRelativeName(
+      operation.name, collection='config.projects.locations.operations')
+  poller = waiter.CloudOperationPollerNoResources(
+      client.projects_locations_operations)
+  progress_message = 'Previewing the deployment'
+  return WaitForApplyLROWithStagedTracker(
+      poller, operation_ref, progress_message, preview=True)
+
+
+def WaitForDeletePreviewOperation(operation):
+  """Waits for the given "preview delete" LRO to complete.
+
+  Args:
+    operation: the operation to poll.
+
+  Raises:
+    apitools.base.py.HttpError: if the request returns an HTTP error
+
+  Returns:
+    A messages.Preview resource.
+  """
+  client = GetClientInstance()
+  operation_ref = resources.REGISTRY.ParseRelativeName(
+      operation.name, collection='config.projects.locations.operations')
+  poller = waiter.CloudOperationPollerNoResources(
+      client.projects_locations_operations)
+  progress_message = 'Previewing the deployment deletion'
+  result = waiter.WaitFor(
+      poller, operation_ref, progress_message, wait_ceiling_ms=_WAIT_CEILING_MS)
+  json = encoding.MessageToJson(result)
+  messages = GetMessagesModule()
+  return encoding.JsonToMessage(messages.Preview, json)

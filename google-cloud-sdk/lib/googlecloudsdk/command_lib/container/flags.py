@@ -1005,14 +1005,26 @@ Enable sending metrics from master components to Cloud Operations.
 
 def AddLoggingFlag(parser, autopilot=False):
   """Adds a --logging flag to parser."""
-  supported = """`SYSTEM`, `WORKLOAD`"""
-  if not autopilot:
-    supported += """, `NONE`"""
+  if autopilot:
+    parser.add_argument(
+        '--logging',
+        type=arg_parsers.ArgList(),
+        default=None,
+        help='Set the components that have logging enabled.',
+        hidden=True,
+        metavar='COMPONENT',
+        action=actions.DeprecationAction(
+            '--logging',
+            warn='The `--logging` flag is deprecated for `create-auto` and will'
+            ' be removed in an upcoming release. For now, only the default '
+            'value "SYSTEM,WORKLOAD" is supported.'),
+    )
+    return
 
   help_text = """\
-Set the components that have logging enabled. Valid component values are: """
-  help_text += supported
-  help_text += """\n
+Set the components that have logging enabled. Valid component values are:
+`SYSTEM`, `WORKLOAD`, `NONE`
+
 For more information, look at
 https://cloud.google.com/stackdriver/docs/solutions/gke/installing#available-logs
 
@@ -1020,9 +1032,8 @@ Examples:
 
   $ {command} --logging=SYSTEM
   $ {command} --logging=SYSTEM,WORKLOAD
+  $ {command} --logging=NONE
 """
-  if not autopilot:
-    help_text += """  $ {command} --logging=NONE"""
   parser.add_argument(
       '--logging',
       type=arg_parsers.ArgList(),
@@ -1034,23 +1045,34 @@ Examples:
 
 def AddMonitoringFlag(parser, autopilot=False):
   """Adds a --monitoring flag to parser."""
-  supported = """`SYSTEM`"""
-  if not autopilot:
-    supported += """, `NONE`"""
+  if autopilot:
+    parser.add_argument(
+        '--monitoring',
+        type=arg_parsers.ArgList(),
+        default=None,
+        help='Set the components that have monitoring enabled.',
+        hidden=True,
+        metavar='COMPONENT',
+        action=actions.DeprecationAction(
+            '--monitoring',
+            warn='The `--monitoring` flag is deprecated for `create-auto` and '
+            'will be removed in an upcoming release. For now, only the default '
+            'value "SYSTEM" is supported.'),
+    )
+    return
 
   help_text = """\
-Set the components that have monitoring enabled. Valid component values are: """
-  help_text += supported
-  help_text += """\n
+Set the components that have monitoring enabled. Valid component values are:
+`SYSTEM`, `NONE`
+
 For more information, look at
 https://cloud.google.com/stackdriver/docs/solutions/gke/installing#available-metrics
 
 Examples:
 
   $ {command} --monitoring=SYSTEM
+  $ {command} --monitoring=NONE
 """
-  if not autopilot:
-    help_text += """  $ {command} --monitoring=NONE"""
   parser.add_argument(
       '--monitoring',
       type=arg_parsers.ArgList(),
@@ -1944,7 +1966,7 @@ def AddDiskSizeFlag(parser):
   parser.add_argument(
       '--disk-size',
       type=arg_parsers.BinarySize(lower_bound='10GB'),
-      help='Size for node VM boot disks. Defaults to 100GB.')
+      help='Size for node VM boot disks in GB. Defaults to 100GB.')
 
 
 def AddDiskTypeFlag(parser):

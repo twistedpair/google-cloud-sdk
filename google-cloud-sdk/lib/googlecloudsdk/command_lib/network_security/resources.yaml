@@ -55,3 +55,15 @@ authorizationPolicy:
     parameter_name: authorizationPoliciesId
     attribute_name: authorization_policy
     help: Id of the authorization policy.
+
+addressGroup:
+  name: address group
+  collection: networksecurity.projects.locations.addressGroups
+  request_id_field: addressGroupId
+  attributes:
+  - *project
+  - *location
+  - &addressGroup
+    parameter_name: addressGroupsId
+    attribute_name: address_group
+    help: Id of the address group.

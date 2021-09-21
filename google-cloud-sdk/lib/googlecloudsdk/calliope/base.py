@@ -321,6 +321,10 @@ class Argument(Action):
         new_help = original_help + ' The default is *{}*.'.format(default)
       flag.help = new_help
 
+  def IsHidden(self):
+    return bool(self.kwargs['hidden'])
+
+
 # Common flag definitions for consistency.
 
 # Common flag categories.

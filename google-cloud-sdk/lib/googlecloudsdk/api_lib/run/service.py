@@ -177,7 +177,8 @@ class Service(k8s_object.KubernetesObject):
   @property
   def status_traffic(self):
     self.AssertFullObject()
-    return traffic.TrafficTargets(self._messages, self.status.traffic)
+    return traffic.TrafficTargets(
+        self._messages, [] if self.status is None else self.status.traffic)
 
   @property
   def vpc_connector(self):

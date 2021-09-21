@@ -181,7 +181,6 @@ def AddInterfaceArgs(parser, for_update=False, support_router_appliance=False):
 
 def AddBgpPeerArgs(parser,
                    for_add_bgp_peer=False,
-                   support_bfd=False,
                    support_enable_ipv6=False,
                    support_havpn_ipv6=False,
                    is_update=False):
@@ -233,49 +232,48 @@ def AddBgpPeerArgs(parser,
       'the routes with lowest priority value win. 0 <= priority <= '
       '65535. If not specified, will use Google-managed priorities.')
 
-  if support_bfd:
-    bfd_group_help = (
-        'Arguments to {0} BFD (Bidirectional Forwarding Detection) '
-        'settings:'.format('update' if is_update else 'configure'))
-    bfd_group = parser.add_group(help=bfd_group_help)
-    bfd_group.add_argument(
-        '--bfd-session-initialization-mode',
-        choices=_BFD_SESSION_INITIALIZATION_MODE_CHOICES,
-        type=lambda mode: mode.upper(),
-        metavar='BFD_SESSION_INITIALIZATION_MODE',
-        help='The BFD session initialization mode for this BGP peer. Must be one '
-        'of:\n\n'
-        'ACTIVE - The Cloud Router will initiate the BFD session for this BGP '
-        'peer.\n\n'
-        'PASSIVE - The Cloud Router will wait for the peer router to initiate '
-        'the BFD session for this BGP peer.\n\n'
-        'DISABLED - BFD is disabled for this BGP peer.')
+  bfd_group_help = (
+      'Arguments to {0} BFD (Bidirectional Forwarding Detection) '
+      'settings:'.format('update' if is_update else 'configure'))
+  bfd_group = parser.add_group(help=bfd_group_help)
+  bfd_group.add_argument(
+      '--bfd-session-initialization-mode',
+      choices=_BFD_SESSION_INITIALIZATION_MODE_CHOICES,
+      type=lambda mode: mode.upper(),
+      metavar='BFD_SESSION_INITIALIZATION_MODE',
+      help='The BFD session initialization mode for this BGP peer. Must be one '
+      'of:\n\n'
+      'ACTIVE - The Cloud Router will initiate the BFD session for this BGP '
+      'peer.\n\n'
+      'PASSIVE - The Cloud Router will wait for the peer router to initiate '
+      'the BFD session for this BGP peer.\n\n'
+      'DISABLED - BFD is disabled for this BGP peer.')
 
-    bfd_group.add_argument(
-        '--bfd-min-transmit-interval',
-        type=arg_parsers.Duration(
-            default_unit='ms',
-            lower_bound='1000ms',
-            upper_bound='30000ms',
-            parsed_unit='ms'),
-        help='The minimum transmit interval between BFD control packets. The '
-        'default is 1000 milliseconds. See $ gcloud topic datetimes for '
-        'information on duration formats.')
-    bfd_group.add_argument(
-        '--bfd-min-receive-interval',
-        type=arg_parsers.Duration(
-            default_unit='ms',
-            lower_bound='1000ms',
-            upper_bound='30000ms',
-            parsed_unit='ms'),
-        help='The minimum receive interval between BFD control packets. The '
-        'default is 1000 milliseconds. See $ gcloud topic datetimes for '
-        'information on duration formats.')
-    bfd_group.add_argument(
-        '--bfd-multiplier',
-        type=int,
-        help='The number of consecutive BFD control packets that must be '
-        'missed before BFD declares that a peer is unavailable.')
+  bfd_group.add_argument(
+      '--bfd-min-transmit-interval',
+      type=arg_parsers.Duration(
+          default_unit='ms',
+          lower_bound='1000ms',
+          upper_bound='30000ms',
+          parsed_unit='ms'),
+      help='The minimum transmit interval between BFD control packets. The '
+      'default is 1000 milliseconds. See $ gcloud topic datetimes for '
+      'information on duration formats.')
+  bfd_group.add_argument(
+      '--bfd-min-receive-interval',
+      type=arg_parsers.Duration(
+          default_unit='ms',
+          lower_bound='1000ms',
+          upper_bound='30000ms',
+          parsed_unit='ms'),
+      help='The minimum receive interval between BFD control packets. The '
+      'default is 1000 milliseconds. See $ gcloud topic datetimes for '
+      'information on duration formats.')
+  bfd_group.add_argument(
+      '--bfd-multiplier',
+      type=int,
+      help='The number of consecutive BFD control packets that must be '
+      'missed before BFD declares that a peer is unavailable.')
 
   enabled_display_help = (
       'If enabled, the peer connection can be established with routing '

@@ -942,6 +942,39 @@ class Location(_messages.Message):
   name = _messages.StringField(5)
 
 
+class MavenRepositoryConfig(_messages.Message):
+  r"""MavenRepositoryConfig is maven related repository details. Provides
+  additional configuration details for repositories of the maven format type.
+
+  Enums:
+    VersionPolicyValueValuesEnum: Version policy defines the versions that the
+      registry will accept.
+
+  Fields:
+    allowSnapshotOverwrites: The repository with this flag will allow
+      publishing the same snapshot versions.
+    versionPolicy: Version policy defines the versions that the registry will
+      accept.
+  """
+
+  class VersionPolicyValueValuesEnum(_messages.Enum):
+    r"""Version policy defines the versions that the registry will accept.
+
+    Values:
+      VERSION_POLICY_UNSPECIFIED: VERSION_POLICY_UNSPECIFIED - the version
+        policy is not defined. When the version policy is not defined, no
+        validation is performed for the versions.
+      RELEASE: RELEASE - repository will accept only Release versions.
+      SNAPSHOT: SNAPSHOT - repository will accept only Snapshot versions.
+    """
+    VERSION_POLICY_UNSPECIFIED = 0
+    RELEASE = 1
+    SNAPSHOT = 2
+
+  allowSnapshotOverwrites = _messages.BooleanField(1)
+  versionPolicy = _messages.EnumField('VersionPolicyValueValuesEnum', 2)
+
+
 class Operation(_messages.Message):
   r"""This resource represents a long-running operation that is the result of
   a network API call.
@@ -1199,6 +1232,8 @@ class Repository(_messages.Message):
       entries. Label keys and values may be no longer than 63 characters.
       Label keys must begin with a lowercase letter and may only contain
       lowercase letters, numeric characters, underscores, and dashes.
+    mavenConfig: Maven repository config contains repository level
+      configuration for the repositories of maven type.
     name: The name of the repository, for example: "projects/p1/locations/us-
       central1/repositories/repo1".
     updateTime: The time when the repository was last updated.
@@ -1260,8 +1295,9 @@ class Repository(_messages.Message):
   format = _messages.EnumField('FormatValueValuesEnum', 3)
   kmsKeyName = _messages.StringField(4)
   labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  updateTime = _messages.StringField(7)
+  mavenConfig = _messages.MessageField('MavenRepositoryConfig', 6)
+  name = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
 
 
 class SetIamPolicyRequest(_messages.Message):

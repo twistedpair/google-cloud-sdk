@@ -20,17 +20,26 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import base
+from googlecloudsdk.core import resources
 
 API_VERSION_FOR_TRACK = {
     base.ReleaseTrack.ALPHA: 'v1alpha1',
     base.ReleaseTrack.BETA: 'v1beta1',
+    base.ReleaseTrack.GA: 'v1',
 }
+API_NAME = 'networkservices'
+
 
 def GetMessagesModule(release_track=base.ReleaseTrack.BETA):
   api_version = API_VERSION_FOR_TRACK.get(release_track)
-  return apis.GetMessagesModule('networkservices', api_version)
+  return apis.GetMessagesModule(API_NAME, api_version)
 
 
 def GetClientInstance(release_track=base.ReleaseTrack.BETA):
   api_version = API_VERSION_FOR_TRACK.get(release_track)
-  return apis.GetClientInstance('networkservices', api_version)
+  return apis.GetClientInstance(API_NAME, api_version)
+
+
+def GetApiBaseUrl(release_track=base.ReleaseTrack.ALPHA):
+  api_version = API_VERSION_FOR_TRACK.get(release_track)
+  return resources.GetApiBaseUrl(API_NAME, api_version)

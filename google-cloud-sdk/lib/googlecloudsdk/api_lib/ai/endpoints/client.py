@@ -24,11 +24,16 @@ from apitools.base.py import extra_types
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.ai.models import client as model_client
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.ai import constants
 from googlecloudsdk.command_lib.ai import errors
 from googlecloudsdk.command_lib.ai import flags
+from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
+from googlecloudsdk.core.credentials import http
+from googlecloudsdk.core.credentials import requests
+from six.moves import http_client
 
 
 def _ParseModel(model_id, location_id):
@@ -70,6 +75,20 @@ def _GetModelDeploymentResourceType(model_ref, client):
          'Please make sure the model %r exists.' % model_ref.RelativeName()))
   model_resource = encoding.MessageToPyValue(model_msg)
   return model_resource['supportedDeploymentResourcesTypes'][0]
+
+
+def _DoHttpPost(url, headers, body):
+  """Makes an http POST request."""
+  if base.UseRequests():
+    response = requests.GetSession().request(
+        'POST', url, data=body, headers=headers)
+    return getattr(response, 'status_code'), getattr(response,
+                                                     'headers'), getattr(
+                                                         response, 'content')
+  else:
+    response, response_body = http.Http().request(
+        uri=url, method='POST', body=body, headers=headers)
+    return int(response.get('status')), response, response_body
 
 
 class EndpointsClient(object):
@@ -303,6 +322,18 @@ class EndpointsClient(object):
         endpoint=endpoint_ref.RelativeName(),
         googleCloudAiplatformV1beta1PredictRequest=predict_request)
     return self.client.projects_locations_endpoints.Predict(req)
+
+  def RawPredict(self, endpoint_ref, headers, request):
+    """Sends online raw prediction request to an endpoint."""
+    url = '{}/endpoints/{}:rawPredict'.format(endpoint_ref.Parent(),
+                                              endpoint_ref.Name())
+
+    status, response_headers, response = _DoHttpPost(url, headers, request)
+    if status != http_client.OK:
+      raise core_exceptions.Error('HTTP request failed. Response:\n' +
+                                  response.decode())
+
+    return response_headers, response
 
   def Explain(self, endpoint_ref, instances_json, args):
     """Sends online explanation request to an endpoint using v1beta1 API."""

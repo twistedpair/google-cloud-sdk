@@ -187,10 +187,6 @@ export CLOUDSDK_BQ_PYTHON
 export CLOUDSDK_ENCODING
 export PYTHONIOENCODING="$CLOUDSDK_ENCODING"
 
-case $HOSTNAME in
-  *.corp.google.com|*.c.googlers.com) export CLOUDSDK_GOOGLE_AUTH_IS_GOOGLE_DOMAIN=true;;
-esac
-
 # </cloud-sdk-sh-preamble>
 
 if [ -z "$CLOUDSDK_PYTHON" ]; then

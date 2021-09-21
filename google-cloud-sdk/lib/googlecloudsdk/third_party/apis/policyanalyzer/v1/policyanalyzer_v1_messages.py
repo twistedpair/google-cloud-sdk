@@ -94,9 +94,14 @@ class PolicyanalyzerProjectsLocationsActivityTypesActivitiesQueryRequest(_messag
 
   Fields:
     filter: Optional. Filter expression to restrict the activities returned.
-      Supported filters are: - service_account_last_authn.full_resource_name
-      {=} [STRING] - service_account_key_last_authn.full_resource_name {=}
-      [STRING]
+      For serviceAccountLastAuthentication activities, supported filters are:
+      - `activities.full_resource_name {=} [STRING]` -
+      `activities.fullResourceName {=} [STRING]` where `[STRING]` is the full
+      resource name of the service account. For
+      serviceAccountKeyLastAuthentication activities, supported filters are: -
+      `activities.full_resource_name {=} [STRING]` -
+      `activities.fullResourceName {=} [STRING]` where `[STRING]` is the full
+      resource name of the service account key.
     pageSize: Optional. The maximum number of results to return from this
       request. Max limit is 1000. Non-positive values are ignored. The
       presence of `nextPageToken` in the response indicates that more results

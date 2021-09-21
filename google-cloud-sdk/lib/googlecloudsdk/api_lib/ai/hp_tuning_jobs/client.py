@@ -63,7 +63,8 @@ class HpTuningJobsClient(object):
              algorithm=None,
              kms_key_name=None,
              network=None,
-             service_account=None):
+             service_account=None,
+             enable_web_access=False):
     """Creates a hyperparameter tuning job with given parameters.
 
     Args:
@@ -79,11 +80,13 @@ class HpTuningJobsClient(object):
         parallel. The default value is 1.
       algorithm: AlgorithmValueValuesEnum, the search algorithm specified for
         the Study.
-      kms_key_name: A customer-managed encryption key to use for the
+      kms_key_name: str, A customer-managed encryption key to use for the
         hyperparameter tuning job.
-      network: user network to which the job should be peered with (overrides
-        yaml file)
-      service_account: A service account (email address string) to use for the
+      network: str, user network to which the job should be peered with
+        (overrides yaml file)
+      service_account: str, A service account (email address string) to use for
+        the job.
+      enable_web_access: bool, Whether to enable the interactive shell for the
         job.
 
     Returns:
@@ -101,6 +104,7 @@ class HpTuningJobsClient(object):
     job_spec.parallelTrialCount = parallel_trial_count
     job_spec.trialJobSpec.network = network
     job_spec.trialJobSpec.serviceAccount = service_account
+    job_spec.trialJobSpec.enableWebAccess = enable_web_access
 
     if display_name:
       job_spec.displayName = display_name

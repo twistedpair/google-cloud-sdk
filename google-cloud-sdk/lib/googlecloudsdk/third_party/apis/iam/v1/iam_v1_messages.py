@@ -472,7 +472,7 @@ class GetPolicyOptions(_messages.Message):
 
 
 class GoogleIamAdminV1WorkforcePoolProviderCertificate(_messages.Message):
-  r"""Certificate for validating SAML authentication response.
+  r"""A certificate for validating a SAML authentication response.
 
   Fields:
     x509Cert: An X.509 certificate.
@@ -485,8 +485,8 @@ class GoogleIamAdminV1WorkforcePoolProviderOidc(_messages.Message):
   r"""Represents an OpenId Connect 1.0 identity provider.
 
   Fields:
-    clientId: Required. The client ID. This must match the audience claim of
-      the JWT issued by the identity provider.
+    clientId: Required. The client ID. Must match the audience claim of the
+      JWT issued by the identity provider.
     issuerUri: Required. The OIDC issuer URI. Must be a valid URI using the
       'https' scheme.
   """
@@ -501,7 +501,7 @@ class GoogleIamAdminV1WorkforcePoolProviderSaml(_messages.Message):
   Fields:
     idpCertificates: Required. A list of X.509 certificates that are used to
       validate the SAML authentication response from the identity provider. Up
-      to 3 certificates may be configured in each WorkforcePoolProvider.
+      to 3 certificates may be configured in each provider.
     idpEntityId: Required. The entity ID for the identity provider.
     idpSsoUri: Required. A valid single sign-on URL.
     spEntityId: Required. The entity ID for the service provider. Must match
@@ -552,14 +552,14 @@ class IamLocationsWorkforcePoolsCreateRequest(_messages.Message):
   r"""A IamLocationsWorkforcePoolsCreateRequest object.
 
   Fields:
-    location: Location of the WorkforcePool to create. Format:
+    location: The location of the pool to create. Format:
       `locations/{location}`.
     workforcePool: A WorkforcePool resource to be passed as the request body.
-    workforcePoolId: The ID to use for the WorkforcePool, which becomes the
-      final component of the resource name. The IDs must be a globally unique
-      string of 6 to 63 lowercase letters, digits, or hyphens. It must start
-      with a letter, and cannot have a trailing hyphen. The prefix `gcp-` is
-      reserved for use by Google, and may not be specified.
+    workforcePoolId: The ID to use for the pool, which becomes the final
+      component of the resource name. The IDs must be a globally unique string
+      of 6 to 63 lowercase letters, digits, or hyphens. It must start with a
+      letter, and cannot have a trailing hyphen. The prefix `gcp-` is reserved
+      for use by Google, and may not be specified.
   """
 
   location = _messages.StringField(1, required=True)
@@ -571,7 +571,7 @@ class IamLocationsWorkforcePoolsDeleteRequest(_messages.Message):
   r"""A IamLocationsWorkforcePoolsDeleteRequest object.
 
   Fields:
-    name: Required. The name of the WorkforcePool to delete. Format:
+    name: Required. The name of the pool to delete. Format:
       `locations/{location}/workforcePools/{workforce_pool_id}`
   """
 
@@ -597,7 +597,7 @@ class IamLocationsWorkforcePoolsGetRequest(_messages.Message):
   r"""A IamLocationsWorkforcePoolsGetRequest object.
 
   Fields:
-    name: Required. The name of the WorkforcePool to retrieve. Format:
+    name: Required. The name of the pool to retrieve. Format:
       `locations/{location}/workforcePools/{workforce_pool_id}`
   """
 
@@ -608,15 +608,15 @@ class IamLocationsWorkforcePoolsListRequest(_messages.Message):
   r"""A IamLocationsWorkforcePoolsListRequest object.
 
   Fields:
-    location: Location of the WorkforcePool. Format: `locations/{location}`.
-    pageSize: The maximum number of WorkforcePools to return. If unspecified,
-      at most 50 WorkforcePools will be returned. The maximum value is 1000;
-      values above 1000 will be coerced to 1000.
+    location: The location of the pool. Format: `locations/{location}`.
+    pageSize: The maximum number of pools to return. If unspecified, at most
+      50 pools will be returned. The maximum value is 1000; values above 1000
+      are truncated to 1000.
     pageToken: A page token, received from a previous `ListWorkforcePools`
       call. Provide this to retrieve the subsequent page.
-    parent: Required. The parent resource name, which owns this collection of
-      WorkforcePools. Format: `organizations/{org-id}`.
-    showDeleted: Whether to return soft-deleted WorkforcePools.
+    parent: Required. The parent resource to list pools for. Format:
+      `organizations/{org-id}`.
+    showDeleted: Whether to return soft-deleted pools.
   """
 
   location = _messages.StringField(1, required=True)
@@ -630,9 +630,9 @@ class IamLocationsWorkforcePoolsPatchRequest(_messages.Message):
   r"""A IamLocationsWorkforcePoolsPatchRequest object.
 
   Fields:
-    name: Output only. The resource name of the WorkforcePool. Format:
+    name: Output only. The resource name of the pool. Format:
       `locations/{location}/workforcePools/{workforce_pool_id}`
-    updateMask: Required. The list of fields to be updated.
+    updateMask: Required. The list of fields to update.
     workforcePool: A WorkforcePool resource to be passed as the request body.
   """
 
@@ -645,15 +645,14 @@ class IamLocationsWorkforcePoolsProvidersCreateRequest(_messages.Message):
   r"""A IamLocationsWorkforcePoolsProvidersCreateRequest object.
 
   Fields:
-    parent: Required. The parent resource where this WorkforcePoolProvider
-      will be created. Format:
+    parent: Required. The pool to create this provider in. Format:
       `locations/{location}/workforcePools/{workforce_pool_id}`
     workforcePoolProvider: A WorkforcePoolProvider resource to be passed as
       the request body.
-    workforcePoolProviderId: Required. The user-specified ID for the
-      WorkforcePoolProvider, which will become the final component of the
-      resource name. Must be 4-32 characters and unique within the current
-      WorkforcePool.
+    workforcePoolProviderId: Required. The ID for the provider, which becomes
+      the final component of the resource name. This value must be 4-32
+      characters, and may contain the characters [a-z0-9-]. The prefix `gcp-`
+      is reserved for use by Google, and may not be specified.
   """
 
   parent = _messages.StringField(1, required=True)
@@ -665,9 +664,8 @@ class IamLocationsWorkforcePoolsProvidersDeleteRequest(_messages.Message):
   r"""A IamLocationsWorkforcePoolsProvidersDeleteRequest object.
 
   Fields:
-    name: Required. The name of the WorkforcePoolProvider to delete. Format: `
-      locations/{location}/workforcePools/{workforce_pool_id}/providers/{provi
-      der_id}`
+    name: Required. The name of the provider to delete. Format: `locations/{lo
+      cation}/workforcePools/{workforce_pool_id}/providers/{provider_id}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -677,9 +675,8 @@ class IamLocationsWorkforcePoolsProvidersGetRequest(_messages.Message):
   r"""A IamLocationsWorkforcePoolsProvidersGetRequest object.
 
   Fields:
-    name: Required. The name of the WorkforcePoolProvider to retrieve. Format:
-      `locations/{location}/workforcePools/{workforce_pool_id}/providers/{prov
-      ider_id}`
+    name: Required. The name of the provider to retrieve. Format: `locations/{
+      location}/workforcePools/{workforce_pool_id}/providers/{provider_id}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -689,16 +686,15 @@ class IamLocationsWorkforcePoolsProvidersListRequest(_messages.Message):
   r"""A IamLocationsWorkforcePoolsProvidersListRequest object.
 
   Fields:
-    pageSize: The maximum number of WorkforcePoolProviders to return. If
-      unspecified, at most 50 WorkforcePoolProviders will be returned. The
-      maximum value is 1000; values above 1000 will be coerced to 1000.
+    pageSize: The maximum number of providers to return. If unspecified, at
+      most 50 providers are returned. The maximum value is 100; values above
+      100 are truncated to 100.
     pageToken: A page token, received from a previous
       `ListWorkforcePoolProviders` call. Provide this to retrieve the
       subsequent page.
-    parent: Required. The parent resource, which owns this collection of
-      WorkforcePoolProviders. Format:
+    parent: Required. The pool to list providers for. Format:
       `locations/{location}/workforcePools/{workforce_pool_id}`
-    showDeleted: Whether to return soft-deleted WorkforcePoolProviders.
+    showDeleted: Whether to return soft-deleted providers.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -711,10 +707,9 @@ class IamLocationsWorkforcePoolsProvidersPatchRequest(_messages.Message):
   r"""A IamLocationsWorkforcePoolsProvidersPatchRequest object.
 
   Fields:
-    name: Output only. The resource name of the WorkforcePoolProvider. Format:
-      `locations/{location}/workforcePools/{workforce_pool_id}/providers/{prov
-      ider_id}`
-    updateMask: Required. The list of fields to be updated.
+    name: Output only. The resource name of the provider. Format: `locations/{
+      location}/workforcePools/{workforce_pool_id}/providers/{provider_id}`
+    updateMask: Required. The list of fields to update.
     workforcePoolProvider: A WorkforcePoolProvider resource to be passed as
       the request body.
   """
@@ -728,9 +723,8 @@ class IamLocationsWorkforcePoolsProvidersUndeleteRequest(_messages.Message):
   r"""A IamLocationsWorkforcePoolsProvidersUndeleteRequest object.
 
   Fields:
-    name: Required. The name of the WorkforcePoolProvider to undelete. Format:
-      `locations/{location}/workforcePools/{workforce_pool_id}/providers/{prov
-      ider_id}`
+    name: Required. The name of the provider to undelete. Format: `locations/{
+      location}/workforcePools/{workforce_pool_id}/providers/{provider_id}`
     undeleteWorkforcePoolProviderRequest: A
       UndeleteWorkforcePoolProviderRequest resource to be passed as the
       request body.
@@ -801,7 +795,7 @@ class IamLocationsWorkforcePoolsUndeleteRequest(_messages.Message):
   r"""A IamLocationsWorkforcePoolsUndeleteRequest object.
 
   Fields:
-    name: Required. The name of the WorkforcePool to undelete. Format:
+    name: Required. The name of the pool to undelete. Format:
       `locations/{location}/workforcePools/{workforce_pool_id}`
     undeleteWorkforcePoolRequest: A UndeleteWorkforcePoolRequest resource to
       be passed as the request body.
@@ -1088,7 +1082,7 @@ class IamProjectsLocationsWorkloadIdentityPoolsPatchRequest(_messages.Message):
 
   Fields:
     name: Output only. The resource name of the pool.
-    updateMask: Required. The list of fields update.
+    updateMask: Required. The list of fields to update.
     workloadIdentityPool: A WorkloadIdentityPool resource to be passed as the
       request body.
   """
@@ -2106,8 +2100,7 @@ class ListWorkforcePoolProvidersResponse(_messages.Message):
   Fields:
     nextPageToken: A token, which can be sent as `page_token` to retrieve the
       next page. If this field is omitted, there are no subsequent pages.
-    workforcePoolProviders: The WorkforcePoolProviders from the specified
-      parent.
+    workforcePoolProviders: A list of providers.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -2120,7 +2113,7 @@ class ListWorkforcePoolsResponse(_messages.Message):
   Fields:
     nextPageToken: A token, which can be sent as `page_token` to retrieve the
       next page. If this field is omitted, there are no subsequent pages.
-    workforcePools: The WorkforcePools from the specified parent.
+    workforcePools: A list of pools.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -3123,41 +3116,45 @@ class UploadServiceAccountKeyRequest(_messages.Message):
 
 
 class WorkforcePool(_messages.Message):
-  r"""Represents a collection of providers. Provides namespaces for federated
-  users that can be referenced in IAM policies.
+  r"""Represents a collection of external workforces. Provides namespaces for
+  federated users that can be referenced in IAM policies.
 
   Enums:
-    StateValueValuesEnum: Output only. The state of the WorkforcePool.
+    StateValueValuesEnum: Output only. The state of the pool.
 
   Fields:
-    description: The user-specified description of the WorkforcePool. Must be
-      less than or equal to 256 characters.
-    disabled: Whether the WorkforcePool is disabled. A disabled WorkforcePool
-      cannot perform new token exchanges or sign-ins using any
-      WorkforcePoolProvider in the WorkforcePool.
-    displayName: The user-specified display name of the WorkforcePool in
-      Google Cloud Console. Must be less than or equal to 32 characters.
-    name: Output only. The resource name of the WorkforcePool. Format:
+    description: A user-specified description of the pool. Cannot exceed 256
+      characters.
+    disabled: Whether the pool is disabled. You cannot use a disabled pool to
+      exchange tokens, or use existing tokens to access resources. If the pool
+      is re-enabled, existing tokens grant access again.
+    displayName: A user-specified display name of the pool in Google Cloud
+      Console. Cannot exceed 32 characters.
+    name: Output only. The resource name of the pool. Format:
       `locations/{location}/workforcePools/{workforce_pool_id}`
-    parent: Immutable. The parent resource name. Format: `organizations/{org-
-      id}`.
-    sessionDuration: How long the GCP access tokens, console sign-in sessions,
-      and gcloud sign-in sessions from this WorkforcePool are valid. Must be
+    parent: Immutable. The resource name of the parent. Format:
+      `organizations/{org-id}`.
+    sessionDuration: How long the Google Cloud access tokens, console sign-in
+      sessions, and gcloud sign-in sessions from this pool are valid. Must be
       greater than 15 minutes (900s) and less than 12 hours (43200s). If
       `session_duration` is not configured, minted credentials will have a
       default duration of one hour (3600s).
-    state: Output only. The state of the WorkforcePool.
+    state: Output only. The state of the pool.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. The state of the WorkforcePool.
+    r"""Output only. The state of the pool.
 
     Values:
-      STATE_UNSPECIFIED: Default value. This value is unused.
-      ACTIVE: The WorkforcePool is active by default.
-      DELETED: The WorkforcePool is soft-deleted. Soft-deleted WorkforcePools
-        are permanently deleted after approximately 30 days unless restored
-        via UndeleteWorkforcePool.
+      STATE_UNSPECIFIED: State unspecified.
+      ACTIVE: The pool is active and may be used in Google Cloud policies.
+      DELETED: The pool is soft-deleted. Soft-deleted pools are permanently
+        deleted after approximately 30 days. You can restore a soft-deleted
+        pool using UndeleteWorkforcePool. You cannot reuse the ID of a soft-
+        deleted pool until it is permanently deleted. While a pool is deleted,
+        you cannot use it to exchange tokens, or use existing tokens to access
+        resources. If the pool is undeleted, existing tokens grant access
+        again.
     """
     STATE_UNSPECIFIED = 0
     ACTIVE = 1
@@ -3173,137 +3170,139 @@ class WorkforcePool(_messages.Message):
 
 
 class WorkforcePoolProvider(_messages.Message):
-  r"""Holds an IDP configuration for federating a workforce to GCP.
+  r"""A configuration for an external identity provider.
 
   Enums:
-    StateValueValuesEnum: Output only. The state of the WorkforcePoolProvider.
+    StateValueValuesEnum: Output only. The state of the provider.
 
   Messages:
-    AttributeMappingValue: Required. Maps claims from the authentication
-      credentials issued by the Identity Provider into Google Cloud Platform
-      IAM attributes, e.g. subject, segment. Each key must be a string
-      specifying the Google Cloud Platform IAM attribute to be produced. The
-      following predefined keys are currently supported: * `google.subject`:
-      required field that indicates the principal that is being authenticated
-      to IAM, and will be logged in all API accesses for which Cloud Audit
-      Logging is configured. * `google.groups`: optional field that indicates
-      asserted groups that the user should be considered to belong to. You can
-      create IAM bindings using the groups attribute and access to a resource
-      will be granted if any of the groups asserted here match a group in the
-      respective binding. * `google.display_name`: optional field that
-      overrides the name of the user. If not set, `google.subject` will be
-      displayed instead. This attribute cannot be used in IAM policies. The
-      maximum length of this field is 100 characters. *
-      `google.profile_photo`: optional fields that may be set to a valid URL
-      specifying the user's thumbnail photo. When set, the image will be
-      visible as the user's profile picture. If not set, a generic user icon
-      will be displayed instead. This attribute cannot be used in IAM
-      policies. Custom attributes can also be mapped by specifying
-      `attribute.{custom_attribute}`, replacing {custom_attribute} with the
-      name of the custom attribute to be mapped. A maximum of 50 custom
-      attribute mappings can be defined. The maximum length of a mapped
-      attribute key is 2048 characters and may only contain the characters
-      [a-z0-9_]. These attributes can then be referenced in IAM policies to
-      define fine-grained access for the workforce pool to Google Cloud
-      resources by specifying: * `google.subject`: `principal://iam.googleapis
-      .com/locations/global/workforcePools/{pool}/subject/{value}` *
-      `google.groups`: `principalSet://iam.googleapis.com/locations/global/wor
-      kforcePools/{pool}/group/{value}` * `attribute.{custom_attribute}`: `pri
-      ncipalSet://iam.googleapis.com/locations/global/workforcePools/{pool}/at
-      tribute.{custom_attribute}/{value}` Each value must be a [Common
-      Expression Language] (https://opensource.google/projects/cel) function
-      that maps an Identity Provider credential to the normalized attribute
-      specified by the corresponding map key. The following keywords may be
-      referenced in the expressions: * `assertion`: JSON representing the
-      authentication credential issued by the Identity Provider. The maximum
-      length of an attribute mapping expression is 2048 characters. When
-      evaluated, the total size of all mapped attributes must not exceed 8KB.
-      Example: Map the `sub` claim of the incoming credential to the `subject`
-      Google Cloud Platform IAM attribute. ``` {"google.subject":
-      "assertion.sub"} ```
+    AttributeMappingValue: Required. Maps attributes from the authentication
+      credentials issued by an external identity provider to Google Cloud
+      attributes, such as `subject` and `segment`. Each key must be a string
+      specifying the Google Cloud IAM attribute to map to. The following keys
+      are supported: * `google.subject`: The principal IAM is authenticating.
+      You can reference this value in IAM bindings. This is also the subject
+      that appears in Cloud Logging logs. This is a required field and the
+      mapped subject cannot exceed 100 characters. * `google.groups`: Groups
+      the authenticating user belongs to. You can grant groups access to
+      resources using an IAM `principalSet` binding; access applies to all
+      members of the group. This is an optional field and the name of the
+      group cannot exceed 100 characters. * `google.display_name`: The name of
+      the authenticated user. This is an optional field and the mapped display
+      name cannot exceed 100 characters. If not set, `google.subject` will be
+      displayed instead. This attribute cannot be referenced in IAM bindings.
+      * `google.profile_photo`: The URL that specifies the authenticated
+      user's thumbnail photo. This is an optional field. When set, the image
+      will be visible as the user's profile picture. If not set, a generic
+      user icon will be displayed instead. This attribute cannot be referenced
+      in IAM bindings. You can also provide custom attributes by specifying
+      `attribute.{custom_attribute}`, where {custom_attribute} is the name of
+      the custom attribute to be mapped. You can define a maximum of 50 custom
+      attributes. The maximum length of a mapped attribute key is 100
+      characters, and the key may only contain the characters [a-z0-9_]. You
+      can reference these attributes in IAM policies to define fine-grained
+      access for a workforce pool to Google Cloud resources. For example: *
+      `google.subject`: `principal://iam.googleapis.com/locations/global/workf
+      orcePools/{pool}/subject/{value}` * `google.groups`: `principalSet://iam
+      .googleapis.com/locations/global/workforcePools/{pool}/group/{value}` *
+      `attribute.{custom_attribute}`: `principalSet://iam.googleapis.com/locat
+      ions/global/workforcePools/{pool}/attribute.{custom_attribute}/{value}`
+      Each value must be a [Common Expression Language]
+      (https://opensource.google/projects/cel) function that maps an identity
+      provider credential to the normalized attribute specified by the
+      corresponding map key. You can use the `assertion` keyword in the
+      expression to access a JSON representation of the authentication
+      credential issued by the provider. The maximum length of an attribute
+      mapping expression is 2048 characters. When evaluated, the total size of
+      all mapped attributes must not exceed 8KB. For OIDC providers, you must
+      supply a custom mapping that includes the `google.subject` attribute.
+      For example, the following maps the `sub` claim of the incoming
+      credential to the `subject` attribute on a Google token: ```
+      {"google.subject": "assertion.sub"} ```
 
   Fields:
     attributeCondition: A [Common Expression
       Language](https://opensource.google/projects/cel) expression, in plain
-      text, to restrict which otherwise valid authentication credentials
-      issued by the provider should be accepted. The expression must output a
+      text, to restrict what otherwise valid authentication credentials issued
+      by the provider should not be accepted. The expression must output a
       boolean representing whether to allow the federation. The following
       keywords may be referenced in the expressions: * `assertion`: JSON
-      representing the authentication credential issued by the Provider. *
+      representing the authentication credential issued by the provider. *
       `google`: The Google attributes mapped from the assertion in the
       `attribute_mappings`. `google.profile_photo` and `google.display_name`
       are not supported. * `attribute`: The custom attributes mapped from the
       assertion in the `attribute_mappings`. The maximum length of the
       attribute condition expression is 4096 characters. If unspecified, all
-      valid authentication credential will be accepted. Example: Only allow
-      credentials with a mapped `google.groups` value of `admins`. ```
-      "'admins' in google.groups" ```
-    attributeMapping: Required. Maps claims from the authentication
-      credentials issued by the Identity Provider into Google Cloud Platform
-      IAM attributes, e.g. subject, segment. Each key must be a string
-      specifying the Google Cloud Platform IAM attribute to be produced. The
-      following predefined keys are currently supported: * `google.subject`:
-      required field that indicates the principal that is being authenticated
-      to IAM, and will be logged in all API accesses for which Cloud Audit
-      Logging is configured. * `google.groups`: optional field that indicates
-      asserted groups that the user should be considered to belong to. You can
-      create IAM bindings using the groups attribute and access to a resource
-      will be granted if any of the groups asserted here match a group in the
-      respective binding. * `google.display_name`: optional field that
-      overrides the name of the user. If not set, `google.subject` will be
-      displayed instead. This attribute cannot be used in IAM policies. The
-      maximum length of this field is 100 characters. *
-      `google.profile_photo`: optional fields that may be set to a valid URL
-      specifying the user's thumbnail photo. When set, the image will be
-      visible as the user's profile picture. If not set, a generic user icon
-      will be displayed instead. This attribute cannot be used in IAM
-      policies. Custom attributes can also be mapped by specifying
-      `attribute.{custom_attribute}`, replacing {custom_attribute} with the
-      name of the custom attribute to be mapped. A maximum of 50 custom
-      attribute mappings can be defined. The maximum length of a mapped
-      attribute key is 2048 characters and may only contain the characters
-      [a-z0-9_]. These attributes can then be referenced in IAM policies to
-      define fine-grained access for the workforce pool to Google Cloud
-      resources by specifying: * `google.subject`: `principal://iam.googleapis
-      .com/locations/global/workforcePools/{pool}/subject/{value}` *
-      `google.groups`: `principalSet://iam.googleapis.com/locations/global/wor
-      kforcePools/{pool}/group/{value}` * `attribute.{custom_attribute}`: `pri
-      ncipalSet://iam.googleapis.com/locations/global/workforcePools/{pool}/at
-      tribute.{custom_attribute}/{value}` Each value must be a [Common
-      Expression Language] (https://opensource.google/projects/cel) function
-      that maps an Identity Provider credential to the normalized attribute
-      specified by the corresponding map key. The following keywords may be
-      referenced in the expressions: * `assertion`: JSON representing the
-      authentication credential issued by the Identity Provider. The maximum
-      length of an attribute mapping expression is 2048 characters. When
-      evaluated, the total size of all mapped attributes must not exceed 8KB.
-      Example: Map the `sub` claim of the incoming credential to the `subject`
-      Google Cloud Platform IAM attribute. ``` {"google.subject":
-      "assertion.sub"} ```
-    description: The user-specified description of the WorkforcePoolProvider.
-      Must be less than or equal to 256 characters.
-    disabled: Whether the WorkforcePoolProvider is disabled. A disabled
-      WorkforcePoolProvider cannot perform new token exchanges or sign-ins.
-    displayName: The user-specified display name for the
-      WorkforcePoolProvider. Must be less than or equal to 32 characters.
-    name: Output only. The resource name of the WorkforcePoolProvider. Format:
-      `locations/{location}/workforcePools/{workforce_pool_id}/providers/{prov
-      ider_id}`
-    oidc: OpenId Connect 1.0 identity provider configuration.
-    saml: SAML identity provider configuration.
-    state: Output only. The state of the WorkforcePoolProvider.
+      valid authentication credentials will be accepted. The following example
+      shows how to only allow credentials with a mapped `google.groups` value
+      of `admins`: ``` "'admins' in google.groups" ```
+    attributeMapping: Required. Maps attributes from the authentication
+      credentials issued by an external identity provider to Google Cloud
+      attributes, such as `subject` and `segment`. Each key must be a string
+      specifying the Google Cloud IAM attribute to map to. The following keys
+      are supported: * `google.subject`: The principal IAM is authenticating.
+      You can reference this value in IAM bindings. This is also the subject
+      that appears in Cloud Logging logs. This is a required field and the
+      mapped subject cannot exceed 100 characters. * `google.groups`: Groups
+      the authenticating user belongs to. You can grant groups access to
+      resources using an IAM `principalSet` binding; access applies to all
+      members of the group. This is an optional field and the name of the
+      group cannot exceed 100 characters. * `google.display_name`: The name of
+      the authenticated user. This is an optional field and the mapped display
+      name cannot exceed 100 characters. If not set, `google.subject` will be
+      displayed instead. This attribute cannot be referenced in IAM bindings.
+      * `google.profile_photo`: The URL that specifies the authenticated
+      user's thumbnail photo. This is an optional field. When set, the image
+      will be visible as the user's profile picture. If not set, a generic
+      user icon will be displayed instead. This attribute cannot be referenced
+      in IAM bindings. You can also provide custom attributes by specifying
+      `attribute.{custom_attribute}`, where {custom_attribute} is the name of
+      the custom attribute to be mapped. You can define a maximum of 50 custom
+      attributes. The maximum length of a mapped attribute key is 100
+      characters, and the key may only contain the characters [a-z0-9_]. You
+      can reference these attributes in IAM policies to define fine-grained
+      access for a workforce pool to Google Cloud resources. For example: *
+      `google.subject`: `principal://iam.googleapis.com/locations/global/workf
+      orcePools/{pool}/subject/{value}` * `google.groups`: `principalSet://iam
+      .googleapis.com/locations/global/workforcePools/{pool}/group/{value}` *
+      `attribute.{custom_attribute}`: `principalSet://iam.googleapis.com/locat
+      ions/global/workforcePools/{pool}/attribute.{custom_attribute}/{value}`
+      Each value must be a [Common Expression Language]
+      (https://opensource.google/projects/cel) function that maps an identity
+      provider credential to the normalized attribute specified by the
+      corresponding map key. You can use the `assertion` keyword in the
+      expression to access a JSON representation of the authentication
+      credential issued by the provider. The maximum length of an attribute
+      mapping expression is 2048 characters. When evaluated, the total size of
+      all mapped attributes must not exceed 8KB. For OIDC providers, you must
+      supply a custom mapping that includes the `google.subject` attribute.
+      For example, the following maps the `sub` claim of the incoming
+      credential to the `subject` attribute on a Google token: ```
+      {"google.subject": "assertion.sub"} ```
+    description: A user-specified description of the provider. Cannot exceed
+      256 characters.
+    disabled: Whether the provider is disabled. You cannot use a disabled
+      provider to exchange tokens. However, existing tokens still grant
+      access.
+    displayName: A user-specified display name for the provider. Cannot exceed
+      32 characters.
+    name: Output only. The resource name of the provider. Format: `locations/{
+      location}/workforcePools/{workforce_pool_id}/providers/{provider_id}`
+    oidc: An OpenId Connect 1.0 identity provider configuration.
+    saml: A SAML identity provider configuration.
+    state: Output only. The state of the provider.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. The state of the WorkforcePoolProvider.
+    r"""Output only. The state of the provider.
 
     Values:
-      STATE_UNSPECIFIED: Default value. This value is unused.
-      ACTIVE: The WorkforcePoolProvider is active and may be used to validate
+      STATE_UNSPECIFIED: State unspecified.
+      ACTIVE: The provider is active and may be used to validate
         authentication credentials.
-      DELETED: The WorkforcePoolProvider is soft-deleted. Soft-deleted
-        WorkforcePoolProviders are permanently deleted after approximately 30
-        days unless restored via UndeleteWorkforcePoolProvider.
+      DELETED: The provider is soft-deleted. Soft-deleted providers are
+        permanently deleted after approximately 30 days. You can restore a
+        soft-deleted provider using UndeleteWorkforcePoolProvider.
     """
     STATE_UNSPECIFIED = 0
     ACTIVE = 1
@@ -3311,46 +3310,48 @@ class WorkforcePoolProvider(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AttributeMappingValue(_messages.Message):
-    r"""Required. Maps claims from the authentication credentials issued by
-    the Identity Provider into Google Cloud Platform IAM attributes, e.g.
-    subject, segment. Each key must be a string specifying the Google Cloud
-    Platform IAM attribute to be produced. The following predefined keys are
-    currently supported: * `google.subject`: required field that indicates the
-    principal that is being authenticated to IAM, and will be logged in all
-    API accesses for which Cloud Audit Logging is configured. *
-    `google.groups`: optional field that indicates asserted groups that the
-    user should be considered to belong to. You can create IAM bindings using
-    the groups attribute and access to a resource will be granted if any of
-    the groups asserted here match a group in the respective binding. *
-    `google.display_name`: optional field that overrides the name of the user.
-    If not set, `google.subject` will be displayed instead. This attribute
-    cannot be used in IAM policies. The maximum length of this field is 100
-    characters. * `google.profile_photo`: optional fields that may be set to a
-    valid URL specifying the user's thumbnail photo. When set, the image will
-    be visible as the user's profile picture. If not set, a generic user icon
-    will be displayed instead. This attribute cannot be used in IAM policies.
-    Custom attributes can also be mapped by specifying
-    `attribute.{custom_attribute}`, replacing {custom_attribute} with the name
-    of the custom attribute to be mapped. A maximum of 50 custom attribute
-    mappings can be defined. The maximum length of a mapped attribute key is
-    2048 characters and may only contain the characters [a-z0-9_]. These
-    attributes can then be referenced in IAM policies to define fine-grained
-    access for the workforce pool to Google Cloud resources by specifying: *
-    `google.subject`: `principal://iam.googleapis.com/locations/global/workfor
-    cePools/{pool}/subject/{value}` * `google.groups`: `principalSet://iam.goo
-    gleapis.com/locations/global/workforcePools/{pool}/group/{value}` *
-    `attribute.{custom_attribute}`: `principalSet://iam.googleapis.com/locatio
-    ns/global/workforcePools/{pool}/attribute.{custom_attribute}/{value}` Each
-    value must be a [Common Expression Language]
-    (https://opensource.google/projects/cel) function that maps an Identity
-    Provider credential to the normalized attribute specified by the
-    corresponding map key. The following keywords may be referenced in the
-    expressions: * `assertion`: JSON representing the authentication
-    credential issued by the Identity Provider. The maximum length of an
-    attribute mapping expression is 2048 characters. When evaluated, the total
-    size of all mapped attributes must not exceed 8KB. Example: Map the `sub`
-    claim of the incoming credential to the `subject` Google Cloud Platform
-    IAM attribute. ``` {"google.subject": "assertion.sub"} ```
+    r"""Required. Maps attributes from the authentication credentials issued
+    by an external identity provider to Google Cloud attributes, such as
+    `subject` and `segment`. Each key must be a string specifying the Google
+    Cloud IAM attribute to map to. The following keys are supported: *
+    `google.subject`: The principal IAM is authenticating. You can reference
+    this value in IAM bindings. This is also the subject that appears in Cloud
+    Logging logs. This is a required field and the mapped subject cannot
+    exceed 100 characters. * `google.groups`: Groups the authenticating user
+    belongs to. You can grant groups access to resources using an IAM
+    `principalSet` binding; access applies to all members of the group. This
+    is an optional field and the name of the group cannot exceed 100
+    characters. * `google.display_name`: The name of the authenticated user.
+    This is an optional field and the mapped display name cannot exceed 100
+    characters. If not set, `google.subject` will be displayed instead. This
+    attribute cannot be referenced in IAM bindings. * `google.profile_photo`:
+    The URL that specifies the authenticated user's thumbnail photo. This is
+    an optional field. When set, the image will be visible as the user's
+    profile picture. If not set, a generic user icon will be displayed
+    instead. This attribute cannot be referenced in IAM bindings. You can also
+    provide custom attributes by specifying `attribute.{custom_attribute}`,
+    where {custom_attribute} is the name of the custom attribute to be mapped.
+    You can define a maximum of 50 custom attributes. The maximum length of a
+    mapped attribute key is 100 characters, and the key may only contain the
+    characters [a-z0-9_]. You can reference these attributes in IAM policies
+    to define fine-grained access for a workforce pool to Google Cloud
+    resources. For example: * `google.subject`: `principal://iam.googleapis.co
+    m/locations/global/workforcePools/{pool}/subject/{value}` *
+    `google.groups`: `principalSet://iam.googleapis.com/locations/global/workf
+    orcePools/{pool}/group/{value}` * `attribute.{custom_attribute}`: `princip
+    alSet://iam.googleapis.com/locations/global/workforcePools/{pool}/attribut
+    e.{custom_attribute}/{value}` Each value must be a [Common Expression
+    Language] (https://opensource.google/projects/cel) function that maps an
+    identity provider credential to the normalized attribute specified by the
+    corresponding map key. You can use the `assertion` keyword in the
+    expression to access a JSON representation of the authentication
+    credential issued by the provider. The maximum length of an attribute
+    mapping expression is 2048 characters. When evaluated, the total size of
+    all mapped attributes must not exceed 8KB. For OIDC providers, you must
+    supply a custom mapping that includes the `google.subject` attribute. For
+    example, the following maps the `sub` claim of the incoming credential to
+    the `subject` attribute on a Google token: ``` {"google.subject":
+    "assertion.sub"} ```
 
     Messages:
       AdditionalProperty: An additional property for a AttributeMappingValue

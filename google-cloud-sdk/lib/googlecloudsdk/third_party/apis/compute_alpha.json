@@ -4,7 +4,7 @@
   "id": "compute:alpha",
   "name": "compute",
   "version": "alpha",
-  "revision": "20210908",
+  "revision": "20210910",
   "title": "Compute Engine API",
   "description": "Creates and runs virtual machines on Google Cloud Platform. ",
   "ownerDomain": "google.com",
@@ -5726,7 +5726,7 @@
           "$ref": "ConfidentialInstanceConfig"
         },
         "postKeyRevocationActionType": {
-          "description": "PostKeyRevocationActionType of the instance.",
+          "description": "PostKeyRevocationActionType of the instance.(will be deprecated soon)",
           "type": "string",
           "enumDescriptions": [
             "Indicates user chose no operation.",
@@ -13440,12 +13440,12 @@
           ]
         },
         "idleTimeoutSec": {
-          "description": "Specifies how long to keep a Connection Tracking entry while there is no matching traffic (in seconds). For L4 ILB the minimum(default) is 10 minutes and maximum is 16 hours. For NLB the minimum(default) is 60 seconds and the maximum is 16 hours. This field will be supported only if the Connection Tracking key is less than 5-tuple.",
+          "description": "Specifies how long to keep a Connection Tracking entry while there is no matching traffic (in seconds). For L4 ILB the minimum(default) is 10 minutes and maximum is 16 hours. For Network Load Balancer the default is 60 seconds. This option is not available publicly. This field will be supported only if the Connection Tracking key is less than 5-tuple.",
           "type": "integer",
           "format": "int32"
         },
         "enableStrongAffinity": {
-          "description": "Enable Strong Session Affinity. This is only available in External TCP\/UDP load balancer.",
+          "description": "Enable Strong Session Affinity for Network Load Balancing. This option is not available publicly.",
           "type": "boolean"
         }
       }
@@ -23067,6 +23067,17 @@
         "firewallPolicy": {
           "description": "[Output Only] URL of the firewall policy the network is associated with.",
           "type": "string"
+        },
+        "networkFirewallPolicyEnforcementOrder": {
+          "type": "string",
+          "enumDescriptions": [
+            "",
+            ""
+          ],
+          "enum": [
+            "AFTER_CLASSIC_FIREWALL",
+            "BEFORE_CLASSIC_FIREWALL"
+          ]
         },
         "enableUlaInternalIpv6": {
           "description": "Enable ULA internal ipv6 on this network. Enabling this feature will assign a \/48 from google defined ULA prefix fd20::\/20. .",

@@ -74,17 +74,6 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  PROJECTS_LOCATIONS_ENDPOINTCONFIGSELECTORS = (
-      'projects.locations.endpointConfigSelectors',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/'
-              'endpointConfigSelectors/{endpointConfigSelectorsId}',
-      },
-      ['name'],
-      True
-  )
   PROJECTS_LOCATIONS_ENDPOINTPOLICIES = (
       'projects.locations.endpointPolicies',
       '{+name}',

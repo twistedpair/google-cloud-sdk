@@ -23,6 +23,7 @@ import copy
 from apitools.base.py import encoding
 from apitools.base.py import extra_types
 from apitools.base.py import list_pager
+from googlecloudsdk.api_lib.ai import util as api_util
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import messages as messages_util
 from googlecloudsdk.command_lib.ai import constants
@@ -68,6 +69,7 @@ class ModelMonitoringJobsClient(object):
         constants.AI_PLATFORM_API_VERSION[version])
     self.messages = messages or self.client.MESSAGES_MODULE
     self._service = self.client.projects_locations_modelDeploymentMonitoringJobs
+    self._version = version
 
   def _ConstructDriftThresholds(self, feature_thresholds,
                                 feature_attribution_thresholds):
@@ -81,19 +83,20 @@ class ModelMonitoringJobsClient(object):
     Returns:
       PredictionDriftDetectionConfig
     """
-    prediction_drift_detection = self.messages.GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigPredictionDriftDetectionConfig(
-    )
+    prediction_drift_detection = api_util.GetMessage(
+        'ModelMonitoringObjectiveConfigPredictionDriftDetectionConfig',
+        self._version)()
     additional_properties = []
     attribution_additional_properties = []
     if feature_thresholds:
       for key, value in feature_thresholds.items():
         threshold = 0.3 if not value else float(value)
-        additional_properties.append(
-            prediction_drift_detection.DriftThresholdsValue(
-            ).AdditionalProperty(
-                key=key,
-                value=self.messages.GoogleCloudAiplatformV1beta1ThresholdConfig(
-                    value=threshold)))
+        additional_properties.append(prediction_drift_detection
+                                     .DriftThresholdsValue().AdditionalProperty(
+                                         key=key,
+                                         value=api_util.GetMessage(
+                                             'ThresholdConfig',
+                                             self._version)(value=threshold)))
       prediction_drift_detection.driftThresholds = prediction_drift_detection.DriftThresholdsValue(
           additionalProperties=additional_properties)
     if feature_attribution_thresholds:
@@ -103,8 +106,8 @@ class ModelMonitoringJobsClient(object):
             prediction_drift_detection.AttributionScoreDriftThresholdsValue(
             ).AdditionalProperty(
                 key=key,
-                value=self.messages.GoogleCloudAiplatformV1beta1ThresholdConfig(
-                    value=threshold)))
+                value=api_util.GetMessage('ThresholdConfig',
+                                          self._version)(value=threshold)))
       prediction_drift_detection.attributionScoreDriftThresholds = prediction_drift_detection.AttributionScoreDriftThresholdsValue(
           additionalProperties=attribution_additional_properties)
 
@@ -122,19 +125,20 @@ class ModelMonitoringJobsClient(object):
     Returns:
       TrainingPredictionSkewDetectionConfig
     """
-    training_prediction_skew_detection = self.messages.GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigTrainingPredictionSkewDetectionConfig(
-    )
+    training_prediction_skew_detection = api_util.GetMessage(
+        'ModelMonitoringObjectiveConfigTrainingPredictionSkewDetectionConfig',
+        self._version)()
     additional_properties = []
     attribution_additional_properties = []
     if feature_thresholds:
       for key, value in feature_thresholds.items():
         threshold = 0.3 if not value else float(value)
-        additional_properties.append(
-            training_prediction_skew_detection.SkewThresholdsValue(
-            ).AdditionalProperty(
-                key=key,
-                value=self.messages.GoogleCloudAiplatformV1beta1ThresholdConfig(
-                    value=threshold)))
+        additional_properties.append(training_prediction_skew_detection
+                                     .SkewThresholdsValue().AdditionalProperty(
+                                         key=key,
+                                         value=api_util.GetMessage(
+                                             'ThresholdConfig',
+                                             self._version)(value=threshold)))
       training_prediction_skew_detection.skewThresholds = training_prediction_skew_detection.SkewThresholdsValue(
           additionalProperties=additional_properties)
     if feature_attribution_thresholds:
@@ -144,8 +148,8 @@ class ModelMonitoringJobsClient(object):
             training_prediction_skew_detection
             .AttributionScoreSkewThresholdsValue().AdditionalProperty(
                 key=key,
-                value=self.messages.GoogleCloudAiplatformV1beta1ThresholdConfig(
-                    value=threshold)))
+                value=api_util.GetMessage('ThresholdConfig',
+                                          self._version)(value=threshold)))
       training_prediction_skew_detection.attributionScoreSkewThresholds = training_prediction_skew_detection.AttributionScoreSkewThresholdsValue(
           additionalProperties=attribution_additional_properties)
 
@@ -185,8 +189,9 @@ class ModelMonitoringJobsClient(object):
         if prediction_drift_detection.attributionScoreDriftThresholds:
           objective_config.objectiveConfig.predictionDriftDetectionConfig.attributionScoreDriftThresholds = prediction_drift_detection.attributionScoreDriftThresholds
       if training_prediction_skew_detection.attributionScoreSkewThresholds or prediction_drift_detection.attributionScoreDriftThresholds:
-        objective_config.objectiveConfig.explanationConfig = self.messages.GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigExplanationConfig(
-            enableFeatureAttributes=True)
+        objective_config.objectiveConfig.explanationConfig = api_util.GetMessage(
+            'ModelMonitoringObjectiveConfigExplanationConfig', self._version)(
+                enableFeatureAttributes=True)
       objective_configs.append(objective_config)
     return objective_configs
 
@@ -219,27 +224,29 @@ class ModelMonitoringJobsClient(object):
     Returns:
       A list of model monitoring objective config.
     """
-    objective_config_template = self.messages.GoogleCloudAiplatformV1beta1ModelDeploymentMonitoringObjectiveConfig(
-    )
+    objective_config_template = api_util.GetMessage(
+        'ModelDeploymentMonitoringObjectiveConfig', self._version)()
     if feature_thresholds or feature_attribution_thresholds:
       if dataset or bigquery_uri or gcs_uris or data_format:
-        training_dataset = self.messages.GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigTrainingDataset(
-        )
+        training_dataset = api_util.GetMessage(
+            'ModelMonitoringObjectiveConfigTrainingDataset', self._version)()
         if target_field is None:
           raise errors.ArgumentError(
               "Target field must be provided if you'd like to do training-prediction skew detection."
           )
         training_dataset.targetField = target_field
-        training_dataset.loggingSamplingStrategy = self.messages.GoogleCloudAiplatformV1beta1SamplingStrategy(
-            randomSampleConfig=self.messages
-            .GoogleCloudAiplatformV1beta1SamplingStrategyRandomSampleConfig(
-                sampleRate=training_sampling_rate))
+        training_dataset.loggingSamplingStrategy = api_util.GetMessage(
+            'SamplingStrategy', self._version)(
+                randomSampleConfig=api_util.GetMessage(
+                    'SamplingStrategyRandomSampleConfig', self._version)(
+                        sampleRate=training_sampling_rate))
         if dataset:
           training_dataset.dataset = _ParseDataset(dataset,
                                                    location_ref).RelativeName()
         elif bigquery_uri:
-          training_dataset.bigquerySource = self.messages.GoogleCloudAiplatformV1beta1BigQuerySource(
-              inputUri=bigquery_uri)
+          training_dataset.bigquerySource = api_util.GetMessage(
+              'BigQuerySource', self._version)(
+                  inputUri=bigquery_uri)
         elif gcs_uris or data_format:
           if gcs_uris is None:
             raise errors.ArgumentError(
@@ -250,23 +257,27 @@ class ModelMonitoringJobsClient(object):
                 'No Data format is defined for Google Cloud Storage training dataset. Please use --data-format to define the Data format.'
             )
           training_dataset.dataFormat = data_format
-          training_dataset.gcsSource = self.messages.GoogleCloudAiplatformV1beta1GcsSource(
-              uris=gcs_uris)
+          training_dataset.gcsSource = api_util.GetMessage(
+              'GcsSource', self._version)(
+                  uris=gcs_uris)
         training_prediction_skew_detection = self._ConstructSkewThresholds(
             feature_thresholds, feature_attribution_thresholds)
-        objective_config_template.objectiveConfig = self.messages.GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfig(
-            trainingDataset=training_dataset,
-            trainingPredictionSkewDetectionConfig=training_prediction_skew_detection
-        )
+        objective_config_template.objectiveConfig = api_util.GetMessage(
+            'ModelMonitoringObjectiveConfig', self._version
+        )(trainingDataset=training_dataset,
+          trainingPredictionSkewDetectionConfig=training_prediction_skew_detection
+         )
       else:
         prediction_drift_detection = self._ConstructDriftThresholds(
             feature_thresholds, feature_attribution_thresholds)
-        objective_config_template.objectiveConfig = self.messages.GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfig(
-            predictionDriftDetectionConfig=prediction_drift_detection)
+        objective_config_template.objectiveConfig = api_util.GetMessage(
+            'ModelMonitoringObjectiveConfig', self._version)(
+                predictionDriftDetectionConfig=prediction_drift_detection)
 
       if feature_attribution_thresholds:
-        objective_config_template.objectiveConfig.explanationConfig = self.messages.GoogleCloudAiplatformV1beta1ModelMonitoringObjectiveConfigExplanationConfig(
-            enableFeatureAttributes=True)
+        objective_config_template.objectiveConfig.explanationConfig = api_util.GetMessage(
+            'ModelMonitoringObjectiveConfigExplanationConfig', self._version)(
+                enableFeatureAttributes=True)
 
     get_endpoint_req = self.messages.AiplatformProjectsLocationsEndpointsGetRequest(
         name=endpoint_name)
@@ -281,19 +292,20 @@ class ModelMonitoringJobsClient(object):
   def Create(self, location_ref, args):
     """Creates a model deployment monitoring job."""
     endpoint_ref = _ParseEndpoint(args.endpoint, location_ref)
-    job_spec = self.messages.GoogleCloudAiplatformV1beta1ModelDeploymentMonitoringJob(
-    )
+    job_spec = api_util.GetMessage('ModelDeploymentMonitoringJob',
+                                   self._version)()
     kms_key_name = common_validation.GetAndValidateKmsKey(args)
     if kms_key_name is not None:
-      job_spec.encryptionSpec = self.messages.GoogleCloudAiplatformV1beta1EncryptionSpec(
-          kmsKeyName=kms_key_name)
+      job_spec.encryptionSpec = api_util.GetMessage('EncryptionSpec',
+                                                    self._version)(
+                                                        kmsKeyName=kms_key_name)
 
     if args.monitoring_config_from_file:
       data = yaml.load_path(args.monitoring_config_from_file)
       if data:
         job_spec = messages_util.DictToMessageWithErrorCheck(
-            data, self.messages
-            .GoogleCloudAiplatformV1beta1ModelDeploymentMonitoringJob)
+            data,
+            api_util.GetMessage('ModelDeploymentMonitoringJob', self._version))
     else:
       job_spec.modelDeploymentMonitoringObjectiveConfigs = self._ConstructObjectiveConfigForCreate(
           location_ref, endpoint_ref.RelativeName(), args.feature_thresholds,
@@ -303,19 +315,22 @@ class ModelMonitoringJobsClient(object):
     job_spec.endpoint = endpoint_ref.RelativeName()
     job_spec.displayName = args.display_name
 
-    job_spec.modelMonitoringAlertConfig = self.messages.GoogleCloudAiplatformV1beta1ModelMonitoringAlertConfig(
-        emailAlertConfig=self.messages
-        .GoogleCloudAiplatformV1beta1ModelMonitoringAlertConfigEmailAlertConfig(
-            userEmails=args.emails))
+    job_spec.modelMonitoringAlertConfig = api_util.GetMessage(
+        'ModelMonitoringAlertConfig', self._version)(
+            emailAlertConfig=api_util.GetMessage(
+                'ModelMonitoringAlertConfigEmailAlertConfig', self._version)(
+                    userEmails=args.emails))
 
-    job_spec.loggingSamplingStrategy = self.messages.GoogleCloudAiplatformV1beta1SamplingStrategy(
-        randomSampleConfig=self.messages
-        .GoogleCloudAiplatformV1beta1SamplingStrategyRandomSampleConfig(
-            sampleRate=args.prediction_sampling_rate))
+    job_spec.loggingSamplingStrategy = api_util.GetMessage(
+        'SamplingStrategy', self._version)(
+            randomSampleConfig=api_util.GetMessage(
+                'SamplingStrategyRandomSampleConfig', self._version)(
+                    sampleRate=args.prediction_sampling_rate))
 
-    job_spec.modelDeploymentMonitoringScheduleConfig = self.messages.GoogleCloudAiplatformV1beta1ModelDeploymentMonitoringScheduleConfig(
-        monitorInterval='{}s'.format(
-            six.text_type(3600 * int(args.monitoring_frequency))))
+    job_spec.modelDeploymentMonitoringScheduleConfig = api_util.GetMessage(
+        'ModelDeploymentMonitoringScheduleConfig', self._version)(
+            monitorInterval='{}s'.format(
+                six.text_type(3600 * int(args.monitoring_frequency))))
 
     if args.predict_instance_schema:
       job_spec.predictInstanceSchemaUri = args.predict_instance_schema
@@ -332,26 +347,41 @@ class ModelMonitoringJobsClient(object):
       job_spec.samplePredictInstance = encoding.PyValueToMessage(
           extra_types.JsonValue, instance_json)
 
-    return self._service.Create(
-        self.messages
-        .AiplatformProjectsLocationsModelDeploymentMonitoringJobsCreateRequest(
-            parent=location_ref.RelativeName(),
-            googleCloudAiplatformV1beta1ModelDeploymentMonitoringJob=job_spec))
+    if self._version == constants.ALPHA_VERSION:
+      return self._service.Create(
+          self.messages.
+          AiplatformProjectsLocationsModelDeploymentMonitoringJobsCreateRequest(
+              parent=location_ref.RelativeName(),
+              googleCloudAiplatformV1alpha1ModelDeploymentMonitoringJob=job_spec
+          ))
+    elif self._version == constants.BETA_VERSION:
+      return self._service.Create(
+          self.messages.
+          AiplatformProjectsLocationsModelDeploymentMonitoringJobsCreateRequest(
+              parent=location_ref.RelativeName(),
+              googleCloudAiplatformV1beta1ModelDeploymentMonitoringJob=job_spec
+          ))
+    else:
+      return self._service.Create(
+          self.messages.
+          AiplatformProjectsLocationsModelDeploymentMonitoringJobsCreateRequest(
+              parent=location_ref.RelativeName(),
+              googleCloudAiplatformV1ModelDeploymentMonitoringJob=job_spec))
 
   def Patch(self, model_monitoring_job_ref, args):
     """Update a model deployment monitoring job."""
-    model_monitoring_job_to_update = self.messages.GoogleCloudAiplatformV1beta1ModelDeploymentMonitoringJob(
-    )
+    model_monitoring_job_to_update = api_util.GetMessage(
+        'ModelDeploymentMonitoringJob', self._version)()
     update_mask = []
 
-    job_spec = self.messages.GoogleCloudAiplatformV1beta1ModelDeploymentMonitoringJob(
-    )
+    job_spec = api_util.GetMessage('ModelDeploymentMonitoringJob',
+                                   self._version)()
     if args.monitoring_config_from_file:
       data = yaml.load_path(args.monitoring_config_from_file)
       if data:
         job_spec = messages_util.DictToMessageWithErrorCheck(
-            data, self.messages
-            .GoogleCloudAiplatformV1beta1ModelDeploymentMonitoringJob)
+            data,
+            api_util.GetMessage('ModelDeploymentMonitoringJob', self._version))
         model_monitoring_job_to_update.modelDeploymentMonitoringObjectiveConfigs = job_spec.modelDeploymentMonitoringObjectiveConfigs
         update_mask.append('model_deployment_monitoring_objective_configs')
 
@@ -369,25 +399,28 @@ class ModelMonitoringJobsClient(object):
       update_mask.append('display_name')
 
     if args.emails:
-      model_monitoring_job_to_update.modelMonitoringAlertConfig = self.messages.GoogleCloudAiplatformV1beta1ModelMonitoringAlertConfig(
-          emailAlertConfig=self.messages.
-          GoogleCloudAiplatformV1beta1ModelMonitoringAlertConfigEmailAlertConfig(
-              userEmails=args.emails))
+      model_monitoring_job_to_update.modelMonitoringAlertConfig = api_util.GetMessage(
+          'ModelMonitoringAlertConfig', self._version)(
+              emailAlertConfig=api_util.GetMessage(
+                  'ModelMonitoringAlertConfigEmailAlertConfig', self._version)(
+                      userEmails=args.emails))
       update_mask.append('model_monitoring_alert_config')
 
     # sampling rate
     if args.prediction_sampling_rate:
-      model_monitoring_job_to_update.loggingSamplingStrategy = self.messages.GoogleCloudAiplatformV1beta1SamplingStrategy(
-          randomSampleConfig=self.messages
-          .GoogleCloudAiplatformV1beta1SamplingStrategyRandomSampleConfig(
-              sampleRate=args.prediction_sampling_rate))
+      model_monitoring_job_to_update.loggingSamplingStrategy = api_util.GetMessage(
+          'SamplingStrategy', self._version)(
+              randomSampleConfig=api_util.GetMessage(
+                  'SamplingStrategyRandomSampleConfig', self._version)(
+                      sampleRate=args.prediction_sampling_rate))
       update_mask.append('logging_sampling_strategy')
 
     # schedule
     if args.monitoring_frequency:
-      model_monitoring_job_to_update.modelDeploymentMonitoringScheduleConfig = self.messages.GoogleCloudAiplatformV1beta1ModelDeploymentMonitoringScheduleConfig(
-          monitorInterval='{}s'.format(
-              six.text_type(3600 * int(args.monitoring_frequency))))
+      model_monitoring_job_to_update.modelDeploymentMonitoringScheduleConfig = api_util.GetMessage(
+          'ModelDeploymentMonitoringScheduleConfig', self._version)(
+              monitorInterval='{}s'.format(
+                  six.text_type(3600 * int(args.monitoring_frequency))))
       update_mask.append('model_deployment_monitoring_schedule_config')
 
     if args.analysis_instance_schema:
@@ -402,10 +435,22 @@ class ModelMonitoringJobsClient(object):
     if not update_mask:
       raise errors.NoFieldsSpecifiedError('No updates requested.')
 
-    req = self.messages.AiplatformProjectsLocationsModelDeploymentMonitoringJobsPatchRequest(
-        name=model_monitoring_job_ref.RelativeName(),
-        googleCloudAiplatformV1beta1ModelDeploymentMonitoringJob=model_monitoring_job_to_update,
-        updateMask=','.join(update_mask))
+    if self._version == constants.ALPHA_VERSION:
+      req = self.messages.AiplatformProjectsLocationsModelDeploymentMonitoringJobsPatchRequest(
+          name=model_monitoring_job_ref.RelativeName(),
+          googleCloudAiplatformV1alpha1ModelDeploymentMonitoringJob=model_monitoring_job_to_update,
+          updateMask=','.join(update_mask))
+    elif self._version == constants.BETA_VERSION:
+      req = self.messages.AiplatformProjectsLocationsModelDeploymentMonitoringJobsPatchRequest(
+          name=model_monitoring_job_ref.RelativeName(),
+          googleCloudAiplatformV1beta1ModelDeploymentMonitoringJob=model_monitoring_job_to_update,
+          updateMask=','.join(update_mask))
+    else:
+      req = self.messages.AiplatformProjectsLocationsModelDeploymentMonitoringJobsPatchRequest(
+          name=model_monitoring_job_ref.RelativeName(),
+          googleCloudAiplatformV1ModelDeploymentMonitoringJob=model_monitoring_job_to_update,
+          updateMask=','.join(update_mask))
+
     return self._service.Patch(req)
 
   def Get(self, model_monitoring_job_ref):

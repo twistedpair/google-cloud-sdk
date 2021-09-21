@@ -28,7 +28,7 @@ properties:
   cacheKeyPolicy:
     description: |-
       Defines the request parameters that contribute to the cache key.
-    $ref: CacheKeyPolicy.yaml
+    $ref: CDNPolicyCacheKeyPolicy.yaml
   cacheMode:
     description: |-
       Cache modes allow users to control the behaviour of the cache, what
@@ -100,19 +100,21 @@ properties:
       be enabled to configure negativeCachingPolicy. - Omitting the policy and
       leaving negativeCaching enabled will use the default TTLs for each status
       code, defined in negativeCaching. - TTLs must be >= 0 (where 0 is "always
-      revalidate") and <= 86400s (1 day) Note that when specifying an explicit
-      negativeCachingPolicy, you should take care to specify a cache TTL for all
-      response codes that you wish to cache. The CDNPolicy will not apply any
-      default negative caching when a policy exists.
+      revalidate") and <= 86400s (1 day) Only HTTP redirection (3xx), client
+      error (4xx), and server error (5xx) status codes may be set. Note that
+      when specifying an explicit negativeCachingPolicy, you should take care to
+      specify a cache TTL for all response codes that you wish to cache. The
+      CDNPolicy will not apply any default negative caching when a policy
+      exists.
     $ref: NegativeCachingPolicyValue.yaml
   signedRequestKeyset:
     description: |-
       The EdgeCacheKeyset containing the set of public keys used to validate
-      signed requests at the edge. For example, the following are both valid
-      URLs to an EdgeCacheKeyset resource: - netw
-      orkservices/v1alpha1/projects/project/global/edgeCacheKeysets/yourKeyset -
-      /global/edgeCacheKeysets/yourKeyset signedRequestMode must be set to a
-      value other than DISABLED when a keyset is provided.
+      signed requests at the edge. The following are both valid paths to an
+      EdgeCacheKeyset resource: *
+      projects/project/locations/global/edgeCacheKeysets/yourKeyset * yourKeyset
+      signedRequestMode must be set to a value other than DISABLED when a keyset
+      is provided.
     type: string
   signedRequestMode:
     description: |-

@@ -130,10 +130,6 @@ class Binding(_messages.Message):
   role = _messages.StringField(3)
 
 
-class CancelOperationRequest(_messages.Message):
-  r"""The request message for Operations.CancelOperation."""
-
-
 class Cluster(_messages.Message):
   r"""A cluster in a private cloud.
 
@@ -305,19 +301,76 @@ class Expr(_messages.Message):
 
 
 class Hcx(_messages.Message):
-  r"""Describes HCX appliance.
+  r"""Details about a HCX Cloud Manager appliance.
+
+  Enums:
+    StateValueValuesEnum: Output only. The state of the appliance.
 
   Fields:
     externalIp: External IP address of the appliance.
     fdqn: Fully qualified domain name of the appliance.
+    fqdn: Fully qualified domain name of the appliance.
     internalIp: Internal IP address of the appliance.
+    state: Output only. The state of the appliance.
     version: Version of the appliance.
   """
 
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the appliance.
+
+    Values:
+      STATE_UNSPECIFIED: Unspecified appliance state. This is the default
+        value.
+      ACTIVE: The appliance is operational and can be used.
+      CREATING: The appliance is being deployed.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    CREATING = 2
+
   externalIp = _messages.StringField(1)
   fdqn = _messages.StringField(2)
-  internalIp = _messages.StringField(3)
-  version = _messages.StringField(4)
+  fqdn = _messages.StringField(3)
+  internalIp = _messages.StringField(4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
+  version = _messages.StringField(6)
+
+
+class HcxActivationKey(_messages.Message):
+  r"""HCX activation key.
+
+  Enums:
+    StateValueValuesEnum: Output only. State of HCX activation key.
+
+  Fields:
+    activationKey: Output only. HCX activation key.
+    createTime: Output only. Creation time of HCX activation key.
+    name: Output only. The resource name of this HcxActivationKey. Resource
+      names are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/us-west1/privateClouds/my-
+      cloud/hcxActivationKeys/my-key`
+    state: Output only. State of HCX activation key.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. State of HCX activation key.
+
+    Values:
+      STATE_UNSPECIFIED: Unspecified state.
+      AVAILABLE: State of a newly generated activation key.
+      CONSUMED: State of key when it has been used to activate HCX appliance.
+      CREATING: State of key when it is being created.
+    """
+    STATE_UNSPECIFIED = 0
+    AVAILABLE = 1
+    CONSUMED = 2
+    CREATING = 3
+
+  activationKey = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  name = _messages.StringField(3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
 
 
 class ListClustersResponse(_messages.Message):
@@ -335,6 +388,21 @@ class ListClustersResponse(_messages.Message):
   unreachable = _messages.StringField(3, repeated=True)
 
 
+class ListHcxActivationKeysResponse(_messages.Message):
+  r"""Response message for VmwareEngine.ListHcxActivationKeys
+
+  Fields:
+    hcxActivationKeys: List of HCX activation keys.
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    unreachable: Locations that could not be reached.
+  """
+
+  hcxActivationKeys = _messages.MessageField('HcxActivationKey', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
 class ListLocationsResponse(_messages.Message):
   r"""The response message for Locations.ListLocations.
 
@@ -346,6 +414,21 @@ class ListLocationsResponse(_messages.Message):
 
   locations = _messages.MessageField('Location', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+
+
+class ListNetworkPoliciesResponse(_messages.Message):
+  r"""Response message for VmwareEngine.ListNetworkPolicies
+
+  Fields:
+    networkPolicies: A list of network policies.
+    nextPageToken: A token, which can be send as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    unreachable: Locations that could not be reached.
+  """
+
+  networkPolicies = _messages.MessageField('NetworkPolicy', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListNodeTypesResponse(_messages.Message):
@@ -476,16 +559,13 @@ class ManagementCluster(_messages.Message):
 
   Fields:
     clusterId: Required. The user-provided identifier of the new `Cluster`.
-      The identifier must be 1-63 characters long, comply with [RFC
+      The identifier must meet the following requirements: * Only contains
+      1-63 alphanumeric characters and hyphens * Begins with an alphabetical
+      character * Ends with a non-hyphen character * Not formatted as a UUID *
+      Complies with [RFC
       1034](https://datatracker.ietf.org/doc/html/rfc1034){: .external}
-      (section 3.5), and not be formatted as a UUID. For example, a name that
-      is 1-63 characters long, matches the regular expression
-      `[a-z]([-a-z0-9]*[a-z0-9])?`, and otherwise complies with RFC 1034. This
-      regular expression describes a name where the first character is a
-      lowercase letter, and all following characters are a dash, lowercase
-      letter, or digit, except the last character, which isn't a dash.
-      @pattern (^[a-z]([-a-z0-9]*[a-z0-9])?$)(?<!(^[0-9a-f]{8}-[0-9a-f]{4}-[0-
-      9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$))
+      (section 3.5) @pattern (^[a-z]([-a-z0-9]*[a-z0-9])?$)(?<!(^[0-9a-f]{8}-[
+      0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$))
     nodeCount: Required. Number of nodes in this cluster.
     nodeTypeId: Required. The canonical identifier of node types (`NodeType`)
       in this cluster. For example: standard-72.
@@ -501,6 +581,11 @@ class NetworkConfig(_messages.Message):
   to be done.
 
   Fields:
+    externalIpAccess: True if vCenter and NSX can be accessed via internet;
+      false otherwise. FQDNs resolve to the allocated external IPs for private
+      cloud domain, but remain mapped to the internal IP within consumer
+      subnets. NAT is set up on NSX for external IP ingress traffic, and users
+      must manually configure NSX firewall to allow HTTPS traffic.
     managementCidr: Required. Management CIDR used by VMware management
       appliances.
     network: Required. The relative resource name of the consumer VPC network
@@ -513,9 +598,149 @@ class NetworkConfig(_messages.Message):
       `projects/{service_project_number}/global/networks/{network_id}`.
   """
 
-  managementCidr = _messages.StringField(1)
-  network = _messages.StringField(2)
-  serviceNetwork = _messages.StringField(3)
+  externalIpAccess = _messages.BooleanField(1)
+  managementCidr = _messages.StringField(2)
+  network = _messages.StringField(3)
+  serviceNetwork = _messages.StringField(4)
+
+
+class NetworkPolicy(_messages.Message):
+  r"""Represents a network policy resource. You can use a network policy to
+  enable or disable internet access and external IP access. Network policies
+  are associated with a VPC network, which span across regions. For a given
+  region, a network policy applies to all private clouds in the VPC network
+  associated with the policy.
+
+  Messages:
+    LabelsValue: Labels are a way to attach lightweight metadata to resources
+      for filtering and querying resource data. No more than 64 user labels
+      can be associated with each resource. Label keys and values can be no
+      longer than 63 characters, can only contain lowercase letters, numeric
+      characters, underscores and dashes, where label keys must start with a
+      letter and international characters are allowed. The empty string is a
+      valid value. Labels are set on creation and updated like any other
+      field. Specifically, to add a new label, you would need to provide all
+      of the existing labels along with the new label. If you only provide a
+      map with the new label, all of the old labels will be removed (probably
+      not what is desired).
+
+  Fields:
+    createTime: Output only. Creation time of this resource in RFC3339 text
+      format.
+    edgeServicesCidr: Required. IP address range in CIDR notation used to
+      create internet access and external IP access. An RFC 1918 CIDR block,
+      with a "/26" prefix, is required. The range cannot overlap with any
+      prefixes either in the consumer VPC network or in use by the private
+      clouds attached to that VPC network.
+    externalIp: Network service that allows External IP addresses to be
+      assigned to VMware workloads. This service can only be enabled when
+      `internet_access` is also enabled.
+    internetAccess: Network service that allows VMware workloads to access the
+      internet.
+    labels: Labels are a way to attach lightweight metadata to resources for
+      filtering and querying resource data. No more than 64 user labels can be
+      associated with each resource. Label keys and values can be no longer
+      than 63 characters, can only contain lowercase letters, numeric
+      characters, underscores and dashes, where label keys must start with a
+      letter and international characters are allowed. The empty string is a
+      valid value. Labels are set on creation and updated like any other
+      field. Specifically, to add a new label, you would need to provide all
+      of the existing labels along with the new label. If you only provide a
+      map with the new label, all of the old labels will be removed (probably
+      not what is desired).
+    name: Output only. The resource name of this network policy. Resource
+      names are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/us-central1/networkPolicies/my-network-
+      policy`
+    network: Required. Name of the network in the consumer project which is
+      peered or will be peered with the service network. Provide the network
+      name in the form of `projects/{project}/global/networks/{network}`,
+      where `{project}` is the project ID or project number of the project
+      containing the network. In case of shared VPC, use the project ID or
+      project number of the host project containing the shared VPC network.
+    updateTime: Output only. Last update time of this resource in RFC3339 text
+      format.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Labels are a way to attach lightweight metadata to resources for
+    filtering and querying resource data. No more than 64 user labels can be
+    associated with each resource. Label keys and values can be no longer than
+    63 characters, can only contain lowercase letters, numeric characters,
+    underscores and dashes, where label keys must start with a letter and
+    international characters are allowed. The empty string is a valid value.
+    Labels are set on creation and updated like any other field. Specifically,
+    to add a new label, you would need to provide all of the existing labels
+    along with the new label. If you only provide a map with the new label,
+    all of the old labels will be removed (probably not what is desired).
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  edgeServicesCidr = _messages.StringField(2)
+  externalIp = _messages.MessageField('NetworkService', 3)
+  internetAccess = _messages.MessageField('NetworkService', 4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  network = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
+
+
+class NetworkService(_messages.Message):
+  r"""Represents a network service that is managed by a `NetworkPolicy`
+  resource. A network service provides a way to control an aspect of external
+  access to VMware workloads. For example, whether the VMware workloads in the
+  private clouds governed by a network policy can access or be accessed from
+  the internet.
+
+  Enums:
+    StateValueValuesEnum: Output only. State of the service. New values may be
+      added to this enum when appropriate.
+
+  Fields:
+    enabled: True if the service is enabled; false otherwise.
+    state: Output only. State of the service. New values may be added to this
+      enum when appropriate.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. State of the service. New values may be added to this
+    enum when appropriate.
+
+    Values:
+      STATE_UNSPECIFIED: Unspecified service state. This is the default value.
+      UNPROVISIONED: Service is not provisioned.
+      RECONCILING: Service is in the process of being
+        provisioned/deprovisioned.
+      ACTIVE: Service is active.
+    """
+    STATE_UNSPECIFIED = 0
+    UNPROVISIONED = 1
+    RECONCILING = 2
+    ACTIVE = 3
+
+  enabled = _messages.BooleanField(1)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
 
 
 class NodeType(_messages.Message):
@@ -546,19 +771,39 @@ class NodeType(_messages.Message):
 
 
 class Nsx(_messages.Message):
-  r"""Describes NSX appliance.
+  r"""Details about a NSX Manager appliance.
+
+  Enums:
+    StateValueValuesEnum: Output only. The state of the appliance.
 
   Fields:
     externalIp: External IP address of the appliance.
     fdqn: Fully qualified domain name of the appliance.
+    fqdn: Fully qualified domain name of the appliance.
     internalIp: Internal IP address of the appliance.
+    state: Output only. The state of the appliance.
     version: Version of the appliance.
   """
 
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the appliance.
+
+    Values:
+      STATE_UNSPECIFIED: Unspecified appliance state. This is the default
+        value.
+      ACTIVE: The appliance is operational and can be used.
+      CREATING: The appliance is being deployed.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    CREATING = 2
+
   externalIp = _messages.StringField(1)
   fdqn = _messages.StringField(2)
-  internalIp = _messages.StringField(3)
-  version = _messages.StringField(4)
+  fqdn = _messages.StringField(3)
+  internalIp = _messages.StringField(4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
+  version = _messages.StringField(6)
 
 
 class Operation(_messages.Message):
@@ -1109,19 +1354,39 @@ class UndeletePrivateCloudRequest(_messages.Message):
 
 
 class Vcenter(_messages.Message):
-  r"""Describes vCenter appliance.
+  r"""Details about a vCenter Server management appliance.
+
+  Enums:
+    StateValueValuesEnum: Output only. The state of the appliance.
 
   Fields:
     externalIp: External IP address of the appliance.
     fdqn: Fully qualified domain name of the appliance.
+    fqdn: Fully qualified domain name of the appliance.
     internalIp: Internal IP address of the appliance.
+    state: Output only. The state of the appliance.
     version: Version of the appliance.
   """
 
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the appliance.
+
+    Values:
+      STATE_UNSPECIFIED: Unspecified appliance state. This is the default
+        value.
+      ACTIVE: The appliance is operational and can be used.
+      CREATING: The appliance is being deployed.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    CREATING = 2
+
   externalIp = _messages.StringField(1)
   fdqn = _messages.StringField(2)
-  internalIp = _messages.StringField(3)
-  version = _messages.StringField(4)
+  fqdn = _messages.StringField(3)
+  internalIp = _messages.StringField(4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
+  version = _messages.StringField(6)
 
 
 class VmwareengineProjectsLocationsGetRequest(_messages.Message):
@@ -1154,6 +1419,72 @@ class VmwareengineProjectsLocationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class VmwareengineProjectsLocationsNetworkPoliciesCreateRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsNetworkPoliciesCreateRequest object.
+
+  Fields:
+    networkPolicy: A NetworkPolicy resource to be passed as the request body.
+    networkPolicyId: Required. The user-provided identifier of the network
+      policy to be created. This identifier must be unique within parent
+      `projects/{my-project}/locations/{us-central1}/networkPolicies` and
+      becomes the final token in the name URI. The identifier must meet the
+      following requirements: * Only contains 1-63 alphanumeric characters and
+      hyphens * Begins with an alphabetical character * Ends with a non-hyphen
+      character * Not formatted as a UUID * Complies with [RFC
+      1034](https://datatracker.ietf.org/doc/html/rfc1034){: .external}
+      (section 3.5) @pattern (^[a-z]([-a-z0-9]*[a-z0-9])?$)(?<!(^[0-9a-f]{8}-[
+      0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$))
+    parent: Required. The resource name of the location (region) to create the
+      new network policy in. Resource names are schemeless URIs that follow
+      the conventions in https://cloud.google.com/apis/design/resource_names.
+      For example: `projects/my-project/locations/us-central1`
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server
+      guarantees that a request doesn't result in creation of duplicate
+      commitments for at least 60 minutes. For example, consider a situation
+      where you make an initial request and the request times out. If you make
+      the request again with the same request ID, the server can check if
+      original operation with the same request ID was received, and if so,
+      will ignore the second request. This prevents clients from accidentally
+      creating duplicate commitments. The request ID must be a valid UUID with
+      the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  networkPolicy = _messages.MessageField('NetworkPolicy', 1)
+  networkPolicyId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class VmwareengineProjectsLocationsNetworkPoliciesDeleteRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsNetworkPoliciesDeleteRequest object.
+
+  Fields:
+    name: Required. The resource name of the network policy to delete.
+      Resource names are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/us-central1/networkPolicies/my-network-
+      policy`
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server
+      guarantees that a request doesn't result in creation of duplicate
+      commitments for at least 60 minutes. For example, consider a situation
+      where you make an initial request and the request times out. If you make
+      the request again with the same request ID, the server can check if
+      original operation with the same request ID was received, and if so,
+      will ignore the second request. This prevents clients from accidentally
+      creating duplicate commitments. The request ID must be a valid UUID with
+      the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
 class VmwareengineProjectsLocationsNetworkPoliciesGetIamPolicyRequest(_messages.Message):
   r"""A VmwareengineProjectsLocationsNetworkPoliciesGetIamPolicyRequest
   object.
@@ -1174,6 +1505,95 @@ class VmwareengineProjectsLocationsNetworkPoliciesGetIamPolicyRequest(_messages.
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   resource = _messages.StringField(2, required=True)
+
+
+class VmwareengineProjectsLocationsNetworkPoliciesGetRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsNetworkPoliciesGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the network policy to retrieve.
+      Resource names are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/us-central1/networkPolicies/my-network-
+      policy`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class VmwareengineProjectsLocationsNetworkPoliciesListRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsNetworkPoliciesListRequest object.
+
+  Fields:
+    filter: A filter expression that matches resources returned in the
+      response. The expression must specify the field name, a comparison
+      operator, and the value that you want to use for filtering. The value
+      must be a string, a number, or a boolean. The comparison operator must
+      be `=`, `!=`, `>`, or `<`. For example, if you are filtering a list of
+      network policies, you can exclude the ones named `example-policy` by
+      specifying `name != "example-policy"`. To filter on multiple
+      expressions, provide each separate expression within parentheses. For
+      example: ``` (name = "example-policy") (createTime >
+      "2021-04-12T08:15:10.40Z") ``` By default, each expression is an `AND`
+      expression. However, you can include `AND` and `OR` expressions
+      explicitly. For example: ``` (name = "example-policy-1") AND (createTime
+      > "2021-04-12T08:15:10.40Z") OR (name = "example-policy-2") ```
+    orderBy: Sorts list results by a certain order. By default, returned
+      results are ordered by `name` in ascending order. You can also sort
+      results in descending order based on the `name` value using
+      `orderBy="name desc"`. Currently, only ordering by `name` is supported.
+    pageSize: The maximum number of network policies to return in one page.
+      The service may return fewer than this value. The maximum value is 25.
+    pageToken: A page token, received from a previous `ListNetworkPolicies`
+      call. Provide this to retrieve the subsequent page. When paginating, all
+      other parameters provided to `ListNetworkPolicies` must match the call
+      that provided the page token.
+    parent: Required. The resource name of the location (region) to query for
+      network policies. Resource names are schemeless URIs that follow the
+      conventions in https://cloud.google.com/apis/design/resource_names. For
+      example: `projects/my-project/locations/us-central1`
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class VmwareengineProjectsLocationsNetworkPoliciesPatchRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsNetworkPoliciesPatchRequest object.
+
+  Fields:
+    name: Output only. The resource name of this network policy. Resource
+      names are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/us-central1/networkPolicies/my-network-
+      policy`
+    networkPolicy: A NetworkPolicy resource to be passed as the request body.
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server
+      guarantees that a request doesn't result in creation of duplicate
+      commitments for at least 60 minutes. For example, consider a situation
+      where you make an initial request and the request times out. If you make
+      the request again with the same request ID, the server can check if
+      original operation with the same request ID was received, and if so,
+      will ignore the second request. This prevents clients from accidentally
+      creating duplicate commitments. The request ID must be a valid UUID with
+      the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    updateMask: Required. Field mask is used to specify the fields to be
+      overwritten in the `NetworkPolicy` resource by the update. The fields
+      specified in the `update_mask` are relative to the resource, not the
+      full request. A field will be overwritten if it is in the mask. If the
+      user does not provide a mask then all fields will be overwritten.
+  """
+
+  name = _messages.StringField(1, required=True)
+  networkPolicy = _messages.MessageField('NetworkPolicy', 2)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
 
 
 class VmwareengineProjectsLocationsNetworkPoliciesSetIamPolicyRequest(_messages.Message):
@@ -1308,19 +1728,6 @@ class VmwareengineProjectsLocationsNodeTypesTestIamPermissionsRequest(_messages.
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
-class VmwareengineProjectsLocationsOperationsCancelRequest(_messages.Message):
-  r"""A VmwareengineProjectsLocationsOperationsCancelRequest object.
-
-  Fields:
-    cancelOperationRequest: A CancelOperationRequest resource to be passed as
-      the request body.
-    name: The name of the operation resource to be cancelled.
-  """
-
-  cancelOperationRequest = _messages.MessageField('CancelOperationRequest', 1)
-  name = _messages.StringField(2, required=True)
-
-
 class VmwareengineProjectsLocationsOperationsDeleteRequest(_messages.Message):
   r"""A VmwareengineProjectsLocationsOperationsDeleteRequest object.
 
@@ -1365,17 +1772,13 @@ class VmwareengineProjectsLocationsPrivateCloudsClustersCreateRequest(_messages.
     cluster: A Cluster resource to be passed as the request body.
     clusterId: Required. The user-provided identifier of the new `Cluster`.
       This identifier must be unique among clusters within the parent and
-      becomes the final token in the name URI. The identifier must be 1-63
-      characters long, comply with [RFC
+      becomes the final token in the name URI. The identifier must meet the
+      following requirements: * Only contains 1-63 alphanumeric characters and
+      hyphens * Begins with an alphabetical character * Ends with a non-hyphen
+      character * Not formatted as a UUID * Complies with [RFC
       1034](https://datatracker.ietf.org/doc/html/rfc1034){: .external}
-      (section 3.5), and not be formatted as a UUID. For example, a name that
-      is 1-63 characters long, matches the regular expression
-      `[a-z]([-a-z0-9]*[a-z0-9])?`, and otherwise complies with RFC 1034. This
-      regular expression describes a name where the first character is a
-      lowercase letter, and all following characters are a dash, lowercase
-      letter, or digit, except the last character, which isn't a dash.
-      @pattern (^[a-z]([-a-z0-9]*[a-z0-9])?$)(?<!(^[0-9a-f]{8}-[0-9a-f]{4}-[0-
-      9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$))
+      (section 3.5) @pattern (^[a-z]([-a-z0-9]*[a-z0-9])?$)(?<!(^[0-9a-f]{8}-[
+      0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$))
     parent: Required. The resource name of the private cloud to create a new
       cluster in. Resource names are schemeless URIs that follow the
       conventions in https://cloud.google.com/apis/design/resource_names. For
@@ -1568,16 +1971,13 @@ class VmwareengineProjectsLocationsPrivateCloudsCreateRequest(_messages.Message)
     privateCloudId: Required. The user-provided identifier of the private
       cloud to be created. This identifier must be unique among each
       `PrivateCloud` within the parent and becomes the final token in the name
-      URI. The identifier must be 1-63 characters long, comply with [RFC
+      URI. The identifier must meet the following requirements: * Only
+      contains 1-63 alphanumeric characters and hyphens * Begins with an
+      alphabetical character * Ends with a non-hyphen character * Not
+      formatted as a UUID * Complies with [RFC
       1034](https://datatracker.ietf.org/doc/html/rfc1034){: .external}
-      (section 3.5), and not be formatted as a UUID. For example, a name that
-      is 1-63 characters long, matches the regular expression
-      `[a-z]([-a-z0-9]*[a-z0-9])?`, and otherwise complies with RFC 1034. This
-      regular expression describes a name where the first character is a
-      lowercase letter, and all following characters are a dash, lowercase
-      letter, or digit, except the last character, which isn't a dash.
-      @pattern (^[a-z]([-a-z0-9]*[a-z0-9])?$)(?<!(^[0-9a-f]{8}-[0-9a-f]{4}-[0-
-      9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$))
+      (section 3.5) @pattern (^[a-z]([-a-z0-9]*[a-z0-9])?$)(?<!(^[0-9a-f]{8}-[
+      0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$))
     requestId: Optional. The request ID must be a valid UUID with the
       exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
@@ -1596,6 +1996,13 @@ class VmwareengineProjectsLocationsPrivateCloudsDeleteRequest(_messages.Message)
   r"""A VmwareengineProjectsLocationsPrivateCloudsDeleteRequest object.
 
   Fields:
+    delayHours: Optional. Time delay of the deletion specified in hours. The
+      default value is `3`. Specifying a non-zero value for this field marks
+      the resource as `DELETED` and sets `expire_time` to the planned deletion
+      time. Deletion can be stopped before `expire_time` elapses using
+      VmwareEngine.UndeletePrivateCloud. Specifying a value of `0` for this
+      field instead begins the deletion process and ceases billing
+      immediately.
     force: Optional. If set to true, cascade delete is enabled and all
       children of this private cloud resource are also deleted. When this flag
       is set to false, the private cloud will not be deleted if there are any
@@ -1610,9 +2017,10 @@ class VmwareengineProjectsLocationsPrivateCloudsDeleteRequest(_messages.Message)
       (00000000-0000-0000-0000-000000000000).
   """
 
-  force = _messages.BooleanField(1)
-  name = _messages.StringField(2, required=True)
-  requestId = _messages.StringField(3)
+  delayHours = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  force = _messages.BooleanField(2)
+  name = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
 
 
 class VmwareengineProjectsLocationsPrivateCloudsGetIamPolicyRequest(_messages.Message):
@@ -1649,6 +2057,47 @@ class VmwareengineProjectsLocationsPrivateCloudsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class VmwareengineProjectsLocationsPrivateCloudsHcxActivationKeysCreateRequest(_messages.Message):
+  r"""A
+  VmwareengineProjectsLocationsPrivateCloudsHcxActivationKeysCreateRequest
+  object.
+
+  Fields:
+    hcxActivationKey: A HcxActivationKey resource to be passed as the request
+      body.
+    hcxActivationKeyId: Required. The user-provided identifier of the
+      `HcxActivationKey` to be created. This identifier must be unique among
+      `HcxActivationKey` resources within the parent and becomes the final
+      token in the name URI. The identifier must meet the following
+      requirements: * Only contains 1-63 alphanumeric characters and hyphens *
+      Begins with an alphabetical character * Ends with a non-hyphen character
+      * Not formatted as a UUID * Complies with [RFC
+      1034](https://datatracker.ietf.org/doc/html/rfc1034){: .external}
+      (section 3.5) @pattern (^[a-z]([-a-z0-9]*[a-z0-9])?$)(?<!(^[0-9a-f]{8}-[
+      0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$))
+    parent: Required. The resource name of the private cloud to create the key
+      for. Resource names are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/us-central1/privateClouds/my-cloud`
+    requestId: A request ID to identify requests. Specify a unique request ID
+      so that if you must retry your request, the server will know to ignore
+      the request if it has already been completed. The server guarantees that
+      a request doesn't result in creation of duplicate commitments for at
+      least 60 minutes. For example, consider a situation where you make an
+      initial request and the request times out. If you make the request again
+      with the same request ID, the server can check if original operation
+      with the same request ID was received, and if so, will ignore the second
+      request. This prevents clients from accidentally creating duplicate
+      commitments. The request ID must be a valid UUID with the exception that
+      zero UUID is not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  hcxActivationKey = _messages.MessageField('HcxActivationKey', 1)
+  hcxActivationKeyId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
 class VmwareengineProjectsLocationsPrivateCloudsHcxActivationKeysGetIamPolicyRequest(_messages.Message):
   r"""A VmwareengineProjectsLocationsPrivateCloudsHcxActivationKeysGetIamPolic
   yRequest object.
@@ -1669,6 +2118,30 @@ class VmwareengineProjectsLocationsPrivateCloudsHcxActivationKeysGetIamPolicyReq
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   resource = _messages.StringField(2, required=True)
+
+
+class VmwareengineProjectsLocationsPrivateCloudsHcxActivationKeysListRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsPrivateCloudsHcxActivationKeysListRequest
+  object.
+
+  Fields:
+    pageSize: The maximum number of autoscale policies to return in one page.
+      The service may return fewer than this value. The maximum value is
+      coerced to 50.
+    pageToken: A page token, received from a previous `ListHcxActivationKeys`
+      call. Provide this to retrieve the subsequent page. When paginating, all
+      other parameters provided to `ListHcxActivationKeys` must match the call
+      that provided the page token.
+    parent: Required. The resource name of the private cloud to be queried for
+      HCX activation keys. Resource names are schemeless URIs that follow the
+      conventions in https://cloud.google.com/apis/design/resource_names. For
+      example: `projects/my-project/locations/us-central1/privateClouds/my-
+      cloud`
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class VmwareengineProjectsLocationsPrivateCloudsHcxActivationKeysSetIamPolicyRequest(_messages.Message):

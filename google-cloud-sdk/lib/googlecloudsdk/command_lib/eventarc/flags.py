@@ -23,6 +23,7 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
+from googlecloudsdk.command_lib.util.concepts import presentation_specs
 from googlecloudsdk.core import properties
 
 _IAM_API_VERSION = 'v1'
@@ -45,9 +46,34 @@ def TriggerAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(name='trigger')
 
 
+def ChannelAttributeConfig():
+  """Builds and AttributeConfig for the channel resrouce."""
+  return concepts.ResourceParameterAttributeConfig(name='channel')
+
+
 def TransportTopicAttributeConfig():
   """Builds an AttributeConfig for the transport topic resource."""
   return concepts.ResourceParameterAttributeConfig(name='transport-topic')
+
+
+def TriggerResourceSpec():
+  """Builds an ResourceSpec for trigger resource."""
+  return concepts.ResourceSpec(
+      'eventarc.projects.locations.triggers',
+      resource_name='trigger',
+      triggersId=TriggerAttributeConfig(),
+      locationsId=LocationAttributeConfig(),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
+
+
+def ChannelResourceSpec():
+  """Builds an ResourceSpac for channel resource."""
+  return concepts.ResourceSpec(
+      'eventarc.projects.locations.channels',
+      resource_name='channel',
+      channelsId=ChannelAttributeConfig(),
+      locationsId=LocationAttributeConfig(),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
 
 
 def AddTransportTopicResourceArg(parser, required=False):
@@ -83,15 +109,42 @@ def AddLocationResourceArg(parser, group_help_text, required=False):
 
 def AddTriggerResourceArg(parser, group_help_text, required=False):
   """Adds a resource argument for an Eventarc trigger."""
-  resource_spec = concepts.ResourceSpec(
-      'eventarc.projects.locations.triggers',
-      resource_name='trigger',
-      triggersId=TriggerAttributeConfig(),
-      locationsId=LocationAttributeConfig(),
-      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
-  concept_parser = concept_parsers.ConceptParser.ForResource(
-      'trigger', resource_spec, group_help_text, required=required)
-  concept_parser.AddToParser(parser)
+  concept_parsers.ConceptParser.ForResource(
+      'trigger', TriggerResourceSpec(), group_help_text,
+      required=required).AddToParser(parser)
+
+
+def AddCreateTrigerResourceArgs(parser, release_track):
+  """Adds trigger and channel arguments to for trigger creation."""
+  if release_track == base.ReleaseTrack.GA:
+    concept_parsers.ConceptParser(
+        [
+            presentation_specs.ResourcePresentationSpec(
+                'trigger',
+                TriggerResourceSpec(),
+                'The trigger to create.',
+                required=True),
+            presentation_specs.ResourcePresentationSpec(
+                '--channel',
+                ChannelResourceSpec(),
+                'The channel to use in the trigger.',
+                flag_name_overrides={'location': ''},
+                hidden=True)
+        ],
+        # This configures the fallthrough from the channel 's location to
+        # the primary flag for the trigger's location.
+        command_level_fallthroughs={
+            '--channel.location': ['trigger.location']
+        }).AddToParser(parser)
+  else:
+    AddTriggerResourceArg(parser, 'The trigger to create.', required=True)
+
+
+def AddChannelResourceArg(parser, group_help_text, required=False):
+  """Adds a resource argument for an Eventarc channel."""
+  concept_parsers.ConceptParser.ForResource(
+      'channel', ChannelResourceSpec(), group_help_text,
+      required=required).AddToParser(parser)
 
 
 def AddServiceAccountArg(parser, required=False):
@@ -136,6 +189,13 @@ def GetEventFiltersArg(args, release_track):
     return args.event_filters
   else:
     return args.matching_criteria
+
+
+def GetChannelArg(args, release_track):
+  """Gets the channel from the arguments."""
+  if release_track == base.ReleaseTrack.GA:
+    return args.CONCEPTS.channel.Parse()
+  return None
 
 
 def AddCreateDestinationArgs(parser, release_track, required=False):
@@ -370,3 +430,12 @@ def AddServiceNameArg(parser, required=False):
       '--service-name',
       required=required,
       help='The value of the serviceName CloudEvents attribute.')
+
+
+# TODO(b/188207212): Switch to resource argument when provider discovery is done
+def AddProviderArg(parser, required=False):
+  """Adds and argument to for the 3P provider."""
+  parser.add_argument(
+      '--provider',
+      required=required,
+      help='Flag for specifying the provider id associated with the channel.')

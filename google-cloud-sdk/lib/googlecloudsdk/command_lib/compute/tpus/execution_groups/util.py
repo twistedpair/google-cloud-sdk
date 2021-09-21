@@ -637,7 +637,7 @@ class SSH(object):
                                   instance, host_keys)
 
     public_key = ssh_helper.keys.GetPublicKey().ToEntry(include_comment=True)
-    user, use_oslogin = ssh.CheckForOsloginAndGetUser(
+    oslogin_state = ssh.GetOsloginState(
         instance,
         ssh_helper.GetProject(
             self.client, properties.VALUES.core.project.Get(required=True)),
@@ -646,9 +646,10 @@ class SSH(object):
         None,
         self.release_track,
         username_requested=False)
+    user = oslogin_state.user
 
     remote = ssh.Remote(external_nat, user)
-    if not use_oslogin:
+    if not oslogin_state.oslogin_enabled:
       self._WaitForSSHKeysToPropagate(ssh_helper, remote, identity_file, user,
                                       instance, options)
 

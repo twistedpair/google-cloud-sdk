@@ -161,9 +161,7 @@ def GetPipelineResultsPathInGCS(artifacts_path):
     A string representing the full Cloud Storage path to the pipeline results
     YAML file.
   """
-  # TODO(b/197157657): Update this path once we have a consistent "last
-  # executed kpt results YAML" path.
-  return '{0}/results.yaml'.format(artifacts_path)
+  return '{0}/results/results.yaml'.format(artifacts_path)
 
 
 def PrintKptApplyResultsError(artifacts_folder,
@@ -203,21 +201,33 @@ def PrintKptApplyResultsError(artifacts_folder,
       if (event.get('type') == action and
           event.get('eventType') in ('resourceDeleted', 'resourceFailed'))
   ]
+  # Kpt sometimes emits generic errors during apply that are not tied to a
+  # specific resource. In this case, both `eventType` and `type` are "error".
+  generic_errors = [
+      event for event in results_data
+      if event.get('type') == 'error' and event.get('eventType') == 'error'
+  ]
 
+  if generic_errors:
+    log.error('[kpt] Encountered errors:')
+    for event in generic_errors:
+      log.status.Print('- "{}"\n'.format(event.get('error')))
   if resource_failures:
     num_resource_failures = len(resource_failures)
     log.error('[kpt] {0} {1} failed to {2}:'.format(
         num_resource_failures,
-        text.Pluralize(len(resource_failures), 'resource'),
-        action))
+        text.Pluralize(len(resource_failures), 'resource'), action))
     for failure_event in resource_failures[:max_resource_errors]:
       log.status.Print('- "{0}" ({1}) failed:\n    "{2}"\n'.format(
           failure_event.get('name'), failure_event.get('kind'),
           failure_event.get('error')))
     if num_resource_failures > max_resource_errors:
       log.status.Print('Some errors were truncated.')
+
+  found_error = bool(resource_failures) or bool(generic_errors)
+  if found_error:
     log.status.Print('See {0} for details.'.format(results_path))
-  return bool(resource_failures)
+  return found_error
 
 
 def PrintKptPipelineResultsError(artifacts_folder):
@@ -264,9 +274,11 @@ def PrintKptPipelineResultsError(artifacts_folder):
     if exit_code == 0 or not (error_messages or stderr):
       continue
 
+    if not printed_error:
+      log.error('Pipeline build failed:')
+      printed_error = True
     log.status.Print('- Function with image "{}" exited with code {}'.format(
         image, exit_code or '(Unknown)'))
-    printed_error = True
     if error_messages:
       for msg in error_messages:
         log.status.Print('  - Error: "{}"'.format(msg))
@@ -280,19 +292,20 @@ def PrintKptPipelineResultsError(artifacts_folder):
   return printed_error
 
 
-def PrintApplyRunError(apply_results):
+def PrintApplyRunError(revision):
   """Prints error details for a failed apply run.
 
   Attempts to display kpt-specific errors, and falls back to displaying Cloud
   Build logs if kpt errors are inaccessible.
 
   Args:
-    apply_results: ApplyResults proto, the apply results from the failed
-      revision.
+    revision: a Revision proto, the failed revision.
   """
+  apply_results = revision.applyResults
   kpt_error_found = PrintKptApplyResultsError(
       apply_results.artifacts, action='apply')
   if not kpt_error_found:
+    log.error(revision.stateDetail)
     PrintCloudBuildResults(apply_results.logs, apply_results.build)
 
 
@@ -312,18 +325,19 @@ def PrintDeleteRunError(delete_results):
     PrintCloudBuildResults(delete_results.logs, delete_results.build)
 
 
-def PrintPipelineRunError(pipeline_results):
+def PrintPipelineRunError(revision):
   """Prints error details for a failed pipeline run.
 
   Attempts to display kpt-specific errors, and falls back to displaying Cloud
   Build logs if kpt errors are inaccessible.
 
   Args:
-    pipeline_results: PipelineResults proto, the apply results from the failed
-      revision.
+    revision: a Revision proto, the failed revision.
   """
+  pipeline_results = revision.pipelineResults
   kpt_error_found = PrintKptPipelineResultsError(pipeline_results.artifacts)
   if not kpt_error_found:
+    log.error(revision.stateDetail)
     PrintCloudBuildResults(pipeline_results.logs, pipeline_results.build)
 
 
@@ -338,13 +352,13 @@ def RevisionFailed(revision_ref):
   """
   messages = blueprints_util.GetMessagesModule()
 
-  log.error(revision_ref.stateDetail)
-
   revision_error_code = revision_ref.errorCode
   if revision_error_code == messages.Revision.ErrorCodeValueValuesEnum.PIPELINE_BUILD_RUN_FAILED:
-    PrintPipelineRunError(revision_ref.pipelineResults)
+    PrintPipelineRunError(revision_ref)
   elif revision_error_code == messages.Revision.ErrorCodeValueValuesEnum.APPLY_BUILD_RUN_FAILED:
-    PrintApplyRunError(revision_ref.applyResults)
+    PrintApplyRunError(revision_ref)
+  else:
+    log.error(revision_ref.stateDetail)
 
 
 def DeploymentFailed(deployment_ref):
@@ -370,3 +384,24 @@ def DeploymentFailed(deployment_ref):
     RevisionFailed(revision_ref)
   elif deployment_error_code == messages.Deployment.ErrorCodeValueValuesEnum.DELETE_BUILD_RUN_FAILED:
     PrintDeleteRunError(deployment_ref.deleteResults)
+
+
+def PreviewFailed(preview_ref):
+  """Displays troubleshooting information to the user.
+
+  This parses the fields of a preview in order to figure out what to output,
+  e.g. instructions for how to continue, links, or log files themselves.
+
+  This function is intended on preview results of a failed preview operation.
+
+  Args:
+    preview_ref: a messages.Preview resource.
+  """
+
+  messages = blueprints_util.GetMessagesModule()
+  preview_error_code = preview_ref.errorCode
+
+  log.error(preview_ref.stateDetail)
+
+  if preview_error_code == messages.Preview.ErrorCodeValueValuesEnum.PIPELINE_BUILD_RUN_FAILED:
+    PrintPipelineRunError(preview_ref)

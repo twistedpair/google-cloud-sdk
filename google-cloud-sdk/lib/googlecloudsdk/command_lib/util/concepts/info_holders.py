@@ -121,9 +121,16 @@ class ConceptInfo(six.with_metaclass(abc.ABCMeta, object)):
 class ResourceInfo(ConceptInfo):
   """Holds information for a resource argument."""
 
-  def __init__(self, presentation_name, concept_spec, group_help,
-               attribute_to_args_map, fallthroughs_map, required=False,
-               plural=False, group=None):
+  def __init__(self,
+               presentation_name,
+               concept_spec,
+               group_help,
+               attribute_to_args_map,
+               fallthroughs_map,
+               required=False,
+               plural=False,
+               group=None,
+               hidden=False):
     """Initializes the ResourceInfo.
 
     Args:
@@ -141,7 +148,9 @@ class ResourceInfo(ConceptInfo):
       plural: bool, True if multiple resources can be parsed, False otherwise.
       group: an argparse argument group parser to which the resource arg group
         should be added, if any.
+      hidden: bool, True, if the resource should be hidden.
     """
+    super(ResourceInfo, self).__init__()
     self.presentation_name = presentation_name
     self._concept_spec = concept_spec
     self._fallthroughs_map = fallthroughs_map
@@ -150,6 +159,7 @@ class ResourceInfo(ConceptInfo):
     self.group_help = group_help
     self.allow_empty = not required
     self.group = group
+    self.hidden = hidden
 
     self._result = None
     self._result_computed = False
@@ -271,8 +281,10 @@ class ResourceInfo(ConceptInfo):
     return help_text.format(resource=expansion_name)
 
   def _IsRequiredArg(self, attribute):
-    return (self._IsAnchor(attribute)
-            and not self.fallthroughs_map.get(attribute.name, []))
+    # An argument cannot be required if it's hidden
+    return not self.hidden and (
+        self._IsAnchor(attribute) and
+        not self.fallthroughs_map.get(attribute.name, []))
 
   def _IsPluralArg(self, attribute):
     return self._IsAnchor(attribute) and self.plural
@@ -297,7 +309,9 @@ class ResourceInfo(ConceptInfo):
     kwargs_dict = {
         'help': final_help_text,
         'type': attribute.value_type,
-        'completer': completer}
+        'completer': completer,
+        'hidden': self.hidden
+    }
     if util.IsPositional(name):
       if plural and required:
         kwargs_dict.update({'nargs': '+'})
@@ -353,9 +367,10 @@ class ResourceInfo(ConceptInfo):
     # provided parser.
     parser = self.group or parser
 
+    hidden = any(x.IsHidden() for x in args)
+
     resource_group = parser.add_group(
-        help=self.GetGroupHelp(),
-        required=self.args_required)
+        help=self.GetGroupHelp(), required=self.args_required, hidden=hidden)
     for arg in args:
       arg.AddToParser(resource_group)
 

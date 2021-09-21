@@ -72,43 +72,37 @@ SUBCOMMAND_DEPRECATION = {
 SUBCOMMAND_ALLOWLIST = {
     'backfill': (None, '2.0.0'),
     'clear': (None, '2.0.0'),
-    'connections': (None, '2.0.0'),
+    'connections': (None, '3.0.0'),
     'dag_state': (None, '2.0.0'),
+    'dags': ('2.0.0', '3.0.0'),
     'delete_dag': ('1.10.1', '2.0.0'),
-    'kerberos': (None, '2.0.0'),
+    'kerberos': (None, '3.0.0'),
     'list_dag_runs': ('1.10.2', '2.0.0'),
     'list_dags': (None, '2.0.0'),
     'list_tasks': (None, '2.0.0'),
     'next_execution': ('1.10.2', '2.0.0'),
     'pause': (None, '2.0.0'),
     'pool': (None, '2.0.0'),
+    'pools': ('2.0.0', '3.0.0'),
     'render': (None, '2.0.0'),
+    'roles': ('2.0.0', '3.0.0'),
     'run': (None, '2.0.0'),
+    'sync-perm': ('2.0.0', '3.0.0'),
     'sync_perm': ('1.10.2', '2.0.0'),
     'task_failed_deps': (None, '2.0.0'),
     'task_state': (None, '2.0.0'),
+    'tasks': ('2.0.0', '3.0.0'),
     'test': (None, '2.0.0'),
     'trigger_dag': (None, '2.0.0'),
     'unpause': (None, '2.0.0'),
-    'variables': (None, '2.0.0'),
-    'version': (None, '2.0.0'),
-}
-SUBCOMMAND_ALLOWLIST.update(SUBCOMMAND_DEPRECATION)
-
-SUBCOMMAND_ALLOWLIST_BETA = dict(SUBCOMMAND_ALLOWLIST)
-SUBCOMMAND_ALLOWLIST_BETA.update({
-    'connections': (None, '3.0.0'),
-    'dags': ('2.0.0', '3.0.0'),
-    'kerberos': (None, '3.0.0'),
-    'pools': ('2.0.0', '3.0.0'),
-    'roles': ('2.0.0', '3.0.0'),
-    'sync-perm': ('2.0.0', '3.0.0'),
-    'tasks': ('2.0.0', '3.0.0'),
     'upgrade_check': ('1.10.15', '2.0.0'),
     'users': ('2.0.0', '3.0.0'),
     'variables': (None, '3.0.0'),
     'version': (None, '3.0.0'),
-})
+}
+SUBCOMMAND_ALLOWLIST.update(SUBCOMMAND_DEPRECATION)
+
+SUBCOMMAND_ALLOWLIST_BETA = dict(SUBCOMMAND_ALLOWLIST)
 
 DEFAULT_NAMESPACE = 'default'
 NAMESPACE_ARG_NAME = '--namespace'

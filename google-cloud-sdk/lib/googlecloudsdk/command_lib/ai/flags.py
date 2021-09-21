@@ -76,6 +76,20 @@ TRAINING_SERVICE_ACCOUNT = base.Argument(
       permission for the specified service account.
       """))
 
+ENABLE_WEB_ACCESS = base.Argument(
+    '--enable-web-access',
+    action='store_true',
+    required=False,
+    default=False,
+    help=textwrap.dedent("""\
+      Whether you want Vertex AI to enable [interactive shell
+      access]
+      (https://cloud.google.com/vertex-ai/docs/training/monitor-debug-interactive-shell)
+      to training containers. If set to ``true'', you can access
+      interactive shells at the URIs given by CustomJob.web_access_uris or
+      Trial.web_access_uris (within HyperparameterTuningJob.trials).
+      """))
+
 
 def AddStreamLogsFlags(parser):
   _POLLING_INTERVAL_FLAG.AddToParser(parser)
@@ -151,6 +165,37 @@ def AddPredictInstanceArg(parser, required=True):
       """).AddToParser(parser)
 
 
+def GetRawPredictRequestArg():
+  """Adds arguments for raw-predict requests."""
+  return base.Argument(
+      '--request',
+      required=True,
+      help="""\
+      The request to send to the endpoint.
+
+      If the request starts with the letter '*@*', the rest should be a file
+      name to read the request from, or '*@-*' to read from *stdin*. If the
+      request body actually starts with '*@*', it must be placed in a file.
+
+      If required, the *Content-Type* header should also be set appropriately,
+      particularly for binary data.
+      """)
+
+
+def GetRawPredictHeadersArg():
+  """Adds arguments for raw-predict http headers."""
+  return base.Argument(
+      '--http-headers',
+      metavar='HEADER=VALUE',
+      type=arg_parsers.ArgDict(value_type=str),
+      help="""\
+      List of header and value pairs to send as part of the request. For
+      example, to set the *Content-Type* and *X-Header*:
+
+        --http-headers=Content-Type="application/json",X-Header=Value
+      """)
+
+
 def GetTrafficSplitArg():
   """Add arguments for traffic split."""
   return base.Argument(
@@ -158,7 +203,7 @@ def GetTrafficSplitArg():
       metavar='DEPLOYED_MODEL_ID=VALUE',
       type=arg_parsers.ArgDict(value_type=int),
       action=arg_parsers.UpdateAction,
-      help=('List of paris of deployed model id and value to set as traffic '
+      help=('List of pairs of deployed model id and value to set as traffic '
             'split.'))
 
 
@@ -170,7 +215,7 @@ def AddTrafficSplitGroupArgs(parser):
       metavar='DEPLOYED_MODEL_ID=VALUE',
       type=arg_parsers.ArgDict(value_type=int),
       action=arg_parsers.UpdateAction,
-      help=('List of paris of deployed model id and value to set as traffic '
+      help=('List of pairs of deployed model id and value to set as traffic '
             'split.'))
 
   group.add_argument(
@@ -912,7 +957,7 @@ def GetPredictInstanceSchemaArg(required=False):
       help="""
       YAML schema file uri(Google Cloud Storage) describing the format of a
       single instance, which are given to format this Endpoint's prediction.
-      If not set, we will generate predict schema from collected predict requests.
+      If not set, predict schema will be generated from collected predict requests.
       """,
       required=required)
 
@@ -934,7 +979,7 @@ def GetSamplingPredictRequestArg(required=False):
       help="""\
       Path to a local file containing the body of a JSON object. Same format as
       [PredictRequest.instances][], this can be set as a replacement of predict-instance-schema.
-      If not set, we will generate predict schema from collected predict requests.
+      If not set, predict schema will be generated from collected predict requests.
 
       An example of a JSON request:
 
@@ -949,8 +994,8 @@ def GetMonitoringLogTtlArg(required=False):
       '--log-ttl',
       type=int,
       help="""
-  The TTL of BigQuery tables in user projects which stores logs(Day-based unit).
-  """,
+TTL of BigQuery tables in user projects which stores logs(Day-based unit).
+""",
       required=required)
 
 
@@ -1049,7 +1094,7 @@ def AddObjectiveConfigGroupForCreate(parser, required=False):
   thresholds_group.add_argument(
       '--target-field',
       help="""
-The target field name the model is to predict. Must be provided if you'd like to
+Target field name the model is to predict. Must be provided if you'd like to
 do training-prediction skew detection.
 """)
   training_data_group = thresholds_group.add_group(mutex=True)
@@ -1058,7 +1103,7 @@ do training-prediction skew detection.
   training_data_group.add_argument(
       '--bigquery-uri',
       help="""
-The BigQuery table of the unmanaged Dataset used to train this Model.
+BigQuery table of the unmanaged Dataset used to train this Model.
 For example: `bq://projectId.bqDatasetId.bqTableId`."""
   )
   gcs_data_source_group = training_data_group.add_group(mutex=False)

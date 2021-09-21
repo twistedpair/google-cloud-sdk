@@ -118,22 +118,20 @@ def GetAcceleratorFlag(custom_name=None):
 def GetSharedSettingFlag(custom_name=None):
   """Gets the --share-setting flag."""
   help_text = """\
-  Specify if this reservation is shared; and if so, the type of sharing:
-  share with all projects in the organization or share with specific projects or
-  folders.
+  Specify if this reservation is shared; and if so, the type of sharing.
+  Currently only sharing with specific projects is supported.
   """
   return base.Argument(
       custom_name if custom_name else '--share-setting',
-      choices=['organization', 'projects', 'folders'],
+      choices=['projects'],
       help=help_text)
 
 
 def GetShareWithFlag(custom_name=None):
   """Gets the --share-with flag."""
   help_text = """\
-  A list of specific projects or folders this reservation should be shared with.
-  List must contain all project ID's or all folder ID's--depending on what the
-  share-setting is set to.
+  A list of all of the specific projects or folders that this reservation is
+  shared with. List must contain project IDs or project numbers.
   """
   return base.Argument(
       custom_name if custom_name else '--share-with',

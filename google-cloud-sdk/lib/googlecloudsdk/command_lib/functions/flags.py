@@ -116,20 +116,51 @@ def GetLocationsUri(resource):
   return ref.SelfLink()
 
 
-def AddFunctionMemoryFlag(parser):
+def AddFunctionMemoryFlag(parser, track=None):
   """Add flag for specifying function memory to the parser."""
-  parser.add_argument(
-      '--memory',
-      type=arg_parsers.BinarySize(
-          suggested_binary_size_scales=['KB', 'MB', 'MiB', 'GB', 'GiB'],
-          default_unit='MB'),
-      help="""\
-      Limit on the amount of memory the function can use.
+  ga_help_text = """\
+  Limit on the amount of memory the function can use.
 
-      Allowed values are: 128MB, 256MB, 512MB, 1024MB, 2048MB, 4096MB, and
-      8192MB. By default, a new function is limited to 256MB of memory. When
-      deploying an update to an existing function, the function keeps its old
-      memory limit unless you specify this flag.""")
+  Allowed values are: 128MB, 256MB, 512MB, 1024MB, 2048MB, 4096MB, and
+  8192MB. By default, a new function is limited to 256MB of memory. When
+  deploying an update to an existing function, the function keeps its old
+  memory limit unless you specify this flag."""
+
+  alpha_help_text = """\
+  Limit on the amount of memory the function can use.
+
+  Allowed values for v1 are: 128MB, 256MB, 512MB, 1024MB, 2048MB, 4096MB,
+  and 8192MB.
+
+  Allowed values for v2 are in the format: <number><unit> with allowed units
+  of "k", "M", "G", "Ki", "Mi", "Gi". Ending 'b' or 'B' is allowed.
+
+  Examples: 100000k, 128M, 10Mb, 1024Mi, 750K, 4Gi.
+
+  By default, a new function is limited to 256MB of memory. When
+  deploying an update to an existing function, the function keeps its old
+  memory limit unless you specify this flag."""
+
+  help_text = (
+      ga_help_text if track is not base.ReleaseTrack.ALPHA else alpha_help_text)
+
+  parser.add_argument('--memory', type=str, help=help_text)
+
+
+def ParseMemoryStrToNumBytes(binary_size):
+  """Parse binary size to number of bytes.
+
+  Args:
+    binary_size: str, memory with size suffix
+
+  Returns:
+    num_bytes: int, the number of bytes
+  """
+
+  binary_size_parser = arg_parsers.BinarySize(
+      suggested_binary_size_scales=['KB', 'MB', 'MiB', 'GB', 'GiB'],
+      default_unit='MB')
+  return binary_size_parser(binary_size)
 
 
 def ValidateV1TimeoutFlag(args):
@@ -160,9 +191,9 @@ def AddFunctionTimeoutFlag(parser, track=None):
       The function execution timeout, e.g. 30s for 30 seconds. Defaults to
       original value for existing function or 60 seconds for new functions.
 
-      For GCF v1 functions, cannot be more than 540s.
+      For GCF first generation functions, cannot be more than 540s.
 
-      For GCF v2 functions, cannot be more than 3600s.
+      For GCF second generation functions, cannot be more than 3600s.
 
       See $ gcloud topic datetimes for information on duration formats."""
 
@@ -193,20 +224,39 @@ def AddAllowUnauthenticatedFlag(parser):
             'callers, without checking authentication.'))
 
 
-def AddV2Flag(parser):
-  """Add the --v2 flag."""
+def AddGen2Flag(parser, track=None):
+  """Add the --gen2 flag."""
+  help_text = (
+      'If enabled, this command will use Cloud Functions (Second generation). '
+      'If disabled, Cloud Functions (First generation) will be used. If not '
+      'specified, the value of this flag will be taken from the '
+      '`functions/gen2` configuration property.')
   parser.add_argument(
-      '--v2',
+      '--gen2',
       default=False,
-      action=actions.StoreBooleanProperty(properties.VALUES.functions.v2),
-      help=('If enabled, this command will use Cloud Functions V2. If '
-            'disabled, Cloud Functions V1 will be used. If not specified, the '
-            'value of this flag will be taken from the `functions/v2` '
-            'configuration property.'))
+      hidden=(track is not base.ReleaseTrack.ALPHA),
+      action=actions.StoreBooleanProperty(properties.VALUES.functions.gen2),
+      help=help_text)
+
+  if track is base.ReleaseTrack.ALPHA:
+    parser.add_argument(
+        '--v2',
+        help=help_text,
+        default=False,
+        hidden=True,
+        action=actions.DeprecationAction(
+            '--v2',
+            warn='The {flag_name} option is deprecated; use --gen2 instead.',
+            removed=False,
+            action=actions.StoreBooleanProperty(
+                properties.VALUES.functions.gen2)),
+    )
 
 
-def ShouldUseV2(args):
-  return properties.VALUES.functions.v2.GetBool()
+def ShouldUseGen2():
+  gen2 = properties.VALUES.functions.gen2.GetBool()
+  v2 = properties.VALUES.functions.v2.GetBool()
+  return gen2 if gen2 is not None else bool(v2)
 
 
 def ShouldEnsureAllUsersInvoke(args):
@@ -332,6 +382,7 @@ def AddRuntimeFlag(parser):
           - `nodejs12`: Node.js 12
           - `nodejs14`: Node.js 14
           - `nodejs16`: Node.js 16 (preview)
+          - `php74`: PHP 7.4
           - `python37`: Python 3.7
           - `python38`: Python 3.8
           - `python39`: Python 3.9
@@ -341,6 +392,7 @@ def AddRuntimeFlag(parser):
           - `java11`: Java 11
           - `dotnet3`: .NET Framework 3
           - `ruby26`: Ruby 2.6
+          - `ruby27`: Ruby 2.7
           - `nodejs6`: Node.js 6 (deprecated)
           - `nodejs8`: Node.js 8 (deprecated)
           """)
@@ -489,7 +541,7 @@ def AddTriggerFlagGroup(parser, track=None):
         help=(
             'The Eventarc matching criteria for the trigger. The criteria can '
             'be specified either as a single comma-separated argument or as '
-            'multiple arguments. This is only relevant when `--v2` is provided.'
+            'multiple arguments. This is only relevant when `--gen2` is provided.'
         ),
     )
 
@@ -550,7 +602,7 @@ def AddTriggerLocationFlag(parser):
       '--trigger-location',
       help=('The location of the trigger, which must be a region or multi-'
             'region where the relevant events originate. This is only '
-            'relevant when `--v2` is provided.'),
+            'relevant when `--gen2` is provided.'),
       completer=LocationsCompleter,
   )
 
@@ -618,7 +670,7 @@ def AddRunServiceAccountFlag(parser):
       If not provided, the function will use the project's default service
       account for Compute Engine.
 
-      This is only relevant when `--v2` is provided.
+      This is only relevant when `--gen2` is provided.
       """)
 
 
@@ -632,7 +684,7 @@ def AddTriggerServiceAccountFlag(parser):
       If not provided, the function will use the project's default service
       account for Compute Engine.
 
-      This is only relevant when `--v2` is provided.
+      This is only relevant when `--gen2` is provided.
       """)
 
 
@@ -676,12 +728,13 @@ def AddSignatureTypeFlag(parser):
   base.ChoiceArgument(
       '--signature-type',
       choices=SIGNATURE_TYPES,
-      help_str=('The type of event signature for the function. `http` '
-                'indicates that the function is triggered by HTTP requests. '
-                '`event` indicates that the function consumes legacy events. '
-                '`cloudevent` indicates that the function consumes events in '
-                'the new CloudEvent format. This is only relevant when `--v2` '
-                'is provided.'),
+      help_str=(
+          'The type of event signature for the function. `http` '
+          'indicates that the function is triggered by HTTP requests. '
+          '`event` indicates that the function consumes legacy events. '
+          '`cloudevent` indicates that the function consumes events in '
+          'the new CloudEvent format. This is only relevant when `--gen2` '
+          'is provided.'),
   ).AddToParser(parser)
 
 

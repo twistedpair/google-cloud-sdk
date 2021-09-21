@@ -247,9 +247,7 @@ class UserPermissionTroubleshooter(ssh_troubleshooter.SshTroubleshooter):
     Returns:
       boolean, indicates whether OS Login is enabled.
     """
-    oslogin_enabled = ssh.MetadataHasOsloginEnable(self.instance.metadata)
-    if oslogin_enabled is None:
-      oslogin_enabled = ssh.MetadataHasOsloginEnable(
-          self.project.commonInstanceMetadata)
+    oslogin_enabled = ssh.FeatureEnabledInMetadata(
+        self.instance, self.project, ssh.OSLOGIN_ENABLE_METADATA_KEY)
 
     return bool(oslogin_enabled)

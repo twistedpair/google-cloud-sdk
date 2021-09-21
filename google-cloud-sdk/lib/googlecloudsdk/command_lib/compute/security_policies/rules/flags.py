@@ -63,15 +63,37 @@ def AddAction(parser,
               support_rate_limit=False,
               support_tcp_ssl=False):
   """Adds the action argument to the argparse."""
-  actions = [
-      'allow', 'deny-403', 'deny-404', 'deny-502', 'redirect-to-recaptcha'
-  ]
+  actions = {
+      'allow': 'Allows the request from HTTP(S) Load Balancing.',
+      'deny-403':
+          'Denies the request from HTTP(S) Load Balancing, with an HTTP '
+          'response status code of 403.',
+      'deny-404':
+          'Denies the request from HTTP(S) Load Balancing, with an HTTP '
+          'response status code of 404.',
+      'deny-502':
+          'Denies the request from HTTP(S) Load Balancing, with an HTTP '
+          'response status code of 503.',
+      'redirect-to-recaptcha':
+          '(DEPRECATED) Redirects the request from HTTP(S) Load Balancing, for'
+          ' reCAPTCHA Enterprise assessment. This flag choice is deprecated. '
+          'Use --action=redirect and --redirect-type=google-recaptcha instead.'
+  }
   if support_redirect:
-    actions.append('redirect')
+    actions.update({
+        'redirect':
+            'Redirects the request from HTTP(S) Load Balancing, based on redirect options.'
+    })
   if support_rate_limit:
-    actions.extend(['rate-based-ban', 'throttle'])
+    actions.update({
+        'rate-based-ban':
+            'Enforces rate-based ban action from HTTP(S) Load Balancing, based on rate limit options.',
+        'throttle':
+            'Enforces throttle action from HTTP(S) Load Balancing, based on rate limit options.'
+    })
   if support_tcp_ssl:
-    actions.append('deny')
+    actions.update(
+        {'deny': 'Denies the request from TCP/SSL Proxy Load Balancing.'})
   parser.add_argument(
       '--action',
       choices=actions,

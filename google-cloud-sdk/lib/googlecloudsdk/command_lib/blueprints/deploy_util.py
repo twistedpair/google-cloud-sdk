@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import json
 import os
 import uuid
 
@@ -35,6 +36,9 @@ from googlecloudsdk.core import resources
 from googlecloudsdk.core.resource import resource_transform
 from googlecloudsdk.core.util import times
 import six
+
+_PREVIEW_FORMAT_TEXT = 'text'
+_PREVIEW_FORMAT_JSON = 'json'
 
 
 def _UploadSourceDirToGCS(gcs_client, source, gcs_source_staging, ignore_file):
@@ -156,6 +160,41 @@ def _UploadSourceToGCS(source, stage_bucket, ignore_file):
   return upload_bucket
 
 
+def _CreateBlueprint(messages, source, source_git_subdir, stage_bucket,
+                     ignore_file):
+  """Returns the Blueprint message.
+
+  Args:
+    messages: ModuleType, the messages module that lets us form blueprints API
+      messages based on our protos.
+    source: string, a Git repo path.
+    source_git_subdir: optional string. If "source" represents a Git repo, then
+      this argument represents the directory within that Git repo to use.
+    stage_bucket: optional string. When not provided, the default staging bucket
+      will be used (see GetDefaultStagingBucket). This string is of the
+      format "gs://bucket-name/". A "source" object will be created under this
+        bucket, and any uploaded artifacts will be stored there.
+    ignore_file: string, a path to a gcloudignore file.
+
+  Returns:
+    A messages.Blueprint to use with deployment or preview operation.
+  """
+  blueprint = messages.Blueprint()
+
+  if source.startswith('gs://'):
+    # The source is already in GCS, so just pass it to the API.
+    blueprint.gcsSource = source
+  elif source.startswith('https://'):
+    blueprint.gitSource = git_blueprint_util.GetBlueprintSourceForGit(
+        messages, source, source_git_subdir)
+  else:
+    # The source is local.
+    upload_bucket = _UploadSourceToGCS(source, stage_bucket, ignore_file)
+    blueprint.gcsSource = upload_bucket
+
+  return blueprint
+
+
 def Apply(source,
           deployment_full_name,
           stage_bucket,
@@ -198,18 +237,8 @@ def Apply(source,
       projectsId=properties.VALUES.core.project.GetOrFail(),
       locationsId=location)
 
-  blueprint = messages.Blueprint()
-
-  if source.startswith('gs://'):
-    # The source is already in GCS, so just pass it to the API.
-    blueprint.gcsSource = source
-  elif source.startswith('https://'):
-    blueprint.gitSource = git_blueprint_util.GetBlueprintSourceForGit(
-        messages, source, source_git_subdir)
-  else:
-    # The source is local.
-    upload_bucket = _UploadSourceToGCS(source, stage_bucket, ignore_file)
-    blueprint.gcsSource = upload_bucket
+  blueprint = _CreateBlueprint(messages, source, source_git_subdir,
+                               stage_bucket, ignore_file)
 
   labels_message = {}
   # Whichever labels the user provides will become the full set of labels in the
@@ -290,3 +319,169 @@ def Apply(source,
         revision_ref.applyResults.artifacts)
 
   return applied_deployment
+
+
+def PreviewApply(source,
+                 deployment_full_name,
+                 stage_bucket,
+                 messages,
+                 location,
+                 ignore_file,
+                 source_git_subdir='.',
+                 preview_format=_PREVIEW_FORMAT_TEXT):
+  """Executes preview of a deployment.
+
+  Bundles parameters for creating/updating a deployment.
+
+  Args:
+    source: string, either a local path, a GCS bucket, or a Git repo.
+    deployment_full_name: string, the fully qualified name of the deployment,
+      e.g. "projects/p/locations/l/deployments/d".
+    stage_bucket: an optional string. When not provided, the default staging
+      bucket will be used. This is of the format "gs://bucket-name/".
+    messages: ModuleType, the messages module that lets us form blueprints API
+      messages based on our protos.
+    location: string, a region like "us-central1".
+    ignore_file: optional string, a path to a gcloudignore file.
+    source_git_subdir: optional string. If "source" represents a Git repo, then
+      this argument represents the directory within that Git repo to use.
+    preview_format: output format for preview results. Either "text" or "json".
+
+  Returns:
+    Returns a messages.Preview that contains preview results.
+  """
+  parent_resource = resources.REGISTRY.Create(
+      collection='config.projects.locations',
+      projectsId=properties.VALUES.core.project.GetOrFail(),
+      locationsId=location)
+
+  blueprint = _CreateBlueprint(messages, source, source_git_subdir,
+                               stage_bucket, ignore_file)
+
+  # Check if a deployment with the given name already exists. If it does, we'll
+  # update that deployment. If not, we'll create it.
+  try:
+    existing_deployment = blueprints_util.GetDeployment(deployment_full_name)
+  except apitools_exceptions.HttpNotFoundError:
+    existing_deployment = None
+
+  is_creating_deployment = existing_deployment is None
+
+  preview = messages.Preview(
+      applyInput=messages.ApplyInput(
+          blueprint=blueprint,
+          deployment='' if is_creating_deployment else deployment_full_name))
+  op = blueprints_util.CreatePreview(preview, parent_resource.RelativeName())
+
+  log.debug('LRO: %s', op.name)
+
+  preview_result = blueprints_util.WaitForApplyPreviewOperation(op)
+
+  _PrintPreview(messages, preview_result, preview_format)
+
+  return preview_result
+
+
+def _PrintPreview(messages,
+                  preview_result,
+                  preview_format=_PREVIEW_FORMAT_TEXT):
+  """Prints preview results.
+
+  Args:
+    messages: ModuleType, the messages module that lets us form blueprints API
+      messages based on our protos.
+    preview_result: a messages.Preview resource.
+    preview_format: a string that specifies the output format for printing.
+  """
+  if preview_result.state == messages.Preview.StateValueValuesEnum.COMPLETED:
+    gcs_path = preview_result.previewResults.artifacts
+    if preview_format == _PREVIEW_FORMAT_TEXT:
+      _FetchAndPrintPreviewResults(gcs_path)
+    elif preview_format == _PREVIEW_FORMAT_JSON:
+      _FetchAndPrintPreviewResultsJSON(gcs_path)
+    log.status.Print('Preview results are available at {0}'.format(gcs_path))
+  elif preview_result.state == messages.Preview.StateValueValuesEnum.FAILED:
+    error_handling.PreviewFailed(preview_result)
+
+
+def _FetchAndPrintPreviewResults(gcs_path):
+  """Fetches from GCS and prints preview results.
+
+  Args:
+    gcs_path: string, the full Cloud Storage path to the folder containing
+      preview results files.
+  """
+  results_path = '{0}/result.json'.format(gcs_path)
+  results_content = error_handling.GetTextFileContentsFromStorageBucket(
+      results_path)
+
+  try:
+    results_data = json.loads(results_content)
+  except ValueError as e:
+    log.debug('Unable to parse preview results JSON: {}'.format(e))
+    log.status.Print('Failed to parse preview results.')
+    return
+
+  summary = results_data.get('Summary')
+  details = results_data.get('Details')
+  log.status.Print('{0}'.format(details))
+  log.status.Print('{0}'.format(summary))
+
+
+def _FetchAndPrintPreviewResultsJSON(gcs_path):
+  """Fetches from GCS and prints preview verbose JSON results.
+
+  Args:
+    gcs_path: string, the full Cloud Storage path to the folder containing
+      preview results files.
+  """
+  results_path = '{0}/verbose.json'.format(gcs_path)
+  results_content = error_handling.GetTextFileContentsFromStorageBucket(
+      results_path)
+  log.status.Print('{0}'.format(results_content))
+
+
+def PreviewDelete(deployment_full_name,
+                  messages,
+                  location,
+                  preview_format=_PREVIEW_FORMAT_TEXT):
+  """Execute preview of delete operation of an existing deployment.
+
+  Args:
+    deployment_full_name: string, the fully qualified name of the deployment,
+      e.g. "projects/p/locations/l/deployments/d".
+    messages: ModuleType, the messages module that lets us form blueprints API
+      messages based on our protos.
+    location: string, a region like "us-central1".
+    preview_format: output format for preview results. Either "text" or "json".
+
+  Returns:
+    Returns a messages.Preview that contains preview results.
+  """
+  parent_resource = resources.REGISTRY.Create(
+      collection='config.projects.locations',
+      projectsId=properties.VALUES.core.project.GetOrFail(),
+      locationsId=location)
+
+  # Check if a deployment with the given name exists.
+  try:
+    existing_deployment = blueprints_util.GetDeployment(deployment_full_name)
+  except apitools_exceptions.HttpNotFoundError:
+    existing_deployment = None
+
+  if existing_deployment is None:
+    log.status.Print(
+        'Specified deployment does not exist: {0}'.format(deployment_full_name))
+    return
+
+  preview = messages.Preview(
+      deleteInput=messages.DeleteInput(deployment=deployment_full_name))
+  op = blueprints_util.CreatePreview(preview, parent_resource.RelativeName())
+
+  log.debug('LRO: %s', op.name)
+
+  preview_result = blueprints_util.WaitForDeletePreviewOperation(op)
+
+  _PrintPreview(messages, preview_result, preview_format)
+
+  return preview_result

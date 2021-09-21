@@ -304,6 +304,35 @@
         "kmsKeyName": {
           "description": "The Cloud KMS resource name of the customer managed encryption key that\u2019s used to encrypt the contents of the Repository. Has the form: `projects\/my-project\/locations\/my-region\/keyRings\/my-kr\/cryptoKeys\/my-key`. This value may not be changed after the Repository has been created.",
           "type": "string"
+        },
+        "mavenConfig": {
+          "description": "Maven repository config contains repository level configuration for the repositories of maven type.",
+          "$ref": "MavenRepositoryConfig"
+        }
+      }
+    },
+    "MavenRepositoryConfig": {
+      "id": "MavenRepositoryConfig",
+      "description": "MavenRepositoryConfig is maven related repository details. Provides additional configuration details for repositories of the maven format type.",
+      "type": "object",
+      "properties": {
+        "allowSnapshotOverwrites": {
+          "description": "The repository with this flag will allow publishing the same snapshot versions.",
+          "type": "boolean"
+        },
+        "versionPolicy": {
+          "description": "Version policy defines the versions that the registry will accept.",
+          "type": "string",
+          "enumDescriptions": [
+            "VERSION_POLICY_UNSPECIFIED - the version policy is not defined. When the version policy is not defined, no validation is performed for the versions.",
+            "RELEASE - repository will accept only Release versions.",
+            "SNAPSHOT - repository will accept only Snapshot versions."
+          ],
+          "enum": [
+            "VERSION_POLICY_UNSPECIFIED",
+            "RELEASE",
+            "SNAPSHOT"
+          ]
         }
       }
     },

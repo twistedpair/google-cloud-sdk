@@ -70,11 +70,53 @@ def GetBypassCacheOnRequestHeaders(client, args):
   return bypass_cache_on_request_headers
 
 
+def HasCacheKeyPolicyArgs(args):
+  """Returns true if the request requires a CacheKeyPolicy message.
+
+  Args:
+    args: The arguments passed to the gcloud command.
+
+  Returns:
+    True if there are cache key policy related arguments which require adding
+    a CacheKeyPolicy message in the request.
+  """
+  return (args.IsSpecified('cache_key_query_string_whitelist') or
+          args.IsSpecified('cache_key_include_http_header'))
+
+
+def GetCacheKeyPolicy(client, args, backend_bucket):
+  """Returns the cache key policy.
+
+  Args:
+    client: The client used by gcloud.
+    args: The arguments passed to the gcloud command.
+    backend_bucket: The backend bucket object. If the backend bucket object
+      contains a cache key policy already, it is used as the base to apply
+      changes based on args.
+
+  Returns:
+    The cache key policy.
+  """
+  cache_key_policy = client.messages.BackendBucketCdnPolicyCacheKeyPolicy()
+  if (backend_bucket.cdnPolicy is not None and
+      backend_bucket.cdnPolicy.cacheKeyPolicy is not None):
+    cache_key_policy = backend_bucket.cdnPolicy.cacheKeyPolicy
+
+  if args.cache_key_include_http_header is not None:
+    cache_key_policy.includeHttpHeaders = args.cache_key_include_http_header
+  if args.cache_key_query_string_whitelist is not None:
+    cache_key_policy.queryStringWhitelist = (
+        args.cache_key_query_string_whitelist)
+
+  return cache_key_policy
+
+
 def ApplyCdnPolicyArgs(client,
                        args,
                        backend_bucket,
                        is_update=False,
-                       cleared_fields=None):
+                       cleared_fields=None,
+                       support_extended_caching=False):
   """Applies the CdnPolicy arguments to the specified backend bucket.
 
   If there are no arguments related to CdnPolicy, the backend bucket remains
@@ -88,6 +130,8 @@ def ApplyCdnPolicyArgs(client,
       a create command, False otherwise.
     cleared_fields: Reference to list with fields that should be cleared. Valid
       only for update command.
+    support_extended_caching: If True, support includeHttpHeader and
+      includeNamedCookie in cacheKeyPolicy.
   """
   if backend_bucket.cdnPolicy is not None:
     cdn_policy = encoding.CopyProtoMessage(backend_bucket.cdnPolicy)
@@ -160,6 +204,9 @@ def ApplyCdnPolicyArgs(client,
     if args.no_bypass_cache_on_request_headers:
       cleared_fields.append('cdnPolicy.bypassCacheOnRequestHeaders')
       cdn_policy.bypassCacheOnRequestHeaders = []
+
+  if support_extended_caching and HasCacheKeyPolicyArgs(args):
+    cdn_policy.cacheKeyPolicy = GetCacheKeyPolicy(client, args, backend_bucket)
 
   if cdn_policy != client.messages.BackendBucketCdnPolicy():
     backend_bucket.cdnPolicy = cdn_policy

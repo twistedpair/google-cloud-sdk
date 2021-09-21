@@ -249,6 +249,7 @@ def CreateSchedulingMessage(messages,
                             maintenance_freeze_duration=None,
                             maintenance_interval=None,
                             provisioning_model=None,
+                            instance_termination_action=None,
                             host_error_timeout_seconds=None):
   """Create scheduling message for VM."""
   # Note: We always specify automaticRestart=False for preemptible VMs. This
@@ -273,6 +274,11 @@ def CreateSchedulingMessage(messages,
     scheduling.provisioningModel = (
         messages.Scheduling.ProvisioningModelValueValuesEnum(provisioning_model)
     )
+
+  if instance_termination_action:
+    scheduling.instanceTerminationAction = (
+        messages.Scheduling.InstanceTerminationActionValueValuesEnum(
+            instance_termination_action))
 
   if node_affinities:
     scheduling.nodeAffinities = node_affinities
@@ -498,6 +504,7 @@ def GetScheduling(args,
                   support_location_hint=False,
                   support_node_project=False,
                   support_provisioning_model=False,
+                  support_termination_action=False,
                   support_host_error_timeout_seconds=False):
   """Generate a Scheduling Message or None based on specified args."""
   node_affinities = None
@@ -527,6 +534,12 @@ def GetScheduling(args,
       args.IsSpecified('provisioning_model')):
     provisioning_model = args.provisioning_model
 
+  instance_termination_action = None
+  if (support_termination_action and
+      hasattr(args, 'instance_termination_action') and
+      args.IsSpecified('instance_termination_action')):
+    instance_termination_action = args.instance_termination_action
+
   host_error_timeout_seconds = None
   if support_host_error_timeout_seconds and hasattr(
       args, 'host_error_timeout_seconds'):
@@ -543,6 +556,7 @@ def GetScheduling(args,
       maintenance_freeze_duration=freeze_duration,
       maintenance_interval=maintenance_interval,
       provisioning_model=provisioning_model,
+      instance_termination_action=instance_termination_action,
       host_error_timeout_seconds=host_error_timeout_seconds)
 
 

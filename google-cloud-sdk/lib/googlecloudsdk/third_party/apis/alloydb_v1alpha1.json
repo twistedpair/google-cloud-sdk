@@ -6,7 +6,7 @@
   "canonicalName": "Cloud AlloyDB Admin",
   "version": "v1alpha1",
   "revision": "0",
-  "title": "alloydb API (prod)",
+  "title": "Cloud AlloyDB API",
   "description": "",
   "ownerDomain": "google.com",
   "ownerName": "Google",
@@ -516,12 +516,9 @@
           "description": "The resource link for the VPC network in which cluster resources are created and from which they are accessible via Private IP. The network must belong to the same project as the cluster. It is specified in the form: \"projects\/{project_number}\/global\/networks\/{network_id}\". This is required to create a cluster. It can be updated, but it cannot be removed.",
           "type": "string"
         },
-        "initialUsers": {
-          "description": "Input only. Initial users to setup during cluster creation. Must be non-empty. We intend to deprecate this post private preview, once we have separate User resources.",
-          "type": "array",
-          "items": {
-            "$ref": "UserPassword"
-          }
+        "initialUser": {
+          "description": "Input only. Initial user to setup during cluster creation. Required. We intend to deprecate this post private preview, once we have separate User resources.",
+          "$ref": "UserPassword"
         }
       }
     },

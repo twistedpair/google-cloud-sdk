@@ -1098,7 +1098,7 @@
           "type": "string"
         },
         "referenceId": {
-          "description": "The unique id of this resource. Can be any arbitrary string, either GUID or any other string. Must be unique within a scope of a target resource, but does not have to be globally unique. Reference ID is part of resource name of the reference. Resource name is generated in the following way: {parent}\/references\/{reference_id}. Reference ID field is currently required but id auto generation might be added in the future.",
+          "description": "The unique id of this resource. Must be unique within a scope of a target resource, but does not have to be globally unique. Reference ID is part of resource name of the reference. Resource name is generated in the following way: {parent}\/references\/{reference_id}. Reference ID field is currently required but id auto generation might be added in the future. It can be any arbitrary string, either GUID or any other string, however CLHs can use preprocess callbacks to perform a custom validation.",
           "type": "string"
         },
         "reference": {

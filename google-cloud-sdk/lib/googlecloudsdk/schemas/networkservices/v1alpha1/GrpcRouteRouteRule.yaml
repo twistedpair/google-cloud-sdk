@@ -26,9 +26,10 @@ properties:
     description: |-
       A detailed rule defining how to route traffic. This field is required.
     $ref: GrpcRouteRouteAction.yaml
-  match:
+  matches:
     description: |-
       A set of conditions that must match for this rule to be activated. If no
       routeMatch field is specified, this rule will unconditionally match
       traffic.
     $ref: GrpcRouteRouteMatch.yaml
+    type: array

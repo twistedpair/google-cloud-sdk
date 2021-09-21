@@ -1845,6 +1845,10 @@
       "description": "A request to collect cluster diagnostic information.",
       "type": "object",
       "properties": {
+        "tarballGcsDir": {
+          "description": "Optional. (Optional) The output Cloud Storage directory for the diagnostic tarball. If not specified, a task-specific directory in the cluster's staging bucket will be used.",
+          "type": "string"
+        }
       }
     },
     "InjectCredentialsRequest": {

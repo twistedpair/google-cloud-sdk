@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
+from googlecloudsdk.command_lib.util.concepts import presentation_specs
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 
@@ -176,6 +177,34 @@ def AddOperationResourceArg(parser, verb):
       GetOperationResourceSpec(),
       'Azure operation {}.'.format(verb),
       required=True).AddToParser(parser)
+
+
+def AddAzureClusterAndClientResourceArgs(parser, update=False):
+  """Adds resource arguments for both Azure cluster and client.
+
+  This is used for the create and update command.
+
+  Args:
+    parser: The argparse.parser to add the resource arg to.
+    update: bool, whether the resources are used in update command.
+  """
+  arg_parser = concept_parsers.ConceptParser(
+      [
+          presentation_specs.ResourcePresentationSpec(
+              'cluster',
+              GetAzureClusterResourceSpec(),
+              'Azure cluster to {}.'.format('update' if update else 'create'),
+              required=True),
+          presentation_specs.ResourcePresentationSpec(
+              '--client',
+              GetAzureClientResourceSpec(),
+              'Azure client to use for cluster {}.'.format(
+                  'update' if update else 'creation'),
+              required=(not update),
+              flag_name_overrides={'location': ''})
+      ],
+      command_level_fallthroughs={'--client.location': ['cluster.location']})
+  arg_parser.AddToParser(parser)
 
 
 def ParseAzureClientResourceArg(args):

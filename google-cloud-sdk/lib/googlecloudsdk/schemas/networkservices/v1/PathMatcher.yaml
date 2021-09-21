@@ -39,7 +39,8 @@ properties:
       The routeRules to match against. routeRules support advanced routing
       behaviour, and can match on paths, headers and query parameters, as well
       as status codes and HTTP methods. You must specify at least one (1) rule,
-      and can specify a maximum of 64 rules.
+      and can specify a maximum of 64 rules. Route rules must not have duplicate
+      priority values.
     type: array
     items:
       $ref: RouteRule.yaml

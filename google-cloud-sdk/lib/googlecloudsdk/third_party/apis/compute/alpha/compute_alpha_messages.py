@@ -4597,14 +4597,14 @@ class BackendServiceConnectionTrackingPolicy(_messages.Message):
       existing connections always persist on unhealthy backends regardless of
       protocol and session affinity. It is generally not recommended to use
       this mode overriding the default.
-    enableStrongAffinity: Enable Strong Session Affinity. This is only
-      available in External TCP/UDP load balancer.
+    enableStrongAffinity: Enable Strong Session Affinity for Network Load
+      Balancing. This option is not available publicly.
     idleTimeoutSec: Specifies how long to keep a Connection Tracking entry
       while there is no matching traffic (in seconds). For L4 ILB the
-      minimum(default) is 10 minutes and maximum is 16 hours. For NLB the
-      minimum(default) is 60 seconds and the maximum is 16 hours. This field
-      will be supported only if the Connection Tracking key is less than
-      5-tuple.
+      minimum(default) is 10 minutes and maximum is 16 hours. For Network Load
+      Balancer the default is 60 seconds. This option is not available
+      publicly. This field will be supported only if the Connection Tracking
+      key is less than 5-tuple.
     trackingMode: Specifies the key used for connection tracking. There are
       two options: PER_CONNECTION: This is the default mode. The Connection
       Tracking is performed as per the Connection Key (default Hash Method)
@@ -40410,7 +40410,7 @@ class InstanceProperties(_messages.Message):
 
   Enums:
     PostKeyRevocationActionTypeValueValuesEnum: PostKeyRevocationActionType of
-      the instance.
+      the instance.(will be deprecated soon)
     PrivateIpv6GoogleAccessValueValuesEnum: The private IPv6 google access
       type for VMs. If not specified, use INHERIT_FROM_SUBNETWORK as default.
 
@@ -40452,7 +40452,8 @@ class InstanceProperties(_messages.Message):
     networkInterfaces: An array of network access configurations for this
       interface.
     networkPerformanceConfig: A NetworkPerformanceConfig attribute.
-    postKeyRevocationActionType: PostKeyRevocationActionType of the instance.
+    postKeyRevocationActionType: PostKeyRevocationActionType of the
+      instance.(will be deprecated soon)
     privateIpv6GoogleAccess: The private IPv6 google access type for VMs. If
       not specified, use INHERIT_FROM_SUBNETWORK as default.
     reservationAffinity: Specifies the reservations that instances can consume
@@ -40477,7 +40478,7 @@ class InstanceProperties(_messages.Message):
   """
 
   class PostKeyRevocationActionTypeValueValuesEnum(_messages.Enum):
-    r"""PostKeyRevocationActionType of the instance.
+    r"""PostKeyRevocationActionType of the instance.(will be deprecated soon)
 
     Values:
       NOOP: Indicates user chose no operation.
@@ -45954,6 +45955,9 @@ class Network(_messages.Message):
   other and to the internet. For more information, read Virtual Private Cloud
   (VPC) Network.
 
+  Enums:
+    NetworkFirewallPolicyEnforcementOrderValueValuesEnum:
+
   Fields:
     IPv4Range: Deprecated in favor of subnet mode networks. The range of
       internal addresses that are legal on this network. This range is a CIDR
@@ -45998,6 +46002,8 @@ class Network(_messages.Message):
       must be a lowercase letter, and all following characters (except for the
       last character) must be a dash, lowercase letter, or digit. The last
       character must be a lowercase letter or digit.
+    networkFirewallPolicyEnforcementOrder: A
+      NetworkFirewallPolicyEnforcementOrderValueValuesEnum attribute.
     peerings: [Output Only] A list of network peerings for the resource.
     routingConfig: The network-level routing configuration for this network.
       Used by Cloud Router to determine what type of network-wide routing
@@ -46008,6 +46014,16 @@ class Network(_messages.Message):
     subnetworks: [Output Only] Server-defined fully-qualified URLs for all
       subnetworks in this VPC network.
   """
+
+  class NetworkFirewallPolicyEnforcementOrderValueValuesEnum(_messages.Enum):
+    r"""NetworkFirewallPolicyEnforcementOrderValueValuesEnum enum type.
+
+    Values:
+      AFTER_CLASSIC_FIREWALL: <no description>
+      BEFORE_CLASSIC_FIREWALL: <no description>
+    """
+    AFTER_CLASSIC_FIREWALL = 0
+    BEFORE_CLASSIC_FIREWALL = 1
 
   IPv4Range = _messages.StringField(1)
   autoCreateSubnetworks = _messages.BooleanField(2)
@@ -46021,11 +46037,12 @@ class Network(_messages.Message):
   kind = _messages.StringField(10, default='compute#network')
   mtu = _messages.IntegerField(11, variant=_messages.Variant.INT32)
   name = _messages.StringField(12)
-  peerings = _messages.MessageField('NetworkPeering', 13, repeated=True)
-  routingConfig = _messages.MessageField('NetworkRoutingConfig', 14)
-  selfLink = _messages.StringField(15)
-  selfLinkWithId = _messages.StringField(16)
-  subnetworks = _messages.StringField(17, repeated=True)
+  networkFirewallPolicyEnforcementOrder = _messages.EnumField('NetworkFirewallPolicyEnforcementOrderValueValuesEnum', 13)
+  peerings = _messages.MessageField('NetworkPeering', 14, repeated=True)
+  routingConfig = _messages.MessageField('NetworkRoutingConfig', 15)
+  selfLink = _messages.StringField(16)
+  selfLinkWithId = _messages.StringField(17)
+  subnetworks = _messages.StringField(18, repeated=True)
 
 
 class NetworkEdgeSecurityService(_messages.Message):

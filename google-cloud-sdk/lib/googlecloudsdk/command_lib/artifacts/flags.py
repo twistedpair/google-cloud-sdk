@@ -272,6 +272,14 @@ def GetOccurrenceFilterFlag():
       help='A filter for the Occurrences which will be summarized.')
 
 
+def GetShowProvenanceFlag():
+  return base.Argument(
+      '--show-provenance',
+      action='store_true',
+      hidden=True,
+      help='Include provenance metadata in the output.')
+
+
 def GetResourceURIArg():
   """Gets RESOURCE_URI required positional argument."""
   return base.Argument(

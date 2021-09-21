@@ -47,11 +47,19 @@ class PresentationSpec(object):
       parser.
     attribute_to_args_map: {str: str}, dict of attribute names to names of
       associated arguments.
+    hidden: bool, True if the arguments should be hidden.
   """
 
-  def __init__(self, name, concept_spec, group_help, prefixes=False,
-               required=False, flag_name_overrides=None, plural=False,
-               group=None):
+  def __init__(self,
+               name,
+               concept_spec,
+               group_help,
+               prefixes=False,
+               required=False,
+               flag_name_overrides=None,
+               plural=False,
+               group=None,
+               hidden=False):
     """Initializes a ResourcePresentationSpec.
 
     Args:
@@ -69,6 +77,7 @@ class PresentationSpec(object):
       group: the parser or subparser for a Calliope command that the resource
         arguments should be added to. If not provided, will be added to the main
         parser.
+      hidden: bool, True if the arguments should be hidden.
     """
     self.name = name
     self._concept_spec = concept_spec
@@ -79,6 +88,7 @@ class PresentationSpec(object):
     self.group = group
     self._attribute_to_args_map = self._GetAttributeToArgsMap(
         flag_name_overrides)
+    self.hidden = hidden
 
   @property
   def concept_spec(self):
@@ -212,7 +222,8 @@ class ResourcePresentationSpec(PresentationSpec):
         fallthroughs_map,
         required=self.required,
         plural=self.plural,
-        group=self.group)
+        group=self.group,
+        hidden=self.hidden)
 
   def __eq__(self, other):
     if not isinstance(other, type(self)):
@@ -220,10 +231,9 @@ class ResourcePresentationSpec(PresentationSpec):
     return (self.name == other.name and
             self.concept_spec == other.concept_spec and
             self.group_help == other.group_help and
-            self.prefixes == other.prefixes and
-            self.plural == other.plural and
-            self.required == other.required and
-            self.group == other.group)
+            self.prefixes == other.prefixes and self.plural == other.plural and
+            self.required == other.required and self.group == other.group and
+            self.hidden == other.hidden)
 
 
 # Currently no other type of multitype concepts have been implemented.
@@ -303,7 +313,6 @@ class MultitypeResourcePresentationSpec(PresentationSpec):
     return (self.name == other.name and
             self.concept_spec == other.concept_spec and
             self.group_help == other.group_help and
-            self.prefixes == other.prefixes and
-            self.plural == other.plural and
-            self.required == other.required and
-            self.group == other.group)
+            self.prefixes == other.prefixes and self.plural == other.plural and
+            self.required == other.required and self.group == other.group and
+            self.hidden == other.hidden)
