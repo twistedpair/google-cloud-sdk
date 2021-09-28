@@ -35,6 +35,7 @@ from googlecloudsdk.command_lib.kms import resource_args as kms_resource_args
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.core import properties
+from googlecloudsdk.core import resources
 
 # TODO(b/185318075): Consider leaving only re-usable flags here and moving flags
 # that are specific to a subgroup/command to their corresponding modules.
@@ -95,6 +96,23 @@ def AddStreamLogsFlags(parser):
   _POLLING_INTERVAL_FLAG.AddToParser(parser)
   _TASK_NAME.AddToParser(parser)
   _ALLOW_MULTILINE_LOGS.AddToParser(parser)
+
+
+def AddUriFlags(parser, collection, api_version=None):
+  """Adds `--uri` flag to the parser object for list commands.
+
+  Args:
+    parser: The argparse parser.
+    collection: str, The resource collection name.
+    api_version: str, The API version.
+  """
+
+  def _GetResourceUri(resource):
+    updated = resources.REGISTRY.ParseRelativeName(
+        resource.name, collection=collection, api_version=api_version)
+    return updated.SelfLink()
+
+  parser.display_info.AddUriFunc(_GetResourceUri)
 
 
 def GetModelIdArg(required=True):
@@ -1104,8 +1122,7 @@ do training-prediction skew detection.
       '--bigquery-uri',
       help="""
 BigQuery table of the unmanaged Dataset used to train this Model.
-For example: `bq://projectId.bqDatasetId.bqTableId`."""
-  )
+For example: `bq://projectId.bqDatasetId.bqTableId`.""")
   gcs_data_source_group = training_data_group.add_group(mutex=False)
   gcs_data_source_group.add_argument(
       '--data-format',

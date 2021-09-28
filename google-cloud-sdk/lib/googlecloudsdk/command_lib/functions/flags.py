@@ -224,7 +224,7 @@ def AddAllowUnauthenticatedFlag(parser):
             'callers, without checking authentication.'))
 
 
-def AddGen2Flag(parser, track=None):
+def AddGen2Flag(parser, track):
   """Add the --gen2 flag."""
   help_text = (
       'If enabled, this command will use Cloud Functions (Second generation). '
@@ -234,7 +234,7 @@ def AddGen2Flag(parser, track=None):
   parser.add_argument(
       '--gen2',
       default=False,
-      hidden=(track is not base.ReleaseTrack.ALPHA),
+      hidden=_ShouldHideV2Flags(track),
       action=actions.StoreBooleanProperty(properties.VALUES.functions.gen2),
       help=help_text)
 
@@ -257,6 +257,10 @@ def ShouldUseGen2():
   gen2 = properties.VALUES.functions.gen2.GetBool()
   v2 = properties.VALUES.functions.v2.GetBool()
   return gen2 if gen2 is not None else bool(v2)
+
+
+def _ShouldHideV2Flags(track):
+  return track is not base.ReleaseTrack.ALPHA
 
 
 def ShouldEnsureAllUsersInvoke(args):
@@ -499,7 +503,8 @@ def AddTriggerFlagGroup(parser, track=None):
     track: base.ReleaseTrack, calliope release track.
   """
   trigger_flags = ['--trigger-topic', '--trigger-bucket', '--trigger-http']
-  if track is base.ReleaseTrack.ALPHA:
+  gen2_tracks = [base.ReleaseTrack.ALPHA, base.ReleaseTrack.BETA]
+  if not _ShouldHideV2Flags(track):
     trigger_flags.append('--trigger-event-filters')
   formatted_trigger_flags = ', '.join(['`{}`'.format(f) for f in trigger_flags])
 
@@ -532,11 +537,12 @@ def AddTriggerFlagGroup(parser, track=None):
       the `describe` command. Any HTTP request (of a supported type) to the
       endpoint will trigger function execution. Supported HTTP request
       types are: POST, PUT, GET, DELETE, and OPTIONS.""")
-  if track is base.ReleaseTrack.ALPHA:
+  if track in gen2_tracks:
     trigger_group.add_argument(
         '--trigger-event-filters',
         type=arg_parsers.ArgDict(),
         action=arg_parsers.UpdateAction,
+        hidden=_ShouldHideV2Flags(track),
         metavar='ATTRIBUTE=VALUE',
         help=(
             'The Eventarc matching criteria for the trigger. The criteria can '
@@ -596,10 +602,11 @@ def RegionAttributeConfig():
   )
 
 
-def AddTriggerLocationFlag(parser):
+def AddTriggerLocationFlag(parser, track):
   """Add flag for specifying trigger location to the parser."""
   parser.add_argument(
       '--trigger-location',
+      hidden=_ShouldHideV2Flags(track),
       help=('The location of the trigger, which must be a region or multi-'
             'region where the relevant events originate. This is only '
             'relevant when `--gen2` is provided.'),
@@ -658,9 +665,10 @@ def AddServiceAccountFlag(parser):
       """)
 
 
-def AddRunServiceAccountFlag(parser):
+def AddRunServiceAccountFlag(parser, track):
   parser.add_argument(
       '--run-service-account',
+      hidden=_ShouldHideV2Flags(track),
       help="""\
       The email address of the IAM service account associated with the Cloud
       Run service for the function. The service account represents the identity
@@ -674,9 +682,10 @@ def AddRunServiceAccountFlag(parser):
       """)
 
 
-def AddTriggerServiceAccountFlag(parser):
+def AddTriggerServiceAccountFlag(parser, track):
   parser.add_argument(
       '--trigger-service-account',
+      hidden=_ShouldHideV2Flags(track),
       help="""\
       The email address of the IAM service account associated with the Eventarc
       trigger for the function. This is used for authenticated invocation.
@@ -724,10 +733,11 @@ def AddIgnoreFileFlag(parser):
   )
 
 
-def AddSignatureTypeFlag(parser):
+def AddSignatureTypeFlag(parser, track):
   base.ChoiceArgument(
       '--signature-type',
       choices=SIGNATURE_TYPES,
+      hidden=_ShouldHideV2Flags(track),
       help_str=(
           'The type of event signature for the function. `http` '
           'indicates that the function is triggered by HTTP requests. '

@@ -1875,6 +1875,7 @@ class TaskInstance(_messages.Message):
       the taskInstance belongs to.
     dagRunId: The DAG run ID the task instance belongs to.
     endDate: Timestamp when the task instance finished execution.
+    executionDate: Execution date for the task.
     hostname: Hostname of the machine or pod the task runs on.
     id: The task instance ID. It is the same as the task ID of a DAG.
     maxTries: The number of tries that should be performed before failing the
@@ -1923,19 +1924,20 @@ class TaskInstance(_messages.Message):
   dagId = _messages.StringField(1)
   dagRunId = _messages.StringField(2)
   endDate = _messages.StringField(3)
-  hostname = _messages.StringField(4)
-  id = _messages.StringField(5)
-  maxTries = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  name = _messages.StringField(7)
-  pool = _messages.StringField(8)
-  priorityWeight = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  queue = _messages.StringField(10)
-  queuedDttm = _messages.StringField(11)
-  startDate = _messages.StringField(12)
-  state = _messages.EnumField('StateValueValuesEnum', 13)
-  taskId = _messages.StringField(14)
-  taskType = _messages.StringField(15)
-  tryNumber = _messages.IntegerField(16, variant=_messages.Variant.INT32)
+  executionDate = _messages.StringField(4)
+  hostname = _messages.StringField(5)
+  id = _messages.StringField(6)
+  maxTries = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  name = _messages.StringField(8)
+  pool = _messages.StringField(9)
+  priorityWeight = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  queue = _messages.StringField(11)
+  queuedDttm = _messages.StringField(12)
+  startDate = _messages.StringField(13)
+  state = _messages.EnumField('StateValueValuesEnum', 14)
+  taskId = _messages.StringField(15)
+  taskType = _messages.StringField(16)
+  tryNumber = _messages.IntegerField(17, variant=_messages.Variant.INT32)
 
 
 class TriggerDagRequest(_messages.Message):

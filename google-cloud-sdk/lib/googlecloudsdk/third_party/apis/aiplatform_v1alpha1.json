@@ -5527,6 +5527,13 @@
           "items": {
             "type": "string"
           }
+        },
+        "specialistWorkerEmails": {
+          "description": "The email addresses of workers in the SpecialistPool.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -8226,6 +8233,13 @@
             "type": "string"
           }
         },
+        "specialistWorkerEmails": {
+          "description": "The email addresses of workers in the SpecialistPool.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "useCase": {
           "description": "If it's not specified, will treat it as the default case.",
           "type": "string",
@@ -10706,6 +10720,13 @@
           "type": "array",
           "items": {
             "$ref": "GoogleCloudAiplatformUiDataLabelingJobRef"
+          }
+        },
+        "specialistWorkerEmails": {
+          "description": "The email addresses of workers in the SpecialistPool.",
+          "type": "array",
+          "items": {
+            "type": "string"
           }
         }
       }
@@ -14724,6 +14745,13 @@
           "items": {
             "type": "string"
           }
+        },
+        "specialistWorkerEmails": {
+          "description": "The email addresses of workers in the SpecialistPool.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -15708,7 +15736,7 @@
           }
         },
         "optimizationObjective": {
-          "description": "Objective function the model is optimizing towards. The training process creates a model that optimizes the value of the objective function over the validation set. The supported optimization objectives: * \"minimize-rmse\" (default) - Minimize root-mean-squared error (RMSE). * \"minimize-mae\" - Minimize mean-absolute error (MAE). * \"minimize-rmsle\" - Minimize root-mean-squared log error (RMSLE). * \"minimize-rmspe\" - Minimize root-mean-squared percentage error (RMSPE). * \"minimize-wape-mae\" - Minimize the combination of weighted absolute percentage error (WAPE) and mean-absolute-error (MAE). * \"minimize-quantile-loss\" - Minimize the quantile loss at the quantiles defined in `quantiles`.",
+          "description": "Objective function the model is optimizing towards. The training process creates a model that optimizes the value of the objective function over the validation set. The supported optimization objectives: * \"minimize-rmse\" (default) - Minimize root-mean-squared error (RMSE). * \"minimize-mae\" - Minimize mean-absolute error (MAE). * \"minimize-rmsle\" - Minimize root-mean-squared log error (RMSLE). * \"minimize-rmspe\" - Minimize root-mean-squared percentage error (RMSPE). * \"minimize-wape-mae\" - Minimize the combination of weighted absolute percentage error (WAPE) and mean-absolute-error (MAE). * \"minimize-quantile-loss\" - Minimize the quantile loss at the quantiles defined in `quantiles`. * \"minimize-mape\" - Minimize the mean absolute percentage error.",
           "type": "string"
         },
         "trainBudgetMilliNodeHours": {
@@ -19468,6 +19496,13 @@
           "items": {
             "type": "string"
           }
+        },
+        "specialistWorkerEmails": {
+          "description": "The email addresses of workers in the SpecialistPool.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -20441,7 +20476,7 @@
           }
         },
         "optimizationObjective": {
-          "description": "Objective function the model is optimizing towards. The training process creates a model that optimizes the value of the objective function over the validation set. The supported optimization objectives: * \"minimize-rmse\" (default) - Minimize root-mean-squared error (RMSE). * \"minimize-mae\" - Minimize mean-absolute error (MAE). * \"minimize-rmsle\" - Minimize root-mean-squared log error (RMSLE). * \"minimize-rmspe\" - Minimize root-mean-squared percentage error (RMSPE). * \"minimize-wape-mae\" - Minimize the combination of weighted absolute percentage error (WAPE) and mean-absolute-error (MAE). * \"minimize-quantile-loss\" - Minimize the quantile loss at the quantiles defined in `quantiles`.",
+          "description": "Objective function the model is optimizing towards. The training process creates a model that optimizes the value of the objective function over the validation set. The supported optimization objectives: * \"minimize-rmse\" (default) - Minimize root-mean-squared error (RMSE). * \"minimize-mae\" - Minimize mean-absolute error (MAE). * \"minimize-rmsle\" - Minimize root-mean-squared log error (RMSLE). * \"minimize-rmspe\" - Minimize root-mean-squared percentage error (RMSPE). * \"minimize-wape-mae\" - Minimize the combination of weighted absolute percentage error (WAPE) and mean-absolute-error (MAE). * \"minimize-quantile-loss\" - Minimize the quantile loss at the quantiles defined in `quantiles`. * \"minimize-mape\" - Minimize the mean absolute percentage error.",
           "type": "string"
         },
         "trainBudgetMilliNodeHours": {
@@ -30747,8 +30782,8 @@
                             },
                             "batchRead": {
                               "id": "aiplatform.projects.locations.tensorboards.experiments.runs.timeSeries.batchRead",
-                              "path": "v1alpha1/{+tensorboard}/experiments/{experimentsId}/runs/{runsId}/timeSeries/{timeSeriesId}:batchRead",
-                              "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/runs/{runsId}/timeSeries/{timeSeriesId}:batchRead",
+                              "path": "v1alpha1/{+tensorboard}/experiments/{experimentsId}/runs/{runsId}/timeSeries:batchRead",
+                              "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/runs/{runsId}/timeSeries:batchRead",
                               "httpMethod": "GET",
                               "parameters": {
                                 "tensorboard": {
@@ -30768,11 +30803,6 @@
                                   "required": true,
                                   "type": "string"
                                 },
-                                "timeSeriesId": {
-                                  "location": "path",
-                                  "required": true,
-                                  "type": "string"
-                                },
                                 "timeSeries": {
                                   "description": "Required. The resource names of the TensorboardTimeSeries to read data from. Format: `projects\/{project}\/locations\/{location}\/tensorboards\/{tensorboard}\/experiments\/{experiment}\/runs\/{run}\/timeSeries\/{time_series}`",
                                   "location": "query",
@@ -30783,8 +30813,7 @@
                               "parameterOrder": [
                                 "tensorboard",
                                 "experimentsId",
-                                "runsId",
-                                "timeSeriesId"
+                                "runsId"
                               ],
                               "response": {
                                 "$ref": "GoogleCloudAiplatformV1alpha1BatchReadTensorboardTimeSeriesDataResponse"

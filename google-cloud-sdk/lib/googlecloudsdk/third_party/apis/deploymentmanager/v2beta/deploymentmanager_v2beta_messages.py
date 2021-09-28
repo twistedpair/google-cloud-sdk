@@ -2044,8 +2044,8 @@ class Rule(_messages.Message):
     description: Human-readable description of the rule.
     ins: If one or more 'in' clauses are specified, the rule matches if the
       PRINCIPAL/AUTHORITY_SELECTOR is in at least one of these entries.
-    logConfigs: The config returned to callers of tech.iam.IAM.CheckPolicy for
-      any entries that match the LOG action.
+    logConfigs: The config returned to callers of CheckPolicy for any entries
+      that match the LOG action.
     notIns: If one or more 'not_in' clauses are specified, the rule matches if
       the PRINCIPAL/AUTHORITY_SELECTOR is in none of the entries.
     permissions: A permission is a string of form '..' (e.g.,

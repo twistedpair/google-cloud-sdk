@@ -85,6 +85,14 @@ def MakeShareSettingsWithArgs(messages,
     if setting_configs == 'organization':
       return messages.ShareSettings(shareType=messages.ShareSettings
                                     .ShareTypeValueValuesEnum.ORGANIZATION)
+    if setting_configs == 'local':
+      if args.IsSpecified(share_with):
+        raise exceptions.InvalidArgumentException(
+            '--share_with',
+            'The scope this reservation is to be shared with must not be '
+            'specified with share setting local.')
+      return messages.ShareSettings(shareType=messages.ShareSettings
+                                    .ShareTypeValueValuesEnum.LOCAL)
     if setting_configs == 'projects':
       if not args.IsSpecified(share_with):
         raise exceptions.InvalidArgumentException(
@@ -109,6 +117,14 @@ def MakeShareSettingsWithDict(messages, dictionary, setting_configs):
     if setting_configs == 'organization':
       return messages.ShareSettings(shareType=messages.ShareSettings
                                     .ShareTypeValueValuesEnum.ORGANIZATION)
+    if setting_configs == 'local':
+      if 'share_with' in dictionary.keys():
+        raise exceptions.InvalidArgumentException(
+            '--share_with',
+            'The scope this reservation is to be shared with must not be '
+            'specified with share setting local.')
+      return messages.ShareSettings(shareType=messages.ShareSettings
+                                    .ShareTypeValueValuesEnum.LOCAL)
     if setting_configs == 'projects':
       if 'share_with' not in dictionary.keys():
         raise exceptions.InvalidArgumentException(

@@ -88,10 +88,14 @@ def TransformRouteFields(service_record):
   Returns:
     A custom printer marker object describing the route fields print format.
   """
+  no_status = service_record.status is None
   traffic_pairs = traffic_pair.GetTrafficTargetPairs(
       service_record.spec_traffic, service_record.status_traffic,
-      service_record.is_managed, service_record.status.latestReadyRevisionName)
-  return _TransformTrafficPairs(traffic_pairs, service_record.status.url,
+      service_record.is_managed,
+      (_INGRESS_UNSPECIFIED
+       if no_status else service_record.status.latestReadyRevisionName))
+  return _TransformTrafficPairs(traffic_pairs,
+                                '' if no_status else service_record.status.url,
                                 _GetIngress(service_record))
 
 

@@ -325,8 +325,9 @@ class EndpointsClient(object):
 
   def RawPredict(self, endpoint_ref, headers, request):
     """Sends online raw prediction request to an endpoint."""
-    url = '{}/endpoints/{}:rawPredict'.format(endpoint_ref.Parent(),
-                                              endpoint_ref.Name())
+    url = '{}{}/{}:rawPredict'.format(self.client.url,
+                                      getattr(self.client, '_VERSION'),
+                                      endpoint_ref.RelativeName())
 
     status, response_headers, response = _DoHttpPost(url, headers, request)
     if status != http_client.OK:

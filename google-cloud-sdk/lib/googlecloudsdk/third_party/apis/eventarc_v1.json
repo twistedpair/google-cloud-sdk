@@ -304,7 +304,7 @@
           "$ref": "GKE"
         },
         "workflow": {
-          "description": "Cloud Workflow that is triggered by the events. A new workflow execution will be created in response to an event. The workflow should be deployed in the same project of the trigger. Format: projects\/{project}\/locations\/{location}\/workflows\/{workflow}",
+          "description": "The resource name of the Workflow whose Executions will be triggered by the events. The Workflow resource should be deployed in the same project of the trigger. Format: projects\/{project}\/locations\/{location}\/workflows\/{workflow}",
           "type": "string"
         }
       }

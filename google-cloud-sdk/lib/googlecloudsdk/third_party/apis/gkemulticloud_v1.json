@@ -303,6 +303,10 @@
           "description": "Output only. PEM encoded x509 certificate of the cluster root of trust.",
           "readOnly": true,
           "type": "string"
+        },
+        "fleet": {
+          "description": "Optional. Fleet configuration.",
+          "$ref": "GoogleCloudGkemulticloudV1Fleet"
         }
       }
     },
@@ -399,6 +403,10 @@
         "proxyConfig": {
           "description": "Optional. Proxy configuration for outbound HTTP(S) traffic.",
           "$ref": "GoogleCloudGkemulticloudV1AwsProxyConfig"
+        },
+        "configEncryption": {
+          "description": "Required. Config encryption for user data.",
+          "$ref": "GoogleCloudGkemulticloudV1AwsConfigEncryption"
         }
       }
     },
@@ -489,6 +497,17 @@
         }
       }
     },
+    "GoogleCloudGkemulticloudV1AwsConfigEncryption": {
+      "id": "GoogleCloudGkemulticloudV1AwsConfigEncryption",
+      "description": "Config encryption for user data.",
+      "type": "object",
+      "properties": {
+        "kmsKeyArn": {
+          "description": "Required. The ARN of the AWS KMS key used to encrypt user data.",
+          "type": "string"
+        }
+      }
+    },
     "GoogleCloudGkemulticloudV1AwsAuthorization": {
       "id": "GoogleCloudGkemulticloudV1AwsAuthorization",
       "description": "Configuration related to the cluster RBAC settings.",
@@ -529,6 +548,22 @@
         },
         "identityProvider": {
           "description": "The ID of the OIDC Identity Provider (IdP) associated to the Workload Identity Pool.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudGkemulticloudV1Fleet": {
+      "id": "GoogleCloudGkemulticloudV1Fleet",
+      "description": "Fleet related configuration. Fleets are a Google Cloud concept for logically organizing clusters, letting you use and manage multi-cluster capabilities and apply consistent policies across your systems. See [Anthos Fleets](https:\/\/cloud.google.com\/anthos\/multicluster-management\/fleets) for more details on Anthos multi-cluster capabilities using Fleets.",
+      "type": "object",
+      "properties": {
+        "project": {
+          "description": "Required. The name of the Fleet host project where this cluster will be registered. Project names are formatted as `projects\/`.",
+          "type": "string"
+        },
+        "membership": {
+          "description": "Output only. The name of the managed Hub Membership resource associated to this cluster. Membership names are formatted as `projects\/\/locations\/global\/membership\/`.",
+          "readOnly": true,
           "type": "string"
         }
       }
@@ -719,6 +754,10 @@
         "proxyConfig": {
           "description": "Optional. Proxy configuration for outbound HTTP(S) traffic.",
           "$ref": "GoogleCloudGkemulticloudV1AwsProxyConfig"
+        },
+        "configEncryption": {
+          "description": "Required. Config encryption for user data.",
+          "$ref": "GoogleCloudGkemulticloudV1AwsConfigEncryption"
         }
       }
     },
@@ -966,6 +1005,11 @@
           "type": "string",
           "format": "byte"
         },
+        "pemCertificate": {
+          "description": "Output only. The PEM encoded x509 certificate.",
+          "readOnly": true,
+          "type": "string"
+        },
         "uid": {
           "description": "Output only. A globally unique identifier for the client.",
           "readOnly": true,
@@ -1104,6 +1148,10 @@
           "description": "Output only. PEM encoded x509 certificate of the cluster root of trust.",
           "readOnly": true,
           "type": "string"
+        },
+        "fleet": {
+          "description": "Optional. Fleet configuration.",
+          "$ref": "GoogleCloudGkemulticloudV1Fleet"
         }
       }
     },
@@ -1214,11 +1262,11 @@
       "type": "object",
       "properties": {
         "resourceGroupId": {
-          "description": "Required. The ARM ID the of the Azure resource group containing the Azure Key Vault key. Example: `\/subscriptions\/\/resourceGroups\/`",
+          "description": "Optional. The ARM ID the of the Azure resource group containing the Azure Key Vault key. Example: `\/subscriptions\/\/resourceGroups\/`",
           "type": "string"
         },
         "kmsKeyIdentifier": {
-          "description": "Required. The URL the of the Azure Key Vault key (with its version) to use to encrypt \/ decrypt data. For example: `https:\/\/.vault.azure.net\/keys\/\/`",
+          "description": "Optional. The URL the of the Azure Key Vault key (with its version) to use to encrypt \/ decrypt data. For example: `https:\/\/.vault.azure.net\/keys\/\/`",
           "type": "string"
         }
       }

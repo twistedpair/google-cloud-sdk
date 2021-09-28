@@ -113,7 +113,7 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
     return operations_util.WaitForOperation(
         self.client.apps_operations, operation, message=progress_message)
 
-  def CreateApp(self, location):
+  def CreateApp(self, location, service_account=None):
     """Creates an App Engine app within the current cloud project.
 
     Creates a new singleton app within the currently selected Cloud Project.
@@ -121,6 +121,8 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
 
     Args:
       location: str, The location (region) of the app, i.e. "us-central"
+      service_account: str, The app level service account of the app, i.e.
+        "123@test-app.iam.gserviceaccount.com"
 
     Raises:
       apitools_exceptions.HttpConflictError if app already exists
@@ -128,8 +130,13 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
     Returns:
       A long running operation.
     """
-    create_request = self.messages.Application(id=self.project,
-                                               locationId=location)
+    create_request = None
+    if service_account:
+      create_request = self.messages.Application(
+          id=self.project, locationId=location, serviceAccount=service_account)
+    else:
+      create_request = self.messages.Application(
+          id=self.project, locationId=location)
 
     operation = self.client.apps.Create(create_request)
 

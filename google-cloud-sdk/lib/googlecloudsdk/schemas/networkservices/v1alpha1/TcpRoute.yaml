@@ -37,11 +37,20 @@ properties:
       Name of the TcpRoute resource. It matches pattern
       `projects/*/locations/global/tcpRoutes/tcp_route_name>`.
     type: string
+  routers:
+    description: |-
+      Routers define a list of routers this TcpRoute should be served by. Each
+      router reference should match the pattern:
+      `projects/*/locations/global/routers/` The attached Router should be of a
+      type PROXY
+    type: array
+    items:
+      type: string
   rules:
     description: |-
       Rules that define how traffic is routed and handled. At least one
-      RouteRule must be supplied. If there are multiple rules then the action
-      taken will be the first rule to match.
+      RouteRule must be supplied. If there are multiple rules then the
+      action taken will be the first rule to match.
     type: array
     items:
       $ref: TcpRouteRouteRule.yaml

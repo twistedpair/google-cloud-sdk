@@ -788,6 +788,23 @@ class CloudassetOperationsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class CloudassetQueryAssetsRequest(_messages.Message):
+  r"""A CloudassetQueryAssetsRequest object.
+
+  Fields:
+    parent: Required. The relative name of the root asset. This can only be an
+      organization number (such as "organizations/123"), a project ID (such as
+      "projects/my-project-id"), or a project number (such as
+      "projects/12345"), or a folder number (such as "folders/123"). Only
+      assets belonging to the `parent` will be returned.
+    queryAssetsRequest: A QueryAssetsRequest resource to be passed as the
+      request body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  queryAssetsRequest = _messages.MessageField('QueryAssetsRequest', 2)
+
+
 class CloudassetSearchAllIamPoliciesRequest(_messages.Message):
   r"""A CloudassetSearchAllIamPoliciesRequest object.
 
@@ -3388,6 +3405,102 @@ class PubsubDestination(_messages.Message):
   topic = _messages.StringField(1)
 
 
+class QueryAssetsRequest(_messages.Message):
+  r"""QueryAssets request.
+
+  Fields:
+    jobReference: Optional. Reference to the query job, which is from the
+      `QueryAssetsResponse` of previous `QueryAssets` call.
+    pageSize: Optional. The maximum number of rows to return in the results.
+      Responses are limited to 10 MB. By default, there is no maximum row
+      count, and only the byte limit applies. When the byte limit is reach,
+      the rest of query results will be paginated.
+    pageToken: Optional. A page token received from previous `QueryAssets`.
+    statement: Optional. A SQL statement that's compatible with [BigQuery
+      Standard SQL](http://cloud/bigquery/docs/reference/standard-
+      sql/enabling-standard-sql).
+    timeout: Optional. Specifies the maximum amount of time that the client is
+      willing to wait for the query to complete. By default, this limit is 5
+      min for the first query, and 10 seconds for the following queries. If
+      the query is complete, the `done` field in the `QueryAssetsResponse` is
+      true, otherwise false. Like BigQuery [jobs.query API](https://cloud.goog
+      le.com/bigquery/docs/reference/rest/v2/jobs/query#queryrequest) The call
+      is not guaranteed to wait for the specified timeout; it typically
+      returns after around 200 seconds (200,000 milliseconds), even if the
+      query is not complete.
+  """
+
+  jobReference = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  statement = _messages.StringField(4)
+  timeout = _messages.StringField(5)
+
+
+class QueryAssetsResponse(_messages.Message):
+  r"""QueryAssets response.
+
+  Fields:
+    done: The query response, which can be either an `error` or a valid
+      `response`. If `done` == `false`, neither `error` nor `response` is set.
+      If `done` == `true`, exactly one of `error` or `response` is set.
+    error: Error status.
+    jobReference: Reference to a query job.
+    queryResult: Result of the query.
+  """
+
+  done = _messages.BooleanField(1)
+  error = _messages.MessageField('Status', 2)
+  jobReference = _messages.StringField(3)
+  queryResult = _messages.MessageField('QueryResult', 4)
+
+
+class QueryResult(_messages.Message):
+  r"""Execution results of the query. The result is formatted as rows
+  represented by BigQuery compatible [schema]. When pagination is necessary,
+  it will contains the page token to retrieve the results of following pages.
+
+  Messages:
+    RowsValueListEntry: A RowsValueListEntry object.
+
+  Fields:
+    nextPageToken: Token to retrieve the next page of the results.
+    rows: Each row hold a query result in the format of `Struct`.
+    schema: Describes the format of the [rows].
+    totalRows: Total rows of the whole query results.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class RowsValueListEntry(_messages.Message):
+    r"""A RowsValueListEntry object.
+
+    Messages:
+      AdditionalProperty: An additional property for a RowsValueListEntry
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a RowsValueListEntry object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  nextPageToken = _messages.StringField(1)
+  rows = _messages.MessageField('RowsValueListEntry', 2, repeated=True)
+  schema = _messages.MessageField('TableSchema', 3)
+  totalRows = _messages.IntegerField(4)
+
+
 class RelatedAsset(_messages.Message):
   r"""An asset identifier in Google Cloud which contains its name, type and
   ancestors. An asset can be any resource in the Google Cloud [resource
@@ -4036,6 +4149,39 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class TableFieldSchema(_messages.Message):
+  r"""A field in TableSchema.
+
+  Fields:
+    field: The field name. The name must contain only letters (a-z, A-Z),
+      numbers (0-9), or underscores (_), and must start with a letter or
+      underscore. The maximum length is 128 characters.
+    fields: Describes the nested schema fields if the type property is set to
+      RECORD.
+    mode: The field mode. Possible values include NULLABLE, REQUIRED and
+      REPEATED. The default value is NULLABLE.
+    type: The field data type. Possible values include * STRING * BYTES *
+      INTEGER * FLOAT * BOOLEAN * TIMESTAMP * DATE * TIME * DATETIME *
+      GEOGRAPHY, * NUMERIC, * BIGNUMERIC, * RECORD (where RECORD indicates
+      that the field contains a nested schema).
+  """
+
+  field = _messages.StringField(1)
+  fields = _messages.MessageField('TableFieldSchema', 2, repeated=True)
+  mode = _messages.StringField(3)
+  type = _messages.StringField(4)
+
+
+class TableSchema(_messages.Message):
+  r"""BigQuery Compatible table schema.
+
+  Fields:
+    fields: Describes the fields in a table.
+  """
+
+  fields = _messages.MessageField('TableFieldSchema', 1, repeated=True)
 
 
 class TemporalAsset(_messages.Message):

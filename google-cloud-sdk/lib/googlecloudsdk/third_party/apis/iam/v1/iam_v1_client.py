@@ -1621,7 +1621,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def Disable(self, request, global_params=None):
-      r"""Disable a ServiceAccountKey. A disabled service account key can be enabled through EnableServiceAccountKey. The API is currently in preview phase.
+      r"""Disable a ServiceAccountKey. A disabled service account key can be enabled through EnableServiceAccountKey.
 
       Args:
         request: (IamProjectsServiceAccountsKeysDisableRequest) input message
@@ -1648,7 +1648,7 @@ class IamV1(base_api.BaseApiClient):
     )
 
     def Enable(self, request, global_params=None):
-      r"""Enable a ServiceAccountKey. The API is currently in preview phase.
+      r"""Enable a ServiceAccountKey.
 
       Args:
         request: (IamProjectsServiceAccountsKeysEnableRequest) input message

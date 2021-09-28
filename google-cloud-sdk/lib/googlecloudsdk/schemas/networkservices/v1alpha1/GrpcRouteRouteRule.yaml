@@ -22,14 +22,18 @@ properties:
         type: string
       version:
         type: string
+  UNKNOWN:
+    type: array
+    description: Unknown API fields that cannot be imported.
+    items:
+      type: string
   action:
     description: |-
       A detailed rule defining how to route traffic. This field is required.
     $ref: GrpcRouteRouteAction.yaml
-  matches:
+  match:
     description: |-
       A set of conditions that must match for this rule to be activated. If no
       routeMatch field is specified, this rule will unconditionally match
       traffic.
     $ref: GrpcRouteRouteMatch.yaml
-    type: array

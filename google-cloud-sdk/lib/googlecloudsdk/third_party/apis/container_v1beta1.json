@@ -603,6 +603,20 @@
         "spot": {
           "description": "Spot flag for enabling Spot VM, which is a rebrand of the existing preemptible flag.",
           "type": "boolean"
+        },
+        "maintenanceInterval": {
+          "description": "Specifies the frequency of planned maintenance events.",
+          "type": "string",
+          "enumDescriptions": [
+            "The maintenance interval is not explicitly specified for this node.",
+            "Nodes are eligible to receive infrastructure and hypervisor updates as they become available. This may result in more maintenance operations (live migrations or terminations) for the VM than the PERIODIC option.",
+            "Nodes receive infrastructure and hypervisor updates on a periodic basis, minimizing the number of maintenance operations (live migrations or terminations) on an individual VM. This may mean underlying VMs will take longer to receive an update than if it was configured for AS_NEEDED. Security updates will still be applied as soon as they are available."
+          ],
+          "enum": [
+            "MAINTENANCE_INTERVAL_UNSPECIFIED",
+            "AS_NEEDED",
+            "PERIODIC"
+          ]
         }
       }
     },

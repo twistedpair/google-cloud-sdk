@@ -858,7 +858,6 @@ def GetOsloginState(instance, project, requested_user, public_key,
   login_profile = oslogin.GetLoginProfile(
       user_email, project.name,
       include_security_keys=oslogin_state.security_keys_enabled)
-  log.warning(login_profile)
   if oslogin_state.security_keys_enabled:
     oslogin_state.security_keys = oslogin_utils.GetSecurityKeysFromProfile(
         user_email, oslogin, profile=login_profile)

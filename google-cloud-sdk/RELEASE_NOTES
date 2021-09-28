@@ -5,6 +5,100 @@ Copyright 2014-2021 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 359.0.0 (2021-09-28)
+
+### Breaking Changes
+
+*   **(AI)** Removed 'python-image-uri' field from `--work-pool-spec` flag of `gcloud beta ai custom-jobs create`. Use 'executor-image-uri' field instead.
+
+
+### Cloud SDK
+
+* Use pyca/cryptography to decode p12 service account keys if available.
+  Otherwise, fall back to using PyOpenSSL.
+
+### AI
+
+* Fixed issue where `gcloud ai custom-jobs list` and `gcloud ai hp-tuning-jobs list` didn't show results with `--uri` flag.
+* Promoted `gcloud ai endpoints raw-predict` to beta and GA.
+
+### Artifact Registry
+
+* Fixed typos for `gcloud beta artifacts repositories create` help text.
+
+### Bare Metal Solution
+
+*   Promoted `gcloud bms instances create` and `gcloud bms instances describe` to GA.
+
+### Cloud Bigtable
+
+*  Added `--restrict-to` flags to `gcloud bigtable app-profiles create` and
+   `gcloud bigtable app-profiles update`, which restricts multi-cluster routing
+   to a specified list of cluster ids.
+
+### Cloud Data Fusion
+
+*   Added `--enable_rbac` optional argument to\
+    `gcloud beta data-fusion instances create` to enable granular\
+    [role-based access control](/data-fusion/docs/concepts/rbac) in enterprise instances with version >= 6.5.0.
+
+### Cloud Dataflow
+
+* Corrected `--snapshot-ttl` lower/upper bound of
+`gcloud dataflow snapshots create` command.
+
+### Cloud Pub/Sub
+
+* Added `--event-time` flag to `gcloud beta pubsub lite-topics publish` to allow users to specify an event time when publishing a message.
+
+### Cloud Run
+
+* Promoted `--key`, `--clear-key`, `--post-key-revocation-action-type`
+  and `--clear-post-key-revocation-action-type` flags of `gcloud run deploy`
+  and `gcloud run services update` to GA for `--platform=managed`.
+* Deployments that change only the service metadata will no longer create new
+  revisions. For example, `gcloud run services my-service update --ingress=all`.
+
+### Cloud Scheduler
+
+*   Promoted `gcloud scheduler locations` command group to GA. Commands in this
+    group provide information for locations where Cloud Scheduler is available.
+
+### Cloud Storage
+
+* Updated gsutil component to 5.2.
+
+### Compute Engine
+
+* Added `--network-performance-configs` flag to `gcloud compute instance-templates create` to both alpha and beta.
+* Modified `--load-balancing-scheme` flag of `gcloud compute backend-services create` and `gcloud compute forwarding-rules create` to accept choice 'EXTERNAL_MANAGED' in beta.
+* Modified `--purpose` flag of `gcloud compute networks subnets create` to accept choice `REGIONAL_MANAGED_PROXY` in beta.
+* Added new `--share-setting=local` to `compute commitments create`, `compute future-reservations create`, and `compute reservations create`.
+
+### Config Connector
+
+* Updated Google Cloud Config Connector to version 1.62.0.
+  See Config Connector Overview for more details [https://cloud.google.com/config-connector/docs/overview](https://cloud.google.com/config-connector/docs/overview).
+
+### Identity and Access Management
+
+* Added command `gcloud iam workforce-pools create-cred-config` to enable Workforce Pools configuration creation.
+
+### Kpt
+
+* Updated kpt from v1.0.0-beta.4 to v1.0.0-beta.5.
+  * Added support for resolving top level pkg symlink.
+  * Added support for preserving the ordering of fields with null values.
+  * Improved the parsing logic for GitHub http package URL in `kpt pkg get`.
+
+### Kubernetes Engine
+
+* Hid `--disable-autopilot` flag from `gcloud container clusters update`.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 358.0.0 (2021-09-21)
 
 ### Breaking Changes

@@ -237,12 +237,12 @@ def AddUpdateArgs(parser, include_alpha_logging,
         '--purpose',
         choices={
             'REGIONAL_MANAGED_PROXY':
-                'The REGIONAL_MANAGED_PROXY subnet purpose.'
+                'The proxy-only subnet for regional HTTP(S) load balancers.'
         },
         type=lambda x: x.replace('-', '_').upper(),
         help=("""\
-        The purpose is set to REGIONAL_MANAGED_PROXY to migrate from the older
-        INTERNAL_HTTPS_LOAD_BALANCER purpose.
+        The purpose of the subnetwork is set to REGIONAL_MANAGED_PROXY to
+        migrate from the INTERNAL_HTTPS_LOAD_BALANCER purpose.
         """))
 
   parser.add_argument(

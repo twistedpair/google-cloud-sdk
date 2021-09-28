@@ -4,7 +4,7 @@
   "id": "compute:v1",
   "name": "compute",
   "version": "v1",
-  "revision": "20210910",
+  "revision": "20210920",
   "title": "Compute Engine API",
   "description": "Creates and runs virtual machines on Google Cloud Platform. ",
   "ownerDomain": "google.com",
@@ -820,7 +820,7 @@
           "type": "string"
         },
         "name": {
-          "description": "Name of the resource; provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression [a-z]([-a-z0-9]*[a-z0-9])?. The first character must be a lowercase letter, and all following characters (except for the last character) must be a dash, lowercase letter, or digit. The last character must be a lowercase letter or digit.",
+          "description": "Name of the resource; provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?`. The first character must be a lowercase letter, and all following characters (except for the last character) must be a dash, lowercase letter, or digit. The last character must be a lowercase letter or digit.",
           "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
           "annotations": {
             "required": [
@@ -3167,11 +3167,11 @@
           "format": "int32"
         },
         "setPublicPtr": {
-          "description": "Specifies whether a public DNS 'PTR' record should be created to map the external IP address of the instance to a DNS domain name.",
+          "description": "Specifies whether a public DNS 'PTR' record should be created to map the external IP address of the instance to a DNS domain name. This field is not used in ipv6AccessConfig. A default PTR record will be created if the VM has external IPv6 range associated.",
           "type": "boolean"
         },
         "publicPtrDomainName": {
-          "description": "The DNS domain name for the public PTR record. You can set this field only if the `setPublicPtr` field is enabled.",
+          "description": "The DNS domain name for the public PTR record. You can set this field only if the `setPublicPtr` field is enabled in accessConfig. If this field is unspecified in ipv6AccessConfig, a default PTR record will be createc for first IP in associated external IPv6 range.",
           "type": "string"
         },
         "networkTier": {
@@ -4412,25 +4412,26 @@
           "type": "string"
         },
         "reservationAffinity": {
-          "description": "Specifies the reservations that instances can consume from.",
+          "description": "Specifies the reservations that instances can consume from. Note that for MachineImage, this is not supported yet.",
           "$ref": "ReservationAffinity"
         },
         "shieldedInstanceConfig": {
+          "description": "Note that for MachineImage, this is not supported yet.",
           "$ref": "ShieldedInstanceConfig"
         },
         "resourcePolicies": {
-          "description": "Resource policies (names, not ULRs) applied to instances created from these properties.",
+          "description": "Resource policies (names, not ULRs) applied to instances created from these properties. Note that for MachineImage, this is not supported yet.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "confidentialInstanceConfig": {
-          "description": "Specifies the Confidential Instance options.",
+          "description": "Specifies the Confidential Instance options. Note that for MachineImage, this is not supported yet.",
           "$ref": "ConfidentialInstanceConfig"
         },
         "privateIpv6GoogleAccess": {
-          "description": "The private IPv6 google access type for VMs. If not specified, use INHERIT_FROM_SUBNETWORK as default.",
+          "description": "The private IPv6 google access type for VMs. If not specified, use INHERIT_FROM_SUBNETWORK as default. Note that for MachineImage, this is not supported yet.",
           "type": "string",
           "enumDescriptions": [
             "Bidirectional private IPv6 access to\/from Google services. If specified, the subnetwork who is attached to the instance's default network interface will be assigned an internal IPv6 prefix if it doesn't have before.",
@@ -4444,7 +4445,7 @@
           ]
         },
         "advancedMachineFeatures": {
-          "description": "Controls for advanced machine-related behavior features.",
+          "description": "Controls for advanced machine-related behavior features. Note that for MachineImage, this is not supported yet.",
           "$ref": "AdvancedMachineFeatures"
         }
       }
@@ -4721,6 +4722,10 @@
             "UPDATING"
           ]
         },
+        "shareSettings": {
+          "description": "Share-settings for shared-reservation",
+          "$ref": "ShareSettings"
+        },
         "satisfiesPzs": {
           "description": "[Output Only] Reserved for future use.",
           "type": "boolean"
@@ -4805,6 +4810,25 @@
           "enum": [
             "NVME",
             "SCSI"
+          ]
+        }
+      }
+    },
+    "ShareSettings": {
+      "id": "ShareSettings",
+      "description": "The share setting for reservations and sole tenancy node groups.",
+      "type": "object",
+      "properties": {
+        "shareType": {
+          "description": "Type of sharing for this shared-reservation",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value.",
+            "Default value. This value is unused."
+          ],
+          "enum": [
+            "LOCAL",
+            "SHARE_TYPE_UNSPECIFIED"
           ]
         }
       }
@@ -9724,7 +9748,7 @@
           "format": "int32"
         },
         "clientTtl": {
-          "description": "Specifies a separate client (e.g. browser client) maximum TTL. This is used to clamp the max-age (or Expires) value sent to the client. With FORCE_CACHE_ALL, the lesser of client_ttl and default_ttl is used for the response max-age directive, along with a \"public\" directive. For cacheable content in CACHE_ALL_STATIC mode, client_ttl clamps the max-age from the origin (if specified), or else sets the response max-age directive to the lesser of the client_ttl and default_ttl, and also ensures a \"public\" cache-control directive is present. If a client TTL is not specified, a default value (1 hour) will be used. The maximum allowed value is 86400s (1 day).",
+          "description": "Specifies a separate client (e.g. browser client) maximum TTL. This is used to clamp the max-age (or Expires) value sent to the client. With FORCE_CACHE_ALL, the lesser of client_ttl and default_ttl is used for the response max-age directive, along with a \"public\" directive. For cacheable content in CACHE_ALL_STATIC mode, client_ttl clamps the max-age from the origin (if specified), or else sets the response max-age directive to the lesser of the client_ttl and default_ttl, and also ensures a \"public\" cache-control directive is present. If a client TTL is not specified, a default value (1 hour) will be used. The maximum allowed value is 31,622,400s (1 year).",
           "type": "integer",
           "format": "int32"
         },
@@ -10322,7 +10346,7 @@
           "format": "int32"
         },
         "clientTtl": {
-          "description": "Specifies a separate client (e.g. browser client) maximum TTL. This is used to clamp the max-age (or Expires) value sent to the client. With FORCE_CACHE_ALL, the lesser of client_ttl and default_ttl is used for the response max-age directive, along with a \"public\" directive. For cacheable content in CACHE_ALL_STATIC mode, client_ttl clamps the max-age from the origin (if specified), or else sets the response max-age directive to the lesser of the client_ttl and default_ttl, and also ensures a \"public\" cache-control directive is present. If a client TTL is not specified, a default value (1 hour) will be used. The maximum allowed value is 86400s (1 day).",
+          "description": "Specifies a separate client (e.g. browser client) maximum TTL. This is used to clamp the max-age (or Expires) value sent to the client. With FORCE_CACHE_ALL, the lesser of client_ttl and default_ttl is used for the response max-age directive, along with a \"public\" directive. For cacheable content in CACHE_ALL_STATIC mode, client_ttl clamps the max-age from the origin (if specified), or else sets the response max-age directive to the lesser of the client_ttl and default_ttl, and also ensures a \"public\" cache-control directive is present. If a client TTL is not specified, a default value (1 hour) will be used. The maximum allowed value is 31,622,400s (1 year).",
           "type": "integer",
           "format": "int32"
         },
@@ -24459,6 +24483,311 @@
           "items": {
             "$ref": "Route"
           }
+        },
+        "bfdStatus": {
+          "$ref": "BfdStatus"
+        }
+      }
+    },
+    "BfdStatus": {
+      "id": "BfdStatus",
+      "description": "Next free: 15",
+      "type": "object",
+      "properties": {
+        "uptimeMs": {
+          "description": "Session uptime in milliseconds. Value will be 0 if session is not up.",
+          "type": "string",
+          "format": "int64"
+        },
+        "localState": {
+          "description": "The current BFD session state as seen by the transmitting system. These states are specified in section 4.1 of RFC5880",
+          "type": "string",
+          "enumDescriptions": [
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "enum": [
+            "ADMIN_DOWN",
+            "DOWN",
+            "INIT",
+            "STATE_UNSPECIFIED",
+            "UP"
+          ]
+        },
+        "localDiagnostic": {
+          "description": "The diagnostic code specifies the local system's reason for the last change in session state. This allows remote systems to determine the reason that the previous session failed, for example. These diagnostic codes are specified in section 4.1 of RFC5880",
+          "type": "string",
+          "enumDescriptions": [
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "enum": [
+            "ADMINISTRATIVELY_DOWN",
+            "CONCATENATED_PATH_DOWN",
+            "CONTROL_DETECTION_TIME_EXPIRED",
+            "DIAGNOSTIC_UNSPECIFIED",
+            "ECHO_FUNCTION_FAILED",
+            "FORWARDING_PLANE_RESET",
+            "NEIGHBOR_SIGNALED_SESSION_DOWN",
+            "NO_DIAGNOSTIC",
+            "PATH_DOWN",
+            "REVERSE_CONCATENATED_PATH_DOWN"
+          ]
+        },
+        "controlPacketCounts": {
+          "description": "Control packet counts for the current BFD session.",
+          "$ref": "BfdStatusPacketCounts"
+        },
+        "txPacket": {
+          "description": "The most recent Tx control packet for this BFD session.",
+          "$ref": "BfdPacket"
+        },
+        "rxPacket": {
+          "description": "The most recent Rx control packet for this BFD session.",
+          "$ref": "BfdPacket"
+        },
+        "controlPacketIntervals": {
+          "description": "Inter-packet time interval statistics for control packets.",
+          "type": "array",
+          "items": {
+            "$ref": "PacketIntervals"
+          }
+        },
+        "negotiatedLocalControlTxIntervalMs": {
+          "description": "Negotiated transmit interval for control packets.",
+          "type": "integer",
+          "format": "uint32"
+        },
+        "bfdSessionInitializationMode": {
+          "description": "The BFD session initialization mode for this BGP peer. If set to ACTIVE, the Cloud Router will initiate the BFD session for this BGP peer. If set to PASSIVE, the Cloud Router will wait for the peer router to initiate the BFD session for this BGP peer. If set to DISABLED, BFD is disabled for this BGP peer.",
+          "type": "string",
+          "enumDescriptions": [
+            "",
+            "",
+            ""
+          ],
+          "enum": [
+            "ACTIVE",
+            "DISABLED",
+            "PASSIVE"
+          ]
+        },
+        "configUpdateTimestampMicros": {
+          "description": "Unix timestamp of the most recent config update.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "BfdStatusPacketCounts": {
+      "id": "BfdStatusPacketCounts",
+      "type": "object",
+      "properties": {
+        "numTx": {
+          "description": "Number of packets transmitted since the beginning of the current BFD session.",
+          "type": "integer",
+          "format": "uint32"
+        },
+        "numRx": {
+          "description": "Number of packets received since the beginning of the current BFD session.",
+          "type": "integer",
+          "format": "uint32"
+        },
+        "numRxSuccessful": {
+          "description": "Number of packets received that were successfully processed since the beginning of the current BFD session.",
+          "type": "integer",
+          "format": "uint32"
+        },
+        "numRxRejected": {
+          "description": "Number of packets received that were rejected because of errors since the beginning of the current BFD session.",
+          "type": "integer",
+          "format": "uint32"
+        }
+      }
+    },
+    "BfdPacket": {
+      "id": "BfdPacket",
+      "type": "object",
+      "properties": {
+        "version": {
+          "description": "The version number of the BFD protocol, as specified in section 4.1 of RFC5880.",
+          "type": "integer",
+          "format": "uint32"
+        },
+        "diagnostic": {
+          "description": "The diagnostic code specifies the local system's reason for the last change in session state. This allows remote systems to determine the reason that the previous session failed, for example. These diagnostic codes are specified in section 4.1 of RFC5880",
+          "type": "string",
+          "enumDescriptions": [
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "enum": [
+            "ADMINISTRATIVELY_DOWN",
+            "CONCATENATED_PATH_DOWN",
+            "CONTROL_DETECTION_TIME_EXPIRED",
+            "DIAGNOSTIC_UNSPECIFIED",
+            "ECHO_FUNCTION_FAILED",
+            "FORWARDING_PLANE_RESET",
+            "NEIGHBOR_SIGNALED_SESSION_DOWN",
+            "NO_DIAGNOSTIC",
+            "PATH_DOWN",
+            "REVERSE_CONCATENATED_PATH_DOWN"
+          ]
+        },
+        "state": {
+          "description": "The current BFD session state as seen by the transmitting system. These states are specified in section 4.1 of RFC5880",
+          "type": "string",
+          "enumDescriptions": [
+            "",
+            "",
+            "",
+            "",
+            ""
+          ],
+          "enum": [
+            "ADMIN_DOWN",
+            "DOWN",
+            "INIT",
+            "STATE_UNSPECIFIED",
+            "UP"
+          ]
+        },
+        "poll": {
+          "description": "The Poll bit of the BFD packet. This is specified in section 4.1 of RFC5880",
+          "type": "boolean"
+        },
+        "final": {
+          "description": "The Final bit of the BFD packet. This is specified in section 4.1 of RFC5880",
+          "type": "boolean"
+        },
+        "controlPlaneIndependent": {
+          "description": "The Control Plane Independent bit of the BFD packet. This is specified in section 4.1 of RFC5880",
+          "type": "boolean"
+        },
+        "authenticationPresent": {
+          "description": "The Authentication Present bit of the BFD packet. This is specified in section 4.1 of RFC5880",
+          "type": "boolean"
+        },
+        "demand": {
+          "description": "The demand bit of the BFD packet. This is specified in section 4.1 of RFC5880",
+          "type": "boolean"
+        },
+        "multipoint": {
+          "description": "The multipoint bit of the BFD packet. This is specified in section 4.1 of RFC5880",
+          "type": "boolean"
+        },
+        "multiplier": {
+          "description": "The detection time multiplier of the BFD packet. This is specified in section 4.1 of RFC5880",
+          "type": "integer",
+          "format": "uint32"
+        },
+        "length": {
+          "description": "The length of the BFD Control packet in bytes. This is specified in section 4.1 of RFC5880",
+          "type": "integer",
+          "format": "uint32"
+        },
+        "myDiscriminator": {
+          "description": "The My Discriminator value in the BFD packet. This is specified in section 4.1 of RFC5880",
+          "type": "integer",
+          "format": "uint32"
+        },
+        "yourDiscriminator": {
+          "description": "The Your Discriminator value in the BFD packet. This is specified in section 4.1 of RFC5880",
+          "type": "integer",
+          "format": "uint32"
+        },
+        "minTxIntervalMs": {
+          "description": "The Desired Min TX Interval value in the BFD packet. This is specified in section 4.1 of RFC5880",
+          "type": "integer",
+          "format": "uint32"
+        },
+        "minRxIntervalMs": {
+          "description": "The Required Min RX Interval value in the BFD packet. This is specified in section 4.1 of RFC5880",
+          "type": "integer",
+          "format": "uint32"
+        },
+        "minEchoRxIntervalMs": {
+          "description": "The Required Min Echo RX Interval value in the BFD packet. This is specified in section 4.1 of RFC5880",
+          "type": "integer",
+          "format": "uint32"
+        }
+      }
+    },
+    "PacketIntervals": {
+      "id": "PacketIntervals",
+      "description": "Next free: 7",
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "The type of packets for which inter-packet intervals were computed.",
+          "type": "string",
+          "enumDescriptions": [
+            "Only applies to Echo packets. This shows the intervals between sending and receiving the same packet.",
+            "Intervals between received packets.",
+            "Intervals between transmitted packets.",
+            ""
+          ],
+          "enum": [
+            "LOOPBACK",
+            "RECEIVE",
+            "TRANSMIT",
+            "TYPE_UNSPECIFIED"
+          ]
+        },
+        "duration": {
+          "description": "From how long ago in the past these intervals were observed.",
+          "type": "string",
+          "enumDescriptions": [
+            "",
+            "",
+            "From BfdSession object creation time.",
+            ""
+          ],
+          "enum": [
+            "DURATION_UNSPECIFIED",
+            "HOUR",
+            "MAX",
+            "MINUTE"
+          ]
+        },
+        "numIntervals": {
+          "description": "Number of inter-packet intervals from which these statistics were derived.",
+          "type": "string",
+          "format": "int64"
+        },
+        "minMs": {
+          "description": "Minimum observed inter-packet interval in milliseconds.",
+          "type": "string",
+          "format": "int64"
+        },
+        "maxMs": {
+          "description": "Maximum observed inter-packet interval in milliseconds.",
+          "type": "string",
+          "format": "int64"
+        },
+        "avgMs": {
+          "description": "Average observed inter-packet interval in milliseconds.",
+          "type": "string",
+          "format": "int64"
         }
       }
     },

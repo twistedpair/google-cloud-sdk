@@ -124,10 +124,10 @@ def GetClusterVersion(args):
   return args.cluster_version
 
 
-def AddNodeVersion(parser):
+def AddNodeVersion(parser, required=True):
   parser.add_argument(
       '--node-version',
-      required=True,
+      required=required,
       help='Kubernetes version to use for the node pool.')
 
 

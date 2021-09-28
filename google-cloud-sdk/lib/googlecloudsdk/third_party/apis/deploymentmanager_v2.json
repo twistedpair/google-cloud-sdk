@@ -5,7 +5,7 @@
  "name": "deploymentmanager",
  "canonicalName": "Deployment Manager",
  "version": "v2",
- "revision": "20210910",
+ "revision": "20210917",
  "title": "Google Cloud Deployment Manager API",
  "description": "Declares, configures, and deploys complex solutions on Google Cloud Platform.",
  "ownerDomain": "google.com",
@@ -1025,7 +1025,7 @@
     },
     "logConfigs": {
      "type": "array",
-     "description": "The config returned to callers of tech.iam.IAM.CheckPolicy for any entries that match the LOG action.",
+     "description": "The config returned to callers of CheckPolicy for any entries that match the LOG action.",
      "items": {
       "$ref": "LogConfig"
      }

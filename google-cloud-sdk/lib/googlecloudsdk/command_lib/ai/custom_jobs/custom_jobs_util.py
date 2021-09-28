@@ -26,6 +26,7 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core.util import files
 
 # TODO(b/191347326): Consider adding tests for the "public" methods in this file
+CUSTOM_JOB_COLLECTION = 'aiplatform.projects.locations.customJobs'
 
 
 def _ConstructSingleWorkerPoolSpec(aiplatform_client,

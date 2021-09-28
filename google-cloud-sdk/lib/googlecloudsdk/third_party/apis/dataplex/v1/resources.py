@@ -53,9 +53,10 @@ class Collections(enum.Enum):
   )
   PROJECTS_LOCATIONS_LAKES_ACTIONS = (
       'projects.locations.lakes.actions',
-      'projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/actions',
+      'projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/actions/'
+      '{actionsId}',
       {},
-      ['projectsId', 'locationsId', 'lakesId'],
+      ['projectsId', 'locationsId', 'lakesId', 'actionsId'],
       True
   )
   PROJECTS_LOCATIONS_LAKES_ZONES = (
@@ -72,9 +73,9 @@ class Collections(enum.Enum):
   PROJECTS_LOCATIONS_LAKES_ZONES_ACTIONS = (
       'projects.locations.lakes.zones.actions',
       'projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/zones/'
-      '{zonesId}/actions',
+      '{zonesId}/actions/{actionsId}',
       {},
-      ['projectsId', 'locationsId', 'lakesId', 'zonesId'],
+      ['projectsId', 'locationsId', 'lakesId', 'zonesId', 'actionsId'],
       True
   )
   PROJECTS_LOCATIONS_LAKES_ZONES_ASSETS = (
@@ -91,9 +92,32 @@ class Collections(enum.Enum):
   PROJECTS_LOCATIONS_LAKES_ZONES_ASSETS_ACTIONS = (
       'projects.locations.lakes.zones.assets.actions',
       'projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/zones/'
-      '{zonesId}/assets/{assetsId}/actions',
+      '{zonesId}/assets/{assetsId}/actions/{actionsId}',
       {},
-      ['projectsId', 'locationsId', 'lakesId', 'zonesId', 'assetsId'],
+      ['projectsId', 'locationsId', 'lakesId', 'zonesId', 'assetsId', 'actionsId'],
+      True
+  )
+  PROJECTS_LOCATIONS_LAKES_ZONES_ENTITIES = (
+      'projects.locations.lakes.zones.entities',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/'
+              'zones/{zonesId}/entities/{entitiesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_LAKES_ZONES_ENTITIES_PARTITIONS = (
+      'projects.locations.lakes.zones.entities.partitions',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/'
+              'zones/{zonesId}/entities/{entitiesId}/partitions/'
+              '{partitionsId}',
+      },
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_OPERATIONS = (

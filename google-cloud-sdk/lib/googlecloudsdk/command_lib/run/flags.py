@@ -873,17 +873,15 @@ def AddCmekKeyRevocationActionTypeFlag(parser, with_clear=True):
   """Add post CMEK key revocation action type flag."""
   policy_group = parser
   if with_clear:
-    policy_group = parser.add_mutually_exclusive_group(hidden=True)
+    policy_group = parser.add_mutually_exclusive_group()
     policy_group.add_argument(
         '--clear-post-key-revocation-action-type',
         default=False,
-        hidden=True,
         action='store_true',
         help='Remove any previously set post CMEK key revocation action type.')
   policy_group.add_argument(
       '--post-key-revocation-action-type',
       choices=_POST_CMEK_KEY_REVOCATION_ACTION_TYPE_CHOICES,
-      hidden=True,
       help=('Action type after CMEK key revocation.'))
 
 
@@ -1295,19 +1293,23 @@ def _GetIngressChanges(args):
             args.ingress, platform))
 
 
-def _GetConfigurationChanges(args):
-  """Returns a list of changes shared by multiple resources, based on the flags set."""
-  changes = []
-
-  # Set client name and version regardless of whether or not it was specified.
+def _PrependClientNameAndVersionChange(args, changes):
+  """Set client name and version regardless of whether or not it was specified."""
   if 'client_name' in args:
     is_either_specified = (
         args.IsSpecified('client_name') or args.IsSpecified('client_version'))
-    changes.append(
+    changes.insert(
+        0,
         config_changes.SetClientNameAndVersionAnnotationChange(
             args.client_name if is_either_specified else 'gcloud',
             args.client_version
-            if is_either_specified else config.CLOUD_SDK_VERSION))
+            if is_either_specified else config.CLOUD_SDK_VERSION,
+            set_on_template=config_changes.AdjustsTemplate(changes)))
+
+
+def _GetConfigurationChanges(args):
+  """Returns a list of changes shared by multiple resources, based on the flags set."""
+  changes = []
 
   # FlagIsExplicitlySet can't be used here because args.image is also set from
   # code in deploy.py.
@@ -1461,6 +1463,7 @@ def GetServiceConfigurationChanges(args):
           config_changes.DeleteTemplateAnnotationChange(
               revision.SESSION_AFFINITY_ANNOTATION))
 
+  _PrependClientNameAndVersionChange(args, changes)
   return changes
 
 
@@ -1477,6 +1480,7 @@ def GetJobConfigurationChanges(args):
   if FlagIsExplicitlySet(args, 'task_timeout'):
     changes.append(config_changes.JobInstanceDeadlineChange(args.task_timeout))
 
+  _PrependClientNameAndVersionChange(args, changes)
   return changes
 
 

@@ -68,7 +68,8 @@ def _GenerateCopyCommand(from_path, to_path, comment=None):
   return cmd
 
 
-def _DependencyEntries(requirements_path=None,
+def _DependencyEntries(is_prebuilt_image=False,
+                       requirements_path=None,
                        setup_path=None,
                        extra_requirements=None,
                        extra_packages=None,
@@ -76,6 +77,8 @@ def _DependencyEntries(requirements_path=None,
   """Returns the Dockerfile entries required to install dependencies.
 
   Args:
+    is_prebuilt_image: (bool) Whether the base image is pre-built and provided
+      by Vertex AI.
     requirements_path: (str) Path that points to a requirements.txt file
     setup_path: (str) Path that points to a setup.py
     extra_requirements: (List[str]) Required dependencies to be installed from
@@ -84,44 +87,45 @@ def _DependencyEntries(requirements_path=None,
     extra_dirs: (List[str]) Directories other than the work_dir required.
   """
   ret = ""
+  pip_version = "pip3" if is_prebuilt_image else "pip"
 
   if setup_path is not None:
     ret += textwrap.dedent("""
         {}
-        RUN pip install --no-cache-dir .
+        RUN {} install --no-cache-dir .
         """.format(
             _GenerateCopyCommand(
                 setup_path,
                 "./setup.py",
                 comment="Found setup.py file, thus copy it to the docker container."
-            )))
+            ), pip_version))
 
   if requirements_path is not None:
     ret += textwrap.dedent("""
         {}
-        RUN pip install --no-cache-dir -r ./requirements.txt
+        RUN {} install --no-cache-dir -r ./requirements.txt
         """.format(
             _GenerateCopyCommand(
                 requirements_path,
                 "./requirements.txt",
                 comment="Found requirements.txt file, thus to the docker container."
-            )))
+            ), pip_version))
 
   if extra_packages is not None:
     for extra in extra_packages:
       package_name = os.path.basename(extra)
       ret += textwrap.dedent("""
         {}
-        RUN pip install --no-cache-dir {}
+        RUN {} install --no-cache-dir {}
         """.format(
-            _GenerateCopyCommand(extra, package_name),
+            _GenerateCopyCommand(extra, package_name), pip_version,
             shlex_quote(package_name)))
 
   if extra_requirements is not None:
     for requirement in extra_requirements:
       ret += textwrap.dedent("""
-        RUN pip install --no-cache-dir --upgrade {}
-        """.format(shlex_quote(requirement)))
+        RUN {} install --no-cache-dir --upgrade {}
+        """.format(pip_version, shlex_quote(requirement)))
 
   if extra_dirs is not None:
     for directory in extra_dirs:
@@ -232,6 +236,7 @@ def _MakeDockerfile(base_image,
   dockerfile += _SitecustomizeRemovalEntry(is_training_prebuilt_image_base)
 
   dockerfile += _DependencyEntries(
+      is_training_prebuilt_image_base,
       requirements_path=requirements_path,
       setup_path=setup_path,
       extra_requirements=extra_requirements,

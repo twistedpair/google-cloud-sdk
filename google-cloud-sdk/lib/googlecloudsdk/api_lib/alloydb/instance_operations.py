@@ -20,14 +20,13 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.alloydb import api_util
 from googlecloudsdk.api_lib.util import waiter
-from googlecloudsdk.core import resources
 
 
-def Await(operation, message, creates_resource=True):
+def Await(op_ref, message, creates_resource=True):
   """Waits for the given google.longrunning.Operation to complete.
 
   Args:
-    operation: The operation to poll.
+    op_ref: The operation to poll.
     message: String to display for default progress_tracker.
     creates_resource: Whether or not the operation creates a resource
 
@@ -46,7 +45,4 @@ def Await(operation, message, creates_resource=True):
   else:
     poller = waiter.CloudOperationPollerNoResources(
         alloydb_client.projects_locations_operations)
-  ref = resources.REGISTRY.ParseRelativeName(
-      operation.name,
-      collection='alloydb.projects.locations.operations')
-  return waiter.WaitFor(poller, ref, message)
+  return waiter.WaitFor(poller, op_ref, message)

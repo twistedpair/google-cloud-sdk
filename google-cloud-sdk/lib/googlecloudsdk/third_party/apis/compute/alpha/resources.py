@@ -424,13 +424,6 @@ class Collections(enum.Enum):
       ['project', 'region', 'healthCheck'],
       True
   )
-  REGIONINPLACESNAPSHOTS = (
-      'regionInPlaceSnapshots',
-      'projects/{project}/regions/{region}/inPlaceSnapshots/{inPlaceSnapshot}',
-      {},
-      ['project', 'region', 'inPlaceSnapshot'],
-      True
-  )
   REGIONINSTANCEGROUPMANAGERS = (
       'regionInstanceGroupManagers',
       'projects/{project}/regions/{region}/instanceGroupManagers/'
@@ -689,13 +682,6 @@ class Collections(enum.Enum):
       'projects/{project}/regions/{region}/vpnTunnels/{vpnTunnel}',
       {},
       ['project', 'region', 'vpnTunnel'],
-      True
-  )
-  ZONEINPLACESNAPSHOTS = (
-      'zoneInPlaceSnapshots',
-      'projects/{project}/zones/{zone}/inPlaceSnapshots/{inPlaceSnapshot}',
-      {},
-      ['project', 'zone', 'inPlaceSnapshot'],
       True
   )
   ZONEOPERATIONS = (

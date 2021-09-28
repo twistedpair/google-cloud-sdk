@@ -998,7 +998,7 @@
           }
         },
         "logConfig": {
-          "description": "The config returned to callers of tech.iam.IAM.CheckPolicy for any entries that match the LOG action.",
+          "description": "The config returned to callers of CheckPolicy for any entries that match the LOG action.",
           "type": "array",
           "items": {
             "$ref": "LogConfig"

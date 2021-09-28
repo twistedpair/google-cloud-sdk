@@ -174,6 +174,8 @@ class Cluster(_messages.Message):
   Fields:
     authorization: Required. Immutable. RBAC policy that will be applied and
       managed by GEC.
+    clusterCaCertificate: Output only. The PEM-encoded public certificate of
+      the cluster's CA.
     createTime: Output only. The time when the cluster was created.
     defaultMaxPodsPerNode: The default maximum number of pods per node used if
       a maximum value is not specified explicitly for a node pool in this
@@ -211,14 +213,15 @@ class Cluster(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   authorization = _messages.MessageField('Authorization', 1)
-  createTime = _messages.StringField(2)
-  defaultMaxPodsPerNode = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  endpoint = _messages.StringField(4)
-  hub = _messages.MessageField('Hub', 5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  name = _messages.StringField(7)
-  networking = _messages.MessageField('ClusterNetworking', 8)
-  updateTime = _messages.StringField(9)
+  clusterCaCertificate = _messages.StringField(2)
+  createTime = _messages.StringField(3)
+  defaultMaxPodsPerNode = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  endpoint = _messages.StringField(5)
+  hub = _messages.MessageField('Hub', 6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  name = _messages.StringField(8)
+  networking = _messages.MessageField('ClusterNetworking', 9)
+  updateTime = _messages.StringField(10)
 
 
 class ClusterNetworking(_messages.Message):

@@ -637,6 +637,12 @@
           "readOnly": true,
           "type": "string",
           "format": "google-datetime"
+        },
+        "scheduleDeadlineTime": {
+          "description": "Output only. The deadline that the maintenance schedule start time can not go beyond, including reschedule.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },

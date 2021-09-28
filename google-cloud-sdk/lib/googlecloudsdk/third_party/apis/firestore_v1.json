@@ -5,7 +5,7 @@
   "name": "firestore",
   "canonicalName": "Firestore",
   "version": "v1",
-  "revision": "20210910",
+  "revision": "20210917",
   "title": "Cloud Firestore API",
   "description": "Accesses the NoSQL document database built for automatic scaling, high performance, and ease of application development. ",
   "ownerDomain": "google.com",
@@ -454,6 +454,69 @@
         "inputUriPrefix": {
           "description": "Location of the exported files. This must match the output_uri_prefix of an ExportDocumentsResponse from an export that has completed successfully. See: google.firestore.admin.v1.ExportDocumentsResponse.output_uri_prefix.",
           "type": "string"
+        }
+      }
+    },
+    "GoogleFirestoreAdminV1Database": {
+      "id": "GoogleFirestoreAdminV1Database",
+      "description": "A Cloud Firestore Database. Currently only one database is allowed per cloud project; this database must have a `database_id` of '(default)'.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The resource name of the Database. Format: `projects\/{project}\/databases\/{database}`",
+          "type": "string"
+        },
+        "locationId": {
+          "description": "The location of the database. Available databases are listed at https:\/\/cloud.google.com\/firestore\/docs\/locations.",
+          "type": "string"
+        },
+        "type": {
+          "description": "The type of the database. See https:\/\/cloud.google.com\/datastore\/docs\/firestore-or-datastore for information about how to choose.",
+          "type": "string",
+          "enumDescriptions": [
+            "The default value. This value is used if the database type is omitted.",
+            "Firestore Native Mode",
+            "Firestore in Datastore Mode."
+          ],
+          "enum": [
+            "DATABASE_TYPE_UNSPECIFIED",
+            "FIRESTORE_NATIVE",
+            "DATASTORE_MODE"
+          ]
+        },
+        "concurrencyMode": {
+          "description": "The concurrency control mode to use for this database.",
+          "type": "string",
+          "enumDescriptions": [
+            "Not used.",
+            "Use optimistic concurrency control by default. This setting is available for Cloud Firestore customers.",
+            "Use pessimistic concurrency control by default. This setting is available for Cloud Firestore customers. This is the default setting for Cloud Firestore.",
+            "Use optimistic concurrency control with entity groups by default. This is the only available setting for Cloud Datastore customers. This is the default setting for Cloud Datastore."
+          ],
+          "enum": [
+            "CONCURRENCY_MODE_UNSPECIFIED",
+            "OPTIMISTIC",
+            "PESSIMISTIC",
+            "OPTIMISTIC_WITH_ENTITY_GROUPS"
+          ]
+        },
+        "etag": {
+          "description": "This checksum is computed by the server based on the value of other fields, and may be sent on update and delete requests to ensure the client has an up-to-date value before proceeding.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleFirestoreAdminV1ListDatabasesResponse": {
+      "id": "GoogleFirestoreAdminV1ListDatabasesResponse",
+      "description": "The list of databases for a project.",
+      "type": "object",
+      "properties": {
+        "databases": {
+          "description": "The databases in the project.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleFirestoreAdminV1Database"
+          }
         }
       }
     },
@@ -2078,6 +2141,93 @@
                 "https://www.googleapis.com/auth/datastore"
               ],
               "description": "Imports documents into Google Cloud Firestore. Existing documents with the same name are overwritten. The import occurs in the background and its progress can be monitored and managed via the Operation resource that is created. If an ImportDocuments operation is cancelled, it is possible that a subset of the data has already been imported to Cloud Firestore."
+            },
+            "get": {
+              "id": "firestore.projects.databases.get",
+              "path": "v1/{+name}",
+              "flatPath": "v1/projects/{projectsId}/databases/{databasesId}",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "Required. A name of the form `projects\/{project_id}\/databases\/{database_id}`",
+                  "pattern": "^projects\/[^\/]+\/databases\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "GoogleFirestoreAdminV1Database"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/datastore"
+              ],
+              "description": "Gets information about a database."
+            },
+            "list": {
+              "id": "firestore.projects.databases.list",
+              "path": "v1/{+parent}/databases",
+              "flatPath": "v1/projects/{projectsId}/databases",
+              "httpMethod": "GET",
+              "parameters": {
+                "parent": {
+                  "description": "Required. A parent name of the form `projects\/{project_id}`",
+                  "pattern": "^projects\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "response": {
+                "$ref": "GoogleFirestoreAdminV1ListDatabasesResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/datastore"
+              ],
+              "description": "List all the databases in the project."
+            },
+            "patch": {
+              "id": "firestore.projects.databases.patch",
+              "path": "v1/{+name}",
+              "flatPath": "v1/projects/{projectsId}/databases/{databasesId}",
+              "httpMethod": "PATCH",
+              "parameters": {
+                "name": {
+                  "description": "The resource name of the Database. Format: `projects\/{project}\/databases\/{database}`",
+                  "pattern": "^projects\/[^\/]+\/databases\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "updateMask": {
+                  "description": "The list of fields to be updated.",
+                  "location": "query",
+                  "type": "string",
+                  "format": "google-fieldmask"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "GoogleFirestoreAdminV1Database"
+              },
+              "response": {
+                "$ref": "GoogleLongrunningOperation"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform",
+                "https://www.googleapis.com/auth/datastore"
+              ],
+              "description": "Updates a database."
             }
           }
           ,

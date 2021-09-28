@@ -22,6 +22,7 @@ from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
 
 _DEFAULT_API_VERSION = 'v2'
+_GLOBAL_REGION = 'global'
 
 
 class BmsClient(object):
@@ -71,10 +72,15 @@ class BmsClient(object):
 
     """
     for location in self.ListLocations(project_resource):
+      # TODO (b/198857865): Global region will be used when it is ready.
+      location_name = location.name.split('/')[-1]
+      if location_name == _GLOBAL_REGION:
+        continue
       request = self.messages.BaremetalsolutionProjectsLocationsInstancesListRequest(
           parent=location.name, filter=None)
       try:
-        response = getattr(service, method)(request, global_params=global_params)
+        response = getattr(service, method)(
+            request, global_params=global_params)
       except Exception:
         # Continue to list entries from other locations.
         continue

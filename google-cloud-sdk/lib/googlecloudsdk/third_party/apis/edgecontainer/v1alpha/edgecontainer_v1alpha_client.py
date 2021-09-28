@@ -256,6 +256,33 @@ class EdgecontainerV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GenerateAccessToken(self, request, global_params=None):
+      r"""Generates an access token for a Cluster.
+
+      Args:
+        request: (EdgecontainerProjectsLocationsClustersGenerateAccessTokenRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GenerateAccessTokenResponse) The response message.
+      """
+      config = self.GetMethodConfig('GenerateAccessToken')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GenerateAccessToken.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:generateAccessToken',
+        http_method='GET',
+        method_id='edgecontainer.projects.locations.clusters.generateAccessToken',
+        ordered_params=['cluster'],
+        path_params=['cluster'],
+        query_params=[],
+        relative_path='v1alpha/{+cluster}:generateAccessToken',
+        request_field='',
+        request_type_name='EdgecontainerProjectsLocationsClustersGenerateAccessTokenRequest',
+        response_type_name='GenerateAccessTokenResponse',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets details of a single Cluster.
 

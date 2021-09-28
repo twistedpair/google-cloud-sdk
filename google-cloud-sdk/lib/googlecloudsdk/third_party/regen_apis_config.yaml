@@ -485,11 +485,11 @@ apis:
       default: true
       resources:
         projects.locations.lakes.actions:
-          path: projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/actions
+          path: projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/actions/{actionsId}
         projects.locations.lakes.zones.actions:
-          path: projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/zones/{zonesId}/actions
+          path: projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/zones/{zonesId}/actions/{actionsId}
         projects.locations.lakes.zones.assets.actions:
-          path: projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/zones/{zonesId}/assets/{assetsId}/actions
+          path: projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/zones/{zonesId}/assets/{assetsId}/actions/{actionsId}
   dataproc:
     v1:
       discovery_doc: dataproc_v1.json

@@ -26,6 +26,7 @@ from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.resource import custom_printer_base as cp
 
 SERVICE_PRINTER_FORMAT = 'service'
+EXECUTION_ENV_VALS = {'gen1': 'First Generation', 'gen2': 'Second Generation'}
 
 
 class ServicePrinter(cp.CustomPrinterBase):
@@ -36,8 +37,12 @@ class ServicePrinter(cp.CustomPrinterBase):
   """
 
   def _GetRevisionHeader(self, record):
-    return console_attr.GetConsoleAttr().Emphasize('Revision {}'.format(
-        record.status.latestCreatedRevisionName))
+    header = ''
+    if record.status is None:
+      header = 'Unknown revision'
+    else:
+      header = 'Revision {}'.format(record.status.latestCreatedRevisionName)
+    return console_attr.GetConsoleAttr().Emphasize(header)
 
   def _RevisionPrinters(self, record):
     """Adds printers for the revision."""
@@ -55,8 +60,17 @@ class ServicePrinter(cp.CustomPrinterBase):
              k8s_util.GetBinAuthzPolicy(record))
         ])
     ]
-    breakglass_value = k8s_util.GetBinAuthzBreakglass(
-        record)
+
+    execution_env_value = k8s_util.GetExecutionEnvironment(record)
+    if (execution_env_value is not None and
+        execution_env_value in EXECUTION_ENV_VALS):
+      labels.append(
+          cp.Labeled([
+              ('Execution Environment',
+               EXECUTION_ENV_VALS[execution_env_value]),
+          ]))
+
+    breakglass_value = k8s_util.GetBinAuthzBreakglass(record)
     if breakglass_value is not None:
       # Show breakglass even if empty, but only if set. There's no skip_none
       # option so this the workaround.

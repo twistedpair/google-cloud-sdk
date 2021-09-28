@@ -62,7 +62,11 @@ def CheckAppNotExists(api_client, project):
         '`gcloud app deploy`.'.format(project=project, region=region))
 
 
-def CreateApp(api_client, project, region, suppress_warning=False):
+def CreateApp(api_client,
+              project,
+              region,
+              suppress_warning=False,
+              service_account=None):
   """Create an App Engine app in the given region.
 
   Prints info about the app being created and displays a progress tracker.
@@ -73,6 +77,7 @@ def CreateApp(api_client, project, region, suppress_warning=False):
     region: The region to create the app
     suppress_warning: True if user doesn't need to be warned this is
         irreversible.
+    service_account: The app level service account for the App Engine app.
 
   Raises:
     AppAlreadyExistsError if app already exists
@@ -80,9 +85,13 @@ def CreateApp(api_client, project, region, suppress_warning=False):
   if not suppress_warning:
     log.status.Print('You are creating an app for project [{project}].'.format(
         project=project))
+    if service_account:
+      log.status.Print(
+          'Designating app-level default service account to be [{service_account}].'
+          .format(service_account=service_account))
     log.warning(APP_CREATE_WARNING)
   try:
-    api_client.CreateApp(region)
+    api_client.CreateApp(region, service_account=service_account)
   except apitools_exceptions.HttpConflictError:
     raise AppAlreadyExistsError(
         'The project [{project}] already contains an App Engine application. '
@@ -90,7 +99,11 @@ def CreateApp(api_client, project, region, suppress_warning=False):
             project=project))
 
 
-def CreateAppInteractively(api_client, project, regions=None, extra_warning=''):
+def CreateAppInteractively(api_client,
+                           project,
+                           regions=None,
+                           extra_warning='',
+                           service_account=None):
   """Interactively choose a region and create an App Engine app.
 
   The caller is responsible for calling this method only when the user can be
@@ -113,6 +126,7 @@ def CreateAppInteractively(api_client, project, regions=None, extra_warning=''):
     regions: The list of regions to choose from; if None, all possible regions
              are listed
     extra_warning: An additional warning to print before listing regions.
+    service_account: The app level service account for the App Engine app.
 
   Raises:
     AppAlreadyExistsError if app already exists
@@ -129,4 +143,9 @@ def CreateAppInteractively(api_client, project, regions=None, extra_warning=''):
                'application located:\n\n'),
       cancel_option=True)
   region = regions[idx]
-  CreateApp(api_client, project, region.region, suppress_warning=True)
+  CreateApp(
+      api_client,
+      project,
+      region.region,
+      suppress_warning=True,
+      service_account=service_account)

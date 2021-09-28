@@ -6899,7 +6899,8 @@ class GoogleCloudApigeeV1Organization(_messages.Message):
       milliseconds since epoch.
     customerName: Not used by Apigee.
     description: Description of the Apigee organization.
-    displayName: A string attribute.
+    displayName: Display name for the Apigee organization. Unused, but
+      reserved for future use.
     environments: Output only. List of environments in the Apigee
       organization.
     expiresAt: Output only. Time that the Apigee organization is scheduled for
@@ -7302,7 +7303,10 @@ class GoogleCloudApigeeV1RatePlan(_messages.Message):
       billed.
     ConsumptionPricingTypeValueValuesEnum: Pricing model used for consumption-
       based charges.
-    PaymentFundingModelValueValuesEnum: Flag that specifies the billing
+    PaymentFundingModelValueValuesEnum: DEPRECATED: This field is no longer
+      supported and will eventually be removed when Apigee Hybrid 1.5/1.6 is
+      no longer supported. Instead, use the `billingType` field inside
+      `DeveloperMonetizationConfig` resource. Flag that specifies the billing
       account type, prepaid or postpaid.
     RevenueShareTypeValueValuesEnum: Method used to calculate the revenue that
       is shared with developers.
@@ -7337,8 +7341,11 @@ class GoogleCloudApigeeV1RatePlan(_messages.Message):
     lastModifiedAt: Output only. Time the rate plan was last modified in
       milliseconds since epoch.
     name: Output only. Name of the rate plan.
-    paymentFundingModel: Flag that specifies the billing account type, prepaid
-      or postpaid.
+    paymentFundingModel: DEPRECATED: This field is no longer supported and
+      will eventually be removed when Apigee Hybrid 1.5/1.6 is no longer
+      supported. Instead, use the `billingType` field inside
+      `DeveloperMonetizationConfig` resource. Flag that specifies the billing
+      account type, prepaid or postpaid.
     revenueShareRates: Details of the revenue sharing model.
     revenueShareType: Method used to calculate the revenue that is shared with
       developers.
@@ -7391,7 +7398,10 @@ class GoogleCloudApigeeV1RatePlan(_messages.Message):
     BUNDLES = 5
 
   class PaymentFundingModelValueValuesEnum(_messages.Enum):
-    r"""Flag that specifies the billing account type, prepaid or postpaid.
+    r"""DEPRECATED: This field is no longer supported and will eventually be
+    removed when Apigee Hybrid 1.5/1.6 is no longer supported. Instead, use
+    the `billingType` field inside `DeveloperMonetizationConfig` resource.
+    Flag that specifies the billing account type, prepaid or postpaid.
 
     Values:
       PAYMENT_FUNDING_MODEL_UNSPECIFIED: Billing account type not specified.

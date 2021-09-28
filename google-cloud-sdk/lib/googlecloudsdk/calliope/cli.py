@@ -100,6 +100,9 @@ def _AddFlagsFileFlags(inject, flags_file, parent_locations=None):
         '{} [{}] not found.'.format(flag, flags_file))
   else:
     contents = files.ReadFileContents(flags_file)
+  if not contents:
+    raise parser_errors.ArgumentError(
+        '{} [{}] is empty.'.format(flag, flags_file))
   data = yaml.load(contents, location_value=True)
   group = data if isinstance(data, list) else [data]
 

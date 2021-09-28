@@ -224,7 +224,6 @@ class ArgAdder(object):
 
   def AddAppProfileRouting(self,
                            required=True,
-                           allow_restrict_to=False,
                            allow_failover_radius=False):
     """Adds arguments for app_profile routing to parser."""
     routing_group = self.parser.add_mutually_exclusive_group(required=required)
@@ -235,13 +234,12 @@ class ArgAdder(object):
         required=True,
         default=False,
         help='Use Multi Cluster Routing policy.')
-    if allow_restrict_to:
-      any_group.add_argument(
-          '--restrict-to',
-          type=arg_parsers.ArgList(),
-          help='Cluster IDs to route to using the Multi Cluster Routing Policy.'
-          ' If unset, all clusters in the instance will be eligible.',
-          metavar='RESTRICT_TO')
+    any_group.add_argument(
+        '--restrict-to',
+        type=arg_parsers.ArgList(),
+        help='Cluster IDs to route to using the Multi Cluster Routing Policy.'
+        ' If unset, all clusters in the instance are eligible.',
+        metavar='RESTRICT_TO')
     if allow_failover_radius:
       choices = {
           'ANY_REGION':

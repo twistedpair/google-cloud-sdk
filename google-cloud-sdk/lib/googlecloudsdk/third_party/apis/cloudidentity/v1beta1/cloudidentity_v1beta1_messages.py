@@ -1385,6 +1385,9 @@ class DynamicGroupQuery(_messages.Message):
       org.department=='engineering')` All users with at least one location
       that has `area` of `foo` and `building_id` of `bar`.
       `user.locations.exists(loc, loc.area=='foo' && loc.building_id=='bar')`
+      All users with any variation of the name John Doe (case-insensitive
+      queries add `equalsIgnoreCase()` to the value being queried).
+      `user.name.value.equalsIgnoreCase('jOhn DoE')`
     resourceType: A ResourceTypeValueValuesEnum attribute.
   """
 

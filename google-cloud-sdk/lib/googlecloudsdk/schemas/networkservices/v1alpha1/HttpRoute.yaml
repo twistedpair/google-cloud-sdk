@@ -47,6 +47,15 @@ properties:
       Name of the HttpRoute resource. It matches pattern
       `projects/*/locations/global/httpRoutes/http_route_name>`.
     type: string
+  routers:
+    description: |-
+      Routers define a list of routers this HttpRoute should be served by.
+      Each router reference should match the pattern:
+      `projects/*/locations/global/routers/` The attached Router should be
+      of a type PROXY
+    type: array
+    items:
+      type: string
   rules:
     description: Rules that define how traffic is routed and handled.
     type: array

@@ -362,7 +362,7 @@ class DatacatalogV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists entries.
+      r"""Lists entries. Note: Currently, this method can list only custom entries. To get a list of both custom and automatically created entries, use SearchCatalog.
 
       Args:
         request: (DatacatalogProjectsLocationsEntryGroupsEntriesListRequest) input message

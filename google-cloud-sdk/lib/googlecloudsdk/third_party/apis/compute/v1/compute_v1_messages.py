@@ -582,10 +582,14 @@ class AccessConfig(_messages.Message):
       match that of the networkTier associated with the Address resource
       owning that IP.
     publicPtrDomainName: The DNS domain name for the public PTR record. You
-      can set this field only if the `setPublicPtr` field is enabled.
+      can set this field only if the `setPublicPtr` field is enabled in
+      accessConfig. If this field is unspecified in ipv6AccessConfig, a
+      default PTR record will be createc for first IP in associated external
+      IPv6 range.
     setPublicPtr: Specifies whether a public DNS 'PTR' record should be
       created to map the external IP address of the instance to a DNS domain
-      name.
+      name. This field is not used in ipv6AccessConfig. A default PTR record
+      will be created if the VM has external IPv6 range associated.
     type: The type of configuration. The default and only option is
       ONE_TO_ONE_NAT.
   """
@@ -3100,7 +3104,7 @@ class BackendBucketCdnPolicy(_messages.Message):
       directive to the lesser of the client_ttl and default_ttl, and also
       ensures a "public" cache-control directive is present. If a client TTL
       is not specified, a default value (1 hour) will be used. The maximum
-      allowed value is 86400s (1 day).
+      allowed value is 31,622,400s (1 year).
     defaultTtl: Specifies the default TTL for cached content served by this
       origin for responses that do not have an existing valid TTL (max-age or
       s-max-age). Setting a TTL of "0" means "always revalidate". The value of
@@ -4025,7 +4029,7 @@ class BackendServiceCdnPolicy(_messages.Message):
       directive to the lesser of the client_ttl and default_ttl, and also
       ensures a "public" cache-control directive is present. If a client TTL
       is not specified, a default value (1 hour) will be used. The maximum
-      allowed value is 86400s (1 day).
+      allowed value is 31,622,400s (1 year).
     defaultTtl: Specifies the default TTL for cached content served by this
       origin for responses that do not have an existing valid TTL (max-age or
       s-max-age). Setting a TTL of "0" means "always revalidate". The value of
@@ -4594,6 +4598,256 @@ class BackendServicesScopedList(_messages.Message):
 
   backendServices = _messages.MessageField('BackendService', 1, repeated=True)
   warning = _messages.MessageField('WarningValue', 2)
+
+
+class BfdPacket(_messages.Message):
+  r"""A BfdPacket object.
+
+  Enums:
+    DiagnosticValueValuesEnum: The diagnostic code specifies the local
+      system's reason for the last change in session state. This allows remote
+      systems to determine the reason that the previous session failed, for
+      example. These diagnostic codes are specified in section 4.1 of RFC5880
+    StateValueValuesEnum: The current BFD session state as seen by the
+      transmitting system. These states are specified in section 4.1 of
+      RFC5880
+
+  Fields:
+    authenticationPresent: The Authentication Present bit of the BFD packet.
+      This is specified in section 4.1 of RFC5880
+    controlPlaneIndependent: The Control Plane Independent bit of the BFD
+      packet. This is specified in section 4.1 of RFC5880
+    demand: The demand bit of the BFD packet. This is specified in section 4.1
+      of RFC5880
+    diagnostic: The diagnostic code specifies the local system's reason for
+      the last change in session state. This allows remote systems to
+      determine the reason that the previous session failed, for example.
+      These diagnostic codes are specified in section 4.1 of RFC5880
+    final: The Final bit of the BFD packet. This is specified in section 4.1
+      of RFC5880
+    length: The length of the BFD Control packet in bytes. This is specified
+      in section 4.1 of RFC5880
+    minEchoRxIntervalMs: The Required Min Echo RX Interval value in the BFD
+      packet. This is specified in section 4.1 of RFC5880
+    minRxIntervalMs: The Required Min RX Interval value in the BFD packet.
+      This is specified in section 4.1 of RFC5880
+    minTxIntervalMs: The Desired Min TX Interval value in the BFD packet. This
+      is specified in section 4.1 of RFC5880
+    multiplier: The detection time multiplier of the BFD packet. This is
+      specified in section 4.1 of RFC5880
+    multipoint: The multipoint bit of the BFD packet. This is specified in
+      section 4.1 of RFC5880
+    myDiscriminator: The My Discriminator value in the BFD packet. This is
+      specified in section 4.1 of RFC5880
+    poll: The Poll bit of the BFD packet. This is specified in section 4.1 of
+      RFC5880
+    state: The current BFD session state as seen by the transmitting system.
+      These states are specified in section 4.1 of RFC5880
+    version: The version number of the BFD protocol, as specified in section
+      4.1 of RFC5880.
+    yourDiscriminator: The Your Discriminator value in the BFD packet. This is
+      specified in section 4.1 of RFC5880
+  """
+
+  class DiagnosticValueValuesEnum(_messages.Enum):
+    r"""The diagnostic code specifies the local system's reason for the last
+    change in session state. This allows remote systems to determine the
+    reason that the previous session failed, for example. These diagnostic
+    codes are specified in section 4.1 of RFC5880
+
+    Values:
+      ADMINISTRATIVELY_DOWN: <no description>
+      CONCATENATED_PATH_DOWN: <no description>
+      CONTROL_DETECTION_TIME_EXPIRED: <no description>
+      DIAGNOSTIC_UNSPECIFIED: <no description>
+      ECHO_FUNCTION_FAILED: <no description>
+      FORWARDING_PLANE_RESET: <no description>
+      NEIGHBOR_SIGNALED_SESSION_DOWN: <no description>
+      NO_DIAGNOSTIC: <no description>
+      PATH_DOWN: <no description>
+      REVERSE_CONCATENATED_PATH_DOWN: <no description>
+    """
+    ADMINISTRATIVELY_DOWN = 0
+    CONCATENATED_PATH_DOWN = 1
+    CONTROL_DETECTION_TIME_EXPIRED = 2
+    DIAGNOSTIC_UNSPECIFIED = 3
+    ECHO_FUNCTION_FAILED = 4
+    FORWARDING_PLANE_RESET = 5
+    NEIGHBOR_SIGNALED_SESSION_DOWN = 6
+    NO_DIAGNOSTIC = 7
+    PATH_DOWN = 8
+    REVERSE_CONCATENATED_PATH_DOWN = 9
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""The current BFD session state as seen by the transmitting system.
+    These states are specified in section 4.1 of RFC5880
+
+    Values:
+      ADMIN_DOWN: <no description>
+      DOWN: <no description>
+      INIT: <no description>
+      STATE_UNSPECIFIED: <no description>
+      UP: <no description>
+    """
+    ADMIN_DOWN = 0
+    DOWN = 1
+    INIT = 2
+    STATE_UNSPECIFIED = 3
+    UP = 4
+
+  authenticationPresent = _messages.BooleanField(1)
+  controlPlaneIndependent = _messages.BooleanField(2)
+  demand = _messages.BooleanField(3)
+  diagnostic = _messages.EnumField('DiagnosticValueValuesEnum', 4)
+  final = _messages.BooleanField(5)
+  length = _messages.IntegerField(6, variant=_messages.Variant.UINT32)
+  minEchoRxIntervalMs = _messages.IntegerField(7, variant=_messages.Variant.UINT32)
+  minRxIntervalMs = _messages.IntegerField(8, variant=_messages.Variant.UINT32)
+  minTxIntervalMs = _messages.IntegerField(9, variant=_messages.Variant.UINT32)
+  multiplier = _messages.IntegerField(10, variant=_messages.Variant.UINT32)
+  multipoint = _messages.BooleanField(11)
+  myDiscriminator = _messages.IntegerField(12, variant=_messages.Variant.UINT32)
+  poll = _messages.BooleanField(13)
+  state = _messages.EnumField('StateValueValuesEnum', 14)
+  version = _messages.IntegerField(15, variant=_messages.Variant.UINT32)
+  yourDiscriminator = _messages.IntegerField(16, variant=_messages.Variant.UINT32)
+
+
+class BfdStatus(_messages.Message):
+  r"""Next free: 15
+
+  Enums:
+    BfdSessionInitializationModeValueValuesEnum: The BFD session
+      initialization mode for this BGP peer. If set to ACTIVE, the Cloud
+      Router will initiate the BFD session for this BGP peer. If set to
+      PASSIVE, the Cloud Router will wait for the peer router to initiate the
+      BFD session for this BGP peer. If set to DISABLED, BFD is disabled for
+      this BGP peer.
+    LocalDiagnosticValueValuesEnum: The diagnostic code specifies the local
+      system's reason for the last change in session state. This allows remote
+      systems to determine the reason that the previous session failed, for
+      example. These diagnostic codes are specified in section 4.1 of RFC5880
+    LocalStateValueValuesEnum: The current BFD session state as seen by the
+      transmitting system. These states are specified in section 4.1 of
+      RFC5880
+
+  Fields:
+    bfdSessionInitializationMode: The BFD session initialization mode for this
+      BGP peer. If set to ACTIVE, the Cloud Router will initiate the BFD
+      session for this BGP peer. If set to PASSIVE, the Cloud Router will wait
+      for the peer router to initiate the BFD session for this BGP peer. If
+      set to DISABLED, BFD is disabled for this BGP peer.
+    configUpdateTimestampMicros: Unix timestamp of the most recent config
+      update.
+    controlPacketCounts: Control packet counts for the current BFD session.
+    controlPacketIntervals: Inter-packet time interval statistics for control
+      packets.
+    localDiagnostic: The diagnostic code specifies the local system's reason
+      for the last change in session state. This allows remote systems to
+      determine the reason that the previous session failed, for example.
+      These diagnostic codes are specified in section 4.1 of RFC5880
+    localState: The current BFD session state as seen by the transmitting
+      system. These states are specified in section 4.1 of RFC5880
+    negotiatedLocalControlTxIntervalMs: Negotiated transmit interval for
+      control packets.
+    rxPacket: The most recent Rx control packet for this BFD session.
+    txPacket: The most recent Tx control packet for this BFD session.
+    uptimeMs: Session uptime in milliseconds. Value will be 0 if session is
+      not up.
+  """
+
+  class BfdSessionInitializationModeValueValuesEnum(_messages.Enum):
+    r"""The BFD session initialization mode for this BGP peer. If set to
+    ACTIVE, the Cloud Router will initiate the BFD session for this BGP peer.
+    If set to PASSIVE, the Cloud Router will wait for the peer router to
+    initiate the BFD session for this BGP peer. If set to DISABLED, BFD is
+    disabled for this BGP peer.
+
+    Values:
+      ACTIVE: <no description>
+      DISABLED: <no description>
+      PASSIVE: <no description>
+    """
+    ACTIVE = 0
+    DISABLED = 1
+    PASSIVE = 2
+
+  class LocalDiagnosticValueValuesEnum(_messages.Enum):
+    r"""The diagnostic code specifies the local system's reason for the last
+    change in session state. This allows remote systems to determine the
+    reason that the previous session failed, for example. These diagnostic
+    codes are specified in section 4.1 of RFC5880
+
+    Values:
+      ADMINISTRATIVELY_DOWN: <no description>
+      CONCATENATED_PATH_DOWN: <no description>
+      CONTROL_DETECTION_TIME_EXPIRED: <no description>
+      DIAGNOSTIC_UNSPECIFIED: <no description>
+      ECHO_FUNCTION_FAILED: <no description>
+      FORWARDING_PLANE_RESET: <no description>
+      NEIGHBOR_SIGNALED_SESSION_DOWN: <no description>
+      NO_DIAGNOSTIC: <no description>
+      PATH_DOWN: <no description>
+      REVERSE_CONCATENATED_PATH_DOWN: <no description>
+    """
+    ADMINISTRATIVELY_DOWN = 0
+    CONCATENATED_PATH_DOWN = 1
+    CONTROL_DETECTION_TIME_EXPIRED = 2
+    DIAGNOSTIC_UNSPECIFIED = 3
+    ECHO_FUNCTION_FAILED = 4
+    FORWARDING_PLANE_RESET = 5
+    NEIGHBOR_SIGNALED_SESSION_DOWN = 6
+    NO_DIAGNOSTIC = 7
+    PATH_DOWN = 8
+    REVERSE_CONCATENATED_PATH_DOWN = 9
+
+  class LocalStateValueValuesEnum(_messages.Enum):
+    r"""The current BFD session state as seen by the transmitting system.
+    These states are specified in section 4.1 of RFC5880
+
+    Values:
+      ADMIN_DOWN: <no description>
+      DOWN: <no description>
+      INIT: <no description>
+      STATE_UNSPECIFIED: <no description>
+      UP: <no description>
+    """
+    ADMIN_DOWN = 0
+    DOWN = 1
+    INIT = 2
+    STATE_UNSPECIFIED = 3
+    UP = 4
+
+  bfdSessionInitializationMode = _messages.EnumField('BfdSessionInitializationModeValueValuesEnum', 1)
+  configUpdateTimestampMicros = _messages.IntegerField(2)
+  controlPacketCounts = _messages.MessageField('BfdStatusPacketCounts', 3)
+  controlPacketIntervals = _messages.MessageField('PacketIntervals', 4, repeated=True)
+  localDiagnostic = _messages.EnumField('LocalDiagnosticValueValuesEnum', 5)
+  localState = _messages.EnumField('LocalStateValueValuesEnum', 6)
+  negotiatedLocalControlTxIntervalMs = _messages.IntegerField(7, variant=_messages.Variant.UINT32)
+  rxPacket = _messages.MessageField('BfdPacket', 8)
+  txPacket = _messages.MessageField('BfdPacket', 9)
+  uptimeMs = _messages.IntegerField(10)
+
+
+class BfdStatusPacketCounts(_messages.Message):
+  r"""A BfdStatusPacketCounts object.
+
+  Fields:
+    numRx: Number of packets received since the beginning of the current BFD
+      session.
+    numRxRejected: Number of packets received that were rejected because of
+      errors since the beginning of the current BFD session.
+    numRxSuccessful: Number of packets received that were successfully
+      processed since the beginning of the current BFD session.
+    numTx: Number of packets transmitted since the beginning of the current
+      BFD session.
+  """
+
+  numRx = _messages.IntegerField(1, variant=_messages.Variant.UINT32)
+  numRxRejected = _messages.IntegerField(2, variant=_messages.Variant.UINT32)
+  numRxSuccessful = _messages.IntegerField(3, variant=_messages.Variant.UINT32)
+  numTx = _messages.IntegerField(4, variant=_messages.Variant.UINT32)
 
 
 class Binding(_messages.Message):
@@ -25164,9 +25418,9 @@ class Firewall(_messages.Message):
     name: Name of the resource; provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
-      regular expression [a-z]([-a-z0-9]*[a-z0-9])?. The first character must
-      be a lowercase letter, and all following characters (except for the last
-      character) must be a dash, lowercase letter, or digit. The last
+      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?`. The first character
+      must be a lowercase letter, and all following characters (except for the
+      last character) must be a dash, lowercase letter, or digit. The last
       character must be a lowercase letter or digit.
     network: URL of the network resource for this firewall rule. If not
       specified when creating a firewall rule, the default network is used:
@@ -32449,6 +32703,7 @@ class InstanceProperties(_messages.Message):
   Enums:
     PrivateIpv6GoogleAccessValueValuesEnum: The private IPv6 google access
       type for VMs. If not specified, use INHERIT_FROM_SUBNETWORK as default.
+      Note that for MachineImage, this is not supported yet.
 
   Messages:
     LabelsValue: Labels to apply to instances that are created from these
@@ -32456,7 +32711,7 @@ class InstanceProperties(_messages.Message):
 
   Fields:
     advancedMachineFeatures: Controls for advanced machine-related behavior
-      features.
+      features. Note that for MachineImage, this is not supported yet.
     canIpForward: Enables instances created based on these properties to send
       packets with source IP addresses other than their own and receive
       packets with destination IP addresses other than their own. If these
@@ -32464,6 +32719,7 @@ class InstanceProperties(_messages.Message):
       hop in a Route resource, specify true. If unsure, leave this set to
       false. See the Enable IP forwarding documentation for more information.
     confidentialInstanceConfig: Specifies the Confidential Instance options.
+      Note that for MachineImage, this is not supported yet.
     description: An optional text description for the instances that are
       created from these properties.
     disks: An array of disks that are associated with the instances that are
@@ -32486,18 +32742,21 @@ class InstanceProperties(_messages.Message):
     networkInterfaces: An array of network access configurations for this
       interface.
     privateIpv6GoogleAccess: The private IPv6 google access type for VMs. If
-      not specified, use INHERIT_FROM_SUBNETWORK as default.
+      not specified, use INHERIT_FROM_SUBNETWORK as default. Note that for
+      MachineImage, this is not supported yet.
     reservationAffinity: Specifies the reservations that instances can consume
-      from.
+      from. Note that for MachineImage, this is not supported yet.
     resourcePolicies: Resource policies (names, not ULRs) applied to instances
-      created from these properties.
+      created from these properties. Note that for MachineImage, this is not
+      supported yet.
     scheduling: Specifies the scheduling options for the instances that are
       created from these properties.
     serviceAccounts: A list of service accounts with specified scopes. Access
       tokens for these service accounts are available to the instances that
       are created from these properties. Use metadata queries to obtain the
       access tokens for these instances.
-    shieldedInstanceConfig: A ShieldedInstanceConfig attribute.
+    shieldedInstanceConfig: Note that for MachineImage, this is not supported
+      yet.
     tags: A list of tags to apply to the instances that are created from these
       properties. The tags identify valid sources or targets for network
       firewalls. The setTags method can modify this list of tags. Each tag
@@ -32506,7 +32765,8 @@ class InstanceProperties(_messages.Message):
 
   class PrivateIpv6GoogleAccessValueValuesEnum(_messages.Enum):
     r"""The private IPv6 google access type for VMs. If not specified, use
-    INHERIT_FROM_SUBNETWORK as default.
+    INHERIT_FROM_SUBNETWORK as default. Note that for MachineImage, this is
+    not supported yet.
 
     Values:
       ENABLE_BIDIRECTIONAL_ACCESS_TO_GOOGLE: Bidirectional private IPv6 access
@@ -40946,6 +41206,62 @@ class OutlierDetection(_messages.Message):
   successRateStdevFactor = _messages.IntegerField(11, variant=_messages.Variant.INT32)
 
 
+class PacketIntervals(_messages.Message):
+  r"""Next free: 7
+
+  Enums:
+    DurationValueValuesEnum: From how long ago in the past these intervals
+      were observed.
+    TypeValueValuesEnum: The type of packets for which inter-packet intervals
+      were computed.
+
+  Fields:
+    avgMs: Average observed inter-packet interval in milliseconds.
+    duration: From how long ago in the past these intervals were observed.
+    maxMs: Maximum observed inter-packet interval in milliseconds.
+    minMs: Minimum observed inter-packet interval in milliseconds.
+    numIntervals: Number of inter-packet intervals from which these statistics
+      were derived.
+    type: The type of packets for which inter-packet intervals were computed.
+  """
+
+  class DurationValueValuesEnum(_messages.Enum):
+    r"""From how long ago in the past these intervals were observed.
+
+    Values:
+      DURATION_UNSPECIFIED: <no description>
+      HOUR: <no description>
+      MAX: From BfdSession object creation time.
+      MINUTE: <no description>
+    """
+    DURATION_UNSPECIFIED = 0
+    HOUR = 1
+    MAX = 2
+    MINUTE = 3
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""The type of packets for which inter-packet intervals were computed.
+
+    Values:
+      LOOPBACK: Only applies to Echo packets. This shows the intervals between
+        sending and receiving the same packet.
+      RECEIVE: Intervals between received packets.
+      TRANSMIT: Intervals between transmitted packets.
+      TYPE_UNSPECIFIED: <no description>
+    """
+    LOOPBACK = 0
+    RECEIVE = 1
+    TRANSMIT = 2
+    TYPE_UNSPECIFIED = 3
+
+  avgMs = _messages.IntegerField(1)
+  duration = _messages.EnumField('DurationValueValuesEnum', 2)
+  maxMs = _messages.IntegerField(3)
+  minMs = _messages.IntegerField(4)
+  numIntervals = _messages.IntegerField(5)
+  type = _messages.EnumField('TypeValueValuesEnum', 6)
+
+
 class PacketMirroring(_messages.Message):
   r"""Represents a Packet Mirroring resource. Packet Mirroring clones the
   traffic of specified instances in your Virtual Private Cloud (VPC) network
@@ -44822,6 +45138,7 @@ class Reservation(_messages.Message):
     satisfiesPzs: [Output Only] Reserved for future use.
     selfLink: [Output Only] Server-defined fully-qualified URL for this
       resource.
+    shareSettings: Share-settings for shared-reservation
     specificReservation: Reservation for instances with specific machine
       shapes.
     specificReservationRequired: Indicates whether the reservation can be
@@ -44857,10 +45174,11 @@ class Reservation(_messages.Message):
   name = _messages.StringField(6)
   satisfiesPzs = _messages.BooleanField(7)
   selfLink = _messages.StringField(8)
-  specificReservation = _messages.MessageField('AllocationSpecificSKUReservation', 9)
-  specificReservationRequired = _messages.BooleanField(10)
-  status = _messages.EnumField('StatusValueValuesEnum', 11)
-  zone = _messages.StringField(12)
+  shareSettings = _messages.MessageField('ShareSettings', 9)
+  specificReservation = _messages.MessageField('AllocationSpecificSKUReservation', 10)
+  specificReservationRequired = _messages.BooleanField(11)
+  status = _messages.EnumField('StatusValueValuesEnum', 12)
+  zone = _messages.StringField(13)
 
 
 class ReservationAffinity(_messages.Message):
@@ -47735,6 +48053,7 @@ class RouterStatusBgpPeerStatus(_messages.Message):
 
   Fields:
     advertisedRoutes: Routes that were advertised to the remote BGP peer
+    bfdStatus: A BfdStatus attribute.
     ipAddress: IP address of the local BGP interface.
     linkedVpnTunnel: URL of the VPN tunnel that this BGP peer controls.
     name: Name of this BGP peer. Unique within the Routers resource.
@@ -47764,16 +48083,17 @@ class RouterStatusBgpPeerStatus(_messages.Message):
     UP = 2
 
   advertisedRoutes = _messages.MessageField('Route', 1, repeated=True)
-  ipAddress = _messages.StringField(2)
-  linkedVpnTunnel = _messages.StringField(3)
-  name = _messages.StringField(4)
-  numLearnedRoutes = _messages.IntegerField(5, variant=_messages.Variant.UINT32)
-  peerIpAddress = _messages.StringField(6)
-  routerApplianceInstance = _messages.StringField(7)
-  state = _messages.StringField(8)
-  status = _messages.EnumField('StatusValueValuesEnum', 9)
-  uptime = _messages.StringField(10)
-  uptimeSeconds = _messages.StringField(11)
+  bfdStatus = _messages.MessageField('BfdStatus', 2)
+  ipAddress = _messages.StringField(3)
+  linkedVpnTunnel = _messages.StringField(4)
+  name = _messages.StringField(5)
+  numLearnedRoutes = _messages.IntegerField(6, variant=_messages.Variant.UINT32)
+  peerIpAddress = _messages.StringField(7)
+  routerApplianceInstance = _messages.StringField(8)
+  state = _messages.StringField(9)
+  status = _messages.EnumField('StatusValueValuesEnum', 10)
+  uptime = _messages.StringField(11)
+  uptimeSeconds = _messages.StringField(12)
 
 
 class RouterStatusNatStatus(_messages.Message):
@@ -49361,6 +49681,29 @@ class ServiceAttachmentsScopedList(_messages.Message):
 
   serviceAttachments = _messages.MessageField('ServiceAttachment', 1, repeated=True)
   warning = _messages.MessageField('WarningValue', 2)
+
+
+class ShareSettings(_messages.Message):
+  r"""The share setting for reservations and sole tenancy node groups.
+
+  Enums:
+    ShareTypeValueValuesEnum: Type of sharing for this shared-reservation
+
+  Fields:
+    shareType: Type of sharing for this shared-reservation
+  """
+
+  class ShareTypeValueValuesEnum(_messages.Enum):
+    r"""Type of sharing for this shared-reservation
+
+    Values:
+      LOCAL: Default value.
+      SHARE_TYPE_UNSPECIFIED: Default value. This value is unused.
+    """
+    LOCAL = 0
+    SHARE_TYPE_UNSPECIFIED = 1
+
+  shareType = _messages.EnumField('ShareTypeValueValuesEnum', 1)
 
 
 class ShieldedInstanceConfig(_messages.Message):

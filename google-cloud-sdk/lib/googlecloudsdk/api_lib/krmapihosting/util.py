@@ -27,5 +27,15 @@ def GetMessagesModule(api_version=_DEFAULT_API_VERSION):
   return apis.GetMessagesModule('krmapihosting', api_version)
 
 
-def GetClientInstance(api_version=_DEFAULT_API_VERSION):
-  return apis.GetClientInstance('krmapihosting', api_version)
+def GetClientInstance(api_version=_DEFAULT_API_VERSION, use_http=True):
+  """Returns an instance of the KRM API Hosting client.
+
+  Args:
+    api_version: The desired api version.
+    use_http: bool, True to create an http object for this client.
+
+  Returns:
+    base_api.BaseApiClient, An instance of the Cloud Build client.
+  """
+  return apis.GetClientInstance(
+      'krmapihosting', api_version, no_http=(not use_http))

@@ -70,14 +70,14 @@ def TransformTrigger(data, undefined=''):
   """Returns textual information about functions trigger.
 
   Args:
-    data: JSON-serializable v1 and v2 Functions objects.
+    data: JSON-serializable 1st and 2nd gen Functions objects.
     undefined: Returns this value if the resource cannot be formatted.
 
   Returns:
     str containing information about functions trigger.
   """
-  product_version = _TransformProductVersion(data)
-  if product_version == '1':
+  generation = _TransformGeneration(data)
+  if generation == '1st gen':
     if 'httpsTrigger' in data:
       return 'HTTP Trigger'
     if 'gcsTrigger' in data:
@@ -88,7 +88,7 @@ def TransformTrigger(data, undefined=''):
       return 'Event Trigger'
     return undefined
 
-  elif product_version == '2':
+  elif generation == '2nd gen':
     if 'eventTrigger' in data:
       event_trigger = data['eventTrigger']
       if 'pubsubTopic' in event_trigger:
@@ -102,11 +102,11 @@ def TransformTrigger(data, undefined=''):
   return undefined
 
 
-def _TransformProductVersion(data, undefined='-'):
+def _TransformGeneration(data, undefined='-'):
   """Returns Cloud Functions product version.
 
   Args:
-    data: JSON-serializable object.
+    data: JSON-serializable 1st and 2nd gen Functions objects.
     undefined: Returns this value if the resource cannot be formatted.
 
   Returns:
@@ -118,13 +118,13 @@ def _TransformProductVersion(data, undefined='-'):
   build_id = data.get('buildId')
   runtime = data.get('runtime')
   if any([entry_point, build_id, runtime]):
-    return '1'
+    return '1st gen'
 
   build_config = data.get('buildConfig')
   service_config = data.get('serviceConfig')
 
   if any([build_config, service_config]):
-    return '2'
+    return '2nd gen'
 
   return undefined
 
@@ -132,7 +132,7 @@ def _TransformProductVersion(data, undefined='-'):
 _TRANSFORMS = {
     'trigger': TransformTrigger,
     'state': _TransformState,
-    'versionId': _TransformProductVersion,
+    'generation': _TransformGeneration,
 }
 
 

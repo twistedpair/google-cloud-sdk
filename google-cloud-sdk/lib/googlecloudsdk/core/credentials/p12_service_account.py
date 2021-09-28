@@ -31,6 +31,7 @@ from googlecloudsdk.core.util import encoding
 import six
 
 _DEFAULT_PASSWORD = 'notasecret'
+_PYCA_CRYPTOGRAPHY_MIN_VERSION = '2.5'
 
 
 class Error(exceptions.Error):
@@ -69,7 +70,9 @@ class PKCS12Signer(crypt_base.Signer, crypt_base.FromServiceAccountMixin):
     del key_id
     key_string, password = (_helpers.to_bytes(k) for k in key_strings)
     from cryptography.hazmat.primitives.serialization import pkcs12  # pylint: disable=g-import-not-at-top
-    key, _, _ = pkcs12.load_key_and_certificates(key_string, password)
+    from cryptography.hazmat import backends  # pylint: disable=g-import-not-at-top
+    key, _, _ = pkcs12.load_key_and_certificates(
+        key_string, password, backend=backends.default_backend())
     return cls(key)
 
 
@@ -140,6 +143,9 @@ class Credentials(service_account.Credentials):
     try:
       signer = PKCS12Signer.from_string((key_string, password))
     except ImportError:
+      log.debug(
+          'pyca/cryptography is not available or the version is < {}. Fall '
+          'back to using OpenSSL.'.format(_PYCA_CRYPTOGRAPHY_MIN_VERSION))
       signer = PKCS12SignerPyOpenSSL.from_string((key_string, password))
 
     missing_fields = [f for f in cls._REQUIRED_FIELDS if f not in kwargs]
@@ -168,15 +174,17 @@ def CreateP12ServiceAccount(key_string, password=None, **kwargs):
         key_string, password, **kwargs)
   except ImportError:
     if not encoding.GetEncodedValue(os.environ, 'CLOUDSDK_PYTHON_SITEPACKAGES'):
-      raise MissingDependencyError((
-          'pyca/cryptography is not available. Please install or upgrade it '
-          'to a version >= 2.5 and set the environment variable '
-          'CLOUDSDK_PYTHON_SITEPACKAGES to 1. If that does not work, see '
-          'https://developers.google.com/cloud/sdk/crypto for details '
-          'or consider using .json private key instead.'))
+      raise MissingDependencyError(
+          ('pyca/cryptography is not available. Please install or upgrade it '
+           'to a version >= {} and set the environment variable '
+           'CLOUDSDK_PYTHON_SITEPACKAGES to 1. If that does not work, see '
+           'https://developers.google.com/cloud/sdk/crypto for details '
+           'or consider using .json private key instead.'
+          ).format(_PYCA_CRYPTOGRAPHY_MIN_VERSION))
     else:
-      raise MissingDependencyError((
-          'pyca/cryptography is not available or the version is < 2.5. '
-          'Please install or upgrade it to a newer version. See '
-          'https://developers.google.com/cloud/sdk/crypto for details '
-          'or consider using .json private key instead.'))
+      raise MissingDependencyError(
+          ('pyca/cryptography is not available or the version is < {}. '
+           'Please install or upgrade it to a newer version. See '
+           'https://developers.google.com/cloud/sdk/crypto for details '
+           'or consider using .json private key instead.'
+          ).format(_PYCA_CRYPTOGRAPHY_MIN_VERSION))

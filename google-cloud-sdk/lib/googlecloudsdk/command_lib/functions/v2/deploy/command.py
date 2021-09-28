@@ -132,10 +132,10 @@ _GCF_GEN2_UNITS = [
 ]
 
 _VALUE_PATTERN = r"""
-    ^                               # Beginning of input marker.
-    (?P<amount>\d+)                 # Amount (no dot allowed)
+    ^                                    # Beginning of input marker.
+    (?P<amount>\d+)                      # Amount.
     ((?P<suffix>[-/ac-zAC-Z]+)([bB])?)?  # Optional scale and optional 'b'.
-    $                               # End of input marker.
+    $                                    # End of input marker.
 """
 
 

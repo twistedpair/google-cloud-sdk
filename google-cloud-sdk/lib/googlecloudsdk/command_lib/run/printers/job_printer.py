@@ -71,6 +71,8 @@ class JobPrinter(cp.CustomPrinterBase):
 
   @staticmethod
   def TransformStatus(record):
+    if record.status is None:
+      return ''
     lines = []
     if record.ready_condition['status'] is None:
       lines.append('{} currently running'.format(

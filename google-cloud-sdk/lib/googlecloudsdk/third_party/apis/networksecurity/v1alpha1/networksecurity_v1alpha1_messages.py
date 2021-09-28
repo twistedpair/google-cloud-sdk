@@ -774,6 +774,170 @@ class MTLSPolicy(_messages.Message):
   clientValidationCa = _messages.MessageField('ValidationCA', 1, repeated=True)
 
 
+class NetworksecurityOrganizationsLocationsAddressGroupsCreateRequest(_messages.Message):
+  r"""A NetworksecurityOrganizationsLocationsAddressGroupsCreateRequest
+  object.
+
+  Fields:
+    addressGroup: A AddressGroup resource to be passed as the request body.
+    addressGroupId: Required. Short name of the AddressGroup resource to be
+      created. This value should be 1-63 characters long, containing only
+      letters, numbers, hyphens, and underscores, and should not start with a
+      number. E.g. "authz_policy".
+    parent: Required. The parent resource of the AddressGroup. Must be in the
+      format `projects/*/locations/{location}`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and t he request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  addressGroup = _messages.MessageField('AddressGroup', 1)
+  addressGroupId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class NetworksecurityOrganizationsLocationsAddressGroupsDeleteRequest(_messages.Message):
+  r"""A NetworksecurityOrganizationsLocationsAddressGroupsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. A name of the AddressGroup to delete. Must be in the
+      format `projects/*/locations/{location}/addressGroups/*`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and t he request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworksecurityOrganizationsLocationsAddressGroupsGetRequest(_messages.Message):
+  r"""A NetworksecurityOrganizationsLocationsAddressGroupsGetRequest object.
+
+  Fields:
+    name: Required. A name of the AddressGroup to get. Must be in the format
+      `projects/*/locations/{location}/addressGroups/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworksecurityOrganizationsLocationsAddressGroupsListRequest(_messages.Message):
+  r"""A NetworksecurityOrganizationsLocationsAddressGroupsListRequest object.
+
+  Fields:
+    pageSize: Maximum number of AddressGroups to return per call.
+    pageToken: The value returned by the last `ListAddressGroupsResponse`
+      Indicates that this is a continuation of a prior `ListAddressGroups`
+      call, and that the system should return the next page of data.
+    parent: Required. The project and location from which the AddressGroups
+      should be listed, specified in the format
+      `projects/*/locations/{location}`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class NetworksecurityOrganizationsLocationsAddressGroupsPatchRequest(_messages.Message):
+  r"""A NetworksecurityOrganizationsLocationsAddressGroupsPatchRequest object.
+
+  Fields:
+    addressGroup: A AddressGroup resource to be passed as the request body.
+    name: Required. Name of the AddressGroup resource. It matches pattern
+      `projects/*/locations/{location}/addressGroups/`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and t he request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the AddressGroup resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the user
+      does not provide a mask then all fields will be overwritten.
+  """
+
+  addressGroup = _messages.MessageField('AddressGroup', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
+class NetworksecurityOrganizationsLocationsOperationsCancelRequest(_messages.Message):
+  r"""A NetworksecurityOrganizationsLocationsOperationsCancelRequest object.
+
+  Fields:
+    cancelOperationRequest: A CancelOperationRequest resource to be passed as
+      the request body.
+    name: The name of the operation resource to be cancelled.
+  """
+
+  cancelOperationRequest = _messages.MessageField('CancelOperationRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class NetworksecurityOrganizationsLocationsOperationsDeleteRequest(_messages.Message):
+  r"""A NetworksecurityOrganizationsLocationsOperationsDeleteRequest object.
+
+  Fields:
+    name: The name of the operation resource to be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworksecurityOrganizationsLocationsOperationsGetRequest(_messages.Message):
+  r"""A NetworksecurityOrganizationsLocationsOperationsGetRequest object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworksecurityOrganizationsLocationsOperationsListRequest(_messages.Message):
+  r"""A NetworksecurityOrganizationsLocationsOperationsListRequest object.
+
+  Fields:
+    filter: The standard list filter.
+    name: The name of the operation's parent resource.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
 class NetworksecurityProjectsLocationsAddressGroupsCreateRequest(_messages.Message):
   r"""A NetworksecurityProjectsLocationsAddressGroupsCreateRequest object.
 

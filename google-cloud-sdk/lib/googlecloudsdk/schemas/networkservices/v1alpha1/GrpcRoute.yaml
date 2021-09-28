@@ -24,6 +24,11 @@ properties:
         type: string
       version:
         type: string
+  UNKNOWN:
+    type: array
+    description: Unknown API fields that cannot be imported.
+    items:
+      type: string
   description:
     description: |-
       A free-text description of the resource. Max length 1024 characters.
@@ -60,12 +65,20 @@ properties:
       Name of the GrpcRoute resource. It matches pattern
       `projects/*/locations/global/grpcRoutes/`
     type: string
+  routers:
+    description: |-
+      Routers define a list of routers this GrpcRoute should be served by.
+      Each router reference should match the pattern:
+      `projects/*/locations/global/routers/`
+    type: array
+    items:
+      type: string
   rules:
     description: |-
       A list of detailed rules defining how to route traffic. Within a
-      single GrpcRoute, the GrpcRoute.RouteAction associated with the first
-      matching GrpcRoute.RouteRule will be executed. At least one rule must
-      be supplied.
+      single GrpcRoute, the GrpcRoute.RouteAction associated with the
+      first matching GrpcRoute.RouteRule will be executed. At least one
+      rule must be supplied.
     type: array
     items:
       $ref: GrpcRouteRouteRule.yaml

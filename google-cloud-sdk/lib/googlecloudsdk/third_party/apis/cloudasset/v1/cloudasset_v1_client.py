@@ -408,6 +408,33 @@ class CloudassetV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def QueryAssets(self, request, global_params=None):
+      r"""Issue a job that queries assets using a SQL statement compatible with [BigQuery Standard SQL](http://cloud/bigquery/docs/reference/standard-sql/enabling-standard-sql). If the query execution finishes within timeout and there's no pagination, the full query results will be returned in the `QueryAssetsResponse`. Otherwise, full query results can be obtained by issuing extra requests with the `job_reference` from the a previous `QueryAssets` call. Note, the query result has approximately 10 GB limitation enforced by BigQuery https://cloud.google.com/bigquery/docs/best-practices-performance-output, queries return larger results will result in errors.
+
+      Args:
+        request: (CloudassetQueryAssetsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (QueryAssetsResponse) The response message.
+      """
+      config = self.GetMethodConfig('QueryAssets')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    QueryAssets.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/{v1Id}/{v1Id1}:queryAssets',
+        http_method='POST',
+        method_id='cloudasset.queryAssets',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}:queryAssets',
+        request_field='queryAssetsRequest',
+        request_type_name='CloudassetQueryAssetsRequest',
+        response_type_name='QueryAssetsResponse',
+        supports_download=False,
+    )
+
     def SearchAllIamPolicies(self, request, global_params=None):
       r"""Searches all IAM policies within the specified scope, such as a project, folder, or organization. The caller must be granted the `cloudasset.assets.searchAllIamPolicies` permission on the desired scope, otherwise the request will be rejected.
 

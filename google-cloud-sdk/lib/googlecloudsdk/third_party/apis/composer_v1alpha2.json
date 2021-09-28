@@ -503,6 +503,11 @@
           "description": "The operator used in this task.",
           "type": "string"
         },
+        "executionDate": {
+          "description": "Execution date for the task.",
+          "type": "string",
+          "format": "google-datetime"
+        },
         "startDate": {
           "description": "Timestamp when the task instance started execution.",
           "type": "string",

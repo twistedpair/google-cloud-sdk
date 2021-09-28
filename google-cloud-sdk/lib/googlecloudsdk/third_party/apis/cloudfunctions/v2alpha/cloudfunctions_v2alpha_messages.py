@@ -429,6 +429,17 @@ class CloudfunctionsProjectsLocationsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class CloudfunctionsProjectsLocationsRuntimesListRequest(_messages.Message):
+  r"""A CloudfunctionsProjectsLocationsRuntimesListRequest object.
+
+  Fields:
+    parent: Required. The project and location from which the runtimes should
+      be listed, specified in the format `projects/*/locations/*`
+  """
+
+  parent = _messages.StringField(1, required=True)
+
+
 class EventFilter(_messages.Message):
   r"""Filters events based on exact matches on the CloudEvents attributes.
 
@@ -960,6 +971,16 @@ class ListOperationsResponse(_messages.Message):
   operations = _messages.MessageField('Operation', 2, repeated=True)
 
 
+class ListRuntimesResponse(_messages.Message):
+  r"""Response for the `ListRuntimes` method.
+
+  Fields:
+    runtimes: The runtimes that match the request.
+  """
+
+  runtimes = _messages.MessageField('Runtime', 1, repeated=True)
+
+
 class Location(_messages.Message):
   r"""A resource that represents Google Cloud Platform location.
 
@@ -1324,6 +1345,45 @@ class RepoSource(_messages.Message):
   projectId = _messages.StringField(5)
   repoName = _messages.StringField(6)
   tagName = _messages.StringField(7)
+
+
+class Runtime(_messages.Message):
+  r"""Describes a runtime and any special information (e.g., deprecation
+  status) related to it.
+
+  Enums:
+    StageValueValuesEnum: The stage of life this runtime is in, e.g., BETA,
+      GA, etc.
+
+  Fields:
+    name: The name of the runtime, e.g., 'go113', 'nodejs12', etc.
+    stage: The stage of life this runtime is in, e.g., BETA, GA, etc.
+    warnings: Warning messages, e.g., a deprecation warning.
+  """
+
+  class StageValueValuesEnum(_messages.Enum):
+    r"""The stage of life this runtime is in, e.g., BETA, GA, etc.
+
+    Values:
+      RUNTIME_STAGE_UNSPECIFIED: Not specified.
+      DEVELOPMENT: The runtime is in development.
+      ALPHA: The runtime is in the Alpha stage.
+      BETA: The runtime is in the Beta stage.
+      GA: The runtime is generally available.
+      DEPRECATED: The runtime is deprecated.
+      DECOMMISSIONED: The runtime is no longer supported.
+    """
+    RUNTIME_STAGE_UNSPECIFIED = 0
+    DEVELOPMENT = 1
+    ALPHA = 2
+    BETA = 3
+    GA = 4
+    DEPRECATED = 5
+    DECOMMISSIONED = 6
+
+  name = _messages.StringField(1)
+  stage = _messages.EnumField('StageValueValuesEnum', 2)
+  warnings = _messages.StringField(3, repeated=True)
 
 
 class ServiceConfig(_messages.Message):

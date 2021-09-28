@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 
 from google.cloud.pubsublite import cloudpubsub
 from google.cloud.pubsublite import types
+from google.cloud.pubsublite.cloudpubsub import message_transforms
 from googlecloudsdk.api_lib.pubsub import topics
 from googlecloudsdk.command_lib.pubsub import lite_util
 from googlecloudsdk.core import gapic_util
@@ -55,7 +56,8 @@ class PublisherClient(object):
               topic_resource,
               message=None,
               ordering_key=None,
-              attributes=None):
+              attributes=None,
+              event_time=None):
     """Publishes a message to the specified Pub/Sub Lite topic.
 
     Args:
@@ -63,6 +65,7 @@ class PublisherClient(object):
       message: The string message to publish.
       ordering_key: The key for ordering delivery to subscribers.
       attributes: A dict of attributes to attach to the message.
+      event_time: A user-specified event timestamp.
 
     Raises:
       EmptyMessageException: if the message is empty.
@@ -77,9 +80,13 @@ class PublisherClient(object):
           'You cannot send an empty message. You must specify either a '
           'MESSAGE, one or more ATTRIBUTE, or both.')
     topic_path = self._TopicResourceToPath(topic_resource)
+    attributes = attributes or {}
+    if event_time:
+      attributes[message_transforms.PUBSUB_LITE_EVENT_TIME] = (
+          message_transforms.encode_attribute_event_time(event_time))
     try:
       return self._client.publish(topic_path, http_encoding.Encode(message),
-                                  ordering_key, **(attributes or {})).result()
+                                  ordering_key, **attributes).result()
     except Exception as e:
       raise topics.PublishOperationException(
           'Publish operation failed with error: {error}'.format(error=e))

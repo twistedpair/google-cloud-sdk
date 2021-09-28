@@ -314,3 +314,32 @@ def AddArgsCloneRules(parser):
       required=True,
       help=('Name of the source network firewall policy to copy '
             'the rules from.'))
+
+
+def AddSrcAddressGroups(parser):
+  """Adds a source address group to this rule."""
+  parser.add_argument(
+      '--src-address-groups',
+      type=arg_parsers.ArgList(),
+      metavar='SOURCE_ADDRESS_GROUPS',
+      required=False,
+      hidden=True,
+      help=(
+          'Source address groups to match for this rule. '
+          'Can only be specified if DIRECTION is ingress.'
+      ))
+
+
+def AddDestAddressGroups(parser):
+  """Adds a destination address group to this rule."""
+  parser.add_argument(
+      '--dest-address-groups',
+      type=arg_parsers.ArgList(),
+      metavar='DEST_ADDRESS_GROUPS',
+      required=False,
+      hidden=True,
+      help=(
+          'Dest address groups to match for this rule. '
+          'Can only be specified if DIRECTION is engress.'
+      ))
+

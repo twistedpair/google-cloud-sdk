@@ -50,13 +50,14 @@ class AppengineAppUpdateApiClient(base.AppengineApiClientBase):
     # pylint: disable=protected-access
     self._registry.RegisterApiByName('appengine', client._VERSION)
 
-  def PatchApplication(self,
-                       split_health_checks=None):
+  def PatchApplication(self, split_health_checks=None, service_account=None):
     """Updates an application.
 
     Args:
       split_health_checks: Boolean, whether to enable split health checks by
-      default.
+        default.
+      service_account: str, the app-level default service account to update for
+        this App Engine app.
 
     Returns:
       Long running operation.
@@ -66,10 +67,13 @@ class AppengineAppUpdateApiClient(base.AppengineApiClientBase):
     update_mask = ''
     if split_health_checks is not None:
       update_mask += 'featureSettings.splitHealthChecks,'
-
+    if service_account is not None:
+      update_mask += 'serviceAccount,'
     application_update = self.messages.Application()
     application_update.featureSettings = self.messages.FeatureSettings(
         splitHealthChecks=split_health_checks)
+    application_update.serviceAccount = service_account
+
     update_request = self.messages.AppengineAppsPatchRequest(
         name=self._FormatApp(),
         application=application_update,

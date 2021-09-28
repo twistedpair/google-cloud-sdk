@@ -190,9 +190,9 @@ class Destination(_messages.Message):
       service should be running in the same project of the trigger.
     gke: A GKE service capable of receiving events. The service should be
       running in the same project of the trigger.
-    workflow: Cloud Workflow that is triggered by the events. A new workflow
-      execution will be created in response to an event. The workflow should
-      be deployed in the same project of the trigger. Format:
+    workflow: The resource name of the Workflow whose Executions will be
+      triggered by the events. The Workflow resource should be deployed in the
+      same project of the trigger. Format:
       projects/{project}/locations/{location}/workflows/{workflow}
   """
 

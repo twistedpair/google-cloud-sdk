@@ -3903,6 +3903,30 @@ class GoogleCloudDialogflowCxV3DeleteDocumentOperationMetadata(_messages.Message
   genericMetadata = _messages.MessageField('GoogleCloudDialogflowCxV3GenericKnowledgeOperationMetadata', 1)
 
 
+class GoogleCloudDialogflowCxV3DeployFlowMetadata(_messages.Message):
+  r"""Metadata returned for the Environments.DeployFlow long running
+  operation.
+
+  Fields:
+    testErrors: Errors of running deployment tests.
+  """
+
+  testErrors = _messages.MessageField('GoogleCloudDialogflowCxV3TestError', 1, repeated=True)
+
+
+class GoogleCloudDialogflowCxV3DeployFlowResponse(_messages.Message):
+  r"""The response message for Environments.DeployFlow.
+
+  Fields:
+    deployment: The name of the flow version Deployment. Format:
+      `projects//locations//agents// environments//deployments/`.
+    environment: The updated environment where the flow is deployed.
+  """
+
+  deployment = _messages.StringField(1)
+  environment = _messages.MessageField('GoogleCloudDialogflowCxV3Environment', 2)
+
+
 class GoogleCloudDialogflowCxV3DtmfInput(_messages.Message):
   r"""Represents the input for dtmf event.
 
@@ -3913,6 +3937,69 @@ class GoogleCloudDialogflowCxV3DtmfInput(_messages.Message):
 
   digits = _messages.StringField(1)
   finishDigit = _messages.StringField(2)
+
+
+class GoogleCloudDialogflowCxV3Environment(_messages.Message):
+  r"""Represents an environment for an agent. You can create multiple versions
+  of your agent and publish them to separate environments. When you edit an
+  agent, you are editing the draft agent. At any point, you can save the draft
+  agent as an agent version, which is an immutable snapshot of your agent.
+  When you save the draft agent, it is published to the default environment.
+  When you create agent versions, you can publish them to custom environments.
+  You can create a variety of custom environments for testing, development,
+  production, etc.
+
+  Fields:
+    description: The human-readable description of the environment. The
+      maximum length is 500 characters. If exceeded, the request is rejected.
+    displayName: Required. The human-readable name of the environment (unique
+      in an agent). Limit of 64 characters.
+    name: The name of the environment. Format:
+      `projects//locations//agents//environments/`.
+    testCasesConfig: The test cases config for continuous tests of this
+      environment.
+    updateTime: Output only. Update time of this environment.
+    versionConfigs: Required. A list of configurations for flow versions. You
+      should include version configs for all flows that are reachable from
+      `Start Flow` in the agent. Otherwise, an error will be returned.
+  """
+
+  description = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  name = _messages.StringField(3)
+  testCasesConfig = _messages.MessageField('GoogleCloudDialogflowCxV3EnvironmentTestCasesConfig', 4)
+  updateTime = _messages.StringField(5)
+  versionConfigs = _messages.MessageField('GoogleCloudDialogflowCxV3EnvironmentVersionConfig', 6, repeated=True)
+
+
+class GoogleCloudDialogflowCxV3EnvironmentTestCasesConfig(_messages.Message):
+  r"""The configuration for continuous tests.
+
+  Fields:
+    enableContinuousRun: Whether to run test cases in
+      TestCasesConfig.test_cases periodically. Default false. If set to ture,
+      run once a day.
+    enablePredeploymentRun: Whether to run test cases in
+      TestCasesConfig.test_cases before deploying a flow version to the
+      environment. Default false.
+    testCases: A list of test case names to run. They should be under the same
+      agent. Format of each test case name: `projects//locations/
+      /agents//testCases/`
+  """
+
+  enableContinuousRun = _messages.BooleanField(1)
+  enablePredeploymentRun = _messages.BooleanField(2)
+  testCases = _messages.StringField(3, repeated=True)
+
+
+class GoogleCloudDialogflowCxV3EnvironmentVersionConfig(_messages.Message):
+  r"""Configuration for the version.
+
+  Fields:
+    version: Required. Format: projects//locations//agents//flows//versions/.
+  """
+
+  version = _messages.StringField(1)
 
 
 class GoogleCloudDialogflowCxV3EventHandler(_messages.Message):
@@ -5784,6 +5871,30 @@ class GoogleCloudDialogflowCxV3beta1DeleteDocumentOperationMetadata(_messages.Me
   genericMetadata = _messages.MessageField('GoogleCloudDialogflowCxV3beta1GenericKnowledgeOperationMetadata', 1)
 
 
+class GoogleCloudDialogflowCxV3beta1DeployFlowMetadata(_messages.Message):
+  r"""Metadata returned for the Environments.DeployFlow long running
+  operation.
+
+  Fields:
+    testErrors: Errors of running deployment tests.
+  """
+
+  testErrors = _messages.MessageField('GoogleCloudDialogflowCxV3beta1TestError', 1, repeated=True)
+
+
+class GoogleCloudDialogflowCxV3beta1DeployFlowResponse(_messages.Message):
+  r"""The response message for Environments.DeployFlow.
+
+  Fields:
+    deployment: The name of the flow version deployment. Format:
+      `projects//locations//agents// environments//deployments/`.
+    environment: The updated environment where the flow is deployed.
+  """
+
+  deployment = _messages.StringField(1)
+  environment = _messages.MessageField('GoogleCloudDialogflowCxV3beta1Environment', 2)
+
+
 class GoogleCloudDialogflowCxV3beta1DtmfInput(_messages.Message):
   r"""Represents the input for dtmf event.
 
@@ -5794,6 +5905,69 @@ class GoogleCloudDialogflowCxV3beta1DtmfInput(_messages.Message):
 
   digits = _messages.StringField(1)
   finishDigit = _messages.StringField(2)
+
+
+class GoogleCloudDialogflowCxV3beta1Environment(_messages.Message):
+  r"""Represents an environment for an agent. You can create multiple versions
+  of your agent and publish them to separate environments. When you edit an
+  agent, you are editing the draft agent. At any point, you can save the draft
+  agent as an agent version, which is an immutable snapshot of your agent.
+  When you save the draft agent, it is published to the default environment.
+  When you create agent versions, you can publish them to custom environments.
+  You can create a variety of custom environments for testing, development,
+  production, etc.
+
+  Fields:
+    description: The human-readable description of the environment. The
+      maximum length is 500 characters. If exceeded, the request is rejected.
+    displayName: Required. The human-readable name of the environment (unique
+      in an agent). Limit of 64 characters.
+    name: The name of the environment. Format:
+      `projects//locations//agents//environments/`.
+    testCasesConfig: The test cases config for continuous tests of this
+      environment.
+    updateTime: Output only. Update time of this environment.
+    versionConfigs: Required. A list of configurations for flow versions. You
+      should include version configs for all flows that are reachable from
+      `Start Flow` in the agent. Otherwise, an error will be returned.
+  """
+
+  description = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  name = _messages.StringField(3)
+  testCasesConfig = _messages.MessageField('GoogleCloudDialogflowCxV3beta1EnvironmentTestCasesConfig', 4)
+  updateTime = _messages.StringField(5)
+  versionConfigs = _messages.MessageField('GoogleCloudDialogflowCxV3beta1EnvironmentVersionConfig', 6, repeated=True)
+
+
+class GoogleCloudDialogflowCxV3beta1EnvironmentTestCasesConfig(_messages.Message):
+  r"""The configuration for continuous tests.
+
+  Fields:
+    enableContinuousRun: Whether to run test cases in
+      TestCasesConfig.test_cases periodically. Default false. If set to ture,
+      run once a day.
+    enablePredeploymentRun: Whether to run test cases in
+      TestCasesConfig.test_cases before deploying a flow version to the
+      environment. Default false.
+    testCases: A list of test case names to run. They should be under the same
+      agent. Format of each test case name: `projects//locations/
+      /agents//testCases/`
+  """
+
+  enableContinuousRun = _messages.BooleanField(1)
+  enablePredeploymentRun = _messages.BooleanField(2)
+  testCases = _messages.StringField(3, repeated=True)
+
+
+class GoogleCloudDialogflowCxV3beta1EnvironmentVersionConfig(_messages.Message):
+  r"""Configuration for the version.
+
+  Fields:
+    version: Required. Format: projects//locations//agents//flows//versions/.
+  """
+
+  version = _messages.StringField(1)
 
 
 class GoogleCloudDialogflowCxV3beta1EventHandler(_messages.Message):

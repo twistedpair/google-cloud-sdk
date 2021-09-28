@@ -33,9 +33,12 @@ class Collections(enum.Enum):
   )
   PROJECTS_DATABASES = (
       'projects.databases',
-      'projects/{projectsId}/databases/{databasesId}',
-      {},
-      ['projectsId', 'databasesId'],
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/databases/{databasesId}',
+      },
+      ['name'],
       True
   )
   PROJECTS_DATABASES_COLLECTIONGROUPS = (

@@ -4769,14 +4769,12 @@ class AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesBatchReadR
       read data from. Format: `projects/{project}/locations/{location}/tensorb
       oards/{tensorboard}/experiments/{experiment}/runs/{run}/timeSeries/{time
       _series}`
-    timeSeriesId: A string attribute.
   """
 
   experimentsId = _messages.StringField(1, required=True)
   runsId = _messages.StringField(2, required=True)
   tensorboard = _messages.StringField(3, required=True)
   timeSeries = _messages.StringField(4, repeated=True)
-  timeSeriesId = _messages.StringField(5, required=True)
 
 
 class AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesCreateRequest(_messages.Message):
@@ -7408,6 +7406,8 @@ class GoogleCloudAiplatformInternalSpecialistPool(_messages.Message):
       SpecialistPool.
     specialistManagersCount: Output only. The number of managers in this
       SpecialistPool.
+    specialistWorkerEmails: The email addresses of workers in the
+      SpecialistPool.
     useCase: If it's not specified, will treat it as the default case.
   """
 
@@ -7426,7 +7426,8 @@ class GoogleCloudAiplatformInternalSpecialistPool(_messages.Message):
   pendingDataLabelingJobs = _messages.StringField(3, repeated=True)
   specialistManagerEmails = _messages.StringField(4, repeated=True)
   specialistManagersCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  useCase = _messages.EnumField('UseCaseValueValuesEnum', 6)
+  specialistWorkerEmails = _messages.StringField(6, repeated=True)
+  useCase = _messages.EnumField('UseCaseValueValuesEnum', 7)
 
 
 class GoogleCloudAiplatformInternalUndeployModelOperationMetadata(_messages.Message):
@@ -10647,6 +10648,8 @@ class GoogleCloudAiplatformUiSpecialistPool(_messages.Message):
       SpecialistPool.
     specialistManagersCount: Output only. The number of managers in this
       SpecialistPool.
+    specialistWorkerEmails: The email addresses of workers in the
+      SpecialistPool.
   """
 
   displayName = _messages.StringField(1)
@@ -10655,6 +10658,7 @@ class GoogleCloudAiplatformUiSpecialistPool(_messages.Message):
   pendingDataLabelingJobs = _messages.StringField(4, repeated=True)
   specialistManagerEmails = _messages.StringField(5, repeated=True)
   specialistManagersCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  specialistWorkerEmails = _messages.StringField(7, repeated=True)
 
 
 class GoogleCloudAiplatformUiSuggestTrialsMetadata(_messages.Message):
@@ -14271,7 +14275,8 @@ class GoogleCloudAiplatformV1SchemaTrainingjobDefinitionAutoMlForecastingInputs(
       * "minimize-wape-mae" - Minimize the combination of weighted absolute
       percentage error (WAPE) and mean-absolute-error (MAE). * "minimize-
       quantile-loss" - Minimize the quantile loss at the quantiles defined in
-      `quantiles`.
+      `quantiles`. * "minimize-mape" - Minimize the mean absolute percentage
+      error.
     quantiles: Quantiles to use for minimize-quantile-loss
       `optimization_objective`. Up to 5 quantiles are allowed of values
       between 0 and 1, exclusive. Required if the value of
@@ -15565,6 +15570,8 @@ class GoogleCloudAiplatformV1SpecialistPool(_messages.Message):
       SpecialistPool.
     specialistManagersCount: Output only. The number of managers in this
       SpecialistPool.
+    specialistWorkerEmails: The email addresses of workers in the
+      SpecialistPool.
   """
 
   displayName = _messages.StringField(1)
@@ -15572,6 +15579,7 @@ class GoogleCloudAiplatformV1SpecialistPool(_messages.Message):
   pendingDataLabelingJobs = _messages.StringField(3, repeated=True)
   specialistManagerEmails = _messages.StringField(4, repeated=True)
   specialistManagersCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  specialistWorkerEmails = _messages.StringField(6, repeated=True)
 
 
 class GoogleCloudAiplatformV1StudySpec(_messages.Message):
@@ -17867,6 +17875,8 @@ class GoogleCloudAiplatformV1alpha1SpecialistPool(_messages.Message):
       SpecialistPool.
     specialistManagersCount: Output only. The number of managers in this
       SpecialistPool.
+    specialistWorkerEmails: The email addresses of workers in the
+      SpecialistPool.
   """
 
   displayName = _messages.StringField(1)
@@ -17874,6 +17884,7 @@ class GoogleCloudAiplatformV1alpha1SpecialistPool(_messages.Message):
   pendingDataLabelingJobs = _messages.StringField(3, repeated=True)
   specialistManagerEmails = _messages.StringField(4, repeated=True)
   specialistManagersCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  specialistWorkerEmails = _messages.StringField(6, repeated=True)
 
 
 class GoogleCloudAiplatformV1alpha1SuggestTrialsMetadata(_messages.Message):
@@ -27112,7 +27123,8 @@ class GoogleCloudAiplatformV1beta1SchemaTrainingjobDefinitionAutoMlForecastingIn
       * "minimize-wape-mae" - Minimize the combination of weighted absolute
       percentage error (WAPE) and mean-absolute-error (MAE). * "minimize-
       quantile-loss" - Minimize the quantile loss at the quantiles defined in
-      `quantiles`.
+      `quantiles`. * "minimize-mape" - Minimize the mean absolute percentage
+      error.
     quantiles: Quantiles to use for minimize-quantile-loss
       `optimization_objective`. Up to 5 quantiles are allowed of values
       between 0 and 1, exclusive. Required if the value of
@@ -28547,6 +28559,8 @@ class GoogleCloudAiplatformV1beta1SpecialistPool(_messages.Message):
       SpecialistPool.
     specialistManagersCount: Output only. The number of managers in this
       SpecialistPool.
+    specialistWorkerEmails: The email addresses of workers in the
+      SpecialistPool.
   """
 
   displayName = _messages.StringField(1)
@@ -28554,6 +28568,7 @@ class GoogleCloudAiplatformV1beta1SpecialistPool(_messages.Message):
   pendingDataLabelingJobs = _messages.StringField(3, repeated=True)
   specialistManagerEmails = _messages.StringField(4, repeated=True)
   specialistManagersCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  specialistWorkerEmails = _messages.StringField(6, repeated=True)
 
 
 class GoogleCloudAiplatformV1beta1StopTrialRequest(_messages.Message):

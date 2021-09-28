@@ -401,18 +401,14 @@ class ServiceConditionPoller(ConditionPoller):
     return datetime.datetime.now() - self._start_time > self._five_seconds
 
 
-class _NewRevisionForcingChange(config_changes_mod.ConfigChanger):
+class _NewRevisionForcingChange(config_changes_mod.RevisionNameChanges):
   """Forces a new revision to get created by changing the revision name."""
-
-  def __init__(self, revision_suffix):
-    self._revision_name_change = config_changes_mod.RevisionNameChanges(
-        revision_suffix)
 
   def Adjust(self, resource):
     """Adjust by revision name."""
     if revision.NONCE_LABEL in resource.template.labels:
       del resource.template.labels[revision.NONCE_LABEL]
-    return self._revision_name_change.Adjust(resource)
+    return super(_NewRevisionForcingChange, self).Adjust(resource)
 
 
 def _IsDigest(url):
@@ -503,6 +499,7 @@ class _SwitchToDigestChange(config_changes_mod.ConfigChanger):
   """Switches the configuration from by-tag to by-digest."""
 
   def __init__(self, base_revision):
+    super(_SwitchToDigestChange, self).__init__(adjusts_template=True)
     self._base_revision = base_revision
 
   def Adjust(self, resource):
@@ -524,6 +521,7 @@ class _AddDigestToImageChange(config_changes_mod.ConfigChanger):
   """Add image digest that comes from source build."""
 
   def __init__(self, image_digest):
+    super(_AddDigestToImageChange, self).__init__(adjusts_template=True)
     self._image_digest = image_digest
 
   def Adjust(self, resource):
@@ -1123,10 +1121,13 @@ class ServerlessOperations(object):
     else:
       with_image = any(
           isinstance(c, config_changes_mod.ImageChange) for c in config_changes)
-      self._AddRevisionForcingChange(serv, config_changes)
-      if serv and not with_image:
-        # Avoid changing the running code by making the new revision by digest
-        self._EnsureImageDigest(serv, config_changes)
+      if config_changes_mod.AdjustsTemplate(config_changes):
+        # Only force a new revision if there's other template-level changes that
+        # warrant a new revision.
+        self._AddRevisionForcingChange(serv, config_changes)
+        if serv and not with_image:
+          # Avoid changing the running code by making the new revision by digest
+          self._EnsureImageDigest(serv, config_changes)
 
     if serv and serv.metadata.deletionTimestamp is not None:
       raise serverless_exceptions.DeploymentFailedError(

@@ -5394,6 +5394,104 @@
         }
       }
     },
+    "GoogleCloudDialogflowCxV3DeployFlowMetadata": {
+      "id": "GoogleCloudDialogflowCxV3DeployFlowMetadata",
+      "description": "Metadata returned for the Environments.DeployFlow long running operation.",
+      "type": "object",
+      "properties": {
+        "testErrors": {
+          "description": "Errors of running deployment tests.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudDialogflowCxV3TestError"
+          }
+        }
+      }
+    },
+    "GoogleCloudDialogflowCxV3DeployFlowResponse": {
+      "id": "GoogleCloudDialogflowCxV3DeployFlowResponse",
+      "description": "The response message for Environments.DeployFlow.",
+      "type": "object",
+      "properties": {
+        "environment": {
+          "description": "The updated environment where the flow is deployed.",
+          "$ref": "GoogleCloudDialogflowCxV3Environment"
+        },
+        "deployment": {
+          "description": "The name of the flow version Deployment. Format: `projects\/\/locations\/\/agents\/\/ environments\/\/deployments\/`.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudDialogflowCxV3Environment": {
+      "id": "GoogleCloudDialogflowCxV3Environment",
+      "description": "Represents an environment for an agent. You can create multiple versions of your agent and publish them to separate environments. When you edit an agent, you are editing the draft agent. At any point, you can save the draft agent as an agent version, which is an immutable snapshot of your agent. When you save the draft agent, it is published to the default environment. When you create agent versions, you can publish them to custom environments. You can create a variety of custom environments for testing, development, production, etc.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The name of the environment. Format: `projects\/\/locations\/\/agents\/\/environments\/`.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "Required. The human-readable name of the environment (unique in an agent). Limit of 64 characters.",
+          "type": "string"
+        },
+        "description": {
+          "description": "The human-readable description of the environment. The maximum length is 500 characters. If exceeded, the request is rejected.",
+          "type": "string"
+        },
+        "versionConfigs": {
+          "description": "Required. A list of configurations for flow versions. You should include version configs for all flows that are reachable from `Start Flow` in the agent. Otherwise, an error will be returned.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudDialogflowCxV3EnvironmentVersionConfig"
+          }
+        },
+        "updateTime": {
+          "description": "Output only. Update time of this environment.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "testCasesConfig": {
+          "description": "The test cases config for continuous tests of this environment.",
+          "$ref": "GoogleCloudDialogflowCxV3EnvironmentTestCasesConfig"
+        }
+      }
+    },
+    "GoogleCloudDialogflowCxV3EnvironmentVersionConfig": {
+      "id": "GoogleCloudDialogflowCxV3EnvironmentVersionConfig",
+      "description": "Configuration for the version.",
+      "type": "object",
+      "properties": {
+        "version": {
+          "description": "Required. Format: projects\/\/locations\/\/agents\/\/flows\/\/versions\/.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudDialogflowCxV3EnvironmentTestCasesConfig": {
+      "id": "GoogleCloudDialogflowCxV3EnvironmentTestCasesConfig",
+      "description": "The configuration for continuous tests.",
+      "type": "object",
+      "properties": {
+        "testCases": {
+          "description": "A list of test case names to run. They should be under the same agent. Format of each test case name: `projects\/\/locations\/ \/agents\/\/testCases\/`",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "enableContinuousRun": {
+          "description": "Whether to run test cases in TestCasesConfig.test_cases periodically. Default false. If set to ture, run once a day.",
+          "type": "boolean"
+        },
+        "enablePredeploymentRun": {
+          "description": "Whether to run test cases in TestCasesConfig.test_cases before deploying a flow version to the environment. Default false.",
+          "type": "boolean"
+        }
+      }
+    },
     "GoogleCloudDialogflowCxV3beta1CreateVersionOperationMetadata": {
       "id": "GoogleCloudDialogflowCxV3beta1CreateVersionOperationMetadata",
       "description": "Metadata associated with the long running operation for Versions.CreateVersion.",
@@ -6965,6 +7063,104 @@
           "description": "Time when the continuous testing run starts.",
           "type": "string",
           "format": "google-datetime"
+        }
+      }
+    },
+    "GoogleCloudDialogflowCxV3beta1DeployFlowMetadata": {
+      "id": "GoogleCloudDialogflowCxV3beta1DeployFlowMetadata",
+      "description": "Metadata returned for the Environments.DeployFlow long running operation.",
+      "type": "object",
+      "properties": {
+        "testErrors": {
+          "description": "Errors of running deployment tests.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudDialogflowCxV3beta1TestError"
+          }
+        }
+      }
+    },
+    "GoogleCloudDialogflowCxV3beta1DeployFlowResponse": {
+      "id": "GoogleCloudDialogflowCxV3beta1DeployFlowResponse",
+      "description": "The response message for Environments.DeployFlow.",
+      "type": "object",
+      "properties": {
+        "environment": {
+          "description": "The updated environment where the flow is deployed.",
+          "$ref": "GoogleCloudDialogflowCxV3beta1Environment"
+        },
+        "deployment": {
+          "description": "The name of the flow version deployment. Format: `projects\/\/locations\/\/agents\/\/ environments\/\/deployments\/`.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudDialogflowCxV3beta1Environment": {
+      "id": "GoogleCloudDialogflowCxV3beta1Environment",
+      "description": "Represents an environment for an agent. You can create multiple versions of your agent and publish them to separate environments. When you edit an agent, you are editing the draft agent. At any point, you can save the draft agent as an agent version, which is an immutable snapshot of your agent. When you save the draft agent, it is published to the default environment. When you create agent versions, you can publish them to custom environments. You can create a variety of custom environments for testing, development, production, etc.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The name of the environment. Format: `projects\/\/locations\/\/agents\/\/environments\/`.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "Required. The human-readable name of the environment (unique in an agent). Limit of 64 characters.",
+          "type": "string"
+        },
+        "description": {
+          "description": "The human-readable description of the environment. The maximum length is 500 characters. If exceeded, the request is rejected.",
+          "type": "string"
+        },
+        "versionConfigs": {
+          "description": "Required. A list of configurations for flow versions. You should include version configs for all flows that are reachable from `Start Flow` in the agent. Otherwise, an error will be returned.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudDialogflowCxV3beta1EnvironmentVersionConfig"
+          }
+        },
+        "updateTime": {
+          "description": "Output only. Update time of this environment.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "testCasesConfig": {
+          "description": "The test cases config for continuous tests of this environment.",
+          "$ref": "GoogleCloudDialogflowCxV3beta1EnvironmentTestCasesConfig"
+        }
+      }
+    },
+    "GoogleCloudDialogflowCxV3beta1EnvironmentVersionConfig": {
+      "id": "GoogleCloudDialogflowCxV3beta1EnvironmentVersionConfig",
+      "description": "Configuration for the version.",
+      "type": "object",
+      "properties": {
+        "version": {
+          "description": "Required. Format: projects\/\/locations\/\/agents\/\/flows\/\/versions\/.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudDialogflowCxV3beta1EnvironmentTestCasesConfig": {
+      "id": "GoogleCloudDialogflowCxV3beta1EnvironmentTestCasesConfig",
+      "description": "The configuration for continuous tests.",
+      "type": "object",
+      "properties": {
+        "testCases": {
+          "description": "A list of test case names to run. They should be under the same agent. Format of each test case name: `projects\/\/locations\/ \/agents\/\/testCases\/`",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "enableContinuousRun": {
+          "description": "Whether to run test cases in TestCasesConfig.test_cases periodically. Default false. If set to ture, run once a day.",
+          "type": "boolean"
+        },
+        "enablePredeploymentRun": {
+          "description": "Whether to run test cases in TestCasesConfig.test_cases before deploying a flow version to the environment. Default false.",
+          "type": "boolean"
         }
       }
     },

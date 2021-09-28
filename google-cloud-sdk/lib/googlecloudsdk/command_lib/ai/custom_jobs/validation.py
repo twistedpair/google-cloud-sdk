@@ -27,7 +27,6 @@ from googlecloudsdk.command_lib.ai import validation
 from googlecloudsdk.command_lib.ai.custom_jobs import custom_jobs_util
 from googlecloudsdk.command_lib.ai.custom_jobs import local_util
 from googlecloudsdk.command_lib.ai.docker import utils as docker_utils
-from googlecloudsdk.core import log
 from googlecloudsdk.core.util import files
 
 
@@ -41,9 +40,6 @@ def ValidateCreateArgs(args, job_spec_from_config, version):
   """Validate the argument values specified in `create` command."""
   # TODO(b/186082396): Add more validations for other args.
   if args.worker_pool_spec:
-    if version != constants.GA_VERSION:
-      args.worker_pool_spec = _NormalizeDeprecatedPythonImageUriInSpec(
-          args.worker_pool_spec)
     _ValidateWorkerPoolSpecArgs(args.worker_pool_spec, version)
   else:
     _ValidateWorkerPoolSpecsFromConfig(job_spec_from_config)
@@ -64,25 +60,6 @@ def _ValidateWorkerPoolSpecArgs(worker_pool_specs, version):
         _ValidateSingleWorkerPoolSpecArgsGa(spec)
       else:
         _ValidateSingleWorkerPoolSpecArgsBetaAlpha(spec)
-
-
-def _NormalizeDeprecatedPythonImageUriInSpec(specs):
-  """Update the values of `--worker-pool-spec` flags if `python-image-uri` is specified."""
-
-  updated = []
-  for spec in specs:
-    if spec and 'python-image-uri' in spec:
-      # TODO(b/185461224): remove `python-image-uri`
-      if 'executor-image-uri' not in spec:
-        log.warning('Field `python-image-uri` in flag `--worker-pool-spec` will'
-                    ' be deprecated. Please use `executor-image-uri` instead.')
-        spec['executor-image-uri'] = spec['python-image-uri']
-      else:
-        log.warning('Field `python-image-uri` in flag `--worker-pool-spec` is '
-                    'replaced by `executor-image-uri`. It is unnecessary to '
-                    'specify both.')
-    updated.append(spec)
-  return updated
 
 
 def _ValidateHardwareInSingleWorkerPool(spec, api_version):

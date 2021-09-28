@@ -390,7 +390,7 @@
             "The attempt to transfer the domain from another registrar to Cloud Domains failed. You can delete resources in this state to allow transfer to be retried.",
             "The domain is registered and operational. The domain renews automatically as long as it remains in this state.",
             "The domain is suspended and inoperative. For more details, see the `issues` field.",
-            "The domain has been exported from Cloud Domains to [Google Domains](https:\/\/domains.google\/). You can no longer update it with this API, and information shown about it may be stale. Without further action, domains in this state expire at their `expire_time`. You can delete the resource after the `expire_time` has passed."
+            "The domain is no longer managed with Cloud Domains. It may have been transferred to another registrar or exported for management in [Google Domains](https:\/\/domains.google\/). You can no longer update it with this API, and information shown about it may be stale. Domains in this state will not be automatically renewed by Cloud Domains."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
@@ -478,7 +478,7 @@
           "type": "string",
           "enumDescriptions": [
             "The renewal method is undefined.",
-            "The domain is automatically renewed each year . To disable automatic renewals, export the domain by calling `ExportRegistration` .",
+            "The domain is automatically renewed each year . To disable automatic renewals, delete the resource by calling `DeleteRegistration` or export it by calling `ExportRegistration`.",
             "The domain must be explicitly renewed each year before its `expire_time`. This option is only available when the `Registration` is in state `EXPORTED`. To manage the domain's current billing and renewal settings, go to [Google Domains](https:\/\/domains.google\/)."
           ],
           "enum": [
@@ -1780,7 +1780,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Exports a `Registration` that you no longer want to use with Cloud Domains. You can continue to use the domain in [Google Domains](https:\/\/domains.google\/) until it expires. If the export is successful: * The resource's `state` becomes `EXPORTED`, meaning that it is no longer managed by Cloud Domains * Because individual users can own domains in Google Domains, the calling user becomes the domain's sole owner. Permissions for the domain are subsequently managed in Google Domains. * Without further action, the domain does not renew automatically. The new owner can set up billing in Google Domains to renew the domain if needed."
+                  "description": "Exports a `Registration` resource, such that it is no longer managed by Cloud Domains. When an active domain is successfully exported, you can continue to use the domain in [Google Domains](https:\/\/domains.google\/) until it expires. The calling user becomes the domain's sole owner in Google Domains, and permissions for the domain are subsequently managed there. The domain will not renew automatically unless the new owner sets up billing in Google Domains."
                 },
                 "delete": {
                   "id": "domains.projects.locations.registrations.delete",
@@ -1805,7 +1805,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Deletes a `Registration` resource. This method only works on resources in one of the following states: * `state` is `EXPORTED` with `expire_time` in the past * `state` is `REGISTRATION_FAILED`"
+                  "description": "Deletes a `Registration` resource. For `Registration` resources , this method works if: * `state` is `EXPORTED` with `expire_time` in the past * `state` is `REGISTRATION_FAILED` When an active domain is successfully deleted, you can continue to use the domain in [Google Domains](https:\/\/domains.google\/) until it expires. The calling user becomes the domain's sole owner in Google Domains, and permissions for the domain are subsequently managed there. The domain will not renew automatically unless the new owner sets up billing in Google Domains."
                 },
                 "retrieveAuthorizationCode": {
                   "id": "domains.projects.locations.registrations.retrieveAuthorizationCode",

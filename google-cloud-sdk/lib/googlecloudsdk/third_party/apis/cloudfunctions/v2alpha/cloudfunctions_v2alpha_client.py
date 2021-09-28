@@ -41,6 +41,7 @@ class CloudfunctionsV2alpha(base_api.BaseApiClient):
         response_encoding=response_encoding)
     self.projects_locations_functions = self.ProjectsLocationsFunctionsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
+    self.projects_locations_runtimes = self.ProjectsLocationsRuntimesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
 
@@ -385,6 +386,43 @@ class CloudfunctionsV2alpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='CloudfunctionsProjectsLocationsOperationsListRequest',
         response_type_name='ListOperationsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsRuntimesService(base_api.BaseApiService):
+    """Service class for the projects_locations_runtimes resource."""
+
+    _NAME = 'projects_locations_runtimes'
+
+    def __init__(self, client):
+      super(CloudfunctionsV2alpha.ProjectsLocationsRuntimesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Returns a list of runtimes that are supported for the requested project.
+
+      Args:
+        request: (CloudfunctionsProjectsLocationsRuntimesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListRuntimesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2alpha/projects/{projectsId}/locations/{locationsId}/runtimes',
+        http_method='GET',
+        method_id='cloudfunctions.projects.locations.runtimes.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v2alpha/{+parent}/runtimes',
+        request_field='',
+        request_type_name='CloudfunctionsProjectsLocationsRuntimesListRequest',
+        response_type_name='ListRuntimesResponse',
         supports_download=False,
     )
 

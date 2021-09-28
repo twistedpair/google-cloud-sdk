@@ -1154,13 +1154,15 @@ class GrpcRouteRouteRule(_messages.Message):
   Fields:
     action: Required. A detailed rule defining how to route traffic. This
       field is required.
-    match: Optional. A set of conditions that must match for this rule to be
-      activated. If no routeMatch field is specified, this rule will
-      unconditionally match traffic.
+    matches: Optional. Matches define conditions used for matching the rule
+      against incoming gRPC requests. Each match is independent, i.e. this
+      rule will be matched if ANY one of the matches is satisfied. If no
+      matches field is specified, this rule will unconditionally match
+      traffic.
   """
 
   action = _messages.MessageField('GrpcRouteRouteAction', 1)
-  match = _messages.MessageField('GrpcRouteRouteMatch', 2)
+  matches = _messages.MessageField('GrpcRouteRouteMatch', 2, repeated=True)
 
 
 class HeaderAction(_messages.Message):

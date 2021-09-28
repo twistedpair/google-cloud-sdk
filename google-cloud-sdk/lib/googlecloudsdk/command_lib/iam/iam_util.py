@@ -133,7 +133,7 @@ class IamPolicyBindingIncompleteError(IamPolicyBindingInvalidError):
 def AddMemberFlag(parser, verb, hide_special_member_types, required=True):
   """Create --member flag and add to parser."""
   help_str = ("""\
-The member {verb}. Should be of the form `user|group|serviceAccount:email` or
+The principal {verb}. Should be of the form `user|group|serviceAccount:email` or
 `domain:domain`.
 
 Examples: `user:test-user@gmail.com`, `group:admins@example.com`,
@@ -148,7 +148,12 @@ Some resources also accept the following special values:
 * `allAuthenticatedUsers` - Special identifier that represents anyone who is
    authenticated with a Google account or a service account.
       """)
-  parser.add_argument('--member', required=required, help=help_str)
+  parser.add_argument(
+      '--member',
+      metavar='PRINCIPAL',
+      required=required,
+      help=help_str,
+      suggestion_aliases=['--principal'])
 
 
 def _ConditionArgDict():
@@ -226,7 +231,7 @@ https://cloud.google.com/iam/docs/conditions-overview"""
 Path to a local JSON or YAML file that defines the condition.
 To see available fields, see the help for `--condition`."""
   help_str_condition_all = """
-Remove all bindings with this role and member, irrespective of any
+Remove all bindings with this role and principal, irrespective of any
 conditions."""
   condition_group = parser.add_mutually_exclusive_group()
   condition_group.add_argument(
@@ -323,8 +328,8 @@ def AddArgsForAddIamPolicyBinding(parser,
   """
 
   help_text = """
-    Role name to assign to the member. The role name is the complete path of a
-    predefined role, such as `roles/logging.viewer`, or the role ID for a
+    Role name to assign to the principal. The role name is the complete path of
+    a predefined role, such as `roles/logging.viewer`, or the role ID for a
     custom role, such as `organizations/{ORGANIZATION_ID}/roles/logging.viewer`.
   """
 
@@ -359,7 +364,7 @@ def AddArgsForRemoveIamPolicyBinding(parser,
       '--role',
       required=True,
       completer=role_completer,
-      help='The role to remove the member from.')
+      help='The role to remove the principal from.')
   AddMemberFlag(parser, 'to remove the binding for', hide_special_member_types)
   if add_condition:
     _AddConditionFlagsForRemoveBindingFromIamPolicy(
@@ -568,8 +573,9 @@ def _PromptForConditionRemoveBindingFromIamPolicy(policy, member, role):
   """Prompt user for a condition when removing binding."""
   conditions = PromptChoicesForRemoveBindingFromIamPolicy(policy, member, role)
   if not conditions:
-    raise IamPolicyBindingNotFound('Policy binding with the specified member '
-                                   'and role not found!')
+    raise IamPolicyBindingNotFound(
+        'Policy binding with the specified principal '
+        'and role not found!')
   prompt_message = ('The policy contains bindings with conditions, '
                     'so specifying a condition is required when removing a '
                     'binding. Please specify a condition.')
@@ -660,7 +666,7 @@ def RemoveBindingFromIamPolicyWithCondition(policy,
           'policy containing conditions is prohibited in non-interactive '
           'mode. Run the command again with `--condition=None` to remove a '
           'binding without condition or run command with `--all` to remove all '
-          'bindings of the specified member and role.')
+          'bindings of the specified principal and role.')
       raise IamPolicyBindingIncompleteError(message)
     condition = _PromptForConditionRemoveBindingFromIamPolicy(
         policy, member, role)
@@ -680,8 +686,9 @@ def _RemoveBindingFromIamPolicyAllConditions(policy, member, role):
       binding.members.remove(member)
       conditions_removed = True
   if not conditions_removed:
-    raise IamPolicyBindingNotFound('Policy bindings with the specified member '
-                                   'and role not found!')
+    raise IamPolicyBindingNotFound(
+        'Policy bindings with the specified principal '
+        'and role not found!')
   policy.bindings[:] = [b for b in policy.bindings if b.members]
 
 
@@ -694,8 +701,9 @@ def _RemoveBindingFromIamPolicyWithCondition(policy, member, role, condition):
       binding.members.remove(member)
       break
   else:
-    raise IamPolicyBindingNotFound('Policy binding with the specified member, '
-                                   'role, and condition not found!')
+    raise IamPolicyBindingNotFound(
+        'Policy binding with the specified principal, '
+        'role, and condition not found!')
   policy.bindings[:] = [b for b in policy.bindings if b.members]
 
 
@@ -748,7 +756,7 @@ def RemoveBindingFromIamPolicy(policy, member, role):
       binding.members.remove(member)
       break
   else:
-    message = 'Policy binding with the specified member and role not found!'
+    message = 'Policy binding with the specified principal and role not found!'
     raise IamPolicyBindingNotFound(message)
 
   # Second, remove any empty bindings.
@@ -990,7 +998,7 @@ def GetDetailedHelpForAddIamPolicyBinding(collection,
   """
   a = 'an' if use_an else 'a'
   note = ('See https://cloud.google.com/iam/docs/managing-policies for details '
-          'of policy role and member types.')
+          'of policy role and principal types.')
   detailed_help = {
       'brief':
           'Add IAM policy binding for {0} {1}.'.format(a, collection),
@@ -1051,7 +1059,7 @@ def GetDetailedHelpForRemoveIamPolicyBinding(collection,
   """
   a = 'an' if use_an else 'a'
   note = ('See https://cloud.google.com/iam/docs/managing-policies for details'
-          ' of policy role and member types.')
+          ' of policy role and principal types.')
   detailed_help = {
       'brief':
           'Remove IAM policy binding for {0} {1}.'.format(a, collection),
@@ -1299,8 +1307,8 @@ def GetRoleName(organization,
     if project or organization:
       raise gcloud_exceptions.InvalidArgumentException(
           parameter_name,
-          'The role id that starts with \'roles/\' only stands for curated '
-          'role. Should not specify the project or organization for curated '
+          'The role id that starts with \'roles/\' only stands for predefined '
+          'role. Should not specify the project or organization for predefined '
           'roles')
     return role
 

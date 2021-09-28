@@ -405,6 +405,13 @@
         "sourceFormat": {
           "description": "Specifies whether the Config Sync Repo is in \u201Chierarchical\u201D or \u201Cunstructured\u201D mode.",
           "type": "string"
+        },
+        "resourceRequirements": {
+          "description": "Specifies CPU and memory limits for containers, keyed by container name",
+          "type": "object",
+          "additionalProperties": {
+            "$ref": "ConfigManagementContainerResourceRequirements"
+          }
         }
       }
     },
@@ -444,6 +451,45 @@
         },
         "gcpServiceAccountEmail": {
           "description": "The GCP Service Account Email used for auth when secret_type is gcpServiceAccount.",
+          "type": "string"
+        },
+        "noSslVerify": {
+          "description": "Enable or disable the SSL certificate verification Default: false.",
+          "type": "boolean"
+        },
+        "syncDepth": {
+          "description": "The depth of git commits synced by the git-sync container.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "ConfigManagementContainerResourceRequirements": {
+      "id": "ConfigManagementContainerResourceRequirements",
+      "description": "ResourceRequirements allows to override the CPU and memory resource requirements of a container.",
+      "type": "object",
+      "properties": {
+        "containerName": {
+          "description": "Name of the container",
+          "type": "string"
+        },
+        "cpuLimit": {
+          "description": "Allows to override the CPU limit of a container",
+          "$ref": "ConfigManagementQuantity"
+        },
+        "memoryLimit": {
+          "description": "Allows to override the memory limit of a container",
+          "$ref": "ConfigManagementQuantity"
+        }
+      }
+    },
+    "ConfigManagementQuantity": {
+      "id": "ConfigManagementQuantity",
+      "description": "The view model of a single quantity, e.g. \"800 MiB\". Corresponds to https:\/\/github.com\/kubernetes\/kubernetes\/blob\/master\/staging\/src\/k8s.io\/apimachinery\/pkg\/api\/resource\/generated.proto",
+      "type": "object",
+      "properties": {
+        "string": {
+          "description": "Stringified version of the quantity, e.g., \"800 MiB\".",
           "type": "string"
         }
       }
@@ -808,6 +854,10 @@
         "rootReconciler": {
           "description": "Version of the deployed reconciler container in root-reconciler pod",
           "type": "string"
+        },
+        "admissionWebhook": {
+          "description": "Version of the deployed admission_webhook pod",
+          "type": "string"
         }
       }
     },
@@ -898,6 +948,22 @@
         },
         "rootReconciler": {
           "description": "Deployment state of root-reconciler",
+          "type": "string",
+          "enumDescriptions": [
+            "Deployment's state cannot be determined",
+            "Deployment is not installed",
+            "Deployment is installed",
+            "Deployment was attempted to be installed, but has errors"
+          ],
+          "enum": [
+            "DEPLOYMENT_STATE_UNSPECIFIED",
+            "NOT_INSTALLED",
+            "INSTALLED",
+            "ERROR"
+          ]
+        },
+        "admissionWebhook": {
+          "description": "Deployment state of admission-webhook",
           "type": "string",
           "enumDescriptions": [
             "Deployment's state cannot be determined",

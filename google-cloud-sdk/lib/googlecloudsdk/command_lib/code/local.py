@@ -25,6 +25,7 @@ import json
 import os
 import os.path
 import re
+import uuid
 
 from apitools.base.py import encoding_helper
 from apitools.base.py import exceptions as apitools_exceptions
@@ -56,6 +57,11 @@ RUN_MESSAGES_MODULE = apis.GetMessagesModule('run', 'v1')
 _DEFAULT_BUILDPACK_BUILDER = 'gcr.io/buildpacks/builder'
 
 _C_IDENTIFIER = r'^[a-zA-Z_][a-zA-Z_0-9]*$'
+
+# A sentinal used for unspecified flag values. We are using an object as a
+# sentinal value instead of None so that for boolean flags None (unset) isn't
+# confused the set value False.
+_FLAG_UNSPECIFIED = object()
 
 
 class InvalidLocationError(exceptions.Error):
@@ -205,23 +211,32 @@ class _SecretVolume(DataObject):
       name: (str) The name of the volume to be referenced in the k8s resource.
       mount_path: (str) The filesystem location where the volume is mounted.
       secret_name: (str) The secret manager reference.
-      mapped_secret: (str) If set, the name of the secret in another project to
-        use.
+      mapped_secret: (str) If set, the path of the secret in another project to
+        use. For example 'projects/123/secrets/foo'.
       items: (List[SecretPath]) The list of keys and paths for the secret.
   """
   NAMES = ('name', 'mapped_secret', 'mount_path', 'secret_name', 'items')
 
   @classmethod
-  def FromParsedYaml(cls, mount, volume_secret):
+  def FromParsedYaml(cls, mount, volume_secret, secret_aliases):
     """Make a _SecretVolume based on the volumeMount and secret from the yaml."""
     items = []
     for item in volume_secret.items:
       items.append(_SecretPath(key=item.key, path=item.path))
+    reachable_secret = secret_aliases.get(volume_secret.secretName, None)
+    mapped_secret = (
+        reachable_secret.FormatAnnotationItem() if reachable_secret else None)
     return cls(
         name=mount.name,
         mount_path=mount.mountPath,
         secret_name=volume_secret.secretName,
-        items=items)
+        items=items,
+        mapped_secret=mapped_secret)
+
+  def IsSameSecret(self, other):
+    if self.mapped_secret or other.mapped_secret:
+      return self.mapped_secret == other.mapped_secret
+    return self.secret_name == other.secret_name
 
 
 class _SecretEnvVar(DataObject):
@@ -230,9 +245,10 @@ class _SecretEnvVar(DataObject):
   Attributes:
     name: (str) the name of the secret in the resource
     key: (str) the secret version to use
-    mapped_secret: (str) if set, the name of the secret from the other project
-      that this secret will pull from. If not set, will pull from the secret
-      called 'name' in the current project.
+    mapped_secret: (str) if set, the path of the secret from the other project
+      that this secret will pull from. For example 'projects/123/secrets/foo'.
+      If not set, will pull from the secret called 'name' in the current
+      project.
   """
   NAMES = ('name', 'key', 'mapped_secret')
 
@@ -285,7 +301,7 @@ class Settings(DataObject):
         env_vars={},
         env_vars_secrets={},
         volumes_secrets=[],
-        allow_secret_manager=None,
+        allow_secret_manager=_FLAG_UNSPECIFIED,
     )
 
   def WithServiceYaml(self, yaml_path):
@@ -327,13 +343,13 @@ class Settings(DataObject):
         elif var.valueFrom.secretKeyRef:
           reachable_secret = secret_aliases.get(var.valueFrom.secretKeyRef.name,
                                                 None)
-          mapped_path = (
+          mapped_secret = (
               reachable_secret.FormatAnnotationItem()
               if reachable_secret else None)
           new_env_vars_secrets[var.name] = _SecretEnvVar(
               key=var.valueFrom.secretKeyRef.key,
               name=var.valueFrom.secretKeyRef.name,
-              mapped_secret=mapped_path)
+              mapped_secret=mapped_secret)
       else:
         new_env_vars[var.name] = var.value
     replacements.update(
@@ -363,7 +379,7 @@ class Settings(DataObject):
         raise exceptions.Error('Container referenced volume "{}" which was not '
                                'found.'.format(vol.name))
       referenced_vols.append(
-          _SecretVolume.FromParsedYaml(vol, all_vols[vol.name]))
+          _SecretVolume.FromParsedYaml(vol, all_vols[vol.name], secret_aliases))
     replacements['volumes_secrets'] = referenced_vols
 
     return self.replace(**replacements)
@@ -471,32 +487,43 @@ class Settings(DataObject):
     return self.replace(**replacements)
 
   def _GetSecrets(self, secrets_args):
-    env_vars = {}
-    volumes = {}
+    env_vars = {}  # name: _SecretEnevVar
+    volumes = {}  # mount_path: _SecretVolume
+    aliases = {}  # secret_path: local_name
+
     for key, secret in secrets_args.items():
       parts = secret.split(':')
       if len(parts) != 2:
         raise exceptions.Error('Expected secret to be of form '
                                '<secretName>:<version>, got {}'.format(secret))
-      if secret.startswith('/projects/'):
-        raise exceptions.Error('Referencing secrets from other projects is '
-                               'not currently supported by local dev.')
       secret_name, version = parts
+      mapped_secret = None
+      if secret_name.startswith('projects/'):
+        # it's a remote secret, need to alias it
+        mapped_secret = secret_name
+        if mapped_secret not in aliases:
+          secret_name = secret_name[:5] + '-' + str(uuid.uuid1())
+          aliases[mapped_secret] = secret_name
+        else:
+          secret_name = aliases[mapped_secret]
+
       if key.startswith('/'):  # it's a volume
         # the volume path is all but the last segment
         mount_path, filename = os.path.split(key)
         if mount_path not in volumes:
           volume = _SecretVolume(
-              name=secret,
+              name=secret_name,
               mount_path=mount_path,
               secret_name=secret_name,
-              items=[])
+              items=[],
+              mapped_secret=mapped_secret)
           volumes[mount_path] = volume
         else:
           volume = volumes[mount_path]
         volume.items.append(_SecretPath(key=version, path=filename))
       else:
-        env_vars[key] = _SecretEnvVar(name=secret_name, key=version)
+        env_vars[key] = _SecretEnvVar(
+            name=secret_name, key=version, mapped_secret=mapped_secret)
     return env_vars, list(volumes.values())
 
   def Build(self):
@@ -576,7 +603,7 @@ def _MergeSecretVolumes(cur_vols, new_vols):
       vol_map[new_vol.mount_path] = new_vol
     else:
       cur_vol = vol_map[new_vol.mount_path]
-      if cur_vol.secret_name == new_vol.secret_name:
+      if cur_vol.IsSameSecret(new_vol):
         cur_items = {item.path: item for item in cur_vol.items}
         new_items = {item.path: item for item in new_vol.items}
         cur_items.update(new_items)
@@ -1173,7 +1200,7 @@ class SecretsGenerator(KubeConfigGenerator):
                env_secrets,
                secret_volumes,
                namespace,
-               allow_secret_manager=None):
+               allow_secret_manager=_FLAG_UNSPECIFIED):
     self.project_name = properties.VALUES.core.project.Get()
     self.service_name = service_name
     self.secret_volumes = secret_volumes
@@ -1205,7 +1232,7 @@ class SecretsGenerator(KubeConfigGenerator):
     if not self.all_secrets:
       return []
     # If secret manager was unspecified, prompt to continue
-    if self.allow_secret_manager is None:
+    if self.allow_secret_manager is _FLAG_UNSPECIFIED:
       requested = []
       for key, sec in self.all_secrets.items():
         if sec.mapped_secret:
@@ -1222,10 +1249,11 @@ class SecretsGenerator(KubeConfigGenerator):
           message=secrets_msg, prompt_string=prompt_string):
         log.status.Print(
             'You can skip this message in the future by passing the '
-            'flag --allow-secret-manager=true')
+            'flag --allow-secret-manager')
         self.allow_secret_manager = True
 
-    if not self.allow_secret_manager:
+    if (not self.allow_secret_manager or
+        self.allow_secret_manager is _FLAG_UNSPECIFIED):
       raise SecretsNotAllowedError(
           'Config requires secrets but access to secret manager was not '
           'allowed. Replace secrets with environment variables or '

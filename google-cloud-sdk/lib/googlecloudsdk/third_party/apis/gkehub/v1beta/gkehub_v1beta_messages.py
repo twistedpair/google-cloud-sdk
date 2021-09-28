@@ -204,20 +204,55 @@ class ConfigManagementBinauthzVersion(_messages.Message):
 class ConfigManagementConfigSync(_messages.Message):
   r"""Configuration for Config Sync
 
+  Messages:
+    ResourceRequirementsValue: Specifies CPU and memory limits for containers,
+      keyed by container name
+
   Fields:
     git: Git repo configuration for the cluster.
+    resourceRequirements: Specifies CPU and memory limits for containers,
+      keyed by container name
     sourceFormat: Specifies whether the Config Sync Repo is in "hierarchical"
       or "unstructured" mode.
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ResourceRequirementsValue(_messages.Message):
+    r"""Specifies CPU and memory limits for containers, keyed by container
+    name
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        ResourceRequirementsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        ResourceRequirementsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ResourceRequirementsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A ConfigManagementContainerResourceRequirements attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('ConfigManagementContainerResourceRequirements', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   git = _messages.MessageField('ConfigManagementGitConfig', 1)
-  sourceFormat = _messages.StringField(2)
+  resourceRequirements = _messages.MessageField('ResourceRequirementsValue', 2)
+  sourceFormat = _messages.StringField(3)
 
 
 class ConfigManagementConfigSyncDeploymentState(_messages.Message):
   r"""The state of ConfigSync's deployment on a cluster
 
   Enums:
+    AdmissionWebhookValueValuesEnum: Deployment state of admission-webhook
     GitSyncValueValuesEnum: Deployment state of the git-sync pod
     ImporterValueValuesEnum: Deployment state of the importer pod
     MonitorValueValuesEnum: Deployment state of the monitor pod
@@ -227,6 +262,7 @@ class ConfigManagementConfigSyncDeploymentState(_messages.Message):
     SyncerValueValuesEnum: Deployment state of the syncer pod
 
   Fields:
+    admissionWebhook: Deployment state of admission-webhook
     gitSync: Deployment state of the git-sync pod
     importer: Deployment state of the importer pod
     monitor: Deployment state of the monitor pod
@@ -234,6 +270,20 @@ class ConfigManagementConfigSyncDeploymentState(_messages.Message):
     rootReconciler: Deployment state of root-reconciler
     syncer: Deployment state of the syncer pod
   """
+
+  class AdmissionWebhookValueValuesEnum(_messages.Enum):
+    r"""Deployment state of admission-webhook
+
+    Values:
+      DEPLOYMENT_STATE_UNSPECIFIED: Deployment's state cannot be determined
+      NOT_INSTALLED: Deployment is not installed
+      INSTALLED: Deployment is installed
+      ERROR: Deployment was attempted to be installed, but has errors
+    """
+    DEPLOYMENT_STATE_UNSPECIFIED = 0
+    NOT_INSTALLED = 1
+    INSTALLED = 2
+    ERROR = 3
 
   class GitSyncValueValuesEnum(_messages.Enum):
     r"""Deployment state of the git-sync pod
@@ -319,12 +369,13 @@ class ConfigManagementConfigSyncDeploymentState(_messages.Message):
     INSTALLED = 2
     ERROR = 3
 
-  gitSync = _messages.EnumField('GitSyncValueValuesEnum', 1)
-  importer = _messages.EnumField('ImporterValueValuesEnum', 2)
-  monitor = _messages.EnumField('MonitorValueValuesEnum', 3)
-  reconcilerManager = _messages.EnumField('ReconcilerManagerValueValuesEnum', 4)
-  rootReconciler = _messages.EnumField('RootReconcilerValueValuesEnum', 5)
-  syncer = _messages.EnumField('SyncerValueValuesEnum', 6)
+  admissionWebhook = _messages.EnumField('AdmissionWebhookValueValuesEnum', 1)
+  gitSync = _messages.EnumField('GitSyncValueValuesEnum', 2)
+  importer = _messages.EnumField('ImporterValueValuesEnum', 3)
+  monitor = _messages.EnumField('MonitorValueValuesEnum', 4)
+  reconcilerManager = _messages.EnumField('ReconcilerManagerValueValuesEnum', 5)
+  rootReconciler = _messages.EnumField('RootReconcilerValueValuesEnum', 6)
+  syncer = _messages.EnumField('SyncerValueValuesEnum', 7)
 
 
 class ConfigManagementConfigSyncState(_messages.Message):
@@ -346,6 +397,7 @@ class ConfigManagementConfigSyncVersion(_messages.Message):
   r"""Specific versioning information pertaining to ConfigSync's Pods
 
   Fields:
+    admissionWebhook: Version of the deployed admission_webhook pod
     gitSync: Version of the deployed git-sync pod
     importer: Version of the deployed importer pod
     monitor: Version of the deployed monitor pod
@@ -355,12 +407,28 @@ class ConfigManagementConfigSyncVersion(_messages.Message):
     syncer: Version of the deployed syncer pod
   """
 
-  gitSync = _messages.StringField(1)
-  importer = _messages.StringField(2)
-  monitor = _messages.StringField(3)
-  reconcilerManager = _messages.StringField(4)
-  rootReconciler = _messages.StringField(5)
-  syncer = _messages.StringField(6)
+  admissionWebhook = _messages.StringField(1)
+  gitSync = _messages.StringField(2)
+  importer = _messages.StringField(3)
+  monitor = _messages.StringField(4)
+  reconcilerManager = _messages.StringField(5)
+  rootReconciler = _messages.StringField(6)
+  syncer = _messages.StringField(7)
+
+
+class ConfigManagementContainerResourceRequirements(_messages.Message):
+  r"""ResourceRequirements allows to override the CPU and memory resource
+  requirements of a container.
+
+  Fields:
+    containerName: Name of the container
+    cpuLimit: Allows to override the CPU limit of a container
+    memoryLimit: Allows to override the memory limit of a container
+  """
+
+  containerName = _messages.StringField(1)
+  cpuLimit = _messages.MessageField('ConfigManagementQuantity', 2)
+  memoryLimit = _messages.MessageField('ConfigManagementQuantity', 3)
 
 
 class ConfigManagementErrorResource(_messages.Message):
@@ -433,11 +501,14 @@ class ConfigManagementGitConfig(_messages.Message):
       secret_type is gcpServiceAccount.
     httpsProxy: URL for the HTTPS proxy to be used when communicating with the
       Git repo.
+    noSslVerify: Enable or disable the SSL certificate verification Default:
+      false.
     policyDir: The path within the Git repository that represents the top
       level of the repo to sync. Default: the root directory of the
       repository.
     secretType: Type of secret configured for access to the Git repo.
     syncBranch: The branch of the repository to sync from. Default: master.
+    syncDepth: The depth of git commits synced by the git-sync container.
     syncRepo: The URL of the Git repository to use as the source of truth.
     syncRev: Git revision (tag or hash) to check out. Default HEAD.
     syncWaitSecs: Period in seconds between consecutive syncs. Default: 15.
@@ -445,12 +516,14 @@ class ConfigManagementGitConfig(_messages.Message):
 
   gcpServiceAccountEmail = _messages.StringField(1)
   httpsProxy = _messages.StringField(2)
-  policyDir = _messages.StringField(3)
-  secretType = _messages.StringField(4)
-  syncBranch = _messages.StringField(5)
-  syncRepo = _messages.StringField(6)
-  syncRev = _messages.StringField(7)
-  syncWaitSecs = _messages.IntegerField(8)
+  noSslVerify = _messages.BooleanField(3)
+  policyDir = _messages.StringField(4)
+  secretType = _messages.StringField(5)
+  syncBranch = _messages.StringField(6)
+  syncDepth = _messages.IntegerField(7)
+  syncRepo = _messages.StringField(8)
+  syncRev = _messages.StringField(9)
+  syncWaitSecs = _messages.IntegerField(10)
 
 
 class ConfigManagementGroupVersionKind(_messages.Message):
@@ -691,6 +764,18 @@ class ConfigManagementPolicyControllerVersion(_messages.Message):
   """
 
   version = _messages.StringField(1)
+
+
+class ConfigManagementQuantity(_messages.Message):
+  r"""The view model of a single quantity, e.g. "800 MiB". Corresponds to http
+  s://github.com/kubernetes/kubernetes/blob/master/staging/src/k8s.io/apimachi
+  nery/pkg/api/resource/generated.proto
+
+  Fields:
+    string: Stringified version of the quantity, e.g., "800 MiB".
+  """
+
+  string = _messages.StringField(1)
 
 
 class ConfigManagementSyncError(_messages.Message):

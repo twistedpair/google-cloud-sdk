@@ -8,6 +8,7 @@ from __future__ import absolute_import
 
 from apitools.base.protorpclite import messages as _messages
 from apitools.base.py import encoding
+from apitools.base.py import extra_types
 
 
 package = 'compute'
@@ -586,12 +587,16 @@ class AccessConfig(_messages.Message):
       owning that IP.
     publicDnsName: [Output Only] The public DNS domain name for the instance.
     publicPtrDomainName: The DNS domain name for the public PTR record. You
-      can set this field only if the `setPublicPtr` field is enabled.
+      can set this field only if the `setPublicPtr` field is enabled in
+      accessConfig. If this field is unspecified in ipv6AccessConfig, a
+      default PTR record will be createc for first IP in associated external
+      IPv6 range.
     setPublicDns: Specifies whether a public DNS 'A' record should be created
       for the external IP address of this access configuration.
     setPublicPtr: Specifies whether a public DNS 'PTR' record should be
       created to map the external IP address of the instance to a DNS domain
-      name.
+      name. This field is not used in ipv6AccessConfig. A default PTR record
+      will be created if the VM has external IPv6 range associated.
     type: The type of configuration. The default and only option is
       ONE_TO_ONE_NAT.
   """
@@ -3426,7 +3431,7 @@ class BackendBucketCdnPolicy(_messages.Message):
       directive to the lesser of the client_ttl and default_ttl, and also
       ensures a "public" cache-control directive is present. If a client TTL
       is not specified, a default value (1 hour) will be used. The maximum
-      allowed value is 86400s (1 day).
+      allowed value is 31,622,400s (1 year).
     defaultTtl: Specifies the default TTL for cached content served by this
       origin for responses that do not have an existing valid TTL (max-age or
       s-max-age). Setting a TTL of "0" means "always revalidate". The value of
@@ -4414,7 +4419,7 @@ class BackendServiceCdnPolicy(_messages.Message):
       directive to the lesser of the client_ttl and default_ttl, and also
       ensures a "public" cache-control directive is present. If a client TTL
       is not specified, a default value (1 hour) will be used. The maximum
-      allowed value is 86400s (1 day).
+      allowed value is 31,622,400s (1 year).
     defaultTtl: Specifies the default TTL for cached content served by this
       origin for responses that do not have an existing valid TTL (max-age or
       s-max-age). Setting a TTL of "0" means "always revalidate". The value of
@@ -13936,6 +13941,64 @@ class ComputeInstancesUpdateShieldedVmConfigRequest(_messages.Message):
   zone = _messages.StringField(5, required=True)
 
 
+class ComputeInstantSnapshotsAggregatedListRequest(_messages.Message):
+  r"""A ComputeInstantSnapshotsAggregatedListRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      The expression must specify the field name, a comparison operator, and
+      the value that you want to use for filtering. The value must be a
+      string, a number, or a boolean. The comparison operator must be either
+      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      instances, you can exclude instances named `example-instance` by
+      specifying `name != example-instance`. You can also filter nested
+      fields. For example, you could specify `scheduling.automaticRestart =
+      false` to include instances only if they are not scheduled for automatic
+      restarts. You can use filtering on nested fields to filter based on
+      resource labels. To filter on multiple expressions, provide each
+      separate expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ```
+    includeAllScopes: Indicates whether every visible scope for each scope
+      type (zone, region, global) should be included in the response. For new
+      resource types added after this field, the flag has no effect as new
+      resource types will always include every visible scope for each scope
+      type in response. For resource types which predate this field, if this
+      flag is omitted or false, only scopes of the scope types where the
+      resource type is expected to be found will be included.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than
+      `maxResults`, Compute Engine returns a `nextPageToken` that can be used
+      to get the next page of results in subsequent list requests. Acceptable
+      values are `0` to `500`, inclusive. (Default: `500`)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name. You can
+      also sort results in descending order based on the creation timestamp
+      using `orderBy="creationTimestamp desc"`. This sorts results based on
+      the `creationTimestamp` field in reverse chronological order (newest
+      result first). Use this to sort resources like operations so that the
+      newest operation is returned first. Currently, only sorting by `name` or
+      `creationTimestamp desc` is supported.
+    pageToken: Specifies a page token to use. Set `pageToken` to the
+      `nextPageToken` returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false.
+  """
+
+  filter = _messages.StringField(1)
+  includeAllScopes = _messages.BooleanField(2)
+  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(4)
+  pageToken = _messages.StringField(5)
+  project = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
+
+
 class ComputeInstantSnapshotsDeleteRequest(_messages.Message):
   r"""A ComputeInstantSnapshotsDeleteRequest object.
 
@@ -20023,201 +20086,6 @@ class ComputeRegionHealthChecksUpdateRequest(_messages.Message):
   project = _messages.StringField(3, required=True)
   region = _messages.StringField(4, required=True)
   requestId = _messages.StringField(5)
-
-
-class ComputeRegionInPlaceSnapshotsDeleteRequest(_messages.Message):
-  r"""A ComputeRegionInPlaceSnapshotsDeleteRequest object.
-
-  Fields:
-    inPlaceSnapshot: Name of the InPlaceSnapshot resource to delete.
-    project: Project ID for this request.
-    region: The name of the region for this request.
-    requestId: An optional request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. For example,
-      consider a situation where you make an initial request and the request
-      times out. If you make the request again with the same request ID, the
-      server can check if original operation with the same request ID was
-      received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
-      ( 00000000-0000-0000-0000-000000000000).
-  """
-
-  inPlaceSnapshot = _messages.StringField(1, required=True)
-  project = _messages.StringField(2, required=True)
-  region = _messages.StringField(3, required=True)
-  requestId = _messages.StringField(4)
-
-
-class ComputeRegionInPlaceSnapshotsGetIamPolicyRequest(_messages.Message):
-  r"""A ComputeRegionInPlaceSnapshotsGetIamPolicyRequest object.
-
-  Fields:
-    optionsRequestedPolicyVersion: Requested IAM Policy version.
-    project: Project ID for this request.
-    region: The name of the region for this request.
-    resource: Name or id of the resource for this request.
-  """
-
-  optionsRequestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  project = _messages.StringField(2, required=True)
-  region = _messages.StringField(3, required=True)
-  resource = _messages.StringField(4, required=True)
-
-
-class ComputeRegionInPlaceSnapshotsGetRequest(_messages.Message):
-  r"""A ComputeRegionInPlaceSnapshotsGetRequest object.
-
-  Fields:
-    inPlaceSnapshot: Name of the InPlaceSnapshot resource to return.
-    project: Project ID for this request.
-    region: The name of the region for this request.
-  """
-
-  inPlaceSnapshot = _messages.StringField(1, required=True)
-  project = _messages.StringField(2, required=True)
-  region = _messages.StringField(3, required=True)
-
-
-class ComputeRegionInPlaceSnapshotsInsertRequest(_messages.Message):
-  r"""A ComputeRegionInPlaceSnapshotsInsertRequest object.
-
-  Fields:
-    inPlaceSnapshot: A InPlaceSnapshot resource to be passed as the request
-      body.
-    project: Project ID for this request.
-    region: Name of the region for this request.
-    requestId: An optional request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. For example,
-      consider a situation where you make an initial request and the request
-      times out. If you make the request again with the same request ID, the
-      server can check if original operation with the same request ID was
-      received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
-      ( 00000000-0000-0000-0000-000000000000).
-  """
-
-  inPlaceSnapshot = _messages.MessageField('InPlaceSnapshot', 1)
-  project = _messages.StringField(2, required=True)
-  region = _messages.StringField(3, required=True)
-  requestId = _messages.StringField(4)
-
-
-class ComputeRegionInPlaceSnapshotsListRequest(_messages.Message):
-  r"""A ComputeRegionInPlaceSnapshotsListRequest object.
-
-  Fields:
-    filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
-      instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
-      fields. For example, you could specify `scheduling.automaticRestart =
-      false` to include instances only if they are not scheduled for automatic
-      restarts. You can use filtering on nested fields to filter based on
-      resource labels. To filter on multiple expressions, provide each
-      separate expression within parentheses. For example: ```
-      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
-      By default, each expression is an `AND` expression. However, you can
-      include `AND` and `OR` expressions explicitly. For example: ```
-      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
-      (scheduling.automaticRestart = true) ```
-    maxResults: The maximum number of results per page that should be
-      returned. If the number of available results is larger than
-      `maxResults`, Compute Engine returns a `nextPageToken` that can be used
-      to get the next page of results in subsequent list requests. Acceptable
-      values are `0` to `500`, inclusive. (Default: `500`)
-    orderBy: Sorts list results by a certain order. By default, results are
-      returned in alphanumerical order based on the resource name. You can
-      also sort results in descending order based on the creation timestamp
-      using `orderBy="creationTimestamp desc"`. This sorts results based on
-      the `creationTimestamp` field in reverse chronological order (newest
-      result first). Use this to sort resources like operations so that the
-      newest operation is returned first. Currently, only sorting by `name` or
-      `creationTimestamp desc` is supported.
-    pageToken: Specifies a page token to use. Set `pageToken` to the
-      `nextPageToken` returned by a previous list request to get the next page
-      of results.
-    project: Project ID for this request.
-    region: The name of the region for this request.
-    returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
-  """
-
-  filter = _messages.StringField(1)
-  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
-  orderBy = _messages.StringField(3)
-  pageToken = _messages.StringField(4)
-  project = _messages.StringField(5, required=True)
-  region = _messages.StringField(6, required=True)
-  returnPartialSuccess = _messages.BooleanField(7)
-
-
-class ComputeRegionInPlaceSnapshotsSetIamPolicyRequest(_messages.Message):
-  r"""A ComputeRegionInPlaceSnapshotsSetIamPolicyRequest object.
-
-  Fields:
-    project: Project ID for this request.
-    region: The name of the region for this request.
-    regionSetPolicyRequest: A RegionSetPolicyRequest resource to be passed as
-      the request body.
-    resource: Name or id of the resource for this request.
-  """
-
-  project = _messages.StringField(1, required=True)
-  region = _messages.StringField(2, required=True)
-  regionSetPolicyRequest = _messages.MessageField('RegionSetPolicyRequest', 3)
-  resource = _messages.StringField(4, required=True)
-
-
-class ComputeRegionInPlaceSnapshotsSetLabelsRequest(_messages.Message):
-  r"""A ComputeRegionInPlaceSnapshotsSetLabelsRequest object.
-
-  Fields:
-    project: Project ID for this request.
-    region: The region for this request.
-    regionSetLabelsRequest: A RegionSetLabelsRequest resource to be passed as
-      the request body.
-    requestId: An optional request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. For example,
-      consider a situation where you make an initial request and the request
-      times out. If you make the request again with the same request ID, the
-      server can check if original operation with the same request ID was
-      received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
-      ( 00000000-0000-0000-0000-000000000000).
-    resource: Name or id of the resource for this request.
-  """
-
-  project = _messages.StringField(1, required=True)
-  region = _messages.StringField(2, required=True)
-  regionSetLabelsRequest = _messages.MessageField('RegionSetLabelsRequest', 3)
-  requestId = _messages.StringField(4)
-  resource = _messages.StringField(5, required=True)
-
-
-class ComputeRegionInPlaceSnapshotsTestIamPermissionsRequest(_messages.Message):
-  r"""A ComputeRegionInPlaceSnapshotsTestIamPermissionsRequest object.
-
-  Fields:
-    project: Project ID for this request.
-    region: The name of the region for this request.
-    resource: Name or id of the resource for this request.
-    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
-      the request body.
-  """
-
-  project = _messages.StringField(1, required=True)
-  region = _messages.StringField(2, required=True)
-  resource = _messages.StringField(3, required=True)
-  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
 
 
 class ComputeRegionInstanceGroupManagersAbandonInstancesRequest(_messages.Message):
@@ -28376,201 +28244,6 @@ class ComputeVpnTunnelsTestIamPermissionsRequest(_messages.Message):
   testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
 
 
-class ComputeZoneInPlaceSnapshotsDeleteRequest(_messages.Message):
-  r"""A ComputeZoneInPlaceSnapshotsDeleteRequest object.
-
-  Fields:
-    inPlaceSnapshot: Name of the InPlaceSnapshot resource to delete.
-    project: Project ID for this request.
-    requestId: An optional request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. For example,
-      consider a situation where you make an initial request and the request
-      times out. If you make the request again with the same request ID, the
-      server can check if original operation with the same request ID was
-      received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
-      ( 00000000-0000-0000-0000-000000000000).
-    zone: The name of the zone for this request.
-  """
-
-  inPlaceSnapshot = _messages.StringField(1, required=True)
-  project = _messages.StringField(2, required=True)
-  requestId = _messages.StringField(3)
-  zone = _messages.StringField(4, required=True)
-
-
-class ComputeZoneInPlaceSnapshotsGetIamPolicyRequest(_messages.Message):
-  r"""A ComputeZoneInPlaceSnapshotsGetIamPolicyRequest object.
-
-  Fields:
-    optionsRequestedPolicyVersion: Requested IAM Policy version.
-    project: Project ID for this request.
-    resource: Name or id of the resource for this request.
-    zone: The name of the zone for this request.
-  """
-
-  optionsRequestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  project = _messages.StringField(2, required=True)
-  resource = _messages.StringField(3, required=True)
-  zone = _messages.StringField(4, required=True)
-
-
-class ComputeZoneInPlaceSnapshotsGetRequest(_messages.Message):
-  r"""A ComputeZoneInPlaceSnapshotsGetRequest object.
-
-  Fields:
-    inPlaceSnapshot: Name of the InPlaceSnapshot resource to return.
-    project: Project ID for this request.
-    zone: The name of the zone for this request.
-  """
-
-  inPlaceSnapshot = _messages.StringField(1, required=True)
-  project = _messages.StringField(2, required=True)
-  zone = _messages.StringField(3, required=True)
-
-
-class ComputeZoneInPlaceSnapshotsInsertRequest(_messages.Message):
-  r"""A ComputeZoneInPlaceSnapshotsInsertRequest object.
-
-  Fields:
-    inPlaceSnapshot: A InPlaceSnapshot resource to be passed as the request
-      body.
-    project: Project ID for this request.
-    requestId: An optional request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. For example,
-      consider a situation where you make an initial request and the request
-      times out. If you make the request again with the same request ID, the
-      server can check if original operation with the same request ID was
-      received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
-      ( 00000000-0000-0000-0000-000000000000).
-    zone: Name of the zone for this request.
-  """
-
-  inPlaceSnapshot = _messages.MessageField('InPlaceSnapshot', 1)
-  project = _messages.StringField(2, required=True)
-  requestId = _messages.StringField(3)
-  zone = _messages.StringField(4, required=True)
-
-
-class ComputeZoneInPlaceSnapshotsListRequest(_messages.Message):
-  r"""A ComputeZoneInPlaceSnapshotsListRequest object.
-
-  Fields:
-    filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
-      instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
-      fields. For example, you could specify `scheduling.automaticRestart =
-      false` to include instances only if they are not scheduled for automatic
-      restarts. You can use filtering on nested fields to filter based on
-      resource labels. To filter on multiple expressions, provide each
-      separate expression within parentheses. For example: ```
-      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
-      By default, each expression is an `AND` expression. However, you can
-      include `AND` and `OR` expressions explicitly. For example: ```
-      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
-      (scheduling.automaticRestart = true) ```
-    maxResults: The maximum number of results per page that should be
-      returned. If the number of available results is larger than
-      `maxResults`, Compute Engine returns a `nextPageToken` that can be used
-      to get the next page of results in subsequent list requests. Acceptable
-      values are `0` to `500`, inclusive. (Default: `500`)
-    orderBy: Sorts list results by a certain order. By default, results are
-      returned in alphanumerical order based on the resource name. You can
-      also sort results in descending order based on the creation timestamp
-      using `orderBy="creationTimestamp desc"`. This sorts results based on
-      the `creationTimestamp` field in reverse chronological order (newest
-      result first). Use this to sort resources like operations so that the
-      newest operation is returned first. Currently, only sorting by `name` or
-      `creationTimestamp desc` is supported.
-    pageToken: Specifies a page token to use. Set `pageToken` to the
-      `nextPageToken` returned by a previous list request to get the next page
-      of results.
-    project: Project ID for this request.
-    returnPartialSuccess: Opt-in for partial success behavior which provides
-      partial results in case of failure. The default value is false.
-    zone: The name of the zone for this request.
-  """
-
-  filter = _messages.StringField(1)
-  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
-  orderBy = _messages.StringField(3)
-  pageToken = _messages.StringField(4)
-  project = _messages.StringField(5, required=True)
-  returnPartialSuccess = _messages.BooleanField(6)
-  zone = _messages.StringField(7, required=True)
-
-
-class ComputeZoneInPlaceSnapshotsSetIamPolicyRequest(_messages.Message):
-  r"""A ComputeZoneInPlaceSnapshotsSetIamPolicyRequest object.
-
-  Fields:
-    project: Project ID for this request.
-    resource: Name or id of the resource for this request.
-    zone: The name of the zone for this request.
-    zoneSetPolicyRequest: A ZoneSetPolicyRequest resource to be passed as the
-      request body.
-  """
-
-  project = _messages.StringField(1, required=True)
-  resource = _messages.StringField(2, required=True)
-  zone = _messages.StringField(3, required=True)
-  zoneSetPolicyRequest = _messages.MessageField('ZoneSetPolicyRequest', 4)
-
-
-class ComputeZoneInPlaceSnapshotsSetLabelsRequest(_messages.Message):
-  r"""A ComputeZoneInPlaceSnapshotsSetLabelsRequest object.
-
-  Fields:
-    project: Project ID for this request.
-    requestId: An optional request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. For example,
-      consider a situation where you make an initial request and the request
-      times out. If you make the request again with the same request ID, the
-      server can check if original operation with the same request ID was
-      received, and if so, will ignore the second request. This prevents
-      clients from accidentally creating duplicate commitments. The request ID
-      must be a valid UUID with the exception that zero UUID is not supported
-      ( 00000000-0000-0000-0000-000000000000).
-    resource: Name or id of the resource for this request.
-    zone: The name of the zone for this request.
-    zoneSetLabelsRequest: A ZoneSetLabelsRequest resource to be passed as the
-      request body.
-  """
-
-  project = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
-  resource = _messages.StringField(3, required=True)
-  zone = _messages.StringField(4, required=True)
-  zoneSetLabelsRequest = _messages.MessageField('ZoneSetLabelsRequest', 5)
-
-
-class ComputeZoneInPlaceSnapshotsTestIamPermissionsRequest(_messages.Message):
-  r"""A ComputeZoneInPlaceSnapshotsTestIamPermissionsRequest object.
-
-  Fields:
-    project: Project ID for this request.
-    resource: Name or id of the resource for this request.
-    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
-      the request body.
-    zone: The name of the zone for this request.
-  """
-
-  project = _messages.StringField(1, required=True)
-  resource = _messages.StringField(2, required=True)
-  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
-  zone = _messages.StringField(4, required=True)
-
-
 class ComputeZoneOperationsDeleteRequest(_messages.Message):
   r"""A ComputeZoneOperationsDeleteRequest object.
 
@@ -29200,20 +28873,6 @@ class Disk(_messages.Message):
       image that was later deleted and recreated under the same name, the
       source image ID would identify the exact version of the image that was
       used.
-    sourceInPlaceSnapshot: [Deprecated] The source in-place snapshot used to
-      create this disk. You can provide this as a partial or full URL to the
-      resource. For example, the following are valid values: -
-      https://www.googleapis.com/compute/v1/projects/project
-      /global/inPlaceSnapshots/inPlaceSnapshots -
-      projects/project/global/inPlaceSnapshots/inPlaceSnapshots -
-      global/inPlaceSnapshots/inPlaceSnapshots
-    sourceInPlaceSnapshotId: Deprecated The unique ID of the in-place snapshot
-      used to create this disk. This value identifies the exact in-place
-      snapshot that was used to create this persistent disk. For example, if
-      you created the persistent disk from an in-place snapshot that was later
-      deleted and recreated under the same name, the source in-place snapshot
-      ID would identify the exact version of the in-place snapshot that was
-      used.
     sourceInstantSnapshot: The source instant snapshot used to create this
       disk. You can provide this as a partial or full URL to the resource. For
       example, the following are valid values: -
@@ -29372,20 +29031,18 @@ class Disk(_messages.Message):
   sourceImage = _messages.StringField(31)
   sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 32)
   sourceImageId = _messages.StringField(33)
-  sourceInPlaceSnapshot = _messages.StringField(34)
-  sourceInPlaceSnapshotId = _messages.StringField(35)
-  sourceInstantSnapshot = _messages.StringField(36)
-  sourceInstantSnapshotId = _messages.StringField(37)
-  sourceSnapshot = _messages.StringField(38)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 39)
-  sourceSnapshotId = _messages.StringField(40)
-  sourceStorageObject = _messages.StringField(41)
-  status = _messages.EnumField('StatusValueValuesEnum', 42)
-  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 43)
-  type = _messages.StringField(44)
-  userLicenses = _messages.StringField(45, repeated=True)
-  users = _messages.StringField(46, repeated=True)
-  zone = _messages.StringField(47)
+  sourceInstantSnapshot = _messages.StringField(34)
+  sourceInstantSnapshotId = _messages.StringField(35)
+  sourceSnapshot = _messages.StringField(36)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 37)
+  sourceSnapshotId = _messages.StringField(38)
+  sourceStorageObject = _messages.StringField(39)
+  status = _messages.EnumField('StatusValueValuesEnum', 40)
+  storageType = _messages.EnumField('StorageTypeValueValuesEnum', 41)
+  type = _messages.StringField(42)
+  userLicenses = _messages.StringField(43, repeated=True)
+  users = _messages.StringField(44, repeated=True)
+  zone = _messages.StringField(45)
 
 
 class DiskAggregatedList(_messages.Message):
@@ -31206,9 +30863,9 @@ class Firewall(_messages.Message):
     name: Name of the resource; provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
-      regular expression [a-z]([-a-z0-9]*[a-z0-9])?. The first character must
-      be a lowercase letter, and all following characters (except for the last
-      character) must be a dash, lowercase letter, or digit. The last
+      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?`. The first character
+      must be a lowercase letter, and all following characters (except for the
+      last character) must be a dash, lowercase letter, or digit. The last
       character must be a lowercase letter or digit.
     network: URL of the network resource for this firewall rule. If not
       specified when creating a firewall rule, the default network is used:
@@ -36847,281 +36504,6 @@ class ImageList(_messages.Message):
   warning = _messages.MessageField('WarningValue', 6)
 
 
-class InPlaceSnapshot(_messages.Message):
-  r"""Represents a InPlaceSnapshot resource. You can use in-place snapshots to
-  create disk rollback points quickly..
-
-  Enums:
-    StatusValueValuesEnum: [Output Only] The status of the inPlaceSnapshot.
-      This can be CREATING, DELETING, FAILED, or READY.
-
-  Messages:
-    LabelsValue: Labels to apply to this InPlaceSnapshot. These can be later
-      modified by the setLabels method. Label values may be empty.
-
-  Fields:
-    creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
-      format.
-    description: An optional description of this resource. Provide this
-      property when you create the resource.
-    diskSizeGb: [Output Only] Size of the source disk, specified in GB.
-    guestFlush: Specifies to create an application consistent in-place
-      snapshot by informing the OS to prepare for the snapshot process.
-      Currently only supported on Windows instances using the Volume Shadow
-      Copy Service (VSS).
-    id: [Output Only] The unique identifier for the resource. This identifier
-      is defined by the server.
-    kind: [Output Only] Type of the resource. Always compute#inPlaceSnapshot
-      for InPlaceSnapshot resources.
-    labelFingerprint: A fingerprint for the labels being applied to this
-      InPlaceSnapshot, which is essentially a hash of the labels set used for
-      optimistic locking. The fingerprint is initially generated by Compute
-      Engine and changes after every request to modify or update labels. You
-      must always provide an up-to-date fingerprint hash in order to update or
-      change labels, otherwise the request will fail with error 412
-      conditionNotMet. To see the latest fingerprint, make a get() request to
-      retrieve a InPlaceSnapshot.
-    labels: Labels to apply to this InPlaceSnapshot. These can be later
-      modified by the setLabels method. Label values may be empty.
-    name: Name of the resource; provided by the client when the resource is
-      created. The name must be 1-63 characters long, and comply with RFC1035.
-      Specifically, the name must be 1-63 characters long and match the
-      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first
-      character must be a lowercase letter, and all following characters must
-      be a dash, lowercase letter, or digit, except the last character, which
-      cannot be a dash.
-    region: [Output Only] URL of the region where the in-place snapshot
-      resides. You must specify this field as part of the HTTP request URL. It
-      is not settable as a field in the request body.
-    selfLink: [Output Only] Server-defined URL for the resource.
-    selfLinkWithId: [Output Only] Server-defined URL for this resource's
-      resource id.
-    sourceDisk: URL of the source disk used to create this in-place snapshot.
-      Note that the source disk must be in the same zone/region as the in-
-      place snapshot to be created. This can be a full or valid partial URL.
-      For example, the following are valid values: -
-      https://www.googleapis.com/compute/v1/projects/project/zones/zone
-      /disks/disk - projects/project/zones/zone/disks/disk -
-      zones/zone/disks/disk
-    sourceDiskId: [Output Only] The ID value of the disk used to create this
-      InPlaceSnapshot. This value may be used to determine whether the
-      InPlaceSnapshot was taken from the current or a previous instance of a
-      given disk name.
-    status: [Output Only] The status of the inPlaceSnapshot. This can be
-      CREATING, DELETING, FAILED, or READY.
-    zone: [Output Only] URL of the zone where the in-place snapshot resides.
-      You must specify this field as part of the HTTP request URL. It is not
-      settable as a field in the request body.
-  """
-
-  class StatusValueValuesEnum(_messages.Enum):
-    r"""[Output Only] The status of the inPlaceSnapshot. This can be CREATING,
-    DELETING, FAILED, or READY.
-
-    Values:
-      CREATING: InPlaceSnapshot creation is in progress.
-      DELETING: InPlaceSnapshot is currently being deleted.
-      FAILED: InPlaceSnapshot creation failed.
-      READY: InPlaceSnapshot has been created successfully.
-    """
-    CREATING = 0
-    DELETING = 1
-    FAILED = 2
-    READY = 3
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LabelsValue(_messages.Message):
-    r"""Labels to apply to this InPlaceSnapshot. These can be later modified
-    by the setLabels method. Label values may be empty.
-
-    Messages:
-      AdditionalProperty: An additional property for a LabelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a LabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  creationTimestamp = _messages.StringField(1)
-  description = _messages.StringField(2)
-  diskSizeGb = _messages.IntegerField(3)
-  guestFlush = _messages.BooleanField(4)
-  id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(6, default='compute#inPlaceSnapshot')
-  labelFingerprint = _messages.BytesField(7)
-  labels = _messages.MessageField('LabelsValue', 8)
-  name = _messages.StringField(9)
-  region = _messages.StringField(10)
-  selfLink = _messages.StringField(11)
-  selfLinkWithId = _messages.StringField(12)
-  sourceDisk = _messages.StringField(13)
-  sourceDiskId = _messages.StringField(14)
-  status = _messages.EnumField('StatusValueValuesEnum', 15)
-  zone = _messages.StringField(16)
-
-
-class InPlaceSnapshotList(_messages.Message):
-  r"""Contains a list of InPlaceSnapshot resources.
-
-  Messages:
-    WarningValue: [Output Only] Informational warning message.
-
-  Fields:
-    id: [Output Only] Unique identifier for the resource; defined by the
-      server.
-    items: A list of InPlaceSnapshot resources.
-    kind: Type of resource.
-    nextPageToken: [Output Only] This token allows you to get the next page of
-      results for list requests. If the number of results is larger than
-      maxResults, use the nextPageToken as a value for the query parameter
-      pageToken in the next list request. Subsequent list requests will have
-      their own nextPageToken to continue paging through the results.
-    selfLink: [Output Only] Server-defined URL for this resource.
-    warning: [Output Only] Informational warning message.
-  """
-
-  class WarningValue(_messages.Message):
-    r"""[Output Only] Informational warning message.
-
-    Enums:
-      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
-        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
-        results in the response.
-
-    Messages:
-      DataValueListEntry: A DataValueListEntry object.
-
-    Fields:
-      code: [Output Only] A warning code, if applicable. For example, Compute
-        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
-        response.
-      data: [Output Only] Metadata about this warning in key: value format.
-        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
-      message: [Output Only] A human-readable description of the warning code.
-    """
-
-    class CodeValueValuesEnum(_messages.Enum):
-      r"""[Output Only] A warning code, if applicable. For example, Compute
-      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
-      response.
-
-      Values:
-        CLEANUP_FAILED: Warning about failed cleanup of transient changes made
-          by a failed operation.
-        DEPRECATED_RESOURCE_USED: A link to a deprecated resource was created.
-        DEPRECATED_TYPE_USED: When deploying and at least one of the resources
-          has a type marked as deprecated
-        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: The user created a boot disk that is
-          larger than image size.
-        EXPERIMENTAL_TYPE_USED: When deploying and at least one of the
-          resources has a type marked as experimental
-        EXTERNAL_API_WARNING: Warning that is present in an external api call
-        FIELD_VALUE_OVERRIDEN: Warning that value of a field has been
-          overridden. Deprecated unused field.
-        INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
-          kernel, which is deprecated.
-        LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
-          exceedingly large number of resources
-        MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
-        NEXT_HOP_ADDRESS_NOT_ASSIGNED: The route's nextHopIp address is not
-          assigned to an instance on the network.
-        NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
-          forward.
-        NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
-          an instance that does not exist.
-        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
-          refers to an instance that is not on the same network as the route.
-        NEXT_HOP_NOT_RUNNING: The route's next hop instance does not have a
-          status of RUNNING.
-        NOT_CRITICAL_ERROR: Error which is not critical. We decided to
-          continue the process despite the mentioned error.
-        NO_RESULTS_ON_PAGE: No results are present on a particular list page.
-        PARTIAL_SUCCESS: Success is reported, but some results may be missing
-          due to errors
-        REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
-          requires a TOS they have not accepted.
-        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
-          in use.
-        RESOURCE_NOT_DELETED: One or more of the resources set to auto-delete
-          could not be deleted because they were in use.
-        SCHEMA_VALIDATION_IGNORED: When a resource schema validation is
-          ignored.
-        SINGLE_INSTANCE_PROPERTY_TEMPLATE: Instance template used in instance
-          group manager is valid as such, but its application does not make a
-          lot of sense, because it allows only single instance in instance
-          group.
-        UNDECLARED_PROPERTIES: When undeclared properties in the schema are
-          present
-        UNREACHABLE: A given scope cannot be reached.
-      """
-      CLEANUP_FAILED = 0
-      DEPRECATED_RESOURCE_USED = 1
-      DEPRECATED_TYPE_USED = 2
-      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
-      EXPERIMENTAL_TYPE_USED = 4
-      EXTERNAL_API_WARNING = 5
-      FIELD_VALUE_OVERRIDEN = 6
-      INJECTED_KERNELS_DEPRECATED = 7
-      LARGE_DEPLOYMENT_WARNING = 8
-      MISSING_TYPE_DEPENDENCY = 9
-      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
-      NEXT_HOP_CANNOT_IP_FORWARD = 11
-      NEXT_HOP_INSTANCE_NOT_FOUND = 12
-      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
-      NEXT_HOP_NOT_RUNNING = 14
-      NOT_CRITICAL_ERROR = 15
-      NO_RESULTS_ON_PAGE = 16
-      PARTIAL_SUCCESS = 17
-      REQUIRED_TOS_AGREEMENT = 18
-      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
-      RESOURCE_NOT_DELETED = 20
-      SCHEMA_VALIDATION_IGNORED = 21
-      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
-      UNDECLARED_PROPERTIES = 23
-      UNREACHABLE = 24
-
-    class DataValueListEntry(_messages.Message):
-      r"""A DataValueListEntry object.
-
-      Fields:
-        key: [Output Only] A key that provides more detail on the warning
-          being returned. For example, for warnings where there are no results
-          in a list request for a particular zone, this key might be scope and
-          the key value might be the zone name. Other examples might be a key
-          indicating a deprecated resource and a suggested replacement, or a
-          warning about invalid network settings (for example, if an instance
-          attempts to perform IP forwarding but is not enabled for IP
-          forwarding).
-        value: [Output Only] A warning data value corresponding to the key.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    code = _messages.EnumField('CodeValueValuesEnum', 1)
-    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
-    message = _messages.StringField(3)
-
-  id = _messages.StringField(1)
-  items = _messages.MessageField('InPlaceSnapshot', 2, repeated=True)
-  kind = _messages.StringField(3, default='compute#inPlaceSnapshotList')
-  nextPageToken = _messages.StringField(4)
-  selfLink = _messages.StringField(5)
-  warning = _messages.MessageField('WarningValue', 6)
-
-
 class InitialStateConfig(_messages.Message):
   r"""Initial State for shielded instance, these are public keys which are
   safe to store in public
@@ -40410,9 +39792,10 @@ class InstanceProperties(_messages.Message):
 
   Enums:
     PostKeyRevocationActionTypeValueValuesEnum: PostKeyRevocationActionType of
-      the instance.(will be deprecated soon)
+      the instance.
     PrivateIpv6GoogleAccessValueValuesEnum: The private IPv6 google access
       type for VMs. If not specified, use INHERIT_FROM_SUBNETWORK as default.
+      Note that for MachineImage, this is not supported yet.
 
   Messages:
     LabelsValue: Labels to apply to instances that are created from these
@@ -40420,7 +39803,7 @@ class InstanceProperties(_messages.Message):
 
   Fields:
     advancedMachineFeatures: Controls for advanced machine-related behavior
-      features.
+      features. Note that for MachineImage, this is not supported yet.
     canIpForward: Enables instances created based on these properties to send
       packets with source IP addresses other than their own and receive
       packets with destination IP addresses other than their own. If these
@@ -40428,12 +39811,14 @@ class InstanceProperties(_messages.Message):
       hop in a Route resource, specify true. If unsure, leave this set to
       false. See the Enable IP forwarding documentation for more information.
     confidentialInstanceConfig: Specifies the Confidential Instance options.
+      Note that for MachineImage, this is not supported yet.
     description: An optional text description for the instances that are
       created from these properties.
     disks: An array of disks that are associated with the instances that are
       created from these properties.
     displayDevice: Display Device properties to enable support for remote
-      display products like: Teradici, VNC and TeamViewer
+      display products like: Teradici, VNC and TeamViewer Note that for
+      MachineImage, this is not supported yet.
     guestAccelerators: A list of guest accelerator cards' type and count to
       use for instances created from these properties.
     labels: Labels to apply to instances that are created from these
@@ -40451,24 +39836,28 @@ class InstanceProperties(_messages.Message):
       information, read Specifying a Minimum CPU Platform.
     networkInterfaces: An array of network access configurations for this
       interface.
-    networkPerformanceConfig: A NetworkPerformanceConfig attribute.
-    postKeyRevocationActionType: PostKeyRevocationActionType of the
-      instance.(will be deprecated soon)
+    networkPerformanceConfig: Note that for MachineImage, this is not
+      supported yet.
+    postKeyRevocationActionType: PostKeyRevocationActionType of the instance.
     privateIpv6GoogleAccess: The private IPv6 google access type for VMs. If
-      not specified, use INHERIT_FROM_SUBNETWORK as default.
+      not specified, use INHERIT_FROM_SUBNETWORK as default. Note that for
+      MachineImage, this is not supported yet.
     reservationAffinity: Specifies the reservations that instances can consume
-      from.
+      from. Note that for MachineImage, this is not supported yet.
     resourcePolicies: Resource policies (names, not ULRs) applied to instances
-      created from these properties.
+      created from these properties. Note that for MachineImage, this is not
+      supported yet.
     scheduling: Specifies the scheduling options for the instances that are
       created from these properties.
     secureTags: [Input Only] Secure tags to apply to this instance. Maximum
-      number of secure tags allowed is 50.
+      number of secure tags allowed is 50. Note that for MachineImage, this is
+      not supported yet.
     serviceAccounts: A list of service accounts with specified scopes. Access
       tokens for these service accounts are available to the instances that
       are created from these properties. Use metadata queries to obtain the
       access tokens for these instances.
-    shieldedInstanceConfig: A ShieldedInstanceConfig attribute.
+    shieldedInstanceConfig: Note that for MachineImage, this is not supported
+      yet.
     shieldedVmConfig: Specifies the Shielded VM options for the instances that
       are created from these properties.
     tags: A list of tags to apply to the instances that are created from these
@@ -40478,7 +39867,7 @@ class InstanceProperties(_messages.Message):
   """
 
   class PostKeyRevocationActionTypeValueValuesEnum(_messages.Enum):
-    r"""PostKeyRevocationActionType of the instance.(will be deprecated soon)
+    r"""PostKeyRevocationActionType of the instance.
 
     Values:
       NOOP: Indicates user chose no operation.
@@ -40492,7 +39881,8 @@ class InstanceProperties(_messages.Message):
 
   class PrivateIpv6GoogleAccessValueValuesEnum(_messages.Enum):
     r"""The private IPv6 google access type for VMs. If not specified, use
-    INHERIT_FROM_SUBNETWORK as default.
+    INHERIT_FROM_SUBNETWORK as default. Note that for MachineImage, this is
+    not supported yet.
 
     Values:
       ENABLE_BIDIRECTIONAL_ACCESS_TO_GOOGLE: Bidirectional private IPv6 access
@@ -41379,6 +40769,186 @@ class InstantSnapshot(_messages.Message):
   zone = _messages.StringField(17)
 
 
+class InstantSnapshotAggregatedList(_messages.Message):
+  r"""A InstantSnapshotAggregatedList object.
+
+  Messages:
+    ItemsValue: A list of InstantSnapshotsScopedList resources.
+    WarningValue: [Output Only] Informational warning message.
+
+  Fields:
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of InstantSnapshotsScopedList resources.
+    kind: [Output Only] Type of resource. Always
+      compute#instantSnapshotAggregatedList for aggregated lists of
+      instantSnapshots.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for this resource.
+    unreachables: [Output Only] Unreachable resources.
+    warning: [Output Only] Informational warning message.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ItemsValue(_messages.Message):
+    r"""A list of InstantSnapshotsScopedList resources.
+
+    Messages:
+      AdditionalProperty: An additional property for a ItemsValue object.
+
+    Fields:
+      additionalProperties: [Output Only] Name of the scope containing this
+        set of instantSnapshots.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ItemsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A InstantSnapshotsScopedList attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('InstantSnapshotsScopedList', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  class WarningValue(_messages.Message):
+    r"""[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      r"""[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: Warning about failed cleanup of transient changes made
+          by a failed operation.
+        DEPRECATED_RESOURCE_USED: A link to a deprecated resource was created.
+        DEPRECATED_TYPE_USED: When deploying and at least one of the resources
+          has a type marked as deprecated
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: The user created a boot disk that is
+          larger than image size.
+        EXPERIMENTAL_TYPE_USED: When deploying and at least one of the
+          resources has a type marked as experimental
+        EXTERNAL_API_WARNING: Warning that is present in an external api call
+        FIELD_VALUE_OVERRIDEN: Warning that value of a field has been
+          overridden. Deprecated unused field.
+        INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
+          kernel, which is deprecated.
+        LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
+          exceedingly large number of resources
+        MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: The route's nextHopIp address is not
+          assigned to an instance on the network.
+        NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
+          forward.
+        NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
+          an instance that does not exist.
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
+          refers to an instance that is not on the same network as the route.
+        NEXT_HOP_NOT_RUNNING: The route's next hop instance does not have a
+          status of RUNNING.
+        NOT_CRITICAL_ERROR: Error which is not critical. We decided to
+          continue the process despite the mentioned error.
+        NO_RESULTS_ON_PAGE: No results are present on a particular list page.
+        PARTIAL_SUCCESS: Success is reported, but some results may be missing
+          due to errors
+        REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
+          requires a TOS they have not accepted.
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
+          in use.
+        RESOURCE_NOT_DELETED: One or more of the resources set to auto-delete
+          could not be deleted because they were in use.
+        SCHEMA_VALIDATION_IGNORED: When a resource schema validation is
+          ignored.
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: Instance template used in instance
+          group manager is valid as such, but its application does not make a
+          lot of sense, because it allows only single instance in instance
+          group.
+        UNDECLARED_PROPERTIES: When undeclared properties in the schema are
+          present
+        UNREACHABLE: A given scope cannot be reached.
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      LARGE_DEPLOYMENT_WARNING = 8
+      MISSING_TYPE_DEPENDENCY = 9
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
+      NEXT_HOP_CANNOT_IP_FORWARD = 11
+      NEXT_HOP_INSTANCE_NOT_FOUND = 12
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
+      NEXT_HOP_NOT_RUNNING = 14
+      NOT_CRITICAL_ERROR = 15
+      NO_RESULTS_ON_PAGE = 16
+      PARTIAL_SUCCESS = 17
+      REQUIRED_TOS_AGREEMENT = 18
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
+      RESOURCE_NOT_DELETED = 20
+      SCHEMA_VALIDATION_IGNORED = 21
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
+      UNDECLARED_PROPERTIES = 23
+      UNREACHABLE = 24
+
+    class DataValueListEntry(_messages.Message):
+      r"""A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('ItemsValue', 2)
+  kind = _messages.StringField(3, default='compute#instantSnapshotAggregatedList')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+  unreachables = _messages.StringField(6, repeated=True)
+  warning = _messages.MessageField('WarningValue', 7)
+
+
 class InstantSnapshotExportParams(_messages.Message):
   r"""A InstantSnapshotExportParams object.
 
@@ -41578,6 +41148,147 @@ class InstantSnapshotsExportRequest(_messages.Message):
   """
 
   exportParams = _messages.MessageField('InstantSnapshotExportParams', 1)
+
+
+class InstantSnapshotsScopedList(_messages.Message):
+  r"""A InstantSnapshotsScopedList object.
+
+  Messages:
+    WarningValue: [Output Only] Informational warning which replaces the list
+      of instantSnapshots when the list is empty.
+
+  Fields:
+    instantSnapshots: [Output Only] A list of instantSnapshots contained in
+      this scope.
+    warning: [Output Only] Informational warning which replaces the list of
+      instantSnapshots when the list is empty.
+  """
+
+  class WarningValue(_messages.Message):
+    r"""[Output Only] Informational warning which replaces the list of
+    instantSnapshots when the list is empty.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      r"""[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: Warning about failed cleanup of transient changes made
+          by a failed operation.
+        DEPRECATED_RESOURCE_USED: A link to a deprecated resource was created.
+        DEPRECATED_TYPE_USED: When deploying and at least one of the resources
+          has a type marked as deprecated
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: The user created a boot disk that is
+          larger than image size.
+        EXPERIMENTAL_TYPE_USED: When deploying and at least one of the
+          resources has a type marked as experimental
+        EXTERNAL_API_WARNING: Warning that is present in an external api call
+        FIELD_VALUE_OVERRIDEN: Warning that value of a field has been
+          overridden. Deprecated unused field.
+        INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
+          kernel, which is deprecated.
+        LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
+          exceedingly large number of resources
+        MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: The route's nextHopIp address is not
+          assigned to an instance on the network.
+        NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
+          forward.
+        NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
+          an instance that does not exist.
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
+          refers to an instance that is not on the same network as the route.
+        NEXT_HOP_NOT_RUNNING: The route's next hop instance does not have a
+          status of RUNNING.
+        NOT_CRITICAL_ERROR: Error which is not critical. We decided to
+          continue the process despite the mentioned error.
+        NO_RESULTS_ON_PAGE: No results are present on a particular list page.
+        PARTIAL_SUCCESS: Success is reported, but some results may be missing
+          due to errors
+        REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
+          requires a TOS they have not accepted.
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
+          in use.
+        RESOURCE_NOT_DELETED: One or more of the resources set to auto-delete
+          could not be deleted because they were in use.
+        SCHEMA_VALIDATION_IGNORED: When a resource schema validation is
+          ignored.
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: Instance template used in instance
+          group manager is valid as such, but its application does not make a
+          lot of sense, because it allows only single instance in instance
+          group.
+        UNDECLARED_PROPERTIES: When undeclared properties in the schema are
+          present
+        UNREACHABLE: A given scope cannot be reached.
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      LARGE_DEPLOYMENT_WARNING = 8
+      MISSING_TYPE_DEPENDENCY = 9
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 10
+      NEXT_HOP_CANNOT_IP_FORWARD = 11
+      NEXT_HOP_INSTANCE_NOT_FOUND = 12
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 13
+      NEXT_HOP_NOT_RUNNING = 14
+      NOT_CRITICAL_ERROR = 15
+      NO_RESULTS_ON_PAGE = 16
+      PARTIAL_SUCCESS = 17
+      REQUIRED_TOS_AGREEMENT = 18
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 19
+      RESOURCE_NOT_DELETED = 20
+      SCHEMA_VALIDATION_IGNORED = 21
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 22
+      UNDECLARED_PROPERTIES = 23
+      UNREACHABLE = 24
+
+    class DataValueListEntry(_messages.Message):
+      r"""A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
+  instantSnapshots = _messages.MessageField('InstantSnapshot', 1, repeated=True)
+  warning = _messages.MessageField('WarningValue', 2)
 
 
 class Int64RangeMatch(_messages.Message):
@@ -44660,6 +44371,7 @@ class MachineImage(_messages.Message):
       Copy Service (VSS).
     id: [Output Only] A unique identifier for this machine image. The server
       defines this identifier.
+    instanceProperties: [Output Only] Properties of source instance
     kind: [Output Only] The resource type, which is always
       compute#machineImage for machine image.
     machineImageEncryptionKey: Encrypts the machine image using a customer-
@@ -44680,6 +44392,8 @@ class MachineImage(_messages.Message):
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
     satisfiesPzs: [Output Only] Reserved for future use.
+    savedDisks: An array of Machine Image specific properties for disks
+      attached to the source instance
     selfLink: [Output Only] The URL for this machine image. The server defines
       this URL.
     selfLinkWithId: [Output Only] Server-defined URL for this resource with
@@ -44722,18 +44436,20 @@ class MachineImage(_messages.Message):
   description = _messages.StringField(2)
   guestFlush = _messages.BooleanField(3)
   id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(5, default='compute#machineImage')
-  machineImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 6)
-  name = _messages.StringField(7)
-  satisfiesPzs = _messages.BooleanField(8)
-  selfLink = _messages.StringField(9)
-  selfLinkWithId = _messages.StringField(10)
-  sourceDiskEncryptionKeys = _messages.MessageField('SourceDiskEncryptionKey', 11, repeated=True)
-  sourceInstance = _messages.StringField(12)
-  sourceInstanceProperties = _messages.MessageField('SourceInstanceProperties', 13)
-  status = _messages.EnumField('StatusValueValuesEnum', 14)
-  storageLocations = _messages.StringField(15, repeated=True)
-  totalStorageBytes = _messages.IntegerField(16)
+  instanceProperties = _messages.MessageField('InstanceProperties', 5)
+  kind = _messages.StringField(6, default='compute#machineImage')
+  machineImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 7)
+  name = _messages.StringField(8)
+  satisfiesPzs = _messages.BooleanField(9)
+  savedDisks = _messages.MessageField('SavedDisk', 10, repeated=True)
+  selfLink = _messages.StringField(11)
+  selfLinkWithId = _messages.StringField(12)
+  sourceDiskEncryptionKeys = _messages.MessageField('SourceDiskEncryptionKey', 13, repeated=True)
+  sourceInstance = _messages.StringField(14)
+  sourceInstanceProperties = _messages.MessageField('SourceInstanceProperties', 15)
+  status = _messages.EnumField('StatusValueValuesEnum', 16)
+  storageLocations = _messages.StringField(17, repeated=True)
+  totalStorageBytes = _messages.IntegerField(18)
 
 
 class MachineImageList(_messages.Message):
@@ -50645,6 +50361,8 @@ class Operation(_messages.Message):
   Messages:
     ErrorValue: [Output Only] If errors are generated during processing of the
       operation, this field will be populated.
+    MetadataValue: [Output Only] Service-specific metadata attached to this
+      operation.
     WarningsValueListEntry: A WarningsValueListEntry object.
 
   Fields:
@@ -50668,6 +50386,8 @@ class Operation(_messages.Message):
       value is in RFC3339 text format.
     kind: [Output Only] Type of the resource. Always `compute#operation` for
       Operation resources.
+    metadata: [Output Only] Service-specific metadata attached to this
+      operation.
     name: [Output Only] Name of the operation.
     operationGroupId: [Output Only] An ID that represents a group of
       operations, such as when a group of operations results from a
@@ -50743,6 +50463,31 @@ class Operation(_messages.Message):
       message = _messages.StringField(3)
 
     errors = _messages.MessageField('ErrorsValueListEntry', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MetadataValue(_messages.Message):
+    r"""[Output Only] Service-specific metadata attached to this operation.
+
+    Messages:
+      AdditionalProperty: An additional property for a MetadataValue object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   class WarningsValueListEntry(_messages.Message):
     r"""A WarningsValueListEntry object.
@@ -50876,21 +50621,22 @@ class Operation(_messages.Message):
   id = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
   insertTime = _messages.StringField(9)
   kind = _messages.StringField(10, default='compute#operation')
-  name = _messages.StringField(11)
-  operationGroupId = _messages.StringField(12)
-  operationType = _messages.StringField(13)
-  progress = _messages.IntegerField(14, variant=_messages.Variant.INT32)
-  region = _messages.StringField(15)
-  selfLink = _messages.StringField(16)
-  selfLinkWithId = _messages.StringField(17)
-  startTime = _messages.StringField(18)
-  status = _messages.EnumField('StatusValueValuesEnum', 19)
-  statusMessage = _messages.StringField(20)
-  targetId = _messages.IntegerField(21, variant=_messages.Variant.UINT64)
-  targetLink = _messages.StringField(22)
-  user = _messages.StringField(23)
-  warnings = _messages.MessageField('WarningsValueListEntry', 24, repeated=True)
-  zone = _messages.StringField(25)
+  metadata = _messages.MessageField('MetadataValue', 11)
+  name = _messages.StringField(12)
+  operationGroupId = _messages.StringField(13)
+  operationType = _messages.StringField(14)
+  progress = _messages.IntegerField(15, variant=_messages.Variant.INT32)
+  region = _messages.StringField(16)
+  selfLink = _messages.StringField(17)
+  selfLinkWithId = _messages.StringField(18)
+  startTime = _messages.StringField(19)
+  status = _messages.EnumField('StatusValueValuesEnum', 20)
+  statusMessage = _messages.StringField(21)
+  targetId = _messages.IntegerField(22, variant=_messages.Variant.UINT64)
+  targetLink = _messages.StringField(23)
+  user = _messages.StringField(24)
+  warnings = _messages.MessageField('WarningsValueListEntry', 25, repeated=True)
+  zone = _messages.StringField(26)
 
 
 class OperationAggregatedList(_messages.Message):
@@ -59670,6 +59416,48 @@ class SavedAttachedDisk(_messages.Message):
   type = _messages.EnumField('TypeValueValuesEnum', 16)
 
 
+class SavedDisk(_messages.Message):
+  r"""An instance-attached disk resource.
+
+  Enums:
+    StorageBytesStatusValueValuesEnum: [Output Only] An indicator whether
+      storageBytes is in a stable state or it is being adjusted as a result of
+      shared storage reallocation. This status can either be UPDATING, meaning
+      the size of the snapshot is being updated, or UP_TO_DATE, meaning the
+      size of the snapshot is up-to-date.
+
+  Fields:
+    kind: [Output Only] Type of the resource. Always compute#savedDisk for
+      attached disks.
+    sourceDisk: Specifies a URL of the disk attached to the source instance.
+    storageBytes: [Output Only] Size of the individual disk snapshot used by
+      this machine image.
+    storageBytesStatus: [Output Only] An indicator whether storageBytes is in
+      a stable state or it is being adjusted as a result of shared storage
+      reallocation. This status can either be UPDATING, meaning the size of
+      the snapshot is being updated, or UP_TO_DATE, meaning the size of the
+      snapshot is up-to-date.
+  """
+
+  class StorageBytesStatusValueValuesEnum(_messages.Enum):
+    r"""[Output Only] An indicator whether storageBytes is in a stable state
+    or it is being adjusted as a result of shared storage reallocation. This
+    status can either be UPDATING, meaning the size of the snapshot is being
+    updated, or UP_TO_DATE, meaning the size of the snapshot is up-to-date.
+
+    Values:
+      UPDATING: <no description>
+      UP_TO_DATE: <no description>
+    """
+    UPDATING = 0
+    UP_TO_DATE = 1
+
+  kind = _messages.StringField(1, default='compute#savedDisk')
+  sourceDisk = _messages.StringField(2)
+  storageBytes = _messages.IntegerField(3)
+  storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 4)
+
+
 class ScalingScheduleStatus(_messages.Message):
   r"""A ScalingScheduleStatus object.
 
@@ -62447,7 +62235,7 @@ class SourceInstanceProperties(_messages.Message):
 
   Enums:
     PostKeyRevocationActionTypeValueValuesEnum: PostKeyRevocationActionType of
-      the instance. (will be deprecated soon)
+      the instance.
 
   Messages:
     LabelsValue: Labels to apply to instances that are created from this
@@ -62485,7 +62273,6 @@ class SourceInstanceProperties(_messages.Message):
     networkInterfaces: An array of network access configurations for this
       interface.
     postKeyRevocationActionType: PostKeyRevocationActionType of the instance.
-      (will be deprecated soon)
     scheduling: Specifies the scheduling options for the instances that are
       created from this machine image.
     serviceAccounts: A list of service accounts with specified scopes. Access
@@ -62499,7 +62286,7 @@ class SourceInstanceProperties(_messages.Message):
   """
 
   class PostKeyRevocationActionTypeValueValuesEnum(_messages.Enum):
-    r"""PostKeyRevocationActionType of the instance. (will be deprecated soon)
+    r"""PostKeyRevocationActionType of the instance.
 
     Values:
       NOOP: Indicates user chose no operation.
@@ -64175,6 +63962,8 @@ class Subnetwork(_messages.Message):
     Values:
       AGGREGATE: Subnetwork used to aggregate multiple private subnetworks.
       CLOUD_EXTENSION: Subnetworks created for Cloud Extension Machines.
+      GLOBAL_MANAGED_PROXY: Subnet reserved for Global Internal HTTP(S) Load
+        Balancing.
       INTERNAL_HTTPS_LOAD_BALANCER: Subnet reserved for Internal HTTP(S) Load
         Balancing.
       PRIVATE: Regular user created or automatically created subnet.
@@ -64186,11 +63975,12 @@ class Subnetwork(_messages.Message):
     """
     AGGREGATE = 0
     CLOUD_EXTENSION = 1
-    INTERNAL_HTTPS_LOAD_BALANCER = 2
-    PRIVATE = 3
-    PRIVATE_RFC_1918 = 4
-    PRIVATE_SERVICE_CONNECT = 5
-    REGIONAL_MANAGED_PROXY = 6
+    GLOBAL_MANAGED_PROXY = 2
+    INTERNAL_HTTPS_LOAD_BALANCER = 3
+    PRIVATE = 4
+    PRIVATE_RFC_1918 = 5
+    PRIVATE_SERVICE_CONNECT = 6
+    REGIONAL_MANAGED_PROXY = 7
 
   class RoleValueValuesEnum(_messages.Enum):
     r"""The role of subnetwork. Currently, this field is only used when

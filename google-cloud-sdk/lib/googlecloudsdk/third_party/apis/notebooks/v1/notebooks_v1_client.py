@@ -177,7 +177,7 @@ class NotebooksV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new Scheduled Notebook in a given project and location.
+      r"""Creates a new Execution in a given project and location.
 
       Args:
         request: (NotebooksProjectsLocationsExecutionsCreateRequest) input message

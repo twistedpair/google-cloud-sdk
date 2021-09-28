@@ -25,31 +25,31 @@ def GetAttachmentPointFlag():
   return base.Argument(
       '--attachment-point',
       required=True,
-      help='The resource to which the policy is attached.')
+      help='Resource to which the policy is attached.')
 
 
 def GetKindFlag():
   return base.Argument(
       '--kind',
       required=True,
-      help='The kind of the policy.')
+      help='Kind of the policy.')
 
 
 def GetPolicyIDFlag():
   return base.Argument(
       'policy_id',
-      help='The id of the policy.')
+      help='Id of the policy.')
 
 
 def GetEtagFlag():
-  return base.Argument('--etag', help='The etag of the existing policy.')
+  return base.Argument('--etag', help='Etag of the existing policy.')
 
 
 def GetPolicyFileFlag():
   return base.Argument(
-      '--policy-file', required=True, help='The contents of the policy.')
+      '--policy-file', required=True, help='Contents of the policy.')
 
 
 def GetPageTokenFlag():
   return base.Argument(
-      '--page_token', help='The page token received from a previous call.')
+      '--page_token', help='Page token received from a previous call.')

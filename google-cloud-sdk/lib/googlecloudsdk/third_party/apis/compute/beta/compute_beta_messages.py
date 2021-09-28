@@ -582,10 +582,14 @@ class AccessConfig(_messages.Message):
       match that of the networkTier associated with the Address resource
       owning that IP.
     publicPtrDomainName: The DNS domain name for the public PTR record. You
-      can set this field only if the `setPublicPtr` field is enabled.
+      can set this field only if the `setPublicPtr` field is enabled in
+      accessConfig. If this field is unspecified in ipv6AccessConfig, a
+      default PTR record will be createc for first IP in associated external
+      IPv6 range.
     setPublicPtr: Specifies whether a public DNS 'PTR' record should be
       created to map the external IP address of the instance to a DNS domain
-      name.
+      name. This field is not used in ipv6AccessConfig. A default PTR record
+      will be created if the VM has external IPv6 range associated.
     type: The type of configuration. The default and only option is
       ONE_TO_ONE_NAT.
   """
@@ -3240,7 +3244,7 @@ class BackendBucketCdnPolicy(_messages.Message):
       directive to the lesser of the client_ttl and default_ttl, and also
       ensures a "public" cache-control directive is present. If a client TTL
       is not specified, a default value (1 hour) will be used. The maximum
-      allowed value is 86400s (1 day).
+      allowed value is 31,622,400s (1 year).
     defaultTtl: Specifies the default TTL for cached content served by this
       origin for responses that do not have an existing valid TTL (max-age or
       s-max-age). Setting a TTL of "0" means "always revalidate". The value of
@@ -3803,6 +3807,8 @@ class BackendService(_messages.Message):
     Values:
       EXTERNAL: Signifies that this will be used for external HTTP(S), SSL
         Proxy, TCP Proxy, or Network Load Balancing
+      EXTERNAL_MANAGED: Signifies that this will be used for External Managed
+        HTTP(S), SSL Proxy, or TCP Proxy Load Balancing.
       INTERNAL: Signifies that this will be used for Internal TCP/UDP Load
         Balancing.
       INTERNAL_MANAGED: Signifies that this will be used for Internal HTTP(S)
@@ -3812,10 +3818,11 @@ class BackendService(_messages.Message):
       INVALID_LOAD_BALANCING_SCHEME: <no description>
     """
     EXTERNAL = 0
-    INTERNAL = 1
-    INTERNAL_MANAGED = 2
-    INTERNAL_SELF_MANAGED = 3
-    INVALID_LOAD_BALANCING_SCHEME = 4
+    EXTERNAL_MANAGED = 1
+    INTERNAL = 2
+    INTERNAL_MANAGED = 3
+    INTERNAL_SELF_MANAGED = 4
+    INVALID_LOAD_BALANCING_SCHEME = 5
 
   class LocalityLbPolicyValueValuesEnum(_messages.Enum):
     r"""The load balancing algorithm used within the scope of the locality.
@@ -4209,7 +4216,7 @@ class BackendServiceCdnPolicy(_messages.Message):
       directive to the lesser of the client_ttl and default_ttl, and also
       ensures a "public" cache-control directive is present. If a client TTL
       is not specified, a default value (1 hour) will be used. The maximum
-      allowed value is 86400s (1 day).
+      allowed value is 31,622,400s (1 year).
     defaultTtl: Specifies the default TTL for cached content served by this
       origin for responses that do not have an existing valid TTL (max-age or
       s-max-age). Setting a TTL of "0" means "always revalidate". The value of
@@ -27818,9 +27825,9 @@ class Firewall(_messages.Message):
     name: Name of the resource; provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
-      regular expression [a-z]([-a-z0-9]*[a-z0-9])?. The first character must
-      be a lowercase letter, and all following characters (except for the last
-      character) must be a dash, lowercase letter, or digit. The last
+      regular expression `[a-z]([-a-z0-9]*[a-z0-9])?`. The first character
+      must be a lowercase letter, and all following characters (except for the
+      last character) must be a dash, lowercase letter, or digit. The last
       character must be a lowercase letter or digit.
     network: URL of the network resource for this firewall rule. If not
       specified when creating a firewall rule, the default network is used:
@@ -28764,16 +28771,18 @@ class ForwardingRule(_messages.Message):
 
     Values:
       EXTERNAL: <no description>
+      EXTERNAL_MANAGED: <no description>
       INTERNAL: <no description>
       INTERNAL_MANAGED: <no description>
       INTERNAL_SELF_MANAGED: <no description>
       INVALID: <no description>
     """
     EXTERNAL = 0
-    INTERNAL = 1
-    INTERNAL_MANAGED = 2
-    INTERNAL_SELF_MANAGED = 3
-    INVALID = 4
+    EXTERNAL_MANAGED = 1
+    INTERNAL = 2
+    INTERNAL_MANAGED = 3
+    INTERNAL_SELF_MANAGED = 4
+    INVALID = 5
 
   class NetworkTierValueValuesEnum(_messages.Enum):
     r"""This signifies the networking tier used for configuring this load
@@ -35365,9 +35374,10 @@ class InstanceProperties(_messages.Message):
 
   Enums:
     PostKeyRevocationActionTypeValueValuesEnum: PostKeyRevocationActionType of
-      the instance.(will be deprecated soon)
+      the instance.
     PrivateIpv6GoogleAccessValueValuesEnum: The private IPv6 google access
       type for VMs. If not specified, use INHERIT_FROM_SUBNETWORK as default.
+      Note that for MachineImage, this is not supported yet.
 
   Messages:
     LabelsValue: Labels to apply to instances that are created from these
@@ -35375,7 +35385,7 @@ class InstanceProperties(_messages.Message):
 
   Fields:
     advancedMachineFeatures: Controls for advanced machine-related behavior
-      features.
+      features. Note that for MachineImage, this is not supported yet.
     canIpForward: Enables instances created based on these properties to send
       packets with source IP addresses other than their own and receive
       packets with destination IP addresses other than their own. If these
@@ -35383,12 +35393,14 @@ class InstanceProperties(_messages.Message):
       hop in a Route resource, specify true. If unsure, leave this set to
       false. See the Enable IP forwarding documentation for more information.
     confidentialInstanceConfig: Specifies the Confidential Instance options.
+      Note that for MachineImage, this is not supported yet.
     description: An optional text description for the instances that are
       created from these properties.
     disks: An array of disks that are associated with the instances that are
       created from these properties.
     displayDevice: Display Device properties to enable support for remote
-      display products like: Teradici, VNC and TeamViewer
+      display products like: Teradici, VNC and TeamViewer Note that for
+      MachineImage, this is not supported yet.
     guestAccelerators: A list of guest accelerator cards' type and count to
       use for instances created from these properties.
     labels: Labels to apply to instances that are created from these
@@ -35406,22 +35418,25 @@ class InstanceProperties(_messages.Message):
       information, read Specifying a Minimum CPU Platform.
     networkInterfaces: An array of network access configurations for this
       interface.
-    networkPerformanceConfig: A NetworkPerformanceConfig attribute.
-    postKeyRevocationActionType: PostKeyRevocationActionType of the
-      instance.(will be deprecated soon)
+    networkPerformanceConfig: Note that for MachineImage, this is not
+      supported yet.
+    postKeyRevocationActionType: PostKeyRevocationActionType of the instance.
     privateIpv6GoogleAccess: The private IPv6 google access type for VMs. If
-      not specified, use INHERIT_FROM_SUBNETWORK as default.
+      not specified, use INHERIT_FROM_SUBNETWORK as default. Note that for
+      MachineImage, this is not supported yet.
     reservationAffinity: Specifies the reservations that instances can consume
-      from.
+      from. Note that for MachineImage, this is not supported yet.
     resourcePolicies: Resource policies (names, not ULRs) applied to instances
-      created from these properties.
+      created from these properties. Note that for MachineImage, this is not
+      supported yet.
     scheduling: Specifies the scheduling options for the instances that are
       created from these properties.
     serviceAccounts: A list of service accounts with specified scopes. Access
       tokens for these service accounts are available to the instances that
       are created from these properties. Use metadata queries to obtain the
       access tokens for these instances.
-    shieldedInstanceConfig: A ShieldedInstanceConfig attribute.
+    shieldedInstanceConfig: Note that for MachineImage, this is not supported
+      yet.
     shieldedVmConfig: Specifies the Shielded VM options for the instances that
       are created from these properties.
     tags: A list of tags to apply to the instances that are created from these
@@ -35431,7 +35446,7 @@ class InstanceProperties(_messages.Message):
   """
 
   class PostKeyRevocationActionTypeValueValuesEnum(_messages.Enum):
-    r"""PostKeyRevocationActionType of the instance.(will be deprecated soon)
+    r"""PostKeyRevocationActionType of the instance.
 
     Values:
       NOOP: Indicates user chose no operation.
@@ -35445,7 +35460,8 @@ class InstanceProperties(_messages.Message):
 
   class PrivateIpv6GoogleAccessValueValuesEnum(_messages.Enum):
     r"""The private IPv6 google access type for VMs. If not specified, use
-    INHERIT_FROM_SUBNETWORK as default.
+    INHERIT_FROM_SUBNETWORK as default. Note that for MachineImage, this is
+    not supported yet.
 
     Values:
       ENABLE_BIDIRECTIONAL_ACCESS_TO_GOOGLE: Bidirectional private IPv6 access
@@ -54056,7 +54072,7 @@ class SourceInstanceProperties(_messages.Message):
 
   Enums:
     PostKeyRevocationActionTypeValueValuesEnum: PostKeyRevocationActionType of
-      the instance. (will be deprecated soon)
+      the instance.
 
   Messages:
     LabelsValue: Labels to apply to instances that are created from this
@@ -54094,7 +54110,6 @@ class SourceInstanceProperties(_messages.Message):
     networkInterfaces: An array of network access configurations for this
       interface.
     postKeyRevocationActionType: PostKeyRevocationActionType of the instance.
-      (will be deprecated soon)
     scheduling: Specifies the scheduling options for the instances that are
       created from this machine image.
     serviceAccounts: A list of service accounts with specified scopes. Access
@@ -54108,7 +54123,7 @@ class SourceInstanceProperties(_messages.Message):
   """
 
   class PostKeyRevocationActionTypeValueValuesEnum(_messages.Enum):
-    r"""PostKeyRevocationActionType of the instance. (will be deprecated soon)
+    r"""PostKeyRevocationActionType of the instance.
 
     Values:
       NOOP: Indicates user chose no operation.
@@ -56267,6 +56282,17 @@ class Subsetting(_messages.Message):
 
   Fields:
     policy: A PolicyValueValuesEnum attribute.
+    subsetSize: The number of backends per backend group assigned to each
+      proxy instance or each service mesh client. An input parameter to the
+      `CONSISTENT_HASH_SUBSETTING` algorithm. Can only be set if `policy` is
+      set to `CONSISTENT_HASH_SUBSETTING`. Can only be set if load balancing
+      scheme is `INTERNAL_MANAGED` or `INTERNAL_SELF_MANAGED`. `subset_size`
+      is optional for Internal HTTP(S) load balancing and required for Traffic
+      Director. If you do not provide this value, Cloud Load Balancing will
+      calculate it dynamically to optimize the number of proxies/clients
+      visible to each backend and vice versa. Must be greater than 0. If
+      `subset_size` is larger than the number of backends/endpoints, then
+      subsetting is disabled.
   """
 
   class PolicyValueValuesEnum(_messages.Enum):
@@ -56292,6 +56318,7 @@ class Subsetting(_messages.Message):
     NONE = 1
 
   policy = _messages.EnumField('PolicyValueValuesEnum', 1)
+  subsetSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class TCPHealthCheck(_messages.Message):

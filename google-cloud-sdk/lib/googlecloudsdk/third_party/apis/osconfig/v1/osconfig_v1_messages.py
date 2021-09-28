@@ -268,6 +268,10 @@ class CVSSv3(_messages.Message):
   userInteraction = _messages.EnumField('UserInteractionValueValuesEnum', 11)
 
 
+class CancelOperationRequest(_messages.Message):
+  r"""The request message for Operations.CancelOperation."""
+
+
 class CancelPatchJobRequest(_messages.Message):
   r"""Message for canceling a patch job."""
 
@@ -1898,6 +1902,31 @@ class OsconfigProjectsLocationsOsPolicyAssignmentsListRevisionsRequest(_messages
   name = _messages.StringField(1, required=True)
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
+
+
+class OsconfigProjectsLocationsOsPolicyAssignmentsOperationsCancelRequest(_messages.Message):
+  r"""A OsconfigProjectsLocationsOsPolicyAssignmentsOperationsCancelRequest
+  object.
+
+  Fields:
+    cancelOperationRequest: A CancelOperationRequest resource to be passed as
+      the request body.
+    name: The name of the operation resource to be cancelled.
+  """
+
+  cancelOperationRequest = _messages.MessageField('CancelOperationRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class OsconfigProjectsLocationsOsPolicyAssignmentsOperationsGetRequest(_messages.Message):
+  r"""A OsconfigProjectsLocationsOsPolicyAssignmentsOperationsGetRequest
+  object.
+
+  Fields:
+    name: The name of the operation resource.
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class OsconfigProjectsLocationsOsPolicyAssignmentsPatchRequest(_messages.Message):

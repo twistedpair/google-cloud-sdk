@@ -2622,10 +2622,10 @@ def ValidateIstioConfigUpdateArgs(istio_config_args, disable_addons_args):
 def WarnForUnspecifiedIpAllocationPolicy(args):
   if not args.IsSpecified('enable_ip_alias'):
     log.warning(
-        'Currently VPC-native is not the default mode during cluster creation. '
-        'In the future, this will become the default mode and can be disabled '
-        'using `--no-enable-ip-alias` flag. Use `--[no-]enable-ip-alias` flag '
-        'to suppress this warning.')
+        'Currently VPC-native is the default mode during cluster creation for '
+        'versions greater than 1.21.0-gke.1500. '
+        'To create advanced routes based clusters, '
+        'please pass the `--no-enable-ip-alias` flag')
 
 
 def WarnForNodeModification(args, enable_autorepair):
@@ -3843,7 +3843,7 @@ Converts a cluster from Autopilot mode to Standard mode."""
       '--disable-autopilot',
       help=help_text,
       default=None,
-      hidden=False,
+      hidden=True,
       action='store_true')
 
 

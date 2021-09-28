@@ -54,6 +54,17 @@ class NameExpansionIterator:
     self._include_buckets = include_buckets
     self._recursion_requested = recursion_requested
 
+  def _get_name_expansion_result(self, resource, expanded_url, original_url):
+    """Returns a NameExpansionResult, removing generations when appropriate."""
+    keep_generation_in_url = (
+        self._all_versions
+        or original_url.generation  # User requested a specific generation.
+    )
+    if not keep_generation_in_url:
+      resource.storage_url.generation = None
+      expanded_url.generation = None
+    return NameExpansionResult(resource, expanded_url, original_url)
+
   def __iter__(self):
     """Iterates over each URL in self._urls and yield the expanded result.
 
@@ -77,14 +88,14 @@ class NameExpansionIterator:
       for resource in resources:
         # TODO(b/191479587): Explore refactoring these branches.
         if not resource.is_container():
-          yield NameExpansionResult(resource, resource.storage_url,
-                                    original_storage_url)
+          yield self._get_name_expansion_result(
+              resource, resource.storage_url, original_storage_url)
           is_name_expansion_iterator_empty = False
           continue
 
         if self._include_buckets and resource.storage_url.is_bucket():
-          yield NameExpansionResult(resource, resource.storage_url,
-                                    original_storage_url)
+          yield self._get_name_expansion_result(
+              resource, resource.storage_url, original_storage_url)
           is_name_expansion_iterator_empty = False
           if not self._recursion_requested:
             continue
@@ -99,8 +110,8 @@ class NameExpansionIterator:
         child_resources = wildcard_iterator.get_wildcard_iterator(
             new_storage_url.url_string, all_versions=self._all_versions)
         for child_resource in child_resources:
-          yield NameExpansionResult(child_resource, resource.storage_url,
-                                    original_storage_url)
+          yield self._get_name_expansion_result(
+              child_resource, resource.storage_url, original_storage_url)
           is_name_expansion_iterator_empty = False
 
       if is_name_expansion_iterator_empty:

@@ -91,7 +91,7 @@ def ArgsForSnapshotTtl(parser):
       '--snapshot-ttl',
       default='7d',
       metavar='DURATION',
-      type=arg_parsers.Duration(lower_bound='1s', upper_bound='7d'),
+      type=arg_parsers.Duration(lower_bound='1h', upper_bound='30d'),
       help='Time to live for the snapshot.')
 
 

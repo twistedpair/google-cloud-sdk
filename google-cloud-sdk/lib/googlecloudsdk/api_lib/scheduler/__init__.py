@@ -50,6 +50,8 @@ def GetApiAdapter(release_track, legacy_cron=False):
     return AlphaApiAdapter(legacy_cron=legacy_cron)
   elif release_track == base.ReleaseTrack.BETA:
     return BetaApiAdapter(legacy_cron=legacy_cron)
+  elif release_track == base.ReleaseTrack.GA:
+    return GaApiAdapter(legacy_cron=legacy_cron)
   else:
     raise UnsupportedReleaseTrackError(release_track)
 
@@ -80,3 +82,11 @@ class BetaApiAdapter(BaseApiAdapter):
                               self.client.projects_locations_jobs,
                               legacy_cron=legacy_cron)
 
+
+class GaApiAdapter(BaseApiAdapter):
+
+  def __init__(self, legacy_cron=False):
+    super(GaApiAdapter, self).__init__(GA_API_VERSION)
+    self.jobs = jobs.BaseJobs(self.client.MESSAGES_MODULE,
+                              self.client.projects_locations_jobs,
+                              legacy_cron=legacy_cron)

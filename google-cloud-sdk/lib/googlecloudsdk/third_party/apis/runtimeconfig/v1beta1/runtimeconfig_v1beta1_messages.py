@@ -740,8 +740,8 @@ class Rule(_messages.Message):
     description: Human-readable description of the rule.
     in_: If one or more 'in' clauses are specified, the rule matches if the
       PRINCIPAL/AUTHORITY_SELECTOR is in at least one of these entries.
-    logConfig: The config returned to callers of tech.iam.IAM.CheckPolicy for
-      any entries that match the LOG action.
+    logConfig: The config returned to callers of CheckPolicy for any entries
+      that match the LOG action.
     notIn: If one or more 'not_in' clauses are specified, the rule matches if
       the PRINCIPAL/AUTHORITY_SELECTOR is in none of the entries. The format
       for in and not_in entries can be found at in the Local IAM documentation

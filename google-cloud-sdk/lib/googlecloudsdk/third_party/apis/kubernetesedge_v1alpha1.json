@@ -277,6 +277,11 @@
           "description": "Output only. The IP address of the Kubernetes API server.",
           "readOnly": true,
           "type": "string"
+        },
+        "clusterCaCertificate": {
+          "description": "Output only. The PEM-encoded public certificate of the cluster's CA.",
+          "readOnly": true,
+          "type": "string"
         }
       }
     },

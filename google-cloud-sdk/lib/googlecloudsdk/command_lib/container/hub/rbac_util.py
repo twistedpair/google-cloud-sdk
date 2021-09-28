@@ -22,11 +22,16 @@ from __future__ import unicode_literals
 import os
 import re
 
+from googlecloudsdk.api_lib.cloudresourcemanager import projects_api
+from googlecloudsdk.command_lib.container.hub.memberships import errors as memberships_errors
+from googlecloudsdk.command_lib.projects import util as projects_util
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
+from googlecloudsdk.core import properties
 
 CLUSTER_ROLE = 'clusterrole'
 NAMESPACE_ROLE = 'role'
+ANTHOS_SUPPORT_USER = 'service-{project_number}@gcp-sa-{instance_name}anthossupport.iam.gserviceaccount.com'
 IMPERSONATE_POLICY_FORMAT = """\
 apiVersion: rbac.authorization.k8s.io/v1
 kind: ClusterRole
@@ -136,6 +141,9 @@ def ValidateArgs(args):
         'Please specify either --role or --anthos-support in the flags.')
   if args.role:
     ValidateRole(args.role)
+  if not args.users and not args.anthos_support:
+    raise InvalidArgsError(
+        'Please specify the either --users or --anthos-support the flags.')
   if args.apply:
     if not args.membership:
       raise InvalidArgsError('Please specify the --membership in flags.')
@@ -145,6 +153,22 @@ def ValidateArgs(args):
       raise InvalidArgsError('Please specify the --context in flags.')
 
 
+def GetAnthosSupportUser(project_id):
+  """Get P4SA account name for Anthos Support when user not specified."""
+  project_number = projects_api.Get(
+      projects_util.ParseProject(project_id)).projectNumber
+  endpoint_overrides = properties.VALUES.api_endpoint_overrides.AllValues()
+  hub_endpoint_override = endpoint_overrides.get('gkehub', '')
+  if not hub_endpoint_override:
+    return ANTHOS_SUPPORT_USER.format(
+        project_number=project_number, instance_name='')
+  elif 'autopush-gkehub' in hub_endpoint_override:
+    return ANTHOS_SUPPORT_USER.format(
+        project_number=project_number, instance_name='autopush-')
+  else:
+    raise memberships_errors.UnknownApiEndpointOverrideError('gkehub')
+
+
 def GenerateRBAC(args, project_id):
   """Returns the generated RBAC policy file with args provided."""
   generated_rbac = ''
@@ -152,11 +176,11 @@ def GenerateRBAC(args, project_id):
   namespace_pattern = re.compile('^role/')
   impersonate_users = ''
   permission_users = ''
-  users_list = args.users.split(',')
   role_permission = ''
   rbac_policy_format = ''
   namespace = ''
   metadata_name = ''
+  users_list = list()
 
   if args.anthos_support:
     rbac_policy_format = IMPERSONATE_POLICY_FORMAT + PERMISSION_POLICY_ANTHOS_SUPPORT_FORMAT
@@ -176,7 +200,10 @@ def GenerateRBAC(args, project_id):
     metadata_name = project_id + '-' + args.membership
   else:
     metadata_name = project_id
-
+  if args.users:
+    users_list = args.users.split(',')
+  elif args.anthos_support:
+    users_list.append(GetAnthosSupportUser(project_id))
   for user in users_list:
     impersonate_users += os.linesep + '  - {user}'.format(user=user)
     permission_users += os.linesep + '- kind: User'

@@ -1550,7 +1550,8 @@ class ManagedidentitiesProjectsLocationsGlobalPeeringsCreateRequest(_messages.Me
     parent: Required. Resource project name and location using the form:
       `projects/{project_id}/locations/global`
     peering: A Peering resource to be passed as the request body.
-    peeringId: Required. Peering Id, unique name to identify peering.
+    peeringId: Required. Peering Id, unique name to identify peering. It
+      should follow the regex format "^(?:[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?)$"
   """
 
   parent = _messages.StringField(1, required=True)

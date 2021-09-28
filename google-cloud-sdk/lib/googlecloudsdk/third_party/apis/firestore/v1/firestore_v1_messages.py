@@ -1020,6 +1020,17 @@ class FirestoreProjectsDatabasesExportDocumentsRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
 
 
+class FirestoreProjectsDatabasesGetRequest(_messages.Message):
+  r"""A FirestoreProjectsDatabasesGetRequest object.
+
+  Fields:
+    name: Required. A name of the form
+      `projects/{project_id}/databases/{database_id}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class FirestoreProjectsDatabasesImportDocumentsRequest(_messages.Message):
   r"""A FirestoreProjectsDatabasesImportDocumentsRequest object.
 
@@ -1033,6 +1044,16 @@ class FirestoreProjectsDatabasesImportDocumentsRequest(_messages.Message):
 
   googleFirestoreAdminV1ImportDocumentsRequest = _messages.MessageField('GoogleFirestoreAdminV1ImportDocumentsRequest', 1)
   name = _messages.StringField(2, required=True)
+
+
+class FirestoreProjectsDatabasesListRequest(_messages.Message):
+  r"""A FirestoreProjectsDatabasesListRequest object.
+
+  Fields:
+    parent: Required. A parent name of the form `projects/{project_id}`
+  """
+
+  parent = _messages.StringField(1, required=True)
 
 
 class FirestoreProjectsDatabasesOperationsCancelRequest(_messages.Message):
@@ -1085,6 +1106,22 @@ class FirestoreProjectsDatabasesOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class FirestoreProjectsDatabasesPatchRequest(_messages.Message):
+  r"""A FirestoreProjectsDatabasesPatchRequest object.
+
+  Fields:
+    googleFirestoreAdminV1Database: A GoogleFirestoreAdminV1Database resource
+      to be passed as the request body.
+    name: The resource name of the Database. Format:
+      `projects/{project}/databases/{database}`
+    updateMask: The list of fields to be updated.
+  """
+
+  googleFirestoreAdminV1Database = _messages.MessageField('GoogleFirestoreAdminV1Database', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
 class FirestoreProjectsLocationsGetRequest(_messages.Message):
   r"""A FirestoreProjectsLocationsGetRequest object.
 
@@ -1113,6 +1150,72 @@ class FirestoreProjectsLocationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class GoogleFirestoreAdminV1Database(_messages.Message):
+  r"""A Cloud Firestore Database. Currently only one database is allowed per
+  cloud project; this database must have a `database_id` of '(default)'.
+
+  Enums:
+    ConcurrencyModeValueValuesEnum: The concurrency control mode to use for
+      this database.
+    TypeValueValuesEnum: The type of the database. See
+      https://cloud.google.com/datastore/docs/firestore-or-datastore for
+      information about how to choose.
+
+  Fields:
+    concurrencyMode: The concurrency control mode to use for this database.
+    etag: This checksum is computed by the server based on the value of other
+      fields, and may be sent on update and delete requests to ensure the
+      client has an up-to-date value before proceeding.
+    locationId: The location of the database. Available databases are listed
+      at https://cloud.google.com/firestore/docs/locations.
+    name: The resource name of the Database. Format:
+      `projects/{project}/databases/{database}`
+    type: The type of the database. See
+      https://cloud.google.com/datastore/docs/firestore-or-datastore for
+      information about how to choose.
+  """
+
+  class ConcurrencyModeValueValuesEnum(_messages.Enum):
+    r"""The concurrency control mode to use for this database.
+
+    Values:
+      CONCURRENCY_MODE_UNSPECIFIED: Not used.
+      OPTIMISTIC: Use optimistic concurrency control by default. This setting
+        is available for Cloud Firestore customers.
+      PESSIMISTIC: Use pessimistic concurrency control by default. This
+        setting is available for Cloud Firestore customers. This is the
+        default setting for Cloud Firestore.
+      OPTIMISTIC_WITH_ENTITY_GROUPS: Use optimistic concurrency control with
+        entity groups by default. This is the only available setting for Cloud
+        Datastore customers. This is the default setting for Cloud Datastore.
+    """
+    CONCURRENCY_MODE_UNSPECIFIED = 0
+    OPTIMISTIC = 1
+    PESSIMISTIC = 2
+    OPTIMISTIC_WITH_ENTITY_GROUPS = 3
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""The type of the database. See
+    https://cloud.google.com/datastore/docs/firestore-or-datastore for
+    information about how to choose.
+
+    Values:
+      DATABASE_TYPE_UNSPECIFIED: The default value. This value is used if the
+        database type is omitted.
+      FIRESTORE_NATIVE: Firestore Native Mode
+      DATASTORE_MODE: Firestore in Datastore Mode.
+    """
+    DATABASE_TYPE_UNSPECIFIED = 0
+    FIRESTORE_NATIVE = 1
+    DATASTORE_MODE = 2
+
+  concurrencyMode = _messages.EnumField('ConcurrencyModeValueValuesEnum', 1)
+  etag = _messages.StringField(2)
+  locationId = _messages.StringField(3)
+  name = _messages.StringField(4)
+  type = _messages.EnumField('TypeValueValuesEnum', 5)
 
 
 class GoogleFirestoreAdminV1ExportDocumentsMetadata(_messages.Message):
@@ -1591,6 +1694,16 @@ class GoogleFirestoreAdminV1IndexOperationMetadata(_messages.Message):
   progressDocuments = _messages.MessageField('GoogleFirestoreAdminV1Progress', 4)
   startTime = _messages.StringField(5)
   state = _messages.EnumField('StateValueValuesEnum', 6)
+
+
+class GoogleFirestoreAdminV1ListDatabasesResponse(_messages.Message):
+  r"""The list of databases for a project.
+
+  Fields:
+    databases: The databases in the project.
+  """
+
+  databases = _messages.MessageField('GoogleFirestoreAdminV1Database', 1, repeated=True)
 
 
 class GoogleFirestoreAdminV1ListFieldsResponse(_messages.Message):

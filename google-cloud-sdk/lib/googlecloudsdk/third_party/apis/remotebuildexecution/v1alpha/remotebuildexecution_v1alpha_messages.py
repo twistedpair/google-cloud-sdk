@@ -1068,6 +1068,9 @@ class GoogleDevtoolsRemotebuildbotCommandStatus(_messages.Message):
       DOCKER_MISSING_CONTAINER: Docker cannot find the container specified in
         the command. This error is likely to only occur if an asynchronous
         container is not running when the command is run.
+      DOCKER_MISSING_BLOB_IN_IMAGE: Docker cannot pull an image because a blob
+        is missing in the repo. May be due to a bad/incomplete image push or
+        partial deletion of underlying blob layers.
     """
     OK = 0
     INVALID_ARGUMENT = 1
@@ -1112,6 +1115,7 @@ class GoogleDevtoolsRemotebuildbotCommandStatus(_messages.Message):
     DOCKER_IMAGE_VPCSC_PERMISSION_DENIED = 40
     WORKING_DIR_NOT_RELATIVE = 41
     DOCKER_MISSING_CONTAINER = 42
+    DOCKER_MISSING_BLOB_IN_IMAGE = 43
 
   code = _messages.EnumField('CodeValueValuesEnum', 1)
   message = _messages.StringField(2)

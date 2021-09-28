@@ -3554,6 +3554,7 @@ class WorkloadIdentityPoolProvider(_messages.Message):
     oidc: An OpenId Connect 1.0 identity provider.
     saml: An SAML 2.0 identity provider.
     state: Output only. The state of the provider.
+    x509: An X.509-type identity provider.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -3649,6 +3650,26 @@ class WorkloadIdentityPoolProvider(_messages.Message):
   oidc = _messages.MessageField('Oidc', 8)
   saml = _messages.MessageField('Saml', 9)
   state = _messages.EnumField('StateValueValuesEnum', 10)
+  x509 = _messages.MessageField('X509', 11)
+
+
+class X509(_messages.Message):
+  r"""Represents an X.509-type identity provider. An X.509-type identity
+  provider represents a CA. It is trusted to assert a client identity if the
+  client has a certificate that chains up to this CA.
+
+  Fields:
+    certFingerprints: Required. A list of allowed cert fingerprints, one of
+      which MUST appear as the root cert fingerprint used to verify the client
+      certificate. A cert fingerprint is a base-64 encoding of the SHA256 hash
+      of an X.509 certificate's DER representation. The list must have AT
+      LEAST 1 entry and can have AT MOST 2 entries.
+    spiffeTrustDomain: Required. The SPIFFE trust domain that MUST match the
+      trust domain component of the SPIFFE ID in the client certificate.
+  """
+
+  certFingerprints = _messages.BytesField(1, repeated=True)
+  spiffeTrustDomain = _messages.StringField(2)
 
 
 encoding.AddCustomJsonFieldMapping(

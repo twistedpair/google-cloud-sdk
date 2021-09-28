@@ -2601,6 +2601,129 @@
         }
       }
     },
+    "QueryAssetsRequest": {
+      "id": "QueryAssetsRequest",
+      "description": "QueryAssets request.",
+      "type": "object",
+      "properties": {
+        "statement": {
+          "description": "Optional. A SQL statement that's compatible with [BigQuery Standard SQL](http:\/\/cloud\/bigquery\/docs\/reference\/standard-sql\/enabling-standard-sql).",
+          "type": "string"
+        },
+        "jobReference": {
+          "description": "Optional. Reference to the query job, which is from the `QueryAssetsResponse` of previous `QueryAssets` call.",
+          "type": "string"
+        },
+        "pageSize": {
+          "description": "Optional. The maximum number of rows to return in the results. Responses are limited to 10 MB. By default, there is no maximum row count, and only the byte limit applies. When the byte limit is reach, the rest of query results will be paginated.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "pageToken": {
+          "description": "Optional. A page token received from previous `QueryAssets`.",
+          "type": "string"
+        },
+        "timeout": {
+          "description": "Optional. Specifies the maximum amount of time that the client is willing to wait for the query to complete. By default, this limit is 5 min for the first query, and 10 seconds for the following queries. If the query is complete, the `done` field in the `QueryAssetsResponse` is true, otherwise false. Like BigQuery [jobs.query API](https:\/\/cloud.google.com\/bigquery\/docs\/reference\/rest\/v2\/jobs\/query#queryrequest) The call is not guaranteed to wait for the specified timeout; it typically returns after around 200 seconds (200,000 milliseconds), even if the query is not complete.",
+          "type": "string",
+          "format": "google-duration"
+        }
+      }
+    },
+    "QueryAssetsResponse": {
+      "id": "QueryAssetsResponse",
+      "description": "QueryAssets response.",
+      "type": "object",
+      "properties": {
+        "jobReference": {
+          "description": "Reference to a query job.",
+          "type": "string"
+        },
+        "done": {
+          "description": "The query response, which can be either an `error` or a valid `response`. If `done` == `false`, neither `error` nor `response` is set. If `done` == `true`, exactly one of `error` or `response` is set.",
+          "type": "boolean"
+        },
+        "error": {
+          "description": "Error status.",
+          "$ref": "Status"
+        },
+        "queryResult": {
+          "description": "Result of the query.",
+          "$ref": "QueryResult"
+        }
+      }
+    },
+    "QueryResult": {
+      "id": "QueryResult",
+      "description": "Execution results of the query. The result is formatted as rows represented by BigQuery compatible [schema]. When pagination is necessary, it will contains the page token to retrieve the results of following pages.",
+      "type": "object",
+      "properties": {
+        "rows": {
+          "description": "Each row hold a query result in the format of `Struct`.",
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": {
+              "type": "any",
+              "description": "Properties of the object."
+            }
+          }
+        },
+        "schema": {
+          "description": "Describes the format of the [rows].",
+          "$ref": "TableSchema"
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of the results.",
+          "type": "string"
+        },
+        "totalRows": {
+          "description": "Total rows of the whole query results.",
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "TableSchema": {
+      "id": "TableSchema",
+      "description": "BigQuery Compatible table schema.",
+      "type": "object",
+      "properties": {
+        "fields": {
+          "description": "Describes the fields in a table.",
+          "type": "array",
+          "items": {
+            "$ref": "TableFieldSchema"
+          }
+        }
+      }
+    },
+    "TableFieldSchema": {
+      "id": "TableFieldSchema",
+      "description": "A field in TableSchema.",
+      "type": "object",
+      "properties": {
+        "field": {
+          "description": "The field name. The name must contain only letters (a-z, A-Z), numbers (0-9), or underscores (_), and must start with a letter or underscore. The maximum length is 128 characters.",
+          "type": "string"
+        },
+        "type": {
+          "description": "The field data type. Possible values include * STRING * BYTES * INTEGER * FLOAT * BOOLEAN * TIMESTAMP * DATE * TIME * DATETIME * GEOGRAPHY, * NUMERIC, * BIGNUMERIC, * RECORD (where RECORD indicates that the field contains a nested schema).",
+          "type": "string"
+        },
+        "mode": {
+          "description": "The field mode. Possible values include NULLABLE, REQUIRED and REPEATED. The default value is NULLABLE.",
+          "type": "string"
+        },
+        "fields": {
+          "description": "Describes the nested schema fields if the type property is set to RECORD.",
+          "type": "array",
+          "items": {
+            "$ref": "TableFieldSchema"
+          }
+        }
+      }
+    },
     "GoogleCloudAssetV1p7beta1Asset": {
       "id": "GoogleCloudAssetV1p7beta1Asset",
       "description": "An asset in Google Cloud. An asset can be any resource in the Google Cloud [resource hierarchy](https:\/\/cloud.google.com\/resource-manager\/docs\/cloud-platform-resource-hierarchy), a resource outside the Google Cloud resource hierarchy (such as Google Kubernetes Engine clusters and objects), or a policy (e.g. Cloud IAM policy). See [Supported asset types](https:\/\/cloud.google.com\/asset-inventory\/docs\/supported-asset-types) for more information.",
@@ -3185,6 +3308,34 @@
             "https://www.googleapis.com/auth/cloud-platform"
           ],
           "description": "Analyze moving a resource to a specified destination without kicking off the actual move. The analysis is best effort depending on the user's permissions of viewing different hierarchical policies and configurations. The policies and configuration are subject to change before the actual resource migration takes place."
+        },
+        "queryAssets": {
+          "id": "cloudasset.queryAssets",
+          "path": "v1/{+parent}:queryAssets",
+          "flatPath": "v1/{v1Id}/{v1Id1}:queryAssets",
+          "httpMethod": "POST",
+          "parameters": {
+            "parent": {
+              "description": "Required. The relative name of the root asset. This can only be an organization number (such as \"organizations\/123\"), a project ID (such as \"projects\/my-project-id\"), or a project number (such as \"projects\/12345\"), or a folder number (such as \"folders\/123\"). Only assets belonging to the `parent` will be returned.",
+              "pattern": "^[^\/]+\/[^\/]+$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "parent"
+          ],
+          "request": {
+            "$ref": "QueryAssetsRequest"
+          },
+          "response": {
+            "$ref": "QueryAssetsResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Issue a job that queries assets using a SQL statement compatible with [BigQuery Standard SQL](http:\/\/cloud\/bigquery\/docs\/reference\/standard-sql\/enabling-standard-sql). If the query execution finishes within timeout and there's no pagination, the full query results will be returned in the `QueryAssetsResponse`. Otherwise, full query results can be obtained by issuing extra requests with the `job_reference` from the a previous `QueryAssets` call. Note, the query result has approximately 10 GB limitation enforced by BigQuery https:\/\/cloud.google.com\/bigquery\/docs\/best-practices-performance-output, queries return larger results will result in errors."
         }
       }
     },

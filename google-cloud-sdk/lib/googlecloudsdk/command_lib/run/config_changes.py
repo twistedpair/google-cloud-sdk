@@ -41,6 +41,13 @@ import six
 class ConfigChanger(six.with_metaclass(abc.ABCMeta, object)):
   """An abstract class representing configuration changes."""
 
+  def __init__(self, adjusts_template):
+    self._adjusts_template = adjusts_template
+
+  @property
+  def adjusts_template(self):
+    return self._adjusts_template
+
   @abc.abstractmethod
   def Adjust(self, resource):
     """Adjust the given Service configuration.
@@ -72,13 +79,18 @@ def WithChanges(resource, changes):
   return resource
 
 
+def AdjustsTemplate(changes):
+  """Returns True if there's any template-level changes."""
+  return any([c.adjusts_template for c in changes])
+
+
 class LabelChanges(ConfigChanger):
   """Represents the user intent to modify metadata labels."""
 
   LABELS_NOT_ALLOWED_IN_REVISION = ([service.ENDPOINT_VISIBILITY])
 
   def __init__(self, diff, copy_to_revision=True):
-    super(LabelChanges, self).__init__()
+    super(LabelChanges, self).__init__(adjusts_template=copy_to_revision)
     self._diff = diff
     self._copy_to_revision = copy_to_revision
 
@@ -109,7 +121,7 @@ class ReplaceServiceChange(ConfigChanger):
   """Represents the user intent to replace the service."""
 
   def __init__(self, new_service):
-    super(ReplaceServiceChange, self).__init__()
+    super(ReplaceServiceChange, self).__init__(adjusts_template=False)
     self._service = new_service
 
   def Adjust(self, resource):
@@ -160,7 +172,7 @@ class SetAnnotationChange(ConfigChanger):
   """Represents the user intent to set an annotation."""
 
   def __init__(self, key, value):
-    super(SetAnnotationChange, self).__init__()
+    super(SetAnnotationChange, self).__init__(adjusts_template=False)
     self._key = key
     self._value = value
 
@@ -173,7 +185,7 @@ class DeleteAnnotationChange(ConfigChanger):
   """Represents the user intent to delete an annotation."""
 
   def __init__(self, key):
-    super(DeleteAnnotationChange, self).__init__()
+    super(DeleteAnnotationChange, self).__init__(adjusts_template=False)
     self._key = key
 
   def Adjust(self, resource):
@@ -187,7 +199,7 @@ class SetTemplateAnnotationChange(ConfigChanger):
   """Represents the user intent to set a template annotation."""
 
   def __init__(self, key, value):
-    super(SetTemplateAnnotationChange, self).__init__()
+    super(SetTemplateAnnotationChange, self).__init__(adjusts_template=True)
     self._key = key
     self._value = value
 
@@ -200,7 +212,7 @@ class DeleteTemplateAnnotationChange(ConfigChanger):
   """Represents the user intent to delete a template annotation."""
 
   def __init__(self, key):
-    super(DeleteTemplateAnnotationChange, self).__init__()
+    super(DeleteTemplateAnnotationChange, self).__init__(adjusts_template=True)
     self._key = key
 
   def Adjust(self, resource):
@@ -214,7 +226,7 @@ class SetLaunchStageAnnotationChange(ConfigChanger):
   """Sets a VPC connector annotation on the service."""
 
   def __init__(self, launch_stage):
-    super(SetLaunchStageAnnotationChange, self).__init__()
+    super(SetLaunchStageAnnotationChange, self).__init__(adjusts_template=False)
     self._launch_stage = launch_stage
 
   def Adjust(self, resource):
@@ -229,22 +241,26 @@ class SetLaunchStageAnnotationChange(ConfigChanger):
 class SetClientNameAndVersionAnnotationChange(ConfigChanger):
   """Sets the client name and version annotations."""
 
-  def __init__(self, client_name, client_version):
-    super(SetClientNameAndVersionAnnotationChange, self).__init__()
+  def __init__(self, client_name, client_version, set_on_template=True):
+    super(SetClientNameAndVersionAnnotationChange,
+          self).__init__(adjusts_template=set_on_template)
     self._client_name = client_name
     self._client_version = client_version
+    self._set_on_template = set_on_template
 
   def Adjust(self, resource):
     if self._client_name is not None:
       resource.annotations[
           k8s_object.CLIENT_NAME_ANNOTATION] = self._client_name
-      resource.template.annotations[
-          k8s_object.CLIENT_NAME_ANNOTATION] = self._client_name
+      if self._set_on_template:
+        resource.template.annotations[
+            k8s_object.CLIENT_NAME_ANNOTATION] = self._client_name
     if self._client_version is not None:
       resource.annotations[
           k8s_object.CLIENT_VERSION_ANNOTATION] = self._client_version
-      resource.template.annotations[
-          k8s_object.CLIENT_VERSION_ANNOTATION] = self._client_version
+      if self._set_on_template:
+        resource.template.annotations[
+            k8s_object.CLIENT_VERSION_ANNOTATION] = self._client_version
     return resource
 
 
@@ -252,7 +268,7 @@ class SandboxChange(ConfigChanger):
   """Sets a sandbox annotation on the service."""
 
   def __init__(self, sandbox):
-    super(SandboxChange, self).__init__()
+    super(SandboxChange, self).__init__(adjusts_template=True)
     self._sandbox = sandbox
 
   def Adjust(self, resource):
@@ -265,7 +281,7 @@ class VpcConnectorChange(ConfigChanger):
   """Sets a VPC connector annotation on the service."""
 
   def __init__(self, connector_name):
-    super(VpcConnectorChange, self).__init__()
+    super(VpcConnectorChange, self).__init__(adjusts_template=True)
     self._connector_name = connector_name
 
   def Adjust(self, resource):
@@ -276,6 +292,9 @@ class VpcConnectorChange(ConfigChanger):
 
 class ClearVpcConnectorChange(ConfigChanger):
   """Clears a VPC connector annotation on the service."""
+
+  def __init__(self):
+    super(ClearVpcConnectorChange, self).__init__(adjusts_template=True)
 
   def Adjust(self, resource):
     annotations = resource.template.annotations
@@ -292,7 +311,7 @@ class ImageChange(ConfigChanger):
   deployment_type = 'container'
 
   def __init__(self, image):
-    super(ImageChange, self).__init__()
+    super(ImageChange, self).__init__(adjusts_template=True)
     self.image = image
 
   def Adjust(self, resource):
@@ -326,7 +345,7 @@ class EnvVarLiteralChanges(ConfigChanger):
       removes: [str], List of env vars to remove.
       clear_others: bool, If true, clear all non-updated env vars.
     """
-    super(EnvVarLiteralChanges, self).__init__()
+    super(EnvVarLiteralChanges, self).__init__(adjusts_template=True)
     self._updates = updates
     self._removes = removes
     self._clear_others = clear_others
@@ -373,7 +392,7 @@ class SecretEnvVarChanges(ConfigChanger):
     Raises:
       ConfigurationError if a key hasn't been provided for a source.
     """
-    super(SecretEnvVarChanges, self).__init__()
+    super(SecretEnvVarChanges, self).__init__(adjusts_template=True)
     self._updates = updates
     self._removes = removes
     self._clear_others = clear_others
@@ -422,7 +441,7 @@ class ConfigMapEnvVarChanges(ConfigChanger):
     Raises:
       ConfigurationError if a key hasn't been provided for a source.
     """
-    super(ConfigMapEnvVarChanges, self).__init__()
+    super(ConfigMapEnvVarChanges, self).__init__(adjusts_template=True)
     self._updates = {}
     for name, v in updates.items():
       # Split the given values into 2 parts:
@@ -480,7 +499,7 @@ class ResourceChanges(ConfigChanger):
   """Represents the user intent to update resource limits."""
 
   def __init__(self, memory=None, cpu=None):
-    super(ResourceChanges, self).__init__()
+    super(ResourceChanges, self).__init__(adjusts_template=True)
     self._memory = memory
     self._cpu = cpu
 
@@ -504,7 +523,7 @@ class CloudSQLChanges(ConfigChanger):
       region: Region to use as the default region for Cloud SQL instances
       args: Args to the command.
     """
-    super(CloudSQLChanges, self).__init__()
+    super(CloudSQLChanges, self).__init__(adjusts_template=True)
     self._project = project
     self._region = region
     self._args = args
@@ -574,7 +593,7 @@ class ConcurrencyChanges(ConfigChanger):
   """Represents the user intent to update concurrency preference."""
 
   def __init__(self, concurrency):
-    super(ConcurrencyChanges, self).__init__()
+    super(ConcurrencyChanges, self).__init__(adjusts_template=True)
     self._concurrency = None if concurrency == 'default' else int(concurrency)
 
   def Adjust(self, resource):
@@ -587,7 +606,7 @@ class TimeoutChanges(ConfigChanger):
   """Represents the user intent to update request duration."""
 
   def __init__(self, timeout):
-    super(TimeoutChanges, self).__init__()
+    super(TimeoutChanges, self).__init__(adjusts_template=True)
     self._timeout = timeout
 
   def Adjust(self, resource):
@@ -600,7 +619,7 @@ class ServiceAccountChanges(ConfigChanger):
   """Represents the user intent to change service account for the revision."""
 
   def __init__(self, service_account):
-    super(ServiceAccountChanges, self).__init__()
+    super(ServiceAccountChanges, self).__init__(adjusts_template=True)
     self._service_account = service_account
 
   def Adjust(self, resource):
@@ -616,7 +635,7 @@ class RevisionNameChanges(ConfigChanger):
   """Represents the user intent to change revision name."""
 
   def __init__(self, revision_suffix):
-    super(RevisionNameChanges, self).__init__()
+    super(RevisionNameChanges, self).__init__(adjusts_template=True)
     self._revision_suffix = revision_suffix
 
   def Adjust(self, resource):
@@ -676,7 +695,7 @@ class SecretVolumeChanges(ConfigChanger):
       clear_others: bool, If true, clear all non-updated volumes and mounts of
         the given [volume_type].
     """
-    super(SecretVolumeChanges, self).__init__()
+    super(SecretVolumeChanges, self).__init__(adjusts_template=True)
     self._updates = updates
     self._removes = removes
     self._clear_others = clear_others
@@ -743,7 +762,7 @@ class ConfigMapVolumeChanges(ConfigChanger):
       clear_others: bool, If true, clear all non-updated volumes and mounts of
         the given [volume_type].
     """
-    super(ConfigMapVolumeChanges, self).__init__()
+    super(ConfigMapVolumeChanges, self).__init__(adjusts_template=True)
     self._updates = {}
     for k, v in updates.items():
       # Split the given values into 2 parts:
@@ -804,6 +823,9 @@ class ConfigMapVolumeChanges(ConfigChanger):
 class NoTrafficChange(ConfigChanger):
   """Represents the user intent to block traffic for a new revision."""
 
+  def __init__(self):
+    super(NoTrafficChange, self).__init__(adjusts_template=False)
+
   def Adjust(self, resource):
     """Removes LATEST from the services traffic assignments."""
     if resource.configuration:
@@ -830,7 +852,7 @@ class TrafficChanges(ConfigChanger):
                tags_to_update=None,
                tags_to_remove=None,
                clear_other_tags=False):
-    super(TrafficChanges, self).__init__()
+    super(TrafficChanges, self).__init__(adjusts_template=False)
     self._new_percentages = new_percentages
     self._by_tag = by_tag
     self._tags_to_update = tags_to_update or {}
@@ -864,7 +886,7 @@ class TagOnDeployChange(ConfigChanger):
   """The intent to provide a tag for the revision you're currently deploying."""
 
   def __init__(self, tag):
-    super(TagOnDeployChange, self).__init__()
+    super(TagOnDeployChange, self).__init__(adjusts_template=False)
     self._tag = tag
 
   def Adjust(self, resource):
@@ -878,7 +900,7 @@ class ContainerCommandChange(ConfigChanger):
   """Represents the user intent to change the 'command' for the container."""
 
   def __init__(self, command):
-    super(ContainerCommandChange, self).__init__()
+    super(ContainerCommandChange, self).__init__(adjusts_template=True)
     self._commands = command
 
   def Adjust(self, resource):
@@ -890,7 +912,7 @@ class ContainerArgsChange(ConfigChanger):
   """Represents the user intent to change the 'args' for the container."""
 
   def __init__(self, args):
-    super(ContainerArgsChange, self).__init__()
+    super(ContainerArgsChange, self).__init__(adjusts_template=True)
     self._args = args
 
   def Adjust(self, resource):
@@ -914,7 +936,7 @@ class ContainerPortChange(ConfigChanger):
       use_http2: bool, True to set the port name for http/2, False to unset it,
         or None to not modify the port name.
     """
-    super(ContainerPortChange, self).__init__()
+    super(ContainerPortChange, self).__init__(adjusts_template=True)
     self._port = port
     self._http2 = use_http2
 
@@ -950,7 +972,7 @@ class SpecChange(ConfigChanger):
   """Represents the user intent to update field in the resource's spec."""
 
   def __init__(self, field, value):
-    super(SpecChange, self).__init__()
+    super(SpecChange, self).__init__(adjusts_template=True)
     self._field = field
     self._value = value
 
@@ -963,7 +985,7 @@ class JobMaxRetriesChange(ConfigChanger):
   """Represents the user intent to update a job's restart policy."""
 
   def __init__(self, max_retries):
-    super(JobMaxRetriesChange, self).__init__()
+    super(JobMaxRetriesChange, self).__init__(adjusts_template=True)
     self._max_retries = max_retries
 
   def Adjust(self, resource):
@@ -980,7 +1002,7 @@ class JobInstanceDeadlineChange(ConfigChanger):
   """Represents the user intent to update a job's instance deadline."""
 
   def __init__(self, deadline_seconds):
-    super(JobInstanceDeadlineChange, self).__init__()
+    super(JobInstanceDeadlineChange, self).__init__(adjusts_template=True)
     self._deadline_seconds = deadline_seconds
 
   def Adjust(self, resource):
@@ -992,7 +1014,7 @@ class CpuThrottlingChange(ConfigChanger):
   """Sets the cpu-throttling annotation on the service."""
 
   def __init__(self, throttling):
-    super(CpuThrottlingChange, self).__init__()
+    super(CpuThrottlingChange, self).__init__(adjusts_template=True)
     self._throttling = throttling
 
   def Adjust(self, resource):
@@ -1005,7 +1027,7 @@ class ConfidentialChange(ConfigChanger):
   """Sets the confidential annotation on the service."""
 
   def __init__(self, confidential):
-    super(ConfidentialChange, self).__init__()
+    super(ConfidentialChange, self).__init__(adjusts_template=True)
     self._confidential = confidential
 
   def Adjust(self, resource):

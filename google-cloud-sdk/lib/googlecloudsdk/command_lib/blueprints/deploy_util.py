@@ -24,6 +24,7 @@ import uuid
 
 from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.blueprints import blueprints_util
+from googlecloudsdk.api_lib.krmapihosting import util as krmapihosting_util
 from googlecloudsdk.api_lib.storage import storage_api
 from googlecloudsdk.calliope import exceptions as c_exceptions
 from googlecloudsdk.command_lib.blueprints import deterministic_snapshot
@@ -195,6 +196,58 @@ def _CreateBlueprint(messages, source, source_git_subdir, stage_bucket,
   return blueprint
 
 
+def _VerifyConfigControllerInstance(config_controller, project, location):
+  """Validates the existance and configuration of the provided CC instance.
+
+  Checks that the specified ConfigController instance exists, and has the
+  ConfigController bundle enabled.
+
+  Args:
+    config_controller: string, the fully qualified name of the config-controller
+      instance. e.g.
+      "projects/{project}/locations/{location}/krmApiHosts/{instance}".
+    project: string, the project the CC instance must be in.
+    location: string, the location the CC instance must be in.
+
+  Raises:
+    InvalidArgumentException: if CC instance does not exist, doesn't have the
+      CC bundle enabled, or is in the wrong region/project.
+  """
+  client = krmapihosting_util.GetClientInstance()
+  messages = krmapihosting_util.GetMessagesModule()
+  req = messages.KrmapihostingProjectsLocationsKrmApiHostsGetRequest(
+      name=config_controller)
+  try:
+    resp = client.projects_locations_krmApiHosts.Get(req)
+  except apitools_exceptions.HttpNotFoundError:
+    raise c_exceptions.InvalidArgumentException(
+        'config-controller',
+        'The KRM API Host instance [{}] does not exist'.format(
+            config_controller))
+
+  cc_ref = resources.REGISTRY.Parse(
+      resp.name, collection='krmapihosting.projects.locations.krmApiHosts')
+
+  location_ref = cc_ref.Parent()
+  project_ref = location_ref.Parent()
+  if location_ref.Name() != location or project_ref.Name() != project:
+    raise c_exceptions.InvalidArgumentException(
+        'config-controller',
+        'KRM API Host instance [{}] must be in location [{}] '
+        'and in project [{}]'.format(config_controller, location, project))
+
+  # If CC isn't enabled or if we can't read the bundleConfig from the response,
+  # consider it to be an illegal argument.
+  try:
+    if not resp.bundlesConfig.configControllerConfig.enabled:
+      raise ValueError('configController bundle not enabled')
+  except (AttributeError, ValueError):
+    raise c_exceptions.InvalidArgumentException(
+        'config-controller',
+        'KRM API Host instance [{}] does not have the configController bundle '
+        'enabled'.format(config_controller))
+
+
 def Apply(source,
           deployment_full_name,
           stage_bucket,
@@ -204,7 +257,8 @@ def Apply(source,
           ignore_file,
           async_,
           reconcile_timeout,
-          source_git_subdir='.'):
+          source_git_subdir='.',
+          config_controller=None):
   """Updates the deployment if one exists, otherwise one will be created.
 
   Bundles parameters for creating/updating a deployment.
@@ -227,6 +281,9 @@ def Apply(source,
       longer than this timeout, the deployment will fail. 0 implies no timeout.
     source_git_subdir: optional string. If "source" represents a Git repo, then
       this argument represents the directory within that Git repo to use.
+    config_controller: optional string, the fully qualified name of the
+      config-controller instance to use. e.g.
+      "projects/{project}/locations/{location}/krmApiHosts/{instance}".
 
   Returns:
     The resulting Deployment resource or, in the case that async_ is True, a
@@ -266,17 +323,35 @@ def Apply(source,
   is_creating_deployment = existing_deployment is None
   op = None
 
+  deployment_ref = resources.REGISTRY.Parse(
+      deployment_full_name, collection='config.projects.locations.deployments')
+  location_ref = deployment_ref.Parent()
+  project_ref = location_ref.Parent()
   # Get just the ID from the fully qualified name.
-  deployment_id = resources.REGISTRY.Parse(
-      deployment_full_name,
-      collection='config.projects.locations.deployments').Name()
+  deployment_id = deployment_ref.Name()
 
   if is_creating_deployment:
-    log.info('Creating the deployment')
+    # Make sure the ConfigController instance exists
+    if config_controller:
+      _VerifyConfigControllerInstance(
+          config_controller,
+          project=project_ref.Name(),
+          location=location_ref.Name())
+      deployment.configController = config_controller
 
+    log.info('Creating the deployment')
     op = blueprints_util.CreateDeployment(deployment, deployment_id,
                                           parent_resource.RelativeName())
   else:
+    if (config_controller is not None and
+        config_controller != existing_deployment.configController):
+      msg = '--config-controller cannot be updated for an existing deployment'
+      if existing_deployment.configController:
+        msg = ('--config-controller for the existing deployment is "{}", and '
+               'cannot be updated.'.format(
+                   existing_deployment.configController))
+      raise c_exceptions.InvalidArgumentException('config-controller', msg)
+
     log.info('Updating the existing deployment')
 
     # If the user didn't specify labels here, then we don't want to overwrite

@@ -79,6 +79,31 @@ def CreateUpdateRequest(ref, args):
   if args.services_named_range is not None:
     krm_api_host.servicesNamedRange = args.services_named_range
 
+  if args.full_management:
+    full_mgmt_config = messages.FullManagementConfig(
+        clusterCidrBlock=args.cluster_ipv4_cidr_block,
+        clusterNamedRange=args.cluster_named_range,
+        manBlock=args.man_block,
+        masterIpv4CidrBlock=master_ipv4_cidr_block,
+        network=args.network,
+        servicesCidrBlock=args.services_ipv4_cidr_block,
+        servicesNamedRange=args.services_named_range)
+    mgmt_config = messages.ManagementConfig(
+        fullManagementConfig=full_mgmt_config)
+    krm_api_host.managementConfig = mgmt_config
+  else:
+    std_mgmt_config = messages.StandardManagementConfig(
+        clusterCidrBlock=args.cluster_ipv4_cidr_block,
+        clusterNamedRange=args.cluster_named_range,
+        manBlock=args.man_block,
+        masterIpv4CidrBlock=master_ipv4_cidr_block,
+        network=args.network,
+        servicesCidrBlock=args.services_ipv4_cidr_block,
+        servicesNamedRange=args.services_named_range)
+    mgmt_config = messages.ManagementConfig(
+        standardManagementConfig=std_mgmt_config)
+    krm_api_host.managementConfig = mgmt_config
+
   request = (
       messages.KrmapihostingProjectsLocationsKrmApiHostsCreateRequest(
           parent=custom_uri,

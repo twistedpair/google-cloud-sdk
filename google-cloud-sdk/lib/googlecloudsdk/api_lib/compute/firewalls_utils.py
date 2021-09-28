@@ -18,14 +18,12 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import re
-
 import enum
+import re
 
 from googlecloudsdk.api_lib.compute import exceptions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.compute import exceptions as compute_exceptions
-
 
 ALLOWED_METAVAR = 'PROTOCOL[:PORT[-PORT]]'
 LEGAL_SPECS = re.compile(
@@ -37,8 +35,7 @@ LEGAL_SPECS = re.compile(
                                   # May specify a range.
 
     $                             # End of input marker.
-    """,
-    re.VERBOSE)
+    """, re.VERBOSE)
 EFFECTIVE_FIREWALL_LIST_FORMAT = """\
   table(
     type,
@@ -315,7 +312,8 @@ def AddArgsForEgress(parser, ruleset_parser, for_update=False):
         """)
 
   parser.add_argument(
-      '--priority', type=int,
+      '--priority',
+      type=int,
       help="""\
       This is an integer between 0 and 65535, both inclusive. When NOT
       specified, the value assumed is 1000. Relative priority determines
@@ -407,8 +405,8 @@ def ParseRules(rules, message_classes, action=ActionType.ALLOW):
     match = LEGAL_SPECS.match(spec)
     if not match:
       raise compute_exceptions.ArgumentError(
-          'Firewall rules must be of the form {0}; received [{1}].'
-          .format(ALLOWED_METAVAR, spec))
+          'Firewall rules must be of the form {0}; received [{1}].'.format(
+              ALLOWED_METAVAR, spec))
     if match.group('ports'):
       ports = [match.group('ports')]
     else:
@@ -470,29 +468,43 @@ def SortFirewallPolicyRules(client, rules):
 
 
 def ConvertFirewallPolicyRulesToEffectiveFwRules(
-    client, firewall_policy, support_network_firewall_policy):
+    client,
+    firewall_policy,
+    support_network_firewall_policy,
+    support_region_network_firewall_policy=False):
   """Convert organization firewall policy rules to effective firewall rules."""
   result = []
   for rule in firewall_policy.rules:
     item = {}
     if (firewall_policy.type == client.messages
         .NetworksGetEffectiveFirewallsResponseEffectiveFirewallPolicy
-        .TypeValueValuesEnum.HIERARCHY
-        or firewall_policy.type == client.messages
-        .InstancesGetEffectiveFirewallsResponseEffectiveFirewallPolicy
-        .TypeValueValuesEnum.HIERARCHY):
+        .TypeValueValuesEnum.HIERARCHY or firewall_policy.type == client
+        .messages.InstancesGetEffectiveFirewallsResponseEffectiveFirewallPolicy
+        .TypeValueValuesEnum.HIERARCHY or
+        (support_region_network_firewall_policy and
+         firewall_policy.type == client.messages.
+         RegionNetworkFirewallPoliciesGetEffectiveFirewallsResponseEffectiveFirewallPolicy
+         .TypeValueValuesEnum.HIERARCHY)):
       item.update({'type': 'org-firewall'})
     elif support_network_firewall_policy and (
         firewall_policy.type == client.messages
         .NetworksGetEffectiveFirewallsResponseEffectiveFirewallPolicy
         .TypeValueValuesEnum.NETWORK or firewall_policy.type == client.messages
         .InstancesGetEffectiveFirewallsResponseEffectiveFirewallPolicy
-        .TypeValueValuesEnum.NETWORK):
+        .TypeValueValuesEnum.NETWORK or
+        (support_region_network_firewall_policy and
+         firewall_policy.type == client.messages.
+         RegionNetworkFirewallPoliciesGetEffectiveFirewallsResponseEffectiveFirewallPolicy
+         .TypeValueValuesEnum.NETWORK)):
       item.update({'type': 'network-firewall-policy'})
     elif support_network_firewall_policy and (
         firewall_policy.type == client.messages
         .InstancesGetEffectiveFirewallsResponseEffectiveFirewallPolicy
-        .TypeValueValuesEnum.NETWORK_REGIONAL):
+        .TypeValueValuesEnum.NETWORK_REGIONAL or
+        (support_region_network_firewall_policy and
+         firewall_policy.type == client.messages.
+         RegionNetworkFirewallPoliciesGetEffectiveFirewallsResponseEffectiveFirewallPolicy
+         .TypeValueValuesEnum.NETWORK_REGIONAL)):
       item.update({'type': 'network-regional-firewall-policy'})
     else:
       item.update({'type': 'unknown'})

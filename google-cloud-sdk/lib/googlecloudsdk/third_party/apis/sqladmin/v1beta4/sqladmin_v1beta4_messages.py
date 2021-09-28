@@ -74,7 +74,7 @@ class BackupConfiguration(_messages.Message):
       is enabled.
     replicationLogArchivingEnabled: Reserved for future use.
     startTime: Start time for the daily backup configuration in UTC timezone
-      in the 24 hour format - *HH:MM*.
+      in the 24 hour format - **HH:MM**.
     transactionLogRetentionDays: The number of days of transaction logs we
       retain for point in time restore, from 1-7.
   """
@@ -161,7 +161,7 @@ class BackupRun(_messages.Message):
     id: The identifier for this backup run. Unique only for a specific Cloud
       SQL instance.
     instance: Name of the database instance.
-    kind: This is always *sql#backupRun*.
+    kind: This is always **sql#backupRun**.
     location: Location of the backups.
     selfLink: The URI of this resource.
     startTime: The time the backup operation actually started in UTC timezone
@@ -255,7 +255,7 @@ class BackupRunsListResponse(_messages.Message):
   Fields:
     items: A list of backup runs in reverse chronological order of the
       enqueued time.
-    kind: This is always *sql#backupRunsList*.
+    kind: This is always **sql#backupRunsList**.
     nextPageToken: The continuation token, used to page through large result
       sets. Provide this value in a subsequent request to return the next page
       of results.
@@ -272,7 +272,7 @@ class BinLogCoordinates(_messages.Message):
   Fields:
     binLogFileName: Name of the binary log file for a Cloud SQL instance.
     binLogPosition: Position (offset) within the binary log file.
-    kind: This is always *sql#binLogCoordinates*.
+    kind: This is always **sql#binLogCoordinates**.
   """
 
   binLogFileName = _messages.StringField(1)
@@ -290,7 +290,7 @@ class CloneContext(_messages.Message):
       coordinates.
     destinationInstanceName: Name of the Cloud SQL instance to be created as a
       clone.
-    kind: This is always *sql#cloneContext*.
+    kind: This is always **sql#cloneContext**.
     pitrTimestampMs: Reserved for future use.
     pointInTime: Timestamp, if specified, identifies the time to which the
       source instance is cloned.
@@ -454,8 +454,9 @@ class DatabaseFlags(_messages.Message):
   Fields:
     name: The name of the flag. These flags are passed at instance startup, so
       include both server options and system variables. Flags are specified
-      with underscores, not hyphens. For more information, see Configuring
-      Database Flags in the Cloud SQL documentation.
+      with underscores, not hyphens. For more information, see [Configuring
+      Database Flags](https://cloud.google.com/sql/docs/mysql/flags) in the
+      Cloud SQL documentation.
     value: The value of the flag. Booleans are set to **on** for true and
       **off** for false. This field must be omitted if the flag doesn't take a
       value.
@@ -469,45 +470,46 @@ class DatabaseInstance(_messages.Message):
   r"""A Cloud SQL instance resource.
 
   Enums:
-    BackendTypeValueValuesEnum:  *SECOND_GEN*: Cloud SQL database instance.
-      *EXTERNAL*: A database server that is not managed by Google. This
-      property is read-only; use the *tier* property in the *settings* object
-      to determine the database type.
+    BackendTypeValueValuesEnum: The backend type. **SECOND_GEN**: Cloud SQL
+      database instance. **EXTERNAL**: A database server that is not managed
+      by Google. This property is read-only; use the **tier** property in the
+      **settings** object to determine the database type.
     DatabaseVersionValueValuesEnum: The database engine type and version. The
-      *databaseVersion* field cannot be changed after instance creation. MySQL
-      instances: *MYSQL_8_0*, *MYSQL_5_7* (default), or *MYSQL_5_6*.
-      PostgreSQL instances: *POSTGRES_9_6*, *POSTGRES_10*, *POSTGRES_11*,
-      *POSTGRES_12*, *POSTGRES_13* (default). SQL Server instances:
-      *SQLSERVER_2019_STANDARD*, *SQLSERVER_2019_ENTERPRISE*,
-      *SQLSERVER_2019_EXPRESS*, or *SQLSERVER_2019_WEB*,
-      *SQLSERVER_2017_STANDARD* (default), *SQLSERVER_2017_ENTERPRISE*,
-      *SQLSERVER_2017_EXPRESS*, or *SQLSERVER_2017_WEB*.
+      **databaseVersion** field cannot be changed after instance creation. *
+      **MySQL instances**: MYSQL_8_0, MYSQL_5_7 (default), or MYSQL_5_6. *
+      **PostgreSQL instances**: POSTGRES_9_6, POSTGRES_10, POSTGRES_11,
+      POSTGRES_12, POSTGRES_13 (default). * **SQL Server instances**:
+      SQLSERVER_2019_STANDARD, SQLSERVER_2019_ENTERPRISE,
+      SQLSERVER_2019_EXPRESS, or SQLSERVER_2019_WEB, SQLSERVER_2017_STANDARD
+      (default), SQLSERVER_2017_ENTERPRISE, SQLSERVER_2017_EXPRESS, or
+      SQLSERVER_2017_WEB.
     InstalledVersionValueValuesEnum: installed_version stores the current
       fully resolved database version including minor version such as
       MYSQL_5_6_50
     InstanceTypeValueValuesEnum: The instance type. This can be one of the
-      following. *CLOUD_SQL_INSTANCE*: A Cloud SQL instance that is not
-      replicating from a primary instance. *ON_PREMISES_INSTANCE*: An instance
-      running on the customer's premises. *READ_REPLICA_INSTANCE*: A Cloud SQL
-      instance configured as a read-replica.
+      following: * **CLOUD_SQL_INSTANCE**: A Cloud SQL instance that is not
+      replicating from a primary instance. * **ON_PREMISES_INSTANCE**: An
+      instance running on the customer's premises. *
+      **READ_REPLICA_INSTANCE**: A Cloud SQL instance configured as a read-
+      replica.
     StateValueValuesEnum: The current serving state of the Cloud SQL instance.
-      This can be one of the following. *SQL_INSTANCE_STATE_UNSPECIFIED*: The
-      state of the instance is unknown. *RUNNABLE*: The instance is running,
-      or has been stopped by owner. *SUSPENDED*: The instance is not
-      available, for example due to problems with billing. *PENDING_DELETE*:
-      The instance is being deleted. *PENDING_CREATE*: The instance is being
-      created. *MAINTENANCE*: The instance is down for maintenance. *FAILED*:
-      The instance creation failed.
+      This can be one of the following: * **SQL_INSTANCE_STATE_UNSPECIFIED**:
+      The state of the instance is unknown. * **RUNNABLE**: The instance is
+      running, or has been stopped by owner. * **SUSPENDED**: The instance is
+      not available, for example due to problems with billing. *
+      **PENDING_DELETE**: The instance is being deleted. * **PENDING_CREATE**:
+      The instance is being created. * **MAINTENANCE**: The instance is down
+      for maintenance. * **FAILED**: The instance creation failed.
     SuspensionReasonValueListEntryValuesEnum:
 
   Messages:
     FailoverReplicaValue: The name and status of the failover replica.
 
   Fields:
-    backendType:  *SECOND_GEN*: Cloud SQL database instance. *EXTERNAL*: A
-      database server that is not managed by Google. This property is read-
-      only; use the *tier* property in the *settings* object to determine the
-      database type.
+    backendType: The backend type. **SECOND_GEN**: Cloud SQL database
+      instance. **EXTERNAL**: A database server that is not managed by Google.
+      This property is read-only; use the **tier** property in the
+      **settings** object to determine the database type.
     connectionName: Connection name of the Cloud SQL instance used in
       connection strings.
     createTime: Output only. The time when the instance was created in [RFC
@@ -516,24 +518,26 @@ class DatabaseInstance(_messages.Message):
     currentDiskSize: The current disk usage of the instance in bytes. This
       property has been deprecated. Use the
       "cloudsql.googleapis.com/database/disk/bytes_used" metric in Cloud
-      Monitoring API instead. Please see this announcement for details.
+      Monitoring API instead. Please see [this
+      announcement](https://groups.google.com/d/msg/google-cloud-sql-
+      announce/I_7-F9EBhT0/BtvFtdFeAgAJ) for details.
     databaseInstalledVersion: database_installed_version stores the current
       fully resolved database version including minor version such as
       MYSQL_5_6_50
     databaseVersion: The database engine type and version. The
-      *databaseVersion* field cannot be changed after instance creation. MySQL
-      instances: *MYSQL_8_0*, *MYSQL_5_7* (default), or *MYSQL_5_6*.
-      PostgreSQL instances: *POSTGRES_9_6*, *POSTGRES_10*, *POSTGRES_11*,
-      *POSTGRES_12*, *POSTGRES_13* (default). SQL Server instances:
-      *SQLSERVER_2019_STANDARD*, *SQLSERVER_2019_ENTERPRISE*,
-      *SQLSERVER_2019_EXPRESS*, or *SQLSERVER_2019_WEB*,
-      *SQLSERVER_2017_STANDARD* (default), *SQLSERVER_2017_ENTERPRISE*,
-      *SQLSERVER_2017_EXPRESS*, or *SQLSERVER_2017_WEB*.
+      **databaseVersion** field cannot be changed after instance creation. *
+      **MySQL instances**: MYSQL_8_0, MYSQL_5_7 (default), or MYSQL_5_6. *
+      **PostgreSQL instances**: POSTGRES_9_6, POSTGRES_10, POSTGRES_11,
+      POSTGRES_12, POSTGRES_13 (default). * **SQL Server instances**:
+      SQLSERVER_2019_STANDARD, SQLSERVER_2019_ENTERPRISE,
+      SQLSERVER_2019_EXPRESS, or SQLSERVER_2019_WEB, SQLSERVER_2017_STANDARD
+      (default), SQLSERVER_2017_ENTERPRISE, SQLSERVER_2017_EXPRESS, or
+      SQLSERVER_2017_WEB.
     diskEncryptionConfiguration: Disk encryption configuration specific to an
       instance.
     diskEncryptionStatus: Disk encryption status specific to an instance.
     etag: This field is deprecated and will be removed from a future version
-      of the API. Use the *settings.settingsVersion* field instead.
+      of the API. Use the **settings.settingsVersion** field instead.
     failoverReplica: The name and status of the failover replica.
     gceZone: The Compute Engine zone that the instance is currently serving
       from. This value could be different from the zone that was specified
@@ -541,15 +545,15 @@ class DatabaseInstance(_messages.Message):
       secondary zone.
     installedVersion: installed_version stores the current fully resolved
       database version including minor version such as MYSQL_5_6_50
-    instanceType: The instance type. This can be one of the following.
-      *CLOUD_SQL_INSTANCE*: A Cloud SQL instance that is not replicating from
-      a primary instance. *ON_PREMISES_INSTANCE*: An instance running on the
-      customer's premises. *READ_REPLICA_INSTANCE*: A Cloud SQL instance
-      configured as a read-replica.
+    instanceType: The instance type. This can be one of the following: *
+      **CLOUD_SQL_INSTANCE**: A Cloud SQL instance that is not replicating
+      from a primary instance. * **ON_PREMISES_INSTANCE**: An instance running
+      on the customer's premises. * **READ_REPLICA_INSTANCE**: A Cloud SQL
+      instance configured as a read-replica.
     ipAddresses: The assigned IP addresses for the instance.
     ipv6Address: The IPv6 address assigned to the instance. (Deprecated) This
       property was applicable only to First Generation instances.
-    kind: This is always *sql#instance*.
+    kind: This is always **sql#instance**.
     masterInstanceName: The name of the instance which will act as primary in
       the replication setup.
     maxDiskSize: The maximum disk size of the instance in bytes.
@@ -562,11 +566,11 @@ class DatabaseInstance(_messages.Message):
       database wellness job
     project: The project ID of the project containing the Cloud SQL instance.
       The Google apps domain is prefixed if applicable.
-    region: The geographical region. Can be *us-central* (*FIRST_GEN*
-      instances only) *us-central1* (*SECOND_GEN* instances only) *asia-east1*
-      or *europe-west1*. Defaults to *us-central* or *us-central1* depending
-      on the instance type. The region cannot be changed after instance
-      creation.
+    region: The geographical region. Can be: * **us-central** (**FIRST_GEN**
+      instances only) * **us-central1** (**SECOND_GEN** instances only) *
+      **asia-east1** or **europe-west1**. Defaults to **us-central** or **us-
+      central1** depending on the instance type. The region cannot be changed
+      after instance creation.
     replicaConfiguration: Configuration specific to failover replicas and read
       replicas.
     replicaNames: The replicas of the instance.
@@ -586,21 +590,22 @@ class DatabaseInstance(_messages.Message):
       the instance. This property is read-only.
     settings: The user settings.
     state: The current serving state of the Cloud SQL instance. This can be
-      one of the following. *SQL_INSTANCE_STATE_UNSPECIFIED*: The state of the
-      instance is unknown. *RUNNABLE*: The instance is running, or has been
-      stopped by owner. *SUSPENDED*: The instance is not available, for
-      example due to problems with billing. *PENDING_DELETE*: The instance is
-      being deleted. *PENDING_CREATE*: The instance is being created.
-      *MAINTENANCE*: The instance is down for maintenance. *FAILED*: The
-      instance creation failed.
+      one of the following: * **SQL_INSTANCE_STATE_UNSPECIFIED**: The state of
+      the instance is unknown. * **RUNNABLE**: The instance is running, or has
+      been stopped by owner. * **SUSPENDED**: The instance is not available,
+      for example due to problems with billing. * **PENDING_DELETE**: The
+      instance is being deleted. * **PENDING_CREATE**: The instance is being
+      created. * **MAINTENANCE**: The instance is down for maintenance. *
+      **FAILED**: The instance creation failed.
     suspensionReason: If the instance state is SUSPENDED, the reason for the
       suspension.
   """
 
   class BackendTypeValueValuesEnum(_messages.Enum):
-    r""" *SECOND_GEN*: Cloud SQL database instance. *EXTERNAL*: A database
-    server that is not managed by Google. This property is read-only; use the
-    *tier* property in the *settings* object to determine the database type.
+    r"""The backend type. **SECOND_GEN**: Cloud SQL database instance.
+    **EXTERNAL**: A database server that is not managed by Google. This
+    property is read-only; use the **tier** property in the **settings**
+    object to determine the database type.
 
     Values:
       SQL_BACKEND_TYPE_UNSPECIFIED: This is an unknown backend type for
@@ -615,15 +620,14 @@ class DatabaseInstance(_messages.Message):
     EXTERNAL = 3
 
   class DatabaseVersionValueValuesEnum(_messages.Enum):
-    r"""The database engine type and version. The *databaseVersion* field
-    cannot be changed after instance creation. MySQL instances: *MYSQL_8_0*,
-    *MYSQL_5_7* (default), or *MYSQL_5_6*. PostgreSQL instances:
-    *POSTGRES_9_6*, *POSTGRES_10*, *POSTGRES_11*, *POSTGRES_12*, *POSTGRES_13*
-    (default). SQL Server instances: *SQLSERVER_2019_STANDARD*,
-    *SQLSERVER_2019_ENTERPRISE*, *SQLSERVER_2019_EXPRESS*, or
-    *SQLSERVER_2019_WEB*, *SQLSERVER_2017_STANDARD* (default),
-    *SQLSERVER_2017_ENTERPRISE*, *SQLSERVER_2017_EXPRESS*, or
-    *SQLSERVER_2017_WEB*.
+    r"""The database engine type and version. The **databaseVersion** field
+    cannot be changed after instance creation. * **MySQL instances**:
+    MYSQL_8_0, MYSQL_5_7 (default), or MYSQL_5_6. * **PostgreSQL instances**:
+    POSTGRES_9_6, POSTGRES_10, POSTGRES_11, POSTGRES_12, POSTGRES_13
+    (default). * **SQL Server instances**: SQLSERVER_2019_STANDARD,
+    SQLSERVER_2019_ENTERPRISE, SQLSERVER_2019_EXPRESS, or SQLSERVER_2019_WEB,
+    SQLSERVER_2017_STANDARD (default), SQLSERVER_2017_ENTERPRISE,
+    SQLSERVER_2017_EXPRESS, or SQLSERVER_2017_WEB.
 
     Values:
       SQL_DATABASE_VERSION_UNSPECIFIED: This is an unknown database version.
@@ -720,10 +724,10 @@ class DatabaseInstance(_messages.Message):
     SQLSERVER_2019_WEB = 18
 
   class InstanceTypeValueValuesEnum(_messages.Enum):
-    r"""The instance type. This can be one of the following.
-    *CLOUD_SQL_INSTANCE*: A Cloud SQL instance that is not replicating from a
-    primary instance. *ON_PREMISES_INSTANCE*: An instance running on the
-    customer's premises. *READ_REPLICA_INSTANCE*: A Cloud SQL instance
+    r"""The instance type. This can be one of the following: *
+    **CLOUD_SQL_INSTANCE**: A Cloud SQL instance that is not replicating from
+    a primary instance. * **ON_PREMISES_INSTANCE**: An instance running on the
+    customer's premises. * **READ_REPLICA_INSTANCE**: A Cloud SQL instance
     configured as a read-replica.
 
     Values:
@@ -741,13 +745,13 @@ class DatabaseInstance(_messages.Message):
 
   class StateValueValuesEnum(_messages.Enum):
     r"""The current serving state of the Cloud SQL instance. This can be one
-    of the following. *SQL_INSTANCE_STATE_UNSPECIFIED*: The state of the
-    instance is unknown. *RUNNABLE*: The instance is running, or has been
-    stopped by owner. *SUSPENDED*: The instance is not available, for example
-    due to problems with billing. *PENDING_DELETE*: The instance is being
-    deleted. *PENDING_CREATE*: The instance is being created. *MAINTENANCE*:
-    The instance is down for maintenance. *FAILED*: The instance creation
-    failed.
+    of the following: * **SQL_INSTANCE_STATE_UNSPECIFIED**: The state of the
+    instance is unknown. * **RUNNABLE**: The instance is running, or has been
+    stopped by owner. * **SUSPENDED**: The instance is not available, for
+    example due to problems with billing. * **PENDING_DELETE**: The instance
+    is being deleted. * **PENDING_CREATE**: The instance is being created. *
+    **MAINTENANCE**: The instance is down for maintenance. * **FAILED**: The
+    instance creation failed.
 
     Values:
       SQL_INSTANCE_STATE_UNSPECIFIED: The state of the instance is unknown.
@@ -849,7 +853,7 @@ class DatabasesListResponse(_messages.Message):
 
   Fields:
     items: List of database resources in the instance.
-    kind: This is always *sql#databasesList*.
+    kind: This is always **sql#databasesList**.
   """
 
   items = _messages.MessageField('Database', 1, repeated=True)
@@ -878,7 +882,7 @@ class DemoteMasterContext(_messages.Message):
   r"""Database instance demote primary instance context.
 
   Fields:
-    kind: This is always *sql#demoteMasterContext*.
+    kind: This is always **sql#demoteMasterContext**.
     masterInstanceName: The name of the instance which will act as on-premises
       primary instance in the replication setup.
     replicaConfiguration: Configuration specific to read-replicas replicating
@@ -999,7 +1003,7 @@ class ExportContext(_messages.Message):
     fileType: The file type for the specified uri. * **SQL**: The file
       contains SQL statements. * **CSV**: The file contains CSV data. *
       **BAK**: The file contains backup data for a SQL Server instance.
-    kind: This is always *sql#exportContext*.
+    kind: This is always **sql#exportContext**.
     offload: Option for export offload.
     sqlExportOptions: Options for exporting data as SQL statements.
     uri: The path to the file in Google Cloud Storage where the export will be
@@ -1093,7 +1097,7 @@ class FailoverContext(_messages.Message):
   r"""Database instance failover context.
 
   Fields:
-    kind: This is always *sql#failoverContext*.
+    kind: This is always **sql#failoverContext**.
     settingsVersion: The current settings version of this instance. Request
       will be rejected if this version doesn't match the current settings
       version.
@@ -1321,8 +1325,8 @@ class ImportContext(_messages.Message):
           permissions to the bucket and read access to the file.
         pvkPassword: Password that encrypts the private key
         pvkPath: Path to the Certificate Private Key (.pvk) in Cloud Storage,
-          in the form *gs://bucketName/fileName*. The instance must have write
-          permissions to the bucket and read access to the file.
+          in the form **gs://bucketName/fileName**. The instance must have
+          write permissions to the bucket and read access to the file.
       """
 
       certPath = _messages.StringField(1)
@@ -1461,7 +1465,7 @@ class InstancesListResponse(_messages.Message):
 
   Fields:
     items: List of database instance resources.
-    kind: This is always *sql#instancesList*.
+    kind: This is always **sql#instancesList**.
     nextPageToken: The continuation token, used to page through large result
       sets. Provide this value in a subsequent request to return the next page
       of results.
@@ -1480,7 +1484,7 @@ class InstancesListServerCasResponse(_messages.Message):
   Fields:
     activeVersion: A string attribute.
     certs: List of server CA certificates for the instance.
-    kind: This is always *sql#instancesListServerCas*.
+    kind: This is always **sql#instancesListServerCas**.
   """
 
   activeVersion = _messages.StringField(1)
@@ -1735,7 +1739,7 @@ class OnPremisesConfiguration(_messages.Message):
     dumpFilePath: The dump file to create the Cloud SQL replica.
     hostPort: The host and port of the on-premises instance in host:port
       format
-    kind: This is always *sql#onPremisesConfiguration*.
+    kind: This is always **sql#onPremisesConfiguration**.
     password: The password for connecting to on-premises instance.
     sourceInstance: The reference to Cloud SQL instance if the source is Cloud
       SQL.
@@ -1949,7 +1953,7 @@ class OperationsListResponse(_messages.Message):
 
   Fields:
     items: List of operation resources.
-    kind: This is always *sql#operationsList*.
+    kind: This is always **sql#operationsList**.
     nextPageToken: The continuation token, used to page through large result
       sets. Provide this value in a subsequent request to return the next page
       of results.
@@ -1965,12 +1969,12 @@ class ReplicaConfiguration(_messages.Message):
 
   Fields:
     failoverTarget: Specifies if the replica is the failover target. If the
-      field is set to *true* the replica will be designated as a failover
+      field is set to **true** the replica will be designated as a failover
       replica. In case the primary instance fails, the replica instance will
       be promoted as the new primary instance. Only one replica can be
       specified as failover target, and the replica has to be in different
       zone with the primary instance.
-    kind: This is always *sql#replicaConfiguration*.
+    kind: This is always **sql#replicaConfiguration**.
     mysqlReplicaConfiguration: MySQL specific configuration when replicating
       from a MySQL on-premises primary instance. Replication configuration
       information such as the username, password, certificates, and keys are
@@ -2024,7 +2028,7 @@ class RestoreBackupContext(_messages.Message):
   Fields:
     backupRunId: The ID of the backup run to restore from.
     instanceId: The ID of the instance that the backup was taken from.
-    kind: This is always *sql#restoreBackupContext*.
+    kind: This is always **sql#restoreBackupContext**.
     project: The full project ID of the source instance.
   """
 
@@ -2038,7 +2042,7 @@ class RotateServerCaContext(_messages.Message):
   r"""Instance rotate server CA context.
 
   Fields:
-    kind: This is always *sql#rotateServerCaContext*.
+    kind: This is always **sql#rotateServerCaContext**.
     nextVersion: The fingerprint of the next version to be rotated to. If left
       unspecified, will be rotated to the most recently added server CA
       version.
@@ -2301,7 +2305,8 @@ class SqlBackupRunsDeleteRequest(_messages.Message):
 
   Fields:
     id: The ID of the backup run to delete. To find a backup run ID, use the
-      list method.
+      [list](https://cloud.google.com/sql/docs/mysql/admin-
+      api/rest/v1beta4/backupRuns/list) method.
     instance: Cloud SQL instance ID. This does not include the project ID.
     project: Project ID of the project that contains the instance.
   """
@@ -2467,8 +2472,8 @@ class SqlExternalSyncSettingError(_messages.Message):
 
   Fields:
     detail: Additional information about the error encountered.
-    kind: Can be *sql#externalSyncSettingError* or
-      *sql#externalSyncSettingWarning*.
+    kind: Can be **sql#externalSyncSettingError** or
+      **sql#externalSyncSettingWarning**.
     type: Identifies the specific error that occurred.
   """
 
@@ -2516,6 +2521,10 @@ class SqlExternalSyncSettingError(_messages.Message):
         actual host name
       PRIMARY_ALREADY_SETUP: The primary instance has been setup and will fail
         the setup.
+      UNSUPPORTED_BINLOG_FORMAT: The primary instance has unsupported binary
+        log format.
+      BINLOG_RETENTION_SETTING: The primary instance's binary log retention
+        setting.
     """
     SQL_EXTERNAL_SYNC_SETTING_ERROR_TYPE_UNSPECIFIED = 0
     CONNECTION_FAILURE = 1
@@ -2541,6 +2550,8 @@ class SqlExternalSyncSettingError(_messages.Message):
     UNSUPPORTED_DEFINER = 21
     SQLSERVER_SERVERNAME_MISMATCH = 22
     PRIMARY_ALREADY_SETUP = 23
+    UNSUPPORTED_BINLOG_FORMAT = 24
+    BINLOG_RETENTION_SETTING = 25
 
   detail = _messages.StringField(1)
   kind = _messages.StringField(2)
@@ -2942,7 +2953,7 @@ class SqlInstancesVerifyExternalSyncSettingsResponse(_messages.Message):
 
   Fields:
     errors: List of migration violations.
-    kind: This is always *sql#migrationSettingErrorList*.
+    kind: This is always **sql#migrationSettingErrorList**.
     warnings: List of migration warnings.
   """
 
@@ -3319,7 +3330,7 @@ class SslCertsInsertResponse(_messages.Message):
 
   Fields:
     clientCert: The new client certificate and private key.
-    kind: This is always *sql#sslCertsInsert*.
+    kind: This is always **sql#sslCertsInsert**.
     operation: The operation to track the ssl certs insert request.
     serverCaCert: The server Certificate Authority's certificate. If this is
       missing you can force a new one to be generated by calling
@@ -3337,7 +3348,7 @@ class SslCertsListResponse(_messages.Message):
 
   Fields:
     items: List of client certificates for the instance.
-    kind: This is always *sql#sslCertsList*.
+    kind: This is always **sql#sslCertsList**.
   """
 
   items = _messages.MessageField('SslCert', 1, repeated=True)
@@ -3456,9 +3467,9 @@ class TruncateLogContext(_messages.Message):
   r"""Database Instance truncate log context.
 
   Fields:
-    kind: This is always *sql#truncateLogContext*.
+    kind: This is always **sql#truncateLogContext**.
     logType: The type of log to truncate. Valid values are
-      *MYSQL_GENERAL_TABLE* and *MYSQL_SLOW_TABLE*.
+      **MYSQL_GENERAL_TABLE** and **MYSQL_SLOW_TABLE**.
   """
 
   kind = _messages.StringField(1)

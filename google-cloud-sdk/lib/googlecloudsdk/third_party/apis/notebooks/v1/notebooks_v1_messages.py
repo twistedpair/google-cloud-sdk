@@ -371,7 +371,7 @@ class ExecutionTemplate(_messages.Message):
     dataprocParameters: Parameters used in Dataproc JobType executions.
     inputNotebookFile: Path to the notebook file to execute. Must be in a
       Google Cloud Storage bucket. Format:
-      gs://{project_id}/{folder}/{notebook_file_name} Ex:
+      gs://{bucket_name}/{folder}/{notebook_file_name} Ex:
       gs://notebook_user/scheduled_notebooks/sentiment_notebook.ipynb
     jobType: The type of Job to be used on this execution.
     labels: Labels for execution. If execution is scheduled, a field included
@@ -393,9 +393,11 @@ class ExecutionTemplate(_messages.Message):
       `standard_v100` - `large_model_v100` - `complex_model_m_v100` -
       `complex_model_l_v100` Finally, if you want to use a TPU for training,
       specify `cloud_tpu` in this field. Learn more about the [special
-      configuration options for training with TPU.
+      configuration options for training with
+      TPU](https://cloud.google.com/ai-platform/training/docs/using-
+      tpus#configuring_a_custom_tpu_machine).
     outputNotebookFolder: Path to the notebook folder to write to. Must be in
-      a Google Cloud Storage bucket path. Format: gs://{project_id}/{folder}
+      a Google Cloud Storage bucket path. Format: gs://{bucket_name}/{folder}
       Ex: gs://notebook_user/scheduled_notebooks
     parameters: Parameters used within the 'input_notebook_file' notebook.
     paramsYamlFile: Parameters to be overridden in the notebook during
@@ -442,20 +444,9 @@ class ExecutionTemplate(_messages.Message):
       CUSTOM: The CUSTOM tier is not a set tier, but rather enables you to use
         your own cluster specification. When you use this tier, set values to
         configure your processing cluster according to these guidelines: * You
-        _must_ set `TrainingInput.masterType` to specify the type of machine
-        to use for your master node. This is the only required setting. * You
-        _may_ set `TrainingInput.workerCount` to specify the number of workers
-        to use. If you specify one or more workers, you _must_ also set
-        `TrainingInput.workerType` to specify the type of machine to use for
-        your worker nodes. * You _may_ set
-        `TrainingInput.parameterServerCount` to specify the number of
-        parameter servers to use. If you specify one or more parameter
-        servers, you _must_ also set `TrainingInput.parameterServerType` to
-        specify the type of machine to use for your parameter servers. Note
-        that all of your workers must use the same machine type, which can be
-        different from your parameter server type and master type. Your
-        parameter servers must likewise use the same machine type, which can
-        be different from your worker type and master type.
+        _must_ set `ExecutionTemplate.masterType` to specify the type of
+        machine to use for your master node. This is the only required
+        setting.
     """
     SCALE_TIER_UNSPECIFIED = 0
     BASIC = 1
@@ -2576,8 +2567,8 @@ class Schedule(_messages.Message):
 
   Fields:
     createTime: Output only. Time the schedule was created.
-    cronSchedule: Cron-tab formatted schedule by which the job will execute
-      Format: minute, hour, day of month, month, day of week e.g. 0 0 * * WED
+    cronSchedule: Cron-tab formatted schedule by which the job will execute.
+      Format: minute, hour, day of month, month, day of week, e.g. 0 0 * * WED
       = every Wednesday More examples: https://crontab.guru/examples.html
     description: A brief description of this environment.
     displayName: Output only. Display name used for UI purposes. Name can only
@@ -2638,8 +2629,9 @@ class Schedule(_messages.Message):
 
 class SchedulerAcceleratorConfig(_messages.Message):
   r"""Definition of a hardware accelerator. Note that not all combinations of
-  `type` and `core_count` are valid. Check GPUs on Compute Engine to find a
-  valid combination. TPUs are not supported.
+  `type` and `core_count` are valid. Check [GPUs on Compute
+  Engine](https://cloud.google.com/compute/docs/gpus) to find a valid
+  combination. TPUs are not supported.
 
   Enums:
     TypeValueValuesEnum: Type of this accelerator.

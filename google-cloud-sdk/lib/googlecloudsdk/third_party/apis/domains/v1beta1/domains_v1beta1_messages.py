@@ -960,8 +960,8 @@ class ManagementSettings(_messages.Message):
     Values:
       RENEWAL_METHOD_UNSPECIFIED: The renewal method is undefined.
       AUTOMATIC_RENEWAL: The domain is automatically renewed each year . To
-        disable automatic renewals, export the domain by calling
-        `ExportRegistration` .
+        disable automatic renewals, delete the resource by calling
+        `DeleteRegistration` or export it by calling `ExportRegistration`.
       MANUAL_RENEWAL: The domain must be explicitly renewed each year before
         its `expire_time`. This option is only available when the
         `Registration` is in state `EXPORTED`. To manage the domain's current
@@ -1525,11 +1525,11 @@ class Registration(_messages.Message):
         automatically as long as it remains in this state.
       SUSPENDED: The domain is suspended and inoperative. For more details,
         see the `issues` field.
-      EXPORTED: The domain has been exported from Cloud Domains to [Google
-        Domains](https://domains.google/). You can no longer update it with
-        this API, and information shown about it may be stale. Without further
-        action, domains in this state expire at their `expire_time`. You can
-        delete the resource after the `expire_time` has passed.
+      EXPORTED: The domain is no longer managed with Cloud Domains. It may
+        have been transferred to another registrar or exported for management
+        in [Google Domains](https://domains.google/). You can no longer update
+        it with this API, and information shown about it may be stale. Domains
+        in this state will not be automatically renewed by Cloud Domains.
     """
     STATE_UNSPECIFIED = 0
     REGISTRATION_PENDING = 1

@@ -7444,13 +7444,13 @@ class AiplatformV1alpha1(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     BatchRead.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/runs/{runsId}/timeSeries/{timeSeriesId}:batchRead',
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/runs/{runsId}/timeSeries:batchRead',
         http_method='GET',
         method_id='aiplatform.projects.locations.tensorboards.experiments.runs.timeSeries.batchRead',
-        ordered_params=['tensorboard', 'experimentsId', 'runsId', 'timeSeriesId'],
-        path_params=['experimentsId', 'runsId', 'tensorboard', 'timeSeriesId'],
+        ordered_params=['tensorboard', 'experimentsId', 'runsId'],
+        path_params=['experimentsId', 'runsId', 'tensorboard'],
         query_params=['timeSeries'],
-        relative_path='v1alpha1/{+tensorboard}/experiments/{experimentsId}/runs/{runsId}/timeSeries/{timeSeriesId}:batchRead',
+        relative_path='v1alpha1/{+tensorboard}/experiments/{experimentsId}/runs/{runsId}/timeSeries:batchRead',
         request_field='',
         request_type_name='AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesBatchReadRequest',
         response_type_name='GoogleCloudAiplatformV1alpha1BatchReadTensorboardTimeSeriesDataResponse',

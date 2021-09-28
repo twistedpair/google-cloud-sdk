@@ -57,7 +57,8 @@ LAUNCH_STAGE_ANNOTATION = RUN_GROUP + '/launch-stage'
 BINAUTHZ_POLICY_ANNOTATION = RUN_GROUP + '/binary-authorization'
 BINAUTHZ_BREAKGLASS_ANNOTATION = RUN_GROUP + '/binary-authorization-breakglass'
 
-CUSTOM_AUDIENCES_ANNOTATION = 'run.googleapis.com/custom-audiences'
+EXECUTION_ENVIRONMENT_ANNOTATION = RUN_GROUP + '/execution-environment'
+CUSTOM_AUDIENCES_ANNOTATION = RUN_GROUP + '/custom-audiences'
 
 
 def Meta(m):

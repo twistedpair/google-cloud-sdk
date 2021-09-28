@@ -2910,6 +2910,10 @@ class NetworkTags(_messages.Message):
 class NodeConfig(_messages.Message):
   r"""Parameters that describe the nodes in a cluster.
 
+  Enums:
+    MaintenanceIntervalValueValuesEnum: Specifies the frequency of planned
+      maintenance events.
+
   Messages:
     LabelsValue: The map of Kubernetes labels (key/value pairs) to be applied
       to each node. These will added in addition to any default label(s) that
@@ -2979,6 +2983,8 @@ class NodeConfig(_messages.Message):
     machineType: The name of a Google Compute Engine [machine
       type](/compute/docs/machine-types) (e.g. `n1-standard-1`). If
       unspecified, the default machine type is `n1-standard-1`.
+    maintenanceInterval: Specifies the frequency of planned maintenance
+      events.
     metadata: The metadata key/value pairs assigned to instances in the
       cluster. Keys must conform to the regexp `[a-zA-Z0-9-_]+` and be less
       than 128 bytes in length. These are reflected as part of a URL in the
@@ -3042,6 +3048,27 @@ class NodeConfig(_messages.Message):
       https://kubernetes.io/docs/concepts/configuration/taint-and-toleration/
     workloadMetadataConfig: The workload metadata configuration for this node.
   """
+
+  class MaintenanceIntervalValueValuesEnum(_messages.Enum):
+    r"""Specifies the frequency of planned maintenance events.
+
+    Values:
+      MAINTENANCE_INTERVAL_UNSPECIFIED: The maintenance interval is not
+        explicitly specified for this node.
+      AS_NEEDED: Nodes are eligible to receive infrastructure and hypervisor
+        updates as they become available. This may result in more maintenance
+        operations (live migrations or terminations) for the VM than the
+        PERIODIC option.
+      PERIODIC: Nodes receive infrastructure and hypervisor updates on a
+        periodic basis, minimizing the number of maintenance operations (live
+        migrations or terminations) on an individual VM. This may mean
+        underlying VMs will take longer to receive an update than if it was
+        configured for AS_NEEDED. Security updates will still be applied as
+        soon as they are available.
+    """
+    MAINTENANCE_INTERVAL_UNSPECIFIED = 0
+    AS_NEEDED = 1
+    PERIODIC = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -3127,20 +3154,21 @@ class NodeConfig(_messages.Message):
   localSsdCount = _messages.IntegerField(14, variant=_messages.Variant.INT32)
   localSsdVolumeConfigs = _messages.MessageField('LocalSsdVolumeConfig', 15, repeated=True)
   machineType = _messages.StringField(16)
-  metadata = _messages.MessageField('MetadataValue', 17)
-  minCpuPlatform = _messages.StringField(18)
-  nodeGroup = _messages.StringField(19)
-  nodeImageConfig = _messages.MessageField('CustomImageConfig', 20)
-  oauthScopes = _messages.StringField(21, repeated=True)
-  preemptible = _messages.BooleanField(22)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 23)
-  sandboxConfig = _messages.MessageField('SandboxConfig', 24)
-  serviceAccount = _messages.StringField(25)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 26)
-  spot = _messages.BooleanField(27)
-  tags = _messages.StringField(28, repeated=True)
-  taints = _messages.MessageField('NodeTaint', 29, repeated=True)
-  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 30)
+  maintenanceInterval = _messages.EnumField('MaintenanceIntervalValueValuesEnum', 17)
+  metadata = _messages.MessageField('MetadataValue', 18)
+  minCpuPlatform = _messages.StringField(19)
+  nodeGroup = _messages.StringField(20)
+  nodeImageConfig = _messages.MessageField('CustomImageConfig', 21)
+  oauthScopes = _messages.StringField(22, repeated=True)
+  preemptible = _messages.BooleanField(23)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 24)
+  sandboxConfig = _messages.MessageField('SandboxConfig', 25)
+  serviceAccount = _messages.StringField(26)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 27)
+  spot = _messages.BooleanField(28)
+  tags = _messages.StringField(29, repeated=True)
+  taints = _messages.MessageField('NodeTaint', 30, repeated=True)
+  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 31)
 
 
 class NodeConfigDefaults(_messages.Message):

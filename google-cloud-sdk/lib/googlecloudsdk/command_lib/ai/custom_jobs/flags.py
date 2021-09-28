@@ -27,6 +27,7 @@ from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.command_lib.ai import constants
 from googlecloudsdk.command_lib.ai import flags as shared_flags
 from googlecloudsdk.command_lib.ai import region_util
+from googlecloudsdk.command_lib.ai.custom_jobs import custom_jobs_util
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 
 _DISPLAY_NAME = base.Argument(
@@ -74,8 +75,6 @@ _WORKER_POOL_SPEC_BETA = base.Argument(
             'accelerator-count': int,
             'container-image-uri': str,
             'executor-image-uri': str,
-            # TODO(b/185461224): remove `python-image-uri`
-            'python-image-uri': str,
             'python-module': str,
             'script': str,
             'local-package-path': str,
@@ -107,7 +106,6 @@ _WORKER_POOL_SPEC_BETA = base.Argument(
         `containerSpec.imageUri` field in `WorkerPoolSpec` API message.
       *executor-image-uri*:::The URI of a container image that will run the
         provided package.
-      *python-image-uri*::: (DEPRECATED) use `executor-image-uri` instead.
       *python-module*:::The Python module name to run within the provided
         package.
       *local-package-path*:::The local path of a folder that contains training
@@ -259,7 +257,7 @@ def AddCustomJobResourceArg(parser,
     regions: list[str], the list of supported regions.
   """
   job_resource_spec = concepts.ResourceSpec(
-      resource_collection='aiplatform.projects.locations.customJobs',
+      resource_collection=custom_jobs_util.CUSTOM_JOB_COLLECTION,
       resource_name='custom job',
       locationsId=shared_flags.RegionAttributeConfig(
           prompt_func=region_util.GetPromptForRegionFunc(regions)),

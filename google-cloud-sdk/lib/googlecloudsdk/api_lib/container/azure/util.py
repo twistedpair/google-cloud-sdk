@@ -361,6 +361,36 @@ class NodePoolsClient(_AzureClientBase):
 
     return self._service.Create(req)
 
+  def Update(self,
+             nodepool_ref,
+             node_version=None,
+             validate_only=None):
+    """Updates a node pool in an Anthos cluster on Azure including node pool version.
+
+    Args:
+      nodepool_ref: obj, Node pool object to be updated.
+      node_version: str, Node pool version to use in the node pool update.
+      validate_only: bool, Validate the update of the node pool.
+
+    Returns:
+      Response to the update request.
+    """
+    req = self._service.GetRequestType('Patch')(
+        name=nodepool_ref.RelativeName(),
+        validateOnly=validate_only)
+
+    update_mask = []
+
+    nodepool = self.__AddMessageForTrack(
+        req, 'AzureNodePool', name=nodepool_ref.azureNodePoolsId)
+
+    if node_version:
+      nodepool.version = node_version
+      update_mask.append('version')
+
+    req.updateMask = ','.join(update_mask)
+    return self._service.Patch(req)
+
   def _GetService(self):
     return self.client.projects_locations_azureClusters_azureNodePools
 

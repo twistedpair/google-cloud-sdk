@@ -278,6 +278,11 @@
           "description": "Output only. The IP address of the Kubernetes API server.",
           "readOnly": true,
           "type": "string"
+        },
+        "clusterCaCertificate": {
+          "description": "Output only. The PEM-encoded public certificate of the cluster's CA.",
+          "readOnly": true,
+          "type": "string"
         }
       }
     },
@@ -332,6 +337,24 @@
         "username": {
           "description": "Required. An active Google username.",
           "type": "string"
+        }
+      }
+    },
+    "GenerateAccessTokenResponse": {
+      "id": "GenerateAccessTokenResponse",
+      "description": "An access token for a cluster.",
+      "type": "object",
+      "properties": {
+        "accessToken": {
+          "description": "Output only. Access token to authenticate to k8s api-server.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "expireTime": {
+          "description": "Output only. Timestamp at which the token will expire.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
         }
       }
     },
@@ -1140,6 +1163,31 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Deletes a single Cluster."
+                },
+                "generateAccessToken": {
+                  "id": "edgecontainer.projects.locations.clusters.generateAccessToken",
+                  "path": "v1beta/{+cluster}:generateAccessToken",
+                  "flatPath": "v1beta/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:generateAccessToken",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "cluster": {
+                      "description": "Required. The resource name of the cluster.",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "cluster"
+                  ],
+                  "response": {
+                    "$ref": "GenerateAccessTokenResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Generates an access token for a Cluster."
                 }
               }
               ,

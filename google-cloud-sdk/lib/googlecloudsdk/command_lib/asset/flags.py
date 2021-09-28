@@ -506,8 +506,9 @@ def AddAnalyzerResourceSelectorGroup(parser):
 def AddAnalyzerIdentityArgs(parser):
   parser.add_argument(
       '--identity',
-      help=('The identity appearing in the form of members in the IAM policy '
-            'binding.'))
+      help=(
+          'The identity appearing in the form of principals in the IAM policy '
+          'binding.'))
 
 
 def AddAnalyzerIdentitySelectorGroup(parser):
@@ -585,8 +586,8 @@ def AddAnalyzerOutputResourceEdgesArgs(parser):
   parser.add_argument(
       '--output-resource-edges',
       action='store_true',
-      help=('If true, the result will output resource edges, starting '
-            'from the policy attached resource, to any expanded resources. '
+      help=('If true, the result will output the relevant parent/child '
+            'relationships between resources. '
             'Default is false.'))
   parser.set_defaults(output_resource_edges=False)
 
@@ -595,8 +596,8 @@ def AddAnalyzerOutputGroupEdgesArgs(parser):
   parser.add_argument(
       '--output-group-edges',
       action='store_true',
-      help=('If true, the result will output group identity edges, starting '
-            "from the binding's group members, to any expanded identities. "
+      help=('If true, the result will output the relevant membership '
+            'relationships between groups. '
             'Default is false.'))
   parser.set_defaults(output_group_edges=False)
 

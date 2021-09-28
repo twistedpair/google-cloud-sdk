@@ -1743,7 +1743,7 @@
           ]
         },
         "cronSchedule": {
-          "description": "Cron-tab formatted schedule by which the job will execute Format: minute, hour, day of month, month, day of week e.g. 0 0 * * WED = every Wednesday More examples: https:\/\/crontab.guru\/examples.html",
+          "description": "Cron-tab formatted schedule by which the job will execute. Format: minute, hour, day of month, month, day of week, e.g. 0 0 * * WED = every Wednesday More examples: https:\/\/crontab.guru\/examples.html",
           "type": "string"
         },
         "timeZone": {
@@ -1791,7 +1791,7 @@
             "A large number of workers with many parameter servers.",
             "A single worker instance with a K80 GPU.",
             "A single worker instance with a Cloud TPU.",
-            "The CUSTOM tier is not a set tier, but rather enables you to use your own cluster specification. When you use this tier, set values to configure your processing cluster according to these guidelines: * You _must_ set `TrainingInput.masterType` to specify the type of machine to use for your master node. This is the only required setting. * You _may_ set `TrainingInput.workerCount` to specify the number of workers to use. If you specify one or more workers, you _must_ also set `TrainingInput.workerType` to specify the type of machine to use for your worker nodes. * You _may_ set `TrainingInput.parameterServerCount` to specify the number of parameter servers to use. If you specify one or more parameter servers, you _must_ also set `TrainingInput.parameterServerType` to specify the type of machine to use for your parameter servers. Note that all of your workers must use the same machine type, which can be different from your parameter server type and master type. Your parameter servers must likewise use the same machine type, which can be different from your worker type and master type."
+            "The CUSTOM tier is not a set tier, but rather enables you to use your own cluster specification. When you use this tier, set values to configure your processing cluster according to these guidelines: * You _must_ set `ExecutionTemplate.masterType` to specify the type of machine to use for your master node. This is the only required setting."
           ],
           "enum": [
             "SCALE_TIER_UNSPECIFIED",
@@ -1804,7 +1804,7 @@
           ]
         },
         "masterType": {
-          "description": "Specifies the type of virtual machine to use for your training job's master worker. You must specify this field when `scaleTier` is set to `CUSTOM`. You can use certain Compute Engine machine types directly in this field. The following types are supported: - `n1-standard-4` - `n1-standard-8` - `n1-standard-16` - `n1-standard-32` - `n1-standard-64` - `n1-standard-96` - `n1-highmem-2` - `n1-highmem-4` - `n1-highmem-8` - `n1-highmem-16` - `n1-highmem-32` - `n1-highmem-64` - `n1-highmem-96` - `n1-highcpu-16` - `n1-highcpu-32` - `n1-highcpu-64` - `n1-highcpu-96` Alternatively, you can use the following legacy machine types: - `standard` - `large_model` - `complex_model_s` - `complex_model_m` - `complex_model_l` - `standard_gpu` - `complex_model_m_gpu` - `complex_model_l_gpu` - `standard_p100` - `complex_model_m_p100` - `standard_v100` - `large_model_v100` - `complex_model_m_v100` - `complex_model_l_v100` Finally, if you want to use a TPU for training, specify `cloud_tpu` in this field. Learn more about the [special configuration options for training with TPU.",
+          "description": "Specifies the type of virtual machine to use for your training job's master worker. You must specify this field when `scaleTier` is set to `CUSTOM`. You can use certain Compute Engine machine types directly in this field. The following types are supported: - `n1-standard-4` - `n1-standard-8` - `n1-standard-16` - `n1-standard-32` - `n1-standard-64` - `n1-standard-96` - `n1-highmem-2` - `n1-highmem-4` - `n1-highmem-8` - `n1-highmem-16` - `n1-highmem-32` - `n1-highmem-64` - `n1-highmem-96` - `n1-highcpu-16` - `n1-highcpu-32` - `n1-highcpu-64` - `n1-highcpu-96` Alternatively, you can use the following legacy machine types: - `standard` - `large_model` - `complex_model_s` - `complex_model_m` - `complex_model_l` - `standard_gpu` - `complex_model_m_gpu` - `complex_model_l_gpu` - `standard_p100` - `complex_model_m_p100` - `standard_v100` - `large_model_v100` - `complex_model_m_v100` - `complex_model_l_v100` Finally, if you want to use a TPU for training, specify `cloud_tpu` in this field. Learn more about the [special configuration options for training with TPU](https:\/\/cloud.google.com\/ai-platform\/training\/docs\/using-tpus#configuring_a_custom_tpu_machine).",
           "type": "string"
         },
         "acceleratorConfig": {
@@ -1819,7 +1819,7 @@
           }
         },
         "inputNotebookFile": {
-          "description": "Path to the notebook file to execute. Must be in a Google Cloud Storage bucket. Format: gs:\/\/{project_id}\/{folder}\/{notebook_file_name} Ex: gs:\/\/notebook_user\/scheduled_notebooks\/sentiment_notebook.ipynb",
+          "description": "Path to the notebook file to execute. Must be in a Google Cloud Storage bucket. Format: gs:\/\/{bucket_name}\/{folder}\/{notebook_file_name} Ex: gs:\/\/notebook_user\/scheduled_notebooks\/sentiment_notebook.ipynb",
           "type": "string"
         },
         "containerImageUri": {
@@ -1827,7 +1827,7 @@
           "type": "string"
         },
         "outputNotebookFolder": {
-          "description": "Path to the notebook folder to write to. Must be in a Google Cloud Storage bucket path. Format: gs:\/\/{project_id}\/{folder} Ex: gs:\/\/notebook_user\/scheduled_notebooks",
+          "description": "Path to the notebook folder to write to. Must be in a Google Cloud Storage bucket path. Format: gs:\/\/{bucket_name}\/{folder} Ex: gs:\/\/notebook_user\/scheduled_notebooks",
           "type": "string"
         },
         "paramsYamlFile": {
@@ -1868,7 +1868,7 @@
     },
     "SchedulerAcceleratorConfig": {
       "id": "SchedulerAcceleratorConfig",
-      "description": "Definition of a hardware accelerator. Note that not all combinations of `type` and `core_count` are valid. Check GPUs on Compute Engine to find a valid combination. TPUs are not supported.",
+      "description": "Definition of a hardware accelerator. Note that not all combinations of `type` and `core_count` are valid. Check [GPUs on Compute Engine](https:\/\/cloud.google.com\/compute\/docs\/gpus) to find a valid combination. TPUs are not supported.",
       "type": "object",
       "properties": {
         "type": {
@@ -3678,7 +3678,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Creates a new Scheduled Notebook in a given project and location."
+                  "description": "Creates a new Execution in a given project and location."
                 }
               }
             }

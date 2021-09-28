@@ -758,22 +758,7 @@ def _Load(account, scopes, prevent_refresh, use_google_auth=True):
   if not prevent_refresh:
     RefreshIfAlmostExpire(cred)
 
-  if use_google_auth and c_creds.IsOauth2clientP12AccountCredentials(cred):
-    cred = _CreateP12GoogleAuth(cred)
-
   return cred
-
-
-def _CreateP12GoogleAuth(credentials):
-  Refresh(credentials)
-  p12_cred = c_creds.P12CredentialsGoogleAuth()
-  p12_cred.token = credentials.access_token
-  p12_cred.expiry = credentials.token_expiry
-  try:
-    p12_cred.id_tokenb64 = credentials.id_tokenb64
-  except AttributeError:
-    pass
-  return p12_cred
 
 
 def Refresh(credentials,

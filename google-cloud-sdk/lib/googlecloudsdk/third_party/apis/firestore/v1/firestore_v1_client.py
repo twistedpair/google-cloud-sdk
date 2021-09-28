@@ -837,6 +837,33 @@ class FirestoreV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Get(self, request, global_params=None):
+      r"""Gets information about a database.
+
+      Args:
+        request: (FirestoreProjectsDatabasesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleFirestoreAdminV1Database) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/databases/{databasesId}',
+        http_method='GET',
+        method_id='firestore.projects.databases.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='FirestoreProjectsDatabasesGetRequest',
+        response_type_name='GoogleFirestoreAdminV1Database',
+        supports_download=False,
+    )
+
     def ImportDocuments(self, request, global_params=None):
       r"""Imports documents into Google Cloud Firestore. Existing documents with the same name are overwritten. The import occurs in the background and its progress can be monitored and managed via the Operation resource that is created. If an ImportDocuments operation is cancelled, it is possible that a subset of the data has already been imported to Cloud Firestore.
 
@@ -860,6 +887,60 @@ class FirestoreV1(base_api.BaseApiClient):
         relative_path='v1/{+name}:importDocuments',
         request_field='googleFirestoreAdminV1ImportDocumentsRequest',
         request_type_name='FirestoreProjectsDatabasesImportDocumentsRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""List all the databases in the project.
+
+      Args:
+        request: (FirestoreProjectsDatabasesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleFirestoreAdminV1ListDatabasesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/databases',
+        http_method='GET',
+        method_id='firestore.projects.databases.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/databases',
+        request_field='',
+        request_type_name='FirestoreProjectsDatabasesListRequest',
+        response_type_name='GoogleFirestoreAdminV1ListDatabasesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a database.
+
+      Args:
+        request: (FirestoreProjectsDatabasesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/databases/{databasesId}',
+        http_method='PATCH',
+        method_id='firestore.projects.databases.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='googleFirestoreAdminV1Database',
+        request_type_name='FirestoreProjectsDatabasesPatchRequest',
         response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )

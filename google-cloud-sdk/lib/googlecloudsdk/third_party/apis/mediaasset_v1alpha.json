@@ -564,6 +564,18 @@
           "additionalProperties": {
             "$ref": "AnnotationSetConfig"
           }
+        },
+        "mediaType": {
+          "description": "Specifies the kind of media held by assets of this asset type.",
+          "type": "string",
+          "enumDescriptions": [
+            "AssetTypes with unspecified media types hold generic assets.",
+            "AssetTypes with video media types have the following properties: 1. Have a required metadata field called 'vod' of type 'system:gcs-file', which is the path to a vod video file. 2. Support searching the content of the provided vod asset."
+          ],
+          "enum": [
+            "MEDIA_TYPE_UNSPECIFIED",
+            "VIDEO"
+          ]
         }
       }
     },
@@ -1673,7 +1685,7 @@
           }
         },
         "logConfig": {
-          "description": "The config returned to callers of tech.iam.IAM.CheckPolicy for any entries that match the LOG action.",
+          "description": "The config returned to callers of CheckPolicy for any entries that match the LOG action.",
           "type": "array",
           "items": {
             "$ref": "GoogleIamV1LogConfig"

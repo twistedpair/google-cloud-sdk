@@ -93,7 +93,6 @@ class ComputeAlpha(base_api.BaseApiClient):
     self.regionDisks = self.RegionDisksService(self)
     self.regionHealthCheckServices = self.RegionHealthCheckServicesService(self)
     self.regionHealthChecks = self.RegionHealthChecksService(self)
-    self.regionInPlaceSnapshots = self.RegionInPlaceSnapshotsService(self)
     self.regionInstanceGroupManagers = self.RegionInstanceGroupManagersService(self)
     self.regionInstanceGroups = self.RegionInstanceGroupsService(self)
     self.regionInstances = self.RegionInstancesService(self)
@@ -129,7 +128,6 @@ class ComputeAlpha(base_api.BaseApiClient):
     self.urlMaps = self.UrlMapsService(self)
     self.vpnGateways = self.VpnGatewaysService(self)
     self.vpnTunnels = self.VpnTunnelsService(self)
-    self.zoneInPlaceSnapshots = self.ZoneInPlaceSnapshotsService(self)
     self.zoneOperations = self.ZoneOperationsService(self)
     self.zones = self.ZonesService(self)
 
@@ -7511,6 +7509,32 @@ class ComputeAlpha(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def AggregatedList(self, request, global_params=None):
+      r"""Retrieves an aggregated list of instantSnapshots.
+
+      Args:
+        request: (ComputeInstantSnapshotsAggregatedListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (InstantSnapshotAggregatedList) The response message.
+      """
+      config = self.GetMethodConfig('AggregatedList')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AggregatedList.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.instantSnapshots.aggregatedList',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/aggregated/instantSnapshots',
+        request_field='',
+        request_type_name='ComputeInstantSnapshotsAggregatedListRequest',
+        response_type_name='InstantSnapshotAggregatedList',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       r"""Deletes the specified InstantSnapshot resource. Keep in mind that deleting a single instantSnapshot might not necessarily delete all the data on that instantSnapshot. If any data on the instantSnapshot that is marked for deletion is needed for subsequent instantSnapshots, the data will be moved to the next corresponding instantSnapshot. For more information, see Deleting instantSnapshots.
 
@@ -13540,224 +13564,6 @@ class ComputeAlpha(base_api.BaseApiClient):
         request_field='healthCheckResource',
         request_type_name='ComputeRegionHealthChecksUpdateRequest',
         response_type_name='Operation',
-        supports_download=False,
-    )
-
-  class RegionInPlaceSnapshotsService(base_api.BaseApiService):
-    """Service class for the regionInPlaceSnapshots resource."""
-
-    _NAME = 'regionInPlaceSnapshots'
-
-    def __init__(self, client):
-      super(ComputeAlpha.RegionInPlaceSnapshotsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Delete(self, request, global_params=None):
-      r"""Deletes the specified InPlaceSnapshot resource. Keep in mind that deleting a single inPlaceSnapshot might not necessarily delete all the data on that inPlaceSnapshot. If any data on the inPlaceSnapshot that is marked for deletion is needed for subsequent inPlaceSnapshots, the data will be moved to the next corresponding inPlaceSnapshot. For more information, see Deleting inPlaceSnapshots.
-
-      Args:
-        request: (ComputeRegionInPlaceSnapshotsDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method='DELETE',
-        method_id='compute.regionInPlaceSnapshots.delete',
-        ordered_params=['project', 'region', 'inPlaceSnapshot'],
-        path_params=['inPlaceSnapshot', 'project', 'region'],
-        query_params=['requestId'],
-        relative_path='projects/{project}/regions/{region}/inPlaceSnapshots/{inPlaceSnapshot}',
-        request_field='',
-        request_type_name='ComputeRegionInPlaceSnapshotsDeleteRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def Get(self, request, global_params=None):
-      r"""Returns the specified InPlaceSnapshot resource in the specified region.
-
-      Args:
-        request: (ComputeRegionInPlaceSnapshotsGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (InPlaceSnapshot) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method='GET',
-        method_id='compute.regionInPlaceSnapshots.get',
-        ordered_params=['project', 'region', 'inPlaceSnapshot'],
-        path_params=['inPlaceSnapshot', 'project', 'region'],
-        query_params=[],
-        relative_path='projects/{project}/regions/{region}/inPlaceSnapshots/{inPlaceSnapshot}',
-        request_field='',
-        request_type_name='ComputeRegionInPlaceSnapshotsGetRequest',
-        response_type_name='InPlaceSnapshot',
-        supports_download=False,
-    )
-
-    def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
-
-      Args:
-        request: (ComputeRegionInPlaceSnapshotsGetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('GetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        http_method='GET',
-        method_id='compute.regionInPlaceSnapshots.getIamPolicy',
-        ordered_params=['project', 'region', 'resource'],
-        path_params=['project', 'region', 'resource'],
-        query_params=['optionsRequestedPolicyVersion'],
-        relative_path='projects/{project}/regions/{region}/inPlaceSnapshots/{resource}/getIamPolicy',
-        request_field='',
-        request_type_name='ComputeRegionInPlaceSnapshotsGetIamPolicyRequest',
-        response_type_name='Policy',
-        supports_download=False,
-    )
-
-    def Insert(self, request, global_params=None):
-      r"""Creates an in-place snapshot in the specified region.
-
-      Args:
-        request: (ComputeRegionInPlaceSnapshotsInsertRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Insert')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method='POST',
-        method_id='compute.regionInPlaceSnapshots.insert',
-        ordered_params=['project', 'region'],
-        path_params=['project', 'region'],
-        query_params=['requestId'],
-        relative_path='projects/{project}/regions/{region}/inPlaceSnapshots',
-        request_field='inPlaceSnapshot',
-        request_type_name='ComputeRegionInPlaceSnapshotsInsertRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""Retrieves the list of InPlaceSnapshot resources contained within the specified region.
-
-      Args:
-        request: (ComputeRegionInPlaceSnapshotsListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (InPlaceSnapshotList) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method='GET',
-        method_id='compute.regionInPlaceSnapshots.list',
-        ordered_params=['project', 'region'],
-        path_params=['project', 'region'],
-        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
-        relative_path='projects/{project}/regions/{region}/inPlaceSnapshots',
-        request_field='',
-        request_type_name='ComputeRegionInPlaceSnapshotsListRequest',
-        response_type_name='InPlaceSnapshotList',
-        supports_download=False,
-    )
-
-    def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
-
-      Args:
-        request: (ComputeRegionInPlaceSnapshotsSetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('SetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        http_method='POST',
-        method_id='compute.regionInPlaceSnapshots.setIamPolicy',
-        ordered_params=['project', 'region', 'resource'],
-        path_params=['project', 'region', 'resource'],
-        query_params=[],
-        relative_path='projects/{project}/regions/{region}/inPlaceSnapshots/{resource}/setIamPolicy',
-        request_field='regionSetPolicyRequest',
-        request_type_name='ComputeRegionInPlaceSnapshotsSetIamPolicyRequest',
-        response_type_name='Policy',
-        supports_download=False,
-    )
-
-    def SetLabels(self, request, global_params=None):
-      r"""Sets the labels on a inPlaceSnapshot in the given region. To learn more about labels, read the Labeling Resources documentation.
-
-      Args:
-        request: (ComputeRegionInPlaceSnapshotsSetLabelsRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('SetLabels')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    SetLabels.method_config = lambda: base_api.ApiMethodInfo(
-        http_method='POST',
-        method_id='compute.regionInPlaceSnapshots.setLabels',
-        ordered_params=['project', 'region', 'resource'],
-        path_params=['project', 'region', 'resource'],
-        query_params=['requestId'],
-        relative_path='projects/{project}/regions/{region}/inPlaceSnapshots/{resource}/setLabels',
-        request_field='regionSetLabelsRequest',
-        request_type_name='ComputeRegionInPlaceSnapshotsSetLabelsRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource.
-
-      Args:
-        request: (ComputeRegionInPlaceSnapshotsTestIamPermissionsRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (TestPermissionsResponse) The response message.
-      """
-      config = self.GetMethodConfig('TestIamPermissions')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        http_method='POST',
-        method_id='compute.regionInPlaceSnapshots.testIamPermissions',
-        ordered_params=['project', 'region', 'resource'],
-        path_params=['project', 'region', 'resource'],
-        query_params=[],
-        relative_path='projects/{project}/regions/{region}/inPlaceSnapshots/{resource}/testIamPermissions',
-        request_field='testPermissionsRequest',
-        request_type_name='ComputeRegionInPlaceSnapshotsTestIamPermissionsRequest',
-        response_type_name='TestPermissionsResponse',
         supports_download=False,
     )
 
@@ -21621,224 +21427,6 @@ class ComputeAlpha(base_api.BaseApiClient):
         relative_path='projects/{project}/regions/{region}/vpnTunnels/{resource}/testIamPermissions',
         request_field='testPermissionsRequest',
         request_type_name='ComputeVpnTunnelsTestIamPermissionsRequest',
-        response_type_name='TestPermissionsResponse',
-        supports_download=False,
-    )
-
-  class ZoneInPlaceSnapshotsService(base_api.BaseApiService):
-    """Service class for the zoneInPlaceSnapshots resource."""
-
-    _NAME = 'zoneInPlaceSnapshots'
-
-    def __init__(self, client):
-      super(ComputeAlpha.ZoneInPlaceSnapshotsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Delete(self, request, global_params=None):
-      r"""Deletes the specified InPlaceSnapshot resource. Keep in mind that deleting a single inPlaceSnapshot might not necessarily delete all the data on that inPlaceSnapshot. If any data on the inPlaceSnapshot that is marked for deletion is needed for subsequent inPlaceSnapshots, the data will be moved to the next corresponding inPlaceSnapshot. For more information, see Deleting inPlaceSnapshots.
-
-      Args:
-        request: (ComputeZoneInPlaceSnapshotsDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        http_method='DELETE',
-        method_id='compute.zoneInPlaceSnapshots.delete',
-        ordered_params=['project', 'zone', 'inPlaceSnapshot'],
-        path_params=['inPlaceSnapshot', 'project', 'zone'],
-        query_params=['requestId'],
-        relative_path='projects/{project}/zones/{zone}/inPlaceSnapshots/{inPlaceSnapshot}',
-        request_field='',
-        request_type_name='ComputeZoneInPlaceSnapshotsDeleteRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def Get(self, request, global_params=None):
-      r"""Returns the specified InPlaceSnapshot resource in the specified zone.
-
-      Args:
-        request: (ComputeZoneInPlaceSnapshotsGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (InPlaceSnapshot) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        http_method='GET',
-        method_id='compute.zoneInPlaceSnapshots.get',
-        ordered_params=['project', 'zone', 'inPlaceSnapshot'],
-        path_params=['inPlaceSnapshot', 'project', 'zone'],
-        query_params=[],
-        relative_path='projects/{project}/zones/{zone}/inPlaceSnapshots/{inPlaceSnapshot}',
-        request_field='',
-        request_type_name='ComputeZoneInPlaceSnapshotsGetRequest',
-        response_type_name='InPlaceSnapshot',
-        supports_download=False,
-    )
-
-    def GetIamPolicy(self, request, global_params=None):
-      r"""Gets the access control policy for a resource. May be empty if no such policy or resource exists.
-
-      Args:
-        request: (ComputeZoneInPlaceSnapshotsGetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('GetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        http_method='GET',
-        method_id='compute.zoneInPlaceSnapshots.getIamPolicy',
-        ordered_params=['project', 'zone', 'resource'],
-        path_params=['project', 'resource', 'zone'],
-        query_params=['optionsRequestedPolicyVersion'],
-        relative_path='projects/{project}/zones/{zone}/inPlaceSnapshots/{resource}/getIamPolicy',
-        request_field='',
-        request_type_name='ComputeZoneInPlaceSnapshotsGetIamPolicyRequest',
-        response_type_name='Policy',
-        supports_download=False,
-    )
-
-    def Insert(self, request, global_params=None):
-      r"""Creates an in-place snapshot in the specified zone.
-
-      Args:
-        request: (ComputeZoneInPlaceSnapshotsInsertRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Insert')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Insert.method_config = lambda: base_api.ApiMethodInfo(
-        http_method='POST',
-        method_id='compute.zoneInPlaceSnapshots.insert',
-        ordered_params=['project', 'zone'],
-        path_params=['project', 'zone'],
-        query_params=['requestId'],
-        relative_path='projects/{project}/zones/{zone}/inPlaceSnapshots',
-        request_field='inPlaceSnapshot',
-        request_type_name='ComputeZoneInPlaceSnapshotsInsertRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""Retrieves the list of InPlaceSnapshot resources contained within the specified zone.
-
-      Args:
-        request: (ComputeZoneInPlaceSnapshotsListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (InPlaceSnapshotList) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        http_method='GET',
-        method_id='compute.zoneInPlaceSnapshots.list',
-        ordered_params=['project', 'zone'],
-        path_params=['project', 'zone'],
-        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
-        relative_path='projects/{project}/zones/{zone}/inPlaceSnapshots',
-        request_field='',
-        request_type_name='ComputeZoneInPlaceSnapshotsListRequest',
-        response_type_name='InPlaceSnapshotList',
-        supports_download=False,
-    )
-
-    def SetIamPolicy(self, request, global_params=None):
-      r"""Sets the access control policy on the specified resource. Replaces any existing policy.
-
-      Args:
-        request: (ComputeZoneInPlaceSnapshotsSetIamPolicyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Policy) The response message.
-      """
-      config = self.GetMethodConfig('SetIamPolicy')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
-        http_method='POST',
-        method_id='compute.zoneInPlaceSnapshots.setIamPolicy',
-        ordered_params=['project', 'zone', 'resource'],
-        path_params=['project', 'resource', 'zone'],
-        query_params=[],
-        relative_path='projects/{project}/zones/{zone}/inPlaceSnapshots/{resource}/setIamPolicy',
-        request_field='zoneSetPolicyRequest',
-        request_type_name='ComputeZoneInPlaceSnapshotsSetIamPolicyRequest',
-        response_type_name='Policy',
-        supports_download=False,
-    )
-
-    def SetLabels(self, request, global_params=None):
-      r"""Sets the labels on a inPlaceSnapshot in the given zone. To learn more about labels, read the Labeling Resources documentation.
-
-      Args:
-        request: (ComputeZoneInPlaceSnapshotsSetLabelsRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('SetLabels')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    SetLabels.method_config = lambda: base_api.ApiMethodInfo(
-        http_method='POST',
-        method_id='compute.zoneInPlaceSnapshots.setLabels',
-        ordered_params=['project', 'zone', 'resource'],
-        path_params=['project', 'resource', 'zone'],
-        query_params=['requestId'],
-        relative_path='projects/{project}/zones/{zone}/inPlaceSnapshots/{resource}/setLabels',
-        request_field='zoneSetLabelsRequest',
-        request_type_name='ComputeZoneInPlaceSnapshotsSetLabelsRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def TestIamPermissions(self, request, global_params=None):
-      r"""Returns permissions that a caller has on the specified resource.
-
-      Args:
-        request: (ComputeZoneInPlaceSnapshotsTestIamPermissionsRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (TestPermissionsResponse) The response message.
-      """
-      config = self.GetMethodConfig('TestIamPermissions')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
-        http_method='POST',
-        method_id='compute.zoneInPlaceSnapshots.testIamPermissions',
-        ordered_params=['project', 'zone', 'resource'],
-        path_params=['project', 'resource', 'zone'],
-        query_params=[],
-        relative_path='projects/{project}/zones/{zone}/inPlaceSnapshots/{resource}/testIamPermissions',
-        request_field='testPermissionsRequest',
-        request_type_name='ComputeZoneInPlaceSnapshotsTestIamPermissionsRequest',
         response_type_name='TestPermissionsResponse',
         supports_download=False,
     )

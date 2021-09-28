@@ -1125,12 +1125,15 @@ class MaintenanceSchedule(_messages.Message):
   Fields:
     endTime: Output only. The end time of any upcoming scheduled maintenance
       for this instance.
+    scheduleDeadlineTime: Output only. The deadline that the maintenance
+      schedule start time can not go beyond, including reschedule.
     startTime: Output only. The start time of any upcoming scheduled
       maintenance for this instance.
   """
 
   endTime = _messages.StringField(1)
-  startTime = _messages.StringField(2)
+  scheduleDeadlineTime = _messages.StringField(2)
+  startTime = _messages.StringField(3)
 
 
 class MaintenanceWindow(_messages.Message):

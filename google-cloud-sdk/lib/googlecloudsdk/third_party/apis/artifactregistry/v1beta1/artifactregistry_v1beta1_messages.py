@@ -1067,7 +1067,7 @@ class Repository(_messages.Message):
       DOCKER: Docker package format.
       MAVEN: Maven package format.
       NPM: NPM package format.
-      PYPI: PyPI package format.
+      PYPI: PyPI package format. Deprecated, use PYTHON instead.
       APT: APT package format.
       YUM: YUM package format.
       PYTHON: Python package format.

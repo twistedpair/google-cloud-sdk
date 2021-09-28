@@ -548,6 +548,10 @@ class AssetType(_messages.Message):
   r"""An asset type resource. An asset type defines the schema for the
   assets.It specifies configuration of all the fields present on the asset.
 
+  Enums:
+    MediaTypeValueValuesEnum: Specifies the kind of media held by assets of
+      this asset type.
+
   Messages:
     AnnotationSetConfigsValue: Mapping of annotationSet ID to its
       configuration. The annotationSet ID will be used as the resource ID when
@@ -580,6 +584,7 @@ class AssetType(_messages.Message):
     linkConfigs: Mapping of a link field name to its configuration.
     linkSetConfigs: Mapping of a collection of link sets to the set
       configuration.
+    mediaType: Specifies the kind of media held by assets of this asset type.
     metadataConfigs: Mapping of field name to its configuration.
     name: The resource name of the asset type, in the following form:
       `projects/{project}/locations/{location}/assetTypes/{type}`. Here {type}
@@ -592,6 +597,20 @@ class AssetType(_messages.Message):
       first).
     updateTime: Output only. The last-modified time.
   """
+
+  class MediaTypeValueValuesEnum(_messages.Enum):
+    r"""Specifies the kind of media held by assets of this asset type.
+
+    Values:
+      MEDIA_TYPE_UNSPECIFIED: AssetTypes with unspecified media types hold
+        generic assets.
+      VIDEO: AssetTypes with video media types have the following properties:
+        1. Have a required metadata field called 'vod' of type 'system:gcs-
+        file', which is the path to a vod video file. 2. Support searching the
+        content of the provided vod asset.
+    """
+    MEDIA_TYPE_UNSPECIFIED = 0
+    VIDEO = 1
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationSetConfigsValue(_messages.Message):
@@ -757,10 +776,11 @@ class AssetType(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 4)
   linkConfigs = _messages.MessageField('LinkConfigsValue', 5)
   linkSetConfigs = _messages.MessageField('LinkSetConfigsValue', 6)
-  metadataConfigs = _messages.MessageField('MetadataConfigsValue', 7)
-  name = _messages.StringField(8)
-  sortOrder = _messages.MessageField('SortOrderConfig', 9)
-  updateTime = _messages.StringField(10)
+  mediaType = _messages.EnumField('MediaTypeValueValuesEnum', 7)
+  metadataConfigs = _messages.MessageField('MetadataConfigsValue', 8)
+  name = _messages.StringField(9)
+  sortOrder = _messages.MessageField('SortOrderConfig', 10)
+  updateTime = _messages.StringField(11)
 
 
 class AuthorizationLoggingOptions(_messages.Message):
@@ -1528,8 +1548,8 @@ class GoogleIamV1Rule(_messages.Message):
     description: Human-readable description of the rule.
     in_: If one or more 'in' clauses are specified, the rule matches if the
       PRINCIPAL/AUTHORITY_SELECTOR is in at least one of these entries.
-    logConfig: The config returned to callers of tech.iam.IAM.CheckPolicy for
-      any entries that match the LOG action.
+    logConfig: The config returned to callers of CheckPolicy for any entries
+      that match the LOG action.
     notIn: If one or more 'not_in' clauses are specified, the rule matches if
       the PRINCIPAL/AUTHORITY_SELECTOR is in none of the entries. The format
       for in and not_in entries can be found at in the Local IAM documentation

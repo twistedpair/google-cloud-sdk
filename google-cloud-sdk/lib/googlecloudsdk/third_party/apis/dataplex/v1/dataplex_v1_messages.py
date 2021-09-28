@@ -605,6 +605,124 @@ class DataplexProjectsLocationsLakesZonesDeleteRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class DataplexProjectsLocationsLakesZonesEntitiesGetRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsLakesZonesEntitiesGetRequest object.
+
+  Enums:
+    ViewValueValuesEnum: Optional. Used to select the subset of information
+      about the Entity to return. Defaults to BASIC.
+
+  Fields:
+    name: Required. The resource name of the entity:
+      projects/{project_number}/locations/{location_id}/lakes/{lake_id}
+      /zones/{zone_id}/entities/{entity_id_or_entity_uid} The entity id part
+      could either be the entity unique ID or the user provided ID.
+    view: Optional. Used to select the subset of information about the Entity
+      to return. Defaults to BASIC.
+  """
+
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""Optional. Used to select the subset of information about the Entity to
+    return. Defaults to BASIC.
+
+    Values:
+      ENTITY_VIEW_UNSPECIFIED: The API will default to the BASIC view.
+      BASIC: Minimal view that does not include the schema.
+      SCHEMA: Includes basic information and schema.
+      STATS: Includes basic information and statistics.
+      FULL: Includes everything.
+    """
+    ENTITY_VIEW_UNSPECIFIED = 0
+    BASIC = 1
+    SCHEMA = 2
+    STATS = 3
+    FULL = 4
+
+  name = _messages.StringField(1, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 2)
+
+
+class DataplexProjectsLocationsLakesZonesEntitiesListRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsLakesZonesEntitiesListRequest object.
+
+  Enums:
+    ViewValueValuesEnum: Required. Specify the entity view to make a partial
+      list request.
+
+  Fields:
+    filter: Optional. Filter request by name prefix.
+    pageSize: Optional. Maximum number of entities to return. The service may
+      return fewer than this value. If unspecified, at most 10 entities will
+      be returned. The maximum value is 1000; values above 1000 will be
+      coerced to 1000.
+    pageToken: Optional. Page token received from a previous ListEntities
+      call. Provide this to retrieve the subsequent page. When paginating, all
+      other parameters provided to ListEntities must match the call that
+      provided the page token.
+    parent: Required. The resource name of the parent zone:
+      projects/{project_number}/locations/{location_id}/lakes/{lake_id}
+      /zones/{zone_id}`
+    view: Required. Specify the entity view to make a partial list request.
+  """
+
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""Required. Specify the entity view to make a partial list request.
+
+    Values:
+      ENTITY_VIEW_UNSPECIFIED: The default / unset value. The API will default
+        to the FULL view.
+      TABLES: Only list table entities.
+      FILESETS: Only list fileset entities.
+    """
+    ENTITY_VIEW_UNSPECIFIED = 0
+    TABLES = 1
+    FILESETS = 2
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 5)
+
+
+class DataplexProjectsLocationsLakesZonesEntitiesPartitionsGetRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsLakesZonesEntitiesPartitionsGetRequest
+  object.
+
+  Fields:
+    name: Required. The resource name of the partition:
+      projects/{project_number}/locations/{location_id}/lakes/{lake_id}
+      /zones/{zone_id}/entities/{entity_id}/partitions/{partition_id}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DataplexProjectsLocationsLakesZonesEntitiesPartitionsListRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsLakesZonesEntitiesPartitionsListRequest
+  object.
+
+  Fields:
+    filter: Optional. Filter request.
+    pageSize: Optional. Maximum number of partitions to return. The service
+      may return fewer than this value. If unspecified, at most 10 partitions
+      will be returned. The maximum value is 1000; values above 1000 will be
+      coerced to 1000.
+    pageToken: Optional. Page token received from a previous ListPartitions
+      call. Provide this to retrieve the subsequent page. When paginating, all
+      other parameters provided to ListPartitions must match the call that
+      provided the page token.
+    parent: Required. The resource name of the parent entity:
+      projects/{project_number}/locations/{location_id}/lakes/{lake_id}
+      /zones/{zone_id}/entities/{entity_id}`
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
 class DataplexProjectsLocationsLakesZonesGetIamPolicyRequest(_messages.Message):
   r"""A DataplexProjectsLocationsLakesZonesGetIamPolicyRequest object.
 
@@ -1054,8 +1172,9 @@ class GoogleCloudDataplexV1Asset(_messages.Message):
       administrator for this asset.
     createTime: Output only. The time when the asset was created.
     description: Optional. Description of the asset.
-    discoverySpec: Required. Specification of the discovery feature applied to
-      data referenced by this asset.
+    discoverySpec: Optional. Specification of the discovery feature applied to
+      data referenced by this asset. When this spec is left unset, the asset
+      will use the spec set on the parent zone.
     discoveryStatus: Output only. Status of the discovery feature applied to
       data referenced by this asset.
     displayName: Optional. User friendly display name.
@@ -1145,7 +1264,9 @@ class GoogleCloudDataplexV1AssetDiscoverySpec(_messages.Message):
       specified at the zone level. When configured as INHERIT some fields in
       this config are ignored and the zone level configuration is used
       instead. All fields that behave this way are called out as such via
-      documentation.
+      documentation. Deprecated: Rather than configure inheritance behavior
+      via this enum, users can enable inheritance by omitting the discovery
+      config entirely.
 
   Fields:
     enabled: Optional. Whether discovery is enabled. When inheritance_mode is
@@ -1167,6 +1288,8 @@ class GoogleCloudDataplexV1AssetDiscoverySpec(_messages.Message):
       zone level. When configured as INHERIT some fields in this config are
       ignored and the zone level configuration is used instead. All fields
       that behave this way are called out as such via documentation.
+      Deprecated: Rather than configure inheritance behavior via this enum,
+      users can enable inheritance by omitting the discovery config entirely.
     publishing: Optional. Settings to manage metadata publishing for the zone.
     schedule: Optional. Cron schedule (https://en.wikipedia.org/wiki/Cron) for
       running discovery jobs periodically. Discovery jobs must be scheduled at
@@ -1178,7 +1301,9 @@ class GoogleCloudDataplexV1AssetDiscoverySpec(_messages.Message):
     in this config override any values specified at the zone level. When
     configured as INHERIT some fields in this config are ignored and the zone
     level configuration is used instead. All fields that behave this way are
-    called out as such via documentation.
+    called out as such via documentation. Deprecated: Rather than configure
+    inheritance behavior via this enum, users can enable inheritance by
+    omitting the discovery config entirely.
 
     Values:
       INHERITANCE_MODE_UNSPECIFIED: Unspecified inheritance mode that is
@@ -1486,6 +1611,133 @@ class GoogleCloudDataplexV1AssetStatus(_messages.Message):
   updateTime = _messages.StringField(3)
 
 
+class GoogleCloudDataplexV1Entity(_messages.Message):
+  r"""Represents tables and fileset metadata contained within a Zone.
+
+  Enums:
+    SystemValueValuesEnum: Required. Identifies the storage system of the
+      entity data.
+    TypeValueValuesEnum: Required. The type of entity.
+
+  Fields:
+    asset: Required. The name of the asset associated with the storage
+      location containing the entity data.
+    catalogEntry: Output only. The name of the associated Data Catalog entry.
+    compatibility: Output only. Metadata stores the entity is compatible with.
+    compatibilityDeprecated: Output only. Metadata stores the entity is
+      compatible with.
+    createTime: Output only. The time when the entity was created.
+    dataPath: Required. Immutable. The storage path of the entity data. For
+      Cloud Storage data, this is the fully-qualified path to the entity, such
+      as gs://bucket/path/to/data. For BigQuery data, this is the name of the
+      table resource such as
+      projects/project_id/datasets/dataset_id/tables/table_id.
+    dataPathPattern: Optional. The set of items within the data path
+      constituting the data in the entity represented as a glob path. Eg.
+      gs://bucket/path/to/data/**/*.csv.
+    description: Optional. User friendly longer description text.
+    displayName: Optional. User friendly display name.
+    etag: Optional. The etag for this entity. Required for update requests, it
+      must match the server's etag.
+    format: Required. Identifies the storage format of the entity data. This
+      does not apply to entities with data stored in BigQuery.
+    id: Required. A user provide entity ID. It is mutable and will be used for
+      the published table name.
+    name: Output only. Immutable. The resource name of the entity, of the
+      form: projects/{project_number}/locations/{location_id}/lakes/{lake_id}/
+      zones/{zone_id}/entities/{entity} The {entity} is a generated unique ID.
+    schema: Required. The description of the data structure and layout. Schema
+      is not included in list responses and only included in SCHEMA and FULL
+      entity views of get entity response.
+    system: Required. Identifies the storage system of the entity data.
+    type: Required. The type of entity.
+    updateTime: Output only. The time when the entity was last updated.
+  """
+
+  class SystemValueValuesEnum(_messages.Enum):
+    r"""Required. Identifies the storage system of the entity data.
+
+    Values:
+      STORAGE_SYSTEM_UNSPECIFIED: StorageSystem unspecified.
+      CLOUD_STORAGE: The entity data is contained within a Cloud Storage
+        bucket.
+      BIGQUERY: The entity data is contained within a BigQuery dataset.
+    """
+    STORAGE_SYSTEM_UNSPECIFIED = 0
+    CLOUD_STORAGE = 1
+    BIGQUERY = 2
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Required. The type of entity.
+
+    Values:
+      TYPE_UNSPECIFIED: Type unspecified.
+      TABLE: Structured and semi-structured data.
+      FILESET: Unstructured data.
+    """
+    TYPE_UNSPECIFIED = 0
+    TABLE = 1
+    FILESET = 2
+
+  asset = _messages.StringField(1)
+  catalogEntry = _messages.StringField(2)
+  compatibility = _messages.MessageField('GoogleCloudDataplexV1EntityCompatibilityStatus', 3)
+  compatibilityDeprecated = _messages.MessageField('GoogleCloudDataplexV1EntityCompatibility', 4)
+  createTime = _messages.StringField(5)
+  dataPath = _messages.StringField(6)
+  dataPathPattern = _messages.StringField(7)
+  description = _messages.StringField(8)
+  displayName = _messages.StringField(9)
+  etag = _messages.StringField(10)
+  format = _messages.MessageField('GoogleCloudDataplexV1StorageFormat', 11)
+  id = _messages.StringField(12)
+  name = _messages.StringField(13)
+  schema = _messages.MessageField('GoogleCloudDataplexV1Schema', 14)
+  system = _messages.EnumField('SystemValueValuesEnum', 15)
+  type = _messages.EnumField('TypeValueValuesEnum', 16)
+  updateTime = _messages.StringField(17)
+
+
+class GoogleCloudDataplexV1EntityCompatibility(_messages.Message):
+  r"""Metadata stores the entity is compatible with.
+
+  Fields:
+    bigquery: Output only. Whether the entity can be represented in BigQuery.
+    hiveMetastore: Output only. Whether the entity can be represented in Hive
+      Metastore.
+  """
+
+  bigquery = _messages.BooleanField(1)
+  hiveMetastore = _messages.BooleanField(2)
+
+
+class GoogleCloudDataplexV1EntityCompatibilityStatus(_messages.Message):
+  r"""Provides information about compatibility with various metadata stores.
+
+  Fields:
+    bigquery: Output only. Whether this entity is compatible with BigQuery.
+    hiveMetastore: Output only. Whether this entity is compatible with Hive
+      Metastore.
+  """
+
+  bigquery = _messages.MessageField('GoogleCloudDataplexV1EntityCompatibilityStatusCompatibility', 1)
+  hiveMetastore = _messages.MessageField('GoogleCloudDataplexV1EntityCompatibilityStatusCompatibility', 2)
+
+
+class GoogleCloudDataplexV1EntityCompatibilityStatusCompatibility(_messages.Message):
+  r"""Provides information about compatibility for a specific metadata store.
+
+  Fields:
+    compatible: Output only. Whether the entity is compatible and can be
+      represented in the metadata store.
+    reason: Output only. Provides additional detail if the entity is
+      incompatible with the metadata store.
+  """
+
+  compatible = _messages.BooleanField(1)
+  reason = _messages.StringField(2)
+
+
 class GoogleCloudDataplexV1JobEvent(_messages.Message):
   r"""The payload associated with Job logs that contains events describing
   jobs that have run within a Lake.
@@ -1725,6 +1977,19 @@ class GoogleCloudDataplexV1ListAssetsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class GoogleCloudDataplexV1ListEntitiesResponse(_messages.Message):
+  r"""List metadata entities response.
+
+  Fields:
+    entities: Entities under the given parent zone.
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+  """
+
+  entities = _messages.MessageField('GoogleCloudDataplexV1Entity', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class GoogleCloudDataplexV1ListLakesResponse(_messages.Message):
   r"""List lakes response.
 
@@ -1738,6 +2003,19 @@ class GoogleCloudDataplexV1ListLakesResponse(_messages.Message):
   lakes = _messages.MessageField('GoogleCloudDataplexV1Lake', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
   unreachableLocations = _messages.StringField(3, repeated=True)
+
+
+class GoogleCloudDataplexV1ListPartitionsResponse(_messages.Message):
+  r"""List metadata partitions response.
+
+  Fields:
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+    partitions: Partitions under the given parent entity.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  partitions = _messages.MessageField('GoogleCloudDataplexV1Partition', 2, repeated=True)
 
 
 class GoogleCloudDataplexV1ListZonesResponse(_messages.Message):
@@ -1918,6 +2196,28 @@ class GoogleCloudDataplexV1OperationMetadata(_messages.Message):
   verb = _messages.StringField(7)
 
 
+class GoogleCloudDataplexV1Partition(_messages.Message):
+  r"""Represents partition metadata contained within Entity instances.
+
+  Fields:
+    etag: Optional. The etag for this partitioin. Required for update
+      requests, it must match the server's etag.
+    location: Required. Immutable. The location of the entity data within the
+      partition. Eg. gs://bucket/path/to/entity/key1=value1/key2=value2
+    name: Output only. The resource name of the entity, of the form: projects/
+      {project_number}/locations/{location_id}/lakes/{lake_id}/zones/{zone_id}
+      /entities/{entity}/partitions/{partition} The {partition} is a generated
+      unique ID.
+    values: Required. Immutable. The set of values representing the partition.
+      These correspond to the partition schema defined in the parent entity.
+  """
+
+  etag = _messages.StringField(1)
+  location = _messages.StringField(2)
+  name = _messages.StringField(3)
+  values = _messages.StringField(4, repeated=True)
+
+
 class GoogleCloudDataplexV1ResolveAssetActionsRequest(_messages.Message):
   r"""ResolveAssetActions request."""
 
@@ -1928,6 +2228,171 @@ class GoogleCloudDataplexV1ResolveLakeActionsRequest(_messages.Message):
 
 class GoogleCloudDataplexV1ResolveZoneActionsRequest(_messages.Message):
   r"""ResolveZoneActions request."""
+
+
+class GoogleCloudDataplexV1Schema(_messages.Message):
+  r"""The schema information describing the structure and layout of the data.
+
+  Enums:
+    PartitionStyleValueValuesEnum: Optional. The structure of paths containing
+      partition data within the entity.
+
+  Fields:
+    fields: Optional. The sequence of fields describing data in table
+      entities.
+    partitionFields: Optional. The sequence of fields describing the partition
+      structure in entities. If this is empty, there are no partitions within
+      the data.
+    partitionStyle: Optional. The structure of paths containing partition data
+      within the entity.
+    userManaged: Required. Whether the schema is user managed, or managed by
+      the service. User managed schemas are not automatically updated by
+      discovery jobs.
+  """
+
+  class PartitionStyleValueValuesEnum(_messages.Enum):
+    r"""Optional. The structure of paths containing partition data within the
+    entity.
+
+    Values:
+      PARTITION_STYLE_UNSPECIFIED: PartitionStyle unspecified
+      HIVE_COMPATIBLE: Partitions are hive-compatible. Eg.
+        gs://bucket/path/to/table/dt=2019-10-31/lang=en Eg.
+        gs://bucket/path/to/table/dt=2019-10-31/lang=en/late
+    """
+    PARTITION_STYLE_UNSPECIFIED = 0
+    HIVE_COMPATIBLE = 1
+
+  fields = _messages.MessageField('GoogleCloudDataplexV1SchemaSchemaField', 1, repeated=True)
+  partitionFields = _messages.MessageField('GoogleCloudDataplexV1SchemaPartitionField', 2, repeated=True)
+  partitionStyle = _messages.EnumField('PartitionStyleValueValuesEnum', 3)
+  userManaged = _messages.BooleanField(4)
+
+
+class GoogleCloudDataplexV1SchemaPartitionField(_messages.Message):
+  r"""Represents a key field within the entity's partition structure.
+
+  Enums:
+    TypeValueValuesEnum: Required. The type of the field.
+
+  Fields:
+    name: Required. The name of the field.
+    type: Required. The type of the field.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Required. The type of the field.
+
+    Values:
+      TYPE_UNSPECIFIED: SchemaType unspecified.
+      BOOLEAN: Boolean field.
+      BYTE: Single byte numeric field.
+      INT16: 16-bit numeric field.
+      INT32: 32-bit numeric field.
+      INT64: 64-bit numeric field.
+      FLOAT: Floating point numeric field.
+      DOUBLE: Double precision numeric field.
+      DECIMAL: Real value numeric field.
+      STRING: Sequence of characters field.
+      BINARY: Sequence of bytes field.
+      TIMESTAMP: Date and time field.
+      DATE: Date field.
+      TIME: Time field.
+      RECORD: Structured field. The nested fields define the structure of the
+        map. If all the nested fields are nullable, this represents a union.
+    """
+    TYPE_UNSPECIFIED = 0
+    BOOLEAN = 1
+    BYTE = 2
+    INT16 = 3
+    INT32 = 4
+    INT64 = 5
+    FLOAT = 6
+    DOUBLE = 7
+    DECIMAL = 8
+    STRING = 9
+    BINARY = 10
+    TIMESTAMP = 11
+    DATE = 12
+    TIME = 13
+    RECORD = 14
+
+  name = _messages.StringField(1)
+  type = _messages.EnumField('TypeValueValuesEnum', 2)
+
+
+class GoogleCloudDataplexV1SchemaSchemaField(_messages.Message):
+  r"""Represents a column field within a table schema.
+
+  Enums:
+    ModeValueValuesEnum: Required. Additional field semantics.
+    TypeValueValuesEnum: Required. The type of the field.
+
+  Fields:
+    description: Optional. User friendly field description.
+    fields: Optional. Any nested field for complex types.
+    mode: Required. Additional field semantics.
+    name: Required. The name of the field.
+    type: Required. The type of the field.
+  """
+
+  class ModeValueValuesEnum(_messages.Enum):
+    r"""Required. Additional field semantics.
+
+    Values:
+      MODE_UNSPECIFIED: Mode unspecified.
+      REQUIRED: The field has required semantics.
+      NULLABLE: The field has optional semantics and may be null.
+      REPEATED: The field has repeated (0 or more) semantics and is a list of
+        values.
+    """
+    MODE_UNSPECIFIED = 0
+    REQUIRED = 1
+    NULLABLE = 2
+    REPEATED = 3
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Required. The type of the field.
+
+    Values:
+      TYPE_UNSPECIFIED: SchemaType unspecified.
+      BOOLEAN: Boolean field.
+      BYTE: Single byte numeric field.
+      INT16: 16-bit numeric field.
+      INT32: 32-bit numeric field.
+      INT64: 64-bit numeric field.
+      FLOAT: Floating point numeric field.
+      DOUBLE: Double precision numeric field.
+      DECIMAL: Real value numeric field.
+      STRING: Sequence of characters field.
+      BINARY: Sequence of bytes field.
+      TIMESTAMP: Date and time field.
+      DATE: Date field.
+      TIME: Time field.
+      RECORD: Structured field. The nested fields define the structure of the
+        map. If all the nested fields are nullable, this represents a union.
+    """
+    TYPE_UNSPECIFIED = 0
+    BOOLEAN = 1
+    BYTE = 2
+    INT16 = 3
+    INT32 = 4
+    INT64 = 5
+    FLOAT = 6
+    DOUBLE = 7
+    DECIMAL = 8
+    STRING = 9
+    BINARY = 10
+    TIMESTAMP = 11
+    DATE = 12
+    TIME = 13
+    RECORD = 14
+
+  description = _messages.StringField(1)
+  fields = _messages.MessageField('GoogleCloudDataplexV1SchemaSchemaField', 2, repeated=True)
+  mode = _messages.EnumField('ModeValueValuesEnum', 3)
+  name = _messages.StringField(4)
+  type = _messages.EnumField('TypeValueValuesEnum', 5)
 
 
 class GoogleCloudDataplexV1SecurityStatus(_messages.Message):
@@ -1960,6 +2425,118 @@ class GoogleCloudDataplexV1SecurityStatus(_messages.Message):
   message = _messages.StringField(1)
   state = _messages.EnumField('StateValueValuesEnum', 2)
   updateTime = _messages.StringField(3)
+
+
+class GoogleCloudDataplexV1StorageFormat(_messages.Message):
+  r"""Describes the format of the data within its storage location.
+
+  Enums:
+    CompressionFormatValueValuesEnum: Optional. The compression type
+      associated with the stored data. If this is not specified, the data is
+      uncompressed.
+    FormatValueValuesEnum: Required. The data format associated with the
+      stored data, represented using content type values.
+
+  Fields:
+    compressionFormat: Optional. The compression type associated with the
+      stored data. If this is not specified, the data is uncompressed.
+    csv: Optional. Additional information about CSV formatted data.
+    format: Required. The data format associated with the stored data,
+      represented using content type values.
+    json: Optional. Additional information about CSV formatted data.
+    mimeType: Optional. The mime type descriptor for the data. This is valid
+      for formats other than UNKNOWN and MIXED.
+    userManaged: Required. Whether the format and content type are user-
+      managed or managed by the service. User managed formats are not
+      automatically updated by discovery jobs.
+  """
+
+  class CompressionFormatValueValuesEnum(_messages.Enum):
+    r"""Optional. The compression type associated with the stored data. If
+    this is not specified, the data is uncompressed.
+
+    Values:
+      COMPRESSION_FORMAT_UNSPECIFIED: CompressionFormat unspecified. Implies
+        uncompressed data.
+      ZIP: Zip compressed set of files.
+      GZIP: GZip compressed set of files.
+      BZIP2: BZip2 compressed set of files.
+    """
+    COMPRESSION_FORMAT_UNSPECIFIED = 0
+    ZIP = 1
+    GZIP = 2
+    BZIP2 = 3
+
+  class FormatValueValuesEnum(_messages.Enum):
+    r"""Required. The data format associated with the stored data, represented
+    using content type values.
+
+    Values:
+      FORMAT_UNSPECIFIED: Format unspecified.
+      PARQUET: Parquet-formatted structured data.
+      AVRO: Avro-formatted structured data.
+      ORC: Orc-formatted structured data.
+      CSV: Csv-formatted semi-structured data.
+      JSON: Json-formatted semi-structured data.
+      IMAGE: Image data formats (such as jpg, png, etc.)
+      AUDIO: Audio data formats (such as mp3, wav, etc.)
+      VIDEO: Video data formats (such as mp4, mpg, etc.)
+      TEXT: Textual data formats (such as txt, xml, etc.)
+      TFRECORD: TensorFlow record format
+      OTHER: Data that doesn't match a specific format.
+      UNKNOWN: Data of an unknown format.
+    """
+    FORMAT_UNSPECIFIED = 0
+    PARQUET = 1
+    AVRO = 2
+    ORC = 3
+    CSV = 4
+    JSON = 5
+    IMAGE = 6
+    AUDIO = 7
+    VIDEO = 8
+    TEXT = 9
+    TFRECORD = 10
+    OTHER = 11
+    UNKNOWN = 12
+
+  compressionFormat = _messages.EnumField('CompressionFormatValueValuesEnum', 1)
+  csv = _messages.MessageField('GoogleCloudDataplexV1StorageFormatCsvOptions', 2)
+  format = _messages.EnumField('FormatValueValuesEnum', 3)
+  json = _messages.MessageField('GoogleCloudDataplexV1StorageFormatJsonOptions', 4)
+  mimeType = _messages.StringField(5)
+  userManaged = _messages.BooleanField(6)
+
+
+class GoogleCloudDataplexV1StorageFormatCsvOptions(_messages.Message):
+  r"""Describes CSV and similar semi-structured data formats.
+
+  Fields:
+    delimiter: Optional. The delimiter being used to separate values. This
+      defaults to ','.
+    encoding: Optional. The character encoding of the data. The default is
+      UTF-8.
+    headerRows: Optional. The number of rows to interpret as header rows that
+      should be skipped when reading data rows.
+    quote: Optional. The character used to quote column values. This defaults
+      to empty, implying unquoted data.
+  """
+
+  delimiter = _messages.StringField(1)
+  encoding = _messages.StringField(2)
+  headerRows = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  quote = _messages.StringField(4)
+
+
+class GoogleCloudDataplexV1StorageFormatJsonOptions(_messages.Message):
+  r"""Describes JSON data format
+
+  Fields:
+    encoding: Optional. The character encoding of the data. The default is
+      UTF-8.
+  """
+
+  encoding = _messages.StringField(1)
 
 
 class GoogleCloudDataplexV1Zone(_messages.Message):

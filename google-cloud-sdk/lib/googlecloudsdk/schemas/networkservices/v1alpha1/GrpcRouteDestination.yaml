@@ -22,6 +22,11 @@ properties:
         type: string
       version:
         type: string
+  UNKNOWN:
+    type: array
+    description: Unknown API fields that cannot be imported.
+    items:
+      type: string
   serviceName:
     description: |-
       The URL of a destination service to which to route traffic. Must refer to

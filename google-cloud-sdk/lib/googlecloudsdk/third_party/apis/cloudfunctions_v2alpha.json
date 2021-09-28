@@ -618,6 +618,60 @@
         }
       }
     },
+    "ListRuntimesResponse": {
+      "id": "ListRuntimesResponse",
+      "description": "Response for the `ListRuntimes` method.",
+      "type": "object",
+      "properties": {
+        "runtimes": {
+          "description": "The runtimes that match the request.",
+          "type": "array",
+          "items": {
+            "$ref": "Runtime"
+          }
+        }
+      }
+    },
+    "Runtime": {
+      "id": "Runtime",
+      "description": "Describes a runtime and any special information (e.g., deprecation status) related to it.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The name of the runtime, e.g., 'go113', 'nodejs12', etc.",
+          "type": "string"
+        },
+        "stage": {
+          "description": "The stage of life this runtime is in, e.g., BETA, GA, etc.",
+          "type": "string",
+          "enumDescriptions": [
+            "Not specified.",
+            "The runtime is in development.",
+            "The runtime is in the Alpha stage.",
+            "The runtime is in the Beta stage.",
+            "The runtime is generally available.",
+            "The runtime is deprecated.",
+            "The runtime is no longer supported."
+          ],
+          "enum": [
+            "RUNTIME_STAGE_UNSPECIFIED",
+            "DEVELOPMENT",
+            "ALPHA",
+            "BETA",
+            "GA",
+            "DEPRECATED",
+            "DECOMMISSIONED"
+          ]
+        },
+        "warnings": {
+          "description": "Warning messages, e.g., a deprecation warning.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
     "SetIamPolicyRequest": {
       "id": "SetIamPolicyRequest",
       "description": "Request message for `SetIamPolicy` method.",
@@ -1575,6 +1629,35 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
+                }
+              }
+            },
+            "runtimes": {
+              "methods": {
+                "list": {
+                  "id": "cloudfunctions.projects.locations.runtimes.list",
+                  "path": "v2alpha/{+parent}/runtimes",
+                  "flatPath": "v2alpha/projects/{projectsId}/locations/{locationsId}/runtimes",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The project and location from which the runtimes should be listed, specified in the format `projects\/*\/locations\/*`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListRuntimesResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Returns a list of runtimes that are supported for the requested project."
                 }
               }
             }

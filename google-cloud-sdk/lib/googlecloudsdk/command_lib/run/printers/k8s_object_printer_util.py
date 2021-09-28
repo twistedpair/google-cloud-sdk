@@ -34,16 +34,22 @@ def OrderByKey(map_):
 
 
 def FormatReadyMessage(record):
+  """Returns the record's status condition Ready (or equivalent) message."""
   if record.ready_condition and record.ready_condition['message']:
     symbol, color = record.ReadySymbolAndColor()
     return console_attr.GetConsoleAttr().Colorize(
         textwrap.fill('{} {}'.format(
             symbol, record.ready_condition['message']), 100), color)
+  elif record.status is None:
+    return console_attr.GetConsoleAttr().Colorize(
+        'Error getting status information', 'red')
   else:
     return ''
 
 
 def LastUpdatedMessage(record):
+  if record.status is None:
+    return 'Unknown update information'
   modifier = record.last_modifier or '?'
   last_transition_time = '?'
   for condition in record.status.conditions:
@@ -96,3 +102,7 @@ def GetBinAuthzPolicy(record):
 
 def GetBinAuthzBreakglass(record):
   return record.annotations.get(k8s_object.BINAUTHZ_BREAKGLASS_ANNOTATION)
+
+
+def GetExecutionEnvironment(record):
+  return record.annotations.get(k8s_object.EXECUTION_ENVIRONMENT_ANNOTATION)

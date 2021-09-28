@@ -91,7 +91,7 @@ def AddResourceTypeFlags(parser):
       help="""List of Config Connector KRM Kinds to export.
   For a full list of supported resource types for a given parent scope run:
 
-  $ {parent_command} list-resources --[project|organization|folder]=<PARENT>
+  $ {parent_command} list-resource-types --[project|organization|folder]=<PARENT>
   """)
   group.add_argument(
       '--resource-types-file',
@@ -101,7 +101,7 @@ def AddResourceTypeFlags(parser):
       Config Connector KRM Kinds to export.
   For a full list of supported resource types for a given parent scope run:
 
-  $ {parent_command} list-resources --[project|organization|folder]=<PARENT>
+  $ {parent_command} list-resource-types --[project|organization|folder]=<PARENT>
   """)
 
 

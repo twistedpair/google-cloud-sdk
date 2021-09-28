@@ -804,6 +804,7 @@ class GoogleCloudGkemulticloudV1AwsCluster(_messages.Message):
     etag: Allows clients to perform consistent read-modify-writes through
       optimistic concurrency control. May be sent on update and delete
       requests to ensure the client has an up-to-date value before proceeding.
+    fleet: Optional. Fleet configuration.
     name: The name of this resource. Cluster names are formatted as
       `projects//locations//awsClusters/`. See [Resource
       Names](https://cloud.google.com/apis/design/resource_names) for more
@@ -883,13 +884,14 @@ class GoogleCloudGkemulticloudV1AwsCluster(_messages.Message):
   description = _messages.StringField(7)
   endpoint = _messages.StringField(8)
   etag = _messages.StringField(9)
-  name = _messages.StringField(10)
-  networking = _messages.MessageField('GoogleCloudGkemulticloudV1AwsClusterNetworking', 11)
-  reconciling = _messages.BooleanField(12)
-  state = _messages.EnumField('StateValueValuesEnum', 13)
-  uid = _messages.StringField(14)
-  updateTime = _messages.StringField(15)
-  workloadIdentityConfig = _messages.MessageField('GoogleCloudGkemulticloudV1WorkloadIdentityConfig', 16)
+  fleet = _messages.MessageField('GoogleCloudGkemulticloudV1Fleet', 10)
+  name = _messages.StringField(11)
+  networking = _messages.MessageField('GoogleCloudGkemulticloudV1AwsClusterNetworking', 12)
+  reconciling = _messages.BooleanField(13)
+  state = _messages.EnumField('StateValueValuesEnum', 14)
+  uid = _messages.StringField(15)
+  updateTime = _messages.StringField(16)
+  workloadIdentityConfig = _messages.MessageField('GoogleCloudGkemulticloudV1WorkloadIdentityConfig', 17)
 
 
 class GoogleCloudGkemulticloudV1AwsClusterNetworking(_messages.Message):
@@ -928,6 +930,16 @@ class GoogleCloudGkemulticloudV1AwsClusterUser(_messages.Message):
   username = _messages.StringField(1)
 
 
+class GoogleCloudGkemulticloudV1AwsConfigEncryption(_messages.Message):
+  r"""Config encryption for user data.
+
+  Fields:
+    kmsKeyArn: Required. The ARN of the AWS KMS key used to encrypt user data.
+  """
+
+  kmsKeyArn = _messages.StringField(1)
+
+
 class GoogleCloudGkemulticloudV1AwsControlPlane(_messages.Message):
   r"""ControlPlane defines common parameters between control plane nodes.
 
@@ -940,6 +952,7 @@ class GoogleCloudGkemulticloudV1AwsControlPlane(_messages.Message):
   Fields:
     awsServicesAuthentication: Required. Authentication configuration for
       management of AWS resources.
+    configEncryption: Required. Config encryption for user data.
     databaseEncryption: Required. The ARN of the AWS KMS key used to encrypt
       cluster secrets.
     iamInstanceProfile: Required. The name of the AWS IAM instance pofile to
@@ -1003,17 +1016,18 @@ class GoogleCloudGkemulticloudV1AwsControlPlane(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   awsServicesAuthentication = _messages.MessageField('GoogleCloudGkemulticloudV1AwsServicesAuthentication', 1)
-  databaseEncryption = _messages.MessageField('GoogleCloudGkemulticloudV1AwsDatabaseEncryption', 2)
-  iamInstanceProfile = _messages.StringField(3)
-  instanceType = _messages.StringField(4)
-  mainVolume = _messages.MessageField('GoogleCloudGkemulticloudV1AwsVolumeTemplate', 5)
-  proxyConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AwsProxyConfig', 6)
-  rootVolume = _messages.MessageField('GoogleCloudGkemulticloudV1AwsVolumeTemplate', 7)
-  securityGroupIds = _messages.StringField(8, repeated=True)
-  sshConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AwsSshConfig', 9)
-  subnetIds = _messages.StringField(10, repeated=True)
-  tags = _messages.MessageField('TagsValue', 11)
-  version = _messages.StringField(12)
+  configEncryption = _messages.MessageField('GoogleCloudGkemulticloudV1AwsConfigEncryption', 2)
+  databaseEncryption = _messages.MessageField('GoogleCloudGkemulticloudV1AwsDatabaseEncryption', 3)
+  iamInstanceProfile = _messages.StringField(4)
+  instanceType = _messages.StringField(5)
+  mainVolume = _messages.MessageField('GoogleCloudGkemulticloudV1AwsVolumeTemplate', 6)
+  proxyConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AwsProxyConfig', 7)
+  rootVolume = _messages.MessageField('GoogleCloudGkemulticloudV1AwsVolumeTemplate', 8)
+  securityGroupIds = _messages.StringField(9, repeated=True)
+  sshConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AwsSshConfig', 10)
+  subnetIds = _messages.StringField(11, repeated=True)
+  tags = _messages.MessageField('TagsValue', 12)
+  version = _messages.StringField(13)
 
 
 class GoogleCloudGkemulticloudV1AwsDatabaseEncryption(_messages.Message):
@@ -1061,6 +1075,7 @@ class GoogleCloudGkemulticloudV1AwsNodeConfig(_messages.Message):
       be up to 255 Unicode characters.
 
   Fields:
+    configEncryption: Required. Config encryption for user data.
     iamInstanceProfile: Required. The name of the AWS IAM role assigned to
       nodes in the pool.
     instanceType: Optional. The AWS instance type. When unspecified, it
@@ -1137,15 +1152,16 @@ class GoogleCloudGkemulticloudV1AwsNodeConfig(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  iamInstanceProfile = _messages.StringField(1)
-  instanceType = _messages.StringField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  proxyConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AwsProxyConfig', 4)
-  rootVolume = _messages.MessageField('GoogleCloudGkemulticloudV1AwsVolumeTemplate', 5)
-  securityGroupIds = _messages.StringField(6, repeated=True)
-  sshConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AwsSshConfig', 7)
-  tags = _messages.MessageField('TagsValue', 8)
-  taints = _messages.MessageField('GoogleCloudGkemulticloudV1NodeTaint', 9, repeated=True)
+  configEncryption = _messages.MessageField('GoogleCloudGkemulticloudV1AwsConfigEncryption', 1)
+  iamInstanceProfile = _messages.StringField(2)
+  instanceType = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  proxyConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AwsProxyConfig', 5)
+  rootVolume = _messages.MessageField('GoogleCloudGkemulticloudV1AwsVolumeTemplate', 6)
+  securityGroupIds = _messages.StringField(7, repeated=True)
+  sshConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AwsSshConfig', 8)
+  tags = _messages.MessageField('TagsValue', 9)
+  taints = _messages.MessageField('GoogleCloudGkemulticloudV1NodeTaint', 10, repeated=True)
 
 
 class GoogleCloudGkemulticloudV1AwsNodePool(_messages.Message):
@@ -1431,6 +1447,7 @@ class GoogleCloudGkemulticloudV1AzureClient(_messages.Message):
       formatted as `projects//locations//azureClients/`. See [Resource
       Names](https://cloud.google.com/apis/design/resource_names) for more
       details on Google Cloud resource names.
+    pemCertificate: Output only. The PEM encoded x509 certificate.
     tenantId: Required. The Azure Active Directory Tenant ID.
     uid: Output only. A globally unique identifier for the client.
   """
@@ -1439,8 +1456,9 @@ class GoogleCloudGkemulticloudV1AzureClient(_messages.Message):
   certificate = _messages.BytesField(2)
   createTime = _messages.StringField(3)
   name = _messages.StringField(4)
-  tenantId = _messages.StringField(5)
-  uid = _messages.StringField(6)
+  pemCertificate = _messages.StringField(5)
+  tenantId = _messages.StringField(6)
+  uid = _messages.StringField(7)
 
 
 class GoogleCloudGkemulticloudV1AzureCluster(_messages.Message):
@@ -1490,6 +1508,7 @@ class GoogleCloudGkemulticloudV1AzureCluster(_messages.Message):
     etag: Allows clients to perform consistent read-modify-writes through
       optimistic concurrency control. May be sent on update and delete
       requests to ensure the client has an up-to-date value before proceeding.
+    fleet: Optional. Fleet configuration.
     name: The name of this resource. Cluster names are formatted as
       `projects//locations//azureClusters/`. See [Resource
       Names](https://cloud.google.com/apis/design/resource_names) for more
@@ -1573,14 +1592,15 @@ class GoogleCloudGkemulticloudV1AzureCluster(_messages.Message):
   description = _messages.StringField(8)
   endpoint = _messages.StringField(9)
   etag = _messages.StringField(10)
-  name = _messages.StringField(11)
-  networking = _messages.MessageField('GoogleCloudGkemulticloudV1AzureClusterNetworking', 12)
-  reconciling = _messages.BooleanField(13)
-  resourceGroupId = _messages.StringField(14)
-  state = _messages.EnumField('StateValueValuesEnum', 15)
-  uid = _messages.StringField(16)
-  updateTime = _messages.StringField(17)
-  workloadIdentityConfig = _messages.MessageField('GoogleCloudGkemulticloudV1WorkloadIdentityConfig', 18)
+  fleet = _messages.MessageField('GoogleCloudGkemulticloudV1Fleet', 11)
+  name = _messages.StringField(12)
+  networking = _messages.MessageField('GoogleCloudGkemulticloudV1AzureClusterNetworking', 13)
+  reconciling = _messages.BooleanField(14)
+  resourceGroupId = _messages.StringField(15)
+  state = _messages.EnumField('StateValueValuesEnum', 16)
+  uid = _messages.StringField(17)
+  updateTime = _messages.StringField(18)
+  workloadIdentityConfig = _messages.MessageField('GoogleCloudGkemulticloudV1WorkloadIdentityConfig', 19)
 
 
 class GoogleCloudGkemulticloudV1AzureClusterNetworking(_messages.Message):
@@ -1700,10 +1720,10 @@ class GoogleCloudGkemulticloudV1AzureDatabaseEncryption(_messages.Message):
   Key Vault.
 
   Fields:
-    kmsKeyIdentifier: Required. The URL the of the Azure Key Vault key (with
+    kmsKeyIdentifier: Optional. The URL the of the Azure Key Vault key (with
       its version) to use to encrypt / decrypt data. For example:
       `https://.vault.azure.net/keys//`
-    resourceGroupId: Required. The ARM ID the of the Azure resource group
+    resourceGroupId: Optional. The ARM ID the of the Azure resource group
       containing the Azure Key Vault key. Example:
       `/subscriptions//resourceGroups/`
   """
@@ -2048,6 +2068,25 @@ class GoogleCloudGkemulticloudV1AzureSshConfig(_messages.Message):
   """
 
   authorizedKey = _messages.StringField(1)
+
+
+class GoogleCloudGkemulticloudV1Fleet(_messages.Message):
+  r"""Fleet related configuration. Fleets are a Google Cloud concept for
+  logically organizing clusters, letting you use and manage multi-cluster
+  capabilities and apply consistent policies across your systems. See [Anthos
+  Fleets](https://cloud.google.com/anthos/multicluster-management/fleets) for
+  more details on Anthos multi-cluster capabilities using Fleets.
+
+  Fields:
+    membership: Output only. The name of the managed Hub Membership resource
+      associated to this cluster. Membership names are formatted as
+      `projects//locations/global/membership/`.
+    project: Required. The name of the Fleet host project where this cluster
+      will be registered. Project names are formatted as `projects/`.
+  """
+
+  membership = _messages.StringField(1)
+  project = _messages.StringField(2)
 
 
 class GoogleCloudGkemulticloudV1GenerateAwsAccessTokenResponse(_messages.Message):

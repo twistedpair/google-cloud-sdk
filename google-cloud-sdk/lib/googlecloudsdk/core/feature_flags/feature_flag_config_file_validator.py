@@ -24,7 +24,7 @@ import os
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core import yaml_validator
-from googlecloudsdk.core.feature_flags import parse
+from googlecloudsdk.core.feature_flags import config
 from googlecloudsdk.core.util import files
 
 SCHEMA_PATH = (
@@ -246,7 +246,7 @@ class Validator(object):
 
     config_file = files.ReadFileContents(self.config_path)
     for section_property in self.parsed_yaml:
-      values_list = parse.FeatureFlagsConfig(
+      values_list = config.FeatureFlagsConfig(
           config_file).properties[section_property].values
       first_value_type = type(values_list[0])
       for value in values_list:
@@ -266,7 +266,7 @@ class Validator(object):
     """
     config_file = files.ReadFileContents(self.config_path)
     for section_property in self.parsed_yaml:
-      values_list = parse.FeatureFlagsConfig(
+      values_list = config.FeatureFlagsConfig(
           config_file).properties[section_property].values
       section_name, property_name = section_property.split('/')
       section_instance = getattr(properties.VALUES, section_name)

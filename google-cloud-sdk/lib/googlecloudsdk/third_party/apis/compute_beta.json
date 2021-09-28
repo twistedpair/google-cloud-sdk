@@ -4,7 +4,7 @@
   "id": "compute:beta",
   "name": "compute",
   "version": "beta",
-  "revision": "20210910",
+  "revision": "20210920",
   "title": "Compute Engine API",
   "description": "Creates and runs virtual machines on Google Cloud Platform. ",
   "ownerDomain": "google.com",
@@ -820,7 +820,7 @@
           "type": "string"
         },
         "name": {
-          "description": "Name of the resource; provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression [a-z]([-a-z0-9]*[a-z0-9])?. The first character must be a lowercase letter, and all following characters (except for the last character) must be a dash, lowercase letter, or digit. The last character must be a lowercase letter or digit.",
+          "description": "Name of the resource; provided by the client when the resource is created. The name must be 1-63 characters long, and comply with RFC1035. Specifically, the name must be 1-63 characters long and match the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?`. The first character must be a lowercase letter, and all following characters (except for the last character) must be a dash, lowercase letter, or digit. The last character must be a lowercase letter or digit.",
           "pattern": "[a-z](?:[-a-z0-9]{0,61}[a-z0-9])?",
           "annotations": {
             "required": [
@@ -3535,11 +3535,11 @@
           "format": "int32"
         },
         "setPublicPtr": {
-          "description": "Specifies whether a public DNS 'PTR' record should be created to map the external IP address of the instance to a DNS domain name.",
+          "description": "Specifies whether a public DNS 'PTR' record should be created to map the external IP address of the instance to a DNS domain name. This field is not used in ipv6AccessConfig. A default PTR record will be created if the VM has external IPv6 range associated.",
           "type": "boolean"
         },
         "publicPtrDomainName": {
-          "description": "The DNS domain name for the public PTR record. You can set this field only if the `setPublicPtr` field is enabled.",
+          "description": "The DNS domain name for the public PTR record. You can set this field only if the `setPublicPtr` field is enabled in accessConfig. If this field is unspecified in ipv6AccessConfig, a default PTR record will be createc for first IP in associated external IPv6 range.",
           "type": "string"
         },
         "networkTier": {
@@ -4965,29 +4965,30 @@
           "$ref": "ShieldedVmConfig"
         },
         "reservationAffinity": {
-          "description": "Specifies the reservations that instances can consume from.",
+          "description": "Specifies the reservations that instances can consume from. Note that for MachineImage, this is not supported yet.",
           "$ref": "ReservationAffinity"
         },
         "shieldedInstanceConfig": {
+          "description": "Note that for MachineImage, this is not supported yet.",
           "$ref": "ShieldedInstanceConfig"
         },
         "displayDevice": {
-          "description": "Display Device properties to enable support for remote display products like: Teradici, VNC and TeamViewer",
+          "description": "Display Device properties to enable support for remote display products like: Teradici, VNC and TeamViewer Note that for MachineImage, this is not supported yet.",
           "$ref": "DisplayDevice"
         },
         "resourcePolicies": {
-          "description": "Resource policies (names, not ULRs) applied to instances created from these properties.",
+          "description": "Resource policies (names, not ULRs) applied to instances created from these properties. Note that for MachineImage, this is not supported yet.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "confidentialInstanceConfig": {
-          "description": "Specifies the Confidential Instance options.",
+          "description": "Specifies the Confidential Instance options. Note that for MachineImage, this is not supported yet.",
           "$ref": "ConfidentialInstanceConfig"
         },
         "postKeyRevocationActionType": {
-          "description": "PostKeyRevocationActionType of the instance.(will be deprecated soon)",
+          "description": "PostKeyRevocationActionType of the instance.",
           "type": "string",
           "enumDescriptions": [
             "Indicates user chose no operation.",
@@ -5001,7 +5002,7 @@
           ]
         },
         "privateIpv6GoogleAccess": {
-          "description": "The private IPv6 google access type for VMs. If not specified, use INHERIT_FROM_SUBNETWORK as default.",
+          "description": "The private IPv6 google access type for VMs. If not specified, use INHERIT_FROM_SUBNETWORK as default. Note that for MachineImage, this is not supported yet.",
           "type": "string",
           "enumDescriptions": [
             "Bidirectional private IPv6 access to\/from Google services. If specified, the subnetwork who is attached to the instance's default network interface will be assigned an internal IPv6 prefix if it doesn't have before.",
@@ -5015,10 +5016,11 @@
           ]
         },
         "advancedMachineFeatures": {
-          "description": "Controls for advanced machine-related behavior features.",
+          "description": "Controls for advanced machine-related behavior features. Note that for MachineImage, this is not supported yet.",
           "$ref": "AdvancedMachineFeatures"
         },
         "networkPerformanceConfig": {
+          "description": "Note that for MachineImage, this is not supported yet.",
           "$ref": "NetworkPerformanceConfig"
         }
       }
@@ -10537,7 +10539,7 @@
           "format": "int32"
         },
         "clientTtl": {
-          "description": "Specifies a separate client (e.g. browser client) maximum TTL. This is used to clamp the max-age (or Expires) value sent to the client. With FORCE_CACHE_ALL, the lesser of client_ttl and default_ttl is used for the response max-age directive, along with a \"public\" directive. For cacheable content in CACHE_ALL_STATIC mode, client_ttl clamps the max-age from the origin (if specified), or else sets the response max-age directive to the lesser of the client_ttl and default_ttl, and also ensures a \"public\" cache-control directive is present. If a client TTL is not specified, a default value (1 hour) will be used. The maximum allowed value is 86400s (1 day).",
+          "description": "Specifies a separate client (e.g. browser client) maximum TTL. This is used to clamp the max-age (or Expires) value sent to the client. With FORCE_CACHE_ALL, the lesser of client_ttl and default_ttl is used for the response max-age directive, along with a \"public\" directive. For cacheable content in CACHE_ALL_STATIC mode, client_ttl clamps the max-age from the origin (if specified), or else sets the response max-age directive to the lesser of the client_ttl and default_ttl, and also ensures a \"public\" cache-control directive is present. If a client TTL is not specified, a default value (1 hour) will be used. The maximum allowed value is 31,622,400s (1 year).",
           "type": "integer",
           "format": "int32"
         },
@@ -10890,6 +10892,7 @@
           "type": "string",
           "enumDescriptions": [
             "Signifies that this will be used for external HTTP(S), SSL Proxy, TCP Proxy, or Network Load Balancing",
+            "Signifies that this will be used for External Managed HTTP(S), SSL Proxy, or TCP Proxy Load Balancing.",
             "Signifies that this will be used for Internal TCP\/UDP Load Balancing.",
             "Signifies that this will be used for Internal HTTP(S) Load Balancing.",
             "Signifies that this will be used by Traffic Director.",
@@ -10897,6 +10900,7 @@
           ],
           "enum": [
             "EXTERNAL",
+            "EXTERNAL_MANAGED",
             "INTERNAL",
             "INTERNAL_MANAGED",
             "INTERNAL_SELF_MANAGED",
@@ -11190,7 +11194,7 @@
           "format": "int32"
         },
         "clientTtl": {
-          "description": "Specifies a separate client (e.g. browser client) maximum TTL. This is used to clamp the max-age (or Expires) value sent to the client. With FORCE_CACHE_ALL, the lesser of client_ttl and default_ttl is used for the response max-age directive, along with a \"public\" directive. For cacheable content in CACHE_ALL_STATIC mode, client_ttl clamps the max-age from the origin (if specified), or else sets the response max-age directive to the lesser of the client_ttl and default_ttl, and also ensures a \"public\" cache-control directive is present. If a client TTL is not specified, a default value (1 hour) will be used. The maximum allowed value is 86400s (1 day).",
+          "description": "Specifies a separate client (e.g. browser client) maximum TTL. This is used to clamp the max-age (or Expires) value sent to the client. With FORCE_CACHE_ALL, the lesser of client_ttl and default_ttl is used for the response max-age directive, along with a \"public\" directive. For cacheable content in CACHE_ALL_STATIC mode, client_ttl clamps the max-age from the origin (if specified), or else sets the response max-age directive to the lesser of the client_ttl and default_ttl, and also ensures a \"public\" cache-control directive is present. If a client TTL is not specified, a default value (1 hour) will be used. The maximum allowed value is 31,622,400s (1 year).",
           "type": "integer",
           "format": "int32"
         },
@@ -11499,6 +11503,11 @@
             "CONSISTENT_HASH_SUBSETTING",
             "NONE"
           ]
+        },
+        "subsetSize": {
+          "description": "The number of backends per backend group assigned to each proxy instance or each service mesh client. An input parameter to the `CONSISTENT_HASH_SUBSETTING` algorithm. Can only be set if `policy` is set to `CONSISTENT_HASH_SUBSETTING`. Can only be set if load balancing scheme is `INTERNAL_MANAGED` or `INTERNAL_SELF_MANAGED`. `subset_size` is optional for Internal HTTP(S) load balancing and required for Traffic Director. If you do not provide this value, Cloud Load Balancing will calculate it dynamically to optimize the number of proxies\/clients visible to each backend and vice versa. Must be greater than 0. If `subset_size` is larger than the number of backends\/endpoints, then subsetting is disabled.",
+          "type": "integer",
+          "format": "int32"
         }
       }
     },
@@ -14083,10 +14092,12 @@
             "",
             "",
             "",
+            "",
             ""
           ],
           "enum": [
             "EXTERNAL",
+            "EXTERNAL_MANAGED",
             "INTERNAL",
             "INTERNAL_MANAGED",
             "INTERNAL_SELF_MANAGED",
@@ -17957,7 +17968,7 @@
           "type": "boolean"
         },
         "postKeyRevocationActionType": {
-          "description": "PostKeyRevocationActionType of the instance. (will be deprecated soon)",
+          "description": "PostKeyRevocationActionType of the instance.",
           "type": "string",
           "enumDescriptions": [
             "Indicates user chose no operation.",

@@ -152,20 +152,6 @@ def GetEffectiveTokenUri(cred_json, key='token_uri'):
   return properties.VALUES.auth.DEFAULT_TOKEN_HOST
 
 
-class P12CredentialsGoogleAuth(google_auth_creds.Credentials):
-  """A fake google-auth credential to represent a p12 service account creds.
-
-  google-auth does not support the p12 service account credentials which was
-  demoted for years. This credential does not support refresh, so the token
-  passed to this class should be a fresh token.
-  """
-
-  def refresh(self, request):
-    # We cannot raise exception here because we don't know if the consumers will
-    # will refresh the loaded credentials or not.
-    pass
-
-
 @six.add_metaclass(abc.ABCMeta)
 class CredentialStore(object):
   """Abstract definition of credential store."""
@@ -253,10 +239,7 @@ class SqliteCredentialStore(CredentialStore):
     if item is None:
       return None
     if use_google_auth:
-      try:
-        return FromJsonGoogleAuth(item[0])
-      except UnknownCredentialsType:
-        pass
+      return FromJsonGoogleAuth(item[0])
     return FromJson(item[0])
 
   def Store(self, account_id, credentials):
@@ -766,11 +749,12 @@ class CredentialTypeGoogleAuth(enum.Enum):
     # global once google-auth is ready to replace oauth2client.
     # pylint: disable=g-import-not-at-top
     from google.oauth2 import service_account as google_auth_service_account
+    from googlecloudsdk.core.credentials import p12_service_account as google_auth_p12_service_account
     # pylint: enable=g-import-not-at-top
+    if isinstance(creds, google_auth_p12_service_account.Credentials):
+      return CredentialTypeGoogleAuth.P12_SERVICE_ACCOUNT
     if isinstance(creds, google_auth_service_account.Credentials):
       return CredentialTypeGoogleAuth.SERVICE_ACCOUNT
-    if isinstance(creds, P12CredentialsGoogleAuth):
-      return CredentialTypeGoogleAuth.P12_SERVICE_ACCOUNT
     if getattr(creds, 'refresh_token', None) is not None:
       return CredentialTypeGoogleAuth.USER_ACCOUNT
     return CredentialTypeGoogleAuth.UNKNOWN
@@ -847,6 +831,17 @@ def ToJsonGoogleAuth(credentials):
         'revoke_uri': _REVOKE_URI,
         'scopes': credentials._scopes,  # pylint: disable=protected-access
         'token_uri': credentials.token_uri,
+    }
+  elif creds_type == CredentialTypeGoogleAuth.P12_SERVICE_ACCOUNT:
+    creds_dict = {
+        'type': creds_type.key,
+        'client_email': credentials.service_account_email,
+        # The base64 only deals with bytes. The encoded value is bytes but is
+        # known to be a safe ascii string. To serialize it, convert it to a
+        # text object.
+        'private_key':
+            (base64.b64encode(credentials.private_key_pkcs12).decode('ascii')),
+        'password': credentials.private_key_password
     }
   else:
     raise UnknownCredentialsType(
@@ -976,8 +971,7 @@ def FromJsonGoogleAuth(json_value):
 
   The type of the credentials could be service account, external account
   (workload identity pool or workforce pool), user account, or p12 service
-  account. p12 service account was deprecated and is not supported by
-  google-auth, so we raise an exception for the callers to handle.
+  account.
 
   Args:
     json_value: string, A string of the JSON representation of the credentials.
@@ -1010,6 +1004,16 @@ def FromJsonGoogleAuth(json_value):
     cred.private_key = json_key.get('private_key')
     cred.private_key_id = json_key.get('private_key_id')
     cred.client_id = json_key.get('client_id')
+    return cred
+  if cred_type == CredentialTypeGoogleAuth.P12_SERVICE_ACCOUNT:
+    json_key['token_uri'] = GetEffectiveTokenUri(json_key)
+    from googlecloudsdk.core.credentials import p12_service_account  # pylint: disable=g-import-not-at-top
+    cred = p12_service_account.CreateP12ServiceAccount(
+        base64.b64decode(json_key['private_key']),
+        json_key['password'],
+        service_account_email=json_key['client_email'],
+        token_uri=json_key['token_uri'],
+        scopes=config.CLOUDSDK_SCOPES)
     return cred
   if cred_type == CredentialTypeGoogleAuth.EXTERNAL_ACCOUNT:
     # token_uri is not applicable to external account credentials.

@@ -46,6 +46,8 @@ class DataplexV1(base_api.BaseApiClient):
     self.projects_locations_lakes_zones_actions = self.ProjectsLocationsLakesZonesActionsService(self)
     self.projects_locations_lakes_zones_assets_actions = self.ProjectsLocationsLakesZonesAssetsActionsService(self)
     self.projects_locations_lakes_zones_assets = self.ProjectsLocationsLakesZonesAssetsService(self)
+    self.projects_locations_lakes_zones_entities_partitions = self.ProjectsLocationsLakesZonesEntitiesPartitionsService(self)
+    self.projects_locations_lakes_zones_entities = self.ProjectsLocationsLakesZonesEntitiesService(self)
     self.projects_locations_lakes_zones = self.ProjectsLocationsLakesZonesService(self)
     self.projects_locations_lakes = self.ProjectsLocationsLakesService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
@@ -686,6 +688,134 @@ class DataplexV1(base_api.BaseApiClient):
         request_field='googleIamV1TestIamPermissionsRequest',
         request_type_name='DataplexProjectsLocationsLakesZonesAssetsTestIamPermissionsRequest',
         response_type_name='GoogleIamV1TestIamPermissionsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsLakesZonesEntitiesPartitionsService(base_api.BaseApiService):
+    """Service class for the projects_locations_lakes_zones_entities_partitions resource."""
+
+    _NAME = 'projects_locations_lakes_zones_entities_partitions'
+
+    def __init__(self, client):
+      super(DataplexV1.ProjectsLocationsLakesZonesEntitiesPartitionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Get a metadata partition of a given entity.
+
+      Args:
+        request: (DataplexProjectsLocationsLakesZonesEntitiesPartitionsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1Partition) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/zones/{zonesId}/entities/{entitiesId}/partitions/{partitionsId}',
+        http_method='GET',
+        method_id='dataplex.projects.locations.lakes.zones.entities.partitions.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsLakesZonesEntitiesPartitionsGetRequest',
+        response_type_name='GoogleCloudDataplexV1Partition',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""List metadata partitions of a given entity.
+
+      Args:
+        request: (DataplexProjectsLocationsLakesZonesEntitiesPartitionsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1ListPartitionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/zones/{zonesId}/entities/{entitiesId}/partitions',
+        http_method='GET',
+        method_id='dataplex.projects.locations.lakes.zones.entities.partitions.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/partitions',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsLakesZonesEntitiesPartitionsListRequest',
+        response_type_name='GoogleCloudDataplexV1ListPartitionsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsLakesZonesEntitiesService(base_api.BaseApiService):
+    """Service class for the projects_locations_lakes_zones_entities resource."""
+
+    _NAME = 'projects_locations_lakes_zones_entities'
+
+    def __init__(self, client):
+      super(DataplexV1.ProjectsLocationsLakesZonesEntitiesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Get a metadata entity.
+
+      Args:
+        request: (DataplexProjectsLocationsLakesZonesEntitiesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1Entity) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/zones/{zonesId}/entities/{entitiesId}',
+        http_method='GET',
+        method_id='dataplex.projects.locations.lakes.zones.entities.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['view'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsLakesZonesEntitiesGetRequest',
+        response_type_name='GoogleCloudDataplexV1Entity',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""List metadata entities of a given zone.
+
+      Args:
+        request: (DataplexProjectsLocationsLakesZonesEntitiesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1ListEntitiesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/zones/{zonesId}/entities',
+        http_method='GET',
+        method_id='dataplex.projects.locations.lakes.zones.entities.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken', 'view'],
+        relative_path='v1/{+parent}/entities',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsLakesZonesEntitiesListRequest',
+        response_type_name='GoogleCloudDataplexV1ListEntitiesResponse',
         supports_download=False,
     )
 

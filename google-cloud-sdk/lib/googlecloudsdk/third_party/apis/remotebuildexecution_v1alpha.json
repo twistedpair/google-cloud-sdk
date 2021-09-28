@@ -1325,7 +1325,8 @@
             "The local Container Manager is not running.",
             "Docker failed because a request was denied by the organization's policy.",
             "Working directory is not relative",
-            "Docker cannot find the container specified in the command. This error is likely to only occur if an asynchronous container is not running when the command is run."
+            "Docker cannot find the container specified in the command. This error is likely to only occur if an asynchronous container is not running when the command is run.",
+            "Docker cannot pull an image because a blob is missing in the repo. May be due to a bad\/incomplete image push or partial deletion of underlying blob layers."
           ],
           "enum": [
             "OK",
@@ -1370,7 +1371,8 @@
             "LOCAL_CONTAINER_MANAGER_NOT_RUNNING",
             "DOCKER_IMAGE_VPCSC_PERMISSION_DENIED",
             "WORKING_DIR_NOT_RELATIVE",
-            "DOCKER_MISSING_CONTAINER"
+            "DOCKER_MISSING_CONTAINER",
+            "DOCKER_MISSING_BLOB_IN_IMAGE"
           ]
         },
         "message": {
