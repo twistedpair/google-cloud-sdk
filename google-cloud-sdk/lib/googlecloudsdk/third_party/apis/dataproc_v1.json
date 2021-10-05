@@ -917,6 +917,13 @@
         "gkeClusterConfig": {
           "description": "Optional. BETA. The Kubernetes Engine config for Dataproc clusters deployed to Kubernetes. Setting this is considered mutually exclusive with Compute Engine-based options such as gce_cluster_config, master_config, worker_config, secondary_worker_config, and autoscaling_config.",
           "$ref": "GkeClusterConfig"
+        },
+        "auxiliaryNodePoolConfigs": {
+          "description": "Optional. The configuration(s) for a cluster's auxiliary node pool(s).",
+          "type": "array",
+          "items": {
+            "$ref": "NodePoolConfig"
+          }
         }
       }
     },
@@ -1637,6 +1644,36 @@
           "description": "The maximum number of nodes in the NodePool. Must be >= min_node_count. Note: Quota must be sufficient to scale up the cluster.",
           "type": "integer",
           "format": "int32"
+        }
+      }
+    },
+    "NodePoolConfig": {
+      "id": "NodePoolConfig",
+      "description": "Configuration of the node pool.",
+      "type": "object",
+      "properties": {
+        "nodePoolId": {
+          "description": "Optional. Identifier of node pool. If one is not provided by user, a default will be provided.",
+          "type": "string"
+        },
+        "roles": {
+          "description": "Required. Role(s) that the node pool takes in the cluster.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enumDescriptions": [
+              "Required unspecified role.",
+              "The node pool will have job drivers run on it."
+            ],
+            "enum": [
+              "ROLE_UNSPECIFIED",
+              "DRIVER"
+            ]
+          }
+        },
+        "nodePoolConfig": {
+          "description": "Optional. The Compute Engine config settings of the instances of the node pool.",
+          "$ref": "InstanceGroupConfig"
         }
       }
     },

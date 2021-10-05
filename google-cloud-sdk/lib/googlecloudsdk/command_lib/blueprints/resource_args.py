@@ -43,7 +43,7 @@ def KrmApiHostAttributeConfig():
       name='krmapihost',
       fallthroughs=fallthroughs,
       help_text='The KRM API Host instance for the {resource},'
-      'e.g. [projects/my-project/locations/us-central1/krmApiHosts/my-cluster].'
+      'e.g. [projects/my-project/locations/us-central1/krmApiHosts/my-instance].'
   )
 
 

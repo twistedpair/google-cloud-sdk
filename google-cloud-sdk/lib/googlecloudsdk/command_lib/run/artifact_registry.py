@@ -87,9 +87,9 @@ def ShouldCreateRepository(repo):
     log.error('Error in retrieving repository from Artifact Registry.')
     raise
   except base_exceptions.HttpNotFoundError:
-    message = ('Deploying from source requires an Artifact Registry repository '
-               'to store build artifacts. A repository named [{name}] in '
-               'region [{location}] will be created.'.format(
+    message = ('Deploying from source requires an Artifact Registry Docker '
+               'repository to store built containers. A repository named '
+               '[{name}] in region [{location}] will be created.'.format(
                    name=repo.repo, location=repo.location))
 
     console_io.PromptContinue(message, cancel_on_no=True)

@@ -42,6 +42,7 @@ class DataplexV1(base_api.BaseApiClient):
     self.projects_locations_lakes_actions = self.ProjectsLocationsLakesActionsService(self)
     self.projects_locations_lakes_content = self.ProjectsLocationsLakesContentService(self)
     self.projects_locations_lakes_environments = self.ProjectsLocationsLakesEnvironmentsService(self)
+    self.projects_locations_lakes_tasks_jobs = self.ProjectsLocationsLakesTasksJobsService(self)
     self.projects_locations_lakes_tasks = self.ProjectsLocationsLakesTasksService(self)
     self.projects_locations_lakes_zones_actions = self.ProjectsLocationsLakesZonesActionsService(self)
     self.projects_locations_lakes_zones_assets_actions = self.ProjectsLocationsLakesZonesAssetsActionsService(self)
@@ -273,6 +274,97 @@ class DataplexV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsLocationsLakesTasksJobsService(base_api.BaseApiService):
+    """Service class for the projects_locations_lakes_tasks_jobs resource."""
+
+    _NAME = 'projects_locations_lakes_tasks_jobs'
+
+    def __init__(self, client):
+      super(DataplexV1.ProjectsLocationsLakesTasksJobsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Cancel(self, request, global_params=None):
+      r"""Cancel jobs running for the task resource.
+
+      Args:
+        request: (DataplexProjectsLocationsLakesTasksJobsCancelRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Cancel')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Cancel.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/tasks/{tasksId}/jobs/{jobsId}:cancel',
+        http_method='POST',
+        method_id='dataplex.projects.locations.lakes.tasks.jobs.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:cancel',
+        request_field='googleCloudDataplexV1CancelJobRequest',
+        request_type_name='DataplexProjectsLocationsLakesTasksJobsCancelRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Get job resource.
+
+      Args:
+        request: (DataplexProjectsLocationsLakesTasksJobsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1Job) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/tasks/{tasksId}/jobs/{jobsId}',
+        http_method='GET',
+        method_id='dataplex.projects.locations.lakes.tasks.jobs.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsLakesTasksJobsGetRequest',
+        response_type_name='GoogleCloudDataplexV1Job',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists Jobs under the given task.
+
+      Args:
+        request: (DataplexProjectsLocationsLakesTasksJobsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1ListJobsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/tasks/{tasksId}/jobs',
+        http_method='GET',
+        method_id='dataplex.projects.locations.lakes.tasks.jobs.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/jobs',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsLakesTasksJobsListRequest',
+        response_type_name='GoogleCloudDataplexV1ListJobsResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsLakesTasksService(base_api.BaseApiService):
     """Service class for the projects_locations_lakes_tasks resource."""
 
@@ -282,6 +374,87 @@ class DataplexV1(base_api.BaseApiClient):
       super(DataplexV1.ProjectsLocationsLakesTasksService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a task resource within a lake.
+
+      Args:
+        request: (DataplexProjectsLocationsLakesTasksCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/tasks',
+        http_method='POST',
+        method_id='dataplex.projects.locations.lakes.tasks.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['taskId', 'validateOnly'],
+        relative_path='v1/{+parent}/tasks',
+        request_field='googleCloudDataplexV1Task',
+        request_type_name='DataplexProjectsLocationsLakesTasksCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Delete the task resource.
+
+      Args:
+        request: (DataplexProjectsLocationsLakesTasksDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/tasks/{tasksId}',
+        http_method='DELETE',
+        method_id='dataplex.projects.locations.lakes.tasks.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsLakesTasksDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Get task resource.
+
+      Args:
+        request: (DataplexProjectsLocationsLakesTasksGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1Task) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/tasks/{tasksId}',
+        http_method='GET',
+        method_id='dataplex.projects.locations.lakes.tasks.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsLakesTasksGetRequest',
+        response_type_name='GoogleCloudDataplexV1Task',
+        supports_download=False,
+    )
 
     def GetIamPolicy(self, request, global_params=None):
       r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
@@ -307,6 +480,60 @@ class DataplexV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='DataplexProjectsLocationsLakesTasksGetIamPolicyRequest',
         response_type_name='GoogleIamV1Policy',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists tasks under the given lake.
+
+      Args:
+        request: (DataplexProjectsLocationsLakesTasksListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudDataplexV1ListTasksResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/tasks',
+        http_method='GET',
+        method_id='dataplex.projects.locations.lakes.tasks.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/tasks',
+        request_field='',
+        request_type_name='DataplexProjectsLocationsLakesTasksListRequest',
+        response_type_name='GoogleCloudDataplexV1ListTasksResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Update the task resource.
+
+      Args:
+        request: (DataplexProjectsLocationsLakesTasksPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/tasks/{tasksId}',
+        http_method='PATCH',
+        method_id='dataplex.projects.locations.lakes.tasks.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask', 'validateOnly'],
+        relative_path='v1/{+name}',
+        request_field='googleCloudDataplexV1Task',
+        request_type_name='DataplexProjectsLocationsLakesTasksPatchRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 

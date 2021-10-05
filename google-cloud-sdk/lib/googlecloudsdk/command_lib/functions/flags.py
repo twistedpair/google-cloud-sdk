@@ -703,9 +703,10 @@ def AddDataFlag(parser):
       help="""JSON string with data that will be passed to the function.""")
 
 
-def AddCloudEventsFlag(parser):
+def AddCloudEventsFlag(parser, track):
   parser.add_argument(
       '--cloud-event',
+      hidden=_ShouldHideV2Flags(track),
       help="""
       JSON encoded string with a CloudEvent in structured content mode.
 

@@ -173,10 +173,13 @@ class SettingsClient(object):
               name=path)
           return self.service_client.folders.GetEventThreatDetectionSettings(
               request_message)
-    except exceptions.HttpError:
-      # TODO(b/152617502): handle 404 error instead of general HttpError
-      raise scc_exceptions.SecurityCenterSettingsException(
-          'Invalid argument {}'.format(path))
+    except exceptions.HttpError as err:
+      if err.status_code == 404:
+        raise scc_exceptions.SecurityCenterSettingsNotFoundException(
+            'Not found {}'.format(path))
+      else:
+        raise scc_exceptions.SecurityCenterSettingsException(
+            'Invalid argument {}'.format(path))
 
   def DescribeService(self, args):
     """Describe service settings of organization/folder/project."""
@@ -433,7 +436,12 @@ class SettingsClient(object):
   def _UpdateModules(self, args, enabled, clear_config=False, config=None):
     """Update modules within service settings."""
     state = self.message_module.Config.ModuleEnablementStateValueValuesEnum.ENABLED if enabled else self.message_module.Config.ModuleEnablementStateValueValuesEnum.DISABLED
-    curr_modules = self.DescribeServiceExplicit(args).modules
+
+    try:
+      curr_modules = self.DescribeServiceExplicit(args).modules
+    except scc_exceptions.SecurityCenterSettingsNotFoundException:
+      curr_modules = None
+      config = None
     if not clear_config and config is None and curr_modules is not None:
       module = [
           p for p in curr_modules.additionalProperties if p.key == args.module

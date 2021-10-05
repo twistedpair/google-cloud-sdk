@@ -20,6 +20,9 @@ from __future__ import unicode_literals
 
 import json
 import os
+import random
+import string
+import textwrap
 import uuid
 
 from apitools.base.py import exceptions as apitools_exceptions
@@ -34,12 +37,21 @@ from googlecloudsdk.command_lib.blueprints import staging_bucket_util
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
+from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.resource import resource_transform
 from googlecloudsdk.core.util import times
 import six
 
 _PREVIEW_FORMAT_TEXT = 'text'
 _PREVIEW_FORMAT_JSON = 'json'
+# Name of the CC instance to create if a user requests cluster creation.
+_DEFAULT_KRMAPIHOSTING_INSTANCE_PREFIX = 'blueprints-cluster-'
+# Length of the random suffix aedded to the CC instance name.
+_KRMAPIHOSTING_INSTANCE_SUFFIX_LENGTH = 5
+# The Master CIDR block to use for the created KRM API Hosting instance.
+# Note: This is set to not conflict with the default ACP CIDR block, which
+# is '172.16.0.128/28'
+_DEFAULT_KRMAPIHOSTING_MASTER_CIDR_BLOCK = '172.16.0.144/28'
 
 
 def _UploadSourceDirToGCS(gcs_client, source, gcs_source_staging, ignore_file):
@@ -213,17 +225,22 @@ def _VerifyConfigControllerInstance(config_controller, project, location):
     InvalidArgumentException: if CC instance does not exist, doesn't have the
       CC bundle enabled, or is in the wrong region/project.
   """
-  client = krmapihosting_util.GetClientInstance()
-  messages = krmapihosting_util.GetMessagesModule()
-  req = messages.KrmapihostingProjectsLocationsKrmApiHostsGetRequest(
-      name=config_controller)
   try:
-    resp = client.projects_locations_krmApiHosts.Get(req)
+    resp = krmapihosting_util.GetKrmApiHost(config_controller)
   except apitools_exceptions.HttpNotFoundError:
     raise c_exceptions.InvalidArgumentException(
         'config-controller',
         'The KRM API Host instance [{}] does not exist'.format(
             config_controller))
+  except apitools_exceptions.HttpForbiddenError:
+    # If checking the cluster fails due to denied permissions, continue with
+    # deployment anyways, since we shouldn't hard fail on this permission not
+    # being set.
+    log.warning(
+        'Unable to verify that the KRM API Host instance [{}] exists and is '
+        'configured correctly due to lack of permissions '
+        '(krmapihosting.krmApiHost.get).', config_controller)
+    return
 
   cc_ref = resources.REGISTRY.Parse(
       resp.name, collection='krmapihosting.projects.locations.krmApiHosts')
@@ -246,6 +263,113 @@ def _VerifyConfigControllerInstance(config_controller, project, location):
         'config-controller',
         'KRM API Host instance [{}] does not have the configController bundle '
         'enabled'.format(config_controller))
+
+
+def _GetOrCreateConfigControllerInstance(location_full_name):
+  """Gets or creates a Config Controller instance for deployment.
+
+  If no CC instance exists, the user will be prompted to create one.
+  If one CC instance exists, that instance will be returned.
+  If multiple CC instance exist, the user will be prompted which one to use.
+
+  Args:
+    location_full_name: the fully qualified name of the location in which the CC
+      instance must be located, e.g. "projects/p/locations/l".
+
+  Returns:
+    The fully qualified krmApiHost name of the chosen/created instance.
+
+  Raises:
+    RequiredArgumentException: If unable to list CC instances.
+  """
+  try:
+    existing_instances = krmapihosting_util.ListKrmApiHosts(location_full_name)
+  except apitools_exceptions.HttpForbiddenError:
+    raise c_exceptions.RequiredArgumentException(
+        '--config_controller',
+        'Unable to list Config Controller instances (missing '
+        '"krmapihosting.krmApiHost.list"). Please specify a Config Controller '
+        'instance with --config-controller, or grant yourself the '
+        '"krmapihosting.krmApiHost.list" permission.'
+    )
+
+  # If no CC instance exists, prompt whether to create one.
+  if not existing_instances:
+    console_io.PromptContinue(
+        message='No Config Controller instances were found in this project and '
+        'region. Blueprints Controller requires a pre-existing Config '
+        'Controller instance to deploy configurations to.',
+        prompt_string='Would you like to create one? (This may take up to 20 '
+        'minutes)',
+        cancel_on_no=True)
+    return _CreateConfigControllerInstance(location_full_name)
+  # If there is exactly 1 CC instance, use that one.
+  elif len(existing_instances) == 1:
+    instance_name = existing_instances[0].name
+    log.status.Print(
+        'Using Config Controller instance [{}] for deployment.'.format(
+            instance_name))
+    return instance_name
+
+  # If multiple CC instances exist, prompt for which one to use (or create)
+  # a new one.
+  choices = [instance.name for instance in existing_instances
+            ] + ['Create a new Config Controller instance']
+  index = console_io.PromptChoice(
+      options=choices,
+      message='Please choose which Config Controller instance to deploy to:\n')
+  # If prompting is disabled, the return value is `None`. In this case, require
+  # the user to explicitly provide a CC instance.
+  if index is None:
+    raise c_exceptions.RequiredArgumentException(
+        'config-controller',
+        'Please specify a Config Controller instance to deploy to with '
+        '--config-controller.')
+  elif index == len(choices) - 1:
+    return _CreateConfigControllerInstance(location_full_name)
+  return existing_instances[index].name
+
+
+def _RandomConfigControllerInstanceName():
+  suffix = ''.join(
+      random.choice(string.ascii_lowercase + string.digits)
+      for _ in range(_KRMAPIHOSTING_INSTANCE_SUFFIX_LENGTH))
+  return _DEFAULT_KRMAPIHOSTING_INSTANCE_PREFIX + suffix
+
+
+def _CreateConfigControllerInstance(location_full_name):
+  """Creates a Config Controller instance in the specified location.
+
+  Args:
+    location_full_name: string, the fully qualified name of the location in
+      which to create the instance, e.g. "projects/p/locations/l".
+
+  Returns:
+    The fully qualified krmApiHost name of the created instance.
+  """
+  messages = krmapihosting_util.GetMessagesModule()
+  krm_api_host = messages.KrmApiHost(
+      bundlesConfig=messages.BundlesConfig(
+          configControllerConfig=messages.ConfigControllerConfig(enabled=True)),
+      masterIpv4CidrBlock=_DEFAULT_KRMAPIHOSTING_MASTER_CIDR_BLOCK)
+  op = krmapihosting_util.CreateKrmApiHost(
+      parent=location_full_name,
+      krm_api_host_id=_RandomConfigControllerInstanceName(),
+      krm_api_host=krm_api_host)
+  log.debug('Config Controller Cluster Creation LRO: %s', op.name)
+  cluster_name = krmapihosting_util.WaitForCreateKrmApiHostOperation(
+      op,
+      progress_message='Waiting for instance to create (this can take up to 20 minutes)'
+  ).name
+
+  log.status.Print(
+      textwrap.dedent('''\
+          To use this as the default instance for future Deployments, run:
+
+            $ gcloud config set blueprints/config_controller {0}
+
+          Or set "--config-controller={0}"'''.format(cluster_name)) + '\n')
+  return cluster_name
 
 
 def Apply(source,
@@ -338,6 +462,18 @@ def Apply(source,
           project=project_ref.Name(),
           location=location_ref.Name())
       deployment.configController = config_controller
+    elif not async_:
+      config_controller = _GetOrCreateConfigControllerInstance(
+          parent_resource.RelativeName())
+      deployment.configController = config_controller
+    else:
+      # If `--async` is set, we should not wait on an LRO. Thus, we cannot
+      # create a CC instance from gcloud if `--async` is set, because we'd need
+      # to wait for that LRO to complete before starting the Deployment
+      # operation.
+      raise c_exceptions.InvalidArgumentException(
+          'config-controller',
+          '--config-controller must be set if --async is set')
 
     log.info('Creating the deployment')
     op = blueprints_util.CreateDeployment(deployment, deployment_id,

@@ -32,6 +32,7 @@ import locale
 import os
 import platform as system_platform
 import re
+import ssl
 import subprocess
 import sys
 import textwrap
@@ -47,7 +48,9 @@ from googlecloudsdk.core.util import files as file_utils
 from googlecloudsdk.core.util import http_proxy_types
 from googlecloudsdk.core.util import platforms
 
+import requests
 import six
+import urllib3
 
 
 class NoopAnonymizer(object):
@@ -181,6 +184,9 @@ class BasicInfo(object):
         Locale: {locale}
         Python Version: [{python_version}]
         Python Location: [{python_location}]
+        OpenSSL: [{openssl_version}]
+        Requests Version: [{requests_version}]
+        urllib3 Version: [{urllib3_version}]
         Site Packages: [{site_packages}]
         """.format(
             version=self.version,
@@ -191,6 +197,9 @@ class BasicInfo(object):
             locale=self.locale,
             python_location=self.python_location,
             python_version=self.python_version.replace('\n', ' '),
+            openssl_version=ssl.OPENSSL_VERSION,
+            requests_version=requests.__version__,
+            urllib3_version=urllib3.__version__,
             site_packages='Enabled' if self.site_packages else 'Disabled'))
 
   def _GetDefaultLocale(self):

@@ -21,7 +21,9 @@ from __future__ import unicode_literals
 import base64
 
 from googlecloudsdk.api_lib.container import kubeconfig as kubeconfig_util
+from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
+from googlecloudsdk.core.util import semver
 
 
 COMMAND_DESCRIPTION = """
@@ -57,6 +59,14 @@ run:
 
 $ {command} my-cluster --location=us-west1
 """
+
+
+class UnsupportedClusterVersion(exceptions.Error):
+  """Class for errors by unsupported cluster versions."""
+
+
+class MissingClusterField(exceptions.Error):
+  """Class for errors by missing cluster fields."""
 
 
 def GenerateContext(kind, project_id, location, cluster_id):
@@ -136,6 +146,26 @@ def GenerateKubeconfig(cluster, context, cmd_path, cmd_args):
   log.status.Print(
       'A new kubeconfig entry "{}" has been generated and set as the '
       'current context.'.format(context))
+
+
+def ValidateClusterVersion(cluster):
+  """Validates the cluster version.
+
+  Args:
+    cluster: object, Anthos Multi-cloud cluster.
+
+  Raises:
+      UnsupportedClusterVersion: cluster version is not supported.
+      MissingClusterField: expected cluster field is missing.
+  """
+  if cluster.controlPlane is None or cluster.controlPlane.version is None:
+    raise MissingClusterField('Cluster is missing cluster version.')
+  else:
+    version = semver.SemVer(cluster.controlPlane.version)
+    if version < semver.SemVer('1.20.0'):
+      raise UnsupportedClusterVersion(
+          'The command get-credentials is supported in cluster version 1.20 '
+          'and newer. For older versions, use get-kubeconfig.')
 
 
 def _GetCaData(pem):

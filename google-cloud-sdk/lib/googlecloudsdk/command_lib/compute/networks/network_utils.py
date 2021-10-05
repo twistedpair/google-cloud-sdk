@@ -48,6 +48,13 @@ _BGP_ROUTING_MODE_CHOICES = {
                 'learned BGP routes.',
 }
 
+_NETWORK_FIREWALL_POLICY_ENFORCEMENT_ORDER_CHOICES = {
+    'AFTER_CLASSIC_FIREWALL': 'Network Firewall Policy is enforced after '
+                              'classic firewall.',
+    'BEFORE_CLASSIC_FIREWALL': 'Network Firewall Policy is enforced before '
+                               'classic firewall.',
+}
+
 _CREATE_SUBNET_MODE_CHOICES = {
     'auto': 'Subnets are created automatically.  This is the recommended '
             'selection.',
@@ -90,6 +97,17 @@ def AddMtuArg(parser):
               via DHCP to all instances attached to this network.""")
 
 
+def AddNetworkFirewallPolicyEnforcementOrderArg(parser):
+  """Adds the --network-firewall-policy-enforcement-order flag."""
+  parser.add_argument(
+      '--network-firewall-policy-enforcement-order',
+      choices=_NETWORK_FIREWALL_POLICY_ENFORCEMENT_ORDER_CHOICES,
+      metavar='NETWORK_FIREWALL_POLICY_ENFORCEMENT_ORDER',
+      hidden=True,
+      help="""The Network Firewall Policy enforcement order of this network. If
+              not specified, defaults to AFTER_CLASSIC_FIREWALL.""")
+
+
 def AddCreateBgpRoutingModeArg(parser):
   """Adds the --bgp-routing-mode flag."""
   parser.add_argument(
@@ -126,6 +144,7 @@ def AddUpdateArgsAlpha(parser):
   """Adds alpha arguments for updating a network."""
 
   AddUpdateArgs(parser)
+  AddNetworkFirewallPolicyEnforcementOrderArg(parser)
 
 
 def CheckRangeLegacyModeOrRaise(args):

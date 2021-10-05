@@ -1527,10 +1527,21 @@ class APIAdapter(object):
       cluster.autopilot.enabled = True
 
       if options.service_account:
-        cluster.autoscaling = self.messages.ClusterAutoscaling()
-        cluster.autoscaling.autoprovisioningNodePoolDefaults = self.messages.AutoprovisioningNodePoolDefaults(
-            serviceAccount=options.service_account,
-            oauthScopes=_SERVICE_ACCOUNT_SCOPES)
+        if cluster.autoscaling is None:
+          cluster.autoscaling = self.messages.ClusterAutoscaling()
+        if cluster.autoscaling.autoprovisioningNodePoolDefaults is None:
+          cluster.autoscaling.autoprovisioningNodePoolDefaults = self.messages.AutoprovisioningNodePoolDefaults(
+          )
+        cluster.autoscaling.autoprovisioningNodePoolDefaults.serviceAccount = options.service_account
+        cluster.autoscaling.autoprovisioningNodePoolDefaults.oauthScopes = _SERVICE_ACCOUNT_SCOPES
+
+      if options.boot_disk_kms_key:
+        if cluster.autoscaling is None:
+          cluster.autoscaling = self.messages.ClusterAutoscaling()
+        if cluster.autoscaling.autoprovisioningNodePoolDefaults is None:
+          cluster.autoscaling.autoprovisioningNodePoolDefaults = self.messages.AutoprovisioningNodePoolDefaults(
+          )
+        cluster.autoscaling.autoprovisioningNodePoolDefaults.bootDiskKmsKey = options.boot_disk_kms_key
 
     if options.enable_confidential_nodes:
       cluster.confidentialNodes = self.messages.ConfidentialNodes(
@@ -1565,8 +1576,7 @@ class APIAdapter(object):
       if not options.workload_pool:
         raise util.Error(
             PREREQUISITE_OPTION_ERROR_MSG.format(
-                prerequisite='workload-pool',
-                opt='enable-mesh-certificates'))
+                prerequisite='workload-pool', opt='enable-mesh-certificates'))
       if cluster.meshCertificates is None:
         cluster.meshCertificates = self.messages.MeshCertificates()
       cluster.meshCertificates.enableCertificates = options.enable_mesh_certificates

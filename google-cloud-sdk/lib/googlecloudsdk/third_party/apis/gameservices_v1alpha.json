@@ -204,6 +204,99 @@
       "properties": {
       }
     },
+    "ListAllocationEndpointsResponse": {
+      "id": "ListAllocationEndpointsResponse",
+      "description": "Response message for AllocationEndpointsService.ListAllocationEndpoints.",
+      "type": "object",
+      "properties": {
+        "allocationEndpoints": {
+          "description": "The list of allocation endpoints.",
+          "type": "array",
+          "items": {
+            "$ref": "AllocationEndpoint"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results, or empty if there are no more results in the list.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "List of locations that could not be reached.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "AllocationEndpoint": {
+      "id": "AllocationEndpoint",
+      "description": "Allocation endpoint resource.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The resource name of the allocation endpoint, in the following form: `projects\/{project}\/locations\/global\/allocationEndpoints\/{allocation_endpoint}`. For example, `projects\/my-project\/locations\/global\/allocationEndpoints\/my-allocation-endpoint`.",
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. The creation time.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The last-modified time.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "serviceAccounts": {
+          "description": "The service accounts to have access to the allocation endpoint. Provide the service account email in the form of service-account-name@project-id.iam.gserviceaccount.com.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "endpoint": {
+          "description": "Output only. The hostname of the allocation endpoint.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "authClientId": {
+          "description": "Output only. The OAuth client ID to be used in the authentication token audience.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "state": {
+          "description": "Output only. The state of the allocation endpoint.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "The default value. This value is used if the state is omitted.",
+            "The allocation endpoint is active and ready to be called.",
+            "The allocation endpoint is provisioning.",
+            "The service account(s) are being provisioned to access the allocation endpoint."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "ACTIVE",
+            "PROVISIONING",
+            "SERVICE_ACCOUNTS_UPDATING"
+          ]
+        },
+        "labels": {
+          "description": "The labels associated with this allocation endpoint. Each label is a key-value pair.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "etag": {
+          "description": "ETag of the resource.",
+          "type": "string"
+        }
+      }
+    },
     "ListGameServerClustersResponse": {
       "id": "ListGameServerClustersResponse",
       "description": "Response message for GameServerClustersService.ListGameServerClusters.",
@@ -1985,6 +2078,177 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`."
+                }
+              }
+            },
+            "global": {
+              "resources": {
+                "allocationEndpoints": {
+                  "methods": {
+                    "list": {
+                      "id": "gameservices.projects.locations.global.allocationEndpoints.list",
+                      "path": "v1alpha/{+parent}/allocationEndpoints",
+                      "flatPath": "v1alpha/projects/{projectsId}/locations/global/allocationEndpoints",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The parent resource name, in the following form: \"projects\/{project}\/locations\/global\".",
+                          "pattern": "^projects\/[^\/]+\/locations\/global$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "Optional. The maximum number of items to return. If unspecified, the server will pick an appropriate default. The server may return fewer items than requested. A caller should only rely on response's next_page_token to determine if there are more AllocationEndpoints left to be queried.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "Optional. The next_page_token value returned from a previous List request, if any.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "filter": {
+                          "description": "Optional. The filter to apply to list results.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "orderBy": {
+                          "description": "Optional. Specifies the ordering of results following syntax at https:\/\/cloud.google.com\/apis\/design\/design_patterns#sorting_order.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListAllocationEndpointsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Lists allocation endpoints in a given project."
+                    },
+                    "get": {
+                      "id": "gameservices.projects.locations.global.allocationEndpoints.get",
+                      "path": "v1alpha/{+name}",
+                      "flatPath": "v1alpha/projects/{projectsId}/locations/global/allocationEndpoints/{allocationEndpointsId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The name of the allocation endpoint to retrieve, in the following form: `projects\/{project}\/locations\/global\/allocationEndpoints\/{allocation_endpoint}`.",
+                          "pattern": "^projects\/[^\/]+\/locations\/global\/allocationEndpoints\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "AllocationEndpoint"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Get a global allocation endpoint."
+                    },
+                    "patch": {
+                      "id": "gameservices.projects.locations.global.allocationEndpoints.patch",
+                      "path": "v1alpha/{+name}",
+                      "flatPath": "v1alpha/projects/{projectsId}/locations/global/allocationEndpoints/{allocationEndpointsId}",
+                      "httpMethod": "PATCH",
+                      "parameters": {
+                        "name": {
+                          "description": "The resource name of the allocation endpoint, in the following form: `projects\/{project}\/locations\/global\/allocationEndpoints\/{allocation_endpoint}`. For example, `projects\/my-project\/locations\/global\/allocationEndpoints\/my-allocation-endpoint`.",
+                          "pattern": "^projects\/[^\/]+\/locations\/global\/allocationEndpoints\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "updateMask": {
+                          "description": "Required. Mask of fields to update. At least one path must be supplied in this field. For the `FieldMask` definition, see https:\/\/developers.google.com\/protocol-buffers\/docs\/reference\/google.protobuf#fieldmask",
+                          "location": "query",
+                          "type": "string",
+                          "format": "google-fieldmask"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "AllocationEndpoint"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Patches an allocation endpoint."
+                    },
+                    "create": {
+                      "id": "gameservices.projects.locations.global.allocationEndpoints.create",
+                      "path": "v1alpha/{+parent}/allocationEndpoints",
+                      "flatPath": "v1alpha/projects/{projectsId}/locations/global/allocationEndpoints",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The parent resource name, in the following form: `projects\/{project}\/locations\/global`.",
+                          "pattern": "^projects\/[^\/]+\/locations\/global$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "allocationEndpointId": {
+                          "description": "Required. The ID of the allocation endpoint resource to be created.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "AllocationEndpoint"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Creates an allocation endpoint in a given project."
+                    },
+                    "delete": {
+                      "id": "gameservices.projects.locations.global.allocationEndpoints.delete",
+                      "path": "v1alpha/{+name}",
+                      "flatPath": "v1alpha/projects/{projectsId}/locations/global/allocationEndpoints/{allocationEndpointsId}",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The name of the allocation endpoint to delete, in the following form: `projects\/{project}\/locations\/global\/allocationEndpoints\/{allocation_endpoint}`.",
+                          "pattern": "^projects\/[^\/]+\/locations\/global\/allocationEndpoints\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Deletes an allocation endpoint."
+                    }
+                  }
                 }
               }
             },

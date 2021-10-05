@@ -8297,6 +8297,50 @@ class GoogleCloudAiplatformUiFeaturestoreMonitoringConfigSnapshotAnalysis(_messa
   monitoringIntervalDays = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
+class GoogleCloudAiplatformUiGcpResources(_messages.Message):
+  r"""The schema of the GCP resource. It will be used to parse the output
+  parameter "GCP_RESOURCES"
+
+  Fields:
+    resources: A list of resources.
+  """
+
+  resources = _messages.MessageField('GoogleCloudAiplatformUiGcpResourcesResource', 1, repeated=True)
+
+
+class GoogleCloudAiplatformUiGcpResourcesResource(_messages.Message):
+  r"""The metadata of a resource
+
+  Enums:
+    ResourceTypeValueValuesEnum: The type of the resource.
+
+  Fields:
+    error: The error from the resource.
+    resourceType: The type of the resource.
+    resourceUri: The unique resource uri. E.g.
+      https://dataflow.googleapis.com/v1b3/projects/project_1/locations/us-
+      central1/jobs/123
+  """
+
+  class ResourceTypeValueValuesEnum(_messages.Enum):
+    r"""The type of the resource.
+
+    Values:
+      UNKNOWN: <no description>
+      CUSTOMJOB: <no description>
+      DATAFLOWJOB: <no description>
+      BIGQUERYJOB: <no description>
+    """
+    UNKNOWN = 0
+    CUSTOMJOB = 1
+    DATAFLOWJOB = 2
+    BIGQUERYJOB = 3
+
+  error = _messages.MessageField('GoogleRpcStatus', 1)
+  resourceType = _messages.EnumField('ResourceTypeValueValuesEnum', 2)
+  resourceUri = _messages.StringField(3)
+
+
 class GoogleCloudAiplatformUiGcsDestination(_messages.Message):
   r"""The Google Cloud Storage location where the output is to be written to.
 
@@ -10902,6 +10946,10 @@ class GoogleCloudAiplatformV1DeployedModel(_messages.Message):
     model: Required. The name of the Model that this is the deployment of.
       Note that the Model may be in a different location than the
       DeployedModel's Endpoint.
+    privateEndpoints: Output only. Provide paths for users to send
+      predict/explain/health requests directly to the deployed model services
+      running on Cloud via private services access. This field is populated if
+      network is configured.
     serviceAccount: The service account that the DeployedModel's container
       runs as. Specify the email address of the service account. If this
       service account is not specified, the container runs as a service
@@ -10919,7 +10967,8 @@ class GoogleCloudAiplatformV1DeployedModel(_messages.Message):
   explanationSpec = _messages.MessageField('GoogleCloudAiplatformV1ExplanationSpec', 7)
   id = _messages.StringField(8)
   model = _messages.StringField(9)
-  serviceAccount = _messages.StringField(10)
+  privateEndpoints = _messages.MessageField('GoogleCloudAiplatformV1PrivateEndpoints', 10)
+  serviceAccount = _messages.StringField(11)
 
 
 class GoogleCloudAiplatformV1DiskSpec(_messages.Message):
@@ -11521,17 +11570,6 @@ class GoogleCloudAiplatformV1Feature(_messages.Message):
       of labels. No more than 64 user labels can be associated with one
       Feature (System labels are excluded)." System reserved label keys are
       prefixed with "aiplatform.googleapis.com/" and are immutable.
-    monitoringConfig: Optional. The custom monitoring configuration for this
-      Feature, if not set, use the monitoring_config defined for the
-      EntityType this Feature belongs to. Only Features with type
-      (Feature.ValueType) BOOL, STRING, DOUBLE or INT64 can enable monitoring.
-      If this is populated with FeaturestoreMonitoringConfig.disabled = true,
-      snapshot analysis monitoring is disabled; if
-      FeaturestoreMonitoringConfig.monitoring_interval specified, snapshot
-      analysis monitoring is enabled. Otherwise, snapshot analysis monitoring
-      config is same as the EntityType's this Feature belongs to.
-    monitoringStats: Output only. A list of historical Snapshot Analysis stats
-      requested by user, sorted by FeatureStatsAnomaly.start_time descending.
     name: Immutable. Name of the Feature. Format: `projects/{project}/location
       s/{location}/featurestores/{featurestore}/entityTypes/{entity_type}/feat
       ures/{feature}` The last part feature is assigned by the client. The
@@ -11604,11 +11642,9 @@ class GoogleCloudAiplatformV1Feature(_messages.Message):
   description = _messages.StringField(2)
   etag = _messages.StringField(3)
   labels = _messages.MessageField('LabelsValue', 4)
-  monitoringConfig = _messages.MessageField('GoogleCloudAiplatformV1FeaturestoreMonitoringConfig', 5)
-  monitoringStats = _messages.MessageField('GoogleCloudAiplatformV1FeatureStatsAnomaly', 6, repeated=True)
-  name = _messages.StringField(7)
-  updateTime = _messages.StringField(8)
-  valueType = _messages.EnumField('ValueTypeValueValuesEnum', 9)
+  name = _messages.StringField(5)
+  updateTime = _messages.StringField(6)
+  valueType = _messages.EnumField('ValueTypeValueValuesEnum', 7)
 
 
 class GoogleCloudAiplatformV1FeatureNoiseSigma(_messages.Message):
@@ -11638,103 +11674,6 @@ class GoogleCloudAiplatformV1FeatureNoiseSigmaNoiseSigmaForFeature(_messages.Mes
 
   name = _messages.StringField(1)
   sigma = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
-
-
-class GoogleCloudAiplatformV1FeatureStatsAnomaly(_messages.Message):
-  r"""Stats and Anomaly generated at specific timestamp for specific Feature.
-  The start_time and end_time are used to define the time range of the dataset
-  that current stats belongs to, e.g. prediction traffic is bucketed into
-  prediction datasets by time window. If the Dataset is not defined by time
-  window, start_time = end_time. Timestamp of the stats and anomalies always
-  refers to end_time. Raw stats and anomalies are stored in stats_uri or
-  anomaly_uri in the tensorflow defined protos. Field data_stats contains
-  almost identical information with the raw stats in Vertex AI defined proto,
-  for UI to display.
-
-  Fields:
-    anomalyDetectionThreshold: This is the threshold used when detecting
-      anomalies. The threshold can be changed by user, so this one might be
-      different from ThresholdConfig.value.
-    anomalyUri: Path of the anomaly file for current feature values in Cloud
-      Storage bucket. Format: gs:////anomalies. Example:
-      gs://monitoring_bucket/feature_name/anomalies. Stats are stored as
-      binary format with Protobuf message Anoamlies are stored as binary
-      format with Protobuf message [tensorflow.metadata.v0.AnomalyInfo] (https
-      ://github.com/tensorflow/metadata/blob/master/tensorflow_metadata/proto/
-      v0/anomalies.proto).
-    distributionDeviation: Deviation from the current stats to baseline stats.
-      1. For categorical feature, the distribution distance is calculated by
-      L-inifinity norm. 2. For numerical feature, the distribution distance is
-      calculated by Jensen\u2013Shannon divergence.
-    endTime: The end timestamp of window where stats were generated. For
-      objectives where time window doesn't make sense (e.g. Featurestore
-      Snapshot Monitoring), end_time indicates the timestamp of the data used
-      to generate stats (e.g. timestamp we take snapshots for feature values).
-    score: Feature importance score, only populated when cross-feature
-      monitoring is enabled. For now only used to represent feature
-      attribution score within range [0, 1] for
-      ModelDeploymentMonitoringObjectiveType.FEATURE_ATTRIBUTION_SKEW and
-      ModelDeploymentMonitoringObjectiveType.FEATURE_ATTRIBUTION_DRIFT.
-    startTime: The start timestamp of window where stats were generated. For
-      objectives where time window doesn't make sense (e.g. Featurestore
-      Snapshot Monitoring), start_time is only used to indicate the monitoring
-      intervals, so it always equals to (end_time - monitoring_interval).
-    statsUri: Path of the stats file for current feature values in Cloud
-      Storage bucket. Format: gs:////stats. Example:
-      gs://monitoring_bucket/feature_name/stats. Stats are stored as binary
-      format with Protobuf message [tensorflow.metadata.v0.FeatureNameStatisti
-      cs](https://github.com/tensorflow/metadata/blob/master/tensorflow_metada
-      ta/proto/v0/statistics.proto).
-  """
-
-  anomalyDetectionThreshold = _messages.FloatField(1)
-  anomalyUri = _messages.StringField(2)
-  distributionDeviation = _messages.FloatField(3)
-  endTime = _messages.StringField(4)
-  score = _messages.FloatField(5)
-  startTime = _messages.StringField(6)
-  statsUri = _messages.StringField(7)
-
-
-class GoogleCloudAiplatformV1FeaturestoreMonitoringConfig(_messages.Message):
-  r"""Configuration of how features in Featurestore are monitored.
-
-  Fields:
-    snapshotAnalysis: The config for Snapshot Analysis Based Feature
-      Monitoring.
-  """
-
-  snapshotAnalysis = _messages.MessageField('GoogleCloudAiplatformV1FeaturestoreMonitoringConfigSnapshotAnalysis', 1)
-
-
-class GoogleCloudAiplatformV1FeaturestoreMonitoringConfigSnapshotAnalysis(_messages.Message):
-  r"""Configuration of the Featurestore's Snapshot Analysis Based Monitoring.
-  This type of analysis generates statistics for each Feature based on a
-  snapshot of the latest feature value of each entities every
-  monitoring_interval.
-
-  Fields:
-    disabled: The monitoring schedule for snapshot analysis. For EntityType-
-      level config: unset / disabled = true indicates disabled by default for
-      Features under it; otherwise by default enable snapshot analysis
-      monitoring with monitoring_interval for Features under it. Feature-level
-      config: disabled = true indicates disabled regardless of the EntityType-
-      level config; unset monitoring_interval indicates going with EntityType-
-      level config; otherwise run snapshot analysis monitoring with
-      monitoring_interval regardless of the EntityType-level config.
-      Explicitly Disable the snapshot analysis based monitoring.
-    monitoringIntervalDays: Configuration of the snapshot analysis based
-      monitoring pipeline running interval. The value indicates number of
-      days. If both
-      FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval_days
-      and FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval
-      are set when creating/updating EntityTypes/Features,
-      FeaturestoreMonitoringConfig.SnapshotAnalysis.monitoring_interval_days
-      will be used.
-  """
-
-  disabled = _messages.BooleanField(1)
-  monitoringIntervalDays = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudAiplatformV1GcsDestination(_messages.Message):
@@ -12242,6 +12181,21 @@ class GoogleCloudAiplatformV1NearestNeighborSearchOperationMetadataRecordError(_
   errorType = _messages.EnumField('ErrorTypeValueValuesEnum', 3)
   rawRecord = _messages.StringField(4)
   sourceGcsUri = _messages.StringField(5)
+
+
+class GoogleCloudAiplatformV1PrivateEndpoints(_messages.Message):
+  r"""PrivateEndpoints is used to provide paths for users to send requests via
+  private services access.
+
+  Fields:
+    explainHttpUri: Output only. Http(s) path to send explain requests.
+    healthHttpUri: Output only. Http(s) path to send health check requests.
+    predictHttpUri: Output only. Http(s) path to send prediction requests.
+  """
+
+  explainHttpUri = _messages.StringField(1)
+  healthHttpUri = _messages.StringField(2)
+  predictHttpUri = _messages.StringField(3)
 
 
 class GoogleCloudAiplatformV1PurgeArtifactsMetadata(_messages.Message):
@@ -21576,13 +21530,19 @@ class GoogleCloudAiplatformV1alpha1PredictResponse(_messages.Message):
   Fields:
     deployedModelId: ID of the Endpoint's DeployedModel that served this
       prediction.
+    model: Output only. The name of the Model this DeployedModel, that served
+      this prediction, was created from.
+    modelDisplayName: Output only. The display name of the Model this
+      DeployedModel, that served this prediction, was created from.
     predictions: The predictions that are the output of the predictions call.
       The schema of any single prediction may be specified via Endpoint's
       DeployedModels' Model's PredictSchemata's prediction_schema_uri.
   """
 
   deployedModelId = _messages.StringField(1)
-  predictions = _messages.MessageField('extra_types.JsonValue', 2, repeated=True)
+  model = _messages.StringField(2)
+  modelDisplayName = _messages.StringField(3)
+  predictions = _messages.MessageField('extra_types.JsonValue', 4, repeated=True)
 
 
 class GoogleCloudAiplatformV1alpha1PredictSchemata(_messages.Message):

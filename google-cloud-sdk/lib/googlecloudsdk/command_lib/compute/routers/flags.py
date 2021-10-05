@@ -150,7 +150,7 @@ def AddAsnArg(parser):
       'https://tools.ietf.org/html/rfc6996, for example `--asn=64512`.')
 
 
-def AddInterfaceArgs(parser, for_update=False, support_router_appliance=False):
+def AddInterfaceArgs(parser, for_update=False):
   """Adds common arguments for routers add-interface or update-interface."""
 
   operation = 'added'
@@ -173,7 +173,8 @@ def AddInterfaceArgs(parser, for_update=False, support_router_appliance=False):
       help='The subnet mask for the link-local IP range of the interface. '
       'The interface IP address and BGP peer IP address must be selected from '
       'the subnet defined by this link-local range.')
-  if support_router_appliance:
+
+  if not for_update:
     parser.add_argument(
         '--redundant-interface',
         help='The interface that is redundant to the current interface.')

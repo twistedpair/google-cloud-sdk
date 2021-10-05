@@ -221,7 +221,7 @@ def AddLoadBalancingScheme(parser,
       help="""\
       Specifies the load balancer type. Choose EXTERNAL for load balancers
       that receive traffic from external clients. Choose EXTERNAL_MANAGED for
-      Envoy based External HTTP(S) Load Balancig. Choose INTERNAL for
+      Envoy-based External HTTP(S) Load Balancing. Choose INTERNAL for
       Internal TCP/UDP Load Balancing. Choose INTERNAL_MANAGED for
       Internal HTTP(S) Load Balancing. Choose INTERNAL_SELF_MANAGED for
       Traffic Director. For more information, refer to this guide:
@@ -597,7 +597,7 @@ If set, lists of backends and health checks must be both empty.
 """
 
 
-def AddServiceBindings(parser, required=False, is_update=False):
+def AddServiceBindings(parser, required=False, is_update=False, help_text=None):
   """Add support for --service_bindings flag."""
   group = parser.add_mutually_exclusive_group() if is_update else parser
   group.add_argument(
@@ -608,7 +608,7 @@ def AddServiceBindings(parser, required=False, is_update=False):
       # TODO(b/199261361): enable when gcloud list command for serviceBindings
       # is available
       # completer=network_services_completers.ServiceBindingsCompleter,
-      help=SERVICE_BINDINGS_HELP)
+      help=help_text if help_text is not None else SERVICE_BINDINGS_HELP)
   if is_update:
     group.add_argument(
         '--no-service-bindings',
@@ -784,18 +784,28 @@ def AddPortName(parser):
   parser.add_argument(
       '--port-name',
       help="""\
-      The name of a service that has been added to an instance group
-      in this backend. Instance group services map a name to a port
-      number which is used by the load balancing service.
-      Only one ``port-name'' may be added to a backend service, and that
-      name must exist as a service on all instance groups that are a
-      part of this backend service. The port number associated with the
-      name may differ between instances. If you do not specify
-      this flag, your instance groups must have a service named ``http''
-      configured. See also
-      `gcloud compute instance-groups set-named-ports --help`.
-      The ``port-name'' parameter cannot be set for Internal TCP/UDP Load
-      Balancing or External TCP/UDP Network Load balancing.
+      Backend services for external HTTP(S) load balancing, internal HTTP(S)
+      load balancing, TCP proxy load balancing, and SSL proxy load balancing
+      must reference exactly one named port if using instance group backends.
+
+      Each instance group backend exports one or more named ports, which map a
+      user-configurable name to a port number. The backend service's named port
+      subscribes to one named port on each instance group. The resolved port
+      number can differ among instance group backends, based on each instance
+      group's named port list.
+
+      When omitted, a backend service subscribes to a named port called http.
+
+      The named port for a backend service is either ignored or cannot be set
+      for these load balancing configurations:
+
+      - For any load balancer, if the backends are not instance groups
+        (for example, GCE_VM_IP_PORT NEGs).
+      - For any type of backend on a backend service for internal TCP/UDP load
+        balancing or external TCP/UDP network load balancing.
+
+      See also
+      https://cloud.google.com/load-balancing/docs/backend-service#named_ports.
       """)
 
 

@@ -1205,20 +1205,159 @@ class InstanceConfig(_messages.Message):
   r"""A possible configuration for a Cloud Spanner instance. Configurations
   define the geographic placement of nodes and their replication.
 
+  Enums:
+    ConfigTypeValueValuesEnum: Output only. Whether this instance config is a
+      Google or User Managed Configuration.
+    StateValueValuesEnum: Output only. The current instance config state.
+
+  Messages:
+    LabelsValue: Cloud Labels are a flexible and lightweight mechanism for
+      organizing cloud resources into groups that reflect a customer's
+      organizational needs and deployment strategies. Cloud Labels can be used
+      to filter collections of resources. They can be used to control how
+      resource metrics are aggregated. And they can be used as arguments to
+      policy management rules (e.g. route, firewall, load balancing, etc.). *
+      Label keys must be between 1 and 63 characters long and must conform to
+      the following regular expression: `a-z{0,62}`. * Label values must be
+      between 0 and 63 characters long and must conform to the regular
+      expression `[a-z0-9_-]{0,63}`. * No more than 64 labels can be
+      associated with a given resource. See https://goo.gl/xmQnxf for more
+      information on and examples of labels. If you plan to use labels in your
+      own code, please note that additional characters may be allowed in the
+      future. Therefore, you are advised to use an internal label
+      representation, such as JSON, which doesn't rely upon specific
+      characters being disallowed. For example, representing labels as the
+      string: name + "_" + value would prove problematic if we were to allow
+      "_" in a future release.
+
   Fields:
+    baseConfig: Base configuration name, e.g. projects//instanceConfigs/nam3,
+      based on which this configuration is created. Only set for user managed
+      configurations. base_config must refer to a configuration of type
+      GOOGLE_MANAGED.
+    configType: Output only. Whether this instance config is a Google or User
+      Managed Configuration.
     displayName: The name of this instance configuration as it appears in UIs.
+    etag: etag is used for optimistic concurrency control as a way to help
+      prevent simultaneous updates of a instance config from overwriting each
+      other. It is strongly suggested that systems make use of the etag in the
+      read-modify-write cycle to perform instance config updates in order to
+      avoid race conditions: An etag is returned in the response which
+      contains instance configs, and systems are expected to put that etag in
+      the request to update instance config to ensure that their change will
+      be applied to the same version of the instance config. If no etag is
+      provided in the call to update instance config, then the existing
+      instance config is overwritten blindly.
+    labels: Cloud Labels are a flexible and lightweight mechanism for
+      organizing cloud resources into groups that reflect a customer's
+      organizational needs and deployment strategies. Cloud Labels can be used
+      to filter collections of resources. They can be used to control how
+      resource metrics are aggregated. And they can be used as arguments to
+      policy management rules (e.g. route, firewall, load balancing, etc.). *
+      Label keys must be between 1 and 63 characters long and must conform to
+      the following regular expression: `a-z{0,62}`. * Label values must be
+      between 0 and 63 characters long and must conform to the regular
+      expression `[a-z0-9_-]{0,63}`. * No more than 64 labels can be
+      associated with a given resource. See https://goo.gl/xmQnxf for more
+      information on and examples of labels. If you plan to use labels in your
+      own code, please note that additional characters may be allowed in the
+      future. Therefore, you are advised to use an internal label
+      representation, such as JSON, which doesn't rely upon specific
+      characters being disallowed. For example, representing labels as the
+      string: name + "_" + value would prove problematic if we were to allow
+      "_" in a future release.
     leaderOptions: Allowed values of the "default_leader" schema option for
       databases in instances that use this instance configuration.
     name: A unique identifier for the instance configuration. Values are of
       the form `projects//instanceConfigs/a-z*`.
+    optionalReplicas: Output only. The available optional replicas to choose
+      from for user managed configurations. Populated for Google managed
+      configurations.
+    reconciling: Output only. If true, the instance config is being created or
+      updated. If false, there are no ongoing operations for the instance
+      config.
     replicas: The geographic placement of nodes in this instance configuration
       and their replication properties.
+    state: Output only. The current instance config state.
   """
 
-  displayName = _messages.StringField(1)
-  leaderOptions = _messages.StringField(2, repeated=True)
-  name = _messages.StringField(3)
-  replicas = _messages.MessageField('ReplicaInfo', 4, repeated=True)
+  class ConfigTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. Whether this instance config is a Google or User Managed
+    Configuration.
+
+    Values:
+      TYPE_UNSPECIFIED: Unspecified.
+      GOOGLE_MANAGED: Google managed configuration.
+      USER_MANAGED: User managed configuration.
+    """
+    TYPE_UNSPECIFIED = 0
+    GOOGLE_MANAGED = 1
+    USER_MANAGED = 2
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current instance config state.
+
+    Values:
+      STATE_UNSPECIFIED: Not specified.
+      CREATING: The instance config is still being created.
+      READY: The instance config is fully created and ready to be used to
+        create instances.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    READY = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Cloud Labels are a flexible and lightweight mechanism for organizing
+    cloud resources into groups that reflect a customer's organizational needs
+    and deployment strategies. Cloud Labels can be used to filter collections
+    of resources. They can be used to control how resource metrics are
+    aggregated. And they can be used as arguments to policy management rules
+    (e.g. route, firewall, load balancing, etc.). * Label keys must be between
+    1 and 63 characters long and must conform to the following regular
+    expression: `a-z{0,62}`. * Label values must be between 0 and 63
+    characters long and must conform to the regular expression
+    `[a-z0-9_-]{0,63}`. * No more than 64 labels can be associated with a
+    given resource. See https://goo.gl/xmQnxf for more information on and
+    examples of labels. If you plan to use labels in your own code, please
+    note that additional characters may be allowed in the future. Therefore,
+    you are advised to use an internal label representation, such as JSON,
+    which doesn't rely upon specific characters being disallowed. For example,
+    representing labels as the string: name + "_" + value would prove
+    problematic if we were to allow "_" in a future release.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  baseConfig = _messages.StringField(1)
+  configType = _messages.EnumField('ConfigTypeValueValuesEnum', 2)
+  displayName = _messages.StringField(3)
+  etag = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  leaderOptions = _messages.StringField(6, repeated=True)
+  name = _messages.StringField(7)
+  optionalReplicas = _messages.MessageField('ReplicaInfo', 8, repeated=True)
+  reconciling = _messages.BooleanField(9)
+  replicas = _messages.MessageField('ReplicaInfo', 10, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
 
 
 class KeyRange(_messages.Message):
@@ -3016,6 +3155,49 @@ class ShortRepresentation(_messages.Message):
   subqueries = _messages.MessageField('SubqueriesValue', 2)
 
 
+class SpannerProjectsInstanceConfigsCreateRequest(_messages.Message):
+  r"""A SpannerProjectsInstanceConfigsCreateRequest object.
+
+  Fields:
+    instanceConfig: A InstanceConfig resource to be passed as the request
+      body.
+    instanceConfigId: Required. The ID of the instance config to create. Valid
+      identifiers are of the form `custom-[-a-z0-9]*[a-z0-9]` and must be
+      between 2 and 64 characters in length. The `custom-` prefix is required
+      to avoid name conflicts with Google managed configurations.
+    parent: Required. The name of the project in which to create the instance
+      config. Values are of the form `projects/`.
+    validateOnly: An option to validate, but not actually execute, a request,
+      and provide the same response.
+  """
+
+  instanceConfig = _messages.MessageField('InstanceConfig', 1)
+  instanceConfigId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  validateOnly = _messages.BooleanField(4)
+
+
+class SpannerProjectsInstanceConfigsDeleteRequest(_messages.Message):
+  r"""A SpannerProjectsInstanceConfigsDeleteRequest object.
+
+  Fields:
+    etag: Used for optimistic concurrency control as a way to help prevent
+      simultaneous deletes of an instance config from overwriting each other.
+      If not empty, the API only deletes the instance config when the etag
+      provided matches the current status of the requested instance config.
+      Otherwise, deletes the instance config without checking the current
+      status of the requested instance config.
+    name: Required. The name of the instance configuration to be deleted.
+      Values are of the form `projects//instanceConfigs/`
+    validateOnly: An option to validate, but not actually execute, a request,
+      and provide the same response.
+  """
+
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  validateOnly = _messages.BooleanField(3)
+
+
 class SpannerProjectsInstanceConfigsGetRequest(_messages.Message):
   r"""A SpannerProjectsInstanceConfigsGetRequest object.
 
@@ -3044,6 +3226,29 @@ class SpannerProjectsInstanceConfigsListRequest(_messages.Message):
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+
+
+class SpannerProjectsInstanceConfigsPatchRequest(_messages.Message):
+  r"""A SpannerProjectsInstanceConfigsPatchRequest object.
+
+  Fields:
+    instanceConfig: A InstanceConfig resource to be passed as the request
+      body.
+    name: A unique identifier for the instance configuration. Values are of
+      the form `projects//instanceConfigs/a-z*`.
+    updateMask: Required. A mask specifying which fields in InstanceConfig
+      should be updated. The field mask must always be specified; this
+      prevents any future fields in InstanceConfig from being erased
+      accidentally by clients that do not know about them. Only display_name
+      and labels can be updated.
+    validateOnly: An option to validate, but not actually execute, a request,
+      and provide the same response.
+  """
+
+  instanceConfig = _messages.MessageField('InstanceConfig', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+  validateOnly = _messages.BooleanField(4)
 
 
 class SpannerProjectsInstancesBackupOperationsListRequest(_messages.Message):

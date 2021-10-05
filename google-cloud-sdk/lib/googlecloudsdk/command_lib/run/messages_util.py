@@ -89,8 +89,8 @@ def GetBuildEquivalentForSourceRunMessage(serv, pack, source):
   else:
     build_flag = '--tag [IMAGE]'
   msg = ('This command is equivalent to running '
-         '"gcloud builds submit {build_flag} {source}" and '
-         '"gcloud run deploy {serv} --image [IMAGE]"\n')
+         '`gcloud builds submit {build_flag} {source}` and '
+         '`gcloud run deploy {serv} --image [IMAGE]`\n')
   return msg.format(
       serv=serv,
       build_flag=build_flag,

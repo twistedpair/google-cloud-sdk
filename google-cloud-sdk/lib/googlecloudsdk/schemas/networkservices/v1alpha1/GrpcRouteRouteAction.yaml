@@ -25,15 +25,9 @@ properties:
     description: Unknown API fields that cannot be imported.
     items:
       type: string
-  destination:
+  destinations:
+    type: array
     description: |-
-      The destination service to which traffic should be forwarded. One of
-      destination or drop must be specified.
-    $ref: GrpcRouteDestination.yaml
-  drop:
-    description: |-
-      If set, the traffic will be dropped and the client will fail with the
-      status code number specified in this field. One of destination or drop
-      must be specified. If this field is specified, no other field must be
-      specified.
-    type: integer
+      The destination service to which traffic should be forwarded.
+    items:
+      $ref: GrpcRouteDestination.yaml

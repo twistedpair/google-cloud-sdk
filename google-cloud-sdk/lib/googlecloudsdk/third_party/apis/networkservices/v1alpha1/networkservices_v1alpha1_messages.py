@@ -1031,19 +1031,60 @@ class GrpcRouteDestination(_messages.Message):
       traffic. Must refer to either a BackendService or
       ServiceDirectoryService.
     weight: Optional. Specifies the proportion of requests forwarded to the
-      backend referenced by the service_name field. This is computed as
-      weight/(sum of all weights in this destination list). For non-zero
-      values, there may be some epsilon from the exact proportion defined here
-      depending on the precision an implementation supports. Weight is not a
-      percentage and the sum of weights does not need to equal 100. If only
-      one serviceName is specified and it has a weight greater than 0, 100% of
-      the traffic is forwarded to that backend. If weight is set to 0, no
-      traffic should be forwarded for this entry. If unspecified, weight
-      defaults to 1.
+      backend referenced by the serviceName field. The sum of the weights of
+      all Destinations must be 100. If no Destinations provide a weight, then
+      traffic will be split evenly among all of them. Specifying weights for
+      some but not all Destinations is unsupported.
   """
 
   serviceName = _messages.StringField(1)
   weight = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class GrpcRouteFaultInjectionPolicy(_messages.Message):
+  r"""The specification for fault injection introduced into traffic to test
+  the resiliency of clients to destination service failure. As part of fault
+  injection, when clients send requests to a destination, delays can be
+  introduced on a percentage of requests before sending those requests to the
+  destination service. Similarly requests from clients can be aborted by for a
+  percentage of requests.
+
+  Fields:
+    abort: The specification for aborting to client requests.
+    delay: The specification for injecting delay to client requests.
+  """
+
+  abort = _messages.MessageField('GrpcRouteFaultInjectionPolicyAbort', 1)
+  delay = _messages.MessageField('GrpcRouteFaultInjectionPolicyDelay', 2)
+
+
+class GrpcRouteFaultInjectionPolicyAbort(_messages.Message):
+  r"""Specification of how client requests are aborted as part of fault
+  injection before being sent to a destination.
+
+  Fields:
+    httpStatus: The HTTP status code used to abort the request. The value must
+      be between 200 and 599 inclusive.
+    percentage: The percentage of traffic which will be aborted. The value
+      must be between [0, 100]
+  """
+
+  httpStatus = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  percentage = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class GrpcRouteFaultInjectionPolicyDelay(_messages.Message):
+  r"""Specification of how client requests are delayed as part of fault
+  injection before being sent to a destination.
+
+  Fields:
+    fixedDelay: Specify a fixed delay before forwarding the request.
+    percentage: The percentage of traffic on which delay will be injected. The
+      value must be between [0, 100]
+  """
+
+  fixedDelay = _messages.StringField(1)
+  percentage = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class GrpcRouteHeaderMatch(_messages.Message):
@@ -1077,6 +1118,78 @@ class GrpcRouteHeaderMatch(_messages.Message):
   key = _messages.StringField(1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)
   value = _messages.StringField(3)
+
+
+class GrpcRouteHeaderModifier(_messages.Message):
+  r"""Specifies how to modify gRPC headers in a request or a response.
+
+  Messages:
+    AddValue: Add the headers with given map where key is the name of the
+      header, value is the value of the header.
+    SetValue: Completely overwrite/replace the headers with given map where
+      key is the name of the header, value is the value of the header.
+
+  Fields:
+    add: Add the headers with given map where key is the name of the header,
+      value is the value of the header.
+    remove: Remove headers (matching by header names) specified in the list.
+    set: Completely overwrite/replace the headers with given map where key is
+      the name of the header, value is the value of the header.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AddValue(_messages.Message):
+    r"""Add the headers with given map where key is the name of the header,
+    value is the value of the header.
+
+    Messages:
+      AdditionalProperty: An additional property for a AddValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type AddValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AddValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class SetValue(_messages.Message):
+    r"""Completely overwrite/replace the headers with given map where key is
+    the name of the header, value is the value of the header.
+
+    Messages:
+      AdditionalProperty: An additional property for a SetValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type SetValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a SetValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  add = _messages.MessageField('AddValue', 1)
+  remove = _messages.StringField(2, repeated=True)
+  set = _messages.MessageField('SetValue', 3)
 
 
 class GrpcRouteMethodMatch(_messages.Message):
@@ -1118,20 +1231,97 @@ class GrpcRouteMethodMatch(_messages.Message):
   type = _messages.EnumField('TypeValueValuesEnum', 4)
 
 
+class GrpcRouteRequestMirrorPolicy(_messages.Message):
+  r"""Specifies the policy on how requests are mirrored to a separate mirrored
+  destination service. The proxy does not wait for responses from the mirrored
+  service. Prior to sending traffic to the mirrored service, the
+  host/authority header is suffixed with -shadow.
+
+  Fields:
+    destination: The destination the requests will be mirrored to. The weight
+      of the destination will be ignored.
+  """
+
+  destination = _messages.MessageField('GrpcRouteDestination', 1)
+
+
+class GrpcRouteRetryPolicy(_messages.Message):
+  r"""The specifications for retries.
+
+  Fields:
+    numRetries: Specifies the allowed number of retries. This number must be >
+      0. If not specpfied, default to 1.
+    perTryTimeout: If not specified, will use the timeout set in the
+      RouteAction. If timeout is not set in the RouteAction, will use the
+      largest timeout among all Backend Services associated with the route.
+    retryConditions: - connect-failure: Router will retry on failures
+      connecting to Backend Services, for example due to connection timeouts.
+      - refused-stream: Router will retry if the backend service resets the
+      stream with a REFUSED_STREAM error code. This reset type indicates that
+      it is safe to retry. - cancelled: Router will retry if the gRPC status
+      code in the response header is set to cancelled - deadline-exceeded:
+      Router will retry if the gRPC status code in the response header is set
+      to deadline-exceeded - resource-exhausted: Router will retry if the gRPC
+      status code in the response header is set to resource-exhausted -
+      unavailable: Router will retry if the gRPC status code in the response
+      header is set to unavailable
+  """
+
+  numRetries = _messages.IntegerField(1, variant=_messages.Variant.UINT32)
+  perTryTimeout = _messages.StringField(2)
+  retryConditions = _messages.StringField(3, repeated=True)
+
+
 class GrpcRouteRouteAction(_messages.Message):
   r"""Specifies how to route matched traffic.
 
   Fields:
-    destination: Optional. The destination service to which traffic should be
-      forwarded. One of destination or drop must be specified.
-    drop: Optional. If set, the traffic will be dropped and the client will
-      fail with the status code number specified in this field. One of
-      destination or drop must be specified. If this field is specified, no
-      other field must be specified.
+    destinations: Optional. The destination services to which traffic should
+      be forwarded. If multiple destinations are specified, traffic will be
+      split between Backend Service(s) according to the weight field of these
+      destinations.
+    faultInjectionPolicy: Optional. The specification for fault injection
+      introduced into traffic to test the resiliency of clients to destination
+      service failure. As part of fault injection, when clients send requests
+      to a destination, delays can be introduced on a percentage of requests
+      before sending those requests to the destination service. Similarly
+      requests from clients can be aborted by for a percentage of requests.
+      timeout and retry_policy will be ignored by clients that are configured
+      with a fault_injection_policy
+    requestHeaderModifier: Optional. The specification for modifying the
+      headers of a matching request prior to delivery of the request to the
+      destination. Cannot be set if the route is attached to a Router whose
+      type is PROXYLESS_GRPC.
+    requestMirrorPolicy: Optional. Specifies the policy on how requests
+      intended for the route's destination are mirrored to a separate mirrored
+      destination. The proxy will not wait for the mirrored destination to
+      respond before returning the response. Prior to sending traffic to the
+      mirrored service, the host / authority header is suffixed with -shadow.
+      Cannot be set if the route is attached to a Router whose type is
+      PROXYLESS_GRPC.
+    responseHeaderModifier: Optional. The specification for modifying the
+      headers of a response prior to sending the response back to the client.
+      Cannot be set if the route is attached to a Router whose type is
+      PROXYLESS_GRPC.
+    retryPolicy: Optional. Specifies the retry policy associated with this
+      route.
+    timeout: Optional. Specifies the timeout for selected route. Timeout is
+      computed from the time the request has been fully processed (i.e. end of
+      stream) up until the response has been completely processed. Timeout
+      includes all retries.
+    urlRewrite: Optional. The specification for rewrite URL before forwarding
+      requests to the destination. Cannot be set if the route is attached to a
+      Router whose type is PROXYLESS_GRPC.
   """
 
-  destination = _messages.MessageField('GrpcRouteDestination', 1)
-  drop = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  destinations = _messages.MessageField('GrpcRouteDestination', 1, repeated=True)
+  faultInjectionPolicy = _messages.MessageField('GrpcRouteFaultInjectionPolicy', 2)
+  requestHeaderModifier = _messages.MessageField('GrpcRouteHeaderModifier', 3)
+  requestMirrorPolicy = _messages.MessageField('GrpcRouteRequestMirrorPolicy', 4)
+  responseHeaderModifier = _messages.MessageField('GrpcRouteHeaderModifier', 5)
+  retryPolicy = _messages.MessageField('GrpcRouteRetryPolicy', 6)
+  timeout = _messages.StringField(7)
+  urlRewrite = _messages.MessageField('GrpcRouteURLRewrite', 8)
 
 
 class GrpcRouteRouteMatch(_messages.Message):
@@ -1163,6 +1353,22 @@ class GrpcRouteRouteRule(_messages.Message):
 
   action = _messages.MessageField('GrpcRouteRouteAction', 1)
   matches = _messages.MessageField('GrpcRouteRouteMatch', 2, repeated=True)
+
+
+class GrpcRouteURLRewrite(_messages.Message):
+  r"""The specification to modify the URL of the request, prior to forwarding
+  the request to the destination.
+
+  Fields:
+    hostRewrite: Prior to forwarding the request to the selected destination,
+      the requests host header is replaced by this value.
+    pathPrefixRewrite: Prior to forwarding the request to the selected
+      destination, the matching portion of the requests path is replaced by
+      this value.
+  """
+
+  hostRewrite = _messages.StringField(1)
+  pathPrefixRewrite = _messages.StringField(2)
 
 
 class HeaderAction(_messages.Message):
@@ -4836,6 +5042,11 @@ class UrlRedirect(_messages.Message):
     hostRedirect: Optional. The host that will be used in the redirect
       response instead of the one that was supplied in the request. The value
       must be between 1 and 255 characters.
+    httpsRedirect: Optional. If set to true, the URL scheme in the redirected
+      request is set to https. If set to false, the URL scheme of the
+      redirected request will remain the same as that of the request. This can
+      only be set if there is at least one (1) edgeSslCertificate set on the
+      service.
     pathRedirect: Optional. The path that will be used in the redirect
       response instead of the one that was supplied in the request.
       pathRedirect cannot be supplied together with prefixRedirect. Supply one
@@ -4855,6 +5066,10 @@ class UrlRedirect(_messages.Message):
       TEMPORARY_REDIRECT, which corresponds to 307. in this case, the request
       method will be retained. - PERMANENT_REDIRECT, which corresponds to 308.
       in this case, the request method will be retained.
+    stripQuery: Optional. If set to true, any accompanying query portion of
+      the original URL is removed prior to redirecting the request. If set to
+      false, the query portion of the original URL is retained. The default is
+      set to false.
   """
 
   class RedirectResponseCodeValueValuesEnum(_messages.Enum):
@@ -4880,9 +5095,11 @@ class UrlRedirect(_messages.Message):
     PERMANENT_REDIRECT = 4
 
   hostRedirect = _messages.StringField(1)
-  pathRedirect = _messages.StringField(2)
-  prefixRedirect = _messages.StringField(3)
-  redirectResponseCode = _messages.EnumField('RedirectResponseCodeValueValuesEnum', 4)
+  httpsRedirect = _messages.BooleanField(2)
+  pathRedirect = _messages.StringField(3)
+  prefixRedirect = _messages.StringField(4)
+  redirectResponseCode = _messages.EnumField('RedirectResponseCodeValueValuesEnum', 5)
+  stripQuery = _messages.BooleanField(6)
 
 
 class UrlRewrite(_messages.Message):

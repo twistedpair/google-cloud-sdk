@@ -860,7 +860,7 @@ def _CreateAndWait(client, messages, function_ref, function):
   create_request = messages.CloudfunctionsProjectsLocationsFunctionsCreateRequest(
       parent=function_parent, functionId=function_ref.Name(), function=function)
   operation = client.projects_locations_functions.Create(create_request)
-  operation_description = 'Deploying function (may take a while)'
+  operation_description = 'Deploying function'
 
   api_util.WaitForOperation(client, messages, operation, operation_description)
 

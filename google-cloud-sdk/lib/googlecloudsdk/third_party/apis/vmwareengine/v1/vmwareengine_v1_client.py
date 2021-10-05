@@ -773,6 +773,33 @@ class VmwareengineV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Get(self, request, global_params=None):
+      r"""Retrieves a `HcxActivationKey` resource by its resource name.
+
+      Args:
+        request: (VmwareengineProjectsLocationsPrivateCloudsHcxActivationKeysGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HcxActivationKey) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/hcxActivationKeys/{hcxActivationKeysId}',
+        http_method='GET',
+        method_id='vmwareengine.projects.locations.privateClouds.hcxActivationKeys.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='VmwareengineProjectsLocationsPrivateCloudsHcxActivationKeysGetRequest',
+        response_type_name='HcxActivationKey',
+        supports_download=False,
+    )
+
     def GetIamPolicy(self, request, global_params=None):
       r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
 
@@ -1027,7 +1054,7 @@ class VmwareengineV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Modifies a `PrivateCloud` resource. Only the following fields can be updated: `labels`, `description`. Only fields specified in `updateMask` are applied.
+      r"""Modifies a `PrivateCloud` resource. Only the following fields can be updated: `labels`, `description`, `network_config.external_ip_access`. Only fields specified in `updateMask` are applied.
 
       Args:
         request: (VmwareengineProjectsLocationsPrivateCloudsPatchRequest) input message

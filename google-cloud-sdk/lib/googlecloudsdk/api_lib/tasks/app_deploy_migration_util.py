@@ -692,6 +692,8 @@ def DeployQueuesYamlFile(
     expected_args.extend((new_arg, 'clear_{}'.format(new_arg)))
 
   responses = []
+  if queue_yaml.queue is None:
+    queue_yaml.queue = []
   for queue in queue_yaml.queue:
     if queue.name in queues_not_present_in_yaml:
       queues_not_present_in_yaml.remove(queue.name)
@@ -763,6 +765,10 @@ def DeployQueuesYamlFile(
       queues_client.Pause(queue_ref)
 
   for queue_name in queues_not_present_in_yaml:
+    # Skipping 'default' queue to retain backwards compatability with legacy
+    # behaviour where admin-console-hr would not DISABLE queues named 'default'.
+    if queue_name == 'default':
+      continue
     queue = all_queues_in_db_dict[queue_name]
     if queue.state in (queue.state.PAUSED, queue.state.DISABLED):
       continue

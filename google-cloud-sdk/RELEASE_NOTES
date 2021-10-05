@@ -5,6 +5,90 @@ Copyright 2014-2021 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 360.0.0 (2021-10-05)
+
+### Artifact Registry
+
+* Updated `gcloud beta artifacts print-settings mvn|gradle` to add release and snapshot details for maven and gradle surfaces.
+* Promoted `gcloud artifacts create repository` to  GA.
+* Updated `gcloud artifacts print-settings mvn|gradle` with release and snapshot policies for maven and gradle to GA.
+
+### Bare Metal Solution
+
+* Fixed issue where `gcloud bms instances list` would not show permissions errors properly.
+
+### Cloud Composer
+
+* Added `--enable-privately-used-public-ips` flag to `gcloud beta composer environments` command to enable using privately used public IP address ranges feature in the GKE cluster.
+* Added `--enable-ip-masq-agent` flag to `gcloud beta composer environments` command to enable IP address masquerading in the GKE cluster.
+* Added `--scheduler-count` flag to `gcloud composer environments create` and `gcloud composer environments update` commands.
+
+### Cloud Data Fusion
+
+*   Added `--enable_rbac` optional argument to\
+    `gcloud beta data-fusion instances update` to toggle granular\
+    [role-based access control](/data-fusion/docs/concepts/rbac) in enterprise instances with version >= 6.5.0.
+
+### Cloud SQL
+
+* Added support for users to select minor versions for MySQL 8.0 instances, when they are available in the API.
+
+### Cloud Storage
+
+* Updated gsutil component to 5.3.
+
+### Compute Engine
+
+* Added debian-11 and rocky-8 options to `--os` flag for:
+  * `gcloud compute images import` in GA,
+  * `gcloud compute instances import` in GA
+  * `gcloud compute machine-images import` in beta
+*   Added `--service-directory-registration` flag to `compute forwarding-rules create NAME --target-service-attachment` to support Service Directory integration with PSC ILB.
+* Promoted `--redundant-interface`, `--subnetwork` and `--subnetwork-region` flags of `gcloud compute routers add-interface` to GA.
+* Promoted `--instance` and `--instance-zone` flags of `gcloud compute routers add-bgp-peer` to GA.
+* Promoted `--interface-names` of `gcloud compute routers remove-interface` to GA.
+* Promoted `--peer-names` of `gcloud compute routers remove-bgp-peer` to GA.
+* Promoted `--provisioning-model` and `--instance-termination-action` flags for `gcloud beta compute <instances|instances bulk|instance-templates> create` commands.
+
+
+### Dataproc Metastore
+
+* Promoted `--encryption-kms-key` flag of `gcloud metastore services create` to GA.
+
+### Kubernetes Engine
+
+* Added `--database-encryption-key` flag to `gcloud container clusters create-auto` to allow enabling Database Encryption on Autopilot clusters at creation time.
+* Added `--boot-disk-kms-key` flag to `gcloud container clusters create-auto` to allow enabling CMEK protected boot disk on Autopilot clusters at creation time.
+* Added `--spot` flag to `gcloud beta container clusters/node-pools create` to allow creating spot VM for node pools.
+
+### Managed Active Directory
+
+* Adding `gcloud active-directory peerings` for Multi Project
+  Support v1 release. Currently supporting up to 10 domain peerings per domain.
+
+### Network Connectivity
+
+* Promoted `gcloud network-connectivity hubs` command group to GA.
+* Promoted `gcloud network-connectivity spokes` command group to GA. Added `gcloud network-connectivity spokes linked-vpn-tunnels`, `gcloud network-connectivity spokes linked-interconnect-attachments`, and `gcloud network-connectivity spokes linked-router-appliances` command groups. Moved `create` and `update` commands to these command groups.
+
+### Network Security
+
+* Promoted `gcloud network-security client-tls-policies` to GA.
+* Promoted `gcloud network-security authorization-policies` to GA.
+
+### Network Services
+
+* Promoted `gcloud network-services endpoint-policies` to GA.
+
+### Secret Manager
+
+*   Added support in `gcloud secrets` command group for specifying projects by
+    project number, rather than project id.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 359.0.0 (2021-09-28)
 
 ### Breaking Changes
@@ -28,7 +112,7 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 ### Bare Metal Solution
 
-*   Promoted `gcloud bms instances create` and `gcloud bms instances describe` to GA.
+*   Promoted `gcloud bms instances list` and `gcloud bms instances describe` to GA.
 
 ### Cloud Bigtable
 

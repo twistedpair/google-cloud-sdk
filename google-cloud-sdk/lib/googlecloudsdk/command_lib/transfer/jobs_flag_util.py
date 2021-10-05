@@ -62,6 +62,9 @@ class OverwriteOption(enum.Enum):
 
 def setup_parser(parser, is_update=False):
   """Adds flags to job create and job update commands."""
+  # Flags and arg groups appear in help text in the order they are added here.
+  # The order was designed by UX, so please do not modify.
+  parser.SetSortArgs(False)
   if is_update:
     parser.add_argument(
         'name', help="Name of the transfer job you'd like to update.")
@@ -69,7 +72,7 @@ def setup_parser(parser, is_update=False):
     parser.add_argument('source', help=_SOURCE_HELP_TEXT)
     parser.add_argument('destination', help=_DESTINATION_HELP_TEXT)
 
-  job_information = parser.add_group(help='JOB INFORMATION')
+  job_information = parser.add_group(help='JOB INFORMATION', sort_args=False)
   if is_update:
     job_information.add_argument(
         '--status',
@@ -111,7 +114,8 @@ def setup_parser(parser, is_update=False):
   schedule = parser.add_group(
       help=("SCHEDULE\n\nA job's schedule determines when and how often the job"
             ' will run. For formatting information, see'
-            ' https://cloud.google.com/sdk/gcloud/reference/topic/datetimes.'))
+            ' https://cloud.google.com/sdk/gcloud/reference/topic/datetimes.'),
+      sort_args=False)
   if is_update:
     schedule.add_argument(
         '--clear-schedule',
@@ -158,7 +162,8 @@ def setup_parser(parser, is_update=False):
           ' Note: If you specify multiple conditions, objects must have at'
           " least one of the specified 'include' prefixes and all of the"
           " specified time conditions. If an object has an 'exclude' prefix, it"
-          ' will be excluded even if it matches other conditions.'))
+          ' will be excluded even if it matches other conditions.'),
+      sort_args=False)
   if is_update:
     object_conditions.add_argument(
         '--clear-include-prefixes',
@@ -235,7 +240,7 @@ def setup_parser(parser, is_update=False):
       ' its start time. Use the absolute duration format (ex. 1m for 1'
       ' month; 1h30m for 1 hour 30 minutes).')
 
-  transfer_options = parser.add_group(help='TRANSFER OPTIONS')
+  transfer_options = parser.add_group(help='TRANSFER OPTIONS', sort_args=False)
   if is_update:
     transfer_options.add_argument(
         '--clear-delete-from',
@@ -267,7 +272,8 @@ def setup_parser(parser, is_update=False):
   notification_config = parser.add_group(
       help=(
           'NOTIFICATION CONFIG\n\nA configuration for receiving notifications of'
-          'transfer operation status changes via Cloud Pub/Sub.'))
+          'transfer operation status changes via Cloud Pub/Sub.'),
+      sort_args=False)
   if is_update:
     notification_config.add_argument(
         '--clear-notification-config',
@@ -299,7 +305,8 @@ def setup_parser(parser, is_update=False):
       ' see errors after an operation fails).')
 
   if not is_update:
-    execution_options = parser.add_group(help='EXECUTION OPTIONS')
+    execution_options = parser.add_group(
+        help='EXECUTION OPTIONS', sort_args=False)
     execution_options.add_argument(
         '--no-async',
         action='store_true',

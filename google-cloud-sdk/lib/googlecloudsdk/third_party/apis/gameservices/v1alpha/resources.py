@@ -64,6 +64,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_GLOBAL_ALLOCATIONENDPOINTS = (
+      'projects.locations.global.allocationEndpoints',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/global/allocationEndpoints/'
+              '{allocationEndpointsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_OPERATIONS = (
       'projects.locations.operations',
       '{+name}',

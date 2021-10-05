@@ -933,139 +933,165 @@ class _SectionApiEndpointOverrides(_Section):
   def __init__(self):
     super(_SectionApiEndpointOverrides, self).__init__(
         'api_endpoint_overrides')
-    self.accessapproval = self._Add('accessapproval')
-    self.accesscontextmanager = self._Add('accesscontextmanager')
-    self.alloydb = self._Add('alloydb')
-    self.anthosevents = self._Add('anthosevents')
-    self.aiplatform = self._Add('aiplatform')
-    self.apigateway = self._Add('apigateway')
-    self.apigee = self._Add('apigee')
-    self.appengine = self._Add('appengine')
-    self.assuredworkloads = self._Add('assuredworkloads')
-    self.baremetalsolution = self._Add('baremetalsolution')
-    self.bigtableadmin = self._Add('bigtableadmin')
-    self.binaryauthorization = self._Add('binaryauthorization')
-    self.blueprints = self._Add('config')
-    self.artifactregistry = self._Add('artifactregistry')
-    self.categorymanager = self._Add('categorymanager')
-    self.certificatemanager = self._Add('certificatemanager')
-    self.cloudasset = self._Add('cloudasset')
-    self.cloudbilling = self._Add('cloudbilling')
-    self.cloudbuild = self._Add('cloudbuild')
+    self.accessapproval = self._Add(
+        'accessapproval', command='gcloud access-approval')
+    self.accesscontextmanager = self._Add(
+        'accesscontextmanager', command='gcloud access-context-manager')
+    self.alloydb = self._Add('alloydb', command='gcloud alloydb')
+    self.anthosevents = self._Add('anthosevents', command='gcloud anthos')
+    self.aiplatform = self._Add('aiplatform', command='gcloud ai-platform')
+    self.apigateway = self._Add('apigateway', command='gcloud api-gateway')
+    self.apigee = self._Add('apigee', command='gcloud apigee')
+    self.appengine = self._Add('appengine', command='gcloud app')
+    self.assuredworkloads = self._Add('assuredworkloads',
+                                      command='gcloud assured')
+    self.baremetalsolution = self._Add('baremetalsolution',
+                                       command='gcloud bms')
+    self.bigtableadmin = self._Add('bigtableadmin', command='gcloud bigtable')
+    self.binaryauthorization = self._Add(
+        'binaryauthorization', command='gcloud container binauthz', hidden=True)
+    self.blueprints = self._Add('config', command='gcloud blueprints')
+    self.artifactregistry = self._Add('artifactregistry',
+                                      command='gcloud artifacts')
+    self.categorymanager = self._Add('categorymanager', hidden=True)
+    self.certificatemanager = self._Add(
+        'certificatemanager', command='gcloud certificate-manager')
+    self.cloudasset = self._Add('cloudasset', command='gcloud asset')
+    self.cloudbilling = self._Add('cloudbilling', command='gcloud billing')
+    self.cloudbuild = self._Add('cloudbuild', command='gcloud builds')
     self.cloudcommerceconsumerprocurement = self._Add(
-        'cloudcommerceconsumerprocurement')
-    self.clouddebugger = self._Add('clouddebugger')
-    self.clouddeploy = self._Add('clouddeploy')
-    self.clouderrorreporting = self._Add('clouderrorreporting')
-    self.cloudfunctions = self._Add('cloudfunctions')
-    self.cloudidentity = self._Add('cloudidentity')
-    self.cloudiot = self._Add('cloudiot')
-    self.cloudkms = self._Add('cloudkms')
-    self.cloudresourcemanager = self._Add('cloudresourcemanager')
-    self.cloudresourcesearch = self._Add('cloudresourcesearch')
-    self.cloudscheduler = self._Add('cloudscheduler')
-    self.cloudtasks = self._Add('cloudtasks')
-    self.cloudtrace = self._Add('cloudtrace')
-    self.composer = self._Add('composer')
+        'cloudcommerceconsumerprocurement',
+        command='gcloud commerce-procurement')
+    self.clouddebugger = self._Add('clouddebugger', command='gcloud debug')
+    self.clouddeploy = self._Add('clouddeploy', command='gcloud deploy')
+    self.clouderrorreporting = self._Add(
+        'clouderrorreporting', command='gcloud error-reporting')
+    self.cloudfunctions = self._Add(
+        'cloudfunctions', command='gcloud functions')
+    self.cloudidentity = self._Add(
+        'cloudidentity', command='gcloud identity')
+    self.cloudiot = self._Add('cloudiot', command='gcloud iot')
+    self.cloudkms = self._Add('cloudkms', command='gcloud kms')
+    self.cloudresourcemanager = self._Add(
+        'cloudresourcemanager', command='gcloud projects')
+    self.cloudresourcesearch = self._Add('cloudresourcesearch', hidden=True)
+    self.cloudscheduler = self._Add(
+        'cloudscheduler', command='gcloud scheduler')
+    self.cloudtasks = self._Add('cloudtasks', command='gcloud tasks')
+    self.cloudtrace = self._Add('cloudtrace', command='gcloud trace')
+    self.composer = self._Add('composer', command='gcloud composer')
     self.compute = self._Add(
         'compute',
-        hidden=False,
         help_text='Overrides API endpoint for `gcloud compute` command group. '
         'For Private Service Connect usage, see '
         'https://cloud.google.com/vpc/docs/configure-private-service-connect-apis#using-endpoints'
     )
-    self.container = self._Add('container')
-    self.containeranalysis = self._Add('containeranalysis')
-    self.datacatalog = self._Add('datacatalog')
-    self.dataflow = self._Add('dataflow')
-    self.datafusion = self._Add('datafusion')
-    self.datamigration = self._Add('datamigration')
-    self.datapol = self._Add('datapol')
-    self.dataplex = self._Add('dataplex')
-    self.dataproc = self._Add('dataproc')
-    self.datastore = self._Add('datastore')
-    self.datastream = self._Add('datastream')
-    self.deploymentmanager = self._Add('deploymentmanager')
-    self.discovery = self._Add('discovery')
-    self.dns = self._Add('dns')
-    self.domains = self._Add('domains')
-    self.edgecontainer = self._Add('edgecontainer')
-    self.eventarc = self._Add('eventarc')
-    self.events = self._Add('events')
-    self.file = self._Add('file')
-    self.firestore = self._Add('firestore')
-    self.gameservices = self._Add('gameservices')
-    self.genomics = self._Add('genomics')
-    self.gkebackup = self._Add('gkebackup')
-    self.gkehub = self._Add('gkehub')
-    self.gkemulticloud = self._Add('gkemulticloud')
-    self.healthcare = self._Add('healthcare')
-    self.iam = self._Add('iam')
-    self.iap = self._Add('iap')
-    self.ids = self._Add('ids')
-    self.kubernetespolicy = self._Add('kubernetespolicy')
-    self.labelmanager = self._Add('labelmanager')
-    self.language = self._Add('language')
-    self.lifesciences = self._Add('lifesciences')
-    self.logging = self._Add('logging')
-    self.managedidentities = self._Add('managedidentities')
-    self.manager = self._Add('manager')
-    self.mediaasset = self._Add('mediaasset')
-    self.memcache = self._Add('memcache')
-    self.metastore = self._Add('metastore')
-    self.ml = self._Add('ml')
-    self.monitoring = self._Add('monitoring')
-    self.networkconnectivity = self._Add('networkconnectivity')
-    self.networkmanagement = self._Add('networkmanagement')
-    self.networkservices = self._Add('networkservices')
-    self.networksecurity = self._Add('networksecurity')
-    self.notebooks = self._Add('notebooks')
-    self.ondemandscanning = self._Add('ondemandscanning')
-    self.orgpolicy = self._Add('orgpolicy')
-    self.osconfig = self._Add('osconfig')
-    self.oslogin = self._Add('oslogin')
-    self.policyanalyzer = self._Add('policyanalyzer')
-    self.policysimulator = self._Add('policysimulator')
-    self.policytroubleshooter = self._Add('policytroubleshooter')
-    self.privateca = self._Add('privateca')
-    self.publicca = self._Add('publicca')
-    self.pubsub = self._Add('pubsub')
-    self.pubsublite = self._Add('pubsublite')
-    self.recommender = self._Add('recommender')
-    self.remotebuildexecution = self._Add('remotebuildexecution')
-    self.replicapoolupdater = self._Add('replicapoolupdater')
-    self.resourcesettings = self._Add('resourcesettings')
-    self.runtimeconfig = self._Add('runtimeconfig')
-    self.recaptcha = self._Add('recaptchaenterprise')
-    self.redis = self._Add('redis')
-    self.run = self._Add('run')
-    self.scc = self._Add('securitycenter')
-    self.servicemanagement = self._Add('servicemanagement')
-    self.serviceregistry = self._Add('serviceregistry')
-    self.serviceusage = self._Add('serviceusage')
-    self.source = self._Add('source')
-    self.sourcerepo = self._Add('sourcerepo')
-    self.secrets = self._Add('secretmanager')
-    self.servicedirectory = self._Add('servicedirectory')
+    self.container = self._Add('container', command='gcloud container')
+    self.containeranalysis = self._Add('containeranalysis', hidden=True)
+    self.datacatalog = self._Add('datacatalog', command='gcloud data-catalog')
+    self.dataflow = self._Add('dataflow', command='gcloud dataflow')
+    self.datafusion = self._Add('datafusion', command='gcloud data-fusion')
+    self.datamigration = self._Add(
+        'datamigration', command='gcloud database-migration')
+    self.datapol = self._Add('datapol', hidden=True)
+    self.dataplex = self._Add('dataplex', command='gcloud dataplex')
+    self.dataproc = self._Add('dataproc', command='gcloud dataproc')
+    self.datastore = self._Add('datastore', command='gcloud datastore')
+    self.datastream = self._Add('datastream', command='gcloud datastream')
+    self.deploymentmanager = self._Add(
+        'deploymentmanager', command='gcloud deployment-manager')
+    self.discovery = self._Add('discovery', hidden=True)
+    self.dns = self._Add('dns', command='gcloud dns')
+    self.domains = self._Add('domains', command='gcloud domains')
+    self.edgecontainer = self._Add(
+        'edgecontainer', command='gcloud edge-container')
+    self.eventarc = self._Add('eventarc', command='gcloud eventarc')
+    self.events = self._Add('events', command='gcloud events')
+    self.file = self._Add('file', command='gcloud filestore')
+    self.firestore = self._Add('firestore', command='gcloud firestore')
+    self.gameservices = self._Add('gameservices', command='gcloud gamer')
+    self.genomics = self._Add('genomics', command='gcloud genomics')
+    self.gkebackup = self._Add('gkebackup', hidden=True)
+    self.gkehub = self._Add('gkehub', hidden=True)
+    self.gkemulticloud = self._Add('gkemulticloud', hidden=True)
+    self.healthcare = self._Add('healthcare', command='gcloud healthcare')
+    self.iam = self._Add('iam', command='gcloud iam')
+    self.iap = self._Add('iap', command='gcloud iap')
+    self.ids = self._Add('ids', command='gcloud ids')
+    self.kubernetespolicy = self._Add('kubernetespolicy', hidden=True)
+    self.labelmanager = self._Add('labelmanager', command='gcloud labelmanager')
+    self.language = self._Add('language', command='gcloud ml language')
+    self.lifesciences = self._Add('lifesciences', command='gcloud lifesciences')
+    self.logging = self._Add('logging', command='gcloud logging')
+    self.managedidentities = self._Add(
+        'managedidentities', command='gcloud active-directory')
+    self.manager = self._Add('manager', hidden=True)
+    self.mediaasset = self._Add('mediaasset', command='gcloud media')
+    self.memcache = self._Add('memcache', command='gcloud memcache')
+    self.metastore = self._Add('metastore', command='gcloud metastore')
+    self.ml = self._Add('ml', hidden=True)
+    self.monitoring = self._Add('monitoring', command='gcloud monitoring')
+    self.networkconnectivity = self._Add(
+        'networkconnectivity', command='gcloud network-connectivity')
+    self.networkmanagement = self._Add(
+        'networkmanagement', command='gcloud network-management')
+    self.networkservices = self._Add(
+        'networkservices', command='gcloud network-services')
+    self.networksecurity = self._Add(
+        'networksecurity', command='gcloud network-security')
+    self.notebooks = self._Add('notebooks', command='gcloud notebooks')
+    self.ondemandscanning = self._Add('ondemandscanning', hidden=True)
+    self.orgpolicy = self._Add('orgpolicy', command='gcloud org-policies')
+    self.osconfig = self._Add('osconfig', hidden=True)
+    self.oslogin = self._Add('oslogin', hidden=True)
+    self.policyanalyzer = self._Add(
+        'policyanalyzer', command='policy-intelligence')
+    self.policysimulator = self._Add('policysimulator', hidden=True)
+    self.policytroubleshooter = self._Add('policytroubleshooter', hidden=True)
+    self.privateca = self._Add('privateca', command='gcloud privateca')
+    self.publicca = self._Add('publicca', command='gcloud publicca')
+    self.pubsub = self._Add('pubsub', command='gcloud pubsub')
+    self.pubsublite = self._Add('pubsublite', hidden=True)
+    self.recommender = self._Add('recommender', command='gcloud recommender')
+    self.remotebuildexecution = self._Add('remotebuildexecution', hidden=True)
+    self.replicapoolupdater = self._Add('replicapoolupdater', hidden=True)
+    self.resourcesettings = self._Add(
+        'resourcesettings', command='gcloud resource-settings')
+    self.runtimeconfig = self._Add(
+        'runtimeconfig', command='gcloud runtime-config')
+    self.recaptcha = self._Add(
+        'recaptchaenterprise', command='gcloud recaptcha')
+    self.redis = self._Add('redis', command='gcloud redis')
+    self.run = self._Add('run', command='gcloud run')
+    self.scc = self._Add('securitycenter', command='gcloud scc')
+    self.servicemanagement = self._Add(
+        'servicemanagement', command='gcloud endpoints')
+    self.serviceregistry = self._Add('serviceregistry', hidden=True)
+    self.serviceusage = self._Add('serviceusage', hidden=True)
+    self.source = self._Add('source', hidden=True)
+    self.sourcerepo = self._Add('sourcerepo', command='gcloud source')
+    self.secrets = self._Add('secretmanager', command='gcloud secrets')
+    self.servicedirectory = self._Add(
+        'servicedirectory', command='gcloud service-directory')
     self.spanner = self._Add(
         'spanner',
-        hidden=False,
         help_text='Overrides API endpoint for `gcloud spanner` command group. '
         'For spanner emulator usage, see '
         'https://cloud.google.com/spanner/docs/emulator#using_the_gcloud_cli_with_the_emulator'
         )
-    self.speech = self._Add('speech')
-    self.sql = self._Add('sql')
-    self.storage = self._Add('storage')
-    self.testing = self._Add('testing')
-    self.toolresults = self._Add('toolresults')
-    self.tpu = self._Add('tpu')
-    self.vision = self._Add('vision')
-    self.vpcaccess = self._Add('vpcaccess')
-    self.workflowexecutions = self._Add('workflowexecutions')
-    self.workflows = self._Add('workflows')
-    self.sddc = self._Add('sddc')
-    self.vmwareengine = self._Add('vmwareengine')
+    self.speech = self._Add('speech', command='gcloud ml speech')
+    self.sql = self._Add('sql', command='gcloud sql')
+    self.storage = self._Add('storage', command='gcloud storage')
+    self.testing = self._Add('testing', command='gcloud firebase test')
+    self.toolresults = self._Add('toolresults', hidden=True)
+    self.tpu = self._Add('tpu', hidden=True)
+    self.vision = self._Add('vision', command='gcloud ml vision')
+    self.vpcaccess = self._Add('vpcaccess', hidden=True)
+    self.workflowexecutions = self._Add(
+        'workflowexecutions', command='gcloud workflows executions')
+    self.workflows = self._Add('workflows', command='gcloud workflows')
+    self.sddc = self._Add('sddc', command='gcloud vmware sddc')
+    self.vmwareengine = self._Add('vmwareengine', command='gcloud vmware')
 
   def EndpointValidator(self, value):
     """Checks to see if the endpoint override string is valid."""
@@ -1077,7 +1103,10 @@ class _SectionApiEndpointOverrides(_Section):
           'with http:// or https:// and ending with a trailing \'/\'. '
           '[{value}] is not a valid endpoint override.'.format(value=value))
 
-  def _Add(self, name, help_text=None, hidden=True):
+  def _Add(self, name, help_text=None, hidden=False, command=None):
+    if not help_text and command:
+      help_text = 'Overrides API endpoint for `{}` command group.'.format(
+          command)
     return super(_SectionApiEndpointOverrides, self)._Add(
         name,
         help_text=help_text,
@@ -1192,7 +1221,10 @@ class _SectionAuth(_Section):
         'or authenticate any requests. This is useful when behind a proxy '
         'that adds authentication to requests.')
     self.token_host = self._Add(
-        'token_host', hidden=True, default=self.DEFAULT_TOKEN_HOST)
+        'token_host',
+        default=self.DEFAULT_TOKEN_HOST,
+        help_text='Overrides the token endpoint to provision access tokens. '
+                  'It can be used with Private Service Connect.')
     self.disable_ssl_validation = self._AddBool(
         'disable_ssl_validation', hidden=True)
     self.client_id = self._Add(

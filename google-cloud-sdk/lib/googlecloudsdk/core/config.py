@@ -24,6 +24,8 @@ import os
 import time
 import uuid
 
+from google.auth import _cloud_sdk
+from google.auth import environment_vars
 import googlecloudsdk
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core.util import encoding
@@ -31,7 +33,6 @@ from googlecloudsdk.core.util import files as file_utils
 from googlecloudsdk.core.util import pkg_resources
 from googlecloudsdk.core.util import platforms
 
-from oauth2client import client
 import six
 
 
@@ -550,7 +551,7 @@ def ADCFilePath():
     str, The path to the default ADC file.
   """
   # pylint:disable=protected-access
-  return client._get_well_known_file()
+  return _cloud_sdk.get_application_default_credentials_path()
 
 
 def ADCEnvVariable():
@@ -559,5 +560,5 @@ def ADCEnvVariable():
   Returns:
     str, The value of the env var or None if unset.
   """
-  return encoding.GetEncodedValue(
-      os.environ, client.GOOGLE_APPLICATION_CREDENTIALS, None)
+  return encoding.GetEncodedValue(os.environ, environment_vars.CREDENTIALS,
+                                  None)

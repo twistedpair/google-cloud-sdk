@@ -637,7 +637,9 @@ class InstallationState(object):
                                    '|third_party/overrides'
                                    '|third_party/proto'
                                    '|dulwich'
+                                   '|gapic'
                                    '|pubsublite'
+                                   '|pubsub/lite_subscriptions.py'
                                    '|logging_v2'
                                    '|pubsub_v1/services)')
     else:

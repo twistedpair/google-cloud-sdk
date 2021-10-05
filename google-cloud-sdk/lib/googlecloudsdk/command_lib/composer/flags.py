@@ -653,7 +653,6 @@ SERVICES_IPV4_CIDR_FLAG = base.Argument(
 ENABLE_IP_MASQ_AGENT_FLAG = base.Argument(
     '--enable-ip-masq-agent',
     default=None,
-    hidden=True,
     action='store_true',
     help="""\
     When enabled the IP Masq Agent is deployed to the cluster with configuration
@@ -694,7 +693,6 @@ ENABLE_PRIVATE_ENDPOINT_FLAG = base.Argument(
 ENABLE_PRIVATELY_USED_PUBLIC_IPS_FLAG = base.Argument(
     '--enable-privately-used-public-ips',
     default=None,
-    hidden=True,
     action='store_true',
     help="""\
     When enabled GKE pods and services may use public(non-RFC1918) IP ranges
@@ -876,6 +874,14 @@ def GetAndValidateKmsEncryptionKey(args):
     if getattr(args, keyword.replace('-', '_'), None):
       raise exceptions.InvalidArgumentException(
           '--kms-key', 'Encryption key not fully specified.')
+
+
+def ValidateSchedulerCountFlag(scheduler_count, is_composer_v1, release_track):
+  """Raises InputError if scheduler count flag is used for Composer v2 in GA."""
+  if (scheduler_count and release_track == base.ReleaseTrack.GA and
+      not is_composer_v1):
+    raise command_util.InvalidUserInputError(
+        _INVALID_OPTION_FOR_V2_ERROR_MSG.format(opt='scheduler-count'))
 
 
 def AddImportSourceFlag(parser, folder):
@@ -1104,6 +1110,7 @@ def AddPrivateIpEnvironmentFlags(update_type_group, release_track):
   CLOUD_SQL_IPV4_CIDR_FLAG.AddToParser(group)
   if release_track != base.ReleaseTrack.GA:
     COMPOSER_NETWORK_IPV4_CIDR_FLAG.AddToParser(group)
+    ENABLE_PRIVATELY_USED_PUBLIC_IPS_FLAG.AddToParser(group)
 
 
 def AddPypiUpdateFlagsToGroup(update_type_group):

@@ -30,7 +30,7 @@ properties:
       Specifies whether the instance should be automatically restarted if it is
       terminated by Compute Engine (not terminated by a user). You can only set
       the automatic restart option for standard instances. Preemptible instances
-      cannot be automatically restarted.  By default, this is set to true so an
+      cannot be automatically restarted. By default, this is set to true so an
       instance is automatically restarted if it is terminated by Compute Engine.
     type: boolean
   availabilityDomain:
@@ -41,6 +41,18 @@ properties:
       1-max count of availability domains in your GroupPlacementPolicy. See
       go/placement-policy-extension for more details.
     type: integer
+  hostErrorTimeoutSeconds:
+    description: |-
+      Specify the time in seconds for host error detection, the value must be
+      within the range of [90, 330] with the increment of 30, if unset, the
+      default behavior of host error recovery will be used.
+    type: integer
+  instanceTerminationAction:
+    description: Specifies the termination action for the instance.
+    type: string
+    enum:
+    - DELETE
+    - STOP
   latencyTolerant:
     description: |-
       Defines whether the instance is tolerant of higher cpu latency. This can
@@ -97,9 +109,8 @@ properties:
       therefore, in a `TERMINATED` state. See Instance Life Cycle for more
       information on the possible instance states.
     type: boolean
-  hostErrorTimeoutSeconds:
-    description: |-
-      The timeout in seconds for host error detection. The value must be
-      within the range of [90, 330] with the increment of 30, if unset, the
-      default behavior of host error recovery will be used.
-    type: integer
+  provisioningModel:
+    description: Specifies the provisioning model of the instance.
+    type: string
+    enum:
+    - SPOT

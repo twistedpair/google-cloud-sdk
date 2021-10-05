@@ -41,6 +41,8 @@ class GameservicesV1alpha(base_api.BaseApiClient):
         response_encoding=response_encoding)
     self.projects_locations_gameServerDeployments_configs = self.ProjectsLocationsGameServerDeploymentsConfigsService(self)
     self.projects_locations_gameServerDeployments = self.ProjectsLocationsGameServerDeploymentsService(self)
+    self.projects_locations_global_allocationEndpoints = self.ProjectsLocationsGlobalAllocationEndpointsService(self)
+    self.projects_locations_global = self.ProjectsLocationsGlobalService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_realms_gameServerClusters = self.ProjectsLocationsRealmsGameServerClustersService(self)
     self.projects_locations_realms = self.ProjectsLocationsRealmsService(self)
@@ -498,6 +500,161 @@ class GameservicesV1alpha(base_api.BaseApiClient):
         response_type_name='Operation',
         supports_download=False,
     )
+
+  class ProjectsLocationsGlobalAllocationEndpointsService(base_api.BaseApiService):
+    """Service class for the projects_locations_global_allocationEndpoints resource."""
+
+    _NAME = 'projects_locations_global_allocationEndpoints'
+
+    def __init__(self, client):
+      super(GameservicesV1alpha.ProjectsLocationsGlobalAllocationEndpointsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates an allocation endpoint in a given project.
+
+      Args:
+        request: (GameservicesProjectsLocationsGlobalAllocationEndpointsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/global/allocationEndpoints',
+        http_method='POST',
+        method_id='gameservices.projects.locations.global.allocationEndpoints.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['allocationEndpointId'],
+        relative_path='v1alpha/{+parent}/allocationEndpoints',
+        request_field='allocationEndpoint',
+        request_type_name='GameservicesProjectsLocationsGlobalAllocationEndpointsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes an allocation endpoint.
+
+      Args:
+        request: (GameservicesProjectsLocationsGlobalAllocationEndpointsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/global/allocationEndpoints/{allocationEndpointsId}',
+        http_method='DELETE',
+        method_id='gameservices.projects.locations.global.allocationEndpoints.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='GameservicesProjectsLocationsGlobalAllocationEndpointsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Get a global allocation endpoint.
+
+      Args:
+        request: (GameservicesProjectsLocationsGlobalAllocationEndpointsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AllocationEndpoint) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/global/allocationEndpoints/{allocationEndpointsId}',
+        http_method='GET',
+        method_id='gameservices.projects.locations.global.allocationEndpoints.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='GameservicesProjectsLocationsGlobalAllocationEndpointsGetRequest',
+        response_type_name='AllocationEndpoint',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists allocation endpoints in a given project.
+
+      Args:
+        request: (GameservicesProjectsLocationsGlobalAllocationEndpointsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListAllocationEndpointsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/global/allocationEndpoints',
+        http_method='GET',
+        method_id='gameservices.projects.locations.global.allocationEndpoints.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/allocationEndpoints',
+        request_field='',
+        request_type_name='GameservicesProjectsLocationsGlobalAllocationEndpointsListRequest',
+        response_type_name='ListAllocationEndpointsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Patches an allocation endpoint.
+
+      Args:
+        request: (GameservicesProjectsLocationsGlobalAllocationEndpointsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/global/allocationEndpoints/{allocationEndpointsId}',
+        http_method='PATCH',
+        method_id='gameservices.projects.locations.global.allocationEndpoints.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1alpha/{+name}',
+        request_field='allocationEndpoint',
+        request_type_name='GameservicesProjectsLocationsGlobalAllocationEndpointsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsGlobalService(base_api.BaseApiService):
+    """Service class for the projects_locations_global resource."""
+
+    _NAME = 'projects_locations_global'
+
+    def __init__(self, client):
+      super(GameservicesV1alpha.ProjectsLocationsGlobalService, self).__init__(client)
+      self._upload_configs = {
+          }
 
   class ProjectsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_operations resource."""

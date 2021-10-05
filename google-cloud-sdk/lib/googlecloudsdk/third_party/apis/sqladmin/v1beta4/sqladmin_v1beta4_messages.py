@@ -382,6 +382,8 @@ class ConnectSettings(_messages.Message):
       POSTGRES_10: The database version is PostgreSQL 10.
       POSTGRES_12: The database version is PostgreSQL 12.
       MYSQL_8_0: The database version is MySQL 8.
+      MYSQL_8_0_18: The database version is MySQL 8.0.18.
+      MYSQL_8_0_26: The database version is MySQL 8.0.21
       POSTGRES_13: The database version is PostgreSQL 13.
       SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
         Standard.
@@ -404,11 +406,13 @@ class ConnectSettings(_messages.Message):
     POSTGRES_10 = 11
     POSTGRES_12 = 12
     MYSQL_8_0 = 13
-    POSTGRES_13 = 14
-    SQLSERVER_2019_STANDARD = 15
-    SQLSERVER_2019_ENTERPRISE = 16
-    SQLSERVER_2019_EXPRESS = 17
-    SQLSERVER_2019_WEB = 18
+    MYSQL_8_0_18 = 14
+    MYSQL_8_0_26 = 15
+    POSTGRES_13 = 16
+    SQLSERVER_2019_STANDARD = 17
+    SQLSERVER_2019_ENTERPRISE = 18
+    SQLSERVER_2019_EXPRESS = 19
+    SQLSERVER_2019_WEB = 20
 
   backendType = _messages.EnumField('BackendTypeValueValuesEnum', 1)
   databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 2)
@@ -646,6 +650,8 @@ class DatabaseInstance(_messages.Message):
       POSTGRES_10: The database version is PostgreSQL 10.
       POSTGRES_12: The database version is PostgreSQL 12.
       MYSQL_8_0: The database version is MySQL 8.
+      MYSQL_8_0_18: The database version is MySQL 8.0.18.
+      MYSQL_8_0_26: The database version is MySQL 8.0.21
       POSTGRES_13: The database version is PostgreSQL 13.
       SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
         Standard.
@@ -668,11 +674,13 @@ class DatabaseInstance(_messages.Message):
     POSTGRES_10 = 11
     POSTGRES_12 = 12
     MYSQL_8_0 = 13
-    POSTGRES_13 = 14
-    SQLSERVER_2019_STANDARD = 15
-    SQLSERVER_2019_ENTERPRISE = 16
-    SQLSERVER_2019_EXPRESS = 17
-    SQLSERVER_2019_WEB = 18
+    MYSQL_8_0_18 = 14
+    MYSQL_8_0_26 = 15
+    POSTGRES_13 = 16
+    SQLSERVER_2019_STANDARD = 17
+    SQLSERVER_2019_ENTERPRISE = 18
+    SQLSERVER_2019_EXPRESS = 19
+    SQLSERVER_2019_WEB = 20
 
   class InstalledVersionValueValuesEnum(_messages.Enum):
     r"""installed_version stores the current fully resolved database version
@@ -695,6 +703,8 @@ class DatabaseInstance(_messages.Message):
       POSTGRES_10: The database version is PostgreSQL 10.
       POSTGRES_12: The database version is PostgreSQL 12.
       MYSQL_8_0: The database version is MySQL 8.
+      MYSQL_8_0_18: The database version is MySQL 8.0.18.
+      MYSQL_8_0_26: The database version is MySQL 8.0.21
       POSTGRES_13: The database version is PostgreSQL 13.
       SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
         Standard.
@@ -717,11 +727,13 @@ class DatabaseInstance(_messages.Message):
     POSTGRES_10 = 11
     POSTGRES_12 = 12
     MYSQL_8_0 = 13
-    POSTGRES_13 = 14
-    SQLSERVER_2019_STANDARD = 15
-    SQLSERVER_2019_ENTERPRISE = 16
-    SQLSERVER_2019_EXPRESS = 17
-    SQLSERVER_2019_WEB = 18
+    MYSQL_8_0_18 = 14
+    MYSQL_8_0_26 = 15
+    POSTGRES_13 = 16
+    SQLSERVER_2019_STANDARD = 17
+    SQLSERVER_2019_ENTERPRISE = 18
+    SQLSERVER_2019_EXPRESS = 19
+    SQLSERVER_2019_WEB = 20
 
   class InstanceTypeValueValuesEnum(_messages.Enum):
     r"""The instance type. This can be one of the following: *
@@ -1156,6 +1168,8 @@ class Flag(_messages.Message):
       POSTGRES_10: The database version is PostgreSQL 10.
       POSTGRES_12: The database version is PostgreSQL 12.
       MYSQL_8_0: The database version is MySQL 8.
+      MYSQL_8_0_18: The database version is MySQL 8.0.18.
+      MYSQL_8_0_26: The database version is MySQL 8.0.21
       POSTGRES_13: The database version is PostgreSQL 13.
       SQLSERVER_2019_STANDARD: The database version is SQL Server 2019
         Standard.
@@ -1178,11 +1192,13 @@ class Flag(_messages.Message):
     POSTGRES_10 = 11
     POSTGRES_12 = 12
     MYSQL_8_0 = 13
-    POSTGRES_13 = 14
-    SQLSERVER_2019_STANDARD = 15
-    SQLSERVER_2019_ENTERPRISE = 16
-    SQLSERVER_2019_EXPRESS = 17
-    SQLSERVER_2019_WEB = 18
+    MYSQL_8_0_18 = 14
+    MYSQL_8_0_26 = 15
+    POSTGRES_13 = 16
+    SQLSERVER_2019_STANDARD = 17
+    SQLSERVER_2019_ENTERPRISE = 18
+    SQLSERVER_2019_EXPRESS = 19
+    SQLSERVER_2019_WEB = 20
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""The type of the flag. Flags are typed to being **BOOLEAN**,
@@ -1242,11 +1258,13 @@ class GenerateEphemeralCertRequest(_messages.Message):
     public_key: PEM encoded public key to include in the signed certificate.
     readTime: Optional. Optional snapshot read timestamp to trade freshness
       for performance.
+    validDuration: Optional. If set, it will contain the cert valid duration.
   """
 
   access_token = _messages.StringField(1)
   public_key = _messages.StringField(2)
   readTime = _messages.StringField(3)
+  validDuration = _messages.StringField(4)
 
 
 class GenerateEphemeralCertResponse(_messages.Message):

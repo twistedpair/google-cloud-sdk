@@ -55,6 +55,84 @@ repositories {{
 }}
 """
 
+SERVICE_ACCOUNT_SNAPSHOT_TEMPLATE = """\
+// Move the secret to ~/.gradle.properties
+def artifactRegistryMavenSecret = "{password}"
+
+// Insert following snippet into your build.gradle
+// see docs.gradle.org/current/userguide/publishing_maven.html
+
+plugins {{
+  id "maven-publish"
+}}
+
+publishing {{
+  repositories {{
+    maven {{
+      def snapshotURL = "https://{location}-maven.pkg.dev/{repo_path}"
+      def releaseURL = "<Paste release URL here>"
+      url version.endsWith('SNAPSHOT') ? snapshotURL : releaseURL
+      credentials {{
+        username = "{username}"
+        password = "$artifactRegistryMavenSecret"
+      }}
+    }}
+  }}
+}}
+
+repositories {{
+  maven {{
+    url "https://{location}-maven.pkg.dev/{repo_path}"
+    credentials {{
+      username = "{username}"
+      password = "$artifactRegistryMavenSecret"
+    }}
+    authentication {{
+      basic(BasicAuthentication)
+    }}
+  }}
+}}
+"""
+
+SERVICE_ACCOUNT_RELEASE_TEMPLATE = """\
+// Move the secret to ~/.gradle.properties
+def artifactRegistryMavenSecret = "{password}"
+
+// Insert following snippet into your build.gradle
+// see docs.gradle.org/current/userguide/publishing_maven.html
+
+plugins {{
+  id "maven-publish"
+}}
+
+publishing {{
+  repositories {{
+    maven {{
+      def snapshotURL = "<Paste snapshot URL here>"
+      def releaseURL = "https://{location}-maven.pkg.dev/{repo_path}"
+      url version.endsWith('SNAPSHOT') ? snapshotURL : releaseURL
+      credentials {{
+        username = "{username}"
+        password = "$artifactRegistryMavenSecret"
+      }}
+    }}
+  }}
+}}
+
+repositories {{
+  maven {{
+    url "https://{location}-maven.pkg.dev/{repo_path}"
+    credentials {{
+      username = "{username}"
+      password = "$artifactRegistryMavenSecret"
+    }}
+    authentication {{
+      basic(BasicAuthentication)
+    }}
+  }}
+}}
+"""
+
 NO_SERVICE_ACCOUNT_TEMPLATE = """\
 // Insert following snippet into your build.gradle
 // see docs.gradle.org/current/userguide/publishing_maven.html
@@ -78,3 +156,56 @@ repositories {{
   }}
 }}
 """
+
+NO_SERVICE_ACCOUNT_SNAPSHOT_TEMPLATE = """\
+// Insert following snippet into your build.gradle
+// see docs.gradle.org/current/userguide/publishing_maven.html
+
+plugins {{
+  id "maven-publish"
+  id "com.google.cloud.artifactregistry.gradle-plugin" version "{extension_version}"
+}}
+
+publishing {{
+  repositories {{
+    maven {{
+      def snapshotURL = "artifactregistry://{location}-maven.pkg.dev/{repo_path}"
+      def releaseURL = "<Paste release URL here>"
+      url version.endsWith('SNAPSHOT') ? snapshotURL : releaseURL
+    }}
+  }}
+}}
+
+repositories {{
+  maven {{
+    url "artifactregistry://{location}-maven.pkg.dev/{repo_path}"
+  }}
+}}
+"""
+
+NO_SERVICE_ACCOUNT_RELEASE_TEMPLATE = """\
+// Insert following snippet into your build.gradle
+// see docs.gradle.org/current/userguide/publishing_maven.html
+
+plugins {{
+  id "maven-publish"
+  id "com.google.cloud.artifactregistry.gradle-plugin" version "{extension_version}"
+}}
+
+publishing {{
+  repositories {{
+    maven {{
+      def snapshotURL = "<Paste snapshot URL here>"
+      def releaseURL = "artifactregistry://{location}-maven.pkg.dev/{repo_path}"
+      url version.endsWith('SNAPSHOT') ? snapshotURL : releaseURL
+    }}
+  }}
+}}
+
+repositories {{
+  maven {{
+    url "artifactregistry://{location}-maven.pkg.dev/{repo_path}"
+  }}
+}}
+"""
+

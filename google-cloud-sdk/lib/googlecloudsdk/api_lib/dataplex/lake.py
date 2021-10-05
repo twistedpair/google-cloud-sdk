@@ -93,6 +93,20 @@ def RemoveServiceAccountFromDatasetPolicy(dataset_policy, member, role):
   return False
 
 
+def GenerateUpdateMask(args):
+  """Create Update Mask for Lakes."""
+  update_mask = []
+  if args.IsSpecified('description'):
+    update_mask.append('description')
+  if args.IsSpecified('display_name'):
+    update_mask.append('displayName')
+  if args.IsSpecified('labels'):
+    update_mask.append('labels')
+  if args.IsSpecified('metastore_service'):
+    update_mask.append('metastore.service')
+  return update_mask
+
+
 def WaitForOperation(operation):
   """Waits for the given google.longrunning.Operation to complete."""
   return dataplex_api.WaitForOperation(

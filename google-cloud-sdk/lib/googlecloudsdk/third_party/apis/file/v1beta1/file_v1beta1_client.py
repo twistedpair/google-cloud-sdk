@@ -508,6 +508,33 @@ class FileV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Revert(self, request, global_params=None):
+      r"""Revert an existing instance's file system to a specified snapshot.
+
+      Args:
+        request: (FileProjectsLocationsInstancesRevertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Revert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Revert.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:revert',
+        http_method='POST',
+        method_id='file.projects.locations.instances.revert',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}:revert',
+        request_field='revertInstanceRequest',
+        request_type_name='FileProjectsLocationsInstancesRevertRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class ProjectsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_operations resource."""
 

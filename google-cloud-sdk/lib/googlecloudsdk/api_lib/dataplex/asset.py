@@ -65,32 +65,75 @@ def SetIamPolicyFromFile(asset_ref, policy_file):
   return SetIamPolicy(asset_ref, policy)
 
 
-def GenerateAssetForCreateRequest(description, display_name, labels,
-                                  resource_name, resource_spec_type,
-                                  creation_policy, deletion_policy,
-                                  discovery_spec_enabled, include_patterns,
-                                  exclude_patterns, inheritance_mode, schedule):
+def GenerateAssetForCreateRequest(args):
   """Create Asset for Message Create Requests."""
   module = dataplex_api.GetMessageModule()
-  resource_spec = module.GoogleCloudDataplexV1AssetResourceSpec
+  resource_spec_field = module.GoogleCloudDataplexV1AssetResourceSpec
+  resource_spec = module.GoogleCloudDataplexV1AssetResourceSpec(
+      name=args.resource_name,
+      type=resource_spec_field.TypeValueValuesEnum(args.resource_type),
+      creationPolicy=resource_spec_field.CreationPolicyValueValuesEnum(
+          args.creation_policy))
+  if args.deletion_policy:
+    setattr(
+        resource_spec, 'deletionPolicy',
+        resource_spec_field.DeletionPolicyValueValuesEnum(args.deletion_policy))
   return module.GoogleCloudDataplexV1Asset(
-      description=description,
-      displayName=display_name,
-      labels=labels,
-      resourceSpec=module.GoogleCloudDataplexV1AssetResourceSpec(
-          name=resource_name,
-          type=resource_spec.TypeValueValuesEnum(resource_spec_type),
-          creationPolicy=resource_spec.CreationPolicyValueValuesEnum(
-              creation_policy),
-          deletionPolicy=resource_spec.DeletionPolicyValueValuesEnum(
-              deletion_policy)),
-      discoverySpec=module.GoogleCloudDataplexV1AssetDiscoverySpec(
-          enabled=discovery_spec_enabled,
-          includePatterns=include_patterns,
-          excludePatterns=exclude_patterns,
-          inheritanceMode=module.GoogleCloudDataplexV1AssetDiscoverySpec
-          .InheritanceModeValueValuesEnum(inheritance_mode),
-          schedule=schedule))
+      description=args.description,
+      displayName=args.display_name,
+      labels=dataplex_api.CreateLabels(module.GoogleCloudDataplexV1Asset, args),
+      resourceSpec=resource_spec,
+      discoverySpec=GenerateDiscoverySpec(args))
+
+
+def GenerateAssetForUpdateRequest(args):
+  """Create Asset for Message Update Requests."""
+  module = dataplex_api.GetMessageModule()
+  resource_spec = module.GoogleCloudDataplexV1AssetResourceSpec()
+  if args.deletion_policy:
+    setattr(
+        resource_spec, 'deletionPolicy',
+        module.GoogleCloudDataplexV1AssetResourceSpec
+        .DeletionPolicyValueValuesEnum(args.deletion_policy))
+  return module.GoogleCloudDataplexV1Asset(
+      description=args.description,
+      displayName=args.display_name,
+      labels=dataplex_api.CreateLabels(module.GoogleCloudDataplexV1Asset, args),
+      resourceSpec=resource_spec,
+      discoverySpec=GenerateDiscoverySpec(args))
+
+
+def GenerateDiscoverySpec(args):
+  """Create Discovery Spec for Assets."""
+  discovery_spec = dataplex_api.GetMessageModule(
+  ).GoogleCloudDataplexV1AssetDiscoverySpec(
+      enabled=args.discovery_enabled,
+      includePatterns=args.discovery_include_patterns,
+      excludePatterns=args.discovery_exclude_patterns,
+      schedule=args.discovery_schedule)
+  return discovery_spec
+
+
+def GenerateUpdateMask(args):
+  """Create Update Mask for Assets."""
+  update_mask = []
+  if args.IsSpecified('description'):
+    update_mask.append('description')
+  if args.IsSpecified('display_name'):
+    update_mask.append('displayName')
+  if args.IsSpecified('labels'):
+    update_mask.append('labels')
+  if args.IsSpecified('discovery_enabled'):
+    update_mask.append('discoverySpec.enabled')
+  if args.IsSpecified('discovery_include_patterns'):
+    update_mask.append('discoverySpec.includePatterns')
+  if args.IsSpecified('discovery_exclude_patterns'):
+    update_mask.append('discoverySpec.excludePatterns')
+  if args.IsSpecified('deletion_policy'):
+    update_mask.append('resourceSpec.deletion_policy')
+  if args.IsSpecified('discovery_schedule'):
+    update_mask.append('discoverySpec.schedule')
+  return update_mask
 
 
 def WaitForOperation(operation):

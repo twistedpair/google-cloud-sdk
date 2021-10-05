@@ -1793,7 +1793,8 @@ class Service(_messages.Message):
     labels: User-defined labels for the metastore service.
     maintenanceWindow: The one hour maintenance window of the metastore
       service. This specifies when the service can be restarted for
-      maintenance purposes in UTC time.
+      maintenance purposes in UTC time. Maintenance window is not needed for
+      services with the SPANNER database type.
     metadataIntegration: The setting that defines how metastore metadata
       should be integrated with external services and systems.
     metadataManagementActivity: Output only. The metadata management

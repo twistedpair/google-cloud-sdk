@@ -3817,11 +3817,16 @@ class GoogleCloudApigeeV1AddonsConfig(_messages.Message):
 
   Fields:
     advancedApiOpsConfig: Configuration for the Advanced API Ops add-on.
+    connectorsPlatformConfig: Configuration for the Connectors Platform add-
+      on.
+    integrationConfig: Configuration for the Integration add-on.
     monetizationConfig: Configuration for the Monetization add-on.
   """
 
   advancedApiOpsConfig = _messages.MessageField('GoogleCloudApigeeV1AdvancedApiOpsConfig', 1)
-  monetizationConfig = _messages.MessageField('GoogleCloudApigeeV1MonetizationConfig', 2)
+  connectorsPlatformConfig = _messages.MessageField('GoogleCloudApigeeV1ConnectorsPlatformConfig', 2)
+  integrationConfig = _messages.MessageField('GoogleCloudApigeeV1IntegrationConfig', 3)
+  monetizationConfig = _messages.MessageField('GoogleCloudApigeeV1MonetizationConfig', 4)
 
 
 class GoogleCloudApigeeV1AdjustDeveloperBalanceRequest(_messages.Message):
@@ -4590,6 +4595,21 @@ class GoogleCloudApigeeV1ConfigVersion(_messages.Message):
 
   majorVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   minorVersion = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudApigeeV1ConnectorsPlatformConfig(_messages.Message):
+  r"""Configuration for the Connectors Platform add-on.
+
+  Fields:
+    enabled: Flag that specifies whether the Connectors Platform add-on is
+      enabled.
+    expiresAt: Output only. Time at which the Connectors Platform add-on
+      expires in in milliseconds since epoch. If unspecified, the add-on will
+      never expire.
+  """
+
+  enabled = _messages.BooleanField(1)
+  expiresAt = _messages.IntegerField(2)
 
 
 class GoogleCloudApigeeV1Credential(_messages.Message):
@@ -6105,6 +6125,19 @@ class GoogleCloudApigeeV1InstanceDeploymentStatusDeployedRoute(_messages.Message
   envgroup = _messages.StringField(2)
   environment = _messages.StringField(3)
   percentage = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudApigeeV1IntegrationConfig(_messages.Message):
+  r"""Configuration for the Integration add-on.
+
+  Fields:
+    enabled: Flag that specifies whether the Integration add-on is enabled.
+    expiresAt: Output only. Time at which the Integration add-on expires in in
+      milliseconds since epoch. If unspecified, the add-on will never expire.
+  """
+
+  enabled = _messages.BooleanField(1)
+  expiresAt = _messages.IntegerField(2)
 
 
 class GoogleCloudApigeeV1KeyAliasReference(_messages.Message):

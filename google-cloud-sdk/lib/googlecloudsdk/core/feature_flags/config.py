@@ -20,22 +20,10 @@ from __future__ import unicode_literals
 
 import functools
 import hashlib
+import logging
 
 from googlecloudsdk.core import config
-from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import yaml
-
-
-class Error(exceptions.Error):
-  """A base exception for all user recoverable errors."""
-
-
-class UnknownPropertyError(Error):
-  """Errors when specified property does not exist."""
-
-  def __init__(self, error):
-    super(UnknownPropertyError, self).__init__(
-        '{err}\nProperty does not exist'.format(err=error))
 
 
 class Property:
@@ -46,8 +34,9 @@ class Property:
     self.weights = []
 
     for attribute in yaml_prop:
-      self.values.append(attribute['value'])
-      self.weights.append(attribute['weight'])
+      if all(key in attribute for key in ('value', 'weight')):
+        self.values.append(attribute['value'])
+        self.weights.append(attribute['weight'])
 
 
 _FEATURE_FLAG_YAML_URL = 'http://www.gstatic.com/cloudsdk/feature_flag_config_file.yaml'
@@ -86,24 +75,21 @@ class FeatureFlagsConfig:
 
   def Get(self, prop):
     """Returns the value for the given property."""
-    try:
-      return self.RandomValue(prop)
-    except KeyError as err:
-      raise UnknownPropertyError(err)
+    prop_str = str(prop)
+    if prop_str not in self.properties:
+      return None
 
-  def RandomValue(self, prop):
-    """Returns random value in the given property."""
-    total_weight = sum(self.properties[prop].weights)
-    prop_client_id = prop + config.GetCID()
+    total_weight = sum(self.properties[prop_str].weights)
+    prop_client_id = prop_str + config.GetCID()
     project_hash = int(
         hashlib.sha256(prop_client_id.encode('utf-8')).hexdigest(),
         16) % total_weight
-    list_of_weights = self.properties[prop].weights
+    list_of_weights = self.properties[prop_str].weights
     sum_of_weights = 0
     for i in range(len(list_of_weights)):
       sum_of_weights += list_of_weights[i]
       if project_hash < sum_of_weights:
-        return self.properties[prop].values[i]
+        return self.properties[prop_str].values[i]
 
 
 def _ParseFeatureFlagsConfig(feature_flags_config_yaml):
@@ -115,9 +101,14 @@ def _ParseFeatureFlagsConfig(feature_flags_config_yaml):
   Returns:
    property_dict: A dictionary of Property objects.
   """
+  try:
+    yaml_dict = yaml.load(feature_flags_config_yaml)
+  except yaml.YAMLParseError as e:
+    logging.debug('Unable to parse config: %s', e)
+    return {}
+
   property_dict = {}
-  yaml_dict = yaml.load(feature_flags_config_yaml)
-  for prop in yaml_dict:
+  for prop in yaml_dict or {}:
     yaml_prop = yaml_dict[prop]
     property_dict[prop] = Property(yaml_prop)
   return property_dict

@@ -656,6 +656,21 @@
             "WORDS",
             "SUBSTRINGS_NGRAM_3"
           ]
+        },
+        "state": {
+          "description": "Output only. State shows whether IndexedFieldConfig is ready to be used.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "STATE_UNSPECIFIED is not an expected state.",
+            "UPDATING means the config is still being updated and not filterable.",
+            "ACTIVE means the config is filterable."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "UPDATING",
+            "ACTIVE"
+          ]
         }
       }
     },

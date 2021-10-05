@@ -2090,10 +2090,13 @@ class MembershipRole(_messages.Message):
       are only supported for `MEMBER` `MembershipRoles`. May be set if `name`
       is `MEMBER`. Must not be set if `name` is any other value.
     name: A string attribute.
+    restrictionEvaluations: Evaluations of restrictions applied to parent
+      group on this membership.
   """
 
   expiryDetail = _messages.MessageField('MembershipRoleExpiryDetail', 1)
   name = _messages.StringField(2)
+  restrictionEvaluations = _messages.MessageField('RestrictionEvaluations', 3)
 
 
 class MembershipRoleExpiryDetail(_messages.Message):
@@ -2104,6 +2107,38 @@ class MembershipRoleExpiryDetail(_messages.Message):
   """
 
   expireTime = _messages.StringField(1)
+
+
+class MembershipRoleRestrictionEvaluation(_messages.Message):
+  r"""The evaluated state of this restriction.
+
+  Enums:
+    StateValueValuesEnum: Output only. The current state of the restriction
+
+  Fields:
+    state: Output only. The current state of the restriction
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of the restriction
+
+    Values:
+      STATE_UNSPECIFIED: Default. Should not be used.
+      COMPLIANT: The member adheres to the parent group's restriction.
+      FORWARD_COMPLIANT: The group-group membership might be currently
+        violating some parent group's restriction but in future, it will never
+        allow any new member in the child group which can violate parent
+        group's restriction.
+      NON_COMPLIANT: The member violates the parent group's restriction.
+      EVALUATING: The state of the membership is under evaluation.
+    """
+    STATE_UNSPECIFIED = 0
+    COMPLIANT = 1
+    FORWARD_COMPLIANT = 2
+    NON_COMPLIANT = 3
+    EVALUATING = 4
+
+  state = _messages.EnumField('StateValueValuesEnum', 1)
 
 
 class ModifyMembershipRolesRequest(_messages.Message):
@@ -2261,6 +2296,18 @@ class PosixGroup(_messages.Message):
   gid = _messages.IntegerField(1, variant=_messages.Variant.UINT64)
   name = _messages.StringField(2)
   systemId = _messages.StringField(3)
+
+
+class RestrictionEvaluations(_messages.Message):
+  r"""Evaluations of restrictions applied to parent group on this membership.
+
+  Fields:
+    memberRestrictionEvaluation: Evaluation of the member restriction applied
+      to this membership. Empty if the user lacks permission to view the
+      restriction evaluation.
+  """
+
+  memberRestrictionEvaluation = _messages.MessageField('MembershipRoleRestrictionEvaluation', 1)
 
 
 class SearchGroupsResponse(_messages.Message):

@@ -1074,6 +1074,8 @@ class GoogleCloudDatacatalogV1BigQueryDateShardedSpec(_messages.Message):
     dataset: Output only. The Data Catalog resource name of the dataset entry
       the current table belongs to. For example: `projects/{PROJECT_ID}/locati
       ons/{LOCATION}/entrygroups/{ENTRY_GROUP_ID}/entries/{ENTRY_ID}`.
+    latestShardResource: Output only. BigQuery resource name of the latest
+      shard.
     shardCount: Output only. Total number of shards.
     tablePrefix: Output only. The table name prefix of the shards. The name of
       any given shard is `[table_prefix]YYYYMMDD`. For example, for the
@@ -1081,8 +1083,9 @@ class GoogleCloudDatacatalogV1BigQueryDateShardedSpec(_messages.Message):
   """
 
   dataset = _messages.StringField(1)
-  shardCount = _messages.IntegerField(2)
-  tablePrefix = _messages.StringField(3)
+  latestShardResource = _messages.StringField(2)
+  shardCount = _messages.IntegerField(3)
+  tablePrefix = _messages.StringField(4)
 
 
 class GoogleCloudDatacatalogV1BigQueryRoutineSpec(_messages.Message):

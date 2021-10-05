@@ -594,6 +594,7 @@ class _LogManager(object):
       f.close()
     self.file_only_logger.handlers[:] = []
     self.file_only_logger.addHandler(_NullHandler())
+    self.file_only_logger.setLevel(logging.NOTSET)
 
     # Reset verbosity and output settings.
     self.SetVerbosity(None)

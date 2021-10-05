@@ -1037,6 +1037,8 @@ def FromJsonGoogleAuth(json_value):
       cred = aws.Credentials.from_info(json_key, scopes=config.CLOUDSDK_SCOPES)
     except ValueError:
       pass
+    except TypeError:
+      pass
 
     try:
       # pylint: disable=g-import-not-at-top

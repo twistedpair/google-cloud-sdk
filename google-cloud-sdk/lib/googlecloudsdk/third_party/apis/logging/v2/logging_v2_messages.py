@@ -1428,7 +1428,9 @@ class LogSink(_messages.Message):
       Resource (https://cloud.google.com/iam/docs/granting-roles-to-service-
       accounts#granting_access_to_a_service_account_for_a_resource). Consult
       the destination service's documentation to determine the appropriate IAM
-      roles to assign to the identity.
+      roles to assign to the identity.Sinks that have a destination that is a
+      log bucket in the same project as the sink do not have a writer_identity
+      and no additional permissions are required.
   """
 
   class OutputVersionFormatValueValuesEnum(_messages.Enum):

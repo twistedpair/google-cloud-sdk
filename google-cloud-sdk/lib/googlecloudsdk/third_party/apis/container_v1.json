@@ -1602,6 +1602,10 @@
             "PRIVATE_IPV6_GOOGLE_ACCESS_TO_GOOGLE",
             "PRIVATE_IPV6_GOOGLE_ACCESS_BIDIRECTIONAL"
           ]
+        },
+        "dnsConfig": {
+          "description": "DNSConfig contains clusterDNS config for this cluster.",
+          "$ref": "DNSConfig"
         }
       }
     },
@@ -1613,6 +1617,43 @@
         "disabled": {
           "description": "Disables cluster default sNAT rules.",
           "type": "boolean"
+        }
+      }
+    },
+    "DNSConfig": {
+      "id": "DNSConfig",
+      "description": "DNSConfig contains the desired set of options for configuring clusterDNS.",
+      "type": "object",
+      "properties": {
+        "clusterDns": {
+          "description": "cluster_dns indicates which in-cluster DNS provider should be used.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value",
+            "Use GKE default DNS provider(kube-dns) for DNS resolution.",
+            "Use CloudDNS for DNS resolution."
+          ],
+          "enum": [
+            "PROVIDER_UNSPECIFIED",
+            "PLATFORM_DEFAULT",
+            "CLOUD_DNS"
+          ]
+        },
+        "clusterDnsScope": {
+          "description": "cluster_dns_scope indicates the scope of access to cluster DNS records.",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value, will be inferred as cluster scope.",
+            "DNS records are accessible from within the VPC."
+          ],
+          "enum": [
+            "DNS_SCOPE_UNSPECIFIED",
+            "VPC_SCOPE"
+          ]
+        },
+        "clusterDnsDomain": {
+          "description": "cluster_dns_domain is the suffix used for all cluster service records.",
+          "type": "string"
         }
       }
     },
@@ -2262,6 +2303,10 @@
         "desiredShieldedNodes": {
           "description": "Configuration for Shielded Nodes.",
           "$ref": "ShieldedNodes"
+        },
+        "desiredDnsConfig": {
+          "description": "DNSConfig contains clusterDNS config for this cluster.",
+          "$ref": "DNSConfig"
         },
         "desiredNodePoolAutoscaling": {
           "description": "Autoscaler configuration for the node pool specified in desired_node_pool_id. If there is only one pool in the cluster and desired_node_pool_id is not provided then the change applies to that single node pool.",

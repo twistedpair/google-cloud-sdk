@@ -624,6 +624,7 @@ class ClusterUpdate(_messages.Message):
     desiredDatapathProvider: The desired datapath provider for the cluster.
     desiredDefaultSnatStatus: The desired status of whether to disable default
       sNAT for this cluster.
+    desiredDnsConfig: DNSConfig contains clusterDNS config for this cluster.
     desiredImage: The desired name of the image to use for this node. This is
       used to create clusters using a custom image. NOTE: Set the
       "desired_node_pool" field as well.
@@ -740,30 +741,31 @@ class ClusterUpdate(_messages.Message):
   desiredDatabaseEncryption = _messages.MessageField('DatabaseEncryption', 6)
   desiredDatapathProvider = _messages.EnumField('DesiredDatapathProviderValueValuesEnum', 7)
   desiredDefaultSnatStatus = _messages.MessageField('DefaultSnatStatus', 8)
-  desiredImage = _messages.StringField(9)
-  desiredImageProject = _messages.StringField(10)
-  desiredImageType = _messages.StringField(11)
-  desiredIntraNodeVisibilityConfig = _messages.MessageField('IntraNodeVisibilityConfig', 12)
-  desiredL4ilbSubsettingConfig = _messages.MessageField('ILBSubsettingConfig', 13)
-  desiredLocations = _messages.StringField(14, repeated=True)
-  desiredLoggingConfig = _messages.MessageField('LoggingConfig', 15)
-  desiredLoggingService = _messages.StringField(16)
-  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 17)
-  desiredMasterVersion = _messages.StringField(18)
-  desiredMeshCertificates = _messages.MessageField('MeshCertificates', 19)
-  desiredMonitoringConfig = _messages.MessageField('MonitoringConfig', 20)
-  desiredMonitoringService = _messages.StringField(21)
-  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 22)
-  desiredNodePoolId = _messages.StringField(23)
-  desiredNodeVersion = _messages.StringField(24)
-  desiredNotificationConfig = _messages.MessageField('NotificationConfig', 25)
-  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 26)
-  desiredPrivateIpv6GoogleAccess = _messages.EnumField('DesiredPrivateIpv6GoogleAccessValueValuesEnum', 27)
-  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 28)
-  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 29)
-  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 30)
-  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 31)
-  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 32)
+  desiredDnsConfig = _messages.MessageField('DNSConfig', 9)
+  desiredImage = _messages.StringField(10)
+  desiredImageProject = _messages.StringField(11)
+  desiredImageType = _messages.StringField(12)
+  desiredIntraNodeVisibilityConfig = _messages.MessageField('IntraNodeVisibilityConfig', 13)
+  desiredL4ilbSubsettingConfig = _messages.MessageField('ILBSubsettingConfig', 14)
+  desiredLocations = _messages.StringField(15, repeated=True)
+  desiredLoggingConfig = _messages.MessageField('LoggingConfig', 16)
+  desiredLoggingService = _messages.StringField(17)
+  desiredMasterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 18)
+  desiredMasterVersion = _messages.StringField(19)
+  desiredMeshCertificates = _messages.MessageField('MeshCertificates', 20)
+  desiredMonitoringConfig = _messages.MessageField('MonitoringConfig', 21)
+  desiredMonitoringService = _messages.StringField(22)
+  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 23)
+  desiredNodePoolId = _messages.StringField(24)
+  desiredNodeVersion = _messages.StringField(25)
+  desiredNotificationConfig = _messages.MessageField('NotificationConfig', 26)
+  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 27)
+  desiredPrivateIpv6GoogleAccess = _messages.EnumField('DesiredPrivateIpv6GoogleAccessValueValuesEnum', 28)
+  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 29)
+  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 30)
+  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 31)
+  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 32)
+  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 33)
 
 
 class CompleteIPRotationRequest(_messages.Message):
@@ -1363,6 +1365,54 @@ class CustomImageConfig(_messages.Message):
   image = _messages.StringField(1)
   imageFamily = _messages.StringField(2)
   imageProject = _messages.StringField(3)
+
+
+class DNSConfig(_messages.Message):
+  r"""DNSConfig contains the desired set of options for configuring
+  clusterDNS.
+
+  Enums:
+    ClusterDnsValueValuesEnum: cluster_dns indicates which in-cluster DNS
+      provider should be used.
+    ClusterDnsScopeValueValuesEnum: cluster_dns_scope indicates the scope of
+      access to cluster DNS records.
+
+  Fields:
+    clusterDns: cluster_dns indicates which in-cluster DNS provider should be
+      used.
+    clusterDnsDomain: cluster_dns_domain is the suffix used for all cluster
+      service records.
+    clusterDnsScope: cluster_dns_scope indicates the scope of access to
+      cluster DNS records.
+  """
+
+  class ClusterDnsScopeValueValuesEnum(_messages.Enum):
+    r"""cluster_dns_scope indicates the scope of access to cluster DNS
+    records.
+
+    Values:
+      DNS_SCOPE_UNSPECIFIED: Default value, will be inferred as cluster scope.
+      VPC_SCOPE: DNS records are accessible from within the VPC.
+    """
+    DNS_SCOPE_UNSPECIFIED = 0
+    VPC_SCOPE = 1
+
+  class ClusterDnsValueValuesEnum(_messages.Enum):
+    r"""cluster_dns indicates which in-cluster DNS provider should be used.
+
+    Values:
+      PROVIDER_UNSPECIFIED: Default value
+      PLATFORM_DEFAULT: Use GKE default DNS provider(kube-dns) for DNS
+        resolution.
+      CLOUD_DNS: Use CloudDNS for DNS resolution.
+    """
+    PROVIDER_UNSPECIFIED = 0
+    PLATFORM_DEFAULT = 1
+    CLOUD_DNS = 2
+
+  clusterDns = _messages.EnumField('ClusterDnsValueValuesEnum', 1)
+  clusterDnsDomain = _messages.StringField(2)
+  clusterDnsScope = _messages.EnumField('ClusterDnsScopeValueValuesEnum', 3)
 
 
 class DailyMaintenanceWindow(_messages.Message):
@@ -2078,6 +2128,7 @@ class NetworkConfig(_messages.Message):
       disabled. When disabled is set to false, default IP masquerade rules
       will be applied to the nodes to prevent sNAT on cluster internal
       traffic.
+    dnsConfig: DNSConfig contains clusterDNS config for this cluster.
     enableIntraNodeVisibility: Whether Intra-node visibility is enabled for
       this cluster. This makes same node pod to pod traffic visible for VPC
       network.
@@ -2133,11 +2184,12 @@ class NetworkConfig(_messages.Message):
 
   datapathProvider = _messages.EnumField('DatapathProviderValueValuesEnum', 1)
   defaultSnatStatus = _messages.MessageField('DefaultSnatStatus', 2)
-  enableIntraNodeVisibility = _messages.BooleanField(3)
-  enableL4ilbSubsetting = _messages.BooleanField(4)
-  network = _messages.StringField(5)
-  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 6)
-  subnetwork = _messages.StringField(7)
+  dnsConfig = _messages.MessageField('DNSConfig', 3)
+  enableIntraNodeVisibility = _messages.BooleanField(4)
+  enableL4ilbSubsetting = _messages.BooleanField(5)
+  network = _messages.StringField(6)
+  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 7)
+  subnetwork = _messages.StringField(8)
 
 
 class NetworkPolicy(_messages.Message):

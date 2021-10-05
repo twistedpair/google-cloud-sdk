@@ -65,40 +65,56 @@ def SetIamPolicyFromFile(zone_ref, policy_file):
   return SetIamPolicy(zone_ref, policy)
 
 
-def GenerateZoneForCreateRequest(description, display_name, labels, zone_type,
-                                 discovery_spec_enabled, include_patterns,
-                                 exclude_patterns, location_type, schedule):
+def GenerateZoneForCreateRequest(args):
   """Create Zone for Message Create Requests."""
   module = dataplex_api.GetMessageModule()
   return module.GoogleCloudDataplexV1Zone(
-      description=description,
-      displayName=display_name,
-      labels=labels,
-      type=module.GoogleCloudDataplexV1Zone.TypeValueValuesEnum(zone_type),
-      discoverySpec=module.GoogleCloudDataplexV1ZoneDiscoverySpec(
-          enabled=discovery_spec_enabled,
-          includePatterns=include_patterns,
-          excludePatterns=exclude_patterns,
-          schedule=schedule),
+      description=args.description,
+      displayName=args.display_name,
+      labels=dataplex_api.CreateLabels(module.GoogleCloudDataplexV1Zone, args),
+      type=module.GoogleCloudDataplexV1Zone.TypeValueValuesEnum(args.type),
+      discoverySpec=GenerateDiscoverySpec(args),
       resourceSpec=module.GoogleCloudDataplexV1ZoneResourceSpec(
           locationType=module.GoogleCloudDataplexV1ZoneResourceSpec
-          .LocationTypeValueValuesEnum(location_type)))
+          .LocationTypeValueValuesEnum(args.resource_location_type)))
 
 
-def GenerateZoneForUpdateRequest(description, display_name, labels,
-                                 discovery_spec_enabled, include_patterns,
-                                 exclude_patterns, schedule):
+def GenerateZoneForUpdateRequest(args):
   """Create Zone for Message Update Requests."""
   module = dataplex_api.GetMessageModule()
   return module.GoogleCloudDataplexV1Zone(
-      description=description,
-      displayName=display_name,
-      labels=labels,
-      discoverySpec=module.GoogleCloudDataplexV1ZoneDiscoverySpec(
-          enabled=discovery_spec_enabled,
-          includePatterns=include_patterns,
-          excludePatterns=exclude_patterns,
-          schedule=schedule))
+      description=args.description,
+      displayName=args.display_name,
+      labels=dataplex_api.CreateLabels(module.GoogleCloudDataplexV1Zone, args),
+      discoverySpec=GenerateDiscoverySpec(args))
+
+
+def GenerateDiscoverySpec(args):
+  return dataplex_api.GetMessageModule().GoogleCloudDataplexV1ZoneDiscoverySpec(
+      enabled=args.discovery_enabled,
+      includePatterns=args.discovery_include_patterns,
+      excludePatterns=args.discovery_exclude_patterns,
+      schedule=args.discovery_schedule)
+
+
+def GenerateUpdateMask(args):
+  """Create Update Mask for Zones."""
+  update_mask = []
+  if args.IsSpecified('description'):
+    update_mask.append('description')
+  if args.IsSpecified('display_name'):
+    update_mask.append('displayName')
+  if args.IsSpecified('labels'):
+    update_mask.append('labels')
+  if args.IsSpecified('discovery_enabled'):
+    update_mask.append('discoverySpec.enabled')
+  if args.IsSpecified('discovery_include_patterns'):
+    update_mask.append('discoverySpec.includePatterns')
+  if args.IsSpecified('discovery_exclude_patterns'):
+    update_mask.append('discoverySpec.excludePatterns')
+  if args.IsSpecified('discovery_schedule'):
+    update_mask.append('discoverySpec.schedule')
+  return update_mask
 
 
 def WaitForOperation(operation):

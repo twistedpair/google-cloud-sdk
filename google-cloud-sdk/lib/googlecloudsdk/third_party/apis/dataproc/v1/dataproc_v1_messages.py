@@ -468,6 +468,8 @@ class ClusterConfig(_messages.Message):
   Fields:
     autoscalingConfig: Optional. Autoscaling config for the policy associated
       with the cluster. Cluster does not autoscale if this field is unset.
+    auxiliaryNodePoolConfigs: Optional. The configuration(s) for a cluster's
+      auxiliary node pool(s).
     configBucket: Optional. A Cloud Storage bucket used to stage job
       dependencies, config files, and job driver console output. If you do not
       specify a staging bucket, Cloud Dataproc will determine a Cloud Storage
@@ -519,20 +521,21 @@ class ClusterConfig(_messages.Message):
   """
 
   autoscalingConfig = _messages.MessageField('AutoscalingConfig', 1)
-  configBucket = _messages.StringField(2)
-  encryptionConfig = _messages.MessageField('EncryptionConfig', 3)
-  endpointConfig = _messages.MessageField('EndpointConfig', 4)
-  gceClusterConfig = _messages.MessageField('GceClusterConfig', 5)
-  gkeClusterConfig = _messages.MessageField('GkeClusterConfig', 6)
-  initializationActions = _messages.MessageField('NodeInitializationAction', 7, repeated=True)
-  lifecycleConfig = _messages.MessageField('LifecycleConfig', 8)
-  masterConfig = _messages.MessageField('InstanceGroupConfig', 9)
-  metastoreConfig = _messages.MessageField('MetastoreConfig', 10)
-  secondaryWorkerConfig = _messages.MessageField('InstanceGroupConfig', 11)
-  securityConfig = _messages.MessageField('SecurityConfig', 12)
-  softwareConfig = _messages.MessageField('SoftwareConfig', 13)
-  tempBucket = _messages.StringField(14)
-  workerConfig = _messages.MessageField('InstanceGroupConfig', 15)
+  auxiliaryNodePoolConfigs = _messages.MessageField('NodePoolConfig', 2, repeated=True)
+  configBucket = _messages.StringField(3)
+  encryptionConfig = _messages.MessageField('EncryptionConfig', 4)
+  endpointConfig = _messages.MessageField('EndpointConfig', 5)
+  gceClusterConfig = _messages.MessageField('GceClusterConfig', 6)
+  gkeClusterConfig = _messages.MessageField('GkeClusterConfig', 7)
+  initializationActions = _messages.MessageField('NodeInitializationAction', 8, repeated=True)
+  lifecycleConfig = _messages.MessageField('LifecycleConfig', 9)
+  masterConfig = _messages.MessageField('InstanceGroupConfig', 10)
+  metastoreConfig = _messages.MessageField('MetastoreConfig', 11)
+  secondaryWorkerConfig = _messages.MessageField('InstanceGroupConfig', 12)
+  securityConfig = _messages.MessageField('SecurityConfig', 13)
+  softwareConfig = _messages.MessageField('SoftwareConfig', 14)
+  tempBucket = _messages.StringField(15)
+  workerConfig = _messages.MessageField('InstanceGroupConfig', 16)
 
 
 class ClusterMetrics(_messages.Message):
@@ -3877,6 +3880,35 @@ class NodeInitializationAction(_messages.Message):
 
   executableFile = _messages.StringField(1)
   executionTimeout = _messages.StringField(2)
+
+
+class NodePoolConfig(_messages.Message):
+  r"""Configuration of the node pool.
+
+  Enums:
+    RolesValueListEntryValuesEnum:
+
+  Fields:
+    nodePoolConfig: Optional. The Compute Engine config settings of the
+      instances of the node pool.
+    nodePoolId: Optional. Identifier of node pool. If one is not provided by
+      user, a default will be provided.
+    roles: Required. Role(s) that the node pool takes in the cluster.
+  """
+
+  class RolesValueListEntryValuesEnum(_messages.Enum):
+    r"""RolesValueListEntryValuesEnum enum type.
+
+    Values:
+      ROLE_UNSPECIFIED: Required unspecified role.
+      DRIVER: The node pool will have job drivers run on it.
+    """
+    ROLE_UNSPECIFIED = 0
+    DRIVER = 1
+
+  nodePoolConfig = _messages.MessageField('InstanceGroupConfig', 1)
+  nodePoolId = _messages.StringField(2)
+  roles = _messages.EnumField('RolesValueListEntryValuesEnum', 3, repeated=True)
 
 
 class Operation(_messages.Message):

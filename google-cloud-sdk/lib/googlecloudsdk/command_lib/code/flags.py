@@ -260,6 +260,8 @@ class CommonFlags(FlagDefs):
     self.CredentialsGroup().AddServiceAccount()
     self.CredentialsGroup().AddApplicationDefaultCredential()
     self.AddReadinessProbe()
+    self.AddAllowSecretManagerFlag()
+    self.AddSecrets()
 
   def _AddAlphaFlags(self):
     """Set up flags that are for alpha track only."""
@@ -276,8 +278,6 @@ class CommonFlags(FlagDefs):
     self.BuildersGroup().AddBuilder()
     self.EnvVarsGroup().AddEnvVars()
     self.EnvVarsGroup().AddEnvVarsFile()
-    self.AddAllowSecretManagerFlag()
-    self.AddSecrets()
 
 
 class InvalidFlagError(exceptions.Error):

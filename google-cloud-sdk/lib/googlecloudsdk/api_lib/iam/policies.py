@@ -23,18 +23,22 @@ import binascii
 from apitools.base.protorpclite import messages as apitools_messages
 from apitools.base.py import encoding
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions as gcloud_exceptions
 from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.core import yaml
 import six
 
 
-def GetClientInstance(api_version, no_http=False):
-  return apis.GetClientInstance('iam', api_version, no_http=no_http)
+def GetClientInstance(release_track, no_http=False):
+  if release_track == base.ReleaseTrack.ALPHA:
+    return apis.GetClientInstance('iam', 'v2alpha', no_http=no_http)
+  else:
+    return apis.GetClientInstance('iam', 'v2beta', no_http=no_http)
 
 
-def GetMessagesModule(api_version, client=None):
-  client = client or GetClientInstance(api_version)
+def GetMessagesModule(release_track, client=None):
+  client = client or GetClientInstance(release_track)
   return client.MESSAGES_MODULE
 
 
@@ -67,4 +71,3 @@ def ParseYamlOrJsonPolicyFile(policy_file_path, policy_message_type):
         'The etag of policy file [{0}] is not properly formatted. {1}'
         .format(policy_file_path, six.text_type(e)))
   return policy
-

@@ -934,6 +934,14 @@
             "TEMPORARY_REDIRECT",
             "PERMANENT_REDIRECT"
           ]
+        },
+        "httpsRedirect": {
+          "description": "Optional. If set to true, the URL scheme in the redirected request is set to https. If set to false, the URL scheme of the redirected request will remain the same as that of the request. This can only be set if there is at least one (1) edgeSslCertificate set on the service.",
+          "type": "boolean"
+        },
+        "stripQuery": {
+          "description": "Optional. If set to true, any accompanying query portion of the original URL is removed prior to redirecting the request. If set to false, the query portion of the original URL is retained. The default is set to false.",
+          "type": "boolean"
         }
       }
     },
@@ -1692,14 +1700,41 @@
       "description": "Specifies how to route matched traffic.",
       "type": "object",
       "properties": {
-        "destination": {
-          "description": "Optional. The destination service to which traffic should be forwarded. One of destination or drop must be specified.",
-          "$ref": "GrpcRouteDestination"
+        "destinations": {
+          "description": "Optional. The destination services to which traffic should be forwarded. If multiple destinations are specified, traffic will be split between Backend Service(s) according to the weight field of these destinations.",
+          "type": "array",
+          "items": {
+            "$ref": "GrpcRouteDestination"
+          }
         },
-        "drop": {
-          "description": "Optional. If set, the traffic will be dropped and the client will fail with the status code number specified in this field. One of destination or drop must be specified. If this field is specified, no other field must be specified.",
-          "type": "integer",
-          "format": "int32"
+        "faultInjectionPolicy": {
+          "description": "Optional. The specification for fault injection introduced into traffic to test the resiliency of clients to destination service failure. As part of fault injection, when clients send requests to a destination, delays can be introduced on a percentage of requests before sending those requests to the destination service. Similarly requests from clients can be aborted by for a percentage of requests. timeout and retry_policy will be ignored by clients that are configured with a fault_injection_policy",
+          "$ref": "GrpcRouteFaultInjectionPolicy"
+        },
+        "requestHeaderModifier": {
+          "description": "Optional. The specification for modifying the headers of a matching request prior to delivery of the request to the destination. Cannot be set if the route is attached to a Router whose type is PROXYLESS_GRPC.",
+          "$ref": "GrpcRouteHeaderModifier"
+        },
+        "responseHeaderModifier": {
+          "description": "Optional. The specification for modifying the headers of a response prior to sending the response back to the client. Cannot be set if the route is attached to a Router whose type is PROXYLESS_GRPC.",
+          "$ref": "GrpcRouteHeaderModifier"
+        },
+        "urlRewrite": {
+          "description": "Optional. The specification for rewrite URL before forwarding requests to the destination. Cannot be set if the route is attached to a Router whose type is PROXYLESS_GRPC.",
+          "$ref": "GrpcRouteURLRewrite"
+        },
+        "timeout": {
+          "description": "Optional. Specifies the timeout for selected route. Timeout is computed from the time the request has been fully processed (i.e. end of stream) up until the response has been completely processed. Timeout includes all retries.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "retryPolicy": {
+          "description": "Optional. Specifies the retry policy associated with this route.",
+          "$ref": "GrpcRouteRetryPolicy"
+        },
+        "requestMirrorPolicy": {
+          "description": "Optional. Specifies the policy on how requests intended for the route's destination are mirrored to a separate mirrored destination. The proxy will not wait for the mirrored destination to respond before returning the response. Prior to sending traffic to the mirrored service, the host \/ authority header is suffixed with -shadow. Cannot be set if the route is attached to a Router whose type is PROXYLESS_GRPC.",
+          "$ref": "GrpcRouteRequestMirrorPolicy"
         }
       }
     },
@@ -1713,9 +1748,136 @@
           "type": "string"
         },
         "weight": {
-          "description": "Optional. Specifies the proportion of requests forwarded to the backend referenced by the service_name field. This is computed as weight\/(sum of all weights in this destination list). For non-zero values, there may be some epsilon from the exact proportion defined here depending on the precision an implementation supports. Weight is not a percentage and the sum of weights does not need to equal 100. If only one serviceName is specified and it has a weight greater than 0, 100% of the traffic is forwarded to that backend. If weight is set to 0, no traffic should be forwarded for this entry. If unspecified, weight defaults to 1.",
+          "description": "Optional. Specifies the proportion of requests forwarded to the backend referenced by the serviceName field. The sum of the weights of all Destinations must be 100. If no Destinations provide a weight, then traffic will be split evenly among all of them. Specifying weights for some but not all Destinations is unsupported.",
           "type": "integer",
           "format": "int32"
+        }
+      }
+    },
+    "GrpcRouteFaultInjectionPolicy": {
+      "id": "GrpcRouteFaultInjectionPolicy",
+      "description": "The specification for fault injection introduced into traffic to test the resiliency of clients to destination service failure. As part of fault injection, when clients send requests to a destination, delays can be introduced on a percentage of requests before sending those requests to the destination service. Similarly requests from clients can be aborted by for a percentage of requests.",
+      "type": "object",
+      "properties": {
+        "delay": {
+          "description": "The specification for injecting delay to client requests.",
+          "$ref": "GrpcRouteFaultInjectionPolicyDelay"
+        },
+        "abort": {
+          "description": "The specification for aborting to client requests.",
+          "$ref": "GrpcRouteFaultInjectionPolicyAbort"
+        }
+      }
+    },
+    "GrpcRouteFaultInjectionPolicyDelay": {
+      "id": "GrpcRouteFaultInjectionPolicyDelay",
+      "description": "Specification of how client requests are delayed as part of fault injection before being sent to a destination.",
+      "type": "object",
+      "properties": {
+        "fixedDelay": {
+          "description": "Specify a fixed delay before forwarding the request.",
+          "type": "string",
+          "format": "google-duration"
+        },
+        "percentage": {
+          "description": "The percentage of traffic on which delay will be injected. The value must be between [0, 100]",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GrpcRouteFaultInjectionPolicyAbort": {
+      "id": "GrpcRouteFaultInjectionPolicyAbort",
+      "description": "Specification of how client requests are aborted as part of fault injection before being sent to a destination.",
+      "type": "object",
+      "properties": {
+        "httpStatus": {
+          "description": "The HTTP status code used to abort the request. The value must be between 200 and 599 inclusive.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "percentage": {
+          "description": "The percentage of traffic which will be aborted. The value must be between [0, 100]",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GrpcRouteHeaderModifier": {
+      "id": "GrpcRouteHeaderModifier",
+      "description": "Specifies how to modify gRPC headers in a request or a response.",
+      "type": "object",
+      "properties": {
+        "set": {
+          "description": "Completely overwrite\/replace the headers with given map where key is the name of the header, value is the value of the header.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "add": {
+          "description": "Add the headers with given map where key is the name of the header, value is the value of the header.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "remove": {
+          "description": "Remove headers (matching by header names) specified in the list.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GrpcRouteURLRewrite": {
+      "id": "GrpcRouteURLRewrite",
+      "description": "The specification to modify the URL of the request, prior to forwarding the request to the destination.",
+      "type": "object",
+      "properties": {
+        "pathPrefixRewrite": {
+          "description": "Prior to forwarding the request to the selected destination, the matching portion of the requests path is replaced by this value.",
+          "type": "string"
+        },
+        "hostRewrite": {
+          "description": "Prior to forwarding the request to the selected destination, the requests host header is replaced by this value.",
+          "type": "string"
+        }
+      }
+    },
+    "GrpcRouteRetryPolicy": {
+      "id": "GrpcRouteRetryPolicy",
+      "description": "The specifications for retries.",
+      "type": "object",
+      "properties": {
+        "retryConditions": {
+          "description": "- connect-failure: Router will retry on failures connecting to Backend Services, for example due to connection timeouts. - refused-stream: Router will retry if the backend service resets the stream with a REFUSED_STREAM error code. This reset type indicates that it is safe to retry. - cancelled: Router will retry if the gRPC status code in the response header is set to cancelled - deadline-exceeded: Router will retry if the gRPC status code in the response header is set to deadline-exceeded - resource-exhausted: Router will retry if the gRPC status code in the response header is set to resource-exhausted - unavailable: Router will retry if the gRPC status code in the response header is set to unavailable",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "numRetries": {
+          "description": "Specifies the allowed number of retries. This number must be > 0. If not specpfied, default to 1.",
+          "type": "integer",
+          "format": "uint32"
+        },
+        "perTryTimeout": {
+          "description": "If not specified, will use the timeout set in the RouteAction. If timeout is not set in the RouteAction, will use the largest timeout among all Backend Services associated with the route.",
+          "type": "string",
+          "format": "google-duration"
+        }
+      }
+    },
+    "GrpcRouteRequestMirrorPolicy": {
+      "id": "GrpcRouteRequestMirrorPolicy",
+      "description": "Specifies the policy on how requests are mirrored to a separate mirrored destination service. The proxy does not wait for responses from the mirrored service. Prior to sending traffic to the mirrored service, the host\/authority header is suffixed with -shadow.",
+      "type": "object",
+      "properties": {
+        "destination": {
+          "description": "The destination the requests will be mirrored to. The weight of the destination will be ignored.",
+          "$ref": "GrpcRouteDestination"
         }
       }
     },

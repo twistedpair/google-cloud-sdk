@@ -24,3 +24,8 @@ from googlecloudsdk.core import exceptions as core_exceptions
 class SecurityCenterSettingsException(core_exceptions.Error):
   """Exception raised from SCC settings backend api."""
   pass
+
+
+class SecurityCenterSettingsNotFoundException(core_exceptions.Error):
+  """Not Found Exception raised from SCC settings backend api."""
+  pass

@@ -1947,6 +1947,408 @@
       "properties": {
       }
     },
+    "GoogleCloudDataplexV1Task": {
+      "id": "GoogleCloudDataplexV1Task",
+      "description": "A task represents a user-visible job.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The relative resource name of the task, of the form: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id}\/ tasks\/{task_id}.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "uid": {
+          "description": "Output only. System generated globally unique ID for the task. This ID will be different if the task is deleted and re-created with the same name.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "createTime": {
+          "description": "Output only. The time when the task was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "updateTime": {
+          "description": "Output only. The time when the task was last updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "description": {
+          "description": "Optional. Description of the task.",
+          "type": "string"
+        },
+        "displayName": {
+          "description": "Optional. User friendly display name.",
+          "type": "string"
+        },
+        "state": {
+          "description": "Output only. Current state of the task.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "State is not specified.",
+            "Resource is active, i.e., ready to use.",
+            "Resource is under creation.",
+            "Resource is under deletion.",
+            "Resource is active but has unresolved actions."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "ACTIVE",
+            "CREATING",
+            "DELETING",
+            "ACTION_REQUIRED"
+          ]
+        },
+        "labels": {
+          "description": "Optional. User-defined labels for the task.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "triggerSpec": {
+          "description": "Required. Spec related to how often and when a task should be triggered.",
+          "$ref": "GoogleCloudDataplexV1TaskTriggerSpec"
+        },
+        "executionSpec": {
+          "description": "Required. Spec related to how a task is executed.",
+          "$ref": "GoogleCloudDataplexV1TaskExecutionSpec"
+        },
+        "spark": {
+          "description": "Config related to running custom Spark tasks.",
+          "$ref": "GoogleCloudDataplexV1TaskSparkTaskConfig"
+        }
+      }
+    },
+    "GoogleCloudDataplexV1TaskTriggerSpec": {
+      "id": "GoogleCloudDataplexV1TaskTriggerSpec",
+      "description": "Task scheduling and trigger settings.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "Required. Immutable. Trigger type of the user-specified Task.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified trigger type.",
+            "The task runs one-time shortly after Task Creation.",
+            "The task is scheduled to run periodically."
+          ],
+          "enum": [
+            "TYPE_UNSPECIFIED",
+            "ON_DEMAND",
+            "RECURRING"
+          ]
+        },
+        "startTime": {
+          "description": "Optional. The first run of the task will be after this time. If not specified, the task will run shortly after being submitted if ON_DEMAND and based on the schedule if RECURRING.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "disabled": {
+          "description": "Optional. Prevent the task from executing. This does not cancel already running tasks. It is intended to temporarily disable RECURRING tasks.",
+          "type": "boolean"
+        },
+        "maxRetries": {
+          "description": "Optional. Number of retry attempts before aborting. Set to zero to never attempt to retry a failed task.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "schedule": {
+          "description": "Optional. Cron schedule (https:\/\/en.wikipedia.org\/wiki\/Cron) for running tasks periodically. To explicitly set a timezone to the cron tab, apply a prefix in the cron tab: \"CRON_TZ=${IANA_TIME_ZONE}\" or \"RON_TZ=${IANA_TIME_ZONE}\". The ${IANA_TIME_ZONE} may only be a valid string from IANA time zone database. For example, \"CRON_TZ=America\/New_York 1 * * * *\", or \"TZ=America\/New_York 1 * * * *\". This field is required for RECURRING tasks.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudDataplexV1TaskExecutionSpec": {
+      "id": "GoogleCloudDataplexV1TaskExecutionSpec",
+      "description": "Execution related settings, like retry and service_account.",
+      "type": "object",
+      "properties": {
+        "args": {
+          "description": "Optional. The arguments to pass to the task. The args can use placeholders of the format ${placeholder} as part of key\/value string. These will be interpolated before passing the args to the driver. Currently supported placeholders: - ${task_id} - ${job_time} To pass positional args, set the key as TASK_ARGS. The value should be a comma-separated string of all the positional arguments. To use a delimiter other than comma, refer to https:\/\/cloud.google.com\/sdk\/gcloud\/reference\/topic\/escaping. In case of other keys being present in the args, then TASK_ARGS will be passed as the last argument.",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        },
+        "serviceAccount": {
+          "description": "Optional. Service account to use to execute a task. If not provided, the default Compute service account for the project is used.",
+          "type": "string"
+        },
+        "serviceAccountScopes": {
+          "description": "Optional. The set of auth scopes and permissions granted to the service account. By default, the CLOUD_PLATFORM auth scope is enabled.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "maxJobExecutionLifetime": {
+          "description": "Optional. The maximum duration after which the job execution is expired.",
+          "type": "string",
+          "format": "google-duration"
+        }
+      }
+    },
+    "GoogleCloudDataplexV1TaskSparkTaskConfig": {
+      "id": "GoogleCloudDataplexV1TaskSparkTaskConfig",
+      "description": "User-specified config for running a Spark task.",
+      "type": "object",
+      "properties": {
+        "mainJarFileUri": {
+          "description": "The GCS URI of the jar file that contains the main class. The execution args are passed in as a sequence of named process arguments (--key=value).",
+          "type": "string"
+        },
+        "mainClass": {
+          "description": "The name of the driver's main class. The jar file that contains the class must be in the default CLASSPATH or specified in jar_file_uris. The execution args are passed in as a sequence of named process arguments (--key=value).",
+          "type": "string"
+        },
+        "pythonScriptFile": {
+          "description": "The GCS URI of the main Python file to use as the driver. Must be a .py file. The execution args are passed in as a sequence of named process arguments (--key=value).",
+          "type": "string"
+        },
+        "pythonScript": {
+          "description": "Python script text to execute as the driver. The execution args are passed in as a sequence of named process arguments (--key=value).",
+          "type": "string"
+        },
+        "sqlScriptFile": {
+          "description": "A reference to a query file. This can be the GCS URI of the query file or it can the path to a SqlScript Content. The execution args are used to declare a set of script variables (set key=\"value\";).",
+          "type": "string"
+        },
+        "sqlScript": {
+          "description": "The query text. The execution args are used to declare a set of script variables (set key=\"value\";).",
+          "type": "string"
+        },
+        "fileUris": {
+          "description": "Optional. GCS URIs of files to be placed in the working directory of each executor.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "archiveUris": {
+          "description": "Optional. GCS URIs of archives to be extracted into the working directory of each executor. Supported file types: .jar, .tar, .tar.gz, .tgz, and .zip.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "infrastructureSpec": {
+          "description": "Required. Infrastructure specification for the execution.",
+          "$ref": "GoogleCloudDataplexV1TaskInfrastructureSpec"
+        }
+      }
+    },
+    "GoogleCloudDataplexV1TaskInfrastructureSpec": {
+      "id": "GoogleCloudDataplexV1TaskInfrastructureSpec",
+      "description": "Configuration for the underlying infrastructure used to run workloads.",
+      "type": "object",
+      "properties": {
+        "batch": {
+          "description": "Compute resources needed for a Task when using Dataproc Serverless.",
+          "$ref": "GoogleCloudDataplexV1TaskInfrastructureSpecBatchComputeResources"
+        },
+        "containerImage": {
+          "description": "Container Image Runtime Configuration.",
+          "$ref": "GoogleCloudDataplexV1TaskInfrastructureSpecContainerImageRuntime"
+        },
+        "vpcNetwork": {
+          "$ref": "GoogleCloudDataplexV1TaskInfrastructureSpecVpcNetwork"
+        }
+      }
+    },
+    "GoogleCloudDataplexV1TaskInfrastructureSpecBatchComputeResources": {
+      "id": "GoogleCloudDataplexV1TaskInfrastructureSpecBatchComputeResources",
+      "description": "Batch compute resources associated with the task.",
+      "type": "object",
+      "properties": {
+        "executorsCount": {
+          "description": "Optional. Total number of job executors.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "maxExecutorsCount": {
+          "description": "Optional. Max configurable executors. If max_executors_count > executors_count, then auto-scaling is enabled.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "GoogleCloudDataplexV1TaskInfrastructureSpecContainerImageRuntime": {
+      "id": "GoogleCloudDataplexV1TaskInfrastructureSpecContainerImageRuntime",
+      "description": "Container Image Runtime Configuration used with Batch execution.",
+      "type": "object",
+      "properties": {
+        "javaJars": {
+          "description": "Optional. A list of Java JARS to add to the classpath. Valid input includes Cloud Storage URIs to Jar binaries. For example, gs:\/\/bucket-name\/my\/path\/to\/file.jar",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "pythonPackages": {
+          "description": "Optional. A list of python packages to be installed. Valid formats include Cloud Storage URI to a PIP installable library. For example, gs:\/\/bucket-name\/my\/path\/to\/lib.tar.gz",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "properties": {
+          "description": "Optional. Override to common configuration of open source components installed on the Dataproc cluster. The properties to set on daemon config files. Property keys are specified in prefix:property format, for example core:hadoop.tmp.dir. For more information, see Cluster properties (https:\/\/cloud.google.com\/dataproc\/docs\/concepts\/cluster-properties).",
+          "type": "object",
+          "additionalProperties": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GoogleCloudDataplexV1TaskInfrastructureSpecVpcNetwork": {
+      "id": "GoogleCloudDataplexV1TaskInfrastructureSpecVpcNetwork",
+      "description": "Cloud VPC Network used to run the infrastructure.",
+      "type": "object",
+      "properties": {
+        "network": {
+          "description": "Optional. The Cloud VPC network in which the job is run. By default, the Cloud VPC network named Default within the project is used.",
+          "type": "string"
+        },
+        "subNetwork": {
+          "description": "Optional. The Cloud VPC sub-network in which the job is run.",
+          "type": "string"
+        },
+        "networkTags": {
+          "description": "Optional. List of network tags to apply to the job.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "GoogleCloudDataplexV1ListTasksResponse": {
+      "id": "GoogleCloudDataplexV1ListTasksResponse",
+      "description": "List tasks response.",
+      "type": "object",
+      "properties": {
+        "tasks": {
+          "description": "Tasks under the given parent lake.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudDataplexV1Task"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results, or empty if there are no more results in the list.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudDataplexV1ListJobsResponse": {
+      "id": "GoogleCloudDataplexV1ListJobsResponse",
+      "description": "List jobs response.",
+      "type": "object",
+      "properties": {
+        "jobs": {
+          "description": "Jobs under a given task.",
+          "type": "array",
+          "items": {
+            "$ref": "GoogleCloudDataplexV1Job"
+          }
+        },
+        "nextPageToken": {
+          "description": "Token to retrieve the next page of results, or empty if there are no more results in the list.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudDataplexV1Job": {
+      "id": "GoogleCloudDataplexV1Job",
+      "description": "A job represents an instance of a task.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The relative resource name of the job, of the form: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id}\/ tasks\/{task_id}\/jobs\/{job_id}.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "uid": {
+          "description": "Output only. System generated globally unique ID for the job.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "startTime": {
+          "description": "Output only. The time when the job was started.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "Output only. The time when the job ended.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "state": {
+          "description": "Output only. Execution state for the job.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "The job state is unknown.",
+            "The job is running.",
+            "The job is cancelling.",
+            "The job cancellation was successful.",
+            "The job completed successfully.",
+            "The job is no longer running due to an error.",
+            "The job was cancelled outside of Dataplex."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "RUNNING",
+            "CANCELLING",
+            "CANCELLED",
+            "SUCCEEDED",
+            "FAILED",
+            "ABORTED"
+          ]
+        },
+        "retryCount": {
+          "description": "Output only. The number of times the job has been retried (excluding the initial attempt).",
+          "readOnly": true,
+          "type": "integer",
+          "format": "uint32"
+        },
+        "service": {
+          "description": "Output only. The underlying service running a job.",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Service used to run the job is unspecified.",
+            "Dataproc service is used to run this job."
+          ],
+          "enum": [
+            "SERVICE_UNSPECIFIED",
+            "DATAPROC"
+          ]
+        },
+        "serviceJob": {
+          "description": "Output only. The full resource name for the job run under a particular service.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "message": {
+          "description": "Output only. Additional information about the current state.",
+          "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudDataplexV1CancelJobRequest": {
+      "id": "GoogleCloudDataplexV1CancelJobRequest",
+      "description": "Cancel task jobs.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "GoogleCloudLocationListLocationsResponse": {
       "id": "GoogleCloudLocationListLocationsResponse",
       "description": "The response message for Locations.ListLocations.",
@@ -2233,6 +2635,59 @@
           "description": "The time when the job ended running.",
           "type": "string",
           "format": "google-datetime"
+        },
+        "state": {
+          "description": "The job state on completion.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified job state.",
+            "Job successfully completed.",
+            "Job was unsuccessful.",
+            "Job was cancelled by the user.",
+            "Job was cancelled or aborted via the service executing the job."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "SUCCEEDED",
+            "FAILED",
+            "CANCELLED",
+            "ABORTED"
+          ]
+        },
+        "retries": {
+          "description": "The number of retries.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "type": {
+          "description": "The type of the job.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified job type.",
+            "Spark jobs.",
+            "Notebook jobs."
+          ],
+          "enum": [
+            "TYPE_UNSPECIFIED",
+            "SPARK",
+            "NOTEBOOK"
+          ]
+        },
+        "service": {
+          "description": "The service used to execute the job.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified service.",
+            "Cloud Dataproc."
+          ],
+          "enum": [
+            "SERVICE_UNSPECIFIED",
+            "DATAPROC"
+          ]
+        },
+        "serviceJob": {
+          "description": "The reference to the job within the service.",
+          "type": "string"
         },
         "discovery": {
           "description": "Details about the discovery job.",
@@ -3794,6 +4249,179 @@
                 },
                 "tasks": {
                   "methods": {
+                    "create": {
+                      "id": "dataplex.projects.locations.lakes.tasks.create",
+                      "path": "v1/{+parent}/tasks",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/tasks",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The resource name of the parent lake: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id}",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/lakes\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "taskId": {
+                          "description": "Required. Task identifier.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "validateOnly": {
+                          "description": "Optional. Only validate the request, but do not perform mutations. The default is false.",
+                          "location": "query",
+                          "type": "boolean"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "request": {
+                        "$ref": "GoogleCloudDataplexV1Task"
+                      },
+                      "response": {
+                        "$ref": "GoogleLongrunningOperation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Creates a task resource within a lake."
+                    },
+                    "patch": {
+                      "id": "dataplex.projects.locations.lakes.tasks.patch",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/tasks/{tasksId}",
+                      "httpMethod": "PATCH",
+                      "parameters": {
+                        "name": {
+                          "description": "Output only. The relative resource name of the task, of the form: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id}\/ tasks\/{task_id}.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/lakes\/[^\/]+\/tasks\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "updateMask": {
+                          "description": "Required. Mask of fields to update.",
+                          "location": "query",
+                          "type": "string",
+                          "format": "google-fieldmask"
+                        },
+                        "validateOnly": {
+                          "description": "Optional. Only validate the request, but do not perform mutations. The default is false.",
+                          "location": "query",
+                          "type": "boolean"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "GoogleCloudDataplexV1Task"
+                      },
+                      "response": {
+                        "$ref": "GoogleLongrunningOperation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Update the task resource."
+                    },
+                    "delete": {
+                      "id": "dataplex.projects.locations.lakes.tasks.delete",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/tasks/{tasksId}",
+                      "httpMethod": "DELETE",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The resource name of the task: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id} \/task\/{task_id}`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/lakes\/[^\/]+\/tasks\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleLongrunningOperation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Delete the task resource."
+                    },
+                    "list": {
+                      "id": "dataplex.projects.locations.lakes.tasks.list",
+                      "path": "v1/{+parent}/tasks",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/tasks",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. The resource name of the parent lake: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id}",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/lakes\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "Optional. Maximum number of tasks to return. The service may return fewer than this value. If unspecified, at most 10 tasks will be returned. The maximum value is 1000; values above 1000 will be coerced to 1000.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "Optional. Page token received from a previous ListZones call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to ListZones must match the call that provided the page token.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "filter": {
+                          "description": "Optional. Filter request.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "orderBy": {
+                          "description": "Optional. Order by fields for the result.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "GoogleCloudDataplexV1ListTasksResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Lists tasks under the given lake."
+                    },
+                    "get": {
+                      "id": "dataplex.projects.locations.lakes.tasks.get",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/tasks/{tasksId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The resource name of the task: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id} \/tasks\/{tasks_id}",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/lakes\/[^\/]+\/tasks\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "GoogleCloudDataplexV1Task"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Get task resource."
+                    },
                     "setIamPolicy": {
                       "id": "dataplex.projects.locations.lakes.tasks.setIamPolicy",
                       "path": "v1/{+resource}:setIamPolicy",
@@ -3880,6 +4508,102 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a NOT_FOUND error.Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
+                    }
+                  }
+                  ,
+                  "resources": {
+                    "jobs": {
+                      "methods": {
+                        "list": {
+                          "id": "dataplex.projects.locations.lakes.tasks.jobs.list",
+                          "path": "v1/{+parent}/jobs",
+                          "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/tasks/{tasksId}/jobs",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "parent": {
+                              "description": "Required. The resource name of the parent environment: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id}\/tasks\/{task_id}",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/lakes\/[^\/]+\/tasks\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            },
+                            "pageSize": {
+                              "description": "Optional. Maximum number of jobs to return. The service may return fewer than this value. If unspecified, at most 10 jobs will be returned. The maximum value is 1000; values above 1000 will be coerced to 1000.",
+                              "location": "query",
+                              "type": "integer",
+                              "format": "int32"
+                            },
+                            "pageToken": {
+                              "description": "Optional. Page token received from a previous ListJobs call. Provide this to retrieve the subsequent page. When paginating, all other parameters provided to ListJobs must match the call that provided the page token.",
+                              "location": "query",
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "parent"
+                          ],
+                          "response": {
+                            "$ref": "GoogleCloudDataplexV1ListJobsResponse"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Lists Jobs under the given task."
+                        },
+                        "get": {
+                          "id": "dataplex.projects.locations.lakes.tasks.jobs.get",
+                          "path": "v1/{+name}",
+                          "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/tasks/{tasksId}/jobs/{jobsId}",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "name": {
+                              "description": "Required. The resource name of the job: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id} \/tasks\/{task_id}\/jobs\/{job_id}",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/lakes\/[^\/]+\/tasks\/[^\/]+\/jobs\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "response": {
+                            "$ref": "GoogleCloudDataplexV1Job"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Get job resource."
+                        },
+                        "cancel": {
+                          "id": "dataplex.projects.locations.lakes.tasks.jobs.cancel",
+                          "path": "v1/{+name}:cancel",
+                          "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/tasks/{tasksId}/jobs/{jobsId}:cancel",
+                          "httpMethod": "POST",
+                          "parameters": {
+                            "name": {
+                              "description": "Required. The resource name of the job: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id} \/task\/{task_id}\/job\/{job_id}`",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/lakes\/[^\/]+\/tasks\/[^\/]+\/jobs\/[^\/]+$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "request": {
+                            "$ref": "GoogleCloudDataplexV1CancelJobRequest"
+                          },
+                          "response": {
+                            "$ref": "Empty"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Cancel jobs running for the task resource."
+                        }
+                      }
                     }
                   }
                 },

@@ -18,11 +18,46 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import io
+import re
+
+from apitools.base.py import exceptions as apitools_exceptions
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.api_lib.util import exceptions as apilib_exceptions
+from googlecloudsdk.core import exceptions
+from googlecloudsdk.core import log
+from googlecloudsdk.core.resource import resource_printer
+
+import six
 
 _DEFAULT_API_VERSION = 'v2'
 _GLOBAL_REGION = 'global'
+_REGIONAL_IAM_REGEX = re.compile(
+    "PERMISSION_DENIED: Permission (.+) denied on 'projects/(.+?)/.*")
+
+
+def _ParseError(error):
+  """Returns a best-effort error message created from an API client error."""
+  if isinstance(error, apitools_exceptions.HttpError):
+    parsed_error = apilib_exceptions.HttpException(error,
+                                                   error_format='{message}')
+    error_message = parsed_error.message
+  else:
+    error_message = six.text_type(error)
+  return error_message
+
+
+def _CollapseRegionalIAMErrors(errors):
+  """If all errors are PERMISSION_DENIEDs, use a single global error instead."""
+  # TODO(b/198857865): Remove this hack once the `global` region fix is in
+  if errors:
+    matches = [_REGIONAL_IAM_REGEX.match(e) for e in errors]
+    if (all(match is not None for match in matches)
+        and len(set(match.group(1) for match in matches)) == 1):
+      errors = ['PERMISSION_DENIED: Permission %s denied on projects/%s' %
+                (matches[0].group(1), matches[0].group(2))]
+  return errors
 
 
 class BmsClient(object):
@@ -33,7 +68,6 @@ class BmsClient(object):
     self._messages = apis.GetMessagesModule('baremetalsolution', api_version)
     self.service = self._client.projects_locations_instances
     self.locations_service = self._client.projects_locations
-    self.operations_service = self.client.projects_locations_operations
 
   @property
   def client(self):
@@ -54,7 +88,8 @@ class BmsClient(object):
                              global_params=None,
                              limit=None,
                              method='List',
-                             predicate=None):
+                             predicate=None,
+                             allow_partial_server_failure=True):
     """Make a series of List requests, across locations in a project.
 
     Args:
@@ -66,11 +101,16 @@ class BmsClient(object):
         records should be yielded.
       method: str, The name of the method used to fetch resources.
       predicate: lambda, A function that returns true for items to be yielded.
+      allow_partial_server_failure: bool, if True don't fail and only print a
+        warning if some requests fail as long as at least one succeeds. If
+        False, fail the complete command if at least one request fails.
 
     Yields:
       protorpc.message.Message, The resources listed by the service.
 
     """
+    response_count = 0
+    errors = []
     for location in self.ListLocations(project_resource):
       # TODO (b/198857865): Global region will be used when it is ready.
       location_name = location.name.split('/')[-1]
@@ -81,9 +121,11 @@ class BmsClient(object):
       try:
         response = getattr(service, method)(
             request, global_params=global_params)
-      except Exception:
-        # Continue to list entries from other locations.
+        response_count += 1
+      except Exception as e:  # pylint: disable=broad-except
+        errors.append(_ParseError(e))
         continue
+
       items = getattr(response, 'instances')
       if predicate:
         items = list(filter(predicate, items))
@@ -93,7 +135,23 @@ class BmsClient(object):
           continue
         limit -= 1
         if not limit:
-          return
+          break
+
+    if errors:
+      # If the command allows partial server errors, instead of raising an
+      # exception to show something went wrong, we show a warning message that
+      # contains the error messages instead.
+      buf = io.StringIO()
+      fmt = ('list[title="Some requests did not succeed.",'
+             'always-display-title]')
+      if allow_partial_server_failure and response_count > 0:
+        resource_printer.Print(sorted(set(errors)), fmt, out=buf)
+        log.warning(buf.getvalue())
+      else:
+        # If all requests failed, clean them up if they're duplicated IAM errors
+        collapsed_errors = _CollapseRegionalIAMErrors(errors)
+        resource_printer.Print(sorted(set(collapsed_errors)), fmt, out=buf)
+        raise exceptions.Error(buf.getvalue())
 
   def ListLocations(self,
                     project_resource,

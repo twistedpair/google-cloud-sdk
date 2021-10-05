@@ -15,7 +15,7 @@ class OsloginV1(base_api.BaseApiClient):
   MTLS_BASE_URL = 'https://oslogin.mtls.googleapis.com/'
 
   _PACKAGE = 'oslogin'
-  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/compute']
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform', 'https://www.googleapis.com/auth/cloud-platform.read-only', 'https://www.googleapis.com/auth/compute', 'https://www.googleapis.com/auth/compute.readonly']
   _VERSION = 'v1'
   _CLIENT_ID = '1042881264118.apps.googleusercontent.com'
   _CLIENT_SECRET = 'x_Tw5K8nnjoRAqULM9PFAC2b'

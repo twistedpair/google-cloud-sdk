@@ -1118,6 +1118,9 @@ class GoogleCloudMlV1Job(_messages.Message):
     explanationInput: Input parameters to create an explanation job.
     explanationOutput: The current explanation job result.
     jobId: Required. The user-specified id of the job.
+    jobPosition: Output only. It's only effect when the job is in QUEUED
+      state. If it's positive, it indicates the job's position in the job
+      scheduler. It's 0 when the job is already scheduled.
     labels: Optional. One or more labels that you can add, to organize your
       jobs. Each label is a key-value pair, where both the key and the value
       are arbitrary strings that you supply. For more information, see the
@@ -1189,13 +1192,14 @@ class GoogleCloudMlV1Job(_messages.Message):
   explanationInput = _messages.MessageField('GoogleCloudMlV1ExplanationInput', 5)
   explanationOutput = _messages.MessageField('GoogleCloudMlV1ExplanationOutput', 6)
   jobId = _messages.StringField(7)
-  labels = _messages.MessageField('LabelsValue', 8)
-  predictionInput = _messages.MessageField('GoogleCloudMlV1PredictionInput', 9)
-  predictionOutput = _messages.MessageField('GoogleCloudMlV1PredictionOutput', 10)
-  startTime = _messages.StringField(11)
-  state = _messages.EnumField('StateValueValuesEnum', 12)
-  trainingInput = _messages.MessageField('GoogleCloudMlV1TrainingInput', 13)
-  trainingOutput = _messages.MessageField('GoogleCloudMlV1TrainingOutput', 14)
+  jobPosition = _messages.IntegerField(8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  predictionInput = _messages.MessageField('GoogleCloudMlV1PredictionInput', 10)
+  predictionOutput = _messages.MessageField('GoogleCloudMlV1PredictionOutput', 11)
+  startTime = _messages.StringField(12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
+  trainingInput = _messages.MessageField('GoogleCloudMlV1TrainingInput', 14)
+  trainingOutput = _messages.MessageField('GoogleCloudMlV1TrainingOutput', 15)
 
 
 class GoogleCloudMlV1ListJobsResponse(_messages.Message):

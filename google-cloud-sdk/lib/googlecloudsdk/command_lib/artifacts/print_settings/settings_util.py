@@ -40,6 +40,8 @@ from googlecloudsdk.core.credentials import store
 from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files
 
+_EXT_VERSION = "2.1.1"
+
 _PROJECT_NOT_FOUND_ERROR = """\
 Failed to find attribute [project]. \
 The attribute can be set in the following ways:
@@ -96,6 +98,27 @@ def _GetLocationAndRepoPath(args, repo_format):
         "Invalid repository type {}. Valid type is {}.".format(
             repo.format, repo_format))
   return location, repo_path
+
+
+def _GetLocationRepoPathAndMavenConfig(args, repo_format):
+  """Get resource values and validate user input."""
+  repo = _GetRequiredRepoValue(args)
+  project = _GetRequiredProjectValue(args)
+  location = _GetRequiredLocationValue(args)
+  repo_path = project + "/" + repo
+  location_list = ar_requests.ListLocations(project)
+  if location.lower() not in location_list:
+    raise ar_exceptions.UnsupportedLocationError(
+        "{} is not a valid location. Valid locations are [{}].".format(
+            location, ", ".join(location_list)))
+  repo = ar_requests.GetRepository(
+      "projects/{}/locations/{}/repositories/{}".format(project, location,
+                                                        repo))
+  if repo.format != repo_format:
+    raise ar_exceptions.InvalidInputValueError(
+        "Invalid repository type {}. Valid type is {}.".format(
+            repo.format, repo_format))
+  return location, repo_path, repo.mavenConfig
 
 
 def _LoadJsonFile(filename):
@@ -198,11 +221,7 @@ def GetYumSettingsSnippet(args):
       args, messages.Repository.FormatValueValuesEnum.YUM)
   repo = _GetRequiredRepoValue(args)
 
-  data = {
-      "location": location,
-      "repo": repo,
-      "repo_path": repo_path
-  }
+  data = {"location": location, "repo": repo, "repo_path": repo_path}
 
   yum_setting_template = yum.DEFAULT_TEMPLATE
   return yum_setting_template.format(**data)
@@ -256,10 +275,10 @@ def GetMavenSnippet(args):
       command invocation.
 
   Returns:
-    A maven snippet.
+    str, a maven snippet to add to the pom.xml file.
   """
   messages = ar_requests.GetMessages()
-  location, repo_path = _GetLocationAndRepoPath(
+  location, repo_path, maven_cfg = _GetLocationRepoPathAndMavenConfig(
       args, messages.Repository.FormatValueValuesEnum.MAVEN)
   data = {
       "scheme": "artifactregistry",
@@ -267,16 +286,42 @@ def GetMavenSnippet(args):
       "server_id": "artifact-registry",
       "repo_path": repo_path,
   }
-  mvn_template = mvn.NO_SERVICE_ACCOUNT_TEMPLATE
-
   sa_creds = _GetServiceAccountCreds(args)
+  mvn_template = GetMavenTemplate(messages, maven_cfg, sa_creds)
+
   if sa_creds:
-    mvn_template = mvn.SERVICE_ACCOUNT_TEMPLATE
     data["scheme"] = "https"
     data["username"] = "_json_key_base64"
     data["password"] = sa_creds
 
   return mvn_template.format(**data)
+
+
+def GetMavenTemplate(messages, maven_cfg, sa_creds):
+  """Forms a maven snippet to add to the pom.xml file.
+
+  Args:
+    messages: Module, the messages module for the API.
+    maven_cfg: MavenRepositoryConfig, the maven configuration proto that
+      contains the version policy.
+    sa_creds: str, service account credentials.
+
+  Returns:
+    str, a maven template to add to pom.xml.
+  """
+  mvn_template = mvn.NO_SERVICE_ACCOUNT_TEMPLATE
+  if maven_cfg and maven_cfg.versionPolicy == messages.MavenRepositoryConfig.VersionPolicyValueValuesEnum.SNAPSHOT:
+    mvn_template = mvn.NO_SERVICE_ACCOUNT_SNAPSHOT_TEMPLATE
+    if sa_creds:
+      mvn_template = mvn.SERVICE_ACCOUNT_SNAPSHOT_TEMPLATE
+  elif maven_cfg and maven_cfg.versionPolicy == messages.MavenRepositoryConfig.VersionPolicyValueValuesEnum.RELEASE:
+    mvn_template = mvn.NO_SERVICE_ACCOUNT_RELEASE_TEMPLATE
+    if sa_creds:
+      mvn_template = mvn.SERVICE_ACCOUNT_RELEASE_TEMPLATE
+  elif sa_creds:
+    mvn_template = mvn.SERVICE_ACCOUNT_TEMPLATE
+
+  return mvn_template
 
 
 def GetGradleSnippet(args):
@@ -287,23 +332,49 @@ def GetGradleSnippet(args):
       command invocation.
 
   Returns:
-    A gradle snippet.
+    str, a gradle snippet to add to build.gradle.
   """
   messages = ar_requests.GetMessages()
-  location, repo_path = _GetLocationAndRepoPath(
+  location, repo_path, maven_cfg = _GetLocationRepoPathAndMavenConfig(
       args, messages.Repository.FormatValueValuesEnum.MAVEN)
+  sa_creds = _GetServiceAccountCreds(args)
+  gradle_template = GetGradleTemplate(messages, maven_cfg, sa_creds)
   data = {"location": location, "repo_path": repo_path}
 
-  sa_creds = _GetServiceAccountCreds(args)
   if sa_creds:
-    gradle_template = gradle.SERVICE_ACCOUNT_TEMPLATE
     data["username"] = "_json_key_base64"
     data["password"] = sa_creds
 
   else:
-    gradle_template = gradle.NO_SERVICE_ACCOUNT_TEMPLATE
-    data["extension_version"] = "2.1.1"
+    data["extension_version"] = _EXT_VERSION
   return gradle_template.format(**data)
+
+
+def GetGradleTemplate(messages, maven_cfg, sa_creds):
+  """Forms a gradle snippet to add to the build.gradle file.
+
+  Args:
+    messages: Module, the messages module for the API.
+    maven_cfg: MavenRepositoryConfig, the maven configuration proto that
+      contains the version policy..
+    sa_creds: str, service account credentials.
+
+  Returns:
+    str, a gradle template to add to build.gradle.
+  """
+  gradle_template = gradle.NO_SERVICE_ACCOUNT_TEMPLATE
+  if maven_cfg and maven_cfg.versionPolicy == messages.MavenRepositoryConfig.VersionPolicyValueValuesEnum.SNAPSHOT:
+    gradle_template = gradle.NO_SERVICE_ACCOUNT_SNAPSHOT_TEMPLATE
+    if sa_creds:
+      gradle_template = gradle.SERVICE_ACCOUNT_SNAPSHOT_TEMPLATE
+  elif maven_cfg and maven_cfg.versionPolicy == messages.MavenRepositoryConfig.VersionPolicyValueValuesEnum.RELEASE:
+    gradle_template = gradle.NO_SERVICE_ACCOUNT_RELEASE_TEMPLATE
+    if sa_creds:
+      gradle_template = gradle.SERVICE_ACCOUNT_RELEASE_TEMPLATE
+  elif sa_creds:
+    gradle_template = gradle.SERVICE_ACCOUNT_TEMPLATE
+
+  return gradle_template
 
 
 def GetPypiSettingsSnippet(args):

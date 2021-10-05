@@ -1472,18 +1472,36 @@ class UpgradeInstanceRequest(_messages.Message):
 class Version(_messages.Message):
   r"""The Data Fusion version.
 
+  Enums:
+    TypeValueValuesEnum: Type represents the release availability of the
+      version
+
   Fields:
     availableFeatures: Represents a list of available feature names for a
       given version.
     defaultVersion: Whether this is currently the default version for Cloud
       Data Fusion
+    type: Type represents the release availability of the version
     versionNumber: The version number of the Data Fusion instance, such as
       '6.0.1.0'.
   """
 
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Type represents the release availability of the version
+
+    Values:
+      TYPE_UNSPECIFIED: Version does not have availability yet
+      TYPE_PREVIEW: Version is under development and not considered stable
+      TYPE_GENERAL_AVAILABILITY: Version is available for public use
+    """
+    TYPE_UNSPECIFIED = 0
+    TYPE_PREVIEW = 1
+    TYPE_GENERAL_AVAILABILITY = 2
+
   availableFeatures = _messages.StringField(1, repeated=True)
   defaultVersion = _messages.BooleanField(2)
-  versionNumber = _messages.StringField(3)
+  type = _messages.EnumField('TypeValueValuesEnum', 3)
+  versionNumber = _messages.StringField(4)
 
 
 encoding.AddCustomJsonFieldMapping(

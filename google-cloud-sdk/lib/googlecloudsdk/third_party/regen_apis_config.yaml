@@ -35,6 +35,10 @@
 root_dir: googlecloudsdk/third_party/apis
 
 apis:
+  beyondcorp:
+    v1alpha:
+      discovery_doc: beyondcorp_v1alpha.json
+      default: true
   accessapproval:
     v1:
       discovery_doc: accessapproval_v1.json

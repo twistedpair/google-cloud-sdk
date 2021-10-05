@@ -12464,6 +12464,32 @@ class ComputeBeta(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ResizeAdvanced(self, request, global_params=None):
+      r"""Resizes the regional managed instance group with advanced configuration options like disabling creation retries. This is an extended version of the resize method. If you increase the size, the group creates new instances using the current instance template. If you decrease the size, the group deletes one or more instances. The resize operation is marked DONE if the resize request is successful. The underlying actions take additional time. You must separately verify the status of the creating or deleting actions with the get or listmanagedinstances method. If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is removed or deleted.
+
+      Args:
+        request: (ComputeRegionInstanceGroupManagersResizeAdvancedRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('ResizeAdvanced')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ResizeAdvanced.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionInstanceGroupManagers.resizeAdvanced',
+        ordered_params=['project', 'region', 'instanceGroupManager'],
+        path_params=['instanceGroupManager', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/resizeAdvanced',
+        request_field='regionInstanceGroupManagersResizeAdvancedRequest',
+        request_type_name='ComputeRegionInstanceGroupManagersResizeAdvancedRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def SetAutoHealingPolicies(self, request, global_params=None):
       r"""Modifies the autohealing policy for the instances in this managed instance group. [Deprecated] This method is deprecated. Use regionInstanceGroupManagers.patch instead.
 

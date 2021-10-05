@@ -21,7 +21,6 @@ from __future__ import unicode_literals
 
 import os
 
-from googlecloudsdk.core.credentials import gce
 from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import platforms
 
@@ -54,8 +53,6 @@ def ShouldLaunchBrowser(attempt_launch_browser):
   # happens when people ssh into other machines.
   launch_browser = attempt_launch_browser
   if launch_browser:
-    if gce.Metadata().connected:
-      launch_browser = False
     current_os = platforms.OperatingSystem.Current()
     if (current_os is platforms.OperatingSystem.LINUX and
         not any(encoding.GetEncodedValue(os.environ, var) for var

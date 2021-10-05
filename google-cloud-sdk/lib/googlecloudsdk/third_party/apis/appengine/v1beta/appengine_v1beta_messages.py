@@ -2362,9 +2362,32 @@ class Service(_messages.Message):
   define a specific set of code used to implement the functionality of that
   service.
 
+  Messages:
+    LabelsValue: A set of labels to apply to this service. Labels are
+      key/value pairs that describe the service and all resources that belong
+      to it (e.g., versions). The labels can be used to search and group
+      resources, and are propagated to the usage and billing reports, enabling
+      fine-grain analysis of costs. An example of using labels is to tag
+      resources belonging to different environments (e.g., "env=prod",
+      "env=qa"). Label keys and values can be no longer than 63 characters,
+      can only contain lowercase letters, numeric characters, underscores,
+      dashes, and international characters. Label keys must start with a
+      lowercase letter or an international character. Each service can have at
+      most 32 labels.
+
   Fields:
     id: Relative name of the service within the application. Example:
       default.@OutputOnly
+    labels: A set of labels to apply to this service. Labels are key/value
+      pairs that describe the service and all resources that belong to it
+      (e.g., versions). The labels can be used to search and group resources,
+      and are propagated to the usage and billing reports, enabling fine-grain
+      analysis of costs. An example of using labels is to tag resources
+      belonging to different environments (e.g., "env=prod", "env=qa"). Label
+      keys and values can be no longer than 63 characters, can only contain
+      lowercase letters, numeric characters, underscores, dashes, and
+      international characters. Label keys must start with a lowercase letter
+      or an international character. Each service can have at most 32 labels.
     name: Full path to the Service resource in the API. Example:
       apps/myapp/services/default.@OutputOnly
     networkSettings: Ingress settings for this service. Will apply to all
@@ -2373,10 +2396,44 @@ class Service(_messages.Message):
       versions within the service.
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""A set of labels to apply to this service. Labels are key/value pairs
+    that describe the service and all resources that belong to it (e.g.,
+    versions). The labels can be used to search and group resources, and are
+    propagated to the usage and billing reports, enabling fine-grain analysis
+    of costs. An example of using labels is to tag resources belonging to
+    different environments (e.g., "env=prod", "env=qa"). Label keys and values
+    can be no longer than 63 characters, can only contain lowercase letters,
+    numeric characters, underscores, dashes, and international characters.
+    Label keys must start with a lowercase letter or an international
+    character. Each service can have at most 32 labels.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   id = _messages.StringField(1)
-  name = _messages.StringField(2)
-  networkSettings = _messages.MessageField('NetworkSettings', 3)
-  split = _messages.MessageField('TrafficSplit', 4)
+  labels = _messages.MessageField('LabelsValue', 2)
+  name = _messages.StringField(3)
+  networkSettings = _messages.MessageField('NetworkSettings', 4)
+  split = _messages.MessageField('TrafficSplit', 5)
 
 
 class SslSettings(_messages.Message):

@@ -241,6 +241,20 @@
           "items": {
             "type": "string"
           }
+        },
+        "type": {
+          "description": "Type represents the release availability of the version",
+          "type": "string",
+          "enumDescriptions": [
+            "Version does not have availability yet",
+            "Version is under development and not considered stable",
+            "Version is available for public use"
+          ],
+          "enum": [
+            "TYPE_UNSPECIFIED",
+            "TYPE_PREVIEW",
+            "TYPE_GENERAL_AVAILABILITY"
+          ]
         }
       }
     },

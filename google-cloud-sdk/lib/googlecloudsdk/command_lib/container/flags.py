@@ -1289,7 +1289,7 @@ for more information on how to use Preemptible VMs with Kubernetes Engine."""
       '--preemptible', action='store_true', help=help_text, hidden=suppressed)
 
 
-def AddSpotFlag(parser, for_node_pool=False, hidden=True):
+def AddSpotFlag(parser, for_node_pool=False, hidden=False):
   """Adds a --spot flag to parser."""
   if for_node_pool:
     help_text = """\

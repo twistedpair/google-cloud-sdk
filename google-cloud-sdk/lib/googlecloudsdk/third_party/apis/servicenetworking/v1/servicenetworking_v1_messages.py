@@ -139,6 +139,10 @@ class AddSubnetworkRequest(_messages.Message):
       range. Use CIDR range notation, such as `30` to provision a subnet with
       an `x.x.x.x/30` CIDR range. The IP address range is drawn from a pool of
       available ranges in the service consumer's allocated range.
+    outsideAllocationPublicIpRange: Optional. Enable outside allocation using
+      public IP addresses. Any public IP range may be specified. If this field
+      is provided, we will not use customer reserved ranges for this primary
+      IP range.
     privateIpv6GoogleAccess: Optional. The private IPv6 google access type for
       the VMs in this subnet. For information about the access types that can
       be set using this field, see [subnetwork](https://cloud.google.com/compu
@@ -169,13 +173,14 @@ class AddSubnetworkRequest(_messages.Message):
   consumerNetwork = _messages.StringField(2)
   description = _messages.StringField(3)
   ipPrefixLength = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  privateIpv6GoogleAccess = _messages.StringField(5)
-  region = _messages.StringField(6)
-  requestedAddress = _messages.StringField(7)
-  requestedRanges = _messages.StringField(8, repeated=True)
-  secondaryIpRangeSpecs = _messages.MessageField('SecondaryIpRangeSpec', 9, repeated=True)
-  subnetwork = _messages.StringField(10)
-  subnetworkUsers = _messages.StringField(11, repeated=True)
+  outsideAllocationPublicIpRange = _messages.StringField(5)
+  privateIpv6GoogleAccess = _messages.StringField(6)
+  region = _messages.StringField(7)
+  requestedAddress = _messages.StringField(8)
+  requestedRanges = _messages.StringField(9, repeated=True)
+  secondaryIpRangeSpecs = _messages.MessageField('SecondaryIpRangeSpec', 10, repeated=True)
+  subnetwork = _messages.StringField(11)
+  subnetworkUsers = _messages.StringField(12, repeated=True)
 
 
 class Api(_messages.Message):
@@ -2586,6 +2591,10 @@ class SecondaryIpRangeSpec(_messages.Message):
       CIDR range notation, such as `30` to provision a secondary IP range with
       an `x.x.x.x/30` CIDR range. The IP address range is drawn from a pool of
       available ranges in the service consumer's allocated range.
+    outsideAllocationPublicIpRange: Optional. Enable outside allocation using
+      public IP addresses. Any public IP range may be specified. If this field
+      is provided, we will not use customer reserved ranges for this secondary
+      IP range.
     rangeName: Required. A name for the secondary IP range. The name must be
       1-63 characters long, and comply with RFC1035. The name must be unique
       within the subnetwork.
@@ -2597,8 +2606,9 @@ class SecondaryIpRangeSpec(_messages.Message):
   """
 
   ipPrefixLength = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  rangeName = _messages.StringField(2)
-  requestedAddress = _messages.StringField(3)
+  outsideAllocationPublicIpRange = _messages.StringField(2)
+  rangeName = _messages.StringField(3)
+  requestedAddress = _messages.StringField(4)
 
 
 class Service(_messages.Message):

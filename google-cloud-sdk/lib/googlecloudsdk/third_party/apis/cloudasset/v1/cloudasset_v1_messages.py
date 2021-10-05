@@ -4335,11 +4335,9 @@ class VersionedResource(_messages.Message):
 
 
 class WindowsApplication(_messages.Message):
-  r"""Contains information about a Windows application as retrieved from the
-  Windows Registry. For more information about these fields, see [Windows
-  Installer Properties for the Uninstall
-  Registry](https://docs.microsoft.com/en-us/windows/win32/msi/uninstall-
-  registry-key){: class="external" }
+  r"""Contains information about a Windows application that is retrieved from
+  the Windows Registry. For more information about these fields, see Windows
+  Installer Properties for the Uninstall Registry.
 
   Fields:
     displayName: The name of the application or product.

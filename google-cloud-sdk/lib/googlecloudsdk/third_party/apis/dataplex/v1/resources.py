@@ -59,6 +59,28 @@ class Collections(enum.Enum):
       ['projectsId', 'locationsId', 'lakesId', 'actionsId'],
       True
   )
+  PROJECTS_LOCATIONS_LAKES_TASKS = (
+      'projects.locations.lakes.tasks',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/'
+              'tasks/{tasksId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_LAKES_TASKS_JOBS = (
+      'projects.locations.lakes.tasks.jobs',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/'
+              'tasks/{tasksId}/jobs/{jobsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_LAKES_ZONES = (
       'projects.locations.lakes.zones',
       '{+name}',

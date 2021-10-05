@@ -777,6 +777,203 @@ class Empty(_messages.Message):
 
 
 
+class EndpointMatcher(_messages.Message):
+  r"""A definition of a matcher that selects endpoints to which the policies
+  should be applied.
+
+  Fields:
+    metadataLabelMatcher: The matcher is based on node metadata presented by
+      xDS clients.
+  """
+
+  metadataLabelMatcher = _messages.MessageField('EndpointMatcherMetadataLabelMatcher', 1)
+
+
+class EndpointMatcherMetadataLabelMatcher(_messages.Message):
+  r"""The matcher that is based on node metadata presented by xDS clients.
+
+  Enums:
+    MetadataLabelMatchCriteriaValueValuesEnum: Specifies how matching should
+      be done. Supported values are: MATCH_ANY: At least one of the Labels
+      specified in the matcher should match the metadata presented by xDS
+      client. MATCH_ALL: The metadata presented by the xDS client should
+      contain all of the labels specified here. The selection is determined
+      based on the best match. For example, suppose there are three
+      EndpointPolicy resources P1, P2 and P3 and if P1 has a the matcher as
+      MATCH_ANY , P2 has MATCH_ALL , and P3 has MATCH_ALL . If a client with
+      label connects, the config from P1 will be selected. If a client with
+      label connects, the config from P2 will be selected. If a client with
+      label connects, the config from P3 will be selected. If there is more
+      than one best match, (for example, if a config P4 with selector exists
+      and if a client with label connects), an error will be thrown.
+
+  Fields:
+    metadataLabelMatchCriteria: Specifies how matching should be done.
+      Supported values are: MATCH_ANY: At least one of the Labels specified in
+      the matcher should match the metadata presented by xDS client.
+      MATCH_ALL: The metadata presented by the xDS client should contain all
+      of the labels specified here. The selection is determined based on the
+      best match. For example, suppose there are three EndpointPolicy
+      resources P1, P2 and P3 and if P1 has a the matcher as MATCH_ANY , P2
+      has MATCH_ALL , and P3 has MATCH_ALL . If a client with label connects,
+      the config from P1 will be selected. If a client with label connects,
+      the config from P2 will be selected. If a client with label connects,
+      the config from P3 will be selected. If there is more than one best
+      match, (for example, if a config P4 with selector exists and if a client
+      with label connects), an error will be thrown.
+    metadataLabels: The list of label value pairs that must match labels in
+      the provided metadata based on filterMatchCriteria This list can have at
+      most 64 entries. The list can be empty if the match criteria is
+      MATCH_ANY, to specify a wildcard match (i.e this matches any client).
+  """
+
+  class MetadataLabelMatchCriteriaValueValuesEnum(_messages.Enum):
+    r"""Specifies how matching should be done. Supported values are:
+    MATCH_ANY: At least one of the Labels specified in the matcher should
+    match the metadata presented by xDS client. MATCH_ALL: The metadata
+    presented by the xDS client should contain all of the labels specified
+    here. The selection is determined based on the best match. For example,
+    suppose there are three EndpointPolicy resources P1, P2 and P3 and if P1
+    has a the matcher as MATCH_ANY , P2 has MATCH_ALL , and P3 has MATCH_ALL .
+    If a client with label connects, the config from P1 will be selected. If a
+    client with label connects, the config from P2 will be selected. If a
+    client with label connects, the config from P3 will be selected. If there
+    is more than one best match, (for example, if a config P4 with selector
+    exists and if a client with label connects), an error will be thrown.
+
+    Values:
+      METADATA_LABEL_MATCH_CRITERIA_UNSPECIFIED: Default value. Should not be
+        used.
+      MATCH_ANY: At least one of the Labels specified in the matcher should
+        match the metadata presented by xDS client.
+      MATCH_ALL: The metadata presented by the xDS client should contain all
+        of the labels specified here.
+    """
+    METADATA_LABEL_MATCH_CRITERIA_UNSPECIFIED = 0
+    MATCH_ANY = 1
+    MATCH_ALL = 2
+
+  metadataLabelMatchCriteria = _messages.EnumField('MetadataLabelMatchCriteriaValueValuesEnum', 1)
+  metadataLabels = _messages.MessageField('EndpointMatcherMetadataLabelMatcherMetadataLabels', 2, repeated=True)
+
+
+class EndpointMatcherMetadataLabelMatcherMetadataLabels(_messages.Message):
+  r"""Defines a name-pair value for a single label.
+
+  Fields:
+    labelName: Required. Label name presented as key in xDS Node Metadata.
+    labelValue: Required. Label value presented as value corresponding to the
+      above key, in xDS Node Metadata.
+  """
+
+  labelName = _messages.StringField(1)
+  labelValue = _messages.StringField(2)
+
+
+class EndpointPolicy(_messages.Message):
+  r"""EndpointPolicy is a resource that helps apply desired configuration on
+  the endpoints that match specific criteria. For example, this resource can
+  be used to apply "authentication config" an all endpoints that serve on port
+  8080.
+
+  Enums:
+    TypeValueValuesEnum: Required. The type of endpoint policy. This is
+      primarily used to validate the configuration.
+
+  Messages:
+    LabelsValue: Optional. Set of label tags associated with the
+      EndpointPolicy resource.
+
+  Fields:
+    authorizationPolicy: Optional. This field specifies the URL of
+      AuthorizationPolicy resource that applies authorization policies to the
+      inbound traffic at the matched endpoints. Refer to Authorization. If
+      this field is not specified, authorization is disabled(no authz checks)
+      for this endpoint. Applicable only when EndpointPolicyType is
+      SIDECAR_PROXY.
+    clientTlsPolicy: Optional. A URL referring to a ClientTlsPolicy resource.
+      ClientTlsPolicy can be set to specify the authentication for traffic
+      from the proxy to the actual endpoints. More specifically, it is applied
+      to the outgoing traffic from the proxy to the endpoint. This is
+      typically used for sidecar model where the proxy identifies itself as
+      endpoint to the control plane, with the connection between sidecar and
+      endpoint requiring authentication. If this field is not set,
+      authentication is disabled(open). Applicable only when
+      EndpointPolicyType is SIDECAR_PROXY.
+    createTime: Output only. The timestamp when the resource was created.
+    description: Optional. A free-text description of the resource. Max length
+      1024 characters.
+    endpointMatcher: Required. A matcher that selects endpoints to which the
+      policies should be applied.
+    labels: Optional. Set of label tags associated with the EndpointPolicy
+      resource.
+    name: Required. Name of the EndpointPolicy resource. It matches pattern
+      `projects/{project}/locations/global/endpointPolicies/{endpoint_policy}`
+      .
+    serverTlsPolicy: Optional. A URL referring to ServerTlsPolicy resource.
+      ServerTlsPolicy is used to determine the authentication policy to be
+      applied to terminate the inbound traffic at the identified backends. If
+      this field is not set, authentication is disabled(open) for this
+      endpoint.
+    trafficPortSelector: Optional. Port selector for the (matched) endpoints.
+      If no port selector is provided, the matched config is applied to all
+      ports.
+    type: Required. The type of endpoint policy. This is primarily used to
+      validate the configuration.
+    updateTime: Output only. The timestamp when the resource was updated.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Required. The type of endpoint policy. This is primarily used to
+    validate the configuration.
+
+    Values:
+      ENDPOINT_POLICY_TYPE_UNSPECIFIED: Default value. Must not be used.
+      SIDECAR_PROXY: Represents a proxy deployed as a sidecar.
+      GRPC_SERVER: Represents a proxyless gRPC backend.
+    """
+    ENDPOINT_POLICY_TYPE_UNSPECIFIED = 0
+    SIDECAR_PROXY = 1
+    GRPC_SERVER = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Set of label tags associated with the EndpointPolicy
+    resource.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  authorizationPolicy = _messages.StringField(1)
+  clientTlsPolicy = _messages.StringField(2)
+  createTime = _messages.StringField(3)
+  description = _messages.StringField(4)
+  endpointMatcher = _messages.MessageField('EndpointMatcher', 5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  serverTlsPolicy = _messages.StringField(8)
+  trafficPortSelector = _messages.MessageField('TrafficPortSelector', 9)
+  type = _messages.EnumField('TypeValueValuesEnum', 10)
+  updateTime = _messages.StringField(11)
+
+
 class Expr(_messages.Message):
   r"""Represents a textual expression in the Common Expression Language (CEL)
   syntax. CEL is a C-like expression language. The syntax and semantics of CEL
@@ -999,6 +1196,21 @@ class ListEdgeCacheServicesResponse(_messages.Message):
   """
 
   edgeCacheServices = _messages.MessageField('EdgeCacheService', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListEndpointPoliciesResponse(_messages.Message):
+  r"""Response returned by the ListEndpointPolicies method.
+
+  Fields:
+    endpointPolicies: List of EndpointPolicy resources.
+    nextPageToken: If there might be more results than those appearing in this
+      response, then `next_page_token` is included. To get the next set of
+      results, call this method again using the value of `next_page_token` as
+      `page_token`.
+  """
+
+  endpointPolicies = _messages.MessageField('EndpointPolicy', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
 
 
@@ -1574,6 +1786,138 @@ class NetworkservicesProjectsLocationsEdgeCacheServicesSetIamPolicyRequest(_mess
 class NetworkservicesProjectsLocationsEdgeCacheServicesTestIamPermissionsRequest(_messages.Message):
   r"""A
   NetworkservicesProjectsLocationsEdgeCacheServicesTestIamPermissionsRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See the operation documentation for the appropriate value for
+      this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
+class NetworkservicesProjectsLocationsEndpointPoliciesCreateRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsEndpointPoliciesCreateRequest object.
+
+  Fields:
+    endpointPolicy: A EndpointPolicy resource to be passed as the request
+      body.
+    endpointPolicyId: Required. Short name of the EndpointPolicy resource to
+      be created. E.g. "CustomECS".
+    parent: Required. The parent resource of the EndpointPolicy. Must be in
+      the format `projects/*/locations/global`.
+  """
+
+  endpointPolicy = _messages.MessageField('EndpointPolicy', 1)
+  endpointPolicyId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class NetworkservicesProjectsLocationsEndpointPoliciesDeleteRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsEndpointPoliciesDeleteRequest object.
+
+  Fields:
+    name: Required. A name of the EndpointPolicy to delete. Must be in the
+      format `projects/*/locations/global/endpointPolicies/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsEndpointPoliciesGetIamPolicyRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsEndpointPoliciesGetIamPolicyRequest
+  object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The policy format version to be
+      returned. Valid values are 0, 1, and 3. Requests specifying an invalid
+      value will be rejected. Requests for policies with any conditional
+      bindings must specify version 3. Policies without any conditional
+      bindings may specify any valid value or leave the field unset. To learn
+      which resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See the operation documentation for the appropriate value for this
+      field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class NetworkservicesProjectsLocationsEndpointPoliciesGetRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsEndpointPoliciesGetRequest object.
+
+  Fields:
+    name: Required. A name of the EndpointPolicy to get. Must be in the format
+      `projects/*/locations/global/endpointPolicies/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsEndpointPoliciesListRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsEndpointPoliciesListRequest object.
+
+  Fields:
+    pageSize: Maximum number of EndpointPolicies to return per call.
+    pageToken: The value returned by the last `ListEndpointPoliciesResponse`
+      Indicates that this is a continuation of a prior `ListEndpointPolicies`
+      call, and that the system should return the next page of data.
+    parent: Required. The project and location from which the EndpointPolicies
+      should be listed, specified in the format `projects/*/locations/global`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class NetworkservicesProjectsLocationsEndpointPoliciesPatchRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsEndpointPoliciesPatchRequest object.
+
+  Fields:
+    endpointPolicy: A EndpointPolicy resource to be passed as the request
+      body.
+    name: Required. Name of the EndpointPolicy resource. It matches pattern
+      `projects/{project}/locations/global/endpointPolicies/{endpoint_policy}`
+      .
+    updateMask: Optional. Field mask is used to specify the fields to be
+      overwritten in the EndpointPolicy resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the user
+      does not provide a mask then all fields will be overwritten.
+  """
+
+  endpointPolicy = _messages.MessageField('EndpointPolicy', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class NetworkservicesProjectsLocationsEndpointPoliciesSetIamPolicyRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsEndpointPoliciesSetIamPolicyRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See the operation documentation for the appropriate value for this
+      field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class NetworkservicesProjectsLocationsEndpointPoliciesTestIamPermissionsRequest(_messages.Message):
+  r"""A
+  NetworkservicesProjectsLocationsEndpointPoliciesTestIamPermissionsRequest
   object.
 
   Fields:
@@ -2190,6 +2534,19 @@ class Timeout(_messages.Message):
   responseTimeout = _messages.StringField(1)
 
 
+class TrafficPortSelector(_messages.Message):
+  r"""Specification of a port-based selector.
+
+  Fields:
+    ports: Optional. A list of ports. Can be port numbers or port range
+      (example, [80-90] specifies all ports from 80 to 90, including 80 and
+      90) or named ports or * to specify all ports. If the list is empty, all
+      ports are selected.
+  """
+
+  ports = _messages.StringField(1, repeated=True)
+
+
 class UrlRedirect(_messages.Message):
   r"""UrlRedirect defines HTTP redirect configuration for a given request.
 
@@ -2206,6 +2563,11 @@ class UrlRedirect(_messages.Message):
     hostRedirect: Optional. The host that will be used in the redirect
       response instead of the one that was supplied in the request. The value
       must be between 1 and 255 characters.
+    httpsRedirect: Optional. If set to true, the URL scheme in the redirected
+      request is set to https. If set to false, the URL scheme of the
+      redirected request will remain the same as that of the request. This can
+      only be set if there is at least one (1) edgeSslCertificate set on the
+      service.
     pathRedirect: Optional. The path that will be used in the redirect
       response instead of the one that was supplied in the request.
       pathRedirect cannot be supplied together with prefixRedirect. Supply one
@@ -2225,6 +2587,10 @@ class UrlRedirect(_messages.Message):
       TEMPORARY_REDIRECT, which corresponds to 307. in this case, the request
       method will be retained. - PERMANENT_REDIRECT, which corresponds to 308.
       in this case, the request method will be retained.
+    stripQuery: Optional. If set to true, any accompanying query portion of
+      the original URL is removed prior to redirecting the request. If set to
+      false, the query portion of the original URL is retained. The default is
+      set to false.
   """
 
   class RedirectResponseCodeValueValuesEnum(_messages.Enum):
@@ -2250,9 +2616,11 @@ class UrlRedirect(_messages.Message):
     PERMANENT_REDIRECT = 4
 
   hostRedirect = _messages.StringField(1)
-  pathRedirect = _messages.StringField(2)
-  prefixRedirect = _messages.StringField(3)
-  redirectResponseCode = _messages.EnumField('RedirectResponseCodeValueValuesEnum', 4)
+  httpsRedirect = _messages.BooleanField(2)
+  pathRedirect = _messages.StringField(3)
+  prefixRedirect = _messages.StringField(4)
+  redirectResponseCode = _messages.EnumField('RedirectResponseCodeValueValuesEnum', 5)
+  stripQuery = _messages.BooleanField(6)
 
 
 class UrlRewrite(_messages.Message):

@@ -78,6 +78,14 @@ class UserCompleter(completers.ListCommandCompleter):
         **kwargs)
 
 
+class _MajorVersionMatchList(list):
+
+  def __contains__(self, database_version):
+    """Check if <database_version> begins with a major_version in <self>."""
+    return any(
+        database_version.startswith(major_version) for major_version in self)
+
+
 def AddInstance(parser, support_wildcard_instances=False):
   parser.add_argument(
       '--instance',
@@ -318,18 +326,14 @@ def AddDatabaseVersion(parser, restrict_choices=True, hidden=False):
   ]
   # End of engine-specific content.
   help_text = (
-      'The database engine type and version. If left unspecified, the API '
-      'defaults will be used.')
-  if not restrict_choices:
-    help_text = ' '.join([
-        help_text, 'See the list of database versions at '
-        'https://cloud.google.com/sql/docs/mysql/admin-api/v1beta4/instances'
-        '#databaseVersion'
-    ])
+      'The database engine type and versions. If left unspecified, the API '
+      'defaults are used. See the list of database versions at '
+      'https://cloud.google.com/sql/docs/mysql/admin-api/rest/v1beta4/SqlDatabaseVersion'
+  )
   parser.add_argument(
       '--database-version',
       required=False,
-      choices=choices if restrict_choices else None,
+      choices=_MajorVersionMatchList(choices) if restrict_choices else None,
       help=help_text,
       hidden=hidden)
 

@@ -294,6 +294,37 @@ class DataplexProjectsLocationsLakesSetIamPolicyRequest(_messages.Message):
   resource = _messages.StringField(2, required=True)
 
 
+class DataplexProjectsLocationsLakesTasksCreateRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsLakesTasksCreateRequest object.
+
+  Fields:
+    googleCloudDataplexV1Task: A GoogleCloudDataplexV1Task resource to be
+      passed as the request body.
+    parent: Required. The resource name of the parent lake:
+      projects/{project_number}/locations/{location_id}/lakes/{lake_id}
+    taskId: Required. Task identifier.
+    validateOnly: Optional. Only validate the request, but do not perform
+      mutations. The default is false.
+  """
+
+  googleCloudDataplexV1Task = _messages.MessageField('GoogleCloudDataplexV1Task', 1)
+  parent = _messages.StringField(2, required=True)
+  taskId = _messages.StringField(3)
+  validateOnly = _messages.BooleanField(4)
+
+
+class DataplexProjectsLocationsLakesTasksDeleteRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsLakesTasksDeleteRequest object.
+
+  Fields:
+    name: Required. The resource name of the task:
+      projects/{project_number}/locations/{location_id}/lakes/{lake_id}
+      /task/{task_id}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class DataplexProjectsLocationsLakesTasksGetIamPolicyRequest(_messages.Message):
   r"""A DataplexProjectsLocationsLakesTasksGetIamPolicyRequest object.
 
@@ -313,6 +344,112 @@ class DataplexProjectsLocationsLakesTasksGetIamPolicyRequest(_messages.Message):
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   resource = _messages.StringField(2, required=True)
+
+
+class DataplexProjectsLocationsLakesTasksGetRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsLakesTasksGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the task:
+      projects/{project_number}/locations/{location_id}/lakes/{lake_id}
+      /tasks/{tasks_id}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DataplexProjectsLocationsLakesTasksJobsCancelRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsLakesTasksJobsCancelRequest object.
+
+  Fields:
+    googleCloudDataplexV1CancelJobRequest: A
+      GoogleCloudDataplexV1CancelJobRequest resource to be passed as the
+      request body.
+    name: Required. The resource name of the job:
+      projects/{project_number}/locations/{location_id}/lakes/{lake_id}
+      /task/{task_id}/job/{job_id}`
+  """
+
+  googleCloudDataplexV1CancelJobRequest = _messages.MessageField('GoogleCloudDataplexV1CancelJobRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class DataplexProjectsLocationsLakesTasksJobsGetRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsLakesTasksJobsGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the job:
+      projects/{project_number}/locations/{location_id}/lakes/{lake_id}
+      /tasks/{task_id}/jobs/{job_id}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DataplexProjectsLocationsLakesTasksJobsListRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsLakesTasksJobsListRequest object.
+
+  Fields:
+    pageSize: Optional. Maximum number of jobs to return. The service may
+      return fewer than this value. If unspecified, at most 10 jobs will be
+      returned. The maximum value is 1000; values above 1000 will be coerced
+      to 1000.
+    pageToken: Optional. Page token received from a previous ListJobs call.
+      Provide this to retrieve the subsequent page. When paginating, all other
+      parameters provided to ListJobs must match the call that provided the
+      page token.
+    parent: Required. The resource name of the parent environment: projects/{p
+      roject_number}/locations/{location_id}/lakes/{lake_id}/tasks/{task_id}
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class DataplexProjectsLocationsLakesTasksListRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsLakesTasksListRequest object.
+
+  Fields:
+    filter: Optional. Filter request.
+    orderBy: Optional. Order by fields for the result.
+    pageSize: Optional. Maximum number of tasks to return. The service may
+      return fewer than this value. If unspecified, at most 10 tasks will be
+      returned. The maximum value is 1000; values above 1000 will be coerced
+      to 1000.
+    pageToken: Optional. Page token received from a previous ListZones call.
+      Provide this to retrieve the subsequent page. When paginating, all other
+      parameters provided to ListZones must match the call that provided the
+      page token.
+    parent: Required. The resource name of the parent lake:
+      projects/{project_number}/locations/{location_id}/lakes/{lake_id}
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class DataplexProjectsLocationsLakesTasksPatchRequest(_messages.Message):
+  r"""A DataplexProjectsLocationsLakesTasksPatchRequest object.
+
+  Fields:
+    googleCloudDataplexV1Task: A GoogleCloudDataplexV1Task resource to be
+      passed as the request body.
+    name: Output only. The relative resource name of the task, of the form:
+      projects/{project_number}/locations/{location_id}/lakes/{lake_id}/
+      tasks/{task_id}.
+    updateMask: Required. Mask of fields to update.
+    validateOnly: Optional. Only validate the request, but do not perform
+      mutations. The default is false.
+  """
+
+  googleCloudDataplexV1Task = _messages.MessageField('GoogleCloudDataplexV1Task', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+  validateOnly = _messages.BooleanField(4)
 
 
 class DataplexProjectsLocationsLakesTasksSetIamPolicyRequest(_messages.Message):
@@ -1611,6 +1748,10 @@ class GoogleCloudDataplexV1AssetStatus(_messages.Message):
   updateTime = _messages.StringField(3)
 
 
+class GoogleCloudDataplexV1CancelJobRequest(_messages.Message):
+  r"""Cancel task jobs."""
+
+
 class GoogleCloudDataplexV1Entity(_messages.Message):
   r"""Represents tables and fileset metadata contained within a Zone.
 
@@ -1738,23 +1879,140 @@ class GoogleCloudDataplexV1EntityCompatibilityStatusCompatibility(_messages.Mess
   reason = _messages.StringField(2)
 
 
+class GoogleCloudDataplexV1Job(_messages.Message):
+  r"""A job represents an instance of a task.
+
+  Enums:
+    ServiceValueValuesEnum: Output only. The underlying service running a job.
+    StateValueValuesEnum: Output only. Execution state for the job.
+
+  Fields:
+    endTime: Output only. The time when the job ended.
+    message: Output only. Additional information about the current state.
+    name: Output only. The relative resource name of the job, of the form:
+      projects/{project_number}/locations/{location_id}/lakes/{lake_id}/
+      tasks/{task_id}/jobs/{job_id}.
+    retryCount: Output only. The number of times the job has been retried
+      (excluding the initial attempt).
+    service: Output only. The underlying service running a job.
+    serviceJob: Output only. The full resource name for the job run under a
+      particular service.
+    startTime: Output only. The time when the job was started.
+    state: Output only. Execution state for the job.
+    uid: Output only. System generated globally unique ID for the job.
+  """
+
+  class ServiceValueValuesEnum(_messages.Enum):
+    r"""Output only. The underlying service running a job.
+
+    Values:
+      SERVICE_UNSPECIFIED: Service used to run the job is unspecified.
+      DATAPROC: Dataproc service is used to run this job.
+    """
+    SERVICE_UNSPECIFIED = 0
+    DATAPROC = 1
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. Execution state for the job.
+
+    Values:
+      STATE_UNSPECIFIED: The job state is unknown.
+      RUNNING: The job is running.
+      CANCELLING: The job is cancelling.
+      CANCELLED: The job cancellation was successful.
+      SUCCEEDED: The job completed successfully.
+      FAILED: The job is no longer running due to an error.
+      ABORTED: The job was cancelled outside of Dataplex.
+    """
+    STATE_UNSPECIFIED = 0
+    RUNNING = 1
+    CANCELLING = 2
+    CANCELLED = 3
+    SUCCEEDED = 4
+    FAILED = 5
+    ABORTED = 6
+
+  endTime = _messages.StringField(1)
+  message = _messages.StringField(2)
+  name = _messages.StringField(3)
+  retryCount = _messages.IntegerField(4, variant=_messages.Variant.UINT32)
+  service = _messages.EnumField('ServiceValueValuesEnum', 5)
+  serviceJob = _messages.StringField(6)
+  startTime = _messages.StringField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  uid = _messages.StringField(9)
+
+
 class GoogleCloudDataplexV1JobEvent(_messages.Message):
   r"""The payload associated with Job logs that contains events describing
   jobs that have run within a Lake.
+
+  Enums:
+    ServiceValueValuesEnum: The service used to execute the job.
+    StateValueValuesEnum: The job state on completion.
+    TypeValueValuesEnum: The type of the job.
 
   Fields:
     discovery: Details about the discovery job.
     endTime: The time when the job ended running.
     jobId: The unique id identifying the job.
     message: The log message.
+    retries: The number of retries.
+    service: The service used to execute the job.
+    serviceJob: The reference to the job within the service.
     startTime: The time when the job started running.
+    state: The job state on completion.
+    type: The type of the job.
   """
+
+  class ServiceValueValuesEnum(_messages.Enum):
+    r"""The service used to execute the job.
+
+    Values:
+      SERVICE_UNSPECIFIED: Unspecified service.
+      DATAPROC: Cloud Dataproc.
+    """
+    SERVICE_UNSPECIFIED = 0
+    DATAPROC = 1
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""The job state on completion.
+
+    Values:
+      STATE_UNSPECIFIED: Unspecified job state.
+      SUCCEEDED: Job successfully completed.
+      FAILED: Job was unsuccessful.
+      CANCELLED: Job was cancelled by the user.
+      ABORTED: Job was cancelled or aborted via the service executing the job.
+    """
+    STATE_UNSPECIFIED = 0
+    SUCCEEDED = 1
+    FAILED = 2
+    CANCELLED = 3
+    ABORTED = 4
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""The type of the job.
+
+    Values:
+      TYPE_UNSPECIFIED: Unspecified job type.
+      SPARK: Spark jobs.
+      NOTEBOOK: Notebook jobs.
+    """
+    TYPE_UNSPECIFIED = 0
+    SPARK = 1
+    NOTEBOOK = 2
 
   discovery = _messages.MessageField('GoogleCloudDataplexV1JobEventDiscoveryDetails', 1)
   endTime = _messages.StringField(2)
   jobId = _messages.StringField(3)
   message = _messages.StringField(4)
-  startTime = _messages.StringField(5)
+  retries = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  service = _messages.EnumField('ServiceValueValuesEnum', 6)
+  serviceJob = _messages.StringField(7)
+  startTime = _messages.StringField(8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  type = _messages.EnumField('TypeValueValuesEnum', 10)
 
 
 class GoogleCloudDataplexV1JobEventDiscoveryDetails(_messages.Message):
@@ -1990,6 +2248,19 @@ class GoogleCloudDataplexV1ListEntitiesResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class GoogleCloudDataplexV1ListJobsResponse(_messages.Message):
+  r"""List jobs response.
+
+  Fields:
+    jobs: Jobs under a given task.
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+  """
+
+  jobs = _messages.MessageField('GoogleCloudDataplexV1Job', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class GoogleCloudDataplexV1ListLakesResponse(_messages.Message):
   r"""List lakes response.
 
@@ -2016,6 +2287,19 @@ class GoogleCloudDataplexV1ListPartitionsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   partitions = _messages.MessageField('GoogleCloudDataplexV1Partition', 2, repeated=True)
+
+
+class GoogleCloudDataplexV1ListTasksResponse(_messages.Message):
+  r"""List tasks response.
+
+  Fields:
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+    tasks: Tasks under the given parent lake.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  tasks = _messages.MessageField('GoogleCloudDataplexV1Task', 2, repeated=True)
 
 
 class GoogleCloudDataplexV1ListZonesResponse(_messages.Message):
@@ -2537,6 +2821,350 @@ class GoogleCloudDataplexV1StorageFormatJsonOptions(_messages.Message):
   """
 
   encoding = _messages.StringField(1)
+
+
+class GoogleCloudDataplexV1Task(_messages.Message):
+  r"""A task represents a user-visible job.
+
+  Enums:
+    StateValueValuesEnum: Output only. Current state of the task.
+
+  Messages:
+    LabelsValue: Optional. User-defined labels for the task.
+
+  Fields:
+    createTime: Output only. The time when the task was created.
+    description: Optional. Description of the task.
+    displayName: Optional. User friendly display name.
+    executionSpec: Required. Spec related to how a task is executed.
+    labels: Optional. User-defined labels for the task.
+    name: Output only. The relative resource name of the task, of the form:
+      projects/{project_number}/locations/{location_id}/lakes/{lake_id}/
+      tasks/{task_id}.
+    spark: Config related to running custom Spark tasks.
+    state: Output only. Current state of the task.
+    triggerSpec: Required. Spec related to how often and when a task should be
+      triggered.
+    uid: Output only. System generated globally unique ID for the task. This
+      ID will be different if the task is deleted and re-created with the same
+      name.
+    updateTime: Output only. The time when the task was last updated.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. Current state of the task.
+
+    Values:
+      STATE_UNSPECIFIED: State is not specified.
+      ACTIVE: Resource is active, i.e., ready to use.
+      CREATING: Resource is under creation.
+      DELETING: Resource is under deletion.
+      ACTION_REQUIRED: Resource is active but has unresolved actions.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    CREATING = 2
+    DELETING = 3
+    ACTION_REQUIRED = 4
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. User-defined labels for the task.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  displayName = _messages.StringField(3)
+  executionSpec = _messages.MessageField('GoogleCloudDataplexV1TaskExecutionSpec', 4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  spark = _messages.MessageField('GoogleCloudDataplexV1TaskSparkTaskConfig', 7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  triggerSpec = _messages.MessageField('GoogleCloudDataplexV1TaskTriggerSpec', 9)
+  uid = _messages.StringField(10)
+  updateTime = _messages.StringField(11)
+
+
+class GoogleCloudDataplexV1TaskExecutionSpec(_messages.Message):
+  r"""Execution related settings, like retry and service_account.
+
+  Messages:
+    ArgsValue: Optional. The arguments to pass to the task. The args can use
+      placeholders of the format ${placeholder} as part of key/value string.
+      These will be interpolated before passing the args to the driver.
+      Currently supported placeholders: - ${task_id} - ${job_time} To pass
+      positional args, set the key as TASK_ARGS. The value should be a comma-
+      separated string of all the positional arguments. To use a delimiter
+      other than comma, refer to
+      https://cloud.google.com/sdk/gcloud/reference/topic/escaping. In case of
+      other keys being present in the args, then TASK_ARGS will be passed as
+      the last argument.
+
+  Fields:
+    args: Optional. The arguments to pass to the task. The args can use
+      placeholders of the format ${placeholder} as part of key/value string.
+      These will be interpolated before passing the args to the driver.
+      Currently supported placeholders: - ${task_id} - ${job_time} To pass
+      positional args, set the key as TASK_ARGS. The value should be a comma-
+      separated string of all the positional arguments. To use a delimiter
+      other than comma, refer to
+      https://cloud.google.com/sdk/gcloud/reference/topic/escaping. In case of
+      other keys being present in the args, then TASK_ARGS will be passed as
+      the last argument.
+    maxJobExecutionLifetime: Optional. The maximum duration after which the
+      job execution is expired.
+    serviceAccount: Optional. Service account to use to execute a task. If not
+      provided, the default Compute service account for the project is used.
+    serviceAccountScopes: Optional. The set of auth scopes and permissions
+      granted to the service account. By default, the CLOUD_PLATFORM auth
+      scope is enabled.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ArgsValue(_messages.Message):
+    r"""Optional. The arguments to pass to the task. The args can use
+    placeholders of the format ${placeholder} as part of key/value string.
+    These will be interpolated before passing the args to the driver.
+    Currently supported placeholders: - ${task_id} - ${job_time} To pass
+    positional args, set the key as TASK_ARGS. The value should be a comma-
+    separated string of all the positional arguments. To use a delimiter other
+    than comma, refer to
+    https://cloud.google.com/sdk/gcloud/reference/topic/escaping. In case of
+    other keys being present in the args, then TASK_ARGS will be passed as the
+    last argument.
+
+    Messages:
+      AdditionalProperty: An additional property for a ArgsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type ArgsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ArgsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  args = _messages.MessageField('ArgsValue', 1)
+  maxJobExecutionLifetime = _messages.StringField(2)
+  serviceAccount = _messages.StringField(3)
+  serviceAccountScopes = _messages.StringField(4, repeated=True)
+
+
+class GoogleCloudDataplexV1TaskInfrastructureSpec(_messages.Message):
+  r"""Configuration for the underlying infrastructure used to run workloads.
+
+  Fields:
+    batch: Compute resources needed for a Task when using Dataproc Serverless.
+    containerImage: Container Image Runtime Configuration.
+    vpcNetwork: A GoogleCloudDataplexV1TaskInfrastructureSpecVpcNetwork
+      attribute.
+  """
+
+  batch = _messages.MessageField('GoogleCloudDataplexV1TaskInfrastructureSpecBatchComputeResources', 1)
+  containerImage = _messages.MessageField('GoogleCloudDataplexV1TaskInfrastructureSpecContainerImageRuntime', 2)
+  vpcNetwork = _messages.MessageField('GoogleCloudDataplexV1TaskInfrastructureSpecVpcNetwork', 3)
+
+
+class GoogleCloudDataplexV1TaskInfrastructureSpecBatchComputeResources(_messages.Message):
+  r"""Batch compute resources associated with the task.
+
+  Fields:
+    executorsCount: Optional. Total number of job executors.
+    maxExecutorsCount: Optional. Max configurable executors. If
+      max_executors_count > executors_count, then auto-scaling is enabled.
+  """
+
+  executorsCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  maxExecutorsCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudDataplexV1TaskInfrastructureSpecContainerImageRuntime(_messages.Message):
+  r"""Container Image Runtime Configuration used with Batch execution.
+
+  Messages:
+    PropertiesValue: Optional. Override to common configuration of open source
+      components installed on the Dataproc cluster. The properties to set on
+      daemon config files. Property keys are specified in prefix:property
+      format, for example core:hadoop.tmp.dir. For more information, see
+      Cluster properties
+      (https://cloud.google.com/dataproc/docs/concepts/cluster-properties).
+
+  Fields:
+    javaJars: Optional. A list of Java JARS to add to the classpath. Valid
+      input includes Cloud Storage URIs to Jar binaries. For example,
+      gs://bucket-name/my/path/to/file.jar
+    properties: Optional. Override to common configuration of open source
+      components installed on the Dataproc cluster. The properties to set on
+      daemon config files. Property keys are specified in prefix:property
+      format, for example core:hadoop.tmp.dir. For more information, see
+      Cluster properties
+      (https://cloud.google.com/dataproc/docs/concepts/cluster-properties).
+    pythonPackages: Optional. A list of python packages to be installed. Valid
+      formats include Cloud Storage URI to a PIP installable library. For
+      example, gs://bucket-name/my/path/to/lib.tar.gz
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class PropertiesValue(_messages.Message):
+    r"""Optional. Override to common configuration of open source components
+    installed on the Dataproc cluster. The properties to set on daemon config
+    files. Property keys are specified in prefix:property format, for example
+    core:hadoop.tmp.dir. For more information, see Cluster properties
+    (https://cloud.google.com/dataproc/docs/concepts/cluster-properties).
+
+    Messages:
+      AdditionalProperty: An additional property for a PropertiesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type PropertiesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a PropertiesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  javaJars = _messages.StringField(1, repeated=True)
+  properties = _messages.MessageField('PropertiesValue', 2)
+  pythonPackages = _messages.StringField(3, repeated=True)
+
+
+class GoogleCloudDataplexV1TaskInfrastructureSpecVpcNetwork(_messages.Message):
+  r"""Cloud VPC Network used to run the infrastructure.
+
+  Fields:
+    network: Optional. The Cloud VPC network in which the job is run. By
+      default, the Cloud VPC network named Default within the project is used.
+    networkTags: Optional. List of network tags to apply to the job.
+    subNetwork: Optional. The Cloud VPC sub-network in which the job is run.
+  """
+
+  network = _messages.StringField(1)
+  networkTags = _messages.StringField(2, repeated=True)
+  subNetwork = _messages.StringField(3)
+
+
+class GoogleCloudDataplexV1TaskSparkTaskConfig(_messages.Message):
+  r"""User-specified config for running a Spark task.
+
+  Fields:
+    archiveUris: Optional. GCS URIs of archives to be extracted into the
+      working directory of each executor. Supported file types: .jar, .tar,
+      .tar.gz, .tgz, and .zip.
+    fileUris: Optional. GCS URIs of files to be placed in the working
+      directory of each executor.
+    infrastructureSpec: Required. Infrastructure specification for the
+      execution.
+    mainClass: The name of the driver's main class. The jar file that contains
+      the class must be in the default CLASSPATH or specified in
+      jar_file_uris. The execution args are passed in as a sequence of named
+      process arguments (--key=value).
+    mainJarFileUri: The GCS URI of the jar file that contains the main class.
+      The execution args are passed in as a sequence of named process
+      arguments (--key=value).
+    pythonScript: Python script text to execute as the driver. The execution
+      args are passed in as a sequence of named process arguments
+      (--key=value).
+    pythonScriptFile: The GCS URI of the main Python file to use as the
+      driver. Must be a .py file. The execution args are passed in as a
+      sequence of named process arguments (--key=value).
+    sqlScript: The query text. The execution args are used to declare a set of
+      script variables (set key="value";).
+    sqlScriptFile: A reference to a query file. This can be the GCS URI of the
+      query file or it can the path to a SqlScript Content. The execution args
+      are used to declare a set of script variables (set key="value";).
+  """
+
+  archiveUris = _messages.StringField(1, repeated=True)
+  fileUris = _messages.StringField(2, repeated=True)
+  infrastructureSpec = _messages.MessageField('GoogleCloudDataplexV1TaskInfrastructureSpec', 3)
+  mainClass = _messages.StringField(4)
+  mainJarFileUri = _messages.StringField(5)
+  pythonScript = _messages.StringField(6)
+  pythonScriptFile = _messages.StringField(7)
+  sqlScript = _messages.StringField(8)
+  sqlScriptFile = _messages.StringField(9)
+
+
+class GoogleCloudDataplexV1TaskTriggerSpec(_messages.Message):
+  r"""Task scheduling and trigger settings.
+
+  Enums:
+    TypeValueValuesEnum: Required. Immutable. Trigger type of the user-
+      specified Task.
+
+  Fields:
+    disabled: Optional. Prevent the task from executing. This does not cancel
+      already running tasks. It is intended to temporarily disable RECURRING
+      tasks.
+    maxRetries: Optional. Number of retry attempts before aborting. Set to
+      zero to never attempt to retry a failed task.
+    schedule: Optional. Cron schedule (https://en.wikipedia.org/wiki/Cron) for
+      running tasks periodically. To explicitly set a timezone to the cron
+      tab, apply a prefix in the cron tab: "CRON_TZ=${IANA_TIME_ZONE}" or
+      "RON_TZ=${IANA_TIME_ZONE}". The ${IANA_TIME_ZONE} may only be a valid
+      string from IANA time zone database. For example,
+      "CRON_TZ=America/New_York 1 * * * *", or "TZ=America/New_York 1 * * *
+      *". This field is required for RECURRING tasks.
+    startTime: Optional. The first run of the task will be after this time. If
+      not specified, the task will run shortly after being submitted if
+      ON_DEMAND and based on the schedule if RECURRING.
+    type: Required. Immutable. Trigger type of the user-specified Task.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Required. Immutable. Trigger type of the user-specified Task.
+
+    Values:
+      TYPE_UNSPECIFIED: Unspecified trigger type.
+      ON_DEMAND: The task runs one-time shortly after Task Creation.
+      RECURRING: The task is scheduled to run periodically.
+    """
+    TYPE_UNSPECIFIED = 0
+    ON_DEMAND = 1
+    RECURRING = 2
+
+  disabled = _messages.BooleanField(1)
+  maxRetries = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  schedule = _messages.StringField(3)
+  startTime = _messages.StringField(4)
+  type = _messages.EnumField('TypeValueValuesEnum', 5)
 
 
 class GoogleCloudDataplexV1Zone(_messages.Message):

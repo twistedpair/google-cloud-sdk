@@ -377,7 +377,7 @@
           ]
         },
         "maintenanceWindow": {
-          "description": "The one hour maintenance window of the metastore service. This specifies when the service can be restarted for maintenance purposes in UTC time.",
+          "description": "The one hour maintenance window of the metastore service. This specifies when the service can be restarted for maintenance purposes in UTC time. Maintenance window is not needed for services with the SPANNER database type.",
           "$ref": "MaintenanceWindow"
         },
         "uid": {
@@ -403,6 +403,10 @@
             "CANARY",
             "STABLE"
           ]
+        },
+        "encryptionConfig": {
+          "description": "Immutable. Information used to configure the Dataproc Metastore service to encrypt customer data at rest. Cannot be updated.",
+          "$ref": "EncryptionConfig"
         }
       }
     },
@@ -634,6 +638,17 @@
         "details": {
           "description": "Output only. The restore details containing the revision of the service to be restored to, in format of JSON.",
           "readOnly": true,
+          "type": "string"
+        }
+      }
+    },
+    "EncryptionConfig": {
+      "id": "EncryptionConfig",
+      "description": "Encryption settings for the service.",
+      "type": "object",
+      "properties": {
+        "kmsKey": {
+          "description": "The fully qualified customer provided Cloud KMS key name to use for customer data encryption, in the following form:projects\/{project_number}\/locations\/{location_id}\/keyRings\/{key_ring_id}\/cryptoKeys\/{crypto_key_id}.",
           "type": "string"
         }
       }

@@ -117,3 +117,187 @@ NO_SERVICE_ACCOUNT_TEMPLATE = """\
   </build>
 </project>
 """
+
+NO_SERVICE_ACCOUNT_SNAPSHOT_TEMPLATE = """\
+<!-- Insert following snippet into your pom.xml -->
+
+<project>
+  <distributionManagement>
+    <snapshotRepository>
+      <id>{server_id}</id>
+      <url>{scheme}://{location}-maven.pkg.dev/{repo_path}</url>
+    </snapshotRepository>
+  </distributionManagement>
+
+  <repositories>
+    <repository>
+      <id>{server_id}</id>
+      <url>{scheme}://{location}-maven.pkg.dev/{repo_path}</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
+  <build>
+    <extensions>
+      <extension>
+        <groupId>com.google.cloud.artifactregistry</groupId>
+        <artifactId>artifactregistry-maven-wagon</artifactId>
+        <version>2.1.0</version>
+      </extension>
+    </extensions>
+  </build>
+</project>
+"""
+
+NO_SERVICE_ACCOUNT_RELEASE_TEMPLATE = """\
+<!-- Insert following snippet into your pom.xml -->
+
+<project>
+  <distributionManagement>
+    <repository>
+      <id>{server_id}</id>
+      <url>{scheme}://{location}-maven.pkg.dev/{repo_path}</url>
+    </repository>
+  </distributionManagement>
+
+  <repositories>
+    <repository>
+      <id>{server_id}</id>
+      <url>{scheme}://{location}-maven.pkg.dev/{repo_path}</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+
+  <build>
+    <extensions>
+      <extension>
+        <groupId>com.google.cloud.artifactregistry</groupId>
+        <artifactId>artifactregistry-maven-wagon</artifactId>
+        <version>2.1.0</version>
+      </extension>
+    </extensions>
+  </build>
+</project>
+"""
+
+SERVICE_ACCOUNT_SNAPSHOT_TEMPLATE = """\
+<!-- Insert following snippet into your pom.xml -->
+
+<project>
+  <distributionManagement>
+    <snapshotRepository>
+      <id>{server_id}</id>
+      <url>{scheme}://{location}-maven.pkg.dev/{repo_path}</url>
+    </snapshotRepository>
+  </distributionManagement>
+
+  <repositories>
+    <repository>
+      <id>{server_id}</id>
+      <url>{scheme}://{location}-maven.pkg.dev/{repo_path}</url>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+</project>
+
+<!-- Insert following snippet into your settings.xml -->
+
+<settings>
+  <servers>
+    <server>
+      <id>{server_id}</id>
+      <configuration>
+        <httpConfiguration>
+          <get>
+            <usePreemptive>true</usePreemptive>
+          </get>
+          <head>
+            <usePreemptive>true</usePreemptive>
+          </head>
+          <put>
+            <params>
+              <property>
+                <name>http.protocol.expect-continue</name>
+                <value>false</value>
+              </property>
+            </params>
+          </put>
+        </httpConfiguration>
+      </configuration>
+      <username>{username}</username>
+      <password>{password}</password>
+    </server>
+  </servers>
+</settings>
+"""
+
+SERVICE_ACCOUNT_RELEASE_TEMPLATE = """\
+<!-- Insert following snippet into your pom.xml -->
+
+<project>
+  <distributionManagement>
+    <repository>
+      <id>{server_id}</id>
+      <url>{scheme}://{location}-maven.pkg.dev/{repo_path}</url>
+    </repository>
+  </distributionManagement>
+
+  <repositories>
+    <repository>
+      <id>{server_id}</id>
+      <url>{scheme}://{location}-maven.pkg.dev/{repo_path}</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+  </repositories>
+</project>
+
+<!-- Insert following snippet into your settings.xml -->
+
+<settings>
+  <servers>
+    <server>
+      <id>{server_id}</id>
+      <configuration>
+        <httpConfiguration>
+          <get>
+            <usePreemptive>true</usePreemptive>
+          </get>
+          <head>
+            <usePreemptive>true</usePreemptive>
+          </head>
+          <put>
+            <params>
+              <property>
+                <name>http.protocol.expect-continue</name>
+                <value>false</value>
+              </property>
+            </params>
+          </put>
+        </httpConfiguration>
+      </configuration>
+      <username>{username}</username>
+      <password>{password}</password>
+    </server>
+  </servers>
+</settings>
+"""

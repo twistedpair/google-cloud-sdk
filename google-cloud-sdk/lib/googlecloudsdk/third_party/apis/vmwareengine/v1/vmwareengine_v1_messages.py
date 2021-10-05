@@ -582,10 +582,10 @@ class NetworkConfig(_messages.Message):
 
   Fields:
     externalIpAccess: True if vCenter and NSX can be accessed via internet;
-      false otherwise. FQDNs resolve to the allocated external IPs for private
-      cloud domain, but remain mapped to the internal IP within consumer
-      subnets. NAT is set up on NSX for external IP ingress traffic, and users
-      must manually configure NSX firewall to allow HTTPS traffic.
+      false otherwise. Resolution of FQDNs requires local DNS configuration
+      for the private cloud domain. NAT is set up on NSX for external IP
+      ingress traffic, and users must manually configure NSX firewall to allow
+      HTTPS traffic.
     managementCidr: Required. Management CIDR used by VMware management
       appliances.
     network: Required. The relative resource name of the consumer VPC network
@@ -2118,6 +2118,21 @@ class VmwareengineProjectsLocationsPrivateCloudsHcxActivationKeysGetIamPolicyReq
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   resource = _messages.StringField(2, required=True)
+
+
+class VmwareengineProjectsLocationsPrivateCloudsHcxActivationKeysGetRequest(_messages.Message):
+  r"""A VmwareengineProjectsLocationsPrivateCloudsHcxActivationKeysGetRequest
+  object.
+
+  Fields:
+    name: Required. The resource name of the HCX activation key to retrieve.
+      Resource names are schemeless URIs that follow the conventions in
+      https://cloud.google.com/apis/design/resource_names. For example:
+      `projects/my-project/locations/us-west1/privateClouds/my-
+      cloud/hcxActivationKeys/my-key`
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class VmwareengineProjectsLocationsPrivateCloudsHcxActivationKeysListRequest(_messages.Message):

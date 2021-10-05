@@ -41,7 +41,8 @@ def AddModesForListFormat(resource):
       x_gcloud_bgp_routing_mode=GetBgpRoutingMode(resource))
 
 
-def CreateNetworkResourceFromArgs(messages, network_ref, network_args):
+def CreateNetworkResourceFromArgs(messages, network_ref, network_args,
+                                  support_firewall_order):
   """Creates a new network resource from flag arguments."""
 
   network = messages.Network(
@@ -63,5 +64,10 @@ def CreateNetworkResourceFromArgs(messages, network_ref, network_args):
 
   if hasattr(network_args, 'mtu') and network_args.mtu is not None:
     network.mtu = network_args.mtu
+
+  if support_firewall_order and network_args.network_firewall_policy_enforcement_order:
+    network.networkFirewallPolicyEnforcementOrder = (
+        messages.Network.NetworkFirewallPolicyEnforcementOrderValueValuesEnum(
+            network_args.network_firewall_policy_enforcement_order))
 
   return network

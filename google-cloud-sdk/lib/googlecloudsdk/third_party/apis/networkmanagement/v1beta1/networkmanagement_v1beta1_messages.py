@@ -207,6 +207,16 @@ class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
 
+class CloudFunctionEndpoint(_messages.Message):
+  r"""Wrapper for cloud function attributes.
+
+  Fields:
+    uri: A [Cloud function](https://cloud.google.com/functions) name.
+  """
+
+  uri = _messages.StringField(1)
+
+
 class CloudSQLInstanceInfo(_messages.Message):
   r"""For display only. Metadata associated with a Cloud SQL instance.
 
@@ -477,6 +487,7 @@ class Endpoint(_messages.Message):
       can be inferred from the source.
 
   Fields:
+    cloudFunction: A [Cloud function](https://cloud.google.com/functions).
     cloudSqlInstance: A [Cloud SQL](https://cloud.google.com/sql) instance
       URI.
     gkeMasterCluster: A cluster URI for [Google Kubernetes Engine
@@ -520,14 +531,15 @@ class Endpoint(_messages.Message):
     GCP_NETWORK = 1
     NON_GCP_NETWORK = 2
 
-  cloudSqlInstance = _messages.StringField(1)
-  gkeMasterCluster = _messages.StringField(2)
-  instance = _messages.StringField(3)
-  ipAddress = _messages.StringField(4)
-  network = _messages.StringField(5)
-  networkType = _messages.EnumField('NetworkTypeValueValuesEnum', 6)
-  port = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  projectId = _messages.StringField(8)
+  cloudFunction = _messages.MessageField('CloudFunctionEndpoint', 1)
+  cloudSqlInstance = _messages.StringField(2)
+  gkeMasterCluster = _messages.StringField(3)
+  instance = _messages.StringField(4)
+  ipAddress = _messages.StringField(5)
+  network = _messages.StringField(6)
+  networkType = _messages.EnumField('NetworkTypeValueValuesEnum', 7)
+  port = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  projectId = _messages.StringField(9)
 
 
 class EndpointInfo(_messages.Message):

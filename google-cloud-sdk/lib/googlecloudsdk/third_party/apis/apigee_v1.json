@@ -2635,9 +2635,17 @@
           "description": "Configuration for the Advanced API Ops add-on.",
           "$ref": "GoogleCloudApigeeV1AdvancedApiOpsConfig"
         },
+        "integrationConfig": {
+          "description": "Configuration for the Integration add-on.",
+          "$ref": "GoogleCloudApigeeV1IntegrationConfig"
+        },
         "monetizationConfig": {
           "description": "Configuration for the Monetization add-on.",
           "$ref": "GoogleCloudApigeeV1MonetizationConfig"
+        },
+        "connectorsPlatformConfig": {
+          "description": "Configuration for the Connectors Platform add-on.",
+          "$ref": "GoogleCloudApigeeV1ConnectorsPlatformConfig"
         }
       }
     },
@@ -2658,6 +2666,23 @@
         }
       }
     },
+    "GoogleCloudApigeeV1IntegrationConfig": {
+      "id": "GoogleCloudApigeeV1IntegrationConfig",
+      "description": "Configuration for the Integration add-on.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Flag that specifies whether the Integration add-on is enabled.",
+          "type": "boolean"
+        },
+        "expiresAt": {
+          "description": "Output only. Time at which the Integration add-on expires in in milliseconds since epoch. If unspecified, the add-on will never expire.",
+          "readOnly": true,
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
     "GoogleCloudApigeeV1MonetizationConfig": {
       "id": "GoogleCloudApigeeV1MonetizationConfig",
       "description": "Configuration for the Monetization add-on.",
@@ -2669,6 +2694,23 @@
         },
         "expiresAt": {
           "description": "Output only. Time at which the Monetization add-on expires in in milliseconds since epoch. If unspecified, the add-on will never expire.",
+          "readOnly": true,
+          "type": "string",
+          "format": "int64"
+        }
+      }
+    },
+    "GoogleCloudApigeeV1ConnectorsPlatformConfig": {
+      "id": "GoogleCloudApigeeV1ConnectorsPlatformConfig",
+      "description": "Configuration for the Connectors Platform add-on.",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Flag that specifies whether the Connectors Platform add-on is enabled.",
+          "type": "boolean"
+        },
+        "expiresAt": {
+          "description": "Output only. Time at which the Connectors Platform add-on expires in in milliseconds since epoch. If unspecified, the add-on will never expire.",
           "readOnly": true,
           "type": "string",
           "format": "int64"

@@ -594,6 +594,11 @@
           "readOnly": true,
           "type": "string",
           "format": "int64"
+        },
+        "latestShardResource": {
+          "description": "Output only. BigQuery resource name of the latest shard.",
+          "readOnly": true,
+          "type": "string"
         }
       }
     },

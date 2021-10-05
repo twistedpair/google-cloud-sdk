@@ -18633,6 +18633,37 @@ class ComputeRegionInstanceGroupManagersRecreateInstancesRequest(_messages.Messa
   requestId = _messages.StringField(5)
 
 
+class ComputeRegionInstanceGroupManagersResizeAdvancedRequest(_messages.Message):
+  r"""A ComputeRegionInstanceGroupManagersResizeAdvancedRequest object.
+
+  Fields:
+    instanceGroupManager: The name of the managed instance group. It must be a
+      string that meets the requirements in RFC1035.
+    project: Project ID for this request.
+    region: Name of the region scoping this request. It must be a string that
+      meets the requirements in RFC1035.
+    regionInstanceGroupManagersResizeAdvancedRequest: A
+      RegionInstanceGroupManagersResizeAdvancedRequest resource to be passed
+      as the request body.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+  """
+
+  instanceGroupManager = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  regionInstanceGroupManagersResizeAdvancedRequest = _messages.MessageField('RegionInstanceGroupManagersResizeAdvancedRequest', 4)
+  requestId = _messages.StringField(5)
+
+
 class ComputeRegionInstanceGroupManagersResizeRequest(_messages.Message):
   r"""A ComputeRegionInstanceGroupManagersResizeRequest object.
 
@@ -47849,6 +47880,35 @@ class RegionInstanceGroupManagersRecreateRequest(_messages.Message):
   """
 
   instances = _messages.StringField(1, repeated=True)
+
+
+class RegionInstanceGroupManagersResizeAdvancedRequest(_messages.Message):
+  r"""A RegionInstanceGroupManagersResizeAdvancedRequest object.
+
+  Fields:
+    noCreationRetries: If this flag is true, the managed instance group
+      attempts to create all instances initiated by this resize request only
+      once. If there is an error during creation, the managed instance group
+      does not retry create this instance, and we will decrease the targetSize
+      of the request instead. If the flag is false, the group attempts to
+      recreate each instance continuously until it succeeds. This flag matters
+      only in the first attempt of creation of an instance. After an instance
+      is successfully created while this flag is enabled, the instance behaves
+      the same way as all the other instances created with a regular resize
+      request. In particular, if a running instance dies unexpectedly at a
+      later time and needs to be recreated, this mode does not affect the
+      recreation behavior in that scenario. This flag is applicable only to
+      the current resize request. It does not influence other resize requests
+      in any way. You can see which instances ar being created in which mode
+      by calling the get or listManagedInstances API.
+    targetSize: The number of running instances that the managed instance
+      group should maintain at any given time. The group automatically adds or
+      removes instances to maintain the number of instances specified by this
+      parameter.
+  """
+
+  noCreationRetries = _messages.BooleanField(1)
+  targetSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class RegionInstanceGroupManagersSetAutoHealingRequest(_messages.Message):

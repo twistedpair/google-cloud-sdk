@@ -2479,10 +2479,13 @@ class Status(_messages.Message):
         false. This means AppDevExperienceFeature has encountered an issue
         that blocks all, or a portion, of its normal operation. See the
         `description` for more details.
+      UNKNOWN: AppDevExperienceFeature's specified subcomponent has a pending
+        or unknown state.
     """
     CODE_UNSPECIFIED = 0
     OK = 1
     FAILED = 2
+    UNKNOWN = 3
 
   code = _messages.EnumField('CodeValueValuesEnum', 1)
   description = _messages.StringField(2)

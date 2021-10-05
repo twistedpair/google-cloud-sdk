@@ -328,7 +328,7 @@
           "type": "string"
         },
         "externalIpAccess": {
-          "description": "True if vCenter and NSX can be accessed via internet; false otherwise. FQDNs resolve to the allocated external IPs for private cloud domain, but remain mapped to the internal IP within consumer subnets. NAT is set up on NSX for external IP ingress traffic, and users must manually configure NSX firewall to allow HTTPS traffic.",
+          "description": "True if vCenter and NSX can be accessed via internet; false otherwise. Resolution of FQDNs requires local DNS configuration for the private cloud domain. NAT is set up on NSX for external IP ingress traffic, and users must manually configure NSX firewall to allow HTTPS traffic.",
           "type": "boolean"
         },
         "managementCidr": {
@@ -1439,7 +1439,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Modifies a `PrivateCloud` resource. Only the following fields can be updated: `labels`, `description`. Only fields specified in `updateMask` are applied."
+                  "description": "Modifies a `PrivateCloud` resource. Only the following fields can be updated: `labels`, `description`, `network_config.external_ip_access`. Only fields specified in `updateMask` are applied."
                 },
                 "delete": {
                   "id": "vmwareengine.projects.locations.privateClouds.delete",
@@ -2060,6 +2060,31 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Lists `HcxActivationKey` resources in a given private cloud."
+                    },
+                    "get": {
+                      "id": "vmwareengine.projects.locations.privateClouds.hcxActivationKeys.get",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/privateClouds/{privateCloudsId}/hcxActivationKeys/{hcxActivationKeysId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. The resource name of the HCX activation key to retrieve. Resource names are schemeless URIs that follow the conventions in https:\/\/cloud.google.com\/apis\/design\/resource_names. For example: `projects\/my-project\/locations\/us-west1\/privateClouds\/my-cloud\/hcxActivationKeys\/my-key`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/privateClouds\/[^\/]+\/hcxActivationKeys\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "HcxActivationKey"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Retrieves a `HcxActivationKey` resource by its resource name."
                     },
                     "setIamPolicy": {
                       "id": "vmwareengine.projects.locations.privateClouds.hcxActivationKeys.setIamPolicy",

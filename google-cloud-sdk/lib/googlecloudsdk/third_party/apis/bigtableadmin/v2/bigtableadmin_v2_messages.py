@@ -1688,7 +1688,8 @@ class Instance(_messages.Message):
 
   Fields:
     createTime: Output only. A server-assigned timestamp representing when
-      this Instance was created.
+      this Instance was created. For instances created before this field was
+      added (August 2021), this value is `seconds: 0, nanos: 1`.
     displayName: Required. The descriptive name for this instance as it
       appears in UIs. Can be changed at any time, but should be kept globally
       unique to avoid confusion.

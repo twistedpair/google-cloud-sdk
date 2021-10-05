@@ -18,7 +18,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import collections
 import os
 
 from googlecloudsdk.core import properties
@@ -26,6 +25,7 @@ from googlecloudsdk.core import yaml
 from googlecloudsdk.core import yaml_validator
 from googlecloudsdk.core.feature_flags import config
 from googlecloudsdk.core.util import files
+
 
 SCHEMA_PATH = (
     os.path.join(os.path.dirname(__file__), 'feature_flags_config_schema.yaml'))
@@ -35,122 +35,105 @@ class ValidationBaseError(Exception):
   """Base class for validation errors.
 
   Attributes:
-    message: str, the error message.
-    file_path: the path to the config_file.
     header: str, description of the error, which may include the
       section/property where there is an error.
+    message: str, the error message.
   """
 
-  def __init__(self, msg, file_path, header):
-    self.message = msg
-    self.file_path = file_path
+  def __init__(self, header, message):
     self.header = header
+    self.message = message
     super(ValidationBaseError, self).__init__(self.message)
 
 
 class ValidationFailedError(Exception):
-  """Validation failed.
+  """Validation failed Error."""
 
-  Attributes:
-    errors: list, errors to be raised.
-  """
+  def __init__(self, config_file_path, config_file_errors,
+               config_file_property_errors):
+    msg_lines = []
+    msg_lines.append('Invalid Feature Flag Config File\n[{}]\n'.format(
+        config_file_path))
+    for error in config_file_errors:
+      msg_lines.append('{}: {}'.format(error.header, error.message))
 
-  def __init__(self, errors):
-    errors_in_config_file = collections.defaultdict(list)
-    for error in errors:
-      errors_in_config_file[error.file_path].append(error)
-    msg_lines = ['']
-    num_errors = 0
-    for file_path, file_errors in sorted(errors_in_config_file.items()):
-      msg_lines.extend(['', file_path])
-      errors_by_property = collections.OrderedDict()
-      for error in file_errors:
-        error_string = str(error)
-        if error_string not in errors_by_property:
-          errors_by_property[error_string] = []
-        errors_by_property[error_string].append(error.header)
-      for i, (error_string, header) in enumerate(errors_by_property.items()):
-        num_errors += 1
-        msg_lines.extend([
-            '{}) {}'.format(i + 1, ', '.join(sorted(set(header)))),
-            '{}'.format(error_string), ''
-        ])
-
-    msg_lines[0] = '{} error(s) found in the Feature Flag Config File!'.format(
-        num_errors)
+    if config_file_property_errors:
+      if config_file_errors:
+        msg_lines.append('')
+      msg_lines.append('PROPERTY ERRORS:')
+    for section_property, errors in sorted(config_file_property_errors.items()):
+      msg_lines.append('[{}]'.format(section_property))
+      for error in errors:
+        msg_lines.append('\t{}: {}'.format(error.header, error.message))
 
     super(ValidationFailedError, self).__init__('\n'.join(msg_lines))
 
 
 class InvalidOrderError(ValidationBaseError):
-  """Raised when the properties are not in alphabetical order.
+  """Raised when the properties are not in alphabetical order."""
 
-  Attributes:
-    header: str, general description of the error.
-  """
-
-  def __init__(self, file_path, properties_list):
+  def __init__(self, properties_list):
     """Instantiates the InvalidOrderError class.
 
     Args:
-      file_path: path to the config file.
       properties_list: str, list of all properties in the config file.
     """
-    msg = ('The properties {properties_list} are not in alphabetical order.'
-          ).format(properties_list=properties_list)
-    self.header = ('The properties in the Feature Flag Config File '
-                   'should be in alphabetical order.')
-    super(InvalidOrderError, self).__init__(
-        msg=msg, file_path=file_path, header=self.header)
+    header = 'ALPHABETICAL_ORDER_ERROR'
+    message = ('Properties in the Feature Flag Config File must be in '
+               'alphabetical order:\n\t{properties_list}'
+               ).format(properties_list=properties_list)
+    super(InvalidOrderError, self).__init__(header, message)
+
+
+class InvalidPropertyError(ValidationBaseError):
+  """Raised when a property is not a valid Cloud SDK property."""
+
+  def __init__(self, property_name, reason):
+    """Instantiates the InvalidPropertyError class.
+
+    Args:
+      property_name: str, name of the property.
+      reason: str, reason for the error.
+    """
+    header = 'INVALID_PROPERTY_ERROR'
+    message = '[{}] is not a valid Cloud SDK property. {}'.format(
+        property_name, reason)
+    super(InvalidPropertyError, self).__init__(header, message)
 
 
 class InvalidSchemaError(ValidationBaseError):
-  """Raised when the config file doesnt satisfy the schema.
+  """Raised when the config file doesnt satisfy the schema."""
 
-  Attributes:
-    header: str, general description of the error.
-  """
-
-  def __init__(self, invalid_schema_reasons, file_path):
+  def __init__(self, invalid_schema_reasons):
     """Instantiates the InvalidSchemaError class.
 
     Args:
       invalid_schema_reasons: str, list of all reasons why the config file does
         not satisfy the schema.
-      file_path: path to the config file.
     """
+    header = 'INVALID_SCHEMA_ERROR'
     schema = 'googlecloudsdk/core/feature_flags/feature_flags_config_schema.yaml'
-    msg = ('Config file does not follow schema because:\n{reasons}.'
-          ).format(reasons='.\n'.join(invalid_schema_reasons))
-    self.header = ('The Feature Flag Config File should match the schema at '
-                   '{schema}.').format(schema=schema)
-    super(InvalidSchemaError, self).__init__(
-        msg=msg, file_path=file_path, header=self.header)
+    message = ('Config file does not follow schema at [{}] because:\n{}.'
+               ).format(schema, '.\n'.join(invalid_schema_reasons))
+
+    super(InvalidSchemaError, self).__init__(header, message)
 
 
 class InvalidValueError(ValidationBaseError):
-  """Raised when a value does not follow the property's validator.
+  """Raised when a value does not follow the property's validator."""
 
-  Attributes:
-    header: str, general description of the error.
-  """
-
-  def __init__(self, property_name, invalid_values, file_path):
+  def __init__(self, invalid_values):
     """Instantiates the InvalidValueError class.
 
     Args:
-      property_name: str, the section/property where there is an invalid value.
       invalid_values: str, list of values in the section/property that are
         invalid.
-      file_path: path to the config file.
     """
-    msg = ('The following values are invalid: {value}').format(
-        value=invalid_values)
-    self.header = (
-        'The Feature Flag Config File\'s values in [{}] should be valid.'
-    ).format(property_name)
-    super(InvalidValueError, self).__init__(
-        msg=msg, file_path=file_path, header=self.header)
+    header = 'INVALID_PROPERTY_VALUES'
+    message = ('The following values are invalid according to the property\'s '
+               'validator: {}').format(invalid_values)
+
+    super(InvalidValueError, self).__init__(header, message)
 
 
 class InconsistentValuesError(ValidationBaseError):
@@ -160,48 +143,46 @@ class InconsistentValuesError(ValidationBaseError):
     header: str, general description of the error.
   """
 
-  def __init__(self, values, property_name, file_path):
+  def __init__(self, values):
     """Instantiates the InconsistentValuesError class.
 
     Args:
       values: str, list of values in the property with inconsistent values.
-      property_name: str, the section/property with inconsistent values.
-      file_path: path to the config file.
     """
-    msg = ('The value types in [{property_name}] are not consistent.\n'
-           'Make the values {values} the same type.').format(
-               property_name=property_name, values=values)
-    self.header = ('The Feature Flag Config File\'s values in [{}] should be of'
-                   ' the same type.').format(property_name)
-    super(InconsistentValuesError, self).__init__(
-        msg=msg, file_path=file_path, header=self.header)
+    header = 'INCONSISTENT_PROPERTY_VALUES'
+    message = ('Value types are not consistent. '
+               'Ensure the values {} are of the same type.').format(values)
+    super(InconsistentValuesError, self).__init__(header, message)
+
+
+def AppendIfNotNone(arr, value):
+  if value:
+    arr.append(value)
 
 
 class Validator(object):
   """A class that checks for the validity of the config file.
 
   Attributes:
-    config_path: str, the path to the configuration file.
+    config_file_path: str, the path to the configuration file.
     parsed_yaml: dict, the parsed YAML representation of the configuration file.
-    list_of_errors: list, the list of all errors from the config file.
   """
 
   def __init__(self, config_file_path):
+    self.config_file_path = config_file_path
     self.parsed_yaml = yaml.load_path(path=config_file_path, round_trip=True)
-    self.config_path = config_file_path
-    self.list_of_errors = []
 
   def ValidateAlphabeticalOrder(self):
     """Validates whether the properties in the config file are in alphabetical order.
 
-    If the properties in config file are not in alphabetical order, this method
-    adds InvalidOrderError to list_of_errors.
+    Returns:
+      InvalidOrderError: If the properties in config file are not in
+          alphabetical order.
     """
     properties_list = list(self.parsed_yaml.keys())
     if properties_list != sorted(properties_list):
-      self.list_of_errors.append(
-          InvalidOrderError(
-              file_path=self.config_path, properties_list=properties_list))
+      return InvalidOrderError(properties_list=properties_list)
+    return None
 
   def ValidateConfigFile(self):
     """Validates the config file.
@@ -212,74 +193,109 @@ class Validator(object):
     Raises:
       ValidationFailedError: Error raised when validation fails.
     """
-    self.ValidateAlphabeticalOrder()
-    self.ValidateSchema()
-    self.ValidateValueTypes()
-    self.ValidateValues()
-    if self.list_of_errors:
-      raise ValidationFailedError(self.list_of_errors)
+    config_file_errors = []
+    AppendIfNotNone(config_file_errors, self.ValidateAlphabeticalOrder())
+    AppendIfNotNone(config_file_errors, self.ValidateSchema())
+
+    config_file_property_errors = {}
+
+    config_file = files.ReadFileContents(self.config_file_path)
+    feature_flags_config = config.FeatureFlagsConfig(config_file)
+    for section_property in feature_flags_config.properties:
+      property_errors = []
+      values_list = feature_flags_config.properties[section_property].values
+
+      AppendIfNotNone(property_errors, self.ValidateValueTypes(values_list))
+      AppendIfNotNone(property_errors,
+                      self.ValidateValues(values_list, section_property))
+      if property_errors:
+        config_file_property_errors[section_property] = property_errors
+
+    if config_file_errors or config_file_property_errors:
+      raise ValidationFailedError(self.config_file_path, config_file_errors,
+                                  config_file_property_errors)
 
   def ValidateSchema(self):
-    """Validates the parsed_yaml against JSON schema.
+    """Validates the parsed_yaml against the JSON schema at SCHEMA_PATH.
 
-    This method ensures that the config file follows the schema. If the YAML
-    data does not match the schema, this method appends InvalidSchemaError to
-    list_of_errors.
+    Returns:
+      InvalidSchemaError: If the config file does not match the schema.
     """
     schema_errors = []
     list_of_invalid_schema = yaml_validator.Validator(SCHEMA_PATH).Iterate(
         self.parsed_yaml)
-    for errors in list_of_invalid_schema:
-      schema_errors.append(str(errors.args[0]))
+    for error in list_of_invalid_schema:
+      schema_errors.append('{}'.format(error))
     if schema_errors:
-      self.list_of_errors.append(
-          InvalidSchemaError(
-              invalid_schema_reasons=schema_errors, file_path=self.config_path))
+      return InvalidSchemaError(invalid_schema_reasons=schema_errors)
+    return None
 
-  def ValidateValueTypes(self):
+  def ValidateValueTypes(self, values_list):
     """Validates the values of each property in the config file.
 
     This method ensures that the values of each property are of the same type.
-    If the values are not of the same type, this method appends
-    InconsistentValuesError to list_of_errors.
+
+    Args:
+      values_list: list, list of possible values of the property in the config
+          file.
+
+    Returns:
+      InconsistentValuesError: If the values are not of the same type.
     """
+    if not values_list:
+      return None
 
-    config_file = files.ReadFileContents(self.config_path)
-    for section_property in self.parsed_yaml:
-      values_list = config.FeatureFlagsConfig(
-          config_file).properties[section_property].values
-      first_value_type = type(values_list[0])
-      for value in values_list:
-        if not isinstance(value, first_value_type):
-          self.list_of_errors.append(
-              InconsistentValuesError(
-                  values=str(values_list),
-                  property_name=section_property,
-                  file_path=self.config_path))
+    first_value_type = type(values_list[0])
+    for value in values_list:
+      if not isinstance(value, first_value_type):
+        return InconsistentValuesError(values=values_list)
 
-  def ValidateValues(self):
+    return None
+
+  def ValidateValues(self, values_list, section_property):
     """Validates the values of each property in the config file.
 
-    This method ensures that the values of each property correspond to the
-    property's validator. If the values dont satisfy the property's validator,
-    this method appends InvalidValueError to list_of_errors.
+    This method ensures that the possible values of each property satisfy the
+    property's validator.
+
+    Args:
+      values_list: list, list of possible values of the property in the config
+          file.
+      section_property: str, name of the property.
+
+    Returns:
+      InvalidPropertyError: If the property is not an actual Cloud SDK property.
+      InvalidValueError: If the values do not satisfy the property's validator.
     """
-    config_file = files.ReadFileContents(self.config_path)
-    for section_property in self.parsed_yaml:
-      values_list = config.FeatureFlagsConfig(
-          config_file).properties[section_property].values
+    try:
       section_name, property_name = section_property.split('/')
+    except ValueError:
+      # This is already caught by the schema validator
+      return None
+
+    try:
       section_instance = getattr(properties.VALUES, section_name)
+    except AttributeError:
+      return InvalidPropertyError(
+          section_property,
+          'Property section [{}] does not exist.'.format(section_name))
+
+    try:
       property_instance = getattr(section_instance, property_name)
-      list_of_invalid_values = []
-      for value in values_list:
-        try:
-          property_instance.Validate(value)
-        except properties.InvalidValueError:
-          list_of_invalid_values.append(value)
-      if list_of_invalid_values:
-        self.list_of_errors.append(
-            InvalidValueError(
-                property_name=section_property,
-                invalid_values=str(list_of_invalid_values),
-                file_path=self.config_path))
+    except AttributeError:
+      return InvalidPropertyError(
+          section_property,
+          'Property [{}] is not a property in section [{}].'.format(
+              property_name, section_name))
+
+    list_of_invalid_values = []
+    for value in values_list:
+      try:
+        property_instance.Validate(value)
+      except properties.InvalidValueError:
+        list_of_invalid_values.append(value)
+
+    if list_of_invalid_values:
+      return InvalidValueError(invalid_values=list_of_invalid_values)
+    return None
+

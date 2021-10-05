@@ -119,7 +119,7 @@ def Create(versions_client,
     log.status.Print(
         'Explanations reflect patterns in your model, but don\'t necessarily '
         'reveal fundamental relationships about your data population. See '
-        'https://cloud.google.com/ml-engine/docs/ai-explanations/limitations '
+        'https://cloud.google.com/vertex-ai/docs/explainable-ai/limitations '
         'for more information.')
 
   model_ref = models_util.ParseModel(model)

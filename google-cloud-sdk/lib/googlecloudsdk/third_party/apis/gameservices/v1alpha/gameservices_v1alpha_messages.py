@@ -25,6 +25,87 @@ class AgonesOptions(_messages.Message):
   install = _messages.BooleanField(1)
 
 
+class AllocationEndpoint(_messages.Message):
+  r"""Allocation endpoint resource.
+
+  Enums:
+    StateValueValuesEnum: Output only. The state of the allocation endpoint.
+
+  Messages:
+    LabelsValue: The labels associated with this allocation endpoint. Each
+      label is a key-value pair.
+
+  Fields:
+    authClientId: Output only. The OAuth client ID to be used in the
+      authentication token audience.
+    createTime: Output only. The creation time.
+    endpoint: Output only. The hostname of the allocation endpoint.
+    etag: ETag of the resource.
+    labels: The labels associated with this allocation endpoint. Each label is
+      a key-value pair.
+    name: The resource name of the allocation endpoint, in the following form:
+      `projects/{project}/locations/global/allocationEndpoints/{allocation_end
+      point}`. For example, `projects/my-
+      project/locations/global/allocationEndpoints/my-allocation-endpoint`.
+    serviceAccounts: The service accounts to have access to the allocation
+      endpoint. Provide the service account email in the form of service-
+      account-name@project-id.iam.gserviceaccount.com.
+    state: Output only. The state of the allocation endpoint.
+    updateTime: Output only. The last-modified time.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the allocation endpoint.
+
+    Values:
+      STATE_UNSPECIFIED: The default value. This value is used if the state is
+        omitted.
+      ACTIVE: The allocation endpoint is active and ready to be called.
+      PROVISIONING: The allocation endpoint is provisioning.
+      SERVICE_ACCOUNTS_UPDATING: The service account(s) are being provisioned
+        to access the allocation endpoint.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    PROVISIONING = 2
+    SERVICE_ACCOUNTS_UPDATING = 3
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""The labels associated with this allocation endpoint. Each label is a
+    key-value pair.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  authClientId = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  endpoint = _messages.StringField(3)
+  etag = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  serviceAccounts = _messages.StringField(7, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  updateTime = _messages.StringField(9)
+
+
 class AuditConfig(_messages.Message):
   r"""Specifies the audit configuration for a service. The configuration
   determines which permission types are logged, and what identities, if any,
@@ -1186,6 +1267,98 @@ class GameservicesProjectsLocationsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class GameservicesProjectsLocationsGlobalAllocationEndpointsCreateRequest(_messages.Message):
+  r"""A GameservicesProjectsLocationsGlobalAllocationEndpointsCreateRequest
+  object.
+
+  Fields:
+    allocationEndpoint: A AllocationEndpoint resource to be passed as the
+      request body.
+    allocationEndpointId: Required. The ID of the allocation endpoint resource
+      to be created.
+    parent: Required. The parent resource name, in the following form:
+      `projects/{project}/locations/global`.
+  """
+
+  allocationEndpoint = _messages.MessageField('AllocationEndpoint', 1)
+  allocationEndpointId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class GameservicesProjectsLocationsGlobalAllocationEndpointsDeleteRequest(_messages.Message):
+  r"""A GameservicesProjectsLocationsGlobalAllocationEndpointsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The name of the allocation endpoint to delete, in the
+      following form: `projects/{project}/locations/global/allocationEndpoints
+      /{allocation_endpoint}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class GameservicesProjectsLocationsGlobalAllocationEndpointsGetRequest(_messages.Message):
+  r"""A GameservicesProjectsLocationsGlobalAllocationEndpointsGetRequest
+  object.
+
+  Fields:
+    name: Required. The name of the allocation endpoint to retrieve, in the
+      following form: `projects/{project}/locations/global/allocationEndpoints
+      /{allocation_endpoint}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class GameservicesProjectsLocationsGlobalAllocationEndpointsListRequest(_messages.Message):
+  r"""A GameservicesProjectsLocationsGlobalAllocationEndpointsListRequest
+  object.
+
+  Fields:
+    filter: Optional. The filter to apply to list results.
+    orderBy: Optional. Specifies the ordering of results following syntax at
+      https://cloud.google.com/apis/design/design_patterns#sorting_order.
+    pageSize: Optional. The maximum number of items to return. If unspecified,
+      the server will pick an appropriate default. The server may return fewer
+      items than requested. A caller should only rely on response's
+      next_page_token to determine if there are more AllocationEndpoints left
+      to be queried.
+    pageToken: Optional. The next_page_token value returned from a previous
+      List request, if any.
+    parent: Required. The parent resource name, in the following form:
+      "projects/{project}/locations/global".
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class GameservicesProjectsLocationsGlobalAllocationEndpointsPatchRequest(_messages.Message):
+  r"""A GameservicesProjectsLocationsGlobalAllocationEndpointsPatchRequest
+  object.
+
+  Fields:
+    allocationEndpoint: A AllocationEndpoint resource to be passed as the
+      request body.
+    name: The resource name of the allocation endpoint, in the following form:
+      `projects/{project}/locations/global/allocationEndpoints/{allocation_end
+      point}`. For example, `projects/my-
+      project/locations/global/allocationEndpoints/my-allocation-endpoint`.
+    updateMask: Required. Mask of fields to update. At least one path must be
+      supplied in this field. For the `FieldMask` definition, see
+      https://developers.google.com/protocol-
+      buffers/docs/reference/google.protobuf#fieldmask
+  """
+
+  allocationEndpoint = _messages.MessageField('AllocationEndpoint', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
 class GameservicesProjectsLocationsListRequest(_messages.Message):
   r"""A GameservicesProjectsLocationsListRequest object.
 
@@ -1744,6 +1917,21 @@ class LabelSelector(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   labels = _messages.MessageField('LabelsValue', 1)
+
+
+class ListAllocationEndpointsResponse(_messages.Message):
+  r"""Response message for AllocationEndpointsService.ListAllocationEndpoints.
+
+  Fields:
+    allocationEndpoints: The list of allocation endpoints.
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+    unreachable: List of locations that could not be reached.
+  """
+
+  allocationEndpoints = _messages.MessageField('AllocationEndpoint', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListGameServerClustersResponse(_messages.Message):

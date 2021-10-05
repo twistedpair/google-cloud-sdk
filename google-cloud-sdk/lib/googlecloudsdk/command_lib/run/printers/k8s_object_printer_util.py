@@ -30,7 +30,7 @@ from googlecloudsdk.core.resource import custom_printer_base as cp
 
 def OrderByKey(map_):
   for k in sorted(map_):
-    yield k, map_[k]
+    yield k, (map_.get(k) if map_.get(k) is not None else '')
 
 
 def FormatReadyMessage(record):

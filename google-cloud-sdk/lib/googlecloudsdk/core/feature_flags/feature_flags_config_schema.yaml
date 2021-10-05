@@ -26,7 +26,7 @@ patternProperties:
       type: object
       properties:
         value:
-          type: [string, integer, boolean]
+          type: [string, number, boolean]
         weight:
           type: integer
           minimum: 0

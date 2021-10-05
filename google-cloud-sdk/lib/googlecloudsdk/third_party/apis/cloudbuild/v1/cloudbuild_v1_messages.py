@@ -1226,6 +1226,12 @@ class CloudbuildProjectsGithubEnterpriseConfigsCreateRequest(_messages.Message):
   r"""A CloudbuildProjectsGithubEnterpriseConfigsCreateRequest object.
 
   Fields:
+    gheConfigId: Optional. The ID to use for the GithubEnterpriseConfig, which
+      will become the final component of the GithubEnterpriseConfig's resource
+      name. ghe_config_id must meet the following requirements: + They must
+      contain only alphanumeric characters and dashes. + They can be 1-64
+      characters long. + They must begin and end with an alphanumeric
+      character
     gitHubEnterpriseConfig: A GitHubEnterpriseConfig resource to be passed as
       the request body.
     parent: Name of the parent project. For example:
@@ -1233,9 +1239,10 @@ class CloudbuildProjectsGithubEnterpriseConfigsCreateRequest(_messages.Message):
     projectId: ID of the project.
   """
 
-  gitHubEnterpriseConfig = _messages.MessageField('GitHubEnterpriseConfig', 1)
-  parent = _messages.StringField(2, required=True)
-  projectId = _messages.StringField(3)
+  gheConfigId = _messages.StringField(1)
+  gitHubEnterpriseConfig = _messages.MessageField('GitHubEnterpriseConfig', 2)
+  parent = _messages.StringField(3, required=True)
+  projectId = _messages.StringField(4)
 
 
 class CloudbuildProjectsGithubEnterpriseConfigsDeleteRequest(_messages.Message):
@@ -1647,6 +1654,12 @@ class CloudbuildProjectsLocationsGithubEnterpriseConfigsCreateRequest(_messages.
   object.
 
   Fields:
+    gheConfigId: Optional. The ID to use for the GithubEnterpriseConfig, which
+      will become the final component of the GithubEnterpriseConfig's resource
+      name. ghe_config_id must meet the following requirements: + They must
+      contain only alphanumeric characters and dashes. + They can be 1-64
+      characters long. + They must begin and end with an alphanumeric
+      character
     gitHubEnterpriseConfig: A GitHubEnterpriseConfig resource to be passed as
       the request body.
     parent: Name of the parent project. For example:
@@ -1654,9 +1667,10 @@ class CloudbuildProjectsLocationsGithubEnterpriseConfigsCreateRequest(_messages.
     projectId: ID of the project.
   """
 
-  gitHubEnterpriseConfig = _messages.MessageField('GitHubEnterpriseConfig', 1)
-  parent = _messages.StringField(2, required=True)
-  projectId = _messages.StringField(3)
+  gheConfigId = _messages.StringField(1)
+  gitHubEnterpriseConfig = _messages.MessageField('GitHubEnterpriseConfig', 2)
+  parent = _messages.StringField(3, required=True)
+  projectId = _messages.StringField(4)
 
 
 class CloudbuildProjectsLocationsGithubEnterpriseConfigsDeleteRequest(_messages.Message):
@@ -2752,6 +2766,90 @@ class HttpBody(_messages.Message):
   extensions = _messages.MessageField('ExtensionsValueListEntry', 3, repeated=True)
 
 
+class HybridPoolConfig(_messages.Message):
+  r"""Configuration for a Hybrid Worker Pool Next ID: 5
+
+  Enums:
+    BuilderImageCachingValueValuesEnum: Immutable. Controls how the worker
+      pool caches images. If unspecified during worker pool creation, this
+      field is defaulted to VOLUME_CACHING.
+    DockerSecurityPolicyValueValuesEnum: Immutable. Specify the security
+      policy for the hybrid worker pool. Once created, this setting cannot be
+      changed on the hybrid worker pool, as we are unable to guarantee that
+      the cluster has not been altered by misuse of privileged Docker daemon.
+
+  Fields:
+    builderImageCaching: Immutable. Controls how the worker pool caches
+      images. If unspecified during worker pool creation, this field is
+      defaulted to VOLUME_CACHING.
+    defaultWorkerConfig: Default settings which will be applied to builds on
+      this worker pool if they are not specified in the build request.
+    dockerSecurityPolicy: Immutable. Specify the security policy for the
+      hybrid worker pool. Once created, this setting cannot be changed on the
+      hybrid worker pool, as we are unable to guarantee that the cluster has
+      not been altered by misuse of privileged Docker daemon.
+    membership: Required. Immutable. The Anthos/GKE Hub membership of the
+      cluster which will run the actual build operations. Example:
+      /projects/{project}/locations/{location}/memberships/{cluster_name}
+  """
+
+  class BuilderImageCachingValueValuesEnum(_messages.Enum):
+    r"""Immutable. Controls how the worker pool caches images. If unspecified
+    during worker pool creation, this field is defaulted to VOLUME_CACHING.
+
+    Values:
+      BUILDER_IMAGE_CACHING_UNSPECIFIED: Default enum type. This should not be
+        used.
+      CACHING_DISABLED: DinD caching is disabled and no caching resources are
+        provisioned.
+      VOLUME_CACHING: A PersistentVolumeClaim is provisioned for caching.
+    """
+    BUILDER_IMAGE_CACHING_UNSPECIFIED = 0
+    CACHING_DISABLED = 1
+    VOLUME_CACHING = 2
+
+  class DockerSecurityPolicyValueValuesEnum(_messages.Enum):
+    r"""Immutable. Specify the security policy for the hybrid worker pool.
+    Once created, this setting cannot be changed on the hybrid worker pool, as
+    we are unable to guarantee that the cluster has not been altered by misuse
+    of privileged Docker daemon.
+
+    Values:
+      DOCKER_SECURITY_POLICY_UNSPECIFIED: Unspecified - the default value will
+        be used.
+      NON_PRIVILEGED_ONLY: Users can only run builds using a non-privileged
+        Docker daemon. This is suitable for most cases.
+      PRIVILEGED_PERMITTED: Users are allowed to run builds using a privileged
+        Docker daemon. This setting should be used with caution, as using a
+        privileged Docker daemon introduces a security risk.
+    """
+    DOCKER_SECURITY_POLICY_UNSPECIFIED = 0
+    NON_PRIVILEGED_ONLY = 1
+    PRIVILEGED_PERMITTED = 2
+
+  builderImageCaching = _messages.EnumField('BuilderImageCachingValueValuesEnum', 1)
+  defaultWorkerConfig = _messages.MessageField('HybridWorkerConfig', 2)
+  dockerSecurityPolicy = _messages.EnumField('DockerSecurityPolicyValueValuesEnum', 3)
+  membership = _messages.StringField(4)
+
+
+class HybridWorkerConfig(_messages.Message):
+  r"""These settings can be applied to a user's build operations. Next ID: 4
+
+  Fields:
+    diskSizeGb: The disk size (in GB) which is requested for the build
+      container. Defaults to 10 GB.
+    memoryGb: The memory (in GB) which is requested for the build container.
+      Defaults to 4 GB.
+    vcpuCount: The number of vCPUs which are requested for the build
+      container. Defaults to 1.
+  """
+
+  diskSizeGb = _messages.IntegerField(1)
+  memoryGb = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  vcpuCount = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+
+
 class InlineSecret(_messages.Message):
   r"""Pairs a set of secret environment variables mapped to encrypted values
   with the Cloud KMS key to use to decrypt the value.
@@ -3235,13 +3333,15 @@ class PoolOption(_messages.Message):
   private-pool) for more information.
 
   Fields:
+    hybridPoolOption: Configuration for a Hybrid Worker Pool.
     name: The `WorkerPool` resource to execute the build on. You must have
       `cloudbuild.workerpools.use` on the project hosting the WorkerPool.
       Format
       projects/{project}/locations/{location}/workerPools/{workerPoolId}
   """
 
-  name = _messages.StringField(1)
+  hybridPoolOption = _messages.MessageField('HybridWorkerConfig', 1)
+  name = _messages.StringField(2)
 
 
 class PrivatePoolV1Config(_messages.Message):
@@ -4047,6 +4147,7 @@ class WorkerPool(_messages.Message):
     etag: Output only. Checksum computed by the server. May be sent on update
       and delete requests to ensure that the client has an up-to-date value
       before proceeding.
+    hybridPoolConfig: Hybrid pool configuration
     name: Output only. The resource name of the `WorkerPool`, with format
       `projects/{project}/locations/{location}/workerPools/{worker_pool}`. The
       value of `{worker_pool}` is provided by `worker_pool_id` in
@@ -4107,11 +4208,12 @@ class WorkerPool(_messages.Message):
   deleteTime = _messages.StringField(3)
   displayName = _messages.StringField(4)
   etag = _messages.StringField(5)
-  name = _messages.StringField(6)
-  privatePoolV1Config = _messages.MessageField('PrivatePoolV1Config', 7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
-  uid = _messages.StringField(9)
-  updateTime = _messages.StringField(10)
+  hybridPoolConfig = _messages.MessageField('HybridPoolConfig', 6)
+  name = _messages.StringField(7)
+  privatePoolV1Config = _messages.MessageField('PrivatePoolV1Config', 8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  uid = _messages.StringField(10)
+  updateTime = _messages.StringField(11)
 
 
 encoding.AddCustomJsonFieldMapping(

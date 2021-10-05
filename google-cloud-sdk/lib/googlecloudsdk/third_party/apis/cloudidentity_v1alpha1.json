@@ -458,6 +458,10 @@
         "expiryDetail": {
           "description": "The expiry details of the `MembershipRole`. Expiry details are only supported for `MEMBER` `MembershipRoles`. May be set if `name` is `MEMBER`. Must not be set if `name` is any other value.",
           "$ref": "MembershipRoleExpiryDetail"
+        },
+        "restrictionEvaluations": {
+          "description": "Evaluations of restrictions applied to parent group on this membership.",
+          "$ref": "RestrictionEvaluations"
         }
       }
     },
@@ -470,6 +474,43 @@
           "description": "The time at which the `MembershipRole` will expire.",
           "type": "string",
           "format": "google-datetime"
+        }
+      }
+    },
+    "RestrictionEvaluations": {
+      "id": "RestrictionEvaluations",
+      "description": "Evaluations of restrictions applied to parent group on this membership.",
+      "type": "object",
+      "properties": {
+        "memberRestrictionEvaluation": {
+          "description": "Evaluation of the member restriction applied to this membership. Empty if the user lacks permission to view the restriction evaluation.",
+          "$ref": "MembershipRoleRestrictionEvaluation"
+        }
+      }
+    },
+    "MembershipRoleRestrictionEvaluation": {
+      "id": "MembershipRoleRestrictionEvaluation",
+      "description": "The evaluated state of this restriction.",
+      "type": "object",
+      "properties": {
+        "state": {
+          "description": "Output only. The current state of the restriction",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Default. Should not be used.",
+            "The member adheres to the parent group\u2019s restriction.",
+            "The group-group membership might be currently violating some parent group's restriction but in future, it will never allow any new member in the child group which can violate parent group's restriction.",
+            "The member violates the parent group\u2019s restriction.",
+            "The state of the membership is under evaluation."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "COMPLIANT",
+            "FORWARD_COMPLIANT",
+            "NON_COMPLIANT",
+            "EVALUATING"
+          ]
         }
       }
     },

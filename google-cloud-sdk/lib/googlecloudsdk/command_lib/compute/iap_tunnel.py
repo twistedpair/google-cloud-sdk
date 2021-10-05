@@ -342,23 +342,21 @@ class _StdinSocket(object):
     pass
 
   def __init__(self):
-    # For linux platforms, we fire a reading thread. This is not needed for
-    # windows because on windows we open the stdin as a file, so we don't need
-    # a infinite loop with timer for that. Now for linux we do need a loop, so
-    # firing a separate thread for input reduces the number of operations
-    # per loop.
+
+    # We will use this thread-safe queue to communicate with the input
+    # reading thread.
+    self._message_queue = queue.Queue()
+    self._stdin_closed = False
+    # Maximum number of bytes the thread should read.
+    self._bufsize = utils.SUBPROTOCOL_MAX_DATA_FRAME_SIZE
     if not platforms.OperatingSystem.IsWindows():
-      self._stdin_closed = False
-
-      # We will use this thread-safe queue to comunicate with the input
-      # reading thread.
-      self._message_queue = queue.Queue()
-
-      # Maximum number of bytes the thread should read.
-      self._bufsize = utils.SUBPROTOCOL_MAX_DATA_FRAME_SIZE
-
       new_thread = threading.Thread(target=
                                     self._ReadFromStdinAndEnqueueMessageUnix)
+      new_thread.start()
+    else:
+      new_thread = threading.Thread(
+          target=self._ReadFromStdinAndEnqueueMessageWindows)
+      new_thread.daemon = True
       new_thread.start()
 
   def send(self, data):  # pylint: disable=invalid-name
@@ -401,17 +399,44 @@ class _StdinSocket(object):
     self.shutdown(socket.SHUT_RD)
 
   def shutdown(self, how):  # pylint: disable=invalid-name
-    # Shutting down read only (SHUT_RD) on Unix only (no change/effect on
-    # Windows)
+    # Shutting down read only (SHUT_RD)
     if how in (socket.SHUT_RDWR, socket.SHUT_RD):
       self._stdin_closed = True
+      # We queue the message so that the recv loop can abort
+      msg = self._StdinSocketMessage(self._StdinClosedMessageType, b'')
+
+      # For linux we still need to unblock the queue in the main thread
       if not platforms.OperatingSystem.IsWindows():
-        # We queue the message so that the recv loop can abort
-        msg = self._StdinSocketMessage(self._StdinClosedMessageType, b'')
         self._message_queue.put(msg)
 
+  def _ReadFromStdinAndEnqueueMessageWindows(self):
+    """Reads data from stdin on Windows.
+
+      This method will loop until stdin is closed. Should be executed in a
+      separate thread to avoid blocking the main thread.
+    """
+
+    try:
+      while not self._stdin_closed:
+        from ctypes import wintypes  # pylint: disable=g-import-not-at-top
+        # STD_INPUT_HANDLE is -10
+        h = ctypes.windll.kernel32.GetStdHandle(-10)
+        buf = ctypes.create_string_buffer(self._bufsize)
+        number_of_bytes_read = wintypes.DWORD()
+        ok = ctypes.windll.kernel32.ReadFile(
+            h, buf, self._bufsize, ctypes.byref(number_of_bytes_read), None)
+        if not ok:
+          raise socket.error(errno.EIO, 'stdin ReadFile failed')
+        msg = buf.raw[:number_of_bytes_read.value]
+        self._message_queue.put(self._StdinSocketMessage(self._DataMessageType,
+                                                         msg))
+    except Exception:  # pylint: disable=broad-except
+      self._message_queue.put(
+          self._StdinSocketMessage(self._ExceptionMessageType,
+                                   sys.exc_info()))
+
   def _RecvWindows(self, bufsize):
-    """Reads data from std in Windows.
+    """Reads data from stdin on Windows.
 
     Args:
       bufsize: The maximum number of bytes to receive. Must be positive.
@@ -420,18 +445,33 @@ class _StdinSocket(object):
     Raises:
       socket.error: On low level errors.
     """
-    # On Windows the way to quickly read without unnecessary blocking is
-    # to directly call ReadFile().
-    from ctypes import wintypes  # pylint: disable=g-import-not-at-top
-    # STD_INPUT_HANDLE is -10
-    h = ctypes.windll.kernel32.GetStdHandle(-10)
-    buf = ctypes.create_string_buffer(bufsize)
-    number_of_bytes_read = wintypes.DWORD()
-    ok = ctypes.windll.kernel32.ReadFile(
-        h, buf, bufsize, ctypes.byref(number_of_bytes_read), None)
-    if not ok:
-      raise socket.error(errno.EIO, 'stdin ReadFile failed')
-    return buf.raw[:number_of_bytes_read.value]
+
+    if bufsize != utils.SUBPROTOCOL_MAX_DATA_FRAME_SIZE:
+      log.info('bufsize [%s] is not max_data_frame_size', bufsize)
+
+    # We are using 1 second timeout here, which mean it can take up to 1
+    # second for gcloud to realize it should exit. Lower timeout means more
+    # cpu usage
+    while not self._stdin_closed:
+      try:
+        msg = self._message_queue.get(timeout=1)
+      except queue.Empty:
+        # Timeout reached
+        continue
+
+      msg_type = msg.GetType()
+      msg_data = msg.GetData()
+
+      if msg_type is self._ExceptionMessageType:
+        six.reraise(msg_data[0], msg_data[1], msg_data[2])
+
+      if msg_type is self._StdinClosedMessageType:
+        self._stdin_closed = True
+
+      return msg_data
+    # If stdin was closed we return an empty byte, so we can have a similar
+    # behavior as the unix version
+    return b''
 
   # TODO(b/198682299): This method is not needed anymore, we should refactor
   # it out.

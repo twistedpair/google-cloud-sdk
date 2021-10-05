@@ -1750,12 +1750,14 @@
           "enumDescriptions": [
             "Not set.",
             "AppDevExperienceFeature's specified subcomponent is ready.",
-            "AppDevExperienceFeature's specified subcomponent ready state is false. This means AppDevExperienceFeature has encountered an issue that blocks all, or a portion, of its normal operation. See the `description` for more details."
+            "AppDevExperienceFeature's specified subcomponent ready state is false. This means AppDevExperienceFeature has encountered an issue that blocks all, or a portion, of its normal operation. See the `description` for more details.",
+            "AppDevExperienceFeature's specified subcomponent has a pending or unknown state."
           ],
           "enum": [
             "CODE_UNSPECIFIED",
             "OK",
-            "FAILED"
+            "FAILED",
+            "UNKNOWN"
           ]
         },
         "description": {

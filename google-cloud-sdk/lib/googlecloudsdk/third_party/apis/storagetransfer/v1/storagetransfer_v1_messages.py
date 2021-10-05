@@ -379,7 +379,7 @@ class ListTransferJobsResponse(_messages.Message):
 
 
 class LoggingConfig(_messages.Message):
-  r"""Logging configure.
+  r"""Logging configuration.
 
   Fields:
     enableOnpremGcsTransferLogs: Enables the Cloud Storage transfer logs for
@@ -460,8 +460,8 @@ class ObjectConditions(_messages.Message):
   modification time" refers to the time of the last change to the object's
   content or metadata - specifically, this is the `updated` property of Cloud
   Storage objects, the `LastModified` field of S3 objects, and the `Last-
-  Modified` header of Azure blobs. This is not supported for transfers
-  involving PosixFilesystem.
+  Modified` header of Azure blobs. Transfers that use PosixFilesystem and have
+  a Cloud Storage source don't support `ObjectConditions`.
 
   Fields:
     excludePrefixes: If you specify `exclude_prefixes`, Storage Transfer
@@ -638,7 +638,7 @@ class PauseTransferOperationRequest(_messages.Message):
 
 
 class PosixFilesystem(_messages.Message):
-  r"""A POSIX filesystem data source or sink.
+  r"""A POSIX filesystem resource.
 
   Fields:
     rootDirectory: Root directory path to the filesystem.
@@ -1092,10 +1092,9 @@ class TransferJob(_messages.Message):
       a job, the creation request fails with an ALREADY_EXISTS error. This
       name must start with `"transferJobs/"` prefix and end with a letter or a
       number, and should be no more than 128 characters. For transfers
-      involving PosixFilesystem, this name must start with 'transferJobs/OPI'
+      involving PosixFilesystem, this name must start with `transferJobs/OPI`
       specifically. For all other transfer types, this name must not start
-      with 'transferJobs/OPI'. 'transferJobs/OPI' is a reserved prefix for
-      PosixFilesystem transfers. Non-PosixFilesystem example:
+      with `transferJobs/OPI`. Non-PosixFilesystem example:
       `"transferJobs/^(?!OPI)[A-Za-z0-9-._~]*[A-Za-z0-9]$"` PosixFilesystem
       example: `"transferJobs/OPI^[A-Za-z0-9-._~]*[A-Za-z0-9]$"` Applications
       must not rely on the enforcement of naming requirements involving OPI.

@@ -200,6 +200,12 @@
           "description": "`etag` is used for optimistic concurrency control as a way to help prevent simultaneous updates of a job from overwriting each other. It is strongly suggested that systems make use of the `etag` in the read-modify-write cycle to perform job updates in order to avoid race conditions: An `etag` is returned in the response to `GetJob`, and systems are expected to put that etag in the request to `UpdateJob` to ensure that their change will be applied to the same version of the job.",
           "type": "string",
           "format": "byte"
+        },
+        "jobPosition": {
+          "description": "Output only. It's only effect when the job is in QUEUED state. If it's positive, it indicates the job's position in the job scheduler. It's 0 when the job is already scheduled.",
+          "readOnly": true,
+          "type": "string",
+          "format": "int64"
         }
       }
     },

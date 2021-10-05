@@ -320,6 +320,16 @@ MAP = {
                 enable_mtls=False,
                 mtls_endpoint_override=''),
     },
+    'beyondcorp': {
+        'v1alpha':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.beyondcorp.v1alpha',
+                client_classpath='beyondcorp_v1alpha_client.BeyondcorpV1alpha',
+                messages_modulepath='beyondcorp_v1alpha_messages',
+                default_version=True,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
+    },
     'bigquery': {
         'v2':
             APIDef(

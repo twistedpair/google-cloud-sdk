@@ -949,6 +949,63 @@
         }
       }
     },
+    "SecuritySettings": {
+      "id": "SecuritySettings",
+      "description": "The definiion of security settings.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "Output only. The resource name of the security settings. Shall be of the form `groups\/{group_id}\/securitySettings`.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "memberRestriction": {
+          "description": "The Member Restriction value",
+          "$ref": "MemberRestriction"
+        }
+      }
+    },
+    "MemberRestriction": {
+      "id": "MemberRestriction",
+      "description": "The definition of MemberRestriction",
+      "type": "object",
+      "properties": {
+        "query": {
+          "description": "Member Restriction as defined by CEL expression. Supported restrictions are: `member.customer_id` and `member.type`. Valid values for `member.type` are `1`, `2` and `3`. They correspond to USER, SERVICE_ACCOUNT, and GROUP respectively. The value for `member.customer_id` only supports `groupCustomerId()` currently which means the customer id of the group will be used for restriction. Supported operators are `&&`, `||` and `==`, corresponding to AND, OR, and EQUAL. Examples: Allow only service accounts of given customer to be members. `member.type == 2 && member.customer_id == groupCustomerId()` Allow only users or groups to be members. `member.type == 1 || member.type == 3`",
+          "type": "string"
+        },
+        "evaluation": {
+          "description": "The evaluated state of this restriction on a group.",
+          "$ref": "RestrictionEvaluation"
+        }
+      }
+    },
+    "RestrictionEvaluation": {
+      "id": "RestrictionEvaluation",
+      "description": "The evaluated state of this restriction.",
+      "type": "object",
+      "properties": {
+        "state": {
+          "description": "Output only. The current state of the restriction",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Default. Should not be used.",
+            "The restriction state is currently being evaluated.",
+            "All transitive members are adhering to restriction.",
+            "Some transitive members violate the restriction. No new violating members can be added.",
+            "Some transitive members violate the restriction. New violating direct members will be denied while indirect members may be added."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "EVALUATING",
+            "COMPLIANT",
+            "FORWARD_COMPLIANT",
+            "NON_COMPLIANT"
+          ]
+        }
+      }
+    },
     "LookupGroupNameResponse": {
       "id": "LookupGroupNameResponse",
       "description": "The response message for GroupsService.LookupGroupName.",
@@ -1069,6 +1126,10 @@
         "expiryDetail": {
           "description": "The expiry details of the `MembershipRole`. Expiry details are only supported for `MEMBER` `MembershipRoles`. May be set if `name` is `MEMBER`. Must not be set if `name` is any other value.",
           "$ref": "ExpiryDetail"
+        },
+        "restrictionEvaluations": {
+          "description": "Evaluations of restrictions applied to parent group on this membership.",
+          "$ref": "RestrictionEvaluations"
         }
       }
     },
@@ -1081,6 +1142,43 @@
           "description": "The time at which the `MembershipRole` will expire.",
           "type": "string",
           "format": "google-datetime"
+        }
+      }
+    },
+    "RestrictionEvaluations": {
+      "id": "RestrictionEvaluations",
+      "description": "Evaluations of restrictions applied to parent group on this membership.",
+      "type": "object",
+      "properties": {
+        "memberRestrictionEvaluation": {
+          "description": "Evaluation of the member restriction applied to this membership. Empty if the user lacks permission to view the restriction evaluation.",
+          "$ref": "MembershipRoleRestrictionEvaluation"
+        }
+      }
+    },
+    "MembershipRoleRestrictionEvaluation": {
+      "id": "MembershipRoleRestrictionEvaluation",
+      "description": "The evaluated state of this restriction.",
+      "type": "object",
+      "properties": {
+        "state": {
+          "description": "Output only. The current state of the restriction",
+          "readOnly": true,
+          "type": "string",
+          "enumDescriptions": [
+            "Default. Should not be used.",
+            "The member adheres to the parent group\u2019s restriction.",
+            "The group-group membership might be currently violating some parent group's restriction but in future, it will never allow any new member in the child group which can violate parent group's restriction.",
+            "The member violates the parent group\u2019s restriction.",
+            "The state of the membership is under evaluation."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "COMPLIANT",
+            "FORWARD_COMPLIANT",
+            "NON_COMPLIANT",
+            "EVALUATING"
+          ]
         }
       }
     },
@@ -2708,6 +2806,74 @@
             "https://www.googleapis.com/auth/cloud-platform"
           ],
           "description": "Retrieves a `Group`."
+        },
+        "getSecuritySettings": {
+          "id": "cloudidentity.groups.getSecuritySettings",
+          "path": "v1beta1/{+name}",
+          "flatPath": "v1beta1/groups/{groupsId}/securitySettings",
+          "httpMethod": "GET",
+          "parameters": {
+            "name": {
+              "description": "Required. The security settings to retrieve. Format: `groups\/{group_id}\/securitySettings`",
+              "pattern": "^groups\/[^\/]+\/securitySettings$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "readMask": {
+              "description": "Field-level read mask of which fields to return. \"*\" returns all fields. If not specified, all fields will be returned. May only contain the following field: `member_restriction`.",
+              "location": "query",
+              "type": "string",
+              "format": "google-fieldmask"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "SecuritySettings"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-identity.groups",
+            "https://www.googleapis.com/auth/cloud-identity.groups.readonly",
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Get Security Settings"
+        },
+        "updateSecuritySettings": {
+          "id": "cloudidentity.groups.updateSecuritySettings",
+          "path": "v1beta1/{+name}",
+          "flatPath": "v1beta1/groups/{groupsId}/securitySettings",
+          "httpMethod": "PATCH",
+          "parameters": {
+            "name": {
+              "description": "Output only. The resource name of the security settings. Shall be of the form `groups\/{group_id}\/securitySettings`.",
+              "pattern": "^groups\/[^\/]+\/securitySettings$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            },
+            "updateMask": {
+              "description": "Required. The fully-qualified names of fields to update. May only contain the following field: `member_restriction.query`.",
+              "location": "query",
+              "type": "string",
+              "format": "google-fieldmask"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "request": {
+            "$ref": "SecuritySettings"
+          },
+          "response": {
+            "$ref": "Operation"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-identity.groups",
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Update Security Settings"
         },
         "patch": {
           "id": "cloudidentity.groups.patch",

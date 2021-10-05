@@ -59,13 +59,26 @@ class AccessPolicy(_messages.Message):
       `accessPolicies/{access_policy}`
     parent: Immutable. The parent of this `AccessPolicy` in the Cloud Resource
       Hierarchy Format: `organizations/{organization_id}`
+    scopes: The scopes of the AccessPolicy. Scopes define which resources a
+      policy can restrict and where its resources can be referenced. For
+      example, a policy A with scopes=["folders/123"] has the following
+      behavior: - ServicePerimeter" can only restrict projects within
+      folders/123. - ServicePerimeter" within policy A can only reference
+      Access Levels defined within A. - Only one policy can include a given
+      scope; thus, attempting to create a second policy which includes
+      "folders/123" will result in an error. If no scopes are provided, then
+      any resource within the organization can be restricted. Scopes cannot be
+      modified after a policy is created. Currently, policies can only have a
+      single scope. Format: list of `folders/{folder_number}` or
+      `projects/{project_number}`
     title: Required. Human readable title. Does not affect behavior.
   """
 
   etag = _messages.StringField(1)
   name = _messages.StringField(2)
   parent = _messages.StringField(3)
-  title = _messages.StringField(4)
+  scopes = _messages.StringField(4, repeated=True)
+  title = _messages.StringField(5)
 
 
 class AccesscontextmanagerAccessPoliciesAccessLevelsCreateRequest(_messages.Message):

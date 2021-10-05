@@ -35,6 +35,7 @@ import requests
 from six.moves import http_client
 from six.moves import urllib
 import socks
+import urllib3
 
 
 class NetworkDiagnostic(diagnostic_base.Diagnostic):
@@ -91,18 +92,22 @@ class ReachabilityChecker(check_base.Checker):
     failures = []
     # Check reachability using httplib2
     for url in urls:
-      fail = self._CheckURLHttplib2(url)
+      fail = CheckURLHttplib2(url)
       if fail:
         failures.append(fail)
 
     # Check reachability using requests
     for url in urls:
-      fail = self._CheckURLRequests(url)
+      fail = CheckURLRequests(url)
       if fail:
         failures.append(fail)
 
+    fail = CheckRequests()
+    if fail:
+      failures.append(fail)
+
     if failures:
-      fail_message = self._ConstructMessageFromFailures(failures, first_run)
+      fail_message = ConstructMessageFromFailures(failures, first_run)
       result = check_base.Result(passed=False, message=fail_message,
                                  failures=failures)
       fixer = http_proxy_setup.ChangeGcloudProxySettings
@@ -114,29 +119,45 @@ class ReachabilityChecker(check_base.Checker):
                                if not urls else pass_message)
     return result, None
 
-  def _CheckURLHttplib2(self, url):
-    try:
-      http.Http().request(url, method='GET')
-    except (http_client.HTTPException, socket.error, ssl.SSLError,
-            httplib2.HttpLib2Error, socks.HTTPError) as err:
-      msg = 'Cannot reach {0} with httplib2 ({1})'.format(
-          url, type(err).__name__)
-      return check_base.Failure(message=msg, exception=err)
 
-  def _CheckURLRequests(self, url):
-    try:
-      core_requests.GetSession().request('GET', url)
-    except requests.exceptions.RequestException as err:
-      msg = 'Cannot reach {0} with requests ({1})'.format(
-          url, type(err).__name__)
-      return check_base.Failure(message=msg, exception=err)
+def CheckURLHttplib2(url):
+  try:
+    http.Http().request(url, method='GET')
+  except (http_client.HTTPException, socket.error, ssl.SSLError,
+          httplib2.HttpLib2Error, socks.HTTPError) as err:
+    msg = 'httplib2 cannot reach {0}:\n{1}\n'.format(
+        url, err)
+    return check_base.Failure(message=msg, exception=err)
 
-  def _ConstructMessageFromFailures(self, failures, first_run):
-    message = 'Reachability Check {0}.\n'.format('failed' if first_run else
-                                                 'still does not pass')
-    for failure in failures:
-      message += '    {0}\n'.format(failure.message)
-    if first_run:
-      message += ('Network connection problems may be due to proxy or '
-                  'firewall settings.\n')
-    return message
+
+def CheckURLRequests(url):
+  try:
+    core_requests.GetSession().request('GET', url)
+  except requests.exceptions.RequestException as err:
+    msg = 'requests cannot reach {0}:\n{1}\n'.format(
+        url, err)
+    return check_base.Failure(message=msg, exception=err)
+
+
+def CheckRequests():
+  urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+  s = requests.Session()
+  s.verify = False
+  try:
+    s.request('GET', 'https://expired.badssl.com')
+  except Exception as e:  # pylint: disable=broad-except
+    msg = 'Issue detected: {}'.format(e)
+    return check_base.Failure(message=msg, exception=e)
+
+
+def ConstructMessageFromFailures(failures, first_run):
+  """Constructs error messages along with diagnostic information."""
+  message = 'Reachability Check {0}.\n'.format('failed' if first_run else
+                                               'still does not pass')
+  for failure in failures:
+    message += '    {0}\n'.format(failure.message)
+  if first_run:
+    message += ('Network connection problems may be due to proxy or '
+                'firewall settings.\n')
+
+  return message

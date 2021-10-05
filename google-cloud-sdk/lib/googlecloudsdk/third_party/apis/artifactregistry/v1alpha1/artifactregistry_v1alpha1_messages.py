@@ -201,9 +201,7 @@ class DockerImage(_messages.Message):
     buildTime: The time this image was built. This field is returned as the
       'metadata.buildTime' field in the Version resource. The build time is
       returned to the client as an RFC 3339 string, which can be easily used
-      with the JavaScript Date constructor and keeps the Version timestamps
-      returned via OnePlatform consistent, as JSON marshals
-      google.protobuf.Timestamp into an RFC 3339 string.
+      with the JavaScript Date constructor.
     imageSizeBytes: Calculated size of the image. This field is returned as
       the 'metadata.imageSizeBytes' field in the Version resource.
     mediaType: Media type of this image, e.g.

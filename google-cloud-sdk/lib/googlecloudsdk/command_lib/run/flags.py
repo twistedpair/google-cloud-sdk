@@ -2121,6 +2121,6 @@ def PromptForDefaultSource():
     source = console_io.PromptWithDefault(
         message='Source code location', default=cwd)
 
-    log.status.Print('Next time, use "gcloud run deploy --source ." '
+    log.status.Print('Next time, use `gcloud run deploy --source .` '
                      'to deploy the current directory.\n')
     return source

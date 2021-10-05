@@ -1633,6 +1633,8 @@ class IndexedFieldConfig(_messages.Message):
   r"""A IndexedFieldConfig object.
 
   Enums:
+    StateValueValuesEnum: Output only. State shows whether IndexedFieldConfig
+      is ready to be used.
     TokenizationValueValuesEnum: String tokenization mode.
 
   Fields:
@@ -1640,8 +1642,24 @@ class IndexedFieldConfig(_messages.Message):
       defaults to the property name.
     fullTextSearch: Enable full text search - strings only. DEPRECATED, use
       tokenization
+    state: Output only. State shows whether IndexedFieldConfig is ready to be
+      used.
     tokenization: String tokenization mode.
   """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. State shows whether IndexedFieldConfig is ready to be
+    used.
+
+    Values:
+      STATE_UNSPECIFIED: STATE_UNSPECIFIED is not an expected state.
+      UPDATING: UPDATING means the config is still being updated and not
+        filterable.
+      ACTIVE: ACTIVE means the config is filterable.
+    """
+    STATE_UNSPECIFIED = 0
+    UPDATING = 1
+    ACTIVE = 2
 
   class TokenizationValueValuesEnum(_messages.Enum):
     r"""String tokenization mode.
@@ -1659,7 +1677,8 @@ class IndexedFieldConfig(_messages.Message):
 
   expression = _messages.StringField(1)
   fullTextSearch = _messages.BooleanField(2)
-  tokenization = _messages.EnumField('TokenizationValueValuesEnum', 3)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
+  tokenization = _messages.EnumField('TokenizationValueValuesEnum', 4)
 
 
 class Input(_messages.Message):
