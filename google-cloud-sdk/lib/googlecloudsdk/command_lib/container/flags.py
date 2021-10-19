@@ -928,16 +928,35 @@ def AddEnableWorkloadMonitoringEapFlag(parser):
   )
 
 
-def AddManagedPrometheusFlag(parser):
-  """Adds a --enable-managed-prometheus flag to parser."""
-  help_text = """Enable Prometheus Managed Collection."""
-  parser.add_argument(
-      '--enable-managed-prometheus',
-      action='store_true',
-      default=None,
-      help=help_text,
-      hidden=True,
-  )
+def AddManagedPrometheusFlags(parser, for_create=False):
+  """Adds --enable-managed-prometheus and --disable-managed-prometheus flags to parser."""
+  help_text = """Enable/Disable Prometheus Managed Collection."""
+
+  # Create can only enable the component.
+  if for_create:
+    parser.add_argument(
+        '--enable-managed-prometheus',
+        action='store_true',
+        default=None,
+        help=help_text,
+        hidden=True,
+    )
+  else:
+    group = parser.add_group(hidden=True, mutex=True)
+    group.add_argument(
+        '--enable-managed-prometheus',
+        action='store_true',
+        default=None,
+        help=help_text,
+        hidden=True,
+    )
+    group.add_argument(
+        '--disable-managed-prometheus',
+        action='store_true',
+        default=None,
+        help=help_text,
+        hidden=True,
+    )
 
 
 def AddEnableMasterSignalsFlags(parser, for_create=False):

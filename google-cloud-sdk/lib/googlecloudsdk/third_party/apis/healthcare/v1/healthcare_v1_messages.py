@@ -36,6 +36,52 @@ class ActivateConsentRequest(_messages.Message):
   ttl = _messages.StringField(3)
 
 
+class AnalyzeEntitiesRequest(_messages.Message):
+  r"""The request to analyze healthcare entities in a document.
+
+  Enums:
+    LicensedVocabulariesValueListEntryValuesEnum:
+
+  Fields:
+    documentContent: document_content is a document to be annotated.
+    licensedVocabularies: A list of licensed vocabularies to use in the
+      request, in addition to the default unlicensed vocabularies.
+  """
+
+  class LicensedVocabulariesValueListEntryValuesEnum(_messages.Enum):
+    r"""LicensedVocabulariesValueListEntryValuesEnum enum type.
+
+    Values:
+      LICENSED_VOCABULARY_UNSPECIFIED: No licensed vocabulary specified.
+      ICD10CM: ICD-10-CM vocabulary
+      SNOMEDCT_US: SNOMED CT (US version) vocabulary
+    """
+    LICENSED_VOCABULARY_UNSPECIFIED = 0
+    ICD10CM = 1
+    SNOMEDCT_US = 2
+
+  documentContent = _messages.StringField(1)
+  licensedVocabularies = _messages.EnumField('LicensedVocabulariesValueListEntryValuesEnum', 2, repeated=True)
+
+
+class AnalyzeEntitiesResponse(_messages.Message):
+  r"""Includes recognized entity mentions and relationships between them.
+
+  Fields:
+    entities: The union of all the candidate entities that the entity_mentions
+      in this response could link to. These are UMLS concepts or normalized
+      mention content.
+    entityMentions: entity_mentions contains all the annotated medical
+      entities that were mentioned in the provided document.
+    relationships: relationships contains all the binary relationships that
+      were identified between entity mentions within the provided document.
+  """
+
+  entities = _messages.MessageField('Entity', 1, repeated=True)
+  entityMentions = _messages.MessageField('EntityMention', 2, repeated=True)
+  relationships = _messages.MessageField('EntityMentionRelationship', 3, repeated=True)
+
+
 class ArchiveUserDataMappingRequest(_messages.Message):
   r"""Archives the specified User data mapping."""
 
@@ -72,7 +118,7 @@ class AttributeDefinition(_messages.Message):
 
   Fields:
     allowedValues: Required. Possible values for the attribute. The number of
-      allowed values must not exceed 100. An empty list is invalid. The list
+      allowed values must not exceed 500. An empty list is invalid. The list
       can only be expanded after creation.
     category: Required. The category of the attribute. The value of this field
       cannot be changed after creation.
@@ -421,12 +467,11 @@ class Consent(_messages.Message):
     r"""Required. Indicates the current state of this Consent.
 
     Values:
-      STATE_UNSPECIFIED: No state specified.
+      STATE_UNSPECIFIED: No state specified. Treated as ACTIVE only at the
+        time of resource creation.
       ACTIVE: The Consent is active and is considered when evaluating a user's
         consent on resources.
-      ARCHIVED: When a Consent is updated, the current version is archived and
-        a new one is created with its state set to the updated Consent's
-        previous state.
+      ARCHIVED: The archived state is currently not being used.
       REVOKED: A revoked Consent is not considered when evaluating a user's
         consent on resources.
       DRAFT: A draft Consent is not considered when evaluating a user's
@@ -953,6 +998,84 @@ class Empty(_messages.Message):
 
 
 
+class Entity(_messages.Message):
+  r"""The candidate entities that an entity mention could link to.
+
+  Fields:
+    entityId: entity_id is a first class field entity_id uniquely identifies
+      this concept and its meta-vocabulary. For example, "UMLS/C0000970".
+    preferredTerm: preferred_term is the preferred term for this concept. For
+      example, "Acetaminophen". For ad hoc entities formed by normalization,
+      this is the most popular unnormalized string.
+    vocabularyCodes: Vocabulary codes are first-class fields and
+      differentiated from the concept unique identifier (entity_id).
+      vocabulary_codes contains the representation of this concept in
+      particular vocabularies, such as ICD-10, SNOMED-CT and RxNORM. These are
+      prefixed by the name of the vocabulary, followed by the unique code
+      within that vocabulary. For example, "RXNORM/A10334543".
+  """
+
+  entityId = _messages.StringField(1)
+  preferredTerm = _messages.StringField(2)
+  vocabularyCodes = _messages.StringField(3, repeated=True)
+
+
+class EntityMention(_messages.Message):
+  r"""An entity mention in the document.
+
+  Fields:
+    certaintyAssessment: The certainty assessment of the entity mention. Its
+      value is one of: LIKELY, SOMEWHAT_LIKELY, UNCERTAIN, SOMEWHAT_UNLIKELY,
+      UNLIKELY, CONDITIONAL
+    confidence: The model's confidence in this entity mention annotation. A
+      number between 0 and 1.
+    linkedEntities: linked_entities are candidate ontological concepts that
+      this entity mention may refer to. They are sorted by decreasing
+      confidence.it
+    mentionId: mention_id uniquely identifies each entity mention in a single
+      response.
+    subject: The subject this entity mention relates to. Its value is one of:
+      PATIENT, FAMILY_MEMBER, OTHER
+    temporalAssessment: How this entity mention relates to the subject
+      temporally. Its value is one of: CURRENT, CLINICAL_HISTORY,
+      FAMILY_HISTORY, UPCOMING, ALLERGY
+    text: text is the location of the entity mention in the document.
+    type: The semantic type of the entity: UNKNOWN_ENTITY_TYPE, ALONE,
+      ANATOMICAL_STRUCTURE, ASSISTED_LIVING, BF_RESULT, BM_RESULT, BM_UNIT,
+      BM_VALUE, BODY_FUNCTION, BODY_MEASUREMENT, COMPLIANT, DOESNOT_FOLLOWUP,
+      FAMILY, FOLLOWSUP, LABORATORY_DATA, LAB_RESULT, LAB_UNIT, LAB_VALUE,
+      MEDICAL_DEVICE, MEDICINE, MED_DOSE, MED_DURATION, MED_FORM,
+      MED_FREQUENCY, MED_ROUTE, MED_STATUS, MED_STRENGTH, MED_TOTALDOSE,
+      MED_UNIT, NON_COMPLIANT, OTHER_LIVINGSTATUS, PROBLEM, PROCEDURE,
+      PROCEDURE_RESULT, PROC_METHOD, REASON_FOR_NONCOMPLIANCE, SEVERITY,
+      SUBSTANCE_ABUSE, UNCLEAR_FOLLOWUP.
+  """
+
+  certaintyAssessment = _messages.MessageField('Feature', 1)
+  confidence = _messages.FloatField(2)
+  linkedEntities = _messages.MessageField('LinkedEntity', 3, repeated=True)
+  mentionId = _messages.StringField(4)
+  subject = _messages.MessageField('Feature', 5)
+  temporalAssessment = _messages.MessageField('Feature', 6)
+  text = _messages.MessageField('TextSpan', 7)
+  type = _messages.StringField(8)
+
+
+class EntityMentionRelationship(_messages.Message):
+  r"""Defines directed relationship from one entity mention to another.
+
+  Fields:
+    confidence: The model's confidence in this annotation. A number between 0
+      and 1.
+    objectId: object_id is the id of the object entity mention.
+    subjectId: subject_id is the id of the subject entity mention.
+  """
+
+  confidence = _messages.FloatField(1)
+  objectId = _messages.StringField(2)
+  subjectId = _messages.StringField(3)
+
+
 class EvaluateUserConsentsRequest(_messages.Message):
   r"""Evaluate a user's Consents for all matching User data mappings. Note:
   User data mappings are indexed asynchronously, causing slight delays between
@@ -1118,6 +1241,37 @@ class ExportDicomDataResponse(_messages.Message):
 
 
 
+class ExportMessagesRequest(_messages.Message):
+  r"""Request to schedule an export.
+
+  Fields:
+    endTime: The end of the range in `send_time` (MSH.7, https://www.hl7.org/d
+      ocumentcenter/public_temp_2E58C1F9-1C23-BA17-0C6126475344DA9D/wg/conf/HL
+      7MSH.htm) to process. If not specified, the time when the export is
+      scheduled is used. This value has to come after the `start_time` defined
+      below. Only messages whose `send_time` lies in the range `start_time`
+      (inclusive) to `end_time` (exclusive) are exported.
+    gcsDestination: Export to a Cloud Storage destination.
+    startTime: The start of the range in `send_time` (MSH.7, https://www.hl7.o
+      rg/documentcenter/public_temp_2E58C1F9-1C23-BA17-0C6126475344DA9D/wg/con
+      f/HL7MSH.htm) to process. If not specified, the UNIX epoch
+      (1970-01-01T00:00:00Z) is used. This value has to come before the
+      `end_time` defined below. Only messages whose `send_time` lies in the
+      range `start_time` (inclusive) to `end_time` (exclusive) are exported.
+  """
+
+  endTime = _messages.StringField(1)
+  gcsDestination = _messages.MessageField('GcsDestination', 2)
+  startTime = _messages.StringField(3)
+
+
+class ExportMessagesResponse(_messages.Message):
+  r"""Final response for the export operation. This structure is included in
+  the response to describe the detailed outcome.
+  """
+
+
+
 class ExportResourcesRequest(_messages.Message):
   r"""Request to export resources.
 
@@ -1125,9 +1279,9 @@ class ExportResourcesRequest(_messages.Message):
     bigqueryDestination: The BigQuery output destination. The Cloud Healthcare
       Service Agent requires two IAM roles on the BigQuery location:
       `roles/bigquery.dataEditor` and `roles/bigquery.jobUser`. The output is
-      one BigQuery table per resource type. Note that unlike in
-      FhirStore.StreamConfig.BigQueryDestination, BigQuery views will not be
-      created by ExportResources.
+      one BigQuery table per resource type. Unlike when setting
+      `BigQueryDestination` for `StreamConfig`, `ExportResources` does not
+      create BigQuery views.
     gcsDestination: The Cloud Storage output destination. The Healthcare
       Service Agent account requires the `roles/storage.objectAdmin` role on
       the Cloud Storage location. The exported outputs are organized by FHIR
@@ -1182,6 +1336,20 @@ class Expr(_messages.Message):
   expression = _messages.StringField(2)
   location = _messages.StringField(3)
   title = _messages.StringField(4)
+
+
+class Feature(_messages.Message):
+  r"""A feature of an entity mention.
+
+  Fields:
+    confidence: The model's confidence in this feature annotation. A number
+      between 0 and 1.
+    value: The value of this feature annotation. Its range depends on the type
+      of the feature.
+  """
+
+  confidence = _messages.FloatField(1)
+  value = _messages.StringField(2)
 
 
 class FhirConfig(_messages.Message):
@@ -1417,6 +1585,87 @@ class FieldMetadata(_messages.Message):
   paths = _messages.StringField(2, repeated=True)
 
 
+class GcsDestination(_messages.Message):
+  r"""The Cloud Storage output destination. The Cloud Healthcare Service Agent
+  requires the `roles/storage.objectAdmin` Cloud IAM roles on the Cloud
+  Storage location.
+
+  Enums:
+    ContentStructureValueValuesEnum: The format of the exported HL7v2 message
+      files.
+    MessageViewValueValuesEnum: Specifies the parts of the Message resource to
+      include in the export. If not specified, FULL is used.
+
+  Fields:
+    contentStructure: The format of the exported HL7v2 message files.
+    messageView: Specifies the parts of the Message resource to include in the
+      export. If not specified, FULL is used.
+    uriPrefix: URI of an existing Cloud Storage directory where the server
+      writes result files, in the format `gs://{bucket-
+      id}/{path/to/destination/dir}`. If there is no trailing slash, the
+      service appends one when composing the object path.
+  """
+
+  class ContentStructureValueValuesEnum(_messages.Enum):
+    r"""The format of the exported HL7v2 message files.
+
+    Values:
+      CONTENT_STRUCTURE_UNSPECIFIED: If the content structure is not
+        specified, the default value `MESSAGE_JSON` will be used.
+      MESSAGE_JSON: Messages are printed using the JSON format returned from
+        the `GetMessage` API. Messages are delimited with newlines.
+    """
+    CONTENT_STRUCTURE_UNSPECIFIED = 0
+    MESSAGE_JSON = 1
+
+  class MessageViewValueValuesEnum(_messages.Enum):
+    r"""Specifies the parts of the Message resource to include in the export.
+    If not specified, FULL is used.
+
+    Values:
+      MESSAGE_VIEW_UNSPECIFIED: Not specified, equivalent to FULL.
+      RAW_ONLY: Server responses include all the message fields except
+        parsed_data field, and schematized_data fields.
+      PARSED_ONLY: Server responses include all the message fields except data
+        field, and schematized_data fields.
+      FULL: Server responses include all the message fields.
+      SCHEMATIZED_ONLY: Server responses include all the message fields except
+        data and parsed_data fields.
+      BASIC: Server responses include only the name field.
+    """
+    MESSAGE_VIEW_UNSPECIFIED = 0
+    RAW_ONLY = 1
+    PARSED_ONLY = 2
+    FULL = 3
+    SCHEMATIZED_ONLY = 4
+    BASIC = 5
+
+  contentStructure = _messages.EnumField('ContentStructureValueValuesEnum', 1)
+  messageView = _messages.EnumField('MessageViewValueValuesEnum', 2)
+  uriPrefix = _messages.StringField(3)
+
+
+class GcsSource(_messages.Message):
+  r"""Specifies the configuration for importing data from Cloud Storage.
+
+  Fields:
+    uri: Points to a Cloud Storage URI containing file(s) to import. The URI
+      must be in the following format: `gs://{bucket_id}/{object_id}`. The URI
+      can include wildcards in `object_id` and thus identify multiple files.
+      Supported wildcards: * `*` to match 0 or more non-separator characters *
+      `**` to match 0 or more characters (including separators). Must be used
+      at the end of a path and with no other wildcards in the path. Can also
+      be used with a file extension (such as .ndjson), which imports all files
+      with the extension in the specified directory and its sub-directories.
+      For example, `gs://my-bucket/my-directory/**.ndjson` imports all files
+      with `.ndjson` extensions in `my-directory/` and its sub-directories. *
+      `?` to match 1 character Files matching the wildcard are expected to
+      contain content only, no metadata.
+  """
+
+  uri = _messages.StringField(1)
+
+
 class GoogleCloudHealthcareV1ConsentGcsDestination(_messages.Message):
   r"""The Cloud Storage location for export.
 
@@ -1462,10 +1711,10 @@ class GoogleCloudHealthcareV1DicomBigQueryDestination(_messages.Message):
   r"""The BigQuery table where the server writes the output.
 
   Fields:
-    force: If the destination table already exists and this flag is `TRUE`,
-      the table is overwritten by the contents of the DICOM store. If the flag
-      is not set and the destination table already exists, the export call
-      returns an error.
+    force: Use `write_disposition` instead. If `write_disposition` is
+      specified, this parameter is ignored. force=false is equivalent to
+      write_disposition=WRITE_EMPTY and force=true is equivalent to
+      write_disposition=WRITE_TRUNCATE.
     tableUri: BigQuery URI to a table, up to 2000 characters long, in the
       format `bq://projectId.bqDatasetId.tableId`
   """
@@ -3364,6 +3613,21 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresDeleteRequest(_messages.Mess
   name = _messages.StringField(1, required=True)
 
 
+class HealthcareProjectsLocationsDatasetsHl7V2StoresExportRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsHl7V2StoresExportRequest object.
+
+  Fields:
+    exportMessagesRequest: A ExportMessagesRequest resource to be passed as
+      the request body.
+    name: The name of the source HL7v2 store, in the format `projects/{project
+      _id}/locations/{location_id}/datasets/{dataset_id}/hl7v2Stores/{hl7v2_st
+      ore_id}`
+  """
+
+  exportMessagesRequest = _messages.MessageField('ExportMessagesRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class HealthcareProjectsLocationsDatasetsHl7V2StoresGetIamPolicyRequest(_messages.Message):
   r"""A HealthcareProjectsLocationsDatasetsHl7V2StoresGetIamPolicyRequest
   object.
@@ -3394,6 +3658,21 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresGetRequest(_messages.Message
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsHl7V2StoresImportRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsHl7V2StoresImportRequest object.
+
+  Fields:
+    importMessagesRequest: A ImportMessagesRequest resource to be passed as
+      the request body.
+    name: The name of the target HL7v2 store, in the format `projects/{project
+      _id}/locations/{location_id}/datasets/{dataset_id}/hl7v2Stores/{hl7v2_st
+      ore_id}`
+  """
+
+  importMessagesRequest = _messages.MessageField('ImportMessagesRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class HealthcareProjectsLocationsDatasetsHl7V2StoresListRequest(_messages.Message):
@@ -3816,6 +4095,20 @@ class HealthcareProjectsLocationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class HealthcareProjectsLocationsServicesNlpAnalyzeEntitiesRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsServicesNlpAnalyzeEntitiesRequest object.
+
+  Fields:
+    analyzeEntitiesRequest: A AnalyzeEntitiesRequest resource to be passed as
+      the request body.
+    nlpService: The resource name of the service of the form:
+      "projects/{project_id}/locations/{location_id}/services/nlp".
+  """
+
+  analyzeEntitiesRequest = _messages.MessageField('AnalyzeEntitiesRequest', 1)
+  nlpService = _messages.StringField(2, required=True)
+
+
 class Hl7SchemaConfig(_messages.Message):
   r"""Root config message for HL7v2 schema. This contains a schema structure
   of groups and segments, and filters that determine which messages to apply
@@ -4155,6 +4448,27 @@ class ImportDicomDataResponse(_messages.Message):
 
 
 
+class ImportMessagesRequest(_messages.Message):
+  r"""Request to import messages.
+
+  Fields:
+    gcsSource: Cloud Storage source data location and import configuration.
+      The Cloud Healthcare Service Agent requires the
+      `roles/storage.objectViewer` Cloud IAM roles on the Cloud Storage
+      location.
+  """
+
+  gcsSource = _messages.MessageField('GcsSource', 1)
+
+
+class ImportMessagesResponse(_messages.Message):
+  r"""Final response of importing messages. This structure is included in the
+  response to describe the detailed outcome. It is only included when the
+  operation finishes successfully.
+  """
+
+
+
 class ImportResourcesRequest(_messages.Message):
   r"""Request to import resources.
 
@@ -4251,6 +4565,21 @@ class IngestMessageResponse(_messages.Message):
 
   hl7Ack = _messages.BytesField(1)
   message = _messages.MessageField('Message', 2)
+
+
+class LinkedEntity(_messages.Message):
+  r"""EntityMentions can be linked to multiple entities using a LinkedEntity
+  message lets us add other fields, e.g. confidence.
+
+  Fields:
+    entityId: entity_id is a concept unique identifier. These are prefixed by
+      a string that identifies the entity coding system, followed by the
+      unique identifier within that system. For example, "UMLS/C0000970". This
+      also supports ad hoc entities, which are formed by normalizing entity
+      mention content.
+  """
+
+  entityId = _messages.StringField(1)
 
 
 class ListAttributeDefinitionsResponse(_messages.Message):
@@ -4773,6 +5102,11 @@ class ParserConfig(_messages.Message):
   r"""The configuration for the parser. It determines how the server parses
   the messages.
 
+  Enums:
+    VersionValueValuesEnum: Immutable. Determines the version of the
+      unschematized parser to be used when `schema` is not given. This field
+      is immutable after store creation.
+
   Fields:
     allowNullHeader: Determines whether messages with no header are allowed.
     schema: Schemas used to parse messages in this store, if schematized
@@ -4780,11 +5114,33 @@ class ParserConfig(_messages.Message):
     segmentTerminator: Byte(s) to use as the segment terminator. If this is
       unset, '\r' is used as segment terminator, matching the HL7 version 2
       specification.
+    version: Immutable. Determines the version of the unschematized parser to
+      be used when `schema` is not given. This field is immutable after store
+      creation.
   """
+
+  class VersionValueValuesEnum(_messages.Enum):
+    r"""Immutable. Determines the version of the unschematized parser to be
+    used when `schema` is not given. This field is immutable after store
+    creation.
+
+    Values:
+      PARSER_VERSION_UNSPECIFIED: Unspecified parser version, equivalent to
+        V1.
+      V1: The `parsed_data` includes every given non-empty message field
+        except the Field Separator (MSH-1) field. As a result, the parsed MSH
+        segment starts with the MSH-2 field and the field numbers are off-by-
+        one with respect to the HL7 standard.
+      V2: The `parsed_data` includes every given non-empty message field.
+    """
+    PARSER_VERSION_UNSPECIFIED = 0
+    V1 = 1
+    V2 = 2
 
   allowNullHeader = _messages.BooleanField(1)
   schema = _messages.MessageField('SchemaPackage', 2)
   segmentTerminator = _messages.BytesField(3)
+  version = _messages.EnumField('VersionValueValuesEnum', 4)
 
 
 class PatientId(_messages.Message):
@@ -4826,7 +5182,7 @@ class Policy(_messages.Message):
   roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
   role: roles/resourcemanager.organizationViewer condition: title: expirable
   access description: Does not grant access after Sep 2020 expression:
-  request.time < timestamp('2020-10-01T00:00:00.000Z') - etag: BwWWja0YfJA= -
+  request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA=
   version: 3 For a description of IAM and its features, see the [IAM
   documentation](https://cloud.google.com/iam/docs/).
 
@@ -4834,7 +5190,12 @@ class Policy(_messages.Message):
     auditConfigs: Specifies cloud audit logging configuration for this policy.
     bindings: Associates a list of `members` to a `role`. Optionally, may
       specify a `condition` that determines how and when the `bindings` are
-      applied. Each of the `bindings` must contain at least one member.
+      applied. Each of the `bindings` must contain at least one member. The
+      `bindings` in a `Policy` can refer to up to 1,500 members; up to 250 of
+      these members can be Google groups. Each occurrence of a member counts
+      towards these limits. For example, if the `bindings` grant 50 different
+      roles to `user:alice@example.com`, and not to any other member, then you
+      can add another 1,450 members to the `bindings` in the `Policy`.
     etag: `etag` is used for optimistic concurrency control as a way to help
       prevent simultaneous updates of a policy from overwriting each other. It
       is strongly suggested that systems make use of the `etag` in the read-
@@ -5150,6 +5511,8 @@ class SchemaPackage(_messages.Message):
   Enums:
     SchematizedParsingTypeValueValuesEnum: Determines how messages that fail
       to parse are handled.
+    UnexpectedSegmentHandlingValueValuesEnum: Determines how unexpected
+      segments (segments not matched to the schema) are handled.
 
   Fields:
     ignoreMinOccurs: Flag to ignore all min_occurs restrictions in the schema.
@@ -5165,6 +5528,8 @@ class SchemaPackage(_messages.Message):
       VersionSources that match the incoming message. Type definitions present
       in higher indices override those in lower indices with the same type
       name if their VersionSources all match an incoming message.
+    unexpectedSegmentHandling: Determines how unexpected segments (segments
+      not matched to the schema) are handled.
   """
 
   class SchematizedParsingTypeValueValuesEnum(_messages.Enum):
@@ -5182,10 +5547,29 @@ class SchemaPackage(_messages.Message):
     SOFT_FAIL = 1
     HARD_FAIL = 2
 
+  class UnexpectedSegmentHandlingValueValuesEnum(_messages.Enum):
+    r"""Determines how unexpected segments (segments not matched to the
+    schema) are handled.
+
+    Values:
+      UNEXPECTED_SEGMENT_HANDLING_MODE_UNSPECIFIED: Unspecified handling mode,
+        equivalent to FAIL.
+      FAIL: Unexpected segments fail to parse and return an error.
+      SKIP: Unexpected segments do not fail, but are omitted from the output.
+      PARSE: Unexpected segments do not fail, but are parsed in place and
+        added to the current group. If a segment has a type definition, it is
+        used, otherwise it is parsed as VARIES.
+    """
+    UNEXPECTED_SEGMENT_HANDLING_MODE_UNSPECIFIED = 0
+    FAIL = 1
+    SKIP = 2
+    PARSE = 3
+
   ignoreMinOccurs = _messages.BooleanField(1)
   schemas = _messages.MessageField('Hl7SchemaConfig', 2, repeated=True)
   schematizedParsingType = _messages.EnumField('SchematizedParsingTypeValueValuesEnum', 3)
   types = _messages.MessageField('Hl7TypesConfig', 4, repeated=True)
+  unexpectedSegmentHandling = _messages.EnumField('UnexpectedSegmentHandlingValueValuesEnum', 5)
 
 
 class SchemaSegment(_messages.Message):
@@ -5495,22 +5879,23 @@ class StreamConfig(_messages.Message):
       than 1 MB of BigQuery data is not streamed. One resolution in this case
       is to delete the incompatible table and let the server recreate one,
       though the newly created table only contains data after the table
-      recreation. Results are appended to the corresponding BigQuery tables.
-      Different versions of the same resource are distinguishable by the
-      meta.versionId and meta.lastUpdated columns. The operation
-      (CREATE/UPDATE/DELETE) that results in the new version is recorded in
-      the meta.tag. The tables contain all historical resource versions since
-      streaming was enabled. For query convenience, the server also creates
-      one view per table of the same name containing only the current resource
-      version. The streamed data in the BigQuery dataset is not guaranteed to
-      be completely unique. The combination of the id and meta.versionId
-      columns should ideally identify a single unique row. But in rare cases,
-      duplicates may exist. At query time, users may use the SQL select
-      statement to keep only one of the duplicate rows given an id and
-      meta.versionId pair. Alternatively, the server created view mentioned
-      above also filters out duplicates. If a resource mutation cannot be
-      streamed to BigQuery, errors are logged to Cloud Logging. For more
-      information, see [Viewing error logs in Cloud
+      recreation. Results are written to BigQuery tables according to the
+      parameters in BigQueryDestination.WriteDisposition. Different versions
+      of the same resource are distinguishable by the meta.versionId and
+      meta.lastUpdated columns. The operation (CREATE/UPDATE/DELETE) that
+      results in the new version is recorded in the meta.tag. The tables
+      contain all historical resource versions since streaming was enabled.
+      For query convenience, the server also creates one view per table of the
+      same name containing only the current resource version. The streamed
+      data in the BigQuery dataset is not guaranteed to be completely unique.
+      The combination of the id and meta.versionId columns should ideally
+      identify a single unique row. But in rare cases, duplicates may exist.
+      At query time, users may use the SQL select statement to keep only one
+      of the duplicate rows given an id and meta.versionId pair.
+      Alternatively, the server created view mentioned above also filters out
+      duplicates. If a resource mutation cannot be streamed to BigQuery,
+      errors are logged to Cloud Logging. For more information, see [Viewing
+      error logs in Cloud
       Logging](https://cloud.google.com/healthcare/docs/how-tos/logging)).
     resourceTypes: Supply a FHIR resource type (such as "Patient" or
       "Observation"). See https://www.hl7.org/fhir/valueset-resource-
@@ -5569,6 +5954,18 @@ class TextConfig(_messages.Message):
   """
 
   transformations = _messages.MessageField('InfoTypeTransformation', 1, repeated=True)
+
+
+class TextSpan(_messages.Message):
+  r"""A span of text in the provided document.
+
+  Fields:
+    beginOffset: The unicode codepoint index of the beginning of this span.
+    content: The original text contained in this span.
+  """
+
+  beginOffset = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  content = _messages.StringField(2)
 
 
 class Type(_messages.Message):

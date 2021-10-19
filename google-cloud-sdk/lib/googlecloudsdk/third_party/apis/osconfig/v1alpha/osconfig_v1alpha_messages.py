@@ -2057,8 +2057,8 @@ class OsconfigProjectsLocationsInstancesInventoriesListRequest(_messages.Message
   view = _messages.EnumField('ViewValueValuesEnum', 5)
 
 
-class OsconfigProjectsLocationsInstancesOsPolicyAssignmentsGetReportRequest(_messages.Message):
-  r"""A OsconfigProjectsLocationsInstancesOsPolicyAssignmentsGetReportRequest
+class OsconfigProjectsLocationsInstancesOsPolicyAssignmentsReportsGetRequest(_messages.Message):
+  r"""A OsconfigProjectsLocationsInstancesOsPolicyAssignmentsReportsGetRequest
   object.
 
   Fields:

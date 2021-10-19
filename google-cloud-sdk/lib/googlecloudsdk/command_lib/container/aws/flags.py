@@ -123,10 +123,11 @@ def AddMainVolumeIops(parser):
   _AddVolumeIops(parser, 'main')
 
 
-def _AddKmsKeyArn(parser, prefix, target, required=False):
+def _AddKmsKeyArn(parser, prefix, target, required=False, hidden=False):
   parser.add_argument(
       '--{}-kms-key-arn'.format(prefix),
       required=required,
+      hidden=hidden,
       help='Amazon Resource Name (ARN) of the AWS KMS key to encrypt the {}.'
       .format(target))
 
@@ -141,6 +142,11 @@ def AddMainVolumeKmsKeyArn(parser):
 
 def AddDatabaseEncryptionKmsKeyArn(parser):
   _AddKmsKeyArn(parser, 'database-encryption', 'cluster secrets', required=True)
+
+
+def AddConfigEncryptionKmsKeyArn(parser):
+  # TODO(b/202339655): Require config encryption after dropping 1.20 and lower.
+  _AddKmsKeyArn(parser, 'config-encryption', 'user data', hidden=True)
 
 
 def AddProxyConfig(parser):

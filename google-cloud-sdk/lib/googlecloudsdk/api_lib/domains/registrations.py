@@ -25,6 +25,7 @@ from googlecloudsdk.core import exceptions
 
 ALPHA_API_VERSION = 'v1alpha2'
 BETA_API_VERSION = 'v1beta1'
+GA_API_VERSION = 'v1'
 
 
 def GetApiVersionFromArgs(args):
@@ -34,6 +35,8 @@ def GetApiVersionFromArgs(args):
     return ALPHA_API_VERSION
   if release_track == base.ReleaseTrack.BETA:
     return BETA_API_VERSION
+  if release_track == base.ReleaseTrack.GA:
+    return GA_API_VERSION
   raise exceptions.UnsupportedReleaseTrackError(release_track)
 
 

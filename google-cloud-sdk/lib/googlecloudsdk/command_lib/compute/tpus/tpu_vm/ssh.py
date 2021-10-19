@@ -266,10 +266,16 @@ def VerifyKeyInAgent(identity_file):
   retcode = execution_utils.Exec(
       cmd, no_exit=True, out_func=keygen_out.write, err_func=err.write)
   if retcode != 0:
-    log.debug('ssh-keygen exited with error {}', err.getvalue())
+    log.debug('ssh-keygen exited with error {}'.format(err.getvalue()))
     log.warning('Cannot generate fingerprint of SSH key. Command may stall.')
     return
-  fingerprint = keygen_out.getvalue()
+  fingerprint_entry = keygen_out.getvalue()
+  if len(fingerprint_entry.split()) <= 1:
+    log.debug('ssh-keygen returned fingerprint entry in invalid format: "{}"'
+              ''.format(fingerprint_entry))
+    return
+  # Only use the actual fingerprint part of the fingerprint entry.
+  fingerprint = fingerprint_entry.split()[1]
 
   # Get keys in agent.
   cmd = ['ssh-add', '-l']
@@ -277,7 +283,7 @@ def VerifyKeyInAgent(identity_file):
   retcode = execution_utils.Exec(
       cmd, no_exit=True, out_func=out.write, err_func=err.write)
   if retcode != 0:
-    log.debug('ssh-add exited with error {}', err.getvalue())
+    log.debug('ssh-add exited with error {}'.format(err.getvalue()))
     log.warning('Cannot retrieve keys in ssh-agent. Command may stall.')
     return
 

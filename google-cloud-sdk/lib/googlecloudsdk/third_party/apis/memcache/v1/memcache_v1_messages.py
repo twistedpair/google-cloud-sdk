@@ -716,8 +716,8 @@ class Instance(_messages.Message):
       within an instance. Refer to zones field for more details.
     nodeConfig: Required. Configuration for Memcached nodes.
     nodeCount: Required. Number of nodes in the Memcached instance.
-    parameters: Optional: User defined parameters to apply to the memcached
-      process on each node.
+    parameters: User defined parameters to apply to the memcached process on
+      each node.
     state: Output only. The state of this Memcached instance.
     updateTime: Output only. The time the instance was updated.
     zones: Zones in which Memcached nodes should be provisioned. Memcached
@@ -1090,18 +1090,18 @@ class MaintenanceWindow(_messages.Message):
 
 
 class MemcacheParameters(_messages.Message):
-  r"""The unique ID associated with this set of parameters. Users can use this
-  id to determine if the parameters associated with the instance differ from
-  the parameters associated with the nodes. A discrepancy between parameter
-  ids can inform users that they may need to take action to apply parameters
-  on nodes.
+  r"""A MemcacheParameters object.
 
   Messages:
     ParamsValue: User defined set of parameters to use in the memcached
       process.
 
   Fields:
-    id: Output only.
+    id: Output only. The unique ID associated with this set of parameters.
+      Users can use this id to determine if the parameters associated with the
+      instance differ from the parameters associated with the nodes. A
+      discrepancy between parameter ids can inform users that they may need to
+      take action to apply parameters on nodes.
     params: User defined set of parameters to use in the memcached process.
   """
 

@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.container.gkemulticloud import util as api_util
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.command_lib.projects import util as project_util
 from googlecloudsdk.command_lib.util.apis import arg_utils
 
 
@@ -72,11 +73,11 @@ def AddServiceAddressCidrBlocks(parser):
             '(e.g. 10.0.0.0/8). Can be any RFC 1918 IP range.'))
 
 
-def AddSubnetID(parser, help_text):
+def AddSubnetID(parser, help_text, required=True):
   """Add the --subnet-id flag."""
   parser.add_argument(
       '--subnet-id',
-      required=True,
+      required=required,
       help='Subnet ID of an existing VNET to use for {}.'.format(help_text))
 
 
@@ -291,23 +292,30 @@ def AddDatabaseEncryption(parser, hidden):
     parser: The argparse.parser to add the arguments to.
     hidden: bool, If True, database encryption flags will be hidden.
   """
-
-  group = parser.add_argument_group('Database encryption', hidden=hidden)
-  group.add_argument(
-      '--database-encryption-resource-group-id',
-      required=True,
-      help=('ARM ID the of the Azure resource group containing '
-            'the Azure Key Vault key.'))
-  group.add_argument(
-      '--database-encryption-kms-key-id',
-      required=True,
+  parser.add_argument(
+      '--database-encryption-key-id',
+      hidden=hidden,
       help=('URL the of the Azure Key Vault key (with its version) '
-            'to use to encrypt / decrypt data.'))
+            'to use to encrypt / decrypt cluster secrets.'))
 
 
-def GetDatabaseEncryption(args):
-  return (args.database_encryption_resource_group_id,
-          args.database_encryption_kms_key_id)
+def AddConfigEncryption(parser, hidden):
+  """Adds config encryption flags.
+
+  Args:
+    parser: The argparse.parser to add the arguments to.
+    hidden: bool, If True, config encryption flags will be hidden.
+  """
+  parser.add_argument(
+      '--config-encryption-key-id',
+      hidden=hidden,
+      help=('URL the of the Azure Key Vault key (with its version) '
+            'to use to encrypt / decrypt config data.'))
+  parser.add_argument(
+      '--config-encryption-public-key',
+      hidden=hidden,
+      help=('RSA key of the Azure Key Vault public key to use for encrypting '
+            'config data.'))
 
 
 def AddNodeLabels(parser):
@@ -463,3 +471,39 @@ def AddProxyConfig(parser):
       required=True,
       help=('The URL the of the proxy setting secret with its version.'))
 
+
+def AddFleetProject(parser):
+  parser.add_argument(
+      '--fleet-project',
+      hidden=True,
+      help='Name of the Fleet host project where the cluster is registered.')
+
+
+def GetFleetProject(args):
+  """Gets and parses the fleet project argument.
+
+  Project ID if specified is converted to project number. The parsed fleet
+  project has format projects/<project-number>.
+
+  Args:
+    args: Arguments parsed from the command.
+
+  Returns:
+    The fleet project in format projects/<project-number>
+    or None if the fleet projectnot is not specified.
+  """
+  if not args.fleet_project:
+    return None
+  p = args.fleet_project
+  if not p.isdigit():
+    return 'projects/{}'.format(project_util.GetProjectNumber(p))
+  return 'projects/{}'.format(p)
+
+
+def AddPrivateEndpoint(parser):
+  parser.add_argument(
+      '--private-endpoint',
+      default=False,
+      action='store_true',
+      hidden=True,
+      help='If set, use private VPC for authentication.')

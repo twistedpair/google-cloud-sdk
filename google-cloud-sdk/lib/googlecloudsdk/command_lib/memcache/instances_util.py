@@ -18,14 +18,34 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from apitools.base.py import encoding
-from googlecloudsdk.api_lib import memcache
 from googlecloudsdk.calliope import arg_parsers
+import six
 
 MEMCACHE_EXTENDED_OPTIONS = ('track-sizes', 'watcher-logbuf-size',
                              'worker-logbuf-size', 'lru-crawler',
                              'idle-timeout', 'lru-maintainer', 'maxconns-fast',
                              'hash-algorithm')
+
+
+class Error(Exception):
+  """Exceptions for this module."""
+
+
+class InvalidTimeOfDayError(Error):
+  """Error for passing invalid time of day."""
+
+
+def CheckMaintenanceWindowStartTimeField(maintenance_window_start_time):
+  if maintenance_window_start_time < 0 or maintenance_window_start_time > 23:
+    raise InvalidTimeOfDayError(
+        'A valid time of day must be specified (0, 23) hours.'
+    )
+  return maintenance_window_start_time
+
+
+def ConvertDurationToJsonFormat(maintenance_window_duration):
+  duration_in_seconds = maintenance_window_duration * 3600
+  return six.text_type(duration_in_seconds) + 's'
 
 
 def NodeMemory(value):
@@ -45,42 +65,3 @@ def _FormatExtendedOptions(key):
   if key in MEMCACHE_EXTENDED_OPTIONS:
     return key.replace('-', '_')
   return key
-
-
-def ChooseUpdateMethod(unused_ref, args):
-  if args.IsSpecified('parameters'):
-    return 'updateParameters'
-  return 'patch'
-
-
-def CreateUpdateRequest(ref, args):
-  """Returns an Update or UpdateParameters request depending on the args given."""
-  messages = memcache.Messages(ref.GetCollectionInfo().api_version)
-  if args.IsSpecified('parameters'):
-    params = encoding.DictToMessage(args.parameters,
-                                    messages.MemcacheParameters.ParamsValue)
-    parameters = messages.MemcacheParameters(params=params)
-    param_req = messages.UpdateParametersRequest(
-        updateMask='params', parameters=parameters)
-    request = (
-        messages.MemcacheProjectsLocationsInstancesUpdateParametersRequest(
-            name=ref.RelativeName(), updateParametersRequest=param_req))
-  else:
-    mask = []
-    instance = messages.Instance()
-    if args.IsSpecified('display_name'):
-      mask.append('displayName')
-      instance.displayName = args.display_name
-    if args.IsSpecified('node_count'):
-      mask.append('nodeCount')
-      instance.nodeCount = args.node_count
-    if args.IsSpecified('labels'):
-      mask.append('labels')
-      instance.labels = messages.Instance.LabelsValue(
-          additionalProperties=args.labels)
-    update_mask = ','.join(mask)
-    request = (
-        messages.MemcacheProjectsLocationsInstancesPatchRequest(
-            name=ref.RelativeName(), instance=instance, updateMask=update_mask))
-
-  return request

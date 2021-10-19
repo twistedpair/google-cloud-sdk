@@ -18,18 +18,18 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import os
+
 from apitools.base.py import exceptions as apitools_exceptions
 from apitools.base.py import list_pager
-from googlecloudsdk.api_lib.app import appengine_api_client as app_engine_api
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import arg_parsers
-from googlecloudsdk.calliope import base as calliope_base
-from googlecloudsdk.command_lib.app import create_util
+from googlecloudsdk.command_lib.tasks import app
+from googlecloudsdk.command_lib.tasks import constants
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
-from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import http_encoding
 
@@ -380,6 +380,14 @@ def _GenerateAdditionalProperties(values_dict):
       ]}
 
 
+def _DoesCommandRequireAppEngineApp():
+  """Returns whether the command being executed needs App Engine app."""
+  gcloud_env_key = constants.GCLOUD_COMMAND_ENV_KEY
+  if gcloud_env_key in os.environ:
+    return os.environ[gcloud_env_key] in constants.COMMANDS_THAT_NEED_APPENGINE
+  return False
+
+
 class RegionResolvingError(exceptions.Error):
   """Error for when the app's region cannot be ultimately determined."""
 
@@ -401,13 +409,17 @@ class AppLocationResolver(object):
     return self.location
 
   def _ResolveAppLocation(self):
-    """Determines Cloud Scheduler location for the project or creates an app."""
-    project = properties.VALUES.core.project.GetOrFail()
-    location = self._GetLocation(project) or self._CreateApp(project)
-    if location is not None:
-      return location
+    """Determines Cloud Scheduler location for the project."""
+    # Not setting the quota project to 'LEGACY' sends the current project ID in
+    # the App Engine API request. This prompts a check to see if the App Engine
+    # admin API is enabled for that project.
+    properties.VALUES.billing.quota_project.Set(
+        properties.VALUES.billing.LEGACY)
+    if app.AppEngineAppExists():
+      project = properties.VALUES.core.project.GetOrFail()
+      return self._GetLocation(project)
     raise RegionResolvingError(
-        'Could not determine the location for the project. Please try again.')
+        'Please use the location flag to manually specify a location.')
 
   def _GetLocation(self, project):
     """Gets the location from the Cloud Scheduler API."""
@@ -420,28 +432,11 @@ class AppLocationResolver(object):
           client.projects_locations, request, batch_size=2, field='locations',
           batch_size_attribute='pageSize'))
       if len(locations) >= 1:
-        return locations[0].labels.additionalProperties[0].value
+        location = locations[0].labels.additionalProperties[0].value
+        if len(locations) > 1 and not _DoesCommandRequireAppEngineApp():
+          log.warning(
+              constants.APP_ENGINE_DEFAULT_LOCATION_WARNING.format(location))
+        return location
       return None
     except apitools_exceptions.HttpNotFoundError:
       return None
-
-  def _CreateApp(self, project):
-    """Walks the user through creating an AppEngine app."""
-    if properties.VALUES.core.disable_prompts.Get():
-      log.warning('Cannot create new App Engine app in quiet mode')
-      return None
-    if console_io.PromptContinue(
-        message=('There is no App Engine app in project [{}].'.format(project)),
-        prompt_string=('Would you like to create one'),
-        throw_if_unattended=True):
-      try:
-        app_engine_api_client = app_engine_api.GetApiClientForTrack(
-            calliope_base.ReleaseTrack.GA)
-        create_util.CreateAppInteractively(app_engine_api_client, project)
-      except create_util.AppAlreadyExistsError:
-        raise create_util.AppAlreadyExistsError(
-            'App already exists in project [{}]. This may be due a race '
-            'condition. Please try again.'.format(project))
-      else:
-        return self._GetLocation(project)
-    return None

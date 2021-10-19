@@ -984,7 +984,7 @@
       "type": "object",
       "properties": {
         "entityId": {
-          "description": "Required. ID for a specific entity. For example, for a machine learning model predicting user clicks on a website, an entity ID could be \"user_123\".",
+          "description": "Required. ID for a specific entity. For example, for a machine learning model predicting user clicks on a website, an entity ID could be `user_123`.",
           "type": "string"
         },
         "featureSelector": {
@@ -1039,7 +1039,7 @@
       "type": "object",
       "properties": {
         "entityType": {
-          "description": "The resource name of the EntityType from the ReadFeatureValuesRequest. Value format: `projects\/{project}\/locations\/{location}\/featurestores\/ {featurestore}\/entityTypes\/{entityType}`.",
+          "description": "The resource name of the EntityType from the ReadFeatureValuesRequest. Value format: `projects\/{project}\/locations\/{location}\/featurestores\/{featurestore}\/entityTypes\/{entityType}`.",
           "type": "string"
         },
         "featureDescriptors": {
@@ -1235,7 +1235,7 @@
       "type": "object",
       "properties": {
         "entityIds": {
-          "description": "Required. IDs of entities to read Feature values of. The maximum number of IDs is 100. For example, for a machine learning model predicting user clicks on a website, an entity ID could be \"user_123\".",
+          "description": "Required. IDs of entities to read Feature values of. The maximum number of IDs is 100. For example, for a machine learning model predicting user clicks on a website, an entity ID could be `user_123`.",
           "type": "array",
           "items": {
             "type": "string"
@@ -1429,7 +1429,7 @@
           "format": "google-datetime"
         },
         "automaticResources": {
-          "description": "Optional. A description of resources that the DeployedIndex uses, which to large degree are decided by Vertex AI, and optionally allows only a modest additional configuration. If min_replica_count is not set, the default value is 1. If max_replica_count is not set, the default value is min_replica_count. The max allowed replica count is 1000. The user is billed for the resources (at least their minimal amount) even if the DeployedIndex receives no traffic.",
+          "description": "Optional. A description of resources that the DeployedIndex uses, which to large degree are decided by Vertex AI, and optionally allows only a modest additional configuration. If min_replica_count is not set, the default value is 2 (we don't provide SLA when min_replica_count=1). If max_replica_count is not set, the default value is min_replica_count. The max allowed replica count is 1000.",
           "$ref": "GoogleCloudAiplatformV1alpha1AutomaticResources"
         }
       }
@@ -2985,7 +2985,7 @@
           "$ref": "GoogleCloudAiplatformV1alpha1EncryptionSpec"
         },
         "enableMonitoringPipelineLogs": {
-          "description": "If true, the scheduled monitoring pipeline status logs are sent to StackDriver Logging. Please note the logs incur cost, which are subject to [Cloud Logging pricing](https:\/\/cloud.google.com\/stackdriver\/pricing).",
+          "description": "If true, the scheduled monitoring pipeline status logs are sent to Google Cloud Logging. Please note the logs incur cost, which are subject to [Cloud Logging pricing](https:\/\/cloud.google.com\/logging#pricing).",
           "type": "boolean"
         },
         "error": {
@@ -3762,14 +3762,14 @@
       "type": "object",
       "properties": {
         "artifacts": {
-          "description": "The resource names of the Artifacts to attribute to the Context. Format: projects\/{project}\/locations\/{location}\/metadataStores\/{metadatastore}\/artifacts\/{artifact}",
+          "description": "The resource names of the Artifacts to attribute to the Context. Format: `projects\/{project}\/locations\/{location}\/metadataStores\/{metadatastore}\/artifacts\/{artifact}`",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "executions": {
-          "description": "The resource names of the Executions to associate with the Context. Format: projects\/{project}\/locations\/{location}\/metadataStores\/{metadatastore}\/executions\/{execution}",
+          "description": "The resource names of the Executions to associate with the Context. Format: `projects\/{project}\/locations\/{location}\/metadataStores\/{metadatastore}\/executions\/{execution}`",
           "type": "array",
           "items": {
             "type": "string"
@@ -4285,6 +4285,14 @@
       "description": "Request message for ModelService.UploadModel.",
       "type": "object",
       "properties": {
+        "parentModel": {
+          "description": "Optional. The resource name of the model into which to upload the version. Only specify this field when uploading a new version.",
+          "type": "string"
+        },
+        "modelId": {
+          "description": "Optional. The ID to use for the uploaded Model, which will become the final component of the model resource name. This value should be 1-128 characters, and valid characters are \/a-z-\/.",
+          "type": "string"
+        },
         "model": {
           "description": "Required. The Model to create.",
           "$ref": "GoogleCloudAiplatformV1alpha1Model"
@@ -4300,12 +4308,40 @@
           "description": "The resource name of the Model.",
           "type": "string"
         },
+        "versionId": {
+          "description": "Output only. Immutable. The version ID of the model. A new version is committed when a new model version is uploaded or trained under an existing model id. It is an auto-incrementing decimal number in string representation.",
+          "readOnly": true,
+          "type": "string"
+        },
+        "versionAliases": {
+          "description": "User provided version aliases so that a model version can be referenced via alias (i.e. projects\/{project}\/locations\/{location}\/models\/{model_id}@{version_alias} instead of auto-generated version id (i.e. projects\/{project}\/locations\/{location}\/models\/{model_id}@{version_id}). The format is a-z{0,126}[a-z0-9] to distinguish from version_id. A default version alias will be created for the first version of the model, and there must be exactly one default version alias for a model.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "versionCreateTime": {
+          "description": "Output only. Timestamp when this version was created.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "versionUpdateTime": {
+          "description": "Output only. Timestamp when this version was most recently updated.",
+          "readOnly": true,
+          "type": "string",
+          "format": "google-datetime"
+        },
         "displayName": {
           "description": "Required. The display name of the Model. The name can be up to 128 characters long and can be consist of any UTF-8 characters.",
           "type": "string"
         },
         "description": {
           "description": "The description of the Model.",
+          "type": "string"
+        },
+        "versionDescription": {
+          "description": "The description of this version.",
           "type": "string"
         },
         "predictSchemata": {
@@ -5393,12 +5429,12 @@
           "type": "string"
         },
         "model": {
-          "description": "Output only. The name of the Model this DeployedModel, that served this prediction, was created from.",
+          "description": "Output only. The resource name of the Model which is deployed as the DeployedModel that this prediction hits.",
           "readOnly": true,
           "type": "string"
         },
         "modelDisplayName": {
-          "description": "Output only. The display name of the Model this DeployedModel, that served this prediction, was created from.",
+          "description": "Output only. The display name of the Model which is deployed as the DeployedModel that this prediction hits.",
           "readOnly": true,
           "type": "string"
         }
@@ -6790,6 +6826,17 @@
         }
       }
     },
+    "GoogleCloudAiplatformInternalCreateDeploymentResourcePoolOperationMetadata": {
+      "id": "GoogleCloudAiplatformInternalCreateDeploymentResourcePoolOperationMetadata",
+      "description": "Runtime operation information for CreateDeploymentResourcePool method.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "The operation generic information.",
+          "$ref": "GoogleCloudAiplatformInternalGenericOperationMetadata"
+        }
+      }
+    },
     "GoogleCloudAiplatformInternalCreateEndpointOperationMetadata": {
       "id": "GoogleCloudAiplatformInternalCreateEndpointOperationMetadata",
       "description": "Runtime operation information for EndpointService.CreateEndpoint.",
@@ -7599,7 +7646,7 @@
     },
     "GoogleCloudAiplatformInternalHumanInTheLoop": {
       "id": "GoogleCloudAiplatformInternalHumanInTheLoop",
-      "description": "A human in the loop configuration describing how to trigger a human labeling job in a prediction process and properties of the human labeling job. Next id: 25",
+      "description": "A human in the loop configuration describing how to trigger a human labeling job in a prediction process and properties of the human labeling job. Next id: 26",
       "type": "object",
       "properties": {
         "documentCriteria": {
@@ -7741,6 +7788,10 @@
         "deIdConfig": {
           "description": "The de-identification config. If set this field, it will run HITL de-id instead of regular HITL pipeline.",
           "$ref": "GoogleCloudAiplatformInternalDeIdentificationConfig"
+        },
+        "autoAssignConfig": {
+          "description": "Auto task assignment configuration of this human in the loop.",
+          "$ref": "GoogleCloudAiplatformInternalAutoAssignConfig"
         }
       }
     },
@@ -7958,6 +8009,17 @@
       "properties": {
         "enableRendering": {
           "description": "Whether enable rendering the new documents using fake values.",
+          "type": "boolean"
+        }
+      }
+    },
+    "GoogleCloudAiplatformInternalAutoAssignConfig": {
+      "id": "GoogleCloudAiplatformInternalAutoAssignConfig",
+      "description": "Configuration to enable automatic task assignment.",
+      "type": "object",
+      "properties": {
+        "autoAssignOnCreation": {
+          "description": "If set to true, it means at the time of HumanInTheLoopService.CreateHumanInTheLoop call, all the existing specialist workers in HumanInTheLoop will be assigned with all the future data labeling tasks associated with this HITL.",
           "type": "boolean"
         }
       }
@@ -8280,6 +8342,17 @@
       "description": "Response message for EndpointService.UndeployModel.",
       "type": "object",
       "properties": {
+      }
+    },
+    "GoogleCloudAiplatformInternalUpdateDeploymentResourcePoolOperationMetadata": {
+      "id": "GoogleCloudAiplatformInternalUpdateDeploymentResourcePoolOperationMetadata",
+      "description": "Runtime operation information for UpdateDeploymentResourcePool method.",
+      "type": "object",
+      "properties": {
+        "genericMetadata": {
+          "description": "The operation generic information.",
+          "$ref": "GoogleCloudAiplatformInternalGenericOperationMetadata"
+        }
       }
     },
     "GoogleCloudAiplatformInternalUpdateFeaturestoreOperationMetadata": {
@@ -14024,6 +14097,10 @@
           "description": "An attribution method that redistributes Integrated Gradients attribution to segmented regions, taking advantage of the model's fully differentiable structure. Refer to this paper for more details: https:\/\/arxiv.org\/abs\/1906.02825 XRAI currently performs better on natural images, like a picture of a house or an animal. If the images are taken in artificial environments, like a lab or manufacturing line, or from diagnostic equipment, like x-rays or quality-control cameras, use Integrated Gradients instead.",
           "$ref": "GoogleCloudAiplatformV1beta1XraiAttribution"
         },
+        "similarity": {
+          "description": "Similarity explainability that returns the nearest neighbors from the provided dataset.",
+          "$ref": "GoogleCloudAiplatformV1beta1Similarity"
+        },
         "topK": {
           "description": "If populated, returns attributions for top K indices of outputs (defaults to 1). Only applies to Models that predicts more than one outputs (e,g, multi-class Models). When set to -1, returns explanations for all outputs.",
           "type": "integer",
@@ -14130,6 +14207,35 @@
         "smoothGradConfig": {
           "description": "Config for SmoothGrad approximation of gradients. When enabled, the gradients are approximated by averaging the gradients from noisy samples in the vicinity of the inputs. Adding noise can help improve the computed gradients. Refer to this paper for more details: https:\/\/arxiv.org\/pdf\/1706.03825.pdf",
           "$ref": "GoogleCloudAiplatformV1beta1SmoothGradConfig"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1Similarity": {
+      "id": "GoogleCloudAiplatformV1beta1Similarity",
+      "description": "Similarity explainability that returns the nearest neighbors from the provided dataset.",
+      "type": "object",
+      "properties": {
+        "gcsSource": {
+          "description": "The Cloud Storage location for the input instances.",
+          "$ref": "GoogleCloudAiplatformV1beta1GcsSource"
+        },
+        "nearestNeighborSearchConfig": {
+          "description": "The configuration for the generated index, the semantics are the same as metadata and should match NearestNeighborSearchConfig.",
+          "type": "any"
+        }
+      }
+    },
+    "GoogleCloudAiplatformV1beta1GcsSource": {
+      "id": "GoogleCloudAiplatformV1beta1GcsSource",
+      "description": "The Google Cloud Storage location for the input content.",
+      "type": "object",
+      "properties": {
+        "uris": {
+          "description": "Required. Google Cloud Storage URI(-s) to the input file(s). May contain wildcards. For more information on wildcards, see https:\/\/cloud.google.com\/storage\/docs\/gsutil\/addlhelp\/WildcardNames.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -14456,7 +14562,7 @@
           "format": "google-datetime"
         },
         "automaticResources": {
-          "description": "Optional. A description of resources that the DeployedIndex uses, which to large degree are decided by Vertex AI, and optionally allows only a modest additional configuration. If min_replica_count is not set, the default value is 1. If max_replica_count is not set, the default value is min_replica_count. The max allowed replica count is 1000. The user is billed for the resources (at least their minimal amount) even if the DeployedIndex receives no traffic.",
+          "description": "Optional. A description of resources that the DeployedIndex uses, which to large degree are decided by Vertex AI, and optionally allows only a modest additional configuration. If min_replica_count is not set, the default value is 2 (we don't provide SLA when min_replica_count=1). If max_replica_count is not set, the default value is min_replica_count. The max allowed replica count is 1000.",
           "$ref": "GoogleCloudAiplatformV1beta1AutomaticResources"
         },
         "enableAccessLogging": {
@@ -19155,7 +19261,7 @@
           "format": "google-datetime"
         },
         "automaticResources": {
-          "description": "Optional. A description of resources that the DeployedIndex uses, which to large degree are decided by Vertex AI, and optionally allows only a modest additional configuration. If min_replica_count is not set, the default value is 1. If max_replica_count is not set, the default value is min_replica_count. The max allowed replica count is 1000. The user is billed for the resources (at least their minimal amount) even if the DeployedIndex receives no traffic.",
+          "description": "Optional. A description of resources that the DeployedIndex uses, which to large degree are decided by Vertex AI, and optionally allows only a modest additional configuration. If min_replica_count is not set, the default value is 2 (we don't provide SLA when min_replica_count=1). If max_replica_count is not set, the default value is min_replica_count. The max allowed replica count is 1000.",
           "$ref": "GoogleCloudAiplatformV1AutomaticResources"
         },
         "enableAccessLogging": {
@@ -22895,7 +23001,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "entityType": {
-                          "description": "Required. The resource name of the EntityType for the entity being read. Value format: `projects\/{project}\/locations\/{location}\/featurestores\/ {featurestore}\/entityTypes\/{entityType}`. For example, for a machine learning model predicting user clicks on a website, an EntityType ID could be \"user\".",
+                          "description": "Required. The resource name of the EntityType for the entity being read. Value format: `projects\/{project}\/locations\/{location}\/featurestores\/{featurestore}\/entityTypes\/{entityType}`. For example, for a machine learning model predicting user clicks on a website, an EntityType ID could be `user`.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/featurestores\/[^\/]+\/entityTypes\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -22923,7 +23029,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "entityType": {
-                          "description": "Required. The resource name of the entities' type. Value format: `projects\/{project}\/locations\/{location}\/featurestores\/ {featurestore}\/entityTypes\/{entityType}`. For example, for a machine learning model predicting user clicks on a website, an EntityType ID could be \"user\".",
+                          "description": "Required. The resource name of the entities' type. Value format: `projects\/{project}\/locations\/{location}\/featurestores\/{featurestore}\/entityTypes\/{entityType}`. For example, for a machine learning model predicting user clicks on a website, an EntityType ID could be `user`.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/featurestores\/[^\/]+\/entityTypes\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -24661,7 +24767,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Perform an online prediction with arbitrary http payload."
+                  "description": "Perform an online prediction with an arbitrary HTTP payload. The response includes the following HTTP headers: * `X-Vertex-AI-Endpoint-Id`: ID of the Endpoint that served this prediction. * `X-Vertex-AI-Deployed-Model-Id`: ID of the Endpoint's DeployedModel that served this prediction."
                 },
                 "explain": {
                   "id": "aiplatform.projects.locations.endpoints.explain",
@@ -27037,14 +27143,14 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The resource name of the Location where the MetadataStore should be created. Format: projects\/{project}\/locations\/{location}\/",
+                      "description": "Required. The resource name of the Location where the MetadataStore should be created. Format: `projects\/{project}\/locations\/{location}\/`",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
                       "type": "string"
                     },
                     "metadataStoreId": {
-                      "description": "The {metadatastore} portion of the resource name with the format: projects\/{project}\/locations\/{location}\/metadataStores\/{metadatastore} If not provided, the MetadataStore's ID will be a UUID generated by the service. Must be 4-128 characters in length. Valid characters are \/a-z-\/. Must be unique across all MetadataStores in the parent Location. (Otherwise the request will fail with ALREADY_EXISTS, or PERMISSION_DENIED if the caller can't view the preexisting MetadataStore.)",
+                      "description": "The {metadatastore} portion of the resource name with the format: `projects\/{project}\/locations\/{location}\/metadataStores\/{metadatastore}` If not provided, the MetadataStore's ID will be a UUID generated by the service. Must be 4-128 characters in length. Valid characters are `\/a-z-\/`. Must be unique across all MetadataStores in the parent Location. (Otherwise the request will fail with ALREADY_EXISTS, or PERMISSION_DENIED if the caller can't view the preexisting MetadataStore.)",
                       "location": "query",
                       "type": "string"
                     }
@@ -27070,7 +27176,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "name": {
-                      "description": "Required. The resource name of the MetadataStore to retrieve. Format: projects\/{project}\/locations\/{location}\/metadataStores\/{metadatastore}",
+                      "description": "Required. The resource name of the MetadataStore to retrieve. Format: `projects\/{project}\/locations\/{location}\/metadataStores\/{metadatastore}`",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/metadataStores\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -27095,7 +27201,7 @@
                   "httpMethod": "GET",
                   "parameters": {
                     "parent": {
-                      "description": "Required. The Location whose MetadataStores should be listed. Format: projects\/{project}\/locations\/{location}",
+                      "description": "Required. The Location whose MetadataStores should be listed. Format: `projects\/{project}\/locations\/{location}`",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -27131,7 +27237,7 @@
                   "httpMethod": "DELETE",
                   "parameters": {
                     "name": {
-                      "description": "Required. The resource name of the MetadataStore to delete. Format: projects\/{project}\/locations\/{location}\/metadataStores\/{metadatastore}",
+                      "description": "Required. The resource name of the MetadataStore to delete. Format: `projects\/{project}\/locations\/{location}\/metadataStores\/{metadatastore}`",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/metadataStores\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -27166,14 +27272,14 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The resource name of the MetadataStore where the Artifact should be created. Format: projects\/{project}\/locations\/{location}\/metadataStores\/{metadatastore}",
+                          "description": "Required. The resource name of the MetadataStore where the Artifact should be created. Format: `projects\/{project}\/locations\/{location}\/metadataStores\/{metadatastore}`",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/metadataStores\/[^\/]+$",
                           "location": "path",
                           "required": true,
                           "type": "string"
                         },
                         "artifactId": {
-                          "description": "The {artifact} portion of the resource name with the format: projects\/{project}\/locations\/{location}\/metadataStores\/{metadatastore}\/artifacts\/{artifact} If not provided, the Artifact's ID will be a UUID generated by the service. Must be 4-128 characters in length. Valid characters are \/a-z-\/. Must be unique across all Artifacts in the parent MetadataStore. (Otherwise the request will fail with ALREADY_EXISTS, or PERMISSION_DENIED if the caller can't view the preexisting Artifact.)",
+                          "description": "The {artifact} portion of the resource name with the format: `projects\/{project}\/locations\/{location}\/metadataStores\/{metadatastore}\/artifacts\/{artifact}` If not provided, the Artifact's ID will be a UUID generated by the service. Must be 4-128 characters in length. Valid characters are `\/a-z-\/`. Must be unique across all Artifacts in the parent MetadataStore. (Otherwise the request will fail with ALREADY_EXISTS, or PERMISSION_DENIED if the caller can't view the preexisting Artifact.)",
                           "location": "query",
                           "type": "string"
                         }
@@ -27199,7 +27305,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "name": {
-                          "description": "Required. The resource name of the Artifact to retrieve. Format: projects\/{project}\/locations\/{location}\/metadataStores\/{metadatastore}\/artifacts\/{artifact}",
+                          "description": "Required. The resource name of the Artifact to retrieve. Format: `projects\/{project}\/locations\/{location}\/metadataStores\/{metadatastore}\/artifacts\/{artifact}`",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/metadataStores\/[^\/]+\/artifacts\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -27224,7 +27330,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The MetadataStore whose Artifacts should be listed. Format: projects\/{project}\/locations\/{location}\/metadataStores\/{metadatastore}",
+                          "description": "Required. The MetadataStore whose Artifacts should be listed. Format: `projects\/{project}\/locations\/{location}\/metadataStores\/{metadatastore}`",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/metadataStores\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -27308,14 +27414,14 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The resource name of the MetadataStore where the Context should be created. Format: projects\/{project}\/locations\/{location}\/metadataStores\/{metadatastore}",
+                          "description": "Required. The resource name of the MetadataStore where the Context should be created. Format: `projects\/{project}\/locations\/{location}\/metadataStores\/{metadatastore}`",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/metadataStores\/[^\/]+$",
                           "location": "path",
                           "required": true,
                           "type": "string"
                         },
                         "contextId": {
-                          "description": "The {context} portion of the resource name with the format: projects\/{project}\/locations\/{location}\/metadataStores\/{metadatastore}\/contexts\/{context}. If not provided, the Context's ID will be a UUID generated by the service. Must be 4-128 characters in length. Valid characters are \/a-z-\/. Must be unique across all Contexts in the parent MetadataStore. (Otherwise the request will fail with ALREADY_EXISTS, or PERMISSION_DENIED if the caller can't view the preexisting Context.)",
+                          "description": "The {context} portion of the resource name with the format: `projects\/{project}\/locations\/{location}\/metadataStores\/{metadatastore}\/contexts\/{context}`. If not provided, the Context's ID will be a UUID generated by the service. Must be 4-128 characters in length. Valid characters are `\/a-z-\/`. Must be unique across all Contexts in the parent MetadataStore. (Otherwise the request will fail with ALREADY_EXISTS, or PERMISSION_DENIED if the caller can't view the preexisting Context.)",
                           "location": "query",
                           "type": "string"
                         }
@@ -27341,7 +27447,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "name": {
-                          "description": "Required. The resource name of the Context to retrieve. Format: projects\/{project}\/locations\/{location}\/metadataStores\/{metadatastore}\/contexts\/{context}",
+                          "description": "Required. The resource name of the Context to retrieve. Format: `projects\/{project}\/locations\/{location}\/metadataStores\/{metadatastore}\/contexts\/{context}`",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/metadataStores\/[^\/]+\/contexts\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -27366,7 +27472,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The MetadataStore whose Contexts should be listed. Format: projects\/{project}\/locations\/{location}\/metadataStores\/{metadatastore}",
+                          "description": "Required. The MetadataStore whose Contexts should be listed. Format: `projects\/{project}\/locations\/{location}\/metadataStores\/{metadatastore}`",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/metadataStores\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -27446,7 +27552,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "context": {
-                          "description": "Required. The resource name of the Context that the Artifacts and Executions belong to. Format: projects\/{project}\/locations\/{location}\/metadataStores\/{metadatastore}\/contexts\/{context}",
+                          "description": "Required. The resource name of the Context that the Artifacts and Executions belong to. Format: `projects\/{project}\/locations\/{location}\/metadataStores\/{metadatastore}\/contexts\/{context}`",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/metadataStores\/[^\/]+\/contexts\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -27474,7 +27580,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "context": {
-                          "description": "Required. The resource name of the parent Context. Format: projects\/{project}\/locations\/{location}\/metadataStores\/{metadatastore}\/contexts\/{context}",
+                          "description": "Required. The resource name of the parent Context. Format: `projects\/{project}\/locations\/{location}\/metadataStores\/{metadatastore}\/contexts\/{context}`",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/metadataStores\/[^\/]+\/contexts\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -27502,7 +27608,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "context": {
-                          "description": "Required. The resource name of the Context whose Artifacts and Executions should be retrieved as a LineageSubgraph. Format: projects\/{project}\/locations\/{location}\/metadataStores\/{metadatastore}\/contexts\/{context} The request may error with FAILED_PRECONDITION if the number of Artifacts, the number of Executions, or the number of Events that would be returned for the Context exceeds 1000.",
+                          "description": "Required. The resource name of the Context whose Artifacts and Executions should be retrieved as a LineageSubgraph. Format: `projects\/{project}\/locations\/{location}\/metadataStores\/{metadatastore}\/contexts\/{context}` The request may error with FAILED_PRECONDITION if the number of Artifacts, the number of Executions, or the number of Events that would be returned for the Context exceeds 1000.",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/metadataStores\/[^\/]+\/contexts\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -27531,14 +27637,14 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The resource name of the MetadataStore where the Execution should be created. Format: projects\/{project}\/locations\/{location}\/metadataStores\/{metadatastore}",
+                          "description": "Required. The resource name of the MetadataStore where the Execution should be created. Format: `projects\/{project}\/locations\/{location}\/metadataStores\/{metadatastore}`",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/metadataStores\/[^\/]+$",
                           "location": "path",
                           "required": true,
                           "type": "string"
                         },
                         "executionId": {
-                          "description": "The {execution} portion of the resource name with the format: projects\/{project}\/locations\/{location}\/metadataStores\/{metadatastore}\/executions\/{execution} If not provided, the Execution's ID will be a UUID generated by the service. Must be 4-128 characters in length. Valid characters are \/a-z-\/. Must be unique across all Executions in the parent MetadataStore. (Otherwise the request will fail with ALREADY_EXISTS, or PERMISSION_DENIED if the caller can't view the preexisting Execution.)",
+                          "description": "The {execution} portion of the resource name with the format: `projects\/{project}\/locations\/{location}\/metadataStores\/{metadatastore}\/executions\/{execution}` If not provided, the Execution's ID will be a UUID generated by the service. Must be 4-128 characters in length. Valid characters are `\/a-z-\/`. Must be unique across all Executions in the parent MetadataStore. (Otherwise the request will fail with ALREADY_EXISTS, or PERMISSION_DENIED if the caller can't view the preexisting Execution.)",
                           "location": "query",
                           "type": "string"
                         }
@@ -27564,7 +27670,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "name": {
-                          "description": "Required. The resource name of the Execution to retrieve. Format: projects\/{project}\/locations\/{location}\/metadataStores\/{metadatastore}\/executions\/{execution}",
+                          "description": "Required. The resource name of the Execution to retrieve. Format: `projects\/{project}\/locations\/{location}\/metadataStores\/{metadatastore}\/executions\/{execution}`",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/metadataStores\/[^\/]+\/executions\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -27589,7 +27695,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "parent": {
-                          "description": "Required. The MetadataStore whose Executions should be listed. Format: projects\/{project}\/locations\/{location}\/metadataStores\/{metadatastore}",
+                          "description": "Required. The MetadataStore whose Executions should be listed. Format: `projects\/{project}\/locations\/{location}\/metadataStores\/{metadatastore}`",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/metadataStores\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -27669,7 +27775,7 @@
                       "httpMethod": "POST",
                       "parameters": {
                         "execution": {
-                          "description": "Required. The resource name of the Execution that the Events connect Artifacts with. Format: projects\/{project}\/locations\/{location}\/metadataStores\/{metadatastore}\/executions\/{execution}",
+                          "description": "Required. The resource name of the Execution that the Events connect Artifacts with. Format: `projects\/{project}\/locations\/{location}\/metadataStores\/{metadatastore}\/executions\/{execution}`",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/metadataStores\/[^\/]+\/executions\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -27697,7 +27803,7 @@
                       "httpMethod": "GET",
                       "parameters": {
                         "execution": {
-                          "description": "Required. The resource name of the Execution whose input and output Artifacts should be retrieved as a LineageSubgraph. Format: projects\/{project}\/locations\/{location}\/metadataStores\/{metadatastore}\/executions\/{execution}",
+                          "description": "Required. The resource name of the Execution whose input and output Artifacts should be retrieved as a LineageSubgraph. Format: `projects\/{project}\/locations\/{location}\/metadataStores\/{metadatastore}\/executions\/{execution}`",
                           "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/metadataStores\/[^\/]+\/executions\/[^\/]+$",
                           "location": "path",
                           "required": true,
@@ -28058,7 +28164,7 @@
                   "scopes": [
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
-                  "description": "Deletes a Model. Note: Model can only be deleted if there are no DeployedModels created from it."
+                  "description": "Deletes a Model. Model can only be deleted if there are no DeployedModels created from it."
                 },
                 "export": {
                   "id": "aiplatform.projects.locations.models.export",
@@ -28067,7 +28173,7 @@
                   "httpMethod": "POST",
                   "parameters": {
                     "name": {
-                      "description": "Required. The resource name of the Model to export. Format: `projects\/{project}\/locations\/{location}\/models\/{model}`",
+                      "description": "Required. The resource name of the Model to export.",
                       "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/models\/[^\/]+$",
                       "location": "path",
                       "required": true,
@@ -28963,7 +29069,7 @@
                       "type": "string"
                     },
                     "filter": {
-                      "description": "Lists the PipelineJobs that match the filter expression. The following fields are supported: * `pipeline_name`: Supports `=` and `!=` comparisons. * `create_time`: Supports `=`, `!=`, `<`, `>`, `<=`, and `>=` comparisons. Values must be in RFC 3339 format. * `update_time`: Supports `=`, `!=`, `<`, `>`, `<=`, and `>=` comparisons. Values must be in RFC 3339 format. * `end_time`: Supports `=`, `!=`, `<`, `>`, `<=`, and `>=` comparisons. Values must be in RFC 3339 format. * `labels`: Supports key-value equality and key presence. Filter expressions can be combined together using logical operators (`AND` & `OR`). For example: `pipeline_name=\"test\" AND create_time>\"2020-05-18T13:30:00Z\"`. The syntax to define filter expression is based on https:\/\/google.aip.dev\/160. Examples: * `create_time>\"2021-05-18T00:00:00Z\" OR update_time>\"2020-05-18T00:00:00Z\"` PipelineJobs created or updated after 2020-05-18 00:00:00 UTC. * `labels.env = \"prod\"` PipelineJobs with label \"env\" set to \"prod\".",
+                      "description": "Lists the PipelineJobs that match the filter expression. The following fields are supported: * `pipeline_name`: Supports `=` and `!=` comparisons. * `display_name`: Supports `=`, `!=` comparisons, and `:` wildcard. * `pipeline_job_user_id`: Supports `=`, `!=` comparisons, and `:` wildcard. for example, can check if pipeline's display_name contains *step* by doing display_name:\\\"*step*\\\" * `create_time`: Supports `=`, `!=`, `<`, `>`, `<=`, and `>=` comparisons. Values must be in RFC 3339 format. * `update_time`: Supports `=`, `!=`, `<`, `>`, `<=`, and `>=` comparisons. Values must be in RFC 3339 format. * `end_time`: Supports `=`, `!=`, `<`, `>`, `<=`, and `>=` comparisons. Values must be in RFC 3339 format. * `labels`: Supports key-value equality and key presence. Filter expressions can be combined together using logical operators (`AND` & `OR`). For example: `pipeline_name=\"test\" AND create_time>\"2020-05-18T13:30:00Z\"`. The syntax to define filter expression is based on https:\/\/google.aip.dev\/160. Examples: * `create_time>\"2021-05-18T00:00:00Z\" OR update_time>\"2020-05-18T00:00:00Z\"` PipelineJobs created or updated after 2020-05-18 00:00:00 UTC. * `labels.env = \"prod\"` PipelineJobs with label \"env\" set to \"prod\".",
                       "location": "query",
                       "type": "string"
                     },

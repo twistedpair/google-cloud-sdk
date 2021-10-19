@@ -5,7 +5,7 @@
   "name": "firestore",
   "canonicalName": "Firestore",
   "version": "v1beta1",
-  "revision": "20210924",
+  "revision": "20211008",
   "title": "Cloud Firestore API",
   "description": "Accesses the NoSQL document database built for automatic scaling, high performance, and ease of application development. ",
   "ownerDomain": "google.com",
@@ -710,7 +710,7 @@
           "type": "boolean"
         },
         "updateTime": {
-          "description": "When set, the target document must exist and have been last updated at that time.",
+          "description": "When set, the target document must exist and have been last updated at that time. Timestamp must be microsecond aligned.",
           "type": "string",
           "format": "google-datetime"
         }
@@ -2032,7 +2032,7 @@
                       "type": "boolean"
                     },
                     "currentDocument.updateTime": {
-                      "description": "When set, the target document must exist and have been last updated at that time.",
+                      "description": "When set, the target document must exist and have been last updated at that time. Timestamp must be microsecond aligned.",
                       "location": "query",
                       "type": "string",
                       "format": "google-datetime"
@@ -2072,7 +2072,7 @@
                       "type": "boolean"
                     },
                     "currentDocument.updateTime": {
-                      "description": "When set, the target document must exist and have been last updated at that time.",
+                      "description": "When set, the target document must exist and have been last updated at that time. Timestamp must be microsecond aligned.",
                       "location": "query",
                       "type": "string",
                       "format": "google-datetime"

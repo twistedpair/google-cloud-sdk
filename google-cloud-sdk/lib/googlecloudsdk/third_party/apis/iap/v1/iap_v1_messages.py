@@ -39,12 +39,14 @@ class AccessSettings(_messages.Message):
     oauthSettings: Settings to configure IAP's OAuth behavior.
     policyDelegationSettings: Settings to configure Policy delegation for apps
       hosted in tenant projects. INTERNAL_ONLY.
+    reauthSettings: Settings to configure reauthentication policies in IAP.
   """
 
   corsSettings = _messages.MessageField('CorsSettings', 1)
   gcipSettings = _messages.MessageField('GcipSettings', 2)
   oauthSettings = _messages.MessageField('OAuthSettings', 3)
   policyDelegationSettings = _messages.MessageField('PolicyDelegationSettings', 4)
+  reauthSettings = _messages.MessageField('ReauthSettings', 5)
 
 
 class ApplicationSettings(_messages.Message):
@@ -64,19 +66,19 @@ class ApplicationSettings(_messages.Message):
 
 
 class Binding(_messages.Message):
-  r"""Associates `members` with a `role`.
+  r"""Associates `members`, or principals, with a `role`.
 
   Fields:
     condition: The condition that is associated with this binding. If the
       condition evaluates to `true`, then this binding applies to the current
       request. If the condition evaluates to `false`, then this binding does
       not apply to the current request. However, a different role binding
-      might grant the same role to one or more of the members in this binding.
-      To learn which resources support conditions in their IAM policies, see
-      the [IAM
+      might grant the same role to one or more of the principals in this
+      binding. To learn which resources support conditions in their IAM
+      policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
-    members: Specifies the identities requesting access for a Cloud Platform
+    members: Specifies the principals requesting access for a Cloud Platform
       resource. `members` can have the following values: * `allUsers`: A
       special identifier that represents anyone who is on the internet; with
       or without a Google account. * `allAuthenticatedUsers`: A special
@@ -106,8 +108,8 @@ class Binding(_messages.Message):
       group retains the role in the binding. * `domain:{domain}`: The G Suite
       domain (primary) that represents all the users of that domain. For
       example, `google.com` or `example.com`.
-    role: Role that is assigned to `members`. For example, `roles/viewer`,
-      `roles/editor`, or `roles/owner`.
+    role: Role that is assigned to the list of `members`, or principals. For
+      example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """
 
   condition = _messages.MessageField('Expr', 1)
@@ -511,15 +513,15 @@ class OAuthSettings(_messages.Message):
 class Policy(_messages.Message):
   r"""An Identity and Access Management (IAM) policy, which specifies access
   controls for Google Cloud resources. A `Policy` is a collection of
-  `bindings`. A `binding` binds one or more `members` to a single `role`.
-  Members can be user accounts, service accounts, Google groups, and domains
-  (such as G Suite). A `role` is a named list of permissions; each `role` can
-  be an IAM predefined role or a user-created custom role. For some types of
-  Google Cloud resources, a `binding` can also specify a `condition`, which is
-  a logical expression that allows access to a resource only if the expression
-  evaluates to `true`. A condition can add constraints based on attributes of
-  the request, the resource, or both. To learn which resources support
-  conditions in their IAM policies, see the [IAM
+  `bindings`. A `binding` binds one or more `members`, or principals, to a
+  single `role`. Principals can be user accounts, service accounts, Google
+  groups, and domains (such as G Suite). A `role` is a named list of
+  permissions; each `role` can be an IAM predefined role or a user-created
+  custom role. For some types of Google Cloud resources, a `binding` can also
+  specify a `condition`, which is a logical expression that allows access to a
+  resource only if the expression evaluates to `true`. A condition can add
+  constraints based on attributes of the request, the resource, or both. To
+  learn which resources support conditions in their IAM policies, see the [IAM
   documentation](https://cloud.google.com/iam/help/conditions/resource-
   policies). **JSON example:** { "bindings": [ { "role":
   "roles/resourcemanager.organizationAdmin", "members": [
@@ -540,9 +542,15 @@ class Policy(_messages.Message):
   documentation](https://cloud.google.com/iam/docs/).
 
   Fields:
-    bindings: Associates a list of `members` to a `role`. Optionally, may
-      specify a `condition` that determines how and when the `bindings` are
-      applied. Each of the `bindings` must contain at least one member.
+    bindings: Associates a list of `members`, or principals, with a `role`.
+      Optionally, may specify a `condition` that determines how and when the
+      `bindings` are applied. Each of the `bindings` must contain at least one
+      principal. The `bindings` in a `Policy` can refer to up to 1,500
+      principals; up to 250 of these principals can be Google groups. Each
+      occurrence of a principal counts towards these limits. For example, if
+      the `bindings` grant 50 different roles to `user:alice@example.com`, and
+      not to any other principal, then you can add another 1,450 principals to
+      the `bindings` in the `Policy`.
     etag: `etag` is used for optimistic concurrency control as a way to help
       prevent simultaneous updates of a policy from overwriting each other. It
       is strongly suggested that systems make use of the `etag` in the read-
@@ -624,6 +632,63 @@ class PolicyName(_messages.Message):
   id = _messages.StringField(1)
   region = _messages.StringField(2)
   type = _messages.StringField(3)
+
+
+class ReauthSettings(_messages.Message):
+  r"""Configuration for IAP reauthentication policies.
+
+  Enums:
+    MethodValueValuesEnum: Reauth method required by the policy.
+    PolicyTypeValueValuesEnum: How IAP determines the effective policy in
+      cases of hierarchial policies. Policies are merged from higher in the
+      hierarchy to lower in the hierarchy.
+
+  Fields:
+    maxAge: Reauth session lifetime, how long before a user has to
+      reauthenticate again.
+    method: Reauth method required by the policy.
+    policyType: How IAP determines the effective policy in cases of
+      hierarchial policies. Policies are merged from higher in the hierarchy
+      to lower in the hierarchy.
+  """
+
+  class MethodValueValuesEnum(_messages.Enum):
+    r"""Reauth method required by the policy.
+
+    Values:
+      METHOD_UNSPECIFIED: Reauthentication disabled.
+      LOGIN: Mimicks the behavior as if the user had logged out and tried to
+        log in again. Users with 2SV (step verification) enabled will see
+        their 2SV challenges if they did not opt to have their second factor
+        responses saved. Apps Core (GSuites) admins can configure settings to
+        disable 2SV cookies and require 2-step verification for all Apps Core
+        users in their domains.
+      PASSWORD: User must type their password.
+      SECURE_KEY: User must use their secure key 2nd factor device.
+    """
+    METHOD_UNSPECIFIED = 0
+    LOGIN = 1
+    PASSWORD = 2
+    SECURE_KEY = 3
+
+  class PolicyTypeValueValuesEnum(_messages.Enum):
+    r"""How IAP determines the effective policy in cases of hierarchial
+    policies. Policies are merged from higher in the hierarchy to lower in the
+    hierarchy.
+
+    Values:
+      POLICY_TYPE_UNSPECIFIED: Default value. This value is unused/invalid.
+      MINIMUM: This policy acts as a minimum to other policies, lower in the
+        hierarchy. Effective policy may only be the same or stricter.
+      DEFAULT: This policy acts as a default if no other reauth policy is set.
+    """
+    POLICY_TYPE_UNSPECIFIED = 0
+    MINIMUM = 1
+    DEFAULT = 2
+
+  maxAge = _messages.StringField(1)
+  method = _messages.EnumField('MethodValueValuesEnum', 2)
+  policyType = _messages.EnumField('PolicyTypeValueValuesEnum', 3)
 
 
 class ResetIdentityAwareProxyClientSecretRequest(_messages.Message):

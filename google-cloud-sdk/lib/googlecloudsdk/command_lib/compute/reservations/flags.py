@@ -141,6 +141,32 @@ def GetShareWithFlag(custom_name=None):
       help=help_text)
 
 
+def GetAddShareWithFlag(custom_name=None):
+  """Gets the --add-share-with flag."""
+  help_text = """\
+  A list of specific projects to add to the list of projects that this
+  reservation is shared with. List must contain project IDs or project numbers.
+  """
+  return base.Argument(
+      custom_name if custom_name else '--add-share-with',
+      type=arg_parsers.ArgList(min_length=1),
+      metavar='PROJECT',
+      help=help_text)
+
+
+def GetRemoveShareWithFlag(custom_name=None):
+  """Gets the --remove-share-with flag."""
+  help_text = """\
+  A list of specific projects to remove from the list of projects that this
+  reservation is shared with. List must contain project IDs or project numbers.
+  """
+  return base.Argument(
+      custom_name if custom_name else '--remove-share-with',
+      type=arg_parsers.ArgList(min_length=1),
+      metavar='PROJECT',
+      help=help_text)
+
+
 def AddCreateFlags(parser,
                    support_location_hint=False,
                    support_fleet=False,

@@ -70,6 +70,7 @@ roleRef:
   kind: ClusterRole
   name: {permission}
   apiGroup: rbac.authorization.k8s.io
+---
 """
 PERMISSION_POLICY_NAMESPACE_FORMAT = """\
 ---
@@ -83,6 +84,7 @@ roleRef:
   kind: Role
   name: {permission}
   apiGroup: rbac.authorization.k8s.io
+---
 """
 PERMISSION_POLICY_ANTHOS_SUPPORT_FORMAT = """\
 ---
@@ -108,6 +110,7 @@ roleRef:
   kind: ClusterRole
   name: anthos-support-reader
   apiGroup: rbac.authorization.k8s.io
+---
 """
 
 
@@ -133,17 +136,40 @@ def ValidateRole(role):
 
 
 def ValidateArgs(args):
-  """Validate the confliction between '--anthos-support' and '--role'."""
-  if (args.anthos_support and args.role) or (not args.anthos_support and
-                                             not args.role):
+  """Validate Args in correct format."""
+  # Validate the confliction between '--anthos-support' and '--role'.
+  if not args.revoke and ((args.anthos_support and args.role) or (
+      not args.anthos_support and not args.role)):
     raise InvalidArgsError(
         'Please specify either --role or --anthos-support in the flags.')
   if args.role:
     ValidateRole(args.role)
+  # Validate the confliction between '--anthos-support' and '--users'.
   if not args.users and not args.anthos_support:
     raise InvalidArgsError(
         'Please specify the either --users or --anthos-support the flags.')
+  # Validate required flags when apply RBAC policy to cluster.
   if args.apply:
+    if not args.membership:
+      raise InvalidArgsError('Please specify the --membership in flags.')
+    if not args.kubeconfig:
+      raise InvalidArgsError('Please specify the --kubeconfig in flags.')
+    if not args.context:
+      raise InvalidArgsError('Please specify the --context in flags.')
+  # Validate users in correct format before generate RBAC policy.
+  if args.users:
+    users_list = args.users.split(',')
+    for user in users_list:
+      if '@' not in user:
+        raise InvalidArgsError(
+            'Please specify the --users in correct format: foo@example.com.')
+  if args.revoke and args.apply:
+    # Validate confliction between --apply and --revoke.
+    raise InvalidArgsError(
+        'Please specify either --apply or --revoke in flags.')
+  if args.revoke:
+    # Validate required flags when revoke RBAC policy for specified user from
+    # from cluster.
     if not args.membership:
       raise InvalidArgsError('Please specify the --membership in flags.')
     if not args.kubeconfig:
@@ -170,11 +196,9 @@ def GetAnthosSupportUser(project_id):
 
 def GenerateRBAC(args, project_id):
   """Returns the generated RBAC policy file with args provided."""
-  generated_rbac = ''
+  generated_rbac = {}
   cluster_pattern = re.compile('^clusterrole/')
   namespace_pattern = re.compile('^role/')
-  impersonate_users = ''
-  permission_users = ''
   role_permission = ''
   rbac_policy_format = ''
   namespace = ''
@@ -195,26 +219,28 @@ def GenerateRBAC(args, project_id):
         'Invalid flags, please specify either the --role or --anthos-support in'
         'your flags.')
 
-  if args.membership:
-    metadata_name = project_id + '-' + args.membership
-  else:
-    metadata_name = project_id
   if args.users:
     users_list = args.users.split(',')
   elif args.anthos_support:
     users_list.append(GetAnthosSupportUser(project_id))
   for user in users_list:
-    impersonate_users += os.linesep + '  - {user}'.format(user=user)
-    permission_users += os.linesep + '- kind: User'
+    impersonate_users = os.linesep + '  - {user}'.format(user=user)
+    permission_users = os.linesep + '- kind: User'
     permission_users += os.linesep + '  name: {user}'.format(user=user)
+    user_name = user.split('@')[0]
+    if args.membership:
+      metadata_name = project_id + '_' + user_name + '_' + args.membership
+    else:
+      metadata_name = project_id + '_' + user_name
 
-  # Assign value to the RBAC file templates.
-  generated_rbac = rbac_policy_format.format(
-      metadata_name=metadata_name,
-      namespace=namespace,
-      user_account=impersonate_users,
-      users=permission_users,
-      permission=role_permission)
+    # Assign value to the RBAC file templates.
+    single_generated_rbac = rbac_policy_format.format(
+        metadata_name=metadata_name,
+        namespace=namespace,
+        user_account=impersonate_users,
+        users=permission_users,
+        permission=role_permission)
+    generated_rbac[user] = single_generated_rbac
 
   return generated_rbac
 

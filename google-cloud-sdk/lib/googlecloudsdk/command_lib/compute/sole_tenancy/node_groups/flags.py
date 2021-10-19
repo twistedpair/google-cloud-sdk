@@ -110,14 +110,22 @@ def AddLocationHintArgToParser(parser):
       ))
 
 
-def AddShareSettingsArgToParser(parser):
-  """Add --share-setting flag."""
-  parser.add_argument(
+def AddShareSettingArgToParser(parser):
+  """Add share setting configuration arguments to parser."""
+  group = parser.add_group(help='Manage the properties of a shared setting')
+  group.add_argument(
       '--share-setting',
+      required=True,
+      choices=['projects'],
       help="""
 Specify if this node group is shared; and if so, the type of sharing:
 share with specific projects or folders.
 """)
+  group.add_argument(
+      '--share-with',
+      type=arg_parsers.ArgList(min_length=1),
+      metavar='PROJECT',
+      help='A list of specific projects this node group should be shared with.')
 
 
 def AddListingShareSettingsArgToParser(parser):

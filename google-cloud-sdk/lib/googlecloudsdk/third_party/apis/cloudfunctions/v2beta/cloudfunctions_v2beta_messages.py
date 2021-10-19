@@ -429,6 +429,17 @@ class CloudfunctionsProjectsLocationsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class CloudfunctionsProjectsLocationsRuntimesListRequest(_messages.Message):
+  r"""A CloudfunctionsProjectsLocationsRuntimesListRequest object.
+
+  Fields:
+    parent: Required. The project and location from which the runtimes should
+      be listed, specified in the format `projects/*/locations/*`
+  """
+
+  parent = _messages.StringField(1, required=True)
+
+
 class EventFilter(_messages.Message):
   r"""Filters events based on exact matches on the CloudEvents attributes.
 
@@ -445,6 +456,10 @@ class EventTrigger(_messages.Message):
   r"""Describes EventTrigger, used to request events to be sent from another
   service.
 
+  Enums:
+    RetryPolicyValueValuesEnum: Optional. If unset, then defaults to ignoring
+      failures (i.e. not retrying them).
+
   Fields:
     eventFilters: Criteria used to filter events.
     eventType: Required. The type of event to observe. For example:
@@ -455,6 +470,8 @@ class EventTrigger(_messages.Message):
       `projects/{project}/topics/{topic}`. This is only valid for events of
       type `google.cloud.pubsub.topic.v1.messagePublished`. The topic provided
       here will not be deleted at function deletion.
+    retryPolicy: Optional. If unset, then defaults to ignoring failures (i.e.
+      not retrying them).
     serviceAccountEmail: Optional. The email of the trigger's service account.
       The service account must have permission to invoke Cloud Run services,
       the permission is `run.routes.invoke`. If empty, defaults to the Compute
@@ -470,12 +487,27 @@ class EventTrigger(_messages.Message):
       function.
   """
 
+  class RetryPolicyValueValuesEnum(_messages.Enum):
+    r"""Optional. If unset, then defaults to ignoring failures (i.e. not
+    retrying them).
+
+    Values:
+      RETRY_POLICY_UNSPECIFIED: Not specified.
+      RETRY_POLICY_DO_NOT_RETRY: Do not retry.
+      RETRY_POLICY_RETRY: Retry on any failure, retry up to 7 days with an
+        exponential backoff (capped at 10 seconds).
+    """
+    RETRY_POLICY_UNSPECIFIED = 0
+    RETRY_POLICY_DO_NOT_RETRY = 1
+    RETRY_POLICY_RETRY = 2
+
   eventFilters = _messages.MessageField('EventFilter', 1, repeated=True)
   eventType = _messages.StringField(2)
   pubsubTopic = _messages.StringField(3)
-  serviceAccountEmail = _messages.StringField(4)
-  trigger = _messages.StringField(5)
-  triggerRegion = _messages.StringField(6)
+  retryPolicy = _messages.EnumField('RetryPolicyValueValuesEnum', 4)
+  serviceAccountEmail = _messages.StringField(5)
+  trigger = _messages.StringField(6)
+  triggerRegion = _messages.StringField(7)
 
 
 class Expr(_messages.Message):
@@ -960,6 +992,16 @@ class ListOperationsResponse(_messages.Message):
   operations = _messages.MessageField('Operation', 2, repeated=True)
 
 
+class ListRuntimesResponse(_messages.Message):
+  r"""Response for the `ListRuntimes` method.
+
+  Fields:
+    runtimes: The runtimes that match the request.
+  """
+
+  runtimes = _messages.MessageField('Runtime', 1, repeated=True)
+
+
 class Location(_messages.Message):
   r"""A resource that represents Google Cloud Platform location.
 
@@ -1258,7 +1300,12 @@ class Policy(_messages.Message):
     auditConfigs: Specifies cloud audit logging configuration for this policy.
     bindings: Associates a list of `members` to a `role`. Optionally, may
       specify a `condition` that determines how and when the `bindings` are
-      applied. Each of the `bindings` must contain at least one member.
+      applied. Each of the `bindings` must contain at least one member. The
+      `bindings` in a `Policy` can refer to up to 1,500 members; up to 250 of
+      these members can be Google groups. Each occurrence of a member counts
+      towards these limits. For example, if the `bindings` grant 50 different
+      roles to `user:alice@example.com`, and not to any other member, then you
+      can add another 1,450 members to the `bindings` in the `Policy`.
     etag: `etag` is used for optimistic concurrency control as a way to help
       prevent simultaneous updates of a policy from overwriting each other. It
       is strongly suggested that systems make use of the `etag` in the read-
@@ -1324,6 +1371,45 @@ class RepoSource(_messages.Message):
   projectId = _messages.StringField(5)
   repoName = _messages.StringField(6)
   tagName = _messages.StringField(7)
+
+
+class Runtime(_messages.Message):
+  r"""Describes a runtime and any special information (e.g., deprecation
+  status) related to it.
+
+  Enums:
+    StageValueValuesEnum: The stage of life this runtime is in, e.g., BETA,
+      GA, etc.
+
+  Fields:
+    name: The name of the runtime, e.g., 'go113', 'nodejs12', etc.
+    stage: The stage of life this runtime is in, e.g., BETA, GA, etc.
+    warnings: Warning messages, e.g., a deprecation warning.
+  """
+
+  class StageValueValuesEnum(_messages.Enum):
+    r"""The stage of life this runtime is in, e.g., BETA, GA, etc.
+
+    Values:
+      RUNTIME_STAGE_UNSPECIFIED: Not specified.
+      DEVELOPMENT: The runtime is in development.
+      ALPHA: The runtime is in the Alpha stage.
+      BETA: The runtime is in the Beta stage.
+      GA: The runtime is generally available.
+      DEPRECATED: The runtime is deprecated.
+      DECOMMISSIONED: The runtime is no longer supported.
+    """
+    RUNTIME_STAGE_UNSPECIFIED = 0
+    DEVELOPMENT = 1
+    ALPHA = 2
+    BETA = 3
+    GA = 4
+    DEPRECATED = 5
+    DECOMMISSIONED = 6
+
+  name = _messages.StringField(1)
+  stage = _messages.EnumField('StageValueValuesEnum', 2)
+  warnings = _messages.StringField(3, repeated=True)
 
 
 class ServiceConfig(_messages.Message):

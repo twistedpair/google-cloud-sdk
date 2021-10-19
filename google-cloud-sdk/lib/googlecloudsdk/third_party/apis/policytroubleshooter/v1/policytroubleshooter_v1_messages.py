@@ -13,7 +13,7 @@ package = 'policytroubleshooter'
 
 
 class GoogleCloudPolicytroubleshooterV1AccessTuple(_messages.Message):
-  r"""Information about the member, resource, and permission to check.
+  r"""Information about the principal, resource, and permission to check.
 
   Fields:
     fullResourceName: Required. The full resource name that identifies the
@@ -21,16 +21,16 @@ class GoogleCloudPolicytroubleshooterV1AccessTuple(_messages.Message):
       project/zones/us-central1-a/instances/my-instance`. For examples of full
       resource names for Google Cloud services, see
       https://cloud.google.com/iam/help/troubleshooter/full-resource-names.
-    permission: Required. The IAM permission to check for the specified member
-      and resource. For a complete list of IAM permissions, see
+    permission: Required. The IAM permission to check for the specified
+      principal and resource. For a complete list of IAM permissions, see
       https://cloud.google.com/iam/help/permissions/reference. For a complete
       list of predefined IAM roles and the permissions in each role, see
       https://cloud.google.com/iam/help/roles/reference.
-    principal: Required. The member, or principal, whose access you want to
-      check, in the form of the email address that represents that member. For
-      example, `alice@example.com` or `my-service-account@my-
-      project.iam.gserviceaccount.com`. The member must be a Google Account or
-      a service account. Other types of members are not supported.
+    principal: Required. The principal whose access you want to check, in the
+      form of the email address that represents that principal. For example,
+      `alice@example.com` or `my-service-account@my-
+      project.iam.gserviceaccount.com`. The principal must be a Google Account
+      or a service account. Other types of principals are not supported.
   """
 
   fullResourceName = _messages.StringField(1)
@@ -39,16 +39,17 @@ class GoogleCloudPolicytroubleshooterV1AccessTuple(_messages.Message):
 
 
 class GoogleCloudPolicytroubleshooterV1BindingExplanation(_messages.Message):
-  r"""Details about how a binding in a policy affects a member's ability to
+  r"""Details about how a binding in a policy affects a principal's ability to
   use a permission.
 
   Enums:
     AccessValueValuesEnum: Required. Indicates whether _this binding_ provides
-      the specified permission to the specified member for the specified
-      resource. This field does _not_ indicate whether the member actually has
-      the permission for the resource. There might be another binding that
-      overrides this binding. To determine whether the member actually has the
-      permission, use the `access` field in the TroubleshootIamPolicyResponse.
+      the specified permission to the specified principal for the specified
+      resource. This field does _not_ indicate whether the principal actually
+      has the permission for the resource. There might be another binding that
+      overrides this binding. To determine whether the principal actually has
+      the permission, use the `access` field in the
+      TroubleshootIamPolicyResponse.
     RelevanceValueValuesEnum: The relevance of this binding to the overall
       determination for the entire policy.
     RolePermissionValueValuesEnum: Indicates whether the role granted by this
@@ -58,41 +59,44 @@ class GoogleCloudPolicytroubleshooterV1BindingExplanation(_messages.Message):
       the entire policy.
 
   Messages:
-    MembershipsValue: Indicates whether each member in the binding includes
-      the member specified in the request, either directly or indirectly. Each
-      key identifies a member in the binding, and each value indicates whether
-      the member in the binding includes the member in the request. For
-      example, suppose that a binding includes the following members: *
-      `user:alice@example.com` * `group:product-eng@example.com` You want to
-      troubleshoot access for `user:bob@example.com`. This user is a member of
-      the group `group:product-eng@example.com`. For the first member in the
-      binding, the key is `user:alice@example.com`, and the `membership` field
-      in the value is set to `MEMBERSHIP_NOT_INCLUDED`. For the second member
-      in the binding, the key is `group:product-eng@example.com`, and the
-      `membership` field in the value is set to `MEMBERSHIP_INCLUDED`.
+    MembershipsValue: Indicates whether each principal in the binding includes
+      the principal specified in the request, either directly or indirectly.
+      Each key identifies a principal in the binding, and each value indicates
+      whether the principal in the binding includes the principal in the
+      request. For example, suppose that a binding includes the following
+      principals: * `user:alice@example.com` * `group:product-eng@example.com`
+      You want to troubleshoot access for `user:bob@example.com`. This user is
+      a principal of the group `group:product-eng@example.com`. For the first
+      principal in the binding, the key is `user:alice@example.com`, and the
+      `membership` field in the value is set to `MEMBERSHIP_NOT_INCLUDED`. For
+      the second principal in the binding, the key is `group:product-
+      eng@example.com`, and the `membership` field in the value is set to
+      `MEMBERSHIP_INCLUDED`.
 
   Fields:
     access: Required. Indicates whether _this binding_ provides the specified
-      permission to the specified member for the specified resource. This
-      field does _not_ indicate whether the member actually has the permission
-      for the resource. There might be another binding that overrides this
-      binding. To determine whether the member actually has the permission,
-      use the `access` field in the TroubleshootIamPolicyResponse.
-    condition: A condition expression that prevents access unless the
-      expression evaluates to `true`. To learn about IAM Conditions, see
-      http://cloud.google.com/iam/help/conditions/overview.
-    memberships: Indicates whether each member in the binding includes the
-      member specified in the request, either directly or indirectly. Each key
-      identifies a member in the binding, and each value indicates whether the
-      member in the binding includes the member in the request. For example,
-      suppose that a binding includes the following members: *
-      `user:alice@example.com` * `group:product-eng@example.com` You want to
-      troubleshoot access for `user:bob@example.com`. This user is a member of
-      the group `group:product-eng@example.com`. For the first member in the
-      binding, the key is `user:alice@example.com`, and the `membership` field
-      in the value is set to `MEMBERSHIP_NOT_INCLUDED`. For the second member
-      in the binding, the key is `group:product-eng@example.com`, and the
-      `membership` field in the value is set to `MEMBERSHIP_INCLUDED`.
+      permission to the specified principal for the specified resource. This
+      field does _not_ indicate whether the principal actually has the
+      permission for the resource. There might be another binding that
+      overrides this binding. To determine whether the principal actually has
+      the permission, use the `access` field in the
+      TroubleshootIamPolicyResponse.
+    condition: A condition expression that prevents this binding from granting
+      access unless the expression evaluates to `true`. To learn about IAM
+      Conditions, see https://cloud.google.com/iam/help/conditions/overview.
+    memberships: Indicates whether each principal in the binding includes the
+      principal specified in the request, either directly or indirectly. Each
+      key identifies a principal in the binding, and each value indicates
+      whether the principal in the binding includes the principal in the
+      request. For example, suppose that a binding includes the following
+      principals: * `user:alice@example.com` * `group:product-eng@example.com`
+      You want to troubleshoot access for `user:bob@example.com`. This user is
+      a principal of the group `group:product-eng@example.com`. For the first
+      principal in the binding, the key is `user:alice@example.com`, and the
+      `membership` field in the value is set to `MEMBERSHIP_NOT_INCLUDED`. For
+      the second principal in the binding, the key is `group:product-
+      eng@example.com`, and the `membership` field in the value is set to
+      `MEMBERSHIP_INCLUDED`.
     relevance: The relevance of this binding to the overall determination for
       the entire policy.
     role: The role that this binding grants. For example,
@@ -108,18 +112,18 @@ class GoogleCloudPolicytroubleshooterV1BindingExplanation(_messages.Message):
 
   class AccessValueValuesEnum(_messages.Enum):
     r"""Required. Indicates whether _this binding_ provides the specified
-    permission to the specified member for the specified resource. This field
-    does _not_ indicate whether the member actually has the permission for the
-    resource. There might be another binding that overrides this binding. To
-    determine whether the member actually has the permission, use the `access`
-    field in the TroubleshootIamPolicyResponse.
+    permission to the specified principal for the specified resource. This
+    field does _not_ indicate whether the principal actually has the
+    permission for the resource. There might be another binding that overrides
+    this binding. To determine whether the principal actually has the
+    permission, use the `access` field in the TroubleshootIamPolicyResponse.
 
     Values:
-      ACCESS_STATE_UNSPECIFIED: Reserved for future use.
-      GRANTED: The member has the permission.
-      NOT_GRANTED: The member does not have the permission.
-      UNKNOWN_CONDITIONAL: The member has the permission only if a condition
-        expression evaluates to `true`.
+      ACCESS_STATE_UNSPECIFIED: Default value. This value is unused.
+      GRANTED: The principal has the permission.
+      NOT_GRANTED: The principal does not have the permission.
+      UNKNOWN_CONDITIONAL: The principal has the permission only if a
+        condition expression evaluates to `true`.
       UNKNOWN_INFO_DENIED: The sender of the request does not have access to
         all of the policies that Policy Troubleshooter needs to evaluate.
     """
@@ -134,7 +138,7 @@ class GoogleCloudPolicytroubleshooterV1BindingExplanation(_messages.Message):
     entire policy.
 
     Values:
-      HEURISTIC_RELEVANCE_UNSPECIFIED: Reserved for future use.
+      HEURISTIC_RELEVANCE_UNSPECIFIED: Default value. This value is unused.
       NORMAL: The data point has a limited effect on the result. Changing the
         data point is unlikely to affect the overall determination.
       HIGH: The data point has a strong effect on the result. Changing the
@@ -149,7 +153,7 @@ class GoogleCloudPolicytroubleshooterV1BindingExplanation(_messages.Message):
     role to the overall determination for the entire policy.
 
     Values:
-      HEURISTIC_RELEVANCE_UNSPECIFIED: Reserved for future use.
+      HEURISTIC_RELEVANCE_UNSPECIFIED: Default value. This value is unused.
       NORMAL: The data point has a limited effect on the result. Changing the
         data point is unlikely to affect the overall determination.
       HIGH: The data point has a strong effect on the result. Changing the
@@ -164,7 +168,7 @@ class GoogleCloudPolicytroubleshooterV1BindingExplanation(_messages.Message):
     specified permission.
 
     Values:
-      ROLE_PERMISSION_UNSPECIFIED: Reserved for future use.
+      ROLE_PERMISSION_UNSPECIFIED: Default value. This value is unused.
       ROLE_PERMISSION_INCLUDED: The permission is included in the role.
       ROLE_PERMISSION_NOT_INCLUDED: The permission is not included in the
         role.
@@ -178,18 +182,18 @@ class GoogleCloudPolicytroubleshooterV1BindingExplanation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class MembershipsValue(_messages.Message):
-    r"""Indicates whether each member in the binding includes the member
+    r"""Indicates whether each principal in the binding includes the principal
     specified in the request, either directly or indirectly. Each key
-    identifies a member in the binding, and each value indicates whether the
-    member in the binding includes the member in the request. For example,
-    suppose that a binding includes the following members: *
+    identifies a principal in the binding, and each value indicates whether
+    the principal in the binding includes the principal in the request. For
+    example, suppose that a binding includes the following principals: *
     `user:alice@example.com` * `group:product-eng@example.com` You want to
-    troubleshoot access for `user:bob@example.com`. This user is a member of
-    the group `group:product-eng@example.com`. For the first member in the
-    binding, the key is `user:alice@example.com`, and the `membership` field
-    in the value is set to `MEMBERSHIP_NOT_INCLUDED`. For the second member in
-    the binding, the key is `group:product-eng@example.com`, and the
-    `membership` field in the value is set to `MEMBERSHIP_INCLUDED`.
+    troubleshoot access for `user:bob@example.com`. This user is a principal
+    of the group `group:product-eng@example.com`. For the first principal in
+    the binding, the key is `user:alice@example.com`, and the `membership`
+    field in the value is set to `MEMBERSHIP_NOT_INCLUDED`. For the second
+    principal in the binding, the key is `group:product-eng@example.com`, and
+    the `membership` field in the value is set to `MEMBERSHIP_INCLUDED`.
 
     Messages:
       AdditionalProperty: An additional property for a MembershipsValue
@@ -224,35 +228,35 @@ class GoogleCloudPolicytroubleshooterV1BindingExplanation(_messages.Message):
 
 
 class GoogleCloudPolicytroubleshooterV1BindingExplanationAnnotatedMembership(_messages.Message):
-  r"""Details about whether the binding includes the member.
+  r"""Details about whether the binding includes the principal.
 
   Enums:
     MembershipValueValuesEnum: Indicates whether the binding includes the
-      member.
-    RelevanceValueValuesEnum: The relevance of the member's status to the
+      principal.
+    RelevanceValueValuesEnum: The relevance of the principal's status to the
       overall determination for the binding.
 
   Fields:
-    membership: Indicates whether the binding includes the member.
-    relevance: The relevance of the member's status to the overall
+    membership: Indicates whether the binding includes the principal.
+    relevance: The relevance of the principal's status to the overall
       determination for the binding.
   """
 
   class MembershipValueValuesEnum(_messages.Enum):
-    r"""Indicates whether the binding includes the member.
+    r"""Indicates whether the binding includes the principal.
 
     Values:
-      MEMBERSHIP_UNSPECIFIED: Reserved for future use.
-      MEMBERSHIP_INCLUDED: The binding includes the member. The member can be
-        included directly or indirectly. For example: * A member is included
-        directly if that member is listed in the binding. * A member is
-        included indirectly if that member is in a Google group or G Suite
-        domain that is listed in the binding.
-      MEMBERSHIP_NOT_INCLUDED: The binding does not include the member.
+      MEMBERSHIP_UNSPECIFIED: Default value. This value is unused.
+      MEMBERSHIP_INCLUDED: The binding includes the principal. The principal
+        can be included directly or indirectly. For example: * A principal is
+        included directly if that principal is listed in the binding. * A
+        principal is included indirectly if that principal is in a Google
+        group or Google Workspace domain that is listed in the binding.
+      MEMBERSHIP_NOT_INCLUDED: The binding does not include the principal.
       MEMBERSHIP_UNKNOWN_INFO_DENIED: The sender of the request is not allowed
         to access the binding.
-      MEMBERSHIP_UNKNOWN_UNSUPPORTED: The member is an unsupported type. Only
-        Google Accounts and service accounts are supported.
+      MEMBERSHIP_UNKNOWN_UNSUPPORTED: The principal is an unsupported type.
+        Only Google Accounts and service accounts are supported.
     """
     MEMBERSHIP_UNSPECIFIED = 0
     MEMBERSHIP_INCLUDED = 1
@@ -261,11 +265,11 @@ class GoogleCloudPolicytroubleshooterV1BindingExplanationAnnotatedMembership(_me
     MEMBERSHIP_UNKNOWN_UNSUPPORTED = 4
 
   class RelevanceValueValuesEnum(_messages.Enum):
-    r"""The relevance of the member's status to the overall determination for
-    the binding.
+    r"""The relevance of the principal's status to the overall determination
+    for the binding.
 
     Values:
-      HEURISTIC_RELEVANCE_UNSPECIFIED: Reserved for future use.
+      HEURISTIC_RELEVANCE_UNSPECIFIED: Default value. This value is unused.
       NORMAL: The data point has a limited effect on the result. Changing the
         data point is unlikely to affect the overall determination.
       HIGH: The data point has a strong effect on the result. Changing the
@@ -284,24 +288,25 @@ class GoogleCloudPolicytroubleshooterV1ExplainedPolicy(_messages.Message):
 
   Enums:
     AccessValueValuesEnum: Indicates whether _this policy_ provides the
-      specified permission to the specified member for the specified resource.
-      This field does _not_ indicate whether the member actually has the
-      permission for the resource. There might be another policy that
-      overrides this policy. To determine whether the member actually has the
-      permission, use the `access` field in the TroubleshootIamPolicyResponse.
+      specified permission to the specified principal for the specified
+      resource. This field does _not_ indicate whether the principal actually
+      has the permission for the resource. There might be another policy that
+      overrides this policy. To determine whether the principal actually has
+      the permission, use the `access` field in the
+      TroubleshootIamPolicyResponse.
     RelevanceValueValuesEnum: The relevance of this policy to the overall
       determination in the TroubleshootIamPolicyResponse. If the sender of the
       request does not have access to the policy, this field is omitted.
 
   Fields:
     access: Indicates whether _this policy_ provides the specified permission
-      to the specified member for the specified resource. This field does
-      _not_ indicate whether the member actually has the permission for the
+      to the specified principal for the specified resource. This field does
+      _not_ indicate whether the principal actually has the permission for the
       resource. There might be another policy that overrides this policy. To
-      determine whether the member actually has the permission, use the
+      determine whether the principal actually has the permission, use the
       `access` field in the TroubleshootIamPolicyResponse.
     bindingExplanations: Details about how each binding in the policy affects
-      the member's ability, or inability, to use the permission for the
+      the principal's ability, or inability, to use the permission for the
       resource. If the sender of the request does not have access to the
       policy, this field is omitted.
     fullResourceName: The full resource name that identifies the resource. For
@@ -319,18 +324,18 @@ class GoogleCloudPolicytroubleshooterV1ExplainedPolicy(_messages.Message):
 
   class AccessValueValuesEnum(_messages.Enum):
     r"""Indicates whether _this policy_ provides the specified permission to
-    the specified member for the specified resource. This field does _not_
-    indicate whether the member actually has the permission for the resource.
-    There might be another policy that overrides this policy. To determine
-    whether the member actually has the permission, use the `access` field in
-    the TroubleshootIamPolicyResponse.
+    the specified principal for the specified resource. This field does _not_
+    indicate whether the principal actually has the permission for the
+    resource. There might be another policy that overrides this policy. To
+    determine whether the principal actually has the permission, use the
+    `access` field in the TroubleshootIamPolicyResponse.
 
     Values:
-      ACCESS_STATE_UNSPECIFIED: Reserved for future use.
-      GRANTED: The member has the permission.
-      NOT_GRANTED: The member does not have the permission.
-      UNKNOWN_CONDITIONAL: The member has the permission only if a condition
-        expression evaluates to `true`.
+      ACCESS_STATE_UNSPECIFIED: Default value. This value is unused.
+      GRANTED: The principal has the permission.
+      NOT_GRANTED: The principal does not have the permission.
+      UNKNOWN_CONDITIONAL: The principal has the permission only if a
+        condition expression evaluates to `true`.
       UNKNOWN_INFO_DENIED: The sender of the request does not have access to
         all of the policies that Policy Troubleshooter needs to evaluate.
     """
@@ -346,7 +351,7 @@ class GoogleCloudPolicytroubleshooterV1ExplainedPolicy(_messages.Message):
     access to the policy, this field is omitted.
 
     Values:
-      HEURISTIC_RELEVANCE_UNSPECIFIED: Reserved for future use.
+      HEURISTIC_RELEVANCE_UNSPECIFIED: Default value. This value is unused.
       NORMAL: The data point has a limited effect on the result. Changing the
         data point is unlikely to affect the overall determination.
       HIGH: The data point has a strong effect on the result. Changing the
@@ -367,7 +372,7 @@ class GoogleCloudPolicytroubleshooterV1TroubleshootIamPolicyRequest(_messages.Me
   r"""Request for TroubleshootIamPolicy.
 
   Fields:
-    accessTuple: The information to use for checking whether a member has a
+    accessTuple: The information to use for checking whether a principal has a
       permission for a resource.
   """
 
@@ -378,16 +383,16 @@ class GoogleCloudPolicytroubleshooterV1TroubleshootIamPolicyResponse(_messages.M
   r"""Response for TroubleshootIamPolicy.
 
   Enums:
-    AccessValueValuesEnum: Indicates whether the member has the specified
+    AccessValueValuesEnum: Indicates whether the principal has the specified
       permission for the specified resource, based on evaluating all of the
       applicable IAM policies.
 
   Fields:
-    access: Indicates whether the member has the specified permission for the
-      specified resource, based on evaluating all of the applicable IAM
+    access: Indicates whether the principal has the specified permission for
+      the specified resource, based on evaluating all of the applicable IAM
       policies.
     explainedPolicies: List of IAM policies that were evaluated to check the
-      member's permissions, with annotations to indicate how each policy
+      principal's permissions, with annotations to indicate how each policy
       contributed to the final result. The list of policies can include the
       policy for the resource itself. It can also include policies that are
       inherited from higher levels of the resource hierarchy, including the
@@ -397,16 +402,16 @@ class GoogleCloudPolicytroubleshooterV1TroubleshootIamPolicyResponse(_messages.M
   """
 
   class AccessValueValuesEnum(_messages.Enum):
-    r"""Indicates whether the member has the specified permission for the
+    r"""Indicates whether the principal has the specified permission for the
     specified resource, based on evaluating all of the applicable IAM
     policies.
 
     Values:
-      ACCESS_STATE_UNSPECIFIED: Reserved for future use.
-      GRANTED: The member has the permission.
-      NOT_GRANTED: The member does not have the permission.
-      UNKNOWN_CONDITIONAL: The member has the permission only if a condition
-        expression evaluates to `true`.
+      ACCESS_STATE_UNSPECIFIED: Default value. This value is unused.
+      GRANTED: The principal has the permission.
+      NOT_GRANTED: The principal does not have the permission.
+      UNKNOWN_CONDITIONAL: The principal has the permission only if a
+        condition expression evaluates to `true`.
       UNKNOWN_INFO_DENIED: The sender of the request does not have access to
         all of the policies that Policy Troubleshooter needs to evaluate.
     """
@@ -484,19 +489,19 @@ class GoogleIamV1AuditLogConfig(_messages.Message):
 
 
 class GoogleIamV1Binding(_messages.Message):
-  r"""Associates `members` with a `role`.
+  r"""Associates `members`, or principals, with a `role`.
 
   Fields:
     condition: The condition that is associated with this binding. If the
       condition evaluates to `true`, then this binding applies to the current
       request. If the condition evaluates to `false`, then this binding does
       not apply to the current request. However, a different role binding
-      might grant the same role to one or more of the members in this binding.
-      To learn which resources support conditions in their IAM policies, see
-      the [IAM
+      might grant the same role to one or more of the principals in this
+      binding. To learn which resources support conditions in their IAM
+      policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
-    members: Specifies the identities requesting access for a Cloud Platform
+    members: Specifies the principals requesting access for a Cloud Platform
       resource. `members` can have the following values: * `allUsers`: A
       special identifier that represents anyone who is on the internet; with
       or without a Google account. * `allAuthenticatedUsers`: A special
@@ -526,8 +531,8 @@ class GoogleIamV1Binding(_messages.Message):
       group retains the role in the binding. * `domain:{domain}`: The G Suite
       domain (primary) that represents all the users of that domain. For
       example, `google.com` or `example.com`.
-    role: Role that is assigned to `members`. For example, `roles/viewer`,
-      `roles/editor`, or `roles/owner`.
+    role: Role that is assigned to the list of `members`, or principals. For
+      example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """
 
   condition = _messages.MessageField('GoogleTypeExpr', 1)
@@ -538,15 +543,15 @@ class GoogleIamV1Binding(_messages.Message):
 class GoogleIamV1Policy(_messages.Message):
   r"""An Identity and Access Management (IAM) policy, which specifies access
   controls for Google Cloud resources. A `Policy` is a collection of
-  `bindings`. A `binding` binds one or more `members` to a single `role`.
-  Members can be user accounts, service accounts, Google groups, and domains
-  (such as G Suite). A `role` is a named list of permissions; each `role` can
-  be an IAM predefined role or a user-created custom role. For some types of
-  Google Cloud resources, a `binding` can also specify a `condition`, which is
-  a logical expression that allows access to a resource only if the expression
-  evaluates to `true`. A condition can add constraints based on attributes of
-  the request, the resource, or both. To learn which resources support
-  conditions in their IAM policies, see the [IAM
+  `bindings`. A `binding` binds one or more `members`, or principals, to a
+  single `role`. Principals can be user accounts, service accounts, Google
+  groups, and domains (such as G Suite). A `role` is a named list of
+  permissions; each `role` can be an IAM predefined role or a user-created
+  custom role. For some types of Google Cloud resources, a `binding` can also
+  specify a `condition`, which is a logical expression that allows access to a
+  resource only if the expression evaluates to `true`. A condition can add
+  constraints based on attributes of the request, the resource, or both. To
+  learn which resources support conditions in their IAM policies, see the [IAM
   documentation](https://cloud.google.com/iam/help/conditions/resource-
   policies). **JSON example:** { "bindings": [ { "role":
   "roles/resourcemanager.organizationAdmin", "members": [
@@ -568,9 +573,15 @@ class GoogleIamV1Policy(_messages.Message):
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
-    bindings: Associates a list of `members` to a `role`. Optionally, may
-      specify a `condition` that determines how and when the `bindings` are
-      applied. Each of the `bindings` must contain at least one member.
+    bindings: Associates a list of `members`, or principals, with a `role`.
+      Optionally, may specify a `condition` that determines how and when the
+      `bindings` are applied. Each of the `bindings` must contain at least one
+      principal. The `bindings` in a `Policy` can refer to up to 1,500
+      principals; up to 250 of these principals can be Google groups. Each
+      occurrence of a principal counts towards these limits. For example, if
+      the `bindings` grant 50 different roles to `user:alice@example.com`, and
+      not to any other principal, then you can add another 1,450 principals to
+      the `bindings` in the `Policy`.
     etag: `etag` is used for optimistic concurrency control as a way to help
       prevent simultaneous updates of a policy from overwriting each other. It
       is strongly suggested that systems make use of the `etag` in the read-

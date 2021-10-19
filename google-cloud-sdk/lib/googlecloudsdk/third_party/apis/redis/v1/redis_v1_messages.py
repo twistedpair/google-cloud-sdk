@@ -198,6 +198,7 @@ class Instance(_messages.Message):
     ConnectModeValueValuesEnum: Optional. The network connect mode of the
       Redis instance. If not provided, the connect mode defaults to
       DIRECT_PEERING.
+    ReadReplicasModeValueValuesEnum: Optional. Read replica mode.
     StateValueValuesEnum: Output only. The current state of this instance.
     TierValueValuesEnum: Required. The service tier of the instance.
     TransitEncryptionModeValueValuesEnum: Optional. The TLS mode of the Redis
@@ -255,11 +256,19 @@ class Instance(_messages.Message):
       specific zone (or collection of zones for cross-zone instances) an
       instance should be provisioned in. Refer to location_id and
       alternative_location_id fields for more details.
+    nodes: Output only. Info per node.
     persistenceIamIdentity: Output only. Cloud IAM identity used by import /
       export operations to transfer data to/from Cloud Storage. Format is
       "serviceAccount:". The value may change over time for a given instance
       so should be checked before each import/export operation.
     port: Output only. The port number of the exposed Redis endpoint.
+    readEndpoint: Output only. Hostname or IP address of the exposed readonly
+      Redis endpoint. Standard tier only. Targets all healthy replica nodes in
+      instance. Replication is asynchronous and replica nodes will exhibit
+      some lag behind the primary. Write requests must target 'host'.
+    readEndpointPort: Output only. The port number of the exposed readonly
+      redis endpoint. Standard tier only. Write requests should target 'port'.
+    readReplicasMode: Optional. Read replica mode.
     redisConfigs: Optional. Redis configuration parameters, according to
       http://redis.io/topics/config. Currently, the only supported parameters
       are: Redis version 3.2 and newer: * maxmemory-policy * notify-keyspace-
@@ -271,6 +280,9 @@ class Instance(_messages.Message):
       are: * `REDIS_3_2` for Redis 3.2 compatibility * `REDIS_4_0` for Redis
       4.0 compatibility (default) * `REDIS_5_0` for Redis 5.0 compatibility *
       `REDIS_6_X` for Redis 6.x compatibility
+    replicaCount: Optional. The number of replica nodes. Valid range for
+      standard tier is [1-5] and defaults to 1. Valid value for basic tier is
+      0 and defaults to 0.
     reservedIpRange: Optional. For DIRECT_PEERING mode, the CIDR range of
       internal addresses that are reserved for this instance. Range must be
       unique and non-overlapping with existing subnets in an authorized
@@ -304,6 +316,21 @@ class Instance(_messages.Message):
     CONNECT_MODE_UNSPECIFIED = 0
     DIRECT_PEERING = 1
     PRIVATE_SERVICE_ACCESS = 2
+
+  class ReadReplicasModeValueValuesEnum(_messages.Enum):
+    r"""Optional. Read replica mode.
+
+    Values:
+      READ_REPLICAS_MODE_UNSPECIFIED: If not set, redis backend would pick the
+        mode based on other fields in the request.
+      READ_REPLICAS_DISABLED: If disabled, read endpoint will not be provided
+        and the instance cannot scale up or down the number of replicas.
+      READ_REPLICAS_ENABLED: If enabled, read endpoint will be provided and
+        the instance can scale up and down the number of replicas.
+    """
+    READ_REPLICAS_MODE_UNSPECIFIED = 0
+    READ_REPLICAS_DISABLED = 1
+    READ_REPLICAS_ENABLED = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The current state of this instance.
@@ -428,16 +455,21 @@ class Instance(_messages.Message):
   maintenanceSchedule = _messages.MessageField('MaintenanceSchedule', 12)
   memorySizeGb = _messages.IntegerField(13, variant=_messages.Variant.INT32)
   name = _messages.StringField(14)
-  persistenceIamIdentity = _messages.StringField(15)
-  port = _messages.IntegerField(16, variant=_messages.Variant.INT32)
-  redisConfigs = _messages.MessageField('RedisConfigsValue', 17)
-  redisVersion = _messages.StringField(18)
-  reservedIpRange = _messages.StringField(19)
-  serverCaCerts = _messages.MessageField('TlsCertificate', 20, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 21)
-  statusMessage = _messages.StringField(22)
-  tier = _messages.EnumField('TierValueValuesEnum', 23)
-  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 24)
+  nodes = _messages.MessageField('NodeInfo', 15, repeated=True)
+  persistenceIamIdentity = _messages.StringField(16)
+  port = _messages.IntegerField(17, variant=_messages.Variant.INT32)
+  readEndpoint = _messages.StringField(18)
+  readEndpointPort = _messages.IntegerField(19, variant=_messages.Variant.INT32)
+  readReplicasMode = _messages.EnumField('ReadReplicasModeValueValuesEnum', 20)
+  redisConfigs = _messages.MessageField('RedisConfigsValue', 21)
+  redisVersion = _messages.StringField(22)
+  replicaCount = _messages.IntegerField(23, variant=_messages.Variant.INT32)
+  reservedIpRange = _messages.StringField(24)
+  serverCaCerts = _messages.MessageField('TlsCertificate', 25, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 26)
+  statusMessage = _messages.StringField(27)
+  tier = _messages.EnumField('TierValueValuesEnum', 28)
+  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 29)
 
 
 class InstanceAuthString(_messages.Message):
@@ -623,6 +655,19 @@ class MaintenanceSchedule(_messages.Message):
   endTime = _messages.StringField(2)
   scheduleDeadlineTime = _messages.StringField(3)
   startTime = _messages.StringField(4)
+
+
+class NodeInfo(_messages.Message):
+  r"""Node specific properties.
+
+  Fields:
+    id: Output only. Output Only. Node identifying string. e.g. 'node-0',
+      'node-1'
+    zone: Output only. Output Only. Location of the node.
+  """
+
+  id = _messages.StringField(1)
+  zone = _messages.StringField(2)
 
 
 class Operation(_messages.Message):

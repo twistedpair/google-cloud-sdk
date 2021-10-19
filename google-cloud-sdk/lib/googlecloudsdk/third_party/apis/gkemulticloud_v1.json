@@ -999,12 +999,6 @@
           "description": "Required. The Azure Active Directory Application ID.",
           "type": "string"
         },
-        "certificate": {
-          "description": "Output only. The PEM encoded x509 certificate.",
-          "readOnly": true,
-          "type": "string",
-          "format": "byte"
-        },
         "pemCertificate": {
           "description": "Output only. The PEM encoded x509 certificate.",
           "readOnly": true,
@@ -1177,6 +1171,10 @@
           "items": {
             "type": "string"
           }
+        },
+        "serviceLoadBalancerSubnetId": {
+          "description": "Optional. The ARM ID of the subnet where Kubernetes private service type load balancers are deployed, when the Service lacks a subnet annotation. When unspecified, it defaults to AzureControlPlane.subnet_id. Example: \"\/subscriptions\/d00494d6-6f3c-4280-bbb2-899e163d1d30\/resourceGroups\/anthos_cluster_gkeust4\/providers\/Microsoft.Network\/virtualNetworks\/gke-vnet-gkeust4\/subnets\/subnetid456\"",
+          "type": "string"
         }
       }
     },
@@ -1190,7 +1188,7 @@
           "type": "string"
         },
         "subnetId": {
-          "description": "Required. The ARM ID of the subnet where the control plane VMs are deployed. Example: `\/subscriptions\/\/resourceGroups\/\/providers\/Microsoft.Network\/virtualNetworks\/\/subnets\/default`.",
+          "description": "Optional. The ARM ID of the default subnet for the control plane. The control plane VMs are deployed in this subnet, unless `AzureControlPlane.replica_placements` is specified. This subnet will also be used as default for `AzureControlPlane.endpoint_subnet_id` if `AzureControlPlane.endpoint_subnet_id` is not specified. Similarly it will be used as default for `AzureClusterNetworking.service_load_balancer_subnet_id`. Example: `\/subscriptions\/\/resourceGroups\/\/providers\/Microsoft.Network\/virtualNetworks\/\/subnets\/default`.",
           "type": "string"
         },
         "vmSize": {
@@ -1217,6 +1215,10 @@
           "description": "Optional. Proxy configuration for outbound HTTP(S) traffic.",
           "$ref": "GoogleCloudGkemulticloudV1AzureProxyConfig"
         },
+        "configEncryption": {
+          "description": "Optional. Configuration related to vm config encryption.",
+          "$ref": "GoogleCloudGkemulticloudV1AzureConfigEncryption"
+        },
         "tags": {
           "description": "Optional. A set of tags to apply to all underlying control plane Azure resources.",
           "type": "object",
@@ -1230,6 +1232,10 @@
           "items": {
             "$ref": "GoogleCloudGkemulticloudV1ReplicaPlacement"
           }
+        },
+        "endpointSubnetId": {
+          "description": "Optional. The ARM ID of the subnet where the control plane load balancer is deployed. When unspecified, it defaults to AzureControlPlane.subnet_id. Example: \"\/subscriptions\/d00494d6-6f3c-4280-bbb2-899e163d1d30\/resourceGroups\/anthos_cluster_gkeust4\/providers\/Microsoft.Network\/virtualNetworks\/gke-vnet-gkeust4\/subnets\/subnetid123\"",
+          "type": "string"
         }
       }
     },
@@ -1261,12 +1267,8 @@
       "description": "Configuration related to application-layer secrets encryption. Anthos clusters on Azure encrypts your Kubernetes data at rest in etcd using Azure Key Vault.",
       "type": "object",
       "properties": {
-        "resourceGroupId": {
-          "description": "Optional. The ARM ID the of the Azure resource group containing the Azure Key Vault key. Example: `\/subscriptions\/\/resourceGroups\/`",
-          "type": "string"
-        },
-        "kmsKeyIdentifier": {
-          "description": "Optional. The URL the of the Azure Key Vault key (with its version) to use to encrypt \/ decrypt data. For example: `https:\/\/.vault.azure.net\/keys\/\/`",
+        "keyId": {
+          "description": "Required. The ARM ID of the Azure Key Vault key to encrypt \/ decrypt data. For example: `\/subscriptions\/\/resourceGroups\/\/providers\/Microsoft.KeyVault\/vaults\/\/keys\/` Encryption will always take the latest version of the key and hence specific version is not supported.",
           "type": "string"
         }
       }
@@ -1282,6 +1284,21 @@
         },
         "secretId": {
           "description": "The URL the of the proxy setting secret with its version. Secret ids are formatted as `https:\/\/.vault.azure.net\/secrets\/\/`.",
+          "type": "string"
+        }
+      }
+    },
+    "GoogleCloudGkemulticloudV1AzureConfigEncryption": {
+      "id": "GoogleCloudGkemulticloudV1AzureConfigEncryption",
+      "description": "Configuration related to config data encryption. Azure VM bootstrap secret is envelope encrypted with the provided key vault key.",
+      "type": "object",
+      "properties": {
+        "keyId": {
+          "description": "Required. The ARM ID of the Azure Key Vault key to encrypt \/ decrypt config data. For example: `\/subscriptions\/\/resourceGroups\/\/providers\/Microsoft.KeyVault\/vaults\/\/keys\/`",
+          "type": "string"
+        },
+        "publicKey": {
+          "description": "Optional. RSA key of the Azure Key Vault public key to use for encrypting the data. This key must be formatted as a PEM-encoded SubjectPublicKeyInfo (RFC 5280) in ASN.1 DER form. The string must be comprised of a single PEM block of type \"PUBLIC KEY\".",
           "type": "string"
         }
       }
@@ -1491,6 +1508,10 @@
         "proxyConfig": {
           "description": "Optional. Proxy configuration for outbound HTTP(S) traffic.",
           "$ref": "GoogleCloudGkemulticloudV1AzureProxyConfig"
+        },
+        "configEncryption": {
+          "description": "Optional. Configuration related to vm config encryption.",
+          "$ref": "GoogleCloudGkemulticloudV1AzureConfigEncryption"
         },
         "taints": {
           "description": "Optional. The initial taints assigned to nodes of this node pool.",

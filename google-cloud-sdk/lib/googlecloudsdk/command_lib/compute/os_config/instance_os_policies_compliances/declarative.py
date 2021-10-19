@@ -40,7 +40,7 @@ def SetNameOnDescribeRequestHook(unused_ref, args, request):
   project = args.project or properties.VALUES.core.project.GetOrFail()
   location = args.location or properties.VALUES.compute.zone.Get()
 
-  flags.ValidateInstanceID(instance, 'INSTANCE')
+  flags.ValidateInstance(instance, 'INSTANCE')
   flags.ValidateZone(location, '--location')
 
   request.name = _DESCRIBE_URI.format(

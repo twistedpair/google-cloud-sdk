@@ -18,7 +18,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from googlecloudsdk.api_lib.alloydb import instance_prop_reducers as reducers
 from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.core import properties
 
@@ -40,6 +39,8 @@ def ConstructCreateRequestFromArgs(client, alloydb_messages, project_ref, args):
   # set availability-type if provided
   instance_resource.availabilityType = _ParseAvailabilityType(
       alloydb_messages, args.availability_type)
+  instance_resource.machineConfig = alloydb_messages.MachineConfig(
+      cpuCount=args.machine_cpu)
   instance_ref = client.resource_parser.Create(
       'alloydb.projects.locations.clusters.instances',
       projectsId=properties.VALUES.core.project.GetOrFail,
@@ -48,8 +49,6 @@ def ConstructCreateRequestFromArgs(client, alloydb_messages, project_ref, args):
       instancesId=args.instance)
   instance_resource.name = instance_ref.RelativeName()
 
-  instance_resource.tier = reducers.MachineType(args.tier, args.memory,
-                                                args.cpu)
   instance_resource.databaseFlags = labels_util.ParseCreateArgs(
       args,
       alloydb_messages.Instance.DatabaseFlagsValue,
@@ -60,9 +59,9 @@ def ConstructCreateRequestFromArgs(client, alloydb_messages, project_ref, args):
   instance_resource.networkConfig = _ParseNetworkConfig(alloydb_messages,
                                                         args.assign_ip)
 
-  if instance_resource.instanceType == alloydb_messages.Instance.InstanceTypeValueValuesEnum.READ:
+  if instance_resource.instanceType == alloydb_messages.Instance.InstanceTypeValueValuesEnum.READ_POOL:
     instance_resource.readPoolConfig = alloydb_messages.ReadPoolConfig(
-        readPoolSize=args.read_pool_size)
+        nodeCount=args.read_pool_node_count)
 
   # TODO(b/185795425): Need better understanding of use cases before adding
   # instance_resource.networkConfig
@@ -91,10 +90,10 @@ def ConstructPatchRequestFromArgs(alloydb_messages, instance_ref, args):
   # set availability-type if provided
   instance_resource.availabilityType = _ParseAvailabilityType(
       alloydb_messages, args.availability_type)
+  instance_resource.machineConfig = alloydb_messages.MachineConfig(
+      cpuCount=args.machine_cpu)
   instance_resource.name = instance_ref.RelativeName()
 
-  instance_resource.tier = reducers.MachineType(args.tier, args.memory,
-                                                args.cpu)
   instance_resource.databaseFlags = labels_util.ParseCreateArgs(
       args,
       alloydb_messages.Instance.DatabaseFlagsValue,
@@ -104,9 +103,9 @@ def ConstructPatchRequestFromArgs(alloydb_messages, instance_ref, args):
                                                       args.instance_type)
   instance_resource.networkConfig = _ParseNetworkConfig(alloydb_messages,
                                                         args.assign_ip)
-  if args.read_pool_size:
+  if args.read_pool_node_count:
     instance_resource.readPoolConfig = alloydb_messages.ReadPoolConfig(
-        readPoolSize=args.read_pool_size)
+        nodeCount=args.read_pool_node_count)
 
   # TODO(b/185795425): Need better understanding of use cases before adding
   # instance_resource.networkConfig

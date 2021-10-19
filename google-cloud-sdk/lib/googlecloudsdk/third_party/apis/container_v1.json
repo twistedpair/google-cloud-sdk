@@ -396,6 +396,10 @@
           "readOnly": true,
           "type": "string"
         },
+        "nodePoolDefaults": {
+          "description": "Default NodePool settings for the entire cluster. These settings are overridden if specified on the specific NodePool object.",
+          "$ref": "NodePoolDefaults"
+        },
         "loggingConfig": {
           "description": "Logging configuration for the cluster.",
           "$ref": "LoggingConfig"
@@ -522,6 +526,14 @@
         "bootDiskKmsKey": {
           "description": " The Customer Managed Encryption Key used to encrypt the boot disk attached to each node in the node pool. This should be of the form projects\/[KEY_PROJECT_ID]\/locations\/[LOCATION]\/keyRings\/[RING_NAME]\/cryptoKeys\/[KEY_NAME]. For more information about protecting resources with Cloud KMS Keys please see: https:\/\/cloud.google.com\/compute\/docs\/disks\/customer-managed-encryption",
           "type": "string"
+        },
+        "gcfsConfig": {
+          "description": "Google Container File System (image streaming) configs.",
+          "$ref": "GcfsConfig"
+        },
+        "advancedMachineFeatures": {
+          "description": "Advanced features for the Compute Engine VM.",
+          "$ref": "AdvancedMachineFeatures"
         },
         "gvnic": {
           "description": "Enable or disable gvnic in the node pool.",
@@ -718,6 +730,29 @@
         "cpuCfsQuotaPeriod": {
           "description": "Set the CPU CFS quota period value 'cpu.cfs_period_us'. The string must be a sequence of decimal numbers, each with optional fraction and a unit suffix, such as \"300ms\". Valid time units are \"ns\", \"us\" (or \"\u00B5s\"), \"ms\", \"s\", \"m\", \"h\". The value must be a positive duration.",
           "type": "string"
+        }
+      }
+    },
+    "GcfsConfig": {
+      "id": "GcfsConfig",
+      "description": "GcfsConfig contains configurations of Google Container File System (image streaming).",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "description": "Whether to use GCFS.",
+          "type": "boolean"
+        }
+      }
+    },
+    "AdvancedMachineFeatures": {
+      "id": "AdvancedMachineFeatures",
+      "description": "Specifies options for controlling advanced machine features.",
+      "type": "object",
+      "properties": {
+        "threadsPerCore": {
+          "description": "The number of threads per physical core. To disable simultaneous multithreading (SMT) set this to 1. If unset, the maximum number of threads supported per core by the underlying processor is assumed.",
+          "type": "string",
+          "format": "int64"
         }
       }
     },
@@ -1899,6 +1934,28 @@
         }
       }
     },
+    "NodePoolDefaults": {
+      "id": "NodePoolDefaults",
+      "description": "Subset of Nodepool message that has defaults.",
+      "type": "object",
+      "properties": {
+        "nodeConfigDefaults": {
+          "description": "Subset of NodeConfig message that has defaults.",
+          "$ref": "NodeConfigDefaults"
+        }
+      }
+    },
+    "NodeConfigDefaults": {
+      "id": "NodeConfigDefaults",
+      "description": "Subset of NodeConfig message that has defaults.",
+      "type": "object",
+      "properties": {
+        "gcfsConfig": {
+          "description": "GCFS (Google Container File System, a.k.a Riptide) options.",
+          "$ref": "GcfsConfig"
+        }
+      }
+    },
     "LoggingConfig": {
       "id": "LoggingConfig",
       "description": "LoggingConfig is cluster logging configuration.",
@@ -2416,6 +2473,10 @@
         "desiredAutopilot": {
           "description": "The desired Autopilot configuration for the cluster.",
           "$ref": "Autopilot"
+        },
+        "desiredGcfsConfig": {
+          "description": "The desired GCFS config for the cluster",
+          "$ref": "GcfsConfig"
         }
       }
     },
@@ -2504,6 +2565,10 @@
         "kubeletConfig": {
           "description": "Node kubelet configs.",
           "$ref": "NodeKubeletConfig"
+        },
+        "gcfsConfig": {
+          "description": "GCFS config.",
+          "$ref": "GcfsConfig"
         },
         "gvnic": {
           "description": "Enable or disable gvnic on the node pool.",

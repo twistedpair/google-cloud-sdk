@@ -68,6 +68,26 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_INSTANCES_OSPOLICYASSIGNMENTS = (
+      'projects.locations.instances.osPolicyAssignments',
+      'projects/{projectsId}/locations/{locationsId}/instances/{instancesId}/'
+      'osPolicyAssignments/{osPolicyAssignmentsId}',
+      {},
+      ['projectsId', 'locationsId', 'instancesId', 'osPolicyAssignmentsId'],
+      True
+  )
+  PROJECTS_LOCATIONS_INSTANCES_OSPOLICYASSIGNMENTS_REPORTS = (
+      'projects.locations.instances.osPolicyAssignments.reports',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/instances/'
+              '{instancesId}/osPolicyAssignments/{osPolicyAssignmentsId}/'
+              'report',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_INSTANCES_VULNERABILITYREPORTS = (
       'projects.locations.instances.vulnerabilityReports',
       '{+name}',

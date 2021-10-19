@@ -40,9 +40,7 @@ class AlloydbV1alpha1(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.projects_locations_backups = self.ProjectsLocationsBackupsService(self)
-    self.projects_locations_clusters_backups = self.ProjectsLocationsClustersBackupsService(self)
     self.projects_locations_clusters_instances = self.ProjectsLocationsClustersInstancesService(self)
-    self.projects_locations_clusters_users = self.ProjectsLocationsClustersUsersService(self)
     self.projects_locations_clusters = self.ProjectsLocationsClustersService(self)
     self.projects_locations_instances = self.ProjectsLocationsInstancesService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
@@ -142,151 +140,6 @@ class AlloydbV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-  class ProjectsLocationsClustersBackupsService(base_api.BaseApiService):
-    """Service class for the projects_locations_clusters_backups resource."""
-
-    _NAME = 'projects_locations_clusters_backups'
-
-    def __init__(self, client):
-      super(AlloydbV1alpha1.ProjectsLocationsClustersBackupsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Create(self, request, global_params=None):
-      r"""Creates a new Backup in a given project and location.
-
-      Args:
-        request: (AlloydbProjectsLocationsClustersBackupsCreateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Create')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/backups',
-        http_method='POST',
-        method_id='alloydb.projects.locations.clusters.backups.create',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['backupId', 'requestId'],
-        relative_path='v1alpha1/{+parent}/backups',
-        request_field='backup',
-        request_type_name='AlloydbProjectsLocationsClustersBackupsCreateRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def Delete(self, request, global_params=None):
-      r"""Deletes a single Backup.
-
-      Args:
-        request: (AlloydbProjectsLocationsClustersBackupsDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/backups/{backupsId}',
-        http_method='DELETE',
-        method_id='alloydb.projects.locations.clusters.backups.delete',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['requestId'],
-        relative_path='v1alpha1/{+name}',
-        request_field='',
-        request_type_name='AlloydbProjectsLocationsClustersBackupsDeleteRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def Get(self, request, global_params=None):
-      r"""Gets details of a single Backup.
-
-      Args:
-        request: (AlloydbProjectsLocationsClustersBackupsGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Backup) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/backups/{backupsId}',
-        http_method='GET',
-        method_id='alloydb.projects.locations.clusters.backups.get',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1alpha1/{+name}',
-        request_field='',
-        request_type_name='AlloydbProjectsLocationsClustersBackupsGetRequest',
-        response_type_name='Backup',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""Lists Backups in a given project and location.
-
-      Args:
-        request: (AlloydbProjectsLocationsClustersBackupsListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListBackupsResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/backups',
-        http_method='GET',
-        method_id='alloydb.projects.locations.clusters.backups.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
-        relative_path='v1alpha1/{+parent}/backups',
-        request_field='',
-        request_type_name='AlloydbProjectsLocationsClustersBackupsListRequest',
-        response_type_name='ListBackupsResponse',
-        supports_download=False,
-    )
-
-    def Patch(self, request, global_params=None):
-      r"""Updates the parameters of a single Backup.
-
-      Args:
-        request: (AlloydbProjectsLocationsClustersBackupsPatchRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/backups/{backupsId}',
-        http_method='PATCH',
-        method_id='alloydb.projects.locations.clusters.backups.patch',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['requestId', 'updateMask'],
-        relative_path='v1alpha1/{+name}',
-        request_field='backup',
-        request_type_name='AlloydbProjectsLocationsClustersBackupsPatchRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
   class ProjectsLocationsClustersInstancesService(base_api.BaseApiService):
     """Service class for the projects_locations_clusters_instances resource."""
 
@@ -296,33 +149,6 @@ class AlloydbV1alpha1(base_api.BaseApiClient):
       super(AlloydbV1alpha1.ProjectsLocationsClustersInstancesService, self).__init__(client)
       self._upload_configs = {
           }
-
-    def BatchCreate(self, request, global_params=None):
-      r"""Creates new instances under the given project, location and cluster. There can be only one primary instance in a cluster. If the primary instance exists in the cluster as well as this request, then API will throw an error. The primary instance should exist before any read pool instance is created. If the primary instance is a part of the request payload, then the API will take care of creating instances in the correct order.
-
-      Args:
-        request: (AlloydbProjectsLocationsClustersInstancesBatchCreateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('BatchCreate')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    BatchCreate.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/instances:batchCreate',
-        http_method='POST',
-        method_id='alloydb.projects.locations.clusters.instances.batchCreate',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['requestId'],
-        relative_path='v1alpha1/{+parent}/instances:batchCreate',
-        request_field='createInstanceRequests',
-        request_type_name='AlloydbProjectsLocationsClustersInstancesBatchCreateRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
 
     def Create(self, request, global_params=None):
       r"""Creates a new Instance in a given project and location.
@@ -513,151 +339,6 @@ class AlloydbV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-  class ProjectsLocationsClustersUsersService(base_api.BaseApiService):
-    """Service class for the projects_locations_clusters_users resource."""
-
-    _NAME = 'projects_locations_clusters_users'
-
-    def __init__(self, client):
-      super(AlloydbV1alpha1.ProjectsLocationsClustersUsersService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Create(self, request, global_params=None):
-      r"""Creates a new User in a given project and location.
-
-      Args:
-        request: (AlloydbProjectsLocationsClustersUsersCreateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Create')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/users',
-        http_method='POST',
-        method_id='alloydb.projects.locations.clusters.users.create',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['requestId', 'userId'],
-        relative_path='v1alpha1/{+parent}/users',
-        request_field='user',
-        request_type_name='AlloydbProjectsLocationsClustersUsersCreateRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def Delete(self, request, global_params=None):
-      r"""Deletes a single User.
-
-      Args:
-        request: (AlloydbProjectsLocationsClustersUsersDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/users/{usersId}',
-        http_method='DELETE',
-        method_id='alloydb.projects.locations.clusters.users.delete',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['requestId'],
-        relative_path='v1alpha1/{+name}',
-        request_field='',
-        request_type_name='AlloydbProjectsLocationsClustersUsersDeleteRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def Get(self, request, global_params=None):
-      r"""Gets details of a single User.
-
-      Args:
-        request: (AlloydbProjectsLocationsClustersUsersGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (User) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/users/{usersId}',
-        http_method='GET',
-        method_id='alloydb.projects.locations.clusters.users.get',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1alpha1/{+name}',
-        request_field='',
-        request_type_name='AlloydbProjectsLocationsClustersUsersGetRequest',
-        response_type_name='User',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""Lists Users in a given project and location.
-
-      Args:
-        request: (AlloydbProjectsLocationsClustersUsersListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListUsersResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/users',
-        http_method='GET',
-        method_id='alloydb.projects.locations.clusters.users.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
-        relative_path='v1alpha1/{+parent}/users',
-        request_field='',
-        request_type_name='AlloydbProjectsLocationsClustersUsersListRequest',
-        response_type_name='ListUsersResponse',
-        supports_download=False,
-    )
-
-    def Patch(self, request, global_params=None):
-      r"""Updates the parameters of a single User.
-
-      Args:
-        request: (AlloydbProjectsLocationsClustersUsersPatchRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/users/{usersId}',
-        http_method='PATCH',
-        method_id='alloydb.projects.locations.clusters.users.patch',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['requestId', 'updateMask'],
-        relative_path='v1alpha1/{+name}',
-        request_field='user',
-        request_type_name='AlloydbProjectsLocationsClustersUsersPatchRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
   class ProjectsLocationsClustersService(base_api.BaseApiService):
     """Service class for the projects_locations_clusters resource."""
 
@@ -722,33 +403,6 @@ class AlloydbV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def Failover(self, request, global_params=None):
-      r"""Forces a Failover for a regional cluster. Failover promotes the HA standby instance in the regional cluster.
-
-      Args:
-        request: (AlloydbProjectsLocationsClustersFailoverRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Failover')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Failover.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:failover',
-        http_method='POST',
-        method_id='alloydb.projects.locations.clusters.failover',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1alpha1/{+name}:failover',
-        request_field='failoverClusterRequest',
-        request_type_name='AlloydbProjectsLocationsClustersFailoverRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
     def Get(self, request, global_params=None):
       r"""Gets details of a single Cluster.
 
@@ -800,33 +454,6 @@ class AlloydbV1alpha1(base_api.BaseApiClient):
         request_field='',
         request_type_name='AlloydbProjectsLocationsClustersGetIamPolicyRequest',
         response_type_name='Policy',
-        supports_download=False,
-    )
-
-    def ImportCluster(self, request, global_params=None):
-      r"""Creates a new Cluster in a given project and location, with a volume restored from the provided backup ID.
-
-      Args:
-        request: (AlloydbProjectsLocationsClustersImportClusterRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('ImportCluster')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    ImportCluster.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters:importCluster',
-        http_method='POST',
-        method_id='alloydb.projects.locations.clusters.importCluster',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['backupSource_backupName', 'clusterId', 'requestId'],
-        relative_path='v1alpha1/{+parent}/clusters:importCluster',
-        request_field='cluster',
-        request_type_name='AlloydbProjectsLocationsClustersImportClusterRequest',
-        response_type_name='Operation',
         supports_download=False,
     )
 

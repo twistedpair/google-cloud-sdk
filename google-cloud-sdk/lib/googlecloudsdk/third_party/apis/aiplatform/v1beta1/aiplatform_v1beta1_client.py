@@ -2403,7 +2403,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
     )
 
     def RawPredict(self, request, global_params=None):
-      r"""Perform an online prediction with arbitrary http payload.
+      r"""Perform an online prediction with an arbitrary HTTP payload. The response includes the following HTTP headers: * `X-Vertex-AI-Endpoint-Id`: ID of the Endpoint that served this prediction. * `X-Vertex-AI-Deployed-Model-Id`: ID of the Endpoint's DeployedModel that served this prediction.
 
       Args:
         request: (AiplatformProjectsLocationsEndpointsRawPredictRequest) input message
@@ -6335,7 +6335,7 @@ class AiplatformV1beta1(base_api.BaseApiClient):
           }
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a Model. Note: Model can only be deleted if there are no DeployedModels created from it.
+      r"""Deletes a Model. Model can only be deleted if there are no DeployedModels created from it.
 
       Args:
         request: (AiplatformProjectsLocationsModelsDeleteRequest) input message
@@ -6358,6 +6358,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         request_field='',
         request_type_name='AiplatformProjectsLocationsModelsDeleteRequest',
         response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def DeleteVersion(self, request, global_params=None):
+      r"""Deletes a Model version. Model version can only be deleted if there are no DeployedModels created from it. Deleting the only version in the Model is not allowed. Use DeleteModel for deleting the Model instead.
+
+      Args:
+        request: (AiplatformProjectsLocationsModelsDeleteVersionRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1Model) The response message.
+      """
+      config = self.GetMethodConfig('DeleteVersion')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DeleteVersion.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/models/{modelsId}:deleteVersion',
+        http_method='DELETE',
+        method_id='aiplatform.projects.locations.models.deleteVersion',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}:deleteVersion',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsModelsDeleteVersionRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1Model',
         supports_download=False,
     )
 
@@ -6442,6 +6469,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ListVersions(self, request, global_params=None):
+      r"""Lists versions of the specified model.
+
+      Args:
+        request: (AiplatformProjectsLocationsModelsListVersionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1ListModelVersionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListVersions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListVersions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/models/{modelsId}:listVersions',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.models.listVersions',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken', 'readMask'],
+        relative_path='v1beta1/{+name}:listVersions',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsModelsListVersionsRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1ListModelVersionsResponse',
+        supports_download=False,
+    )
+
     def Patch(self, request, global_params=None):
       r"""Updates a Model.
 
@@ -6465,6 +6519,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         relative_path='v1beta1/{+name}',
         request_field='googleCloudAiplatformV1beta1Model',
         request_type_name='AiplatformProjectsLocationsModelsPatchRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1Model',
+        supports_download=False,
+    )
+
+    def SetVersionAlias(self, request, global_params=None):
+      r"""Sets an alias for a Model version.
+
+      Args:
+        request: (AiplatformProjectsLocationsModelsSetVersionAliasRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1Model) The response message.
+      """
+      config = self.GetMethodConfig('SetVersionAlias')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetVersionAlias.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/models/{modelsId}:setVersionAlias',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.models.setVersionAlias',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}:setVersionAlias',
+        request_field='googleCloudAiplatformV1beta1SetVersionAliasRequest',
+        request_type_name='AiplatformProjectsLocationsModelsSetVersionAliasRequest',
         response_type_name='GoogleCloudAiplatformV1beta1Model',
         supports_download=False,
     )

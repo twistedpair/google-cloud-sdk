@@ -230,13 +230,6 @@
             "$ref": "RRSetRoutingPolicyGeoPolicyGeoPolicyItem"
           }
         },
-        "failovers": {
-          "description": "If the health check for the primary target for a geo location returns an unhealthy status, the failover target is returned instead. This failover configuration is not mandatory. If a failover is not provided, the primary target won't be healthchecked, and it returns the primarily configured rrdata irrespective of whether it is healthy or not.",
-          "type": "array",
-          "items": {
-            "$ref": "RRSetRoutingPolicyGeoPolicyGeoPolicyItem"
-          }
-        },
         "kind": {
           "default": "dns#rRSetRoutingPolicyGeoPolicy",
           "type": "string"

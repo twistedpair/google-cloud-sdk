@@ -482,8 +482,8 @@ class DatabaseInstance(_messages.Message):
       **databaseVersion** field cannot be changed after instance creation. *
       **MySQL instances**: MYSQL_8_0, MYSQL_5_7 (default), or MYSQL_5_6. *
       **PostgreSQL instances**: POSTGRES_9_6, POSTGRES_10, POSTGRES_11,
-      POSTGRES_12, POSTGRES_13 (default). * **SQL Server instances**:
-      SQLSERVER_2019_STANDARD, SQLSERVER_2019_ENTERPRISE,
+      POSTGRES_12, POSTGRES_13 (default), POSTGRES_14. * **SQL Server
+      instances**: SQLSERVER_2019_STANDARD, SQLSERVER_2019_ENTERPRISE,
       SQLSERVER_2019_EXPRESS, or SQLSERVER_2019_WEB, SQLSERVER_2017_STANDARD
       (default), SQLSERVER_2017_ENTERPRISE, SQLSERVER_2017_EXPRESS, or
       SQLSERVER_2017_WEB.
@@ -532,8 +532,8 @@ class DatabaseInstance(_messages.Message):
       **databaseVersion** field cannot be changed after instance creation. *
       **MySQL instances**: MYSQL_8_0, MYSQL_5_7 (default), or MYSQL_5_6. *
       **PostgreSQL instances**: POSTGRES_9_6, POSTGRES_10, POSTGRES_11,
-      POSTGRES_12, POSTGRES_13 (default). * **SQL Server instances**:
-      SQLSERVER_2019_STANDARD, SQLSERVER_2019_ENTERPRISE,
+      POSTGRES_12, POSTGRES_13 (default), POSTGRES_14. * **SQL Server
+      instances**: SQLSERVER_2019_STANDARD, SQLSERVER_2019_ENTERPRISE,
       SQLSERVER_2019_EXPRESS, or SQLSERVER_2019_WEB, SQLSERVER_2017_STANDARD
       (default), SQLSERVER_2017_ENTERPRISE, SQLSERVER_2017_EXPRESS, or
       SQLSERVER_2017_WEB.
@@ -628,10 +628,11 @@ class DatabaseInstance(_messages.Message):
     cannot be changed after instance creation. * **MySQL instances**:
     MYSQL_8_0, MYSQL_5_7 (default), or MYSQL_5_6. * **PostgreSQL instances**:
     POSTGRES_9_6, POSTGRES_10, POSTGRES_11, POSTGRES_12, POSTGRES_13
-    (default). * **SQL Server instances**: SQLSERVER_2019_STANDARD,
-    SQLSERVER_2019_ENTERPRISE, SQLSERVER_2019_EXPRESS, or SQLSERVER_2019_WEB,
-    SQLSERVER_2017_STANDARD (default), SQLSERVER_2017_ENTERPRISE,
-    SQLSERVER_2017_EXPRESS, or SQLSERVER_2017_WEB.
+    (default), POSTGRES_14. * **SQL Server instances**:
+    SQLSERVER_2019_STANDARD, SQLSERVER_2019_ENTERPRISE,
+    SQLSERVER_2019_EXPRESS, or SQLSERVER_2019_WEB, SQLSERVER_2017_STANDARD
+    (default), SQLSERVER_2017_ENTERPRISE, SQLSERVER_2017_EXPRESS, or
+    SQLSERVER_2017_WEB.
 
     Values:
       SQL_DATABASE_VERSION_UNSPECIFIED: This is an unknown database version.
@@ -1982,6 +1983,39 @@ class OperationsListResponse(_messages.Message):
   nextPageToken = _messages.StringField(3)
 
 
+class PasswordValidationPolicy(_messages.Message):
+  r"""Database instance local user password validation policy
+
+  Enums:
+    ComplexityValueValuesEnum: The complexity of the password.
+
+  Fields:
+    complexity: The complexity of the password.
+    disallowUsernameSubstring: Disallow username as a part of the password.
+    minLength: Minimum number of characters allowed.
+    passwordChangeInterval: Minimum interval after which the password can be
+      changed.
+    reuseInterval: Number of previous passwords that cannot be reused.
+  """
+
+  class ComplexityValueValuesEnum(_messages.Enum):
+    r"""The complexity of the password.
+
+    Values:
+      COMPLEXITY_UNSPECIFIED: Complexity check is not specified.
+      COMPLEXITY_DEFAULT: A combination of lowercase, uppercase, numeric, and
+        non-alphanumeric characters.
+    """
+    COMPLEXITY_UNSPECIFIED = 0
+    COMPLEXITY_DEFAULT = 1
+
+  complexity = _messages.EnumField('ComplexityValueValuesEnum', 1)
+  disallowUsernameSubstring = _messages.BooleanField(2)
+  minLength = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  passwordChangeInterval = _messages.StringField(4)
+  reuseInterval = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+
+
 class ReplicaConfiguration(_messages.Message):
   r"""Read-replica configuration for connecting to the primary instance.
 
@@ -2145,6 +2179,8 @@ class Settings(_messages.Message):
       was only applicable to First Generation instances.
     maintenanceWindow: The maintenance window for this instance. This
       specifies when the instance can be restarted for maintenance purposes.
+    passwordValidationPolicy: The local user password validation policy of the
+      instance.
     pricingPlan: The pricing plan for this instance. This can be either
       **PER_USE** or **PACKAGE**. Only **PER_USE** is supported for Second
       Generation instances.
@@ -2295,14 +2331,15 @@ class Settings(_messages.Message):
   kind = _messages.StringField(16)
   locationPreference = _messages.MessageField('LocationPreference', 17)
   maintenanceWindow = _messages.MessageField('MaintenanceWindow', 18)
-  pricingPlan = _messages.EnumField('PricingPlanValueValuesEnum', 19)
-  replicationType = _messages.EnumField('ReplicationTypeValueValuesEnum', 20)
-  settingsVersion = _messages.IntegerField(21)
-  sqlServerAuditConfig = _messages.MessageField('SqlServerAuditConfig', 22)
-  storageAutoResize = _messages.BooleanField(23)
-  storageAutoResizeLimit = _messages.IntegerField(24)
-  tier = _messages.StringField(25)
-  userLabels = _messages.MessageField('UserLabelsValue', 26)
+  passwordValidationPolicy = _messages.MessageField('PasswordValidationPolicy', 19)
+  pricingPlan = _messages.EnumField('PricingPlanValueValuesEnum', 20)
+  replicationType = _messages.EnumField('ReplicationTypeValueValuesEnum', 21)
+  settingsVersion = _messages.IntegerField(22)
+  sqlServerAuditConfig = _messages.MessageField('SqlServerAuditConfig', 23)
+  storageAutoResize = _messages.BooleanField(24)
+  storageAutoResizeLimit = _messages.IntegerField(25)
+  tier = _messages.StringField(26)
+  userLabels = _messages.MessageField('UserLabelsValue', 27)
 
 
 class SqlActiveDirectoryConfig(_messages.Message):
@@ -3518,6 +3555,7 @@ class User(_messages.Message):
     name: The name of the user in the Cloud SQL instance. Can be omitted for
       *update* since it is already specified in the URL.
     password: The password for the user.
+    passwordPolicy: User level password validation policy.
     project: The project ID of the project containing the Cloud SQL database.
       The Google apps domain is prefixed if applicable. Can be omitted for
       *update* since it is already specified on the URL.
@@ -3546,9 +3584,26 @@ class User(_messages.Message):
   kind = _messages.StringField(5)
   name = _messages.StringField(6)
   password = _messages.StringField(7)
-  project = _messages.StringField(8)
-  sqlserverUserDetails = _messages.MessageField('SqlServerUserDetails', 9)
-  type = _messages.EnumField('TypeValueValuesEnum', 10)
+  passwordPolicy = _messages.MessageField('UserPasswordValidationPolicy', 8)
+  project = _messages.StringField(9)
+  sqlserverUserDetails = _messages.MessageField('SqlServerUserDetails', 10)
+  type = _messages.EnumField('TypeValueValuesEnum', 11)
+
+
+class UserPasswordValidationPolicy(_messages.Message):
+  r"""User level password validation policy.
+
+  Fields:
+    allowedFailedAttempts: Number of failed login attempts allowed before user
+      get locked.
+    enableFailedAttemptsCheck: If true, failed login attempts check will be
+      enabled.
+    passwordExpirationDuration: Expiration duration after password is updated.
+  """
+
+  allowedFailedAttempts = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  enableFailedAttemptsCheck = _messages.BooleanField(2)
+  passwordExpirationDuration = _messages.StringField(3)
 
 
 class UsersListResponse(_messages.Message):

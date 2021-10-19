@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 import argparse
 import textwrap
 
+from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope.concepts import concepts
@@ -295,8 +296,17 @@ def AddLocalRunCustomJobFlags(parser):
   parser.add_argument(
       '--work-dir',
       metavar='WORK_DIR',
+      hidden=True,
+      action=actions.DeprecationAction(
+          '--work-dir',
+          warn='The {flag_name} option is deprecated; use --local-package-path instead.',
+          removed=False),
+      help='Alias of --local-package-path')
+  parser.add_argument(
+      '--local-package-path',
+      metavar='LOCAL_PATH',
       help=textwrap.dedent("""
-      Path of the working directory where the python-module or script exists.
+      local path of the directory where the python-module or script exists.
       If not specified, it use the directory where you run the this command.
 
       Only the contents of this directory will be accessible to the built
@@ -324,16 +334,25 @@ def AddLocalRunCustomJobFlags(parser):
       """))
 
   # Flags for base container image
-  parser.add_argument(
-      '--base-image',
-      metavar='BASE_IMAGE',
-      required=True,
+  image_group = parser.add_mutually_exclusive_group(required=True)
+  image_group.add_argument(
+      '--executor-image-uri',
+      metavar='IMAGE_URI',
       help=textwrap.dedent("""
       URI or ID of the container image in either the Container Registry or local
       that will run the application.
       See https://cloud.google.com/vertex-ai/docs/training/pre-built-containers
       for available pre-built container images provided by Vertex AI for training.
       """))
+  image_group.add_argument(
+      '--base-image',
+      metavar='BASE_IMAGE',
+      hidden=True,
+      action=actions.DeprecationAction(
+          '--base-image',
+          warn='The {flag_name} option is deprecated; use --executor-image-uri instead.',
+          removed=False),
+      help='Alias of --executor-image-uri')
 
   # Flags for extra requirements.
   parser.add_argument(

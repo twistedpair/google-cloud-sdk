@@ -192,17 +192,6 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  LOCATIONS_BUCKETS_TABLES = (
-      'locations.buckets.tables',
-      '{+name}',
-      {
-          '':
-              '{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}/'
-              'tables/{tablesId}',
-      },
-      ['name'],
-      True
-  )
   LOCATIONS_BUCKETS_VIEWS = (
       'locations.buckets.views',
       '{+name}',

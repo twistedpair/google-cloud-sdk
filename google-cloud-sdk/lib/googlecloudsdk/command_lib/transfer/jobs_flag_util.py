@@ -36,6 +36,11 @@ _SOURCE_HELP_TEXT = (
     '- Amazon S3 - s3://examplebucket/example-folder\n'
     '- Azure Storage - http://examplestorageaccount.blob.core.windows.net/'
     'examplecontainer/examplefolder\n\n'
+    'POSIX filesystem - Specify the `posix://` scheme followed by the full path'
+    " to the desired directory. Format the path relative to the agents' mount"
+    ' point in the filesystem, not based on where the desired directory is in'
+    ' the machine running gcloud. For example:\n\n'
+    '- posix://example/path/to/directory/\n\n'
     'Publicly-accessible objects:\n'
     '- URL list of objects - http://example.com/tsvfile')
 _DESTINATION_HELP_TEXT = (

@@ -1367,8 +1367,11 @@ def AddOVFSourceUriArg(parser):
   parser.add_argument(
       '--source-uri',
       required=True,
-      help=('Cloud Storage path to one of:\n  OVF descriptor\n  '
-            'OVA file\n  Directory with OVF package'))
+      help=(
+          'Cloud Storage path to one of:\n  OVF descriptor\n  '
+          'OVA file\n  Directory with OVF package.\n'
+          'For more information about Cloud Storage URIs, see\n'
+          'https://cloud.google.com/storage/docs/request-endpoints#json-api.'))
 
 
 def AddGuestEnvironmentArg(parser, resource='instance'):

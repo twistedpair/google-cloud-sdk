@@ -623,7 +623,7 @@
     },
     "Policy": {
       "id": "Policy",
-      "description": "An Identity and Access Management (IAM) policy, which specifies access controls for Google Cloud resources. A `Policy` is a collection of `bindings`. A `binding` binds one or more `members` to a single `role`. Members can be user accounts, service accounts, Google groups, and domains (such as G Suite). A `role` is a named list of permissions; each `role` can be an IAM predefined role or a user-created custom role. For some types of Google Cloud resources, a `binding` can also specify a `condition`, which is a logical expression that allows access to a resource only if the expression evaluates to `true`. A condition can add constraints based on attributes of the request, the resource, or both. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies). **JSON example:** { \"bindings\": [ { \"role\": \"roles\/resourcemanager.organizationAdmin\", \"members\": [ \"user:mike@example.com\", \"group:admins@example.com\", \"domain:google.com\", \"serviceAccount:my-project-id@appspot.gserviceaccount.com\" ] }, { \"role\": \"roles\/resourcemanager.organizationViewer\", \"members\": [ \"user:eve@example.com\" ], \"condition\": { \"title\": \"expirable access\", \"description\": \"Does not grant access after Sep 2020\", \"expression\": \"request.time < timestamp('2020-10-01T00:00:00.000Z')\", } } ], \"etag\": \"BwWWja0YfJA=\", \"version\": 3 } **YAML example:** bindings: - members: - user:mike@example.com - group:admins@example.com - domain:google.com - serviceAccount:my-project-id@appspot.gserviceaccount.com role: roles\/resourcemanager.organizationAdmin - members: - user:eve@example.com role: roles\/resourcemanager.organizationViewer condition: title: expirable access description: Does not grant access after Sep 2020 expression: request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA= version: 3 For a description of IAM and its features, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/docs\/).",
+      "description": "An Identity and Access Management (IAM) policy, which specifies access controls for Google Cloud resources. A `Policy` is a collection of `bindings`. A `binding` binds one or more `members`, or principals, to a single `role`. Principals can be user accounts, service accounts, Google groups, and domains (such as G Suite). A `role` is a named list of permissions; each `role` can be an IAM predefined role or a user-created custom role. For some types of Google Cloud resources, a `binding` can also specify a `condition`, which is a logical expression that allows access to a resource only if the expression evaluates to `true`. A condition can add constraints based on attributes of the request, the resource, or both. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies). **JSON example:** { \"bindings\": [ { \"role\": \"roles\/resourcemanager.organizationAdmin\", \"members\": [ \"user:mike@example.com\", \"group:admins@example.com\", \"domain:google.com\", \"serviceAccount:my-project-id@appspot.gserviceaccount.com\" ] }, { \"role\": \"roles\/resourcemanager.organizationViewer\", \"members\": [ \"user:eve@example.com\" ], \"condition\": { \"title\": \"expirable access\", \"description\": \"Does not grant access after Sep 2020\", \"expression\": \"request.time < timestamp('2020-10-01T00:00:00.000Z')\", } } ], \"etag\": \"BwWWja0YfJA=\", \"version\": 3 } **YAML example:** bindings: - members: - user:mike@example.com - group:admins@example.com - domain:google.com - serviceAccount:my-project-id@appspot.gserviceaccount.com role: roles\/resourcemanager.organizationAdmin - members: - user:eve@example.com role: roles\/resourcemanager.organizationViewer condition: title: expirable access description: Does not grant access after Sep 2020 expression: request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA= version: 3 For a description of IAM and its features, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/docs\/).",
       "type": "object",
       "properties": {
         "version": {
@@ -632,7 +632,7 @@
           "format": "int32"
         },
         "bindings": {
-          "description": "Associates a list of `members` to a `role`. Optionally, may specify a `condition` that determines how and when the `bindings` are applied. Each of the `bindings` must contain at least one member.",
+          "description": "Associates a list of `members`, or principals, with a `role`. Optionally, may specify a `condition` that determines how and when the `bindings` are applied. Each of the `bindings` must contain at least one principal. The `bindings` in a `Policy` can refer to up to 1,500 principals; up to 250 of these principals can be Google groups. Each occurrence of a principal counts towards these limits. For example, if the `bindings` grant 50 different roles to `user:alice@example.com`, and not to any other principal, then you can add another 1,450 principals to the `bindings` in the `Policy`.",
           "type": "array",
           "items": {
             "$ref": "Binding"
@@ -654,22 +654,22 @@
     },
     "Binding": {
       "id": "Binding",
-      "description": "Associates `members` with a `role`.",
+      "description": "Associates `members`, or principals, with a `role`.",
       "type": "object",
       "properties": {
         "role": {
-          "description": "Role that is assigned to `members`. For example, `roles\/viewer`, `roles\/editor`, or `roles\/owner`.",
+          "description": "Role that is assigned to the list of `members`, or principals. For example, `roles\/viewer`, `roles\/editor`, or `roles\/owner`.",
           "type": "string"
         },
         "members": {
-          "description": "Specifies the identities requesting access for a Cloud Platform resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
+          "description": "Specifies the principals requesting access for a Cloud Platform resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "condition": {
-          "description": "The condition that is associated with this binding. If the condition evaluates to `true`, then this binding applies to the current request. If the condition evaluates to `false`, then this binding does not apply to the current request. However, a different role binding might grant the same role to one or more of the members in this binding. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
+          "description": "The condition that is associated with this binding. If the condition evaluates to `true`, then this binding applies to the current request. If the condition evaluates to `false`, then this binding does not apply to the current request. However, a different role binding might grant the same role to one or more of the principals in this binding. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
           "$ref": "Expr"
         }
       }
@@ -870,7 +870,7 @@
             "The user has indicated this role is currently in a Beta phase.",
             "The user has indicated this role is generally available.",
             "The user has indicated this role is being deprecated.",
-            "This role is disabled and will not contribute permissions to any members it is granted to in policies.",
+            "This role is disabled and will not contribute permissions to any principals it is granted to in policies.",
             "The user has indicated this role is currently in an EAP phase."
           ],
           "enum": [
@@ -1319,50 +1319,9 @@
           "description": "A [Common Expression Language](https:\/\/opensource.google\/projects\/cel) expression, in plain text, to restrict what otherwise valid authentication credentials issued by the provider should not be accepted. The expression must output a boolean representing whether to allow the federation. The following keywords may be referenced in the expressions: * `assertion`: JSON representing the authentication credential issued by the provider. * `google`: The Google attributes mapped from the assertion in the `attribute_mappings`. `google.profile_photo` and `google.display_name` are not supported. * `attribute`: The custom attributes mapped from the assertion in the `attribute_mappings`. The maximum length of the attribute condition expression is 4096 characters. If unspecified, all valid authentication credentials will be accepted. The following example shows how to only allow credentials with a mapped `google.groups` value of `admins`: ``` \"'admins' in google.groups\" ```",
           "type": "string"
         },
-        "saml": {
-          "description": "A SAML identity provider configuration.",
-          "$ref": "GoogleIamAdminV1WorkforcePoolProviderSaml"
-        },
         "oidc": {
           "description": "An OpenId Connect 1.0 identity provider configuration.",
           "$ref": "GoogleIamAdminV1WorkforcePoolProviderOidc"
-        }
-      }
-    },
-    "GoogleIamAdminV1WorkforcePoolProviderSaml": {
-      "id": "GoogleIamAdminV1WorkforcePoolProviderSaml",
-      "description": "Represents a SAML identity provider.",
-      "type": "object",
-      "properties": {
-        "spEntityId": {
-          "description": "Required. The entity ID for the service provider. Must match the audience attribute in the SAML assertion.",
-          "type": "string"
-        },
-        "idpEntityId": {
-          "description": "Required. The entity ID for the identity provider.",
-          "type": "string"
-        },
-        "idpCertificates": {
-          "description": "Required. A list of X.509 certificates that are used to validate the SAML authentication response from the identity provider. Up to 3 certificates may be configured in each provider.",
-          "type": "array",
-          "items": {
-            "$ref": "GoogleIamAdminV1WorkforcePoolProviderCertificate"
-          }
-        },
-        "idpSsoUri": {
-          "description": "Required. A valid single sign-on URL.",
-          "type": "string"
-        }
-      }
-    },
-    "GoogleIamAdminV1WorkforcePoolProviderCertificate": {
-      "id": "GoogleIamAdminV1WorkforcePoolProviderCertificate",
-      "description": "A certificate for validating a SAML authentication response.",
-      "type": "object",
-      "properties": {
-        "x509Cert": {
-          "description": "An X.509 certificate.",
-          "type": "string"
         }
       }
     },
@@ -1541,10 +1500,6 @@
         "saml": {
           "description": "An SAML 2.0 identity provider.",
           "$ref": "Saml"
-        },
-        "x509": {
-          "description": "An X.509-type identity provider.",
-          "$ref": "X509"
         }
       }
     },
@@ -1585,25 +1540,6 @@
         "idpMetadataXml": {
           "description": "Required. SAML Identity provider configuration metadata xml doc. The xml document should comply with [SAML 2.0 specification](https:\/\/docs.oasis-open.org\/security\/saml\/v2.0\/saml-metadata-2.0-os.pdf). The max size of the acceptable xml document will be bounded to 128k characters. The metadata xml document should satisfy the following constraints: 1) Must contain an Identity Provider Entity ID. 2) Must contain at least one non-expired signing key certificate. 3) For each signing key: a) Valid from should be no more than 7 days from now. b) Valid to should be no more than 10 years in the future. 4) Upto 3 IdP signing keys are allowed in the metadata xml. When updating the provider's metadata xml, at lease one non-expired signing key must overlap with the existing metadata. This requirement is skipped if there are no non-expired signing keys present in the existing metadata",
           "type": "string"
-        }
-      }
-    },
-    "X509": {
-      "id": "X509",
-      "description": "Represents an X.509-type identity provider. An X.509-type identity provider represents a CA. It is trusted to assert a client identity if the client has a certificate that chains up to this CA.",
-      "type": "object",
-      "properties": {
-        "spiffeTrustDomain": {
-          "description": "Required. The SPIFFE trust domain that MUST match the trust domain component of the SPIFFE ID in the client certificate.",
-          "type": "string"
-        },
-        "certFingerprints": {
-          "description": "Required. A list of allowed cert fingerprints, one of which MUST appear as the root cert fingerprint used to verify the client certificate. A cert fingerprint is a base-64 encoding of the SHA256 hash of an X.509 certificate's DER representation. The list must have AT LEAST 1 entry and can have AT MOST 2 entries.",
-          "type": "array",
-          "items": {
-            "type": "string",
-            "format": "byte"
-          }
         }
       }
     },
@@ -2497,7 +2433,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Gets the IAM policy that is attached to a ServiceAccount. This IAM policy specifies which members have access to the service account. This method does not tell you whether the service account has been granted any roles on other resources. To check whether a service account has role grants on a resource, use the `getIamPolicy` method for that resource. For example, to view the role grants for a project, call the Resource Manager API's [`projects.getIamPolicy`](https:\/\/cloud.google.com\/resource-manager\/reference\/rest\/v1\/projects\/getIamPolicy) method."
+              "description": "Gets the IAM policy that is attached to a ServiceAccount. This IAM policy specifies which principals have access to the service account. This method does not tell you whether the service account has been granted any roles on other resources. To check whether a service account has role grants on a resource, use the `getIamPolicy` method for that resource. For example, to view the role grants for a project, call the Resource Manager API's [`projects.getIamPolicy`](https:\/\/cloud.google.com\/resource-manager\/reference\/rest\/v1\/projects\/getIamPolicy) method."
             },
             "setIamPolicy": {
               "id": "iam.projects.serviceAccounts.setIamPolicy",
@@ -2525,7 +2461,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Sets the IAM policy that is attached to a ServiceAccount. Use this method to grant or revoke access to the service account. For example, you could grant a member the ability to impersonate the service account. This method does not enable the service account to access other resources. To grant roles to a service account on a resource, follow these steps: 1. Call the resource's `getIamPolicy` method to get its current IAM policy. 2. Edit the policy so that it binds the service account to an IAM role for the resource. 3. Call the resource's `setIamPolicy` method to update its IAM policy. For detailed instructions, see [Granting roles to a service account for specific resources](https:\/\/cloud.google.com\/iam\/help\/service-accounts\/granting-access-to-service-accounts)."
+              "description": "Sets the IAM policy that is attached to a ServiceAccount. Use this method to grant or revoke access to the service account. For example, you could grant a principal the ability to impersonate the service account. This method does not enable the service account to access other resources. To grant roles to a service account on a resource, follow these steps: 1. Call the resource's `getIamPolicy` method to get its current IAM policy. 2. Edit the policy so that it binds the service account to an IAM role for the resource. 3. Call the resource's `setIamPolicy` method to update its IAM policy. For detailed instructions, see [Manage access to project, folders, and organizations](https:\/\/cloud.google.com\/iam\/help\/service-accounts\/granting-access-to-service-accounts) or [Manage access to other resources](https:\/\/cloud.google.com\/iam\/help\/access\/manage-other-resources)."
             },
             "testIamPermissions": {
               "id": "iam.projects.serviceAccounts.testIamPermissions",
@@ -3061,7 +2997,7 @@
               "scopes": [
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
-              "description": "Deletes a custom Role. When you delete a custom role, the following changes occur immediately: * You cannot bind a member to the custom role in an IAM Policy. * Existing bindings to the custom role are not changed, but they have no effect. * By default, the response from ListRoles does not include the custom role. You have 7 days to undelete the custom role. After 7 days, the following changes occur: * The custom role is permanently deleted and cannot be recovered. * If an IAM policy contains a binding to the custom role, the binding is permanently removed."
+              "description": "Deletes a custom Role. When you delete a custom role, the following changes occur immediately: * You cannot bind a principal to the custom role in an IAM Policy. * Existing bindings to the custom role are not changed, but they have no effect. * By default, the response from ListRoles does not include the custom role. You have 7 days to undelete the custom role. After 7 days, the following changes occur: * The custom role is permanently deleted and cannot be recovered. * If an IAM policy contains a binding to the custom role, the binding is permanently removed."
             },
             "undelete": {
               "id": "iam.projects.roles.undelete",
@@ -3092,382 +3028,6 @@
               "description": "Undeletes a custom Role."
             }
           }
-        }
-      }
-    },
-    "roles": {
-      "methods": {
-        "queryGrantableRoles": {
-          "id": "iam.roles.queryGrantableRoles",
-          "path": "v1/roles:queryGrantableRoles",
-          "flatPath": "v1/roles:queryGrantableRoles",
-          "httpMethod": "POST",
-          "parameters": {
-          },
-          "parameterOrder": [
-          ],
-          "request": {
-            "$ref": "QueryGrantableRolesRequest"
-          },
-          "response": {
-            "$ref": "QueryGrantableRolesResponse"
-          },
-          "scopes": [
-            "https://www.googleapis.com/auth/cloud-platform"
-          ],
-          "description": "Lists roles that can be granted on a Google Cloud resource. A role is grantable if the IAM policy for the resource can contain bindings to the role."
-        },
-        "list": {
-          "id": "iam.roles.list",
-          "path": "v1/roles",
-          "flatPath": "v1/roles",
-          "httpMethod": "GET",
-          "parameters": {
-            "parent": {
-              "description": "The `parent` parameter's value depends on the target resource for the request, namely [`roles`](\/iam\/reference\/rest\/v1\/roles), [`projects`](\/iam\/reference\/rest\/v1\/projects.roles), or [`organizations`](\/iam\/reference\/rest\/v1\/organizations.roles). Each resource type's `parent` value format is described below: * [`roles.list()`](\/iam\/reference\/rest\/v1\/roles\/list): An empty string. This method doesn't require a resource; it simply returns all [predefined roles](\/iam\/docs\/understanding-roles#predefined_roles) in Cloud IAM. Example request URL: `https:\/\/iam.googleapis.com\/v1\/roles` * [`projects.roles.list()`](\/iam\/reference\/rest\/v1\/projects.roles\/list): `projects\/{PROJECT_ID}`. This method lists all project-level [custom roles](\/iam\/docs\/understanding-custom-roles). Example request URL: `https:\/\/iam.googleapis.com\/v1\/projects\/{PROJECT_ID}\/roles` * [`organizations.roles.list()`](\/iam\/reference\/rest\/v1\/organizations.roles\/list): `organizations\/{ORGANIZATION_ID}`. This method lists all organization-level [custom roles](\/iam\/docs\/understanding-custom-roles). Example request URL: `https:\/\/iam.googleapis.com\/v1\/organizations\/{ORGANIZATION_ID}\/roles` Note: Wildcard (*) values are invalid; you must specify a complete project ID or organization ID.",
-              "location": "query",
-              "type": "string"
-            },
-            "pageSize": {
-              "description": "Optional limit on the number of roles to include in the response. The default is 300, and the maximum is 1,000.",
-              "location": "query",
-              "type": "integer",
-              "format": "int32"
-            },
-            "pageToken": {
-              "description": "Optional pagination token returned in an earlier ListRolesResponse.",
-              "location": "query",
-              "type": "string"
-            },
-            "view": {
-              "description": "Optional view for the returned Role objects. When `FULL` is specified, the `includedPermissions` field is returned, which includes a list of all permissions in the role. The default value is `BASIC`, which does not return the `includedPermissions` field.",
-              "location": "query",
-              "type": "string",
-              "enumDescriptions": [
-                "Omits the `included_permissions` field. This is the default value.",
-                "Returns all fields."
-              ],
-              "enum": [
-                "BASIC",
-                "FULL"
-              ]
-            },
-            "showDeleted": {
-              "description": "Include Roles that have been deleted.",
-              "location": "query",
-              "type": "boolean"
-            }
-          },
-          "parameterOrder": [
-          ],
-          "response": {
-            "$ref": "ListRolesResponse"
-          },
-          "scopes": [
-            "https://www.googleapis.com/auth/cloud-platform"
-          ],
-          "description": "Lists every predefined Role that IAM supports, or every custom role that is defined for an organization or project."
-        },
-        "get": {
-          "id": "iam.roles.get",
-          "path": "v1/{+name}",
-          "flatPath": "v1/roles/{rolesId}",
-          "httpMethod": "GET",
-          "parameters": {
-            "name": {
-              "description": "The `name` parameter's value depends on the target resource for the request, namely [`roles`](\/iam\/reference\/rest\/v1\/roles), [`projects`](\/iam\/reference\/rest\/v1\/projects.roles), or [`organizations`](\/iam\/reference\/rest\/v1\/organizations.roles). Each resource type's `name` value format is described below: * [`roles.get()`](\/iam\/reference\/rest\/v1\/roles\/get): `roles\/{ROLE_NAME}`. This method returns results from all [predefined roles](\/iam\/docs\/understanding-roles#predefined_roles) in Cloud IAM. Example request URL: `https:\/\/iam.googleapis.com\/v1\/roles\/{ROLE_NAME}` * [`projects.roles.get()`](\/iam\/reference\/rest\/v1\/projects.roles\/get): `projects\/{PROJECT_ID}\/roles\/{CUSTOM_ROLE_ID}`. This method returns only [custom roles](\/iam\/docs\/understanding-custom-roles) that have been created at the project level. Example request URL: `https:\/\/iam.googleapis.com\/v1\/projects\/{PROJECT_ID}\/roles\/{CUSTOM_ROLE_ID}` * [`organizations.roles.get()`](\/iam\/reference\/rest\/v1\/organizations.roles\/get): `organizations\/{ORGANIZATION_ID}\/roles\/{CUSTOM_ROLE_ID}`. This method returns only [custom roles](\/iam\/docs\/understanding-custom-roles) that have been created at the organization level. Example request URL: `https:\/\/iam.googleapis.com\/v1\/organizations\/{ORGANIZATION_ID}\/roles\/{CUSTOM_ROLE_ID}` Note: Wildcard (*) values are invalid; you must specify a complete project ID or organization ID.",
-              "pattern": "^roles\/[^\/]+$",
-              "location": "path",
-              "required": true,
-              "type": "string"
-            }
-          },
-          "parameterOrder": [
-            "name"
-          ],
-          "response": {
-            "$ref": "Role"
-          },
-          "scopes": [
-            "https://www.googleapis.com/auth/cloud-platform"
-          ],
-          "description": "Gets the definition of a Role."
-        }
-      }
-    },
-    "organizations": {
-      "resources": {
-        "roles": {
-          "methods": {
-            "list": {
-              "id": "iam.organizations.roles.list",
-              "path": "v1/{+parent}/roles",
-              "flatPath": "v1/organizations/{organizationsId}/roles",
-              "httpMethod": "GET",
-              "parameters": {
-                "parent": {
-                  "description": "The `parent` parameter's value depends on the target resource for the request, namely [`roles`](\/iam\/reference\/rest\/v1\/roles), [`projects`](\/iam\/reference\/rest\/v1\/projects.roles), or [`organizations`](\/iam\/reference\/rest\/v1\/organizations.roles). Each resource type's `parent` value format is described below: * [`roles.list()`](\/iam\/reference\/rest\/v1\/roles\/list): An empty string. This method doesn't require a resource; it simply returns all [predefined roles](\/iam\/docs\/understanding-roles#predefined_roles) in Cloud IAM. Example request URL: `https:\/\/iam.googleapis.com\/v1\/roles` * [`projects.roles.list()`](\/iam\/reference\/rest\/v1\/projects.roles\/list): `projects\/{PROJECT_ID}`. This method lists all project-level [custom roles](\/iam\/docs\/understanding-custom-roles). Example request URL: `https:\/\/iam.googleapis.com\/v1\/projects\/{PROJECT_ID}\/roles` * [`organizations.roles.list()`](\/iam\/reference\/rest\/v1\/organizations.roles\/list): `organizations\/{ORGANIZATION_ID}`. This method lists all organization-level [custom roles](\/iam\/docs\/understanding-custom-roles). Example request URL: `https:\/\/iam.googleapis.com\/v1\/organizations\/{ORGANIZATION_ID}\/roles` Note: Wildcard (*) values are invalid; you must specify a complete project ID or organization ID.",
-                  "pattern": "^organizations\/[^\/]+$",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                },
-                "pageSize": {
-                  "description": "Optional limit on the number of roles to include in the response. The default is 300, and the maximum is 1,000.",
-                  "location": "query",
-                  "type": "integer",
-                  "format": "int32"
-                },
-                "pageToken": {
-                  "description": "Optional pagination token returned in an earlier ListRolesResponse.",
-                  "location": "query",
-                  "type": "string"
-                },
-                "view": {
-                  "description": "Optional view for the returned Role objects. When `FULL` is specified, the `includedPermissions` field is returned, which includes a list of all permissions in the role. The default value is `BASIC`, which does not return the `includedPermissions` field.",
-                  "location": "query",
-                  "type": "string",
-                  "enumDescriptions": [
-                    "Omits the `included_permissions` field. This is the default value.",
-                    "Returns all fields."
-                  ],
-                  "enum": [
-                    "BASIC",
-                    "FULL"
-                  ]
-                },
-                "showDeleted": {
-                  "description": "Include Roles that have been deleted.",
-                  "location": "query",
-                  "type": "boolean"
-                }
-              },
-              "parameterOrder": [
-                "parent"
-              ],
-              "response": {
-                "$ref": "ListRolesResponse"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
-              "description": "Lists every predefined Role that IAM supports, or every custom role that is defined for an organization or project."
-            },
-            "get": {
-              "id": "iam.organizations.roles.get",
-              "path": "v1/{+name}",
-              "flatPath": "v1/organizations/{organizationsId}/roles/{rolesId}",
-              "httpMethod": "GET",
-              "parameters": {
-                "name": {
-                  "description": "The `name` parameter's value depends on the target resource for the request, namely [`roles`](\/iam\/reference\/rest\/v1\/roles), [`projects`](\/iam\/reference\/rest\/v1\/projects.roles), or [`organizations`](\/iam\/reference\/rest\/v1\/organizations.roles). Each resource type's `name` value format is described below: * [`roles.get()`](\/iam\/reference\/rest\/v1\/roles\/get): `roles\/{ROLE_NAME}`. This method returns results from all [predefined roles](\/iam\/docs\/understanding-roles#predefined_roles) in Cloud IAM. Example request URL: `https:\/\/iam.googleapis.com\/v1\/roles\/{ROLE_NAME}` * [`projects.roles.get()`](\/iam\/reference\/rest\/v1\/projects.roles\/get): `projects\/{PROJECT_ID}\/roles\/{CUSTOM_ROLE_ID}`. This method returns only [custom roles](\/iam\/docs\/understanding-custom-roles) that have been created at the project level. Example request URL: `https:\/\/iam.googleapis.com\/v1\/projects\/{PROJECT_ID}\/roles\/{CUSTOM_ROLE_ID}` * [`organizations.roles.get()`](\/iam\/reference\/rest\/v1\/organizations.roles\/get): `organizations\/{ORGANIZATION_ID}\/roles\/{CUSTOM_ROLE_ID}`. This method returns only [custom roles](\/iam\/docs\/understanding-custom-roles) that have been created at the organization level. Example request URL: `https:\/\/iam.googleapis.com\/v1\/organizations\/{ORGANIZATION_ID}\/roles\/{CUSTOM_ROLE_ID}` Note: Wildcard (*) values are invalid; you must specify a complete project ID or organization ID.",
-                  "pattern": "^organizations\/[^\/]+\/roles\/[^\/]+$",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "name"
-              ],
-              "response": {
-                "$ref": "Role"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
-              "description": "Gets the definition of a Role."
-            },
-            "create": {
-              "id": "iam.organizations.roles.create",
-              "path": "v1/{+parent}/roles",
-              "flatPath": "v1/organizations/{organizationsId}/roles",
-              "httpMethod": "POST",
-              "parameters": {
-                "parent": {
-                  "description": "The `parent` parameter's value depends on the target resource for the request, namely [`projects`](\/iam\/reference\/rest\/v1\/projects.roles) or [`organizations`](\/iam\/reference\/rest\/v1\/organizations.roles). Each resource type's `parent` value format is described below: * [`projects.roles.create()`](\/iam\/reference\/rest\/v1\/projects.roles\/create): `projects\/{PROJECT_ID}`. This method creates project-level [custom roles](\/iam\/docs\/understanding-custom-roles). Example request URL: `https:\/\/iam.googleapis.com\/v1\/projects\/{PROJECT_ID}\/roles` * [`organizations.roles.create()`](\/iam\/reference\/rest\/v1\/organizations.roles\/create): `organizations\/{ORGANIZATION_ID}`. This method creates organization-level [custom roles](\/iam\/docs\/understanding-custom-roles). Example request URL: `https:\/\/iam.googleapis.com\/v1\/organizations\/{ORGANIZATION_ID}\/roles` Note: Wildcard (*) values are invalid; you must specify a complete project ID or organization ID.",
-                  "pattern": "^organizations\/[^\/]+$",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "parent"
-              ],
-              "request": {
-                "$ref": "CreateRoleRequest"
-              },
-              "response": {
-                "$ref": "Role"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
-              "description": "Creates a new custom Role."
-            },
-            "patch": {
-              "id": "iam.organizations.roles.patch",
-              "path": "v1/{+name}",
-              "flatPath": "v1/organizations/{organizationsId}/roles/{rolesId}",
-              "httpMethod": "PATCH",
-              "parameters": {
-                "name": {
-                  "description": "The `name` parameter's value depends on the target resource for the request, namely [`projects`](\/iam\/reference\/rest\/v1\/projects.roles) or [`organizations`](\/iam\/reference\/rest\/v1\/organizations.roles). Each resource type's `name` value format is described below: * [`projects.roles.patch()`](\/iam\/reference\/rest\/v1\/projects.roles\/patch): `projects\/{PROJECT_ID}\/roles\/{CUSTOM_ROLE_ID}`. This method updates only [custom roles](\/iam\/docs\/understanding-custom-roles) that have been created at the project level. Example request URL: `https:\/\/iam.googleapis.com\/v1\/projects\/{PROJECT_ID}\/roles\/{CUSTOM_ROLE_ID}` * [`organizations.roles.patch()`](\/iam\/reference\/rest\/v1\/organizations.roles\/patch): `organizations\/{ORGANIZATION_ID}\/roles\/{CUSTOM_ROLE_ID}`. This method updates only [custom roles](\/iam\/docs\/understanding-custom-roles) that have been created at the organization level. Example request URL: `https:\/\/iam.googleapis.com\/v1\/organizations\/{ORGANIZATION_ID}\/roles\/{CUSTOM_ROLE_ID}` Note: Wildcard (*) values are invalid; you must specify a complete project ID or organization ID.",
-                  "pattern": "^organizations\/[^\/]+\/roles\/[^\/]+$",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                },
-                "updateMask": {
-                  "description": "A mask describing which fields in the Role have changed.",
-                  "location": "query",
-                  "type": "string",
-                  "format": "google-fieldmask"
-                }
-              },
-              "parameterOrder": [
-                "name"
-              ],
-              "request": {
-                "$ref": "Role"
-              },
-              "response": {
-                "$ref": "Role"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
-              "description": "Updates the definition of a custom Role."
-            },
-            "delete": {
-              "id": "iam.organizations.roles.delete",
-              "path": "v1/{+name}",
-              "flatPath": "v1/organizations/{organizationsId}/roles/{rolesId}",
-              "httpMethod": "DELETE",
-              "parameters": {
-                "name": {
-                  "description": "The `name` parameter's value depends on the target resource for the request, namely [`projects`](\/iam\/reference\/rest\/v1\/projects.roles) or [`organizations`](\/iam\/reference\/rest\/v1\/organizations.roles). Each resource type's `name` value format is described below: * [`projects.roles.delete()`](\/iam\/reference\/rest\/v1\/projects.roles\/delete): `projects\/{PROJECT_ID}\/roles\/{CUSTOM_ROLE_ID}`. This method deletes only [custom roles](\/iam\/docs\/understanding-custom-roles) that have been created at the project level. Example request URL: `https:\/\/iam.googleapis.com\/v1\/projects\/{PROJECT_ID}\/roles\/{CUSTOM_ROLE_ID}` * [`organizations.roles.delete()`](\/iam\/reference\/rest\/v1\/organizations.roles\/delete): `organizations\/{ORGANIZATION_ID}\/roles\/{CUSTOM_ROLE_ID}`. This method deletes only [custom roles](\/iam\/docs\/understanding-custom-roles) that have been created at the organization level. Example request URL: `https:\/\/iam.googleapis.com\/v1\/organizations\/{ORGANIZATION_ID}\/roles\/{CUSTOM_ROLE_ID}` Note: Wildcard (*) values are invalid; you must specify a complete project ID or organization ID.",
-                  "pattern": "^organizations\/[^\/]+\/roles\/[^\/]+$",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                },
-                "etag": {
-                  "description": "Used to perform a consistent read-modify-write.",
-                  "location": "query",
-                  "type": "string",
-                  "format": "byte"
-                }
-              },
-              "parameterOrder": [
-                "name"
-              ],
-              "response": {
-                "$ref": "Role"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
-              "description": "Deletes a custom Role. When you delete a custom role, the following changes occur immediately: * You cannot bind a member to the custom role in an IAM Policy. * Existing bindings to the custom role are not changed, but they have no effect. * By default, the response from ListRoles does not include the custom role. You have 7 days to undelete the custom role. After 7 days, the following changes occur: * The custom role is permanently deleted and cannot be recovered. * If an IAM policy contains a binding to the custom role, the binding is permanently removed."
-            },
-            "undelete": {
-              "id": "iam.organizations.roles.undelete",
-              "path": "v1/{+name}:undelete",
-              "flatPath": "v1/organizations/{organizationsId}/roles/{rolesId}:undelete",
-              "httpMethod": "POST",
-              "parameters": {
-                "name": {
-                  "description": "The `name` parameter's value depends on the target resource for the request, namely [`projects`](\/iam\/reference\/rest\/v1\/projects.roles) or [`organizations`](\/iam\/reference\/rest\/v1\/organizations.roles). Each resource type's `name` value format is described below: * [`projects.roles.undelete()`](\/iam\/reference\/rest\/v1\/projects.roles\/undelete): `projects\/{PROJECT_ID}\/roles\/{CUSTOM_ROLE_ID}`. This method undeletes only [custom roles](\/iam\/docs\/understanding-custom-roles) that have been created at the project level. Example request URL: `https:\/\/iam.googleapis.com\/v1\/projects\/{PROJECT_ID}\/roles\/{CUSTOM_ROLE_ID}` * [`organizations.roles.undelete()`](\/iam\/reference\/rest\/v1\/organizations.roles\/undelete): `organizations\/{ORGANIZATION_ID}\/roles\/{CUSTOM_ROLE_ID}`. This method undeletes only [custom roles](\/iam\/docs\/understanding-custom-roles) that have been created at the organization level. Example request URL: `https:\/\/iam.googleapis.com\/v1\/organizations\/{ORGANIZATION_ID}\/roles\/{CUSTOM_ROLE_ID}` Note: Wildcard (*) values are invalid; you must specify a complete project ID or organization ID.",
-                  "pattern": "^organizations\/[^\/]+\/roles\/[^\/]+$",
-                  "location": "path",
-                  "required": true,
-                  "type": "string"
-                }
-              },
-              "parameterOrder": [
-                "name"
-              ],
-              "request": {
-                "$ref": "UndeleteRoleRequest"
-              },
-              "response": {
-                "$ref": "Role"
-              },
-              "scopes": [
-                "https://www.googleapis.com/auth/cloud-platform"
-              ],
-              "description": "Undeletes a custom Role."
-            }
-          }
-        }
-      }
-    },
-    "permissions": {
-      "methods": {
-        "queryTestablePermissions": {
-          "id": "iam.permissions.queryTestablePermissions",
-          "path": "v1/permissions:queryTestablePermissions",
-          "flatPath": "v1/permissions:queryTestablePermissions",
-          "httpMethod": "POST",
-          "parameters": {
-          },
-          "parameterOrder": [
-          ],
-          "request": {
-            "$ref": "QueryTestablePermissionsRequest"
-          },
-          "response": {
-            "$ref": "QueryTestablePermissionsResponse"
-          },
-          "scopes": [
-            "https://www.googleapis.com/auth/cloud-platform"
-          ],
-          "description": "Lists every permission that you can test on a resource. A permission is testable if you can check whether a member has that permission on the resource."
-        }
-      }
-    },
-    "iamPolicies": {
-      "methods": {
-        "queryAuditableServices": {
-          "id": "iam.iamPolicies.queryAuditableServices",
-          "path": "v1/iamPolicies:queryAuditableServices",
-          "flatPath": "v1/iamPolicies:queryAuditableServices",
-          "httpMethod": "POST",
-          "parameters": {
-          },
-          "parameterOrder": [
-          ],
-          "request": {
-            "$ref": "QueryAuditableServicesRequest"
-          },
-          "response": {
-            "$ref": "QueryAuditableServicesResponse"
-          },
-          "scopes": [
-            "https://www.googleapis.com/auth/cloud-platform"
-          ],
-          "description": "Returns a list of services that allow you to opt into audit logs that are not generated by default. To learn more about audit logs, see the [Logging documentation](https:\/\/cloud.google.com\/logging\/docs\/audit)."
-        },
-        "lintPolicy": {
-          "id": "iam.iamPolicies.lintPolicy",
-          "path": "v1/iamPolicies:lintPolicy",
-          "flatPath": "v1/iamPolicies:lintPolicy",
-          "httpMethod": "POST",
-          "parameters": {
-          },
-          "parameterOrder": [
-          ],
-          "request": {
-            "$ref": "LintPolicyRequest"
-          },
-          "response": {
-            "$ref": "LintPolicyResponse"
-          },
-          "scopes": [
-            "https://www.googleapis.com/auth/cloud-platform"
-          ],
-          "description": "Lints, or validates, an IAM policy. Currently checks the google.iam.v1.Binding.condition field, which contains a condition expression for a role binding. Successful calls to this method always return an HTTP `200 OK` status code, even if the linter detects an issue in the IAM policy."
         }
       }
     },
@@ -3753,6 +3313,35 @@
           }
           ,
           "resources": {
+            "operations": {
+              "methods": {
+                "get": {
+                  "id": "iam.locations.workforcePools.operations.get",
+                  "path": "v1/{+name}",
+                  "flatPath": "v1/locations/{locationsId}/workforcePools/{workforcePoolsId}/operations/{operationsId}",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "name": {
+                      "description": "The name of the operation resource.",
+                      "pattern": "^locations\/[^\/]+\/workforcePools\/[^\/]+\/operations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "name"
+                  ],
+                  "response": {
+                    "$ref": "Operation"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
+                }
+              }
+            },
             "providers": {
               "methods": {
                 "list": {
@@ -3942,6 +3531,38 @@
                   "description": "Undeletes a WorkforcePoolProvider, as long as it was deleted fewer than 30 days ago."
                 }
               }
+              ,
+              "resources": {
+                "operations": {
+                  "methods": {
+                    "get": {
+                      "id": "iam.locations.workforcePools.providers.operations.get",
+                      "path": "v1/{+name}",
+                      "flatPath": "v1/locations/{locationsId}/workforcePools/{workforcePoolsId}/providers/{providersId}/operations/{operationsId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the operation resource.",
+                          "pattern": "^locations\/[^\/]+\/workforcePools\/[^\/]+\/providers\/[^\/]+\/operations\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service."
+                    }
+                  }
+                }
+              }
             },
             "subject": {
               "methods": {
@@ -4001,6 +3622,382 @@
               }
             }
           }
+        }
+      }
+    },
+    "roles": {
+      "methods": {
+        "queryGrantableRoles": {
+          "id": "iam.roles.queryGrantableRoles",
+          "path": "v1/roles:queryGrantableRoles",
+          "flatPath": "v1/roles:queryGrantableRoles",
+          "httpMethod": "POST",
+          "parameters": {
+          },
+          "parameterOrder": [
+          ],
+          "request": {
+            "$ref": "QueryGrantableRolesRequest"
+          },
+          "response": {
+            "$ref": "QueryGrantableRolesResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Lists roles that can be granted on a Google Cloud resource. A role is grantable if the IAM policy for the resource can contain bindings to the role."
+        },
+        "list": {
+          "id": "iam.roles.list",
+          "path": "v1/roles",
+          "flatPath": "v1/roles",
+          "httpMethod": "GET",
+          "parameters": {
+            "parent": {
+              "description": "The `parent` parameter's value depends on the target resource for the request, namely [`roles`](\/iam\/reference\/rest\/v1\/roles), [`projects`](\/iam\/reference\/rest\/v1\/projects.roles), or [`organizations`](\/iam\/reference\/rest\/v1\/organizations.roles). Each resource type's `parent` value format is described below: * [`roles.list()`](\/iam\/reference\/rest\/v1\/roles\/list): An empty string. This method doesn't require a resource; it simply returns all [predefined roles](\/iam\/docs\/understanding-roles#predefined_roles) in Cloud IAM. Example request URL: `https:\/\/iam.googleapis.com\/v1\/roles` * [`projects.roles.list()`](\/iam\/reference\/rest\/v1\/projects.roles\/list): `projects\/{PROJECT_ID}`. This method lists all project-level [custom roles](\/iam\/docs\/understanding-custom-roles). Example request URL: `https:\/\/iam.googleapis.com\/v1\/projects\/{PROJECT_ID}\/roles` * [`organizations.roles.list()`](\/iam\/reference\/rest\/v1\/organizations.roles\/list): `organizations\/{ORGANIZATION_ID}`. This method lists all organization-level [custom roles](\/iam\/docs\/understanding-custom-roles). Example request URL: `https:\/\/iam.googleapis.com\/v1\/organizations\/{ORGANIZATION_ID}\/roles` Note: Wildcard (*) values are invalid; you must specify a complete project ID or organization ID.",
+              "location": "query",
+              "type": "string"
+            },
+            "pageSize": {
+              "description": "Optional limit on the number of roles to include in the response. The default is 300, and the maximum is 1,000.",
+              "location": "query",
+              "type": "integer",
+              "format": "int32"
+            },
+            "pageToken": {
+              "description": "Optional pagination token returned in an earlier ListRolesResponse.",
+              "location": "query",
+              "type": "string"
+            },
+            "view": {
+              "description": "Optional view for the returned Role objects. When `FULL` is specified, the `includedPermissions` field is returned, which includes a list of all permissions in the role. The default value is `BASIC`, which does not return the `includedPermissions` field.",
+              "location": "query",
+              "type": "string",
+              "enumDescriptions": [
+                "Omits the `included_permissions` field. This is the default value.",
+                "Returns all fields."
+              ],
+              "enum": [
+                "BASIC",
+                "FULL"
+              ]
+            },
+            "showDeleted": {
+              "description": "Include Roles that have been deleted.",
+              "location": "query",
+              "type": "boolean"
+            }
+          },
+          "parameterOrder": [
+          ],
+          "response": {
+            "$ref": "ListRolesResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Lists every predefined Role that IAM supports, or every custom role that is defined for an organization or project."
+        },
+        "get": {
+          "id": "iam.roles.get",
+          "path": "v1/{+name}",
+          "flatPath": "v1/roles/{rolesId}",
+          "httpMethod": "GET",
+          "parameters": {
+            "name": {
+              "description": "The `name` parameter's value depends on the target resource for the request, namely [`roles`](\/iam\/reference\/rest\/v1\/roles), [`projects`](\/iam\/reference\/rest\/v1\/projects.roles), or [`organizations`](\/iam\/reference\/rest\/v1\/organizations.roles). Each resource type's `name` value format is described below: * [`roles.get()`](\/iam\/reference\/rest\/v1\/roles\/get): `roles\/{ROLE_NAME}`. This method returns results from all [predefined roles](\/iam\/docs\/understanding-roles#predefined_roles) in Cloud IAM. Example request URL: `https:\/\/iam.googleapis.com\/v1\/roles\/{ROLE_NAME}` * [`projects.roles.get()`](\/iam\/reference\/rest\/v1\/projects.roles\/get): `projects\/{PROJECT_ID}\/roles\/{CUSTOM_ROLE_ID}`. This method returns only [custom roles](\/iam\/docs\/understanding-custom-roles) that have been created at the project level. Example request URL: `https:\/\/iam.googleapis.com\/v1\/projects\/{PROJECT_ID}\/roles\/{CUSTOM_ROLE_ID}` * [`organizations.roles.get()`](\/iam\/reference\/rest\/v1\/organizations.roles\/get): `organizations\/{ORGANIZATION_ID}\/roles\/{CUSTOM_ROLE_ID}`. This method returns only [custom roles](\/iam\/docs\/understanding-custom-roles) that have been created at the organization level. Example request URL: `https:\/\/iam.googleapis.com\/v1\/organizations\/{ORGANIZATION_ID}\/roles\/{CUSTOM_ROLE_ID}` Note: Wildcard (*) values are invalid; you must specify a complete project ID or organization ID.",
+              "pattern": "^roles\/[^\/]+$",
+              "location": "path",
+              "required": true,
+              "type": "string"
+            }
+          },
+          "parameterOrder": [
+            "name"
+          ],
+          "response": {
+            "$ref": "Role"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Gets the definition of a Role."
+        }
+      }
+    },
+    "organizations": {
+      "resources": {
+        "roles": {
+          "methods": {
+            "list": {
+              "id": "iam.organizations.roles.list",
+              "path": "v1/{+parent}/roles",
+              "flatPath": "v1/organizations/{organizationsId}/roles",
+              "httpMethod": "GET",
+              "parameters": {
+                "parent": {
+                  "description": "The `parent` parameter's value depends on the target resource for the request, namely [`roles`](\/iam\/reference\/rest\/v1\/roles), [`projects`](\/iam\/reference\/rest\/v1\/projects.roles), or [`organizations`](\/iam\/reference\/rest\/v1\/organizations.roles). Each resource type's `parent` value format is described below: * [`roles.list()`](\/iam\/reference\/rest\/v1\/roles\/list): An empty string. This method doesn't require a resource; it simply returns all [predefined roles](\/iam\/docs\/understanding-roles#predefined_roles) in Cloud IAM. Example request URL: `https:\/\/iam.googleapis.com\/v1\/roles` * [`projects.roles.list()`](\/iam\/reference\/rest\/v1\/projects.roles\/list): `projects\/{PROJECT_ID}`. This method lists all project-level [custom roles](\/iam\/docs\/understanding-custom-roles). Example request URL: `https:\/\/iam.googleapis.com\/v1\/projects\/{PROJECT_ID}\/roles` * [`organizations.roles.list()`](\/iam\/reference\/rest\/v1\/organizations.roles\/list): `organizations\/{ORGANIZATION_ID}`. This method lists all organization-level [custom roles](\/iam\/docs\/understanding-custom-roles). Example request URL: `https:\/\/iam.googleapis.com\/v1\/organizations\/{ORGANIZATION_ID}\/roles` Note: Wildcard (*) values are invalid; you must specify a complete project ID or organization ID.",
+                  "pattern": "^organizations\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "pageSize": {
+                  "description": "Optional limit on the number of roles to include in the response. The default is 300, and the maximum is 1,000.",
+                  "location": "query",
+                  "type": "integer",
+                  "format": "int32"
+                },
+                "pageToken": {
+                  "description": "Optional pagination token returned in an earlier ListRolesResponse.",
+                  "location": "query",
+                  "type": "string"
+                },
+                "view": {
+                  "description": "Optional view for the returned Role objects. When `FULL` is specified, the `includedPermissions` field is returned, which includes a list of all permissions in the role. The default value is `BASIC`, which does not return the `includedPermissions` field.",
+                  "location": "query",
+                  "type": "string",
+                  "enumDescriptions": [
+                    "Omits the `included_permissions` field. This is the default value.",
+                    "Returns all fields."
+                  ],
+                  "enum": [
+                    "BASIC",
+                    "FULL"
+                  ]
+                },
+                "showDeleted": {
+                  "description": "Include Roles that have been deleted.",
+                  "location": "query",
+                  "type": "boolean"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "response": {
+                "$ref": "ListRolesResponse"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Lists every predefined Role that IAM supports, or every custom role that is defined for an organization or project."
+            },
+            "get": {
+              "id": "iam.organizations.roles.get",
+              "path": "v1/{+name}",
+              "flatPath": "v1/organizations/{organizationsId}/roles/{rolesId}",
+              "httpMethod": "GET",
+              "parameters": {
+                "name": {
+                  "description": "The `name` parameter's value depends on the target resource for the request, namely [`roles`](\/iam\/reference\/rest\/v1\/roles), [`projects`](\/iam\/reference\/rest\/v1\/projects.roles), or [`organizations`](\/iam\/reference\/rest\/v1\/organizations.roles). Each resource type's `name` value format is described below: * [`roles.get()`](\/iam\/reference\/rest\/v1\/roles\/get): `roles\/{ROLE_NAME}`. This method returns results from all [predefined roles](\/iam\/docs\/understanding-roles#predefined_roles) in Cloud IAM. Example request URL: `https:\/\/iam.googleapis.com\/v1\/roles\/{ROLE_NAME}` * [`projects.roles.get()`](\/iam\/reference\/rest\/v1\/projects.roles\/get): `projects\/{PROJECT_ID}\/roles\/{CUSTOM_ROLE_ID}`. This method returns only [custom roles](\/iam\/docs\/understanding-custom-roles) that have been created at the project level. Example request URL: `https:\/\/iam.googleapis.com\/v1\/projects\/{PROJECT_ID}\/roles\/{CUSTOM_ROLE_ID}` * [`organizations.roles.get()`](\/iam\/reference\/rest\/v1\/organizations.roles\/get): `organizations\/{ORGANIZATION_ID}\/roles\/{CUSTOM_ROLE_ID}`. This method returns only [custom roles](\/iam\/docs\/understanding-custom-roles) that have been created at the organization level. Example request URL: `https:\/\/iam.googleapis.com\/v1\/organizations\/{ORGANIZATION_ID}\/roles\/{CUSTOM_ROLE_ID}` Note: Wildcard (*) values are invalid; you must specify a complete project ID or organization ID.",
+                  "pattern": "^organizations\/[^\/]+\/roles\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "Role"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Gets the definition of a Role."
+            },
+            "create": {
+              "id": "iam.organizations.roles.create",
+              "path": "v1/{+parent}/roles",
+              "flatPath": "v1/organizations/{organizationsId}/roles",
+              "httpMethod": "POST",
+              "parameters": {
+                "parent": {
+                  "description": "The `parent` parameter's value depends on the target resource for the request, namely [`projects`](\/iam\/reference\/rest\/v1\/projects.roles) or [`organizations`](\/iam\/reference\/rest\/v1\/organizations.roles). Each resource type's `parent` value format is described below: * [`projects.roles.create()`](\/iam\/reference\/rest\/v1\/projects.roles\/create): `projects\/{PROJECT_ID}`. This method creates project-level [custom roles](\/iam\/docs\/understanding-custom-roles). Example request URL: `https:\/\/iam.googleapis.com\/v1\/projects\/{PROJECT_ID}\/roles` * [`organizations.roles.create()`](\/iam\/reference\/rest\/v1\/organizations.roles\/create): `organizations\/{ORGANIZATION_ID}`. This method creates organization-level [custom roles](\/iam\/docs\/understanding-custom-roles). Example request URL: `https:\/\/iam.googleapis.com\/v1\/organizations\/{ORGANIZATION_ID}\/roles` Note: Wildcard (*) values are invalid; you must specify a complete project ID or organization ID.",
+                  "pattern": "^organizations\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "parent"
+              ],
+              "request": {
+                "$ref": "CreateRoleRequest"
+              },
+              "response": {
+                "$ref": "Role"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Creates a new custom Role."
+            },
+            "patch": {
+              "id": "iam.organizations.roles.patch",
+              "path": "v1/{+name}",
+              "flatPath": "v1/organizations/{organizationsId}/roles/{rolesId}",
+              "httpMethod": "PATCH",
+              "parameters": {
+                "name": {
+                  "description": "The `name` parameter's value depends on the target resource for the request, namely [`projects`](\/iam\/reference\/rest\/v1\/projects.roles) or [`organizations`](\/iam\/reference\/rest\/v1\/organizations.roles). Each resource type's `name` value format is described below: * [`projects.roles.patch()`](\/iam\/reference\/rest\/v1\/projects.roles\/patch): `projects\/{PROJECT_ID}\/roles\/{CUSTOM_ROLE_ID}`. This method updates only [custom roles](\/iam\/docs\/understanding-custom-roles) that have been created at the project level. Example request URL: `https:\/\/iam.googleapis.com\/v1\/projects\/{PROJECT_ID}\/roles\/{CUSTOM_ROLE_ID}` * [`organizations.roles.patch()`](\/iam\/reference\/rest\/v1\/organizations.roles\/patch): `organizations\/{ORGANIZATION_ID}\/roles\/{CUSTOM_ROLE_ID}`. This method updates only [custom roles](\/iam\/docs\/understanding-custom-roles) that have been created at the organization level. Example request URL: `https:\/\/iam.googleapis.com\/v1\/organizations\/{ORGANIZATION_ID}\/roles\/{CUSTOM_ROLE_ID}` Note: Wildcard (*) values are invalid; you must specify a complete project ID or organization ID.",
+                  "pattern": "^organizations\/[^\/]+\/roles\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "updateMask": {
+                  "description": "A mask describing which fields in the Role have changed.",
+                  "location": "query",
+                  "type": "string",
+                  "format": "google-fieldmask"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "Role"
+              },
+              "response": {
+                "$ref": "Role"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Updates the definition of a custom Role."
+            },
+            "delete": {
+              "id": "iam.organizations.roles.delete",
+              "path": "v1/{+name}",
+              "flatPath": "v1/organizations/{organizationsId}/roles/{rolesId}",
+              "httpMethod": "DELETE",
+              "parameters": {
+                "name": {
+                  "description": "The `name` parameter's value depends on the target resource for the request, namely [`projects`](\/iam\/reference\/rest\/v1\/projects.roles) or [`organizations`](\/iam\/reference\/rest\/v1\/organizations.roles). Each resource type's `name` value format is described below: * [`projects.roles.delete()`](\/iam\/reference\/rest\/v1\/projects.roles\/delete): `projects\/{PROJECT_ID}\/roles\/{CUSTOM_ROLE_ID}`. This method deletes only [custom roles](\/iam\/docs\/understanding-custom-roles) that have been created at the project level. Example request URL: `https:\/\/iam.googleapis.com\/v1\/projects\/{PROJECT_ID}\/roles\/{CUSTOM_ROLE_ID}` * [`organizations.roles.delete()`](\/iam\/reference\/rest\/v1\/organizations.roles\/delete): `organizations\/{ORGANIZATION_ID}\/roles\/{CUSTOM_ROLE_ID}`. This method deletes only [custom roles](\/iam\/docs\/understanding-custom-roles) that have been created at the organization level. Example request URL: `https:\/\/iam.googleapis.com\/v1\/organizations\/{ORGANIZATION_ID}\/roles\/{CUSTOM_ROLE_ID}` Note: Wildcard (*) values are invalid; you must specify a complete project ID or organization ID.",
+                  "pattern": "^organizations\/[^\/]+\/roles\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "etag": {
+                  "description": "Used to perform a consistent read-modify-write.",
+                  "location": "query",
+                  "type": "string",
+                  "format": "byte"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "response": {
+                "$ref": "Role"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Deletes a custom Role. When you delete a custom role, the following changes occur immediately: * You cannot bind a principal to the custom role in an IAM Policy. * Existing bindings to the custom role are not changed, but they have no effect. * By default, the response from ListRoles does not include the custom role. You have 7 days to undelete the custom role. After 7 days, the following changes occur: * The custom role is permanently deleted and cannot be recovered. * If an IAM policy contains a binding to the custom role, the binding is permanently removed."
+            },
+            "undelete": {
+              "id": "iam.organizations.roles.undelete",
+              "path": "v1/{+name}:undelete",
+              "flatPath": "v1/organizations/{organizationsId}/roles/{rolesId}:undelete",
+              "httpMethod": "POST",
+              "parameters": {
+                "name": {
+                  "description": "The `name` parameter's value depends on the target resource for the request, namely [`projects`](\/iam\/reference\/rest\/v1\/projects.roles) or [`organizations`](\/iam\/reference\/rest\/v1\/organizations.roles). Each resource type's `name` value format is described below: * [`projects.roles.undelete()`](\/iam\/reference\/rest\/v1\/projects.roles\/undelete): `projects\/{PROJECT_ID}\/roles\/{CUSTOM_ROLE_ID}`. This method undeletes only [custom roles](\/iam\/docs\/understanding-custom-roles) that have been created at the project level. Example request URL: `https:\/\/iam.googleapis.com\/v1\/projects\/{PROJECT_ID}\/roles\/{CUSTOM_ROLE_ID}` * [`organizations.roles.undelete()`](\/iam\/reference\/rest\/v1\/organizations.roles\/undelete): `organizations\/{ORGANIZATION_ID}\/roles\/{CUSTOM_ROLE_ID}`. This method undeletes only [custom roles](\/iam\/docs\/understanding-custom-roles) that have been created at the organization level. Example request URL: `https:\/\/iam.googleapis.com\/v1\/organizations\/{ORGANIZATION_ID}\/roles\/{CUSTOM_ROLE_ID}` Note: Wildcard (*) values are invalid; you must specify a complete project ID or organization ID.",
+                  "pattern": "^organizations\/[^\/]+\/roles\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "UndeleteRoleRequest"
+              },
+              "response": {
+                "$ref": "Role"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Undeletes a custom Role."
+            }
+          }
+        }
+      }
+    },
+    "permissions": {
+      "methods": {
+        "queryTestablePermissions": {
+          "id": "iam.permissions.queryTestablePermissions",
+          "path": "v1/permissions:queryTestablePermissions",
+          "flatPath": "v1/permissions:queryTestablePermissions",
+          "httpMethod": "POST",
+          "parameters": {
+          },
+          "parameterOrder": [
+          ],
+          "request": {
+            "$ref": "QueryTestablePermissionsRequest"
+          },
+          "response": {
+            "$ref": "QueryTestablePermissionsResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Lists every permission that you can test on a resource. A permission is testable if you can check whether a principal has that permission on the resource."
+        }
+      }
+    },
+    "iamPolicies": {
+      "methods": {
+        "queryAuditableServices": {
+          "id": "iam.iamPolicies.queryAuditableServices",
+          "path": "v1/iamPolicies:queryAuditableServices",
+          "flatPath": "v1/iamPolicies:queryAuditableServices",
+          "httpMethod": "POST",
+          "parameters": {
+          },
+          "parameterOrder": [
+          ],
+          "request": {
+            "$ref": "QueryAuditableServicesRequest"
+          },
+          "response": {
+            "$ref": "QueryAuditableServicesResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Returns a list of services that allow you to opt into audit logs that are not generated by default. To learn more about audit logs, see the [Logging documentation](https:\/\/cloud.google.com\/logging\/docs\/audit)."
+        },
+        "lintPolicy": {
+          "id": "iam.iamPolicies.lintPolicy",
+          "path": "v1/iamPolicies:lintPolicy",
+          "flatPath": "v1/iamPolicies:lintPolicy",
+          "httpMethod": "POST",
+          "parameters": {
+          },
+          "parameterOrder": [
+          ],
+          "request": {
+            "$ref": "LintPolicyRequest"
+          },
+          "response": {
+            "$ref": "LintPolicyResponse"
+          },
+          "scopes": [
+            "https://www.googleapis.com/auth/cloud-platform"
+          ],
+          "description": "Lints, or validates, an IAM policy. Currently checks the google.iam.v1.Binding.condition field, which contains a condition expression for a role binding. Successful calls to this method always return an HTTP `200 OK` status code, even if the linter detects an issue in the IAM policy."
         }
       }
     }

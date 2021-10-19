@@ -789,27 +789,28 @@ version [{1}].  To clear your fixed version setting, run:
     return (current_version, latest_version)
 
   def _HashRcfiles(self, shell_rc_files):
-    """Creates the md5 checksums of files.
+    """Creates the sha256 checksums of files.
 
     Args:
-      shell_rc_files: list, A list of files to get the md5 checksums.
+      shell_rc_files: list, A list of files to get the sha256 checksums.
     Returns:
-      md5dict, dictionary of m5 file sums.
+      sha256dict, dictionary of sha256 file sums.
     """
 
-    md5dict = {}
+    sha256dict = {}
     for name in shell_rc_files:
       try:
         fpath = os.path.join(self.__sdk_root, name)
         if not os.path.exists(fpath):
           continue
 
-        md5 = hashlib.md5(file_utils.ReadBinaryFileContents(fpath)).hexdigest()
-        md5dict[name] = md5
+        sha256 = hashlib.sha256(
+            file_utils.ReadBinaryFileContents(fpath)).hexdigest()
+        sha256dict[name] = sha256
       except OSError:
-        md5dict[name] = 0
+        sha256dict[name] = 0
         continue
-    return md5dict
+    return sha256dict
 
   def _PrintPendingAction(self, components, action):
     """Prints info about components we are going to install or remove.

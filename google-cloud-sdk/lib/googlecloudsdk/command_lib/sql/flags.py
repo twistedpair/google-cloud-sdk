@@ -243,7 +243,8 @@ def AddBackupStartTime(parser):
       '--backup-start-time',
       required=False,
       help=('Start time of daily backups, specified in the 24 hour '
-            'format - HH:MM, in the UTC timezone.'))
+            'format - HH:MM, in the UTC timezone. A random backup time is '
+            'selected if this is not specified and backups are enabled.'))
 
 
 def AddBackupLocation(parser, allow_empty):
@@ -963,6 +964,103 @@ def AddBackupRunId(parser):
       type=arg_parsers.BoundedInt(lower_bound=1, unlimited=True),
       help='The ID of the backup run. You can find the ID by running '
             '$ gcloud sql backups list -i {instance}.')
+
+
+def AddPasswordPolicyMinLength(parser):
+  """Add the flag to specify password policy min length.
+
+  Args:
+    parser: The current argparse parser to add this to.
+  """
+  parser.add_argument(
+      '--password-policy-min-length',
+      type=int,
+      required=False,
+      default=None,
+      help='Minimum number of characters allowed in the password.')
+
+
+def AddPasswordPolicyComplexity(parser):
+  """Add the flag to specify password policy complexity.
+
+  Args:
+    parser: The current argparse parser to add this to.
+  """
+  parser.add_argument(
+      '--password-policy-complexity',
+      choices={
+          'COMPLEXITY_UNSPECIFIED':
+              'The default value if COMPLEXITY_DEFAULT is not specified. It implies that complexity check is not enabled.',
+          'COMPLEXITY_DEFAULT':
+              'A combination of lowercase, uppercase, numeric, and non-alphanumeric characters.'
+      },
+      required=False,
+      default=None,
+      help='The complexity of the password.')
+
+
+def AddPasswordPolicyReuseInterval(parser):
+  """Add the flag to specify password policy reuse interval.
+
+  Args:
+    parser: The current argparse parser to add this to.
+  """
+  parser.add_argument(
+      '--password-policy-reuse-interval',
+      type=arg_parsers.BoundedInt(lower_bound=0, upper_bound=100),
+      required=False,
+      default=None,
+      help='Number of previous passwords that cannot be reused. The valid range is between 0 and 100.'
+  )
+
+
+def AddPasswordPolicyDisallowUsernameSubstring(parser,
+                                               show_negated_in_help=True):
+  """Add the flag to specify password policy disallow username as substring.
+
+  Args:
+    parser: The current argparse parser to add this to.
+    show_negated_in_help: Show nagative action in help.
+  """
+  kwargs = _GetKwargsForBoolFlag(show_negated_in_help)
+  parser.add_argument(
+      '--password-policy-disallow-username-substring',
+      required=False,
+      help='Disallow username as a part of the password.',
+      **kwargs)
+
+
+def AddPasswordPolicyPasswordChangeInterval(parser):
+  """Add the flag to specify password policy password change interval.
+
+  Args:
+    parser: The current argparse parser to add this to.
+  """
+  parser.add_argument(
+      '--password-policy-password-change-interval',
+      default=None,
+      type=arg_parsers.Duration(lower_bound='1s'),
+      required=False,
+      help="""\
+        Minimum interval after which the password can be changed, for example,
+        2m for 2 minutes. See <a href="/sdk/gcloud/reference/topic/datetimes">
+        $ gcloud topic datetimes</a> for information on duration formats.
+      """)
+
+
+def AddPasswordPolicyClearPasswordPolicy(parser, show_negated_in_help=False):
+  """Add the flag to clear password policy.
+
+  Args:
+    parser: The current argparse parser to add this to.
+    show_negated_in_help: Show nagative action in help.
+  """
+  kwargs = _GetKwargsForBoolFlag(show_negated_in_help)
+  parser.add_argument(
+      '--clear-password-policy',
+      required=False,
+      help='Clear the existing password policy.',
+      **kwargs)
 
 
 INSTANCES_USERLABELS_FORMAT = ':(settings.userLabels:alias=labels:label=LABELS)'

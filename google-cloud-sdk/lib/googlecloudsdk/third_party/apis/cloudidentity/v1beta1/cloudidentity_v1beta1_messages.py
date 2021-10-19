@@ -2423,18 +2423,19 @@ class MemberRelation(_messages.Message):
 
   Enums:
     RelationTypeValueValuesEnum: The relation between the group and the
-      transitive member.
+      transitive membership.
 
   Fields:
     member: Resource name for this member.
     preferredMemberKey: Entity key has an id and a namespace. In case of
       discussion forums, the id will be an email address without a namespace.
-    relationType: The relation between the group and the transitive member.
+    relationType: The relation between the group and the transitive
+      membership.
     roles: The membership role details (i.e name of role and expiry time).
   """
 
   class RelationTypeValueValuesEnum(_messages.Enum):
-    r"""The relation between the group and the transitive member.
+    r"""The relation between the group and the transitive membership.
 
     Values:
       RELATION_TYPE_UNSPECIFIED: The relation type is undefined or
@@ -2773,12 +2774,12 @@ class RestrictionEvaluation(_messages.Message):
     Values:
       STATE_UNSPECIFIED: Default. Should not be used.
       EVALUATING: The restriction state is currently being evaluated.
-      COMPLIANT: All transitive members are adhering to restriction.
-      FORWARD_COMPLIANT: Some transitive members violate the restriction. No
-        new violating members can be added.
-      NON_COMPLIANT: Some transitive members violate the restriction. New
-        violating direct members will be denied while indirect members may be
-        added.
+      COMPLIANT: All transitive memberships are adhering to restriction.
+      FORWARD_COMPLIANT: Some transitive memberships violate the restriction.
+        No new violating memberships can be added.
+      NON_COMPLIANT: Some transitive memberships violate the restriction. New
+        violating direct memberships will be denied while indirect memberships
+        may be added.
     """
     STATE_UNSPECIFIED = 0
     EVALUATING = 1
@@ -2831,7 +2832,7 @@ class SearchTransitiveMembershipsResponse(_messages.Message):
   r"""The response message for MembershipsService.SearchTransitiveMemberships.
 
   Fields:
-    memberships: List of transitive members satisfying the query.
+    memberships: List of transitive memberships satisfying the query.
     nextPageToken: Token to retrieve the next page of results, or empty if
       there are no more results.
   """

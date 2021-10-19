@@ -20,6 +20,8 @@ from __future__ import unicode_literals
 
 import argparse
 import datetime
+import random
+
 from googlecloudsdk.api_lib.sql import api_util as common_api_util
 from googlecloudsdk.api_lib.sql import constants
 from googlecloudsdk.api_lib.sql import exceptions as sql_exceptions
@@ -61,12 +63,15 @@ def SqlServerAuditConfig(sql_messages, bucket=None):
 def BackupConfiguration(sql_messages,
                         instance=None,
                         backup_enabled=None,
+                        backup_specified=None,
                         backup_location=None,
                         backup_start_time=None,
                         enable_bin_log=None,
                         enable_point_in_time_recovery=None,
                         retained_backups_count=None,
-                        retained_transaction_log_days=None):
+                        retained_transaction_log_days=None,
+                        is_new_primary=None,
+                        is_new_replica=None):
   """Generates the backup configuration for the instance.
 
   Args:
@@ -74,6 +79,7 @@ def BackupConfiguration(sql_messages,
     instance: sql_messages.DatabaseInstance, the original instance, if the
       previous state is needed.
     backup_enabled: boolean, True if backup should be enabled.
+    backup_specified: boolean, True if the backup argument was specified.
     backup_location: string, location where to store backups by default.
     backup_start_time: string, start time of backup specified in 24-hour format.
     enable_bin_log: boolean, True if binary logging should be enabled.
@@ -82,6 +88,9 @@ def BackupConfiguration(sql_messages,
     retained_backups_count: int, how many backups to keep stored.
     retained_transaction_log_days: int, how many days of transaction logs to
       keep stored.
+    is_new_primary: boolean, Whether this is to create a new primary
+      instance.
+    is_new_replica: boolean, Whether this is to create a new replica.
 
   Returns:
     sql_messages.BackupConfiguration object, or None
@@ -89,16 +98,26 @@ def BackupConfiguration(sql_messages,
   Raises:
     ToolException: Bad combination of arguments.
   """
-  should_generate_config = any([
-      backup_location is not None,
-      backup_start_time,
-      enable_bin_log is not None,
-      enable_point_in_time_recovery is not None,
-      retained_backups_count is not None,
-      retained_transaction_log_days is not None,
-      not backup_enabled,
-  ])
+  if not backup_enabled:
+    if (backup_location is not None or backup_start_time or
+        retained_backups_count is not None or
+        retained_transaction_log_days is not None):
+      raise sql_exceptions.ArgumentError(
+          'Argument --no-backup not allowed with --backup-location, '
+          '--backup-start-time, --retained-backups-count, or '
+          '--retained-transaction-log-days')
 
+  should_generate_config = _ShouldGenerateConfig(
+      backup_enabled=backup_enabled,
+      backup_location=backup_location,
+      backup_specified=backup_specified,
+      backup_start_time=backup_start_time,
+      enable_bin_log=enable_bin_log,
+      enable_point_in_time_recovery=enable_point_in_time_recovery,
+      retained_backups_count=retained_backups_count,
+      retained_transaction_log_days=retained_transaction_log_days,
+      is_new_primary=is_new_primary,
+      is_new_replica=is_new_replica)
   if not should_generate_config:
     return None
 
@@ -110,11 +129,16 @@ def BackupConfiguration(sql_messages,
   else:
     backup_config = instance.settings.backupConfiguration
 
+  backup_config.enabled = backup_enabled
+
   if backup_location is not None:
     backup_config.location = backup_location
     backup_config.enabled = True
   if backup_start_time:
     backup_config.startTime = backup_start_time
+    backup_config.enabled = True
+  elif backup_enabled:
+    backup_config.startTime = _GetRandomStartTime()
     backup_config.enabled = True
 
   if retained_backups_count is not None:
@@ -130,16 +154,6 @@ def BackupConfiguration(sql_messages,
   if retained_transaction_log_days is not None:
     backup_config.transactionLogRetentionDays = retained_transaction_log_days
     backup_config.enabled = True
-
-  if not backup_enabled:
-    if (backup_location is not None or backup_start_time or
-        retained_backups_count is not None or
-        retained_transaction_log_days is not None):
-      raise sql_exceptions.ArgumentError(
-          'Argument --no-backup not allowed with --backup-location, '
-          '--backup-start-time, --retained-backups-count, or '
-          '--retained-transaction-log-days')
-    backup_config.enabled = False
 
   if enable_bin_log is not None:
     backup_config.binaryLogEnabled = enable_bin_log
@@ -394,6 +408,61 @@ def _CustomMachineTypeString(cpu, memory_mib):
   return machine_type
 
 
+def _GetRandomStartTime():
+  """Generates a random start time for backups.
+
+  Returns:
+    A random start time for backups in 24 hour format (HH:MM)
+  """
+  return '%02d:00' % random.randint(0, 23)
+
+
+def _ShouldGenerateConfig(backup_enabled=None,
+                          backup_location=None,
+                          backup_specified=None,
+                          backup_start_time=None,
+                          enable_bin_log=None,
+                          enable_point_in_time_recovery=None,
+                          retained_backups_count=None,
+                          retained_transaction_log_days=None,
+                          is_new_primary=None,
+                          is_new_replica=None):
+  """Determines whether a backup config should be generated.
+
+  Args:
+    backup_enabled: boolean, True if backup should be enabled.
+    backup_location: string, location where to store backups by default.
+    backup_specified: boolean, True if the backup argument was specified.
+    backup_start_time: string, start time of backup specified in 24-hour format.
+    enable_bin_log: boolean, True if binary logging should be enabled.
+    enable_point_in_time_recovery: boolean, True if point-in-time recovery
+      (using write-ahead log archiving) should be enabled.
+    retained_backups_count: int, how many backups to keep stored.
+    retained_transaction_log_days: int, how many days of transaction logs to
+      keep stored.
+    is_new_primary: boolean, True if this is to create a new primary instance.
+    is_new_replica: boolean, True if this is to create a new replica.
+
+  Returns:
+    Whether a backup config should be generated.
+  """
+  if is_new_replica:
+    return False
+
+  if is_new_primary:
+    return False if backup_specified and not backup_enabled else True
+
+  return any([
+      not backup_enabled,
+      backup_location is not None,
+      backup_start_time,
+      enable_bin_log is not None,
+      enable_point_in_time_recovery is not None,
+      retained_backups_count is not None,
+      retained_transaction_log_days is not None,
+  ])
+
+
 def MachineType(instance=None, tier=None, memory=None, cpu=None):
   """Generates the machine type for the instance.
 
@@ -548,3 +617,75 @@ def Region(specified_region, gce_zone, secondary_zone=None):
     derived_region = api_util.GetRegionFromZone(gce_zone)
     return derived_region
   return specified_region
+
+
+def _ParseComplexity(sql_messages, complexity):
+  if complexity:
+    return sql_messages.PasswordValidationPolicy.ComplexityValueValuesEnum.lookup_by_name(
+        complexity.upper())
+  return None
+
+
+def PasswordPolicy(sql_messages,
+                   password_policy_min_length=None,
+                   password_policy_complexity=None,
+                   password_policy_reuse_interval=None,
+                   password_policy_disallow_username_substring=None,
+                   password_policy_password_change_interval=None,
+                   clear_password_policy=None):
+  """Generates or clears password policy for the instance.
+
+  Args:
+    sql_messages: module, The messages module that should be used.
+    password_policy_min_length: int, Minimum number of characters allowed.
+    password_policy_complexity: string, The complexity of the password.
+    password_policy_reuse_interval: int, Number of previous passwords that
+      cannot be reused.
+    password_policy_disallow_username_substring: boolean, True if disallow
+      username as a part of the password.
+    password_policy_password_change_interval: duration, Minimum interval at
+      which password can be changed.
+    clear_password_policy: boolean, True if clear existing password policy.
+
+  Returns:
+    sql_messages.PasswordValidationPolicy or None
+
+  """
+  should_generate_policy = any([
+      password_policy_min_length is not None,
+      password_policy_complexity is not None,
+      password_policy_reuse_interval is not None,
+      password_policy_disallow_username_substring is not None,
+      password_policy_password_change_interval is not None,
+      clear_password_policy is not None,
+  ])
+  if not should_generate_policy:
+    return None
+
+  # Config exists, generate password policy.
+  password_policy = sql_messages.PasswordValidationPolicy()
+
+  # Clear password policy is to replace existing policy with an empty one.
+  if clear_password_policy:
+    # TODO(b/202780321): Use clear fields instead.
+    password_policy.minLength = 0
+    password_policy.complexity = sql_messages.PasswordValidationPolicy.ComplexityValueValuesEnum.COMPLEXITY_UNSPECIFIED
+    password_policy.reuseInterval = 0
+    password_policy.disallowUsernameSubstring = False
+    password_policy.passwordChangeInterval = '0s'
+    return password_policy
+
+  if password_policy_min_length is not None:
+    password_policy.minLength = password_policy_min_length
+  if password_policy_complexity is not None:
+    password_policy.complexity = _ParseComplexity(sql_messages,
+                                                  password_policy_complexity)
+  if password_policy_reuse_interval is not None:
+    password_policy.reuseInterval = password_policy_reuse_interval
+  if password_policy_disallow_username_substring is not None:
+    password_policy.disallowUsernameSubstring = password_policy_disallow_username_substring
+  if password_policy_password_change_interval is not None:
+    password_policy.passwordChangeInterval = str(
+        password_policy_password_change_interval) + 's'
+
+  return password_policy

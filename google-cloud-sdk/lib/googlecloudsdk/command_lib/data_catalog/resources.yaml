@@ -126,7 +126,7 @@ crawler:
     parameter_name: crawlersId
     attribute_name: crawler
     help: |
-      The Cloud Data Catalog crawler for the {resource}.
+      The Data Catalog crawler for the {resource}.
 
 crawler_run:
   name: crawler run
@@ -138,7 +138,7 @@ crawler_run:
     parameter_name: crawlerRunsId
     attribute_name: crawler_run
     help: |
-      The Cloud Data Catalog crawler run for the {resource}.
+      The Data Catalog crawler run for the {resource}.
 
 tag_template:
   name: tag template

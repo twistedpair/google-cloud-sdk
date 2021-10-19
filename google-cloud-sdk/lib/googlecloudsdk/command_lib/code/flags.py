@@ -251,6 +251,10 @@ class CommonFlags(FlagDefs):
 
     if release_track == base.ReleaseTrack.ALPHA:
       self._AddAlphaFlags()
+    # See AssembleSettings for where we decide how to parse service_config args
+    # based on release track.
+    appyaml_support = release_track == base.ReleaseTrack.ALPHA
+    self.AddServiceConfigPositionalArg(include_app_engine_docs=appyaml_support)
 
   def _AddBetaFlags(self):
     """Set up flags that are for alpha and beta tracks."""
@@ -262,20 +266,16 @@ class CommonFlags(FlagDefs):
     self.AddReadinessProbe()
     self.AddAllowSecretManagerFlag()
     self.AddSecrets()
+    self.BuildersGroup().AddBuilder()
 
   def _AddAlphaFlags(self):
     """Set up flags that are for alpha track only."""
-
-    # See AssembleSettings for where we decide how to parse service_config args
-    # based on release track.
-    self.AddServiceConfigPositionalArg(include_app_engine_docs=True)
 
     self.AddCloudsqlInstances()
     self.AddServiceName()
     self.AddImage()
     self.AddMemory()
     self.AddCpu()
-    self.BuildersGroup().AddBuilder()
     self.EnvVarsGroup().AddEnvVars()
     self.EnvVarsGroup().AddEnvVarsFile()
 

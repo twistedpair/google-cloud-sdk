@@ -1981,8 +1981,8 @@ class OsconfigProjectsLocationsInstancesInventoriesListRequest(_messages.Message
   view = _messages.EnumField('ViewValueValuesEnum', 5)
 
 
-class OsconfigProjectsLocationsInstancesOsPolicyAssignmentsGetReportRequest(_messages.Message):
-  r"""A OsconfigProjectsLocationsInstancesOsPolicyAssignmentsGetReportRequest
+class OsconfigProjectsLocationsInstancesOsPolicyAssignmentsReportsGetRequest(_messages.Message):
+  r"""A OsconfigProjectsLocationsInstancesOsPolicyAssignmentsReportsGetRequest
   object.
 
   Fields:
@@ -2248,6 +2248,25 @@ class OsconfigProjectsPatchDeploymentsListRequest(_messages.Message):
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+
+
+class OsconfigProjectsPatchDeploymentsPatchRequest(_messages.Message):
+  r"""A OsconfigProjectsPatchDeploymentsPatchRequest object.
+
+  Fields:
+    name: Unique name for the patch deployment resource in a project. The
+      patch deployment name is in the form:
+      `projects/{project_id}/patchDeployments/{patch_deployment_id}`. This
+      field is ignored when you create a new patch deployment.
+    patchDeployment: A PatchDeployment resource to be passed as the request
+      body.
+    updateMask: Optional. Field mask that controls which fields of the patch
+      deployment should be updated.
+  """
+
+  name = _messages.StringField(1, required=True)
+  patchDeployment = _messages.MessageField('PatchDeployment', 2)
+  updateMask = _messages.StringField(3)
 
 
 class OsconfigProjectsPatchJobsCancelRequest(_messages.Message):
@@ -2779,10 +2798,13 @@ class RecurringSchedule(_messages.Message):
         weeks.
       MONTHLY: Indicates that the frequency should be expressed in terms of
         months.
+      DAILY: Indicates that the frequency should be expressed in terms of
+        days.
     """
     FREQUENCY_UNSPECIFIED = 0
     WEEKLY = 1
     MONTHLY = 2
+    DAILY = 3
 
   endTime = _messages.StringField(1)
   frequency = _messages.EnumField('FrequencyValueValuesEnum', 2)

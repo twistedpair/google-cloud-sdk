@@ -44,8 +44,16 @@ def FormatResponse(response, _):
         'persistenceIamIdentity'] = response.persistenceIamIdentity
   if response.port:
     modified_response['port'] = response.port
+  if response.readEndpoint:
+    modified_response['readEndpoint'] = response.readEndpoint
+  if response.readEndpointPort:
+    modified_response['readEndpointPort'] = response.readEndpointPort
+  if response.readReplicasMode:
+    modified_response['readReplicasMode'] = response.readReplicasMode
   if response.redisVersion:
     modified_response['redisVersion'] = response.redisVersion
+  if response.replicaCount:
+    modified_response['replicaCount'] = response.replicaCount
   if response.reservedIpRange:
     modified_response['reservedIpRange'] = response.reservedIpRange
   if response.state:
@@ -74,4 +82,5 @@ def FormatResponse(response, _):
 
     modified_mw_policy['maintenanceWindow'] = modified_mwlist
     modified_response['maintenancePolicy'] = modified_mw_policy
+
   return modified_response

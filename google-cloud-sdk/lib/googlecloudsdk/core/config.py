@@ -239,10 +239,6 @@ class Paths(object):
 
   Attributes:
     global_config_dir: str, The path to the user's global config area.
-    workspace_dir: str, The path of the current workspace or None if not in a
-      workspace.
-    workspace_config_dir: str, The path to the config directory under the
-      current workspace, or None if not in a workspace.
   """
   CLOUDSDK_STATE_DIR = '.install'
   CLOUDSDK_PROPERTIES_NAME = 'properties'
@@ -313,12 +309,19 @@ class Paths(object):
   def cid_path(self):
     """Gets the path to the file to store the client ID.
 
-    This is always stored in the global location because it is per install.
-
     Returns:
       str, The path to the file.
     """
     return os.path.join(self.global_config_dir, '.metricsUUID')
+
+  @property
+  def feature_flags_config_path(self):
+    """Gets the path to the file to store the cached feature flags config file.
+
+    Returns:
+      str, The path to the file.
+    """
+    return os.path.join(self.global_config_dir, '.feature_flags_config.yaml')
 
   @property
   def update_check_cache_path(self):
@@ -436,6 +439,7 @@ class Paths(object):
 
   @property
   def container_config_path(self):
+    """Absolute path of the container config dir."""
     return os.path.join(self.global_config_dir, 'kubernetes')
 
   @property

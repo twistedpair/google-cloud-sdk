@@ -12,7 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Utilities for Cloud Data Catalog taxonomies commands."""
+"""Utilities for Data Catalog taxonomies commands."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -55,7 +55,7 @@ def ProcessTaxonomiesFromYAML(inline_source, version_label):
                                    'input file.')
   unrecognized_field_paths = _GetUnrecognizedFieldPaths(import_request_message)
   if unrecognized_field_paths:
-    error_msg_lines = ['Invalid inline source, the following fields are '
+    error_msg_lines = ['Invalid inline source, the following fields are ' +
                        'unrecognized:']
     error_msg_lines += unrecognized_field_paths
     raise InvalidInlineSourceError('\n'.join(error_msg_lines))

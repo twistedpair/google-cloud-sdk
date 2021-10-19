@@ -25,6 +25,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import contextlib
 import json
 
 from apitools.base.py import encoding
@@ -32,7 +33,6 @@ from apitools.base.py import exceptions as apitools_exceptions
 from apitools.base.py import http_wrapper as apitools_http_wrapper
 from apitools.base.py import list_pager
 from apitools.base.py import transfer as apitools_transfer
-
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.api_lib.storage import errors as cloud_errors
 from googlecloudsdk.api_lib.storage import gcs_metadata_util
@@ -43,6 +43,7 @@ from googlecloudsdk.api_lib.storage import patch_gcs_messages
 # pylint: enable=unused-import
 from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.calliope import exceptions as calliope_errors
+from googlecloudsdk.command_lib.storage import encryption_util
 from googlecloudsdk.command_lib.storage import errors as command_errors
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage import tracker_file_util
@@ -55,7 +56,6 @@ from googlecloudsdk.core.credentials import transports
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import retry
 from googlecloudsdk.core.util import scaled_integer
-
 import oauth2client
 
 
@@ -201,6 +201,26 @@ class GcsApi(cloud_api.CloudApi):
     self._stream_response_handler = _StorageStreamResponseHandler()
     self._download_http_client = None
     self._upload_http_client = None
+
+  @contextlib.contextmanager
+  def _apitools_request_headers_context(self, headers):
+    if headers:
+      old_headers = self.client.additional_http_headers.copy()
+      self.client.additional_http_headers.update(headers)
+    yield
+    if headers:
+      self.client.additional_http_headers = old_headers
+
+  def _encryption_headers_context(self, key):
+    if key and key.type == encryption_util.KeyType.CSEK:
+      additional_headers = {
+          'x-goog-encryption-algorithm': 'AES256',
+          'x-goog-encryption-key': key.key,
+          'x-goog-encryption-key-sha256': key.sha256,
+      }
+    else:
+      additional_headers = {}
+    return self._apitools_request_headers_context(additional_headers)
 
   def _get_projection(self, fields_scope, message_class):
     """Generate query projection from fields_scope.

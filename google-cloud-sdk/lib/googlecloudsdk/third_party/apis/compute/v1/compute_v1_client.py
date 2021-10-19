@@ -734,6 +734,32 @@ class ComputeV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def SetEdgeSecurityPolicy(self, request, global_params=None):
+      r"""Sets the edge security policy for the specified backend bucket.
+
+      Args:
+        request: (ComputeBackendBucketsSetEdgeSecurityPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetEdgeSecurityPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetEdgeSecurityPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.backendBuckets.setEdgeSecurityPolicy',
+        ordered_params=['project', 'backendBucket'],
+        path_params=['backendBucket', 'project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/backendBuckets/{backendBucket}/setEdgeSecurityPolicy',
+        request_field='securityPolicyReference',
+        request_type_name='ComputeBackendBucketsSetEdgeSecurityPolicyRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Update(self, request, global_params=None):
       r"""Updates the specified BackendBucket resource with the data included in the request.
 
@@ -1000,6 +1026,32 @@ class ComputeV1(base_api.BaseApiClient):
         relative_path='projects/{project}/global/backendServices/{backendService}',
         request_field='backendServiceResource',
         request_type_name='ComputeBackendServicesPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def SetEdgeSecurityPolicy(self, request, global_params=None):
+      r"""Sets the edge security policy for the specified backend service.
+
+      Args:
+        request: (ComputeBackendServicesSetEdgeSecurityPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SetEdgeSecurityPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetEdgeSecurityPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.backendServices.setEdgeSecurityPolicy',
+        ordered_params=['project', 'backendService'],
+        path_params=['backendService', 'project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/backendServices/{backendService}/setEdgeSecurityPolicy',
+        request_field='securityPolicyReference',
+        request_type_name='ComputeBackendServicesSetEdgeSecurityPolicyRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -12188,6 +12240,32 @@ class ComputeV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Update(self, request, global_params=None):
+      r"""Update share settings of the reservation.
+
+      Args:
+        request: (ComputeReservationsUpdateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='PATCH',
+        method_id='compute.reservations.update',
+        ordered_params=['project', 'zone', 'reservation'],
+        path_params=['project', 'reservation', 'zone'],
+        query_params=['paths', 'requestId', 'updateMask'],
+        relative_path='projects/{project}/zones/{zone}/reservations/{reservation}',
+        request_field='reservationResource',
+        request_type_name='ComputeReservationsUpdateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class ResourcePoliciesService(base_api.BaseApiService):
     """Service class for the resourcePolicies resource."""
 
@@ -13389,6 +13467,32 @@ class ComputeV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='ComputeSnapshotsGetIamPolicyRequest',
         response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      r"""Creates a snapshot in the specified project using the data included in the request.
+
+      Args:
+        request: (ComputeSnapshotsInsertRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.snapshots.insert',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/global/snapshots',
+        request_field='snapshot',
+        request_type_name='ComputeSnapshotsInsertRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

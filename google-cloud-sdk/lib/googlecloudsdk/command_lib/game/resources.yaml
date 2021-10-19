@@ -106,3 +106,14 @@ config:
     parameter_name: configsId
     attribute_name: config
     help: Cloud Game Servers Configs.
+
+endpoint:
+  name: allocation endpoint
+  collection: gameservices.projects.locations.global.allocationEndpoints
+  request_id_field: allocationEndpointId
+  attributes:
+  - *project
+  - &endpoint
+    parameter_name: allocationEndpointsId
+    attribute_name: endpoint
+    help: Cloud Game Servers Allocation Endpoint

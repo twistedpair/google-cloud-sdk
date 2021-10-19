@@ -36,6 +36,7 @@ from six.moves import http_client
 from six.moves import urllib
 
 from google.auth import _helpers
+from google.auth import credentials as google_auth_credentials
 from google.auth import exceptions as google_auth_exceptions
 from google.oauth2 import _client as google_auth_client
 from google.oauth2 import credentials
@@ -297,3 +298,19 @@ def _HandleErrorResponse(response_body):
     if context_aware.IsContextAwareAccessDeniedError(e):
       raise ContextAwareAccessDeniedError()
     raise
+
+
+class AccessTokenCredentials(google_auth_credentials.Credentials):
+  """A credential represented by an access token."""
+
+  def __init__(self, token):
+    super(AccessTokenCredentials, self).__init__()
+    self.token = token
+
+  @property
+  def expired(self):
+    return False
+
+  def refresh(self, request):
+    del request  # Unused
+    pass

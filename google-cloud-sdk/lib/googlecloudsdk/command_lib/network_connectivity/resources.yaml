@@ -30,6 +30,18 @@ hub:
     attribute_name: hub
     help: Id of the hub.
 
+internalRange:
+  name: internal range
+  collection: networkconnectivity.projects.locations.internalRanges
+  request_id_field: internalRangeId
+  attributes:
+  - *project
+  - *region
+  - &internalRange
+    parameter_name: internalRangesId
+    attribute_name: internal_range
+    help: Id of the internal range.
+
 spoke:
   name: spoke
   collection: networkconnectivity.projects.locations.spokes
@@ -41,3 +53,14 @@ spoke:
     parameter_name: spokesId
     attribute_name: spoke
     help: Id of the spoke.
+
+policyBasedRoute:
+  name: policy based route
+  collection: networkconnectivity.projects.locations.global.policyBasedRoutes
+  request_id_field: policyBasedRouteId
+  attributes:
+  - *project
+  - &policyBasedRoute
+    parameter_name: policyBasedRoutesId
+    attribute_name: policy_based_route
+    help: Id of the policy based route.

@@ -499,9 +499,9 @@
           "type": "string",
           "enumDescriptions": [
             "Default. Should not be used.",
-            "The member adheres to the parent group\u2019s restriction.",
+            "The member adheres to the parent group's restriction.",
             "The group-group membership might be currently violating some parent group's restriction but in future, it will never allow any new member in the child group which can violate parent group's restriction.",
-            "The member violates the parent group\u2019s restriction.",
+            "The member violates the parent group's restriction.",
             "The state of the membership is under evaluation."
           ],
           "enum": [
@@ -616,7 +616,7 @@
       "type": "object",
       "properties": {
         "memberships": {
-          "description": "List of transitive members satisfying the query.",
+          "description": "List of transitive memberships satisfying the query.",
           "type": "array",
           "items": {
             "$ref": "MemberRelation"
@@ -652,7 +652,7 @@
           }
         },
         "relationType": {
-          "description": "The relation between the group and the transitive member.",
+          "description": "The relation between the group and the transitive membership.",
           "type": "string",
           "enumDescriptions": [
             "The relation type is undefined or undetermined.",

@@ -78,12 +78,15 @@ def GenerateAssetForCreateRequest(args):
     setattr(
         resource_spec, 'deletionPolicy',
         resource_spec_field.DeletionPolicyValueValuesEnum(args.deletion_policy))
-  return module.GoogleCloudDataplexV1Asset(
+  request = module.GoogleCloudDataplexV1Asset(
       description=args.description,
       displayName=args.display_name,
       labels=dataplex_api.CreateLabels(module.GoogleCloudDataplexV1Asset, args),
-      resourceSpec=resource_spec,
-      discoverySpec=GenerateDiscoverySpec(args))
+      resourceSpec=resource_spec)
+  discovery = GenerateDiscoverySpec(args)
+  if discovery != module.GoogleCloudDataplexV1AssetDiscoverySpec():
+    setattr(request, 'discoverySpec', discovery)
+  return request
 
 
 def GenerateAssetForUpdateRequest(args):

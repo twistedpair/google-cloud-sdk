@@ -100,6 +100,10 @@ def _get_raw_destination(destination_string):
 
   raw_destination = _expand_destination_wildcards(destination_string)
   if raw_destination:
+    if (isinstance(raw_destination.storage_url, storage_url.FileUrl) and
+        raw_destination.storage_url.is_pipe):
+      log.warning('Downloading to a pipe.'
+                  ' This command may stall until the pipe is read.')
     return raw_destination
   return resource_reference.UnknownResource(destination_url)
 

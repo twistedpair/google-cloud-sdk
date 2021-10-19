@@ -277,12 +277,16 @@
             "SSD",
             "HDD"
           ]
+        },
+        "wwid": {
+          "description": "The WWID for this LUN.",
+          "type": "string"
         }
       }
     },
     "Network": {
       "id": "Network",
-      "description": "A network.",
+      "description": "A Network.",
       "type": "object",
       "properties": {
         "name": {
@@ -314,6 +318,95 @@
         },
         "macAddress": {
           "description": "List of physical interfaces.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "state": {
+          "description": "The Network state.",
+          "type": "string",
+          "enumDescriptions": [
+            "The Network is in an unknown state.",
+            "The Network is being provisioning.",
+            "The Network has been provisioned."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "PROVISIONING",
+            "PROVISIONED"
+          ]
+        },
+        "vlanId": {
+          "description": "The vlan id of the Network.",
+          "type": "string"
+        },
+        "cidr": {
+          "description": "The cidr of the Network.",
+          "type": "string"
+        },
+        "vrf": {
+          "description": "The vrf for the Network.",
+          "$ref": "VRF"
+        }
+      }
+    },
+    "VRF": {
+      "id": "VRF",
+      "description": "A network VRF.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The name of the VRF.",
+          "type": "string"
+        },
+        "juniperAlias": {
+          "description": "The Juniper alias of the VRF.",
+          "type": "string"
+        },
+        "routeTarget": {
+          "description": "The route target of the VRF.",
+          "type": "string",
+          "format": "int64"
+        },
+        "autonomousSystemNumber": {
+          "description": "The autonomous system number of the VRF.",
+          "type": "string"
+        },
+        "state": {
+          "description": "The possible state of VRF.",
+          "type": "string",
+          "enumDescriptions": [
+            "The unspecified state.",
+            "The vrf is being provisioning.",
+            "The vrf is being provisioning."
+          ],
+          "enum": [
+            "STATE_UNSPECIFIED",
+            "PROVISIONING",
+            "PROVISIONED"
+          ]
+        }
+      }
+    },
+    "ListLunsResponse": {
+      "id": "ListLunsResponse",
+      "description": "Response message containing the list of storage volume luns.",
+      "type": "object",
+      "properties": {
+        "luns": {
+          "description": "The list of luns.",
+          "type": "array",
+          "items": {
+            "$ref": "Lun"
+          }
+        },
+        "nextPageToken": {
+          "description": "A token identifying a page of results from the server.",
+          "type": "string"
+        },
+        "unreachable": {
+          "description": "Locations that could not be reached.",
           "type": "array",
           "items": {
             "type": "string"
@@ -520,6 +613,85 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Get details about a single server."
+                }
+              }
+            },
+            "volumes": {
+              "resources": {
+                "luns": {
+                  "methods": {
+                    "get": {
+                      "id": "baremetalsolution.projects.locations.volumes.luns.get",
+                      "path": "v2/{+name}",
+                      "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}/luns/{lunsId}",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "name": {
+                          "description": "Required. Name of the resource.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/volumes\/[^\/]+\/luns\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "response": {
+                        "$ref": "Lun"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Get details of a single storage lun."
+                    },
+                    "list": {
+                      "id": "baremetalsolution.projects.locations.volumes.luns.list",
+                      "path": "v2/{+parent}/luns",
+                      "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}/luns",
+                      "httpMethod": "GET",
+                      "parameters": {
+                        "parent": {
+                          "description": "Required. Parent value for ListLunsRequest.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/volumes\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        },
+                        "pageSize": {
+                          "description": "Requested page size. The server might return fewer items than requested. If unspecified, server will pick an appropriate default.",
+                          "location": "query",
+                          "type": "integer",
+                          "format": "int32"
+                        },
+                        "pageToken": {
+                          "description": "A token identifying a page of results from the server.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "filter": {
+                          "description": "Filtering results.",
+                          "location": "query",
+                          "type": "string"
+                        },
+                        "orderBy": {
+                          "description": "Hint for how to order the results.",
+                          "location": "query",
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "parent"
+                      ],
+                      "response": {
+                        "$ref": "ListLunsResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "List storage volume luns for given storage volume."
+                    }
+                  }
                 }
               }
             }

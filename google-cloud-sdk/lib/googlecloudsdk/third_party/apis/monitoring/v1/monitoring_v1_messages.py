@@ -445,6 +445,9 @@ class Dashboard(_messages.Message):
   r"""A Google Stackdriver dashboard. Dashboards define the content and layout
   of pages in the Stackdriver web application.
 
+  Messages:
+    LabelsValue: Labels applied to the dashboard
+
   Fields:
     columnLayout: The content is divided into equally spaced columns and the
       widgets are arranged vertically.
@@ -457,6 +460,7 @@ class Dashboard(_messages.Message):
       configuration. The field should not be passed during dashboard creation.
     gridLayout: Content is arranged with a basic layout that re-flows a simple
       list of informational elements like widgets or tiles.
+    labels: Labels applied to the dashboard
     mosaicLayout: The content is arranged as a grid of tiles, with each
       content widget occupying one or more grid blocks.
     name: Immutable. The resource name of the dashboard.
@@ -464,13 +468,38 @@ class Dashboard(_messages.Message):
       are arranged horizontally.
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Labels applied to the dashboard
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   columnLayout = _messages.MessageField('ColumnLayout', 1)
   displayName = _messages.StringField(2)
   etag = _messages.StringField(3)
   gridLayout = _messages.MessageField('GridLayout', 4)
-  mosaicLayout = _messages.MessageField('MosaicLayout', 5)
-  name = _messages.StringField(6)
-  rowLayout = _messages.MessageField('RowLayout', 7)
+  labels = _messages.MessageField('LabelsValue', 5)
+  mosaicLayout = _messages.MessageField('MosaicLayout', 6)
+  name = _messages.StringField(7)
+  rowLayout = _messages.MessageField('RowLayout', 8)
 
 
 class DataSet(_messages.Message):

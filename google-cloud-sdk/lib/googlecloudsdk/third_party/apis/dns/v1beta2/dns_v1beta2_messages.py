@@ -1465,15 +1465,13 @@ class RRSetRoutingPolicyGeoPolicy(_messages.Message):
   r"""A RRSetRoutingPolicyGeoPolicy object.
 
   Fields:
-    failovers: A RRSetRoutingPolicyGeoPolicyGeoPolicyItem attribute.
     items: A RRSetRoutingPolicyGeoPolicyGeoPolicyItem attribute.
     kind: Identifies what kind of resource this is. Value: the fixed string
       "dns#rRSetRoutingPolicyGeoPolicy".
   """
 
-  failovers = _messages.MessageField('RRSetRoutingPolicyGeoPolicyGeoPolicyItem', 1, repeated=True)
-  items = _messages.MessageField('RRSetRoutingPolicyGeoPolicyGeoPolicyItem', 2, repeated=True)
-  kind = _messages.StringField(3, default='dns#rRSetRoutingPolicyGeoPolicy')
+  items = _messages.MessageField('RRSetRoutingPolicyGeoPolicyGeoPolicyItem', 1, repeated=True)
+  kind = _messages.StringField(2, default='dns#rRSetRoutingPolicyGeoPolicy')
 
 
 class RRSetRoutingPolicyGeoPolicyGeoPolicyItem(_messages.Message):

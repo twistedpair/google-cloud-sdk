@@ -48,6 +48,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  LOCATIONS_WORKFORCEPOOLS_OPERATIONS = (
+      'locations.workforcePools.operations',
+      '{+name}',
+      {
+          '':
+              'locations/{locationsId}/workforcePools/{workforcePoolsId}/'
+              'operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
   LOCATIONS_WORKFORCEPOOLS_PROVIDERS = (
       'locations.workforcePools.providers',
       '{+name}',
@@ -55,6 +66,17 @@ class Collections(enum.Enum):
           '':
               'locations/{locationsId}/workforcePools/{workforcePoolsId}/'
               'providers/{providersId}',
+      },
+      ['name'],
+      True
+  )
+  LOCATIONS_WORKFORCEPOOLS_PROVIDERS_OPERATIONS = (
+      'locations.workforcePools.providers.operations',
+      '{+name}',
+      {
+          '':
+              'locations/{locationsId}/workforcePools/{workforcePoolsId}/'
+              'providers/{providersId}/operations/{operationsId}',
       },
       ['name'],
       True

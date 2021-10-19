@@ -945,10 +945,13 @@ class DynamicGroupStatus(_messages.Message):
       UP_TO_DATE: The dynamic group is up-to-date.
       UPDATING_MEMBERSHIPS: The dynamic group has just been created and
         memberships are being updated.
+      INVALID_QUERY: Group is in an unrecoverable state and its memberships
+        can't be updated.
     """
     STATUS_UNSPECIFIED = 0
     UP_TO_DATE = 1
     UPDATING_MEMBERSHIPS = 2
+    INVALID_QUERY = 3
 
   status = _messages.EnumField('StatusValueValuesEnum', 1)
   statusTime = _messages.StringField(2)

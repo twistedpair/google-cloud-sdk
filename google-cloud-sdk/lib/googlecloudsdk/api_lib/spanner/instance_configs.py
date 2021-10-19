@@ -49,3 +49,15 @@ def List():
       field='instanceConfigs',
       batch_size_attribute='pageSize')
 
+
+def Delete(config, etag=None, validate_only=False):
+  """Delete an instance config."""
+  client = apis.GetClientInstance('spanner', 'v1')
+  msgs = apis.GetMessagesModule('spanner', 'v1')
+  ref = resources.REGISTRY.Parse(
+      config,
+      params={'projectsId': properties.VALUES.core.project.GetOrFail},
+      collection='spanner.projects.instanceConfigs')
+  req = msgs.SpannerProjectsInstanceConfigsDeleteRequest(
+      name=ref.RelativeName(), etag=etag, validateOnly=validate_only)
+  return client.projects_instanceConfigs.Delete(req)

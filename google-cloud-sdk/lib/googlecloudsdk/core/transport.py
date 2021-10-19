@@ -605,8 +605,8 @@ def IsTokenUri(uri):
   if uri in TOKEN_URIS:
     return True
 
-  metadata_regexp = ('metadata.google.internal/computeMetadata/.*?/instance/'
-                     'service-accounts/.*?/token')
+  metadata_regexp = ('(metadata.google.internal|169.254.169.254)/'
+                     'computeMetadata/.*?/instance/service-accounts/.*?/token')
 
   impersonate_service_account = ('iamcredentials.googleapis.com/v.*?/projects/'
                                  '-/serviceAccounts/.*?:generateAccessToken')

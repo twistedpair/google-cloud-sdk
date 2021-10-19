@@ -64,121 +64,6 @@ class AlloydbProjectsLocationsBackupsTestIamPermissionsRequest(_messages.Message
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
-class AlloydbProjectsLocationsClustersBackupsCreateRequest(_messages.Message):
-  r"""A AlloydbProjectsLocationsClustersBackupsCreateRequest object.
-
-  Fields:
-    backup: A Backup resource to be passed as the request body.
-    backupId: Required. Id of the requesting object If auto-generating Id
-      server-side, remove this field and backup_id from the method_signature
-      of Create RPC
-    parent: Required. Value for parent.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-  """
-
-  backup = _messages.MessageField('Backup', 1)
-  backupId = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-  requestId = _messages.StringField(4)
-
-
-class AlloydbProjectsLocationsClustersBackupsDeleteRequest(_messages.Message):
-  r"""A AlloydbProjectsLocationsClustersBackupsDeleteRequest object.
-
-  Fields:
-    name: Required. Name of the resource
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes after the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-  """
-
-  name = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
-
-
-class AlloydbProjectsLocationsClustersBackupsGetRequest(_messages.Message):
-  r"""A AlloydbProjectsLocationsClustersBackupsGetRequest object.
-
-  Fields:
-    name: Required. Name of the resource
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class AlloydbProjectsLocationsClustersBackupsListRequest(_messages.Message):
-  r"""A AlloydbProjectsLocationsClustersBackupsListRequest object.
-
-  Fields:
-    filter: Optional. Filtering results
-    orderBy: Optional. Hint for how to order the results
-    pageSize: Optional. Requested page size. Server may return fewer items
-      than requested. If unspecified, server will pick an appropriate default.
-    pageToken: A token identifying a page of results the server should return.
-    parent: Required. Parent value for ListBackupsRequest
-  """
-
-  filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
-
-
-class AlloydbProjectsLocationsClustersBackupsPatchRequest(_messages.Message):
-  r"""A AlloydbProjectsLocationsClustersBackupsPatchRequest object.
-
-  Fields:
-    backup: A Backup resource to be passed as the request body.
-    name: Output only. The name of the backup resource with the format: * proj
-      ects/{project}/locations/{region}/clusters/{cluster_id}/backups/{backup_
-      id} where the cluster and backup ID segments should satisfy the regex
-      expression "[a-z0-9-]+". For more details see
-      https://google.aip.dev/122. The prefix of the backup resource name is
-      the name of the parent resource: *
-      projects/{project}/locations/{region}/clusters/{cluster_id}
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    updateMask: Optional. Field mask is used to specify the fields to be
-      overwritten in the Backup resource by the update. The fields specified
-      in the update_mask are relative to the resource, not the full request. A
-      field will be overwritten if it is in the mask. If the user does not
-      provide a mask then all fields will be overwritten.
-  """
-
-  backup = _messages.MessageField('Backup', 1)
-  name = _messages.StringField(2, required=True)
-  requestId = _messages.StringField(3)
-  updateMask = _messages.StringField(4)
-
-
 class AlloydbProjectsLocationsClustersCreateRequest(_messages.Message):
   r"""A AlloydbProjectsLocationsClustersCreateRequest object.
 
@@ -234,20 +119,6 @@ class AlloydbProjectsLocationsClustersDeleteRequest(_messages.Message):
   requestId = _messages.StringField(3)
 
 
-class AlloydbProjectsLocationsClustersFailoverRequest(_messages.Message):
-  r"""A AlloydbProjectsLocationsClustersFailoverRequest object.
-
-  Fields:
-    failoverClusterRequest: A FailoverClusterRequest resource to be passed as
-      the request body.
-    name: Required. The name of the resource. For the required format, see the
-      comment on the Cluster.name field.
-  """
-
-  failoverClusterRequest = _messages.MessageField('FailoverClusterRequest', 1)
-  name = _messages.StringField(2, required=True)
-
-
 class AlloydbProjectsLocationsClustersGetIamPolicyRequest(_messages.Message):
   r"""A AlloydbProjectsLocationsClustersGetIamPolicyRequest object.
 
@@ -278,64 +149,6 @@ class AlloydbProjectsLocationsClustersGetRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
-
-
-class AlloydbProjectsLocationsClustersImportClusterRequest(_messages.Message):
-  r"""A AlloydbProjectsLocationsClustersImportClusterRequest object.
-
-  Fields:
-    backupSource_backupName: Required. The name of the backup resource with
-      the format: * projects/{project}/locations/{region}/clusters/{cluster_id
-      }/backups/{backup_id}
-    cluster: A Cluster resource to be passed as the request body.
-    clusterId: Required. Id of the requesting object If auto-generating Id
-      server-side, remove this field and cluster_id from the method_signature
-      of Create RPC
-    parent: Required. The name of the parent resource. For the required
-      format, see the comment on the Cluster.name field.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-  """
-
-  backupSource_backupName = _messages.StringField(1)
-  cluster = _messages.MessageField('Cluster', 2)
-  clusterId = _messages.StringField(3)
-  parent = _messages.StringField(4, required=True)
-  requestId = _messages.StringField(5)
-
-
-class AlloydbProjectsLocationsClustersInstancesBatchCreateRequest(_messages.Message):
-  r"""A AlloydbProjectsLocationsClustersInstancesBatchCreateRequest object.
-
-  Fields:
-    createInstanceRequests: A CreateInstanceRequests resource to be passed as
-      the request body.
-    parent: Required. The name of the parent resource.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-  """
-
-  createInstanceRequests = _messages.MessageField('CreateInstanceRequests', 1)
-  parent = _messages.StringField(2, required=True)
-  requestId = _messages.StringField(3)
 
 
 class AlloydbProjectsLocationsClustersInstancesCreateRequest(_messages.Message):
@@ -573,115 +386,6 @@ class AlloydbProjectsLocationsClustersTestIamPermissionsRequest(_messages.Messag
 
   resource = _messages.StringField(1, required=True)
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
-
-
-class AlloydbProjectsLocationsClustersUsersCreateRequest(_messages.Message):
-  r"""A AlloydbProjectsLocationsClustersUsersCreateRequest object.
-
-  Fields:
-    parent: Required. Value for parent.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    user: A User resource to be passed as the request body.
-    userId: Required. Id of the requesting object If auto-generating Id
-      server-side, remove this field and user_id from the method_signature of
-      Create RPC
-  """
-
-  parent = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
-  user = _messages.MessageField('User', 3)
-  userId = _messages.StringField(4)
-
-
-class AlloydbProjectsLocationsClustersUsersDeleteRequest(_messages.Message):
-  r"""A AlloydbProjectsLocationsClustersUsersDeleteRequest object.
-
-  Fields:
-    name: Required. Name of the resource
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes after the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-  """
-
-  name = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
-
-
-class AlloydbProjectsLocationsClustersUsersGetRequest(_messages.Message):
-  r"""A AlloydbProjectsLocationsClustersUsersGetRequest object.
-
-  Fields:
-    name: Required. Name of the resource
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class AlloydbProjectsLocationsClustersUsersListRequest(_messages.Message):
-  r"""A AlloydbProjectsLocationsClustersUsersListRequest object.
-
-  Fields:
-    filter: Optional. Filtering results
-    orderBy: Optional. Hint for how to order the results
-    pageSize: Optional. Requested page size. Server may return fewer items
-      than requested. If unspecified, server will pick an appropriate default.
-    pageToken: A token identifying a page of results the server should return.
-    parent: Required. Parent value for ListUsersRequest
-  """
-
-  filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
-
-
-class AlloydbProjectsLocationsClustersUsersPatchRequest(_messages.Message):
-  r"""A AlloydbProjectsLocationsClustersUsersPatchRequest object.
-
-  Fields:
-    name: Output only. name of resource
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    updateMask: Optional. Field mask is used to specify the fields to be
-      overwritten in the User resource by the update. The fields specified in
-      the update_mask are relative to the resource, not the full request. A
-      field will be overwritten if it is in the mask. If the user does not
-      provide a mask then all fields will be overwritten.
-    user: A User resource to be passed as the request body.
-  """
-
-  name = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
-  updateMask = _messages.StringField(3)
-  user = _messages.MessageField('User', 4)
 
 
 class AlloydbProjectsLocationsGetRequest(_messages.Message):
@@ -946,254 +650,20 @@ class AuditLogConfig(_messages.Message):
   logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
 
 
-class Backup(_messages.Message):
-  r"""Message describing Backup object
-
-  Enums:
-    StateValueValuesEnum: Output only. The current state of the backup.
-    TypeValueValuesEnum: The backup type, which suggests the trigger for the
-      backup.
-
-  Messages:
-    LabelsValue: Labels as key value pairs
-
-  Fields:
-    createTime: Output only. Create time stamp
-    labels: Labels as key value pairs
-    name: Output only. The name of the backup resource with the format: * proj
-      ects/{project}/locations/{region}/clusters/{cluster_id}/backups/{backup_
-      id} where the cluster and backup ID segments should satisfy the regex
-      expression "[a-z0-9-]+". For more details see
-      https://google.aip.dev/122. The prefix of the backup resource name is
-      the name of the parent resource: *
-      projects/{project}/locations/{region}/clusters/{cluster_id}
-    state: Output only. The current state of the backup.
-    type: The backup type, which suggests the trigger for the backup.
-    updateTime: Output only. Update time stamp
-  """
-
-  class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. The current state of the backup.
-
-    Values:
-      STATE_UNSPECIFIED: The state of the backup is unknown.
-      READY: The backup is ready.
-      CREATING: The backup is creating.
-      FAILED: The backup failed.
-    """
-    STATE_UNSPECIFIED = 0
-    READY = 1
-    CREATING = 2
-    FAILED = 3
-
-  class TypeValueValuesEnum(_messages.Enum):
-    r"""The backup type, which suggests the trigger for the backup.
-
-    Values:
-      TYPE_UNSPECIFIED: <no description>
-      ON_DEMAND: ON_DEMAND backups that were triggered by the customer (e.g.,
-        not AUTOMATED).
-      AUTOMATED: AUTOMATED backups triggered by the backup scheduler.
-    """
-    TYPE_UNSPECIFIED = 0
-    ON_DEMAND = 1
-    AUTOMATED = 2
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LabelsValue(_messages.Message):
-    r"""Labels as key value pairs
-
-    Messages:
-      AdditionalProperty: An additional property for a LabelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a LabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  createTime = _messages.StringField(1)
-  labels = _messages.MessageField('LabelsValue', 2)
-  name = _messages.StringField(3)
-  state = _messages.EnumField('StateValueValuesEnum', 4)
-  type = _messages.EnumField('TypeValueValuesEnum', 5)
-  updateTime = _messages.StringField(6)
-
-
-class BatchCreateInstanceStatus(_messages.Message):
-  r"""Message for current status of an instance in the BatchCreateInstances
-  operation. For example, lets say a BatchCreateInstances workflow has 4
-  instances, Instance1 through Instance4. Lets also assume that 2 instances
-  succeeded but the third failed to create and the 4th was never picked up for
-  creation because of failure of the previous one. Then, resulting states
-  would look something like: 1. Instance1 = ROLLED_BACK 2. Instance2 =
-  ROLLED_BACK 3. Instance3 = FAILED 4. Instance4 = PENDING_CREATE However,
-  while the operation is running, the instance might be in other states
-  including ACTIVE, DELETING and CREATING.
-
-  Enums:
-    StateValueValuesEnum: The current state of an instance involved in the
-      batch create operation. Once the operation is complete, the final state
-      of the instances in the LRO can be one of: 1. ACTIVE, indicating that
-      instances were created successfully 2. FAILED, indicating that a
-      particular instance failed creation 3. ROLLED_BACK indicating that
-      although the instance was created successfully, it had to be rolled back
-      and deleted due to failure in other steps of the workflow. 4.
-      PENDING_CREATE, indicating that the instance was never picked up for
-      creation due to some error in a preceding operation that caused the
-      BatchCreateInstances operation to stop.
-    TypeValueValuesEnum:
-
-  Fields:
-    errorMsg: Error, if any error occurred and is available, during instance
-      creation.
-    state: The current state of an instance involved in the batch create
-      operation. Once the operation is complete, the final state of the
-      instances in the LRO can be one of: 1. ACTIVE, indicating that instances
-      were created successfully 2. FAILED, indicating that a particular
-      instance failed creation 3. ROLLED_BACK indicating that although the
-      instance was created successfully, it had to be rolled back and deleted
-      due to failure in other steps of the workflow. 4. PENDING_CREATE,
-      indicating that the instance was never picked up for creation due to
-      some error in a preceding operation that caused the BatchCreateInstances
-      operation to stop.
-    type: A TypeValueValuesEnum attribute.
-  """
-
-  class StateValueValuesEnum(_messages.Enum):
-    r"""The current state of an instance involved in the batch create
-    operation. Once the operation is complete, the final state of the
-    instances in the LRO can be one of: 1. ACTIVE, indicating that instances
-    were created successfully 2. FAILED, indicating that a particular instance
-    failed creation 3. ROLLED_BACK indicating that although the instance was
-    created successfully, it had to be rolled back and deleted due to failure
-    in other steps of the workflow. 4. PENDING_CREATE, indicating that the
-    instance was never picked up for creation due to some error in a preceding
-    operation that caused the BatchCreateInstances operation to stop.
-
-    Values:
-      STATE_UNSPECIFIED: The state of the instance is unknown.
-      PENDING_CREATE: Instance is pending creation and has not yet been picked
-        up for processsing in the backend.
-      ACTIVE: The instance is active and running.
-      CREATING: The instance is being created.
-      DELETING: The instance is being deleted.
-      FAILED: The creation of the instance failed or a fatal error occurred
-        during an operation on the instance.
-      ROLLED_BACK: The instance was created successfully, but was rolled back
-        and deleted due to some other failure during BatchCreateInstances
-        operation.
-    """
-    STATE_UNSPECIFIED = 0
-    PENDING_CREATE = 1
-    ACTIVE = 2
-    CREATING = 3
-    DELETING = 4
-    FAILED = 5
-    ROLLED_BACK = 6
-
-  class TypeValueValuesEnum(_messages.Enum):
-    r"""TypeValueValuesEnum enum type.
-
-    Values:
-      INSTANCE_TYPE_UNSPECIFIED: <no description>
-      PRIMARY: PRIMARY instances support read and write operations.
-      READ: READ instances support read operations only. Each read instance
-        consists of one or more homogeneous read replicas. * READ instance of
-        size 1 can only have zonal availability. * READ instances with replica
-        count of 2 or more can have regional availability (replicas are
-        present in 2 or more zones in a region).
-    """
-    INSTANCE_TYPE_UNSPECIFIED = 0
-    PRIMARY = 1
-    READ = 2
-
-  errorMsg = _messages.StringField(1)
-  state = _messages.EnumField('StateValueValuesEnum', 2)
-  type = _messages.EnumField('TypeValueValuesEnum', 3)
-
-
-class BatchCreateInstancesMetadata(_messages.Message):
-  r"""Message for metadata that is specific to BatchCreateInstances API.
-
-  Messages:
-    InstanceStatusesValue: A map representing current state of the instances
-      involved in the BatchCreateInstances operation. The instance state will
-      be in STATE_UNSPECIFIED state if the instance has not yet been picked up
-      for processing. The key of the map is the name of the instance resource.
-      For the required format, see the comment on the Instance.name field.
-
-  Fields:
-    instanceStatuses: A map representing current state of the instances
-      involved in the BatchCreateInstances operation. The instance state will
-      be in STATE_UNSPECIFIED state if the instance has not yet been picked up
-      for processing. The key of the map is the name of the instance resource.
-      For the required format, see the comment on the Instance.name field.
-    instanceTargets: The instances being created in the API call. Each string
-      in this list is the server defined resource path for target instances in
-      the request and for the format of each string, see the comment on the
-      Instance.name field.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class InstanceStatusesValue(_messages.Message):
-    r"""A map representing current state of the instances involved in the
-    BatchCreateInstances operation. The instance state will be in
-    STATE_UNSPECIFIED state if the instance has not yet been picked up for
-    processing. The key of the map is the name of the instance resource. For
-    the required format, see the comment on the Instance.name field.
-
-    Messages:
-      AdditionalProperty: An additional property for a InstanceStatusesValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type
-        InstanceStatusesValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a InstanceStatusesValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A BatchCreateInstanceStatus attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('BatchCreateInstanceStatus', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  instanceStatuses = _messages.MessageField('InstanceStatusesValue', 1)
-  instanceTargets = _messages.StringField(2, repeated=True)
-
-
 class Binding(_messages.Message):
-  r"""Associates `members` with a `role`.
+  r"""Associates `members`, or principals, with a `role`.
 
   Fields:
     condition: The condition that is associated with this binding. If the
       condition evaluates to `true`, then this binding applies to the current
       request. If the condition evaluates to `false`, then this binding does
       not apply to the current request. However, a different role binding
-      might grant the same role to one or more of the members in this binding.
-      To learn which resources support conditions in their IAM policies, see
-      the [IAM
+      might grant the same role to one or more of the principals in this
+      binding. To learn which resources support conditions in their IAM
+      policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
-    members: Specifies the identities requesting access for a Cloud Platform
+    members: Specifies the principals requesting access for a Cloud Platform
       resource. `members` can have the following values: * `allUsers`: A
       special identifier that represents anyone who is on the internet; with
       or without a Google account. * `allAuthenticatedUsers`: A special
@@ -1223,8 +693,8 @@ class Binding(_messages.Message):
       group retains the role in the binding. * `domain:{domain}`: The G Suite
       domain (primary) that represents all the users of that domain. For
       example, `google.com` or `example.com`.
-    role: Role that is assigned to `members`. For example, `roles/viewer`,
-      `roles/editor`, or `roles/owner`.
+    role: Role that is assigned to the list of `members`, or principals. For
+      example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """
 
   condition = _messages.MessageField('Expr', 1)
@@ -1237,7 +707,7 @@ class CancelOperationRequest(_messages.Message):
 
 
 class Cluster(_messages.Message):
-  r"""Message describing Cluster object NEXT_ID: 9
+  r"""Message describing Cluster object NEXT_ID: 10
 
   Enums:
     DatabaseVersionValueValuesEnum: The database engine major version.
@@ -1342,46 +812,6 @@ class Cluster(_messages.Message):
   updateTime = _messages.StringField(8)
 
 
-class CreateInstanceRequest(_messages.Message):
-  r"""Message for creating a Instance
-
-  Fields:
-    instance: Required. The resource being created
-    instanceId: Required. Id of the requesting object If auto-generating Id
-      server-side, remove this field and instance_id from the method_signature
-      of Create RPC
-    parent: Required. The name of the parent resource. For the required
-      format, see the comment on the Instance.name field.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-  """
-
-  instance = _messages.MessageField('Instance', 1)
-  instanceId = _messages.StringField(2)
-  parent = _messages.StringField(3)
-  requestId = _messages.StringField(4)
-
-
-class CreateInstanceRequests(_messages.Message):
-  r"""See usage below for notes.
-
-  Fields:
-    createInstanceRequests: Required. Primary and read replica instances to be
-      created. This list should not be empty.
-  """
-
-  createInstanceRequests = _messages.MessageField('CreateInstanceRequest', 1, repeated=True)
-
-
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -1428,26 +858,6 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
-class FailoverClusterRequest(_messages.Message):
-  r"""A FailoverClusterRequest object.
-
-  Fields:
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes after the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-  """
-
-  requestId = _messages.StringField(1)
-
-
 class FailoverInstanceRequest(_messages.Message):
   r"""Message for triggering failover on an Instance
 
@@ -1469,7 +879,7 @@ class FailoverInstanceRequest(_messages.Message):
 
 
 class Instance(_messages.Message):
-  r"""Message describing Instance object NEXT ID: 14
+  r"""Message describing Instance object NEXT ID: 15
 
   Enums:
     AvailabilityTypeValueValuesEnum: Availability type of an Instance.
@@ -1505,6 +915,8 @@ class Instance(_messages.Message):
     ipAddress: Output only. The IP address for the Instance. This is the
       connection endpoint for an end-user application.
     labels: Labels as key value pairs
+    machineConfig: Configurations for the machines that host the underlying
+      database engine.
     name: Output only. The name of the instance resource with the format: * pr
       ojects/{project}/locations/{region}/clusters/{cluster_id}/instances/{ins
       tance_id} where the cluster and instance ID segments should satisfy the
@@ -1517,9 +929,9 @@ class Instance(_messages.Message):
       networks can connect to the instance.
     readPoolConfig: Read pool specific config.
     state: Output only. The current serving state of the instance.
-    tier: The tier (or machine type) for this instance, for example
-      *n2-standard-2* (PostgreSQL instances). Required for new instances and
-      can be updated.
+    tier: Deprecated: Please use VMConfig instead. This field will be removed
+      during private preview. The tier (or machine type) for this instance,
+      for example *n2-standard-2* (PostgreSQL instances).
     updateTime: Output only. Update time stamp
   """
 
@@ -1543,15 +955,15 @@ class Instance(_messages.Message):
     Values:
       INSTANCE_TYPE_UNSPECIFIED: <no description>
       PRIMARY: PRIMARY instances support read and write operations.
-      READ: READ instances support read operations only. Each read instance
-        consists of one or more homogeneous read replicas. * READ instance of
-        size 1 can only have zonal availability. * READ instances with replica
-        count of 2 or more can have regional availability (replicas are
-        present in 2 or more zones in a region).
+      READ_POOL: READ_POOL instances support read operations only. Each read
+        pool instance consists of one or more homogeneous nodes. * Read pool
+        of size 1 can only have zonal availability. * Read pools with node
+        count of 2 or more can have regional availability (nodes are present
+        in 2 or more zones in a region).
     """
     INSTANCE_TYPE_UNSPECIFIED = 0
     PRIMARY = 1
-    READ = 2
+    READ_POOL = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The current serving state of the instance.
@@ -1637,12 +1049,13 @@ class Instance(_messages.Message):
   instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 5)
   ipAddress = _messages.StringField(6)
   labels = _messages.MessageField('LabelsValue', 7)
-  name = _messages.StringField(8)
-  networkConfig = _messages.MessageField('NetworkConfig', 9)
-  readPoolConfig = _messages.MessageField('ReadPoolConfig', 10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  tier = _messages.StringField(12)
-  updateTime = _messages.StringField(13)
+  machineConfig = _messages.MessageField('MachineConfig', 8)
+  name = _messages.StringField(9)
+  networkConfig = _messages.MessageField('NetworkConfig', 10)
+  readPoolConfig = _messages.MessageField('ReadPoolConfig', 11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  tier = _messages.StringField(13)
+  updateTime = _messages.StringField(14)
 
 
 class IntegerRestrictions(_messages.Message):
@@ -1655,21 +1068,6 @@ class IntegerRestrictions(_messages.Message):
 
   maxValue = _messages.IntegerField(1)
   minValue = _messages.IntegerField(2)
-
-
-class ListBackupsResponse(_messages.Message):
-  r"""Message for response to listing Backups
-
-  Fields:
-    backups: The list of Backup
-    nextPageToken: A token identifying a page of results the server should
-      return.
-    unreachable: Locations that could not be reached.
-  """
-
-  backups = _messages.MessageField('Backup', 1, repeated=True)
-  nextPageToken = _messages.StringField(2)
-  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListClustersResponse(_messages.Message):
@@ -1739,21 +1137,6 @@ class ListSupportedDatabaseFlagsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   supportedDatabaseFlags = _messages.MessageField('SupportedDatabaseFlag', 2, repeated=True)
-
-
-class ListUsersResponse(_messages.Message):
-  r"""Message for response to listing Users
-
-  Fields:
-    nextPageToken: A token identifying a page of results the server should
-      return.
-    unreachable: Locations that could not be reached.
-    users: The list of User
-  """
-
-  nextPageToken = _messages.StringField(1)
-  unreachable = _messages.StringField(2, repeated=True)
-  users = _messages.MessageField('User', 3, repeated=True)
 
 
 class Location(_messages.Message):
@@ -1834,6 +1217,16 @@ class Location(_messages.Message):
   locationId = _messages.StringField(3)
   metadata = _messages.MessageField('MetadataValue', 4)
   name = _messages.StringField(5)
+
+
+class MachineConfig(_messages.Message):
+  r"""MachineConfig describes the configuration of a machine.
+
+  Fields:
+    cpuCount: The number of CPU's in the VM instance.
+  """
+
+  cpuCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
 class NetworkConfig(_messages.Message):
@@ -1962,7 +1355,6 @@ class OperationMetadata(_messages.Message):
 
   Fields:
     apiVersion: Output only. API version used to start the operation.
-    batchCreateInstancesMetadata: A BatchCreateInstancesMetadata attribute.
     createTime: Output only. The time the operation was created.
     endTime: Output only. The time the operation finished running.
     requestedCancellation: Output only. Identifies whether the user has
@@ -1977,27 +1369,26 @@ class OperationMetadata(_messages.Message):
   """
 
   apiVersion = _messages.StringField(1)
-  batchCreateInstancesMetadata = _messages.MessageField('BatchCreateInstancesMetadata', 2)
-  createTime = _messages.StringField(3)
-  endTime = _messages.StringField(4)
-  requestedCancellation = _messages.BooleanField(5)
-  statusMessage = _messages.StringField(6)
-  target = _messages.StringField(7)
-  verb = _messages.StringField(8)
+  createTime = _messages.StringField(2)
+  endTime = _messages.StringField(3)
+  requestedCancellation = _messages.BooleanField(4)
+  statusMessage = _messages.StringField(5)
+  target = _messages.StringField(6)
+  verb = _messages.StringField(7)
 
 
 class Policy(_messages.Message):
   r"""An Identity and Access Management (IAM) policy, which specifies access
   controls for Google Cloud resources. A `Policy` is a collection of
-  `bindings`. A `binding` binds one or more `members` to a single `role`.
-  Members can be user accounts, service accounts, Google groups, and domains
-  (such as G Suite). A `role` is a named list of permissions; each `role` can
-  be an IAM predefined role or a user-created custom role. For some types of
-  Google Cloud resources, a `binding` can also specify a `condition`, which is
-  a logical expression that allows access to a resource only if the expression
-  evaluates to `true`. A condition can add constraints based on attributes of
-  the request, the resource, or both. To learn which resources support
-  conditions in their IAM policies, see the [IAM
+  `bindings`. A `binding` binds one or more `members`, or principals, to a
+  single `role`. Principals can be user accounts, service accounts, Google
+  groups, and domains (such as G Suite). A `role` is a named list of
+  permissions; each `role` can be an IAM predefined role or a user-created
+  custom role. For some types of Google Cloud resources, a `binding` can also
+  specify a `condition`, which is a logical expression that allows access to a
+  resource only if the expression evaluates to `true`. A condition can add
+  constraints based on attributes of the request, the resource, or both. To
+  learn which resources support conditions in their IAM policies, see the [IAM
   documentation](https://cloud.google.com/iam/help/conditions/resource-
   policies). **JSON example:** { "bindings": [ { "role":
   "roles/resourcemanager.organizationAdmin", "members": [
@@ -2019,9 +1410,15 @@ class Policy(_messages.Message):
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
-    bindings: Associates a list of `members` to a `role`. Optionally, may
-      specify a `condition` that determines how and when the `bindings` are
-      applied. Each of the `bindings` must contain at least one member.
+    bindings: Associates a list of `members`, or principals, with a `role`.
+      Optionally, may specify a `condition` that determines how and when the
+      `bindings` are applied. Each of the `bindings` must contain at least one
+      principal. The `bindings` in a `Policy` can refer to up to 1,500
+      principals; up to 250 of these principals can be Google groups. Each
+      occurrence of a principal counts towards these limits. For example, if
+      the `bindings` grant 50 different roles to `user:alice@example.com`, and
+      not to any other principal, then you can add another 1,450 principals to
+      the `bindings` in the `Policy`.
     etag: `etag` is used for optimistic concurrency control as a way to help
       prevent simultaneous updates of a policy from overwriting each other. It
       is strongly suggested that systems make use of the `etag` in the read-
@@ -2059,13 +1456,13 @@ class Policy(_messages.Message):
 
 
 class ReadPoolConfig(_messages.Message):
-  r"""Read pool configuration for an instance.
+  r"""Configuration for a read pool instance.
 
   Fields:
-    readPoolSize: Read pool size.
+    nodeCount: Read capacity, i.e. number of nodes in a read pool instance.
   """
 
-  readPoolSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  nodeCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
 class RestartInstanceRequest(_messages.Message):
@@ -2318,49 +1715,6 @@ class TestIamPermissionsResponse(_messages.Message):
   """
 
   permissions = _messages.StringField(1, repeated=True)
-
-
-class User(_messages.Message):
-  r"""Message describing User object
-
-  Messages:
-    LabelsValue: Labels as key value pairs
-
-  Fields:
-    createTime: Output only. Create time stamp
-    labels: Labels as key value pairs
-    name: Output only. name of resource
-    updateTime: Output only. Update time stamp
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LabelsValue(_messages.Message):
-    r"""Labels as key value pairs
-
-    Messages:
-      AdditionalProperty: An additional property for a LabelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a LabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  createTime = _messages.StringField(1)
-  labels = _messages.MessageField('LabelsValue', 2)
-  name = _messages.StringField(3)
-  updateTime = _messages.StringField(4)
 
 
 class UserPassword(_messages.Message):

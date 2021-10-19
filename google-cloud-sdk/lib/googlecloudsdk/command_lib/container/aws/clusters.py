@@ -88,6 +88,10 @@ class Client(object):
     msg = 'GoogleCloudGkemulticloud{}AwsDatabaseEncryption'.format(self.version)
     return getattr(self.messages, msg)(kmsKeyArn=database_encryption_key)
 
+  def _CreateAwsConfigEncryption(self, config_encryption_key):
+    msg = 'GoogleCloudGkemulticloud{}AwsConfigEncryption'.format(self.version)
+    return getattr(self.messages, msg)(kmsKeyArn=config_encryption_key)
+
   def _CreateAwsServicesAuthentication(self, role_arn, role_session_name):
     msg = 'GoogleCloudGkemulticloud{}AwsServicesAuthentication'.format(
         self.version)
@@ -103,8 +107,12 @@ class Client(object):
     return getattr(self.messages, msg)(
         secretArn=secret_arn, secretVersion=secret_version_id)
 
+  def _CreateFleet(self, fleet_project):
+    msg = 'GoogleCloudGkemulticloud{}Fleet'.format(self.version)
+    return getattr(self.messages, msg)(project=fleet_project)
+
   def Create(self, cluster_ref, args):
-    """Create an AWS cluster."""
+    """Creates an Anthos cluster on AWS."""
     validate_only = getattr(args, 'validate_only', False)
     req = self.messages.GkemulticloudProjectsLocationsAwsClustersCreateRequest(
         awsClusterId=cluster_ref.awsClustersId,
@@ -114,6 +122,8 @@ class Client(object):
     c = self._AddAwsCluster(req)
     c.name = cluster_ref.awsClustersId
     c.awsRegion = args.aws_region
+    if args.fleet_project:
+      c.fleet = self._CreateFleet(args.fleet_project)
 
     cp = self._AddAwsControlPlane(c)
     cp.subnetIds.extend(args.subnet_ids)
@@ -138,6 +148,9 @@ class Client(object):
     if args.proxy_secret_arn and args.proxy_secret_version_id:
       cp.proxyConfig = self._CreateAwsProxyConfig(args.proxy_secret_arn,
                                                   args.proxy_secret_version_id)
+    if args.config_encryption_kms_key_arn:
+      cp.configEncryption = self._CreateAwsConfigEncryption(
+          args.config_encryption_kms_key_arn)
 
     net = self._AddAwsNetworking(c)
     net.vpcId = args.vpc_id
@@ -202,3 +215,28 @@ class Client(object):
         field='awsClusters',
         batch_size_attribute='pageSize'):
       yield cluster
+
+  def Update(self, cluster_ref, args):
+    """Updates an Anthos cluster on AWS.
+
+    Args:
+      cluster_ref: gkemulticloud.GoogleCloudGkemulticloudV1AwsCluster object.
+      args: argparse.Namespace, Arguments parsed from the command.
+
+    Returns:
+      Response to the update request.
+    """
+    validate_only = getattr(args, 'validate_only', False)
+    req = self.messages.GkemulticloudProjectsLocationsAwsClustersPatchRequest(
+        name=cluster_ref.RelativeName(), validateOnly=validate_only)
+
+    update_mask = []
+    c = self._AddAwsCluster(req)
+    cp = self._AddAwsControlPlane(c)
+    if args.cluster_version:
+      cp.version = args.cluster_version
+      update_mask.append('control_plane.version')
+
+    req.updateMask = ','.join(update_mask)
+
+    return self.service.Patch(req)

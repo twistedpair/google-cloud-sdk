@@ -221,7 +221,8 @@
             "Adaptive Multi-Rate Narrowband codec. `sample_rate_hertz` must be 8000.",
             "Adaptive Multi-Rate Wideband codec. `sample_rate_hertz` must be 16000.",
             "Opus encoded audio frames in Ogg container ([OggOpus](https:\/\/wiki.xiph.org\/OggOpus)). `sample_rate_hertz` must be one of 8000, 12000, 16000, 24000, or 48000.",
-            "Although the use of lossy encodings is not recommended, if a very low bitrate encoding is required, `OGG_OPUS` is highly preferred over Speex encoding. The [Speex](https:\/\/speex.org\/) encoding supported by Cloud Speech API has a header byte in each block, as in MIME type `audio\/x-speex-with-header-byte`. It is a variant of the RTP Speex encoding defined in [RFC 5574](https:\/\/tools.ietf.org\/html\/rfc5574). The stream is a sequence of blocks, one block per RTP packet. Each block starts with a byte containing the length of the block, in bytes, followed by one or more frames of Speex data, padded to an integral number of bytes (octets) as specified in RFC 5574. In other words, each RTP header is replaced with a single byte containing the block length. Only Speex wideband is supported. `sample_rate_hertz` must be 16000."
+            "Although the use of lossy encodings is not recommended, if a very low bitrate encoding is required, `OGG_OPUS` is highly preferred over Speex encoding. The [Speex](https:\/\/speex.org\/) encoding supported by Cloud Speech API has a header byte in each block, as in MIME type `audio\/x-speex-with-header-byte`. It is a variant of the RTP Speex encoding defined in [RFC 5574](https:\/\/tools.ietf.org\/html\/rfc5574). The stream is a sequence of blocks, one block per RTP packet. Each block starts with a byte containing the length of the block, in bytes, followed by one or more frames of Speex data, padded to an integral number of bytes (octets) as specified in RFC 5574. In other words, each RTP header is replaced with a single byte containing the block length. Only Speex wideband is supported. `sample_rate_hertz` must be 16000.",
+            "Opus encoded audio frames in WebM container ([OggOpus](https:\/\/wiki.xiph.org\/OggOpus)). This is a Beta features and only available in v1p1beta1. `sample_rate_hertz` must be one of 8000, 12000, 16000, 24000, or 48000."
           ],
           "enum": [
             "ENCODING_UNSPECIFIED",
@@ -231,7 +232,8 @@
             "AMR",
             "AMR_WB",
             "OGG_OPUS",
-            "SPEEX_WITH_HEADER_BYTE"
+            "SPEEX_WITH_HEADER_BYTE",
+            "WEBM_OPUS"
           ]
         },
         "sampleRateHertz": {
@@ -252,6 +254,13 @@
           "description": "Required. The language of the supplied audio as a [BCP-47](https:\/\/www.rfc-editor.org\/rfc\/bcp\/bcp47.txt) language tag. Example: \"en-US\". See [Language Support](https:\/\/cloud.google.com\/speech-to-text\/docs\/languages) for a list of the currently supported language codes.",
           "type": "string"
         },
+        "alternativeLanguageCodes": {
+          "description": "A list of up to 3 additional [BCP-47](https:\/\/www.rfc-editor.org\/rfc\/bcp\/bcp47.txt) language tags, listing possible alternative languages of the supplied audio. See [Language Support](https:\/\/cloud.google.com\/speech-to-text\/docs\/languages) for a list of the currently supported language codes. If alternative languages are listed, recognition result will contain recognition in the most likely language detected including the main language_code. The recognition result will include the language tag of the language detected in the audio. Note: This feature is only supported for Voice Command and Voice Search use cases and performance may vary for other use cases (e.g., phone call transcription).",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
         "maxAlternatives": {
           "description": "Maximum number of recognition hypotheses to be returned. Specifically, the maximum number of `SpeechRecognitionAlternative` messages within each `SpeechRecognitionResult`. The server may return fewer than `max_alternatives`. Valid values are `0`-`30`. A value of `0` or `1` will return a maximum of one. If omitted, will return a maximum of one.",
           "type": "integer",
@@ -270,6 +279,10 @@
         },
         "enableWordTimeOffsets": {
           "description": "If `true`, the top result includes a list of words and the start and end time offsets (timestamps) for those words. If `false`, no word-level time offset information is returned. The default is `false`.",
+          "type": "boolean"
+        },
+        "enableWordConfidence": {
+          "description": "If `true`, the top result includes a list of words and the confidence for those words. If `false`, no word-level confidence information is returned. The default is `false`.",
           "type": "boolean"
         },
         "enableAutomaticPunctuation": {
@@ -488,6 +501,11 @@
           "description": "For multi-channel audio, this is the channel number corresponding to the recognized result for the audio from that channel. For audio_channel_count = N, its output values can range from '1' to 'N'.",
           "type": "integer",
           "format": "int32"
+        },
+        "languageCode": {
+          "description": "Output only. The [BCP-47](https:\/\/www.rfc-editor.org\/rfc\/bcp\/bcp47.txt) language tag of the language in this result. This language code was detected to have the most likelihood of being spoken in the audio.",
+          "readOnly": true,
+          "type": "string"
         }
       }
     },
@@ -532,6 +550,11 @@
         "word": {
           "description": "The word corresponding to this set of information.",
           "type": "string"
+        },
+        "confidence": {
+          "description": "The confidence estimate between 0.0 and 1.0. A higher number indicates an estimated greater likelihood that the recognized words are correct. This field is set only for the top alternative of a non-streaming result or, of a streaming result where `is_final=true`. This field is not guaranteed to be accurate and users should not rely on it to be always provided. The default of 0.0 is a sentinel value indicating `confidence` was not set.",
+          "type": "number",
+          "format": "float"
         },
         "speakerTag": {
           "description": "Output only. A distinct integer value is assigned for every speaker within the audio. This field specifies which one of those speakers was detected to have spoken this word. Value ranges from '1' to diarization_speaker_count. speaker_tag is set if enable_speaker_diarization = 'true' and only in the top alternative.",
@@ -614,6 +637,14 @@
           "description": "When available, billed audio seconds for the corresponding request.",
           "type": "string",
           "format": "google-duration"
+        },
+        "outputConfig": {
+          "description": "Original output config if present in the request.",
+          "$ref": "TranscriptOutputConfig"
+        },
+        "outputError": {
+          "description": "If the transcript output fails this field contains the relevant error.",
+          "$ref": "Status"
         }
       }
     }

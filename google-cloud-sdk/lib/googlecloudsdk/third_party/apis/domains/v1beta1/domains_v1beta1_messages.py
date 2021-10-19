@@ -89,19 +89,19 @@ class AuthorizationCode(_messages.Message):
 
 
 class Binding(_messages.Message):
-  r"""Associates `members` with a `role`.
+  r"""Associates `members`, or principals, with a `role`.
 
   Fields:
     condition: The condition that is associated with this binding. If the
       condition evaluates to `true`, then this binding applies to the current
       request. If the condition evaluates to `false`, then this binding does
       not apply to the current request. However, a different role binding
-      might grant the same role to one or more of the members in this binding.
-      To learn which resources support conditions in their IAM policies, see
-      the [IAM
+      might grant the same role to one or more of the principals in this
+      binding. To learn which resources support conditions in their IAM
+      policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
-    members: Specifies the identities requesting access for a Cloud Platform
+    members: Specifies the principals requesting access for a Cloud Platform
       resource. `members` can have the following values: * `allUsers`: A
       special identifier that represents anyone who is on the internet; with
       or without a Google account. * `allAuthenticatedUsers`: A special
@@ -131,8 +131,8 @@ class Binding(_messages.Message):
       group retains the role in the binding. * `domain:{domain}`: The G Suite
       domain (primary) that represents all the users of that domain. For
       example, `google.com` or `example.com`.
-    role: Role that is assigned to `members`. For example, `roles/viewer`,
-      `roles/editor`, or `roles/owner`.
+    role: Role that is assigned to the list of `members`, or principals. For
+      example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """
 
   condition = _messages.MessageField('Expr', 1)
@@ -583,6 +583,21 @@ class DomainsProjectsLocationsRegistrationsRetrieveRegisterParametersRequest(_me
   location = _messages.StringField(2, required=True)
 
 
+class DomainsProjectsLocationsRegistrationsRetrieveTransferParametersRequest(_messages.Message):
+  r"""A DomainsProjectsLocationsRegistrationsRetrieveTransferParametersRequest
+  object.
+
+  Fields:
+    domainName: Required. The domain name. Unicode domain names must be
+      expressed in Punycode format.
+    location: Required. The location. Must be in the format
+      `projects/*/locations/*`.
+  """
+
+  domainName = _messages.StringField(1)
+  location = _messages.StringField(2, required=True)
+
+
 class DomainsProjectsLocationsRegistrationsSearchDomainsRequest(_messages.Message):
   r"""A DomainsProjectsLocationsRegistrationsSearchDomainsRequest object.
 
@@ -624,6 +639,20 @@ class DomainsProjectsLocationsRegistrationsTestIamPermissionsRequest(_messages.M
 
   resource = _messages.StringField(1, required=True)
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
+class DomainsProjectsLocationsRegistrationsTransferRequest(_messages.Message):
+  r"""A DomainsProjectsLocationsRegistrationsTransferRequest object.
+
+  Fields:
+    parent: Required. The parent resource of the `Registration`. Must be in
+      the format `projects/*/locations/*`.
+    transferDomainRequest: A TransferDomainRequest resource to be passed as
+      the request body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  transferDomainRequest = _messages.MessageField('TransferDomainRequest', 2)
 
 
 class DsRecord(_messages.Message):
@@ -1141,15 +1170,15 @@ class OperationMetadata(_messages.Message):
 class Policy(_messages.Message):
   r"""An Identity and Access Management (IAM) policy, which specifies access
   controls for Google Cloud resources. A `Policy` is a collection of
-  `bindings`. A `binding` binds one or more `members` to a single `role`.
-  Members can be user accounts, service accounts, Google groups, and domains
-  (such as G Suite). A `role` is a named list of permissions; each `role` can
-  be an IAM predefined role or a user-created custom role. For some types of
-  Google Cloud resources, a `binding` can also specify a `condition`, which is
-  a logical expression that allows access to a resource only if the expression
-  evaluates to `true`. A condition can add constraints based on attributes of
-  the request, the resource, or both. To learn which resources support
-  conditions in their IAM policies, see the [IAM
+  `bindings`. A `binding` binds one or more `members`, or principals, to a
+  single `role`. Principals can be user accounts, service accounts, Google
+  groups, and domains (such as G Suite). A `role` is a named list of
+  permissions; each `role` can be an IAM predefined role or a user-created
+  custom role. For some types of Google Cloud resources, a `binding` can also
+  specify a `condition`, which is a logical expression that allows access to a
+  resource only if the expression evaluates to `true`. A condition can add
+  constraints based on attributes of the request, the resource, or both. To
+  learn which resources support conditions in their IAM policies, see the [IAM
   documentation](https://cloud.google.com/iam/help/conditions/resource-
   policies). **JSON example:** { "bindings": [ { "role":
   "roles/resourcemanager.organizationAdmin", "members": [
@@ -1171,9 +1200,15 @@ class Policy(_messages.Message):
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
-    bindings: Associates a list of `members` to a `role`. Optionally, may
-      specify a `condition` that determines how and when the `bindings` are
-      applied. Each of the `bindings` must contain at least one member.
+    bindings: Associates a list of `members`, or principals, with a `role`.
+      Optionally, may specify a `condition` that determines how and when the
+      `bindings` are applied. Each of the `bindings` must contain at least one
+      principal. The `bindings` in a `Policy` can refer to up to 1,500
+      principals; up to 250 of these principals can be Google groups. Each
+      occurrence of a principal counts towards these limits. For example, if
+      the `bindings` grant 50 different roles to `user:alice@example.com`, and
+      not to any other principal, then you can add another 1,450 principals to
+      the `bindings` in the `Policy`.
     etag: `etag` is used for optimistic concurrency control as a way to help
       prevent simultaneous updates of a policy from overwriting each other. It
       is strongly suggested that systems make use of the `etag` in the read-
@@ -1445,11 +1480,17 @@ class RegisterParameters(_messages.Message):
 
 class Registration(_messages.Message):
   r"""The `Registration` resource facilitates managing and configuring domain
-  name registrations. To create a new `Registration` resource, find a suitable
-  domain name by calling the `SearchDomains` method with a query to see
-  available domain name options. After choosing a name, call
+  name registrations. There are several ways to create a new `Registration`
+  resource: To create a new `Registration` resource, find a suitable domain
+  name by calling the `SearchDomains` method with a query to see available
+  domain name options. After choosing a name, call
   `RetrieveRegisterParameters` to ensure availability and obtain information
-  like pricing, which is needed to build a call to `RegisterDomain`.
+  like pricing, which is needed to build a call to `RegisterDomain`. Another
+  way to create a new `Registration` is to transfer an existing domain from
+  another registrar. First, go to the current registrar to unlock the domain
+  for transfer and retrieve the domain's transfer authorization code. Then
+  call `RetrieveTransferParameters` to confirm that the domain is unlocked and
+  to get values needed to build a call to `TransferDomain`.
 
   Enums:
     IssuesValueListEntryValuesEnum:
@@ -1521,6 +1562,13 @@ class Registration(_messages.Message):
       REGISTRATION_PENDING: The domain is being registered.
       REGISTRATION_FAILED: The domain registration failed. You can delete
         resources in this state to allow registration to be retried.
+      TRANSFER_PENDING: Domain transfer from another registrar to Cloud
+        Domains is in progress. The domain's current registrar may require
+        action to complete the transfer. Check emails from the domain's
+        current registrar to the domain's current registrant for instructions.
+      TRANSFER_FAILED: The attempt to transfer the domain from another
+        registrar to Cloud Domains failed. You can delete resources in this
+        state to allow transfer to be retried.
       ACTIVE: The domain is registered and operational. The domain renews
         automatically as long as it remains in this state.
       SUSPENDED: The domain is suspended and inoperative. For more details,
@@ -1534,9 +1582,11 @@ class Registration(_messages.Message):
     STATE_UNSPECIFIED = 0
     REGISTRATION_PENDING = 1
     REGISTRATION_FAILED = 2
-    ACTIVE = 3
-    SUSPENDED = 4
-    EXPORTED = 5
+    TRANSFER_PENDING = 3
+    TRANSFER_FAILED = 4
+    ACTIVE = 5
+    SUSPENDED = 6
+    EXPORTED = 7
 
   class SupportedPrivacyValueListEntryValuesEnum(_messages.Enum):
     r"""SupportedPrivacyValueListEntryValuesEnum enum type.
@@ -1613,6 +1663,17 @@ class RetrieveRegisterParametersResponse(_messages.Message):
   """
 
   registerParameters = _messages.MessageField('RegisterParameters', 1)
+
+
+class RetrieveTransferParametersResponse(_messages.Message):
+  r"""Response for the `RetrieveTransferParameters` method.
+
+  Fields:
+    transferParameters: Parameters to use when calling the `TransferDomain`
+      method.
+  """
+
+  transferParameters = _messages.MessageField('TransferParameters', 1)
 
 
 class SearchDomainsResponse(_messages.Message):
@@ -1778,6 +1839,120 @@ class TestIamPermissionsResponse(_messages.Message):
   """
 
   permissions = _messages.StringField(1, repeated=True)
+
+
+class TransferDomainRequest(_messages.Message):
+  r"""Request for the `TransferDomain` method.
+
+  Enums:
+    ContactNoticesValueListEntryValuesEnum:
+
+  Fields:
+    authorizationCode: The domain's transfer authorization code. You can
+      obtain this from the domain's current registrar.
+    contactNotices: The list of contact notices that you acknowledge. The
+      notices needed here depend on the values specified in
+      `registration.contact_settings`.
+    registration: Required. The complete `Registration` resource to be
+      created. You can leave `registration.dns_settings` unset to import the
+      domain's current DNS configuration from its current registrar. Use this
+      option only if you are sure that the domain's current DNS service will
+      not cease upon transfer, as is often the case for DNS services provided
+      for free by the registrar.
+    validateOnly: Validate the request without actually transferring the
+      domain.
+    yearlyPrice: Required. Acknowledgement of the price to transfer or renew
+      the domain for one year. Call `RetrieveTransferParameters` to obtain the
+      price, which you must acknowledge.
+  """
+
+  class ContactNoticesValueListEntryValuesEnum(_messages.Enum):
+    r"""ContactNoticesValueListEntryValuesEnum enum type.
+
+    Values:
+      CONTACT_NOTICE_UNSPECIFIED: The notice is undefined.
+      PUBLIC_CONTACT_DATA_ACKNOWLEDGEMENT: Required when setting the `privacy`
+        field of `ContactSettings` to `PUBLIC_CONTACT_DATA`, which exposes
+        contact data publicly.
+    """
+    CONTACT_NOTICE_UNSPECIFIED = 0
+    PUBLIC_CONTACT_DATA_ACKNOWLEDGEMENT = 1
+
+  authorizationCode = _messages.MessageField('AuthorizationCode', 1)
+  contactNotices = _messages.EnumField('ContactNoticesValueListEntryValuesEnum', 2, repeated=True)
+  registration = _messages.MessageField('Registration', 3)
+  validateOnly = _messages.BooleanField(4)
+  yearlyPrice = _messages.MessageField('Money', 5)
+
+
+class TransferParameters(_messages.Message):
+  r"""Parameters required to transfer a domain from another registrar.
+
+  Enums:
+    SupportedPrivacyValueListEntryValuesEnum:
+    TransferLockStateValueValuesEnum: Indicates whether the domain is
+      protected by a transfer lock. For a transfer to succeed, this must show
+      `UNLOCKED`. To unlock a domain, go to its current registrar.
+
+  Fields:
+    currentRegistrar: The registrar that currently manages the domain.
+    domainName: The domain name. Unicode domain names are expressed in
+      Punycode format.
+    nameServers: The name servers that currently store the configuration of
+      the domain.
+    supportedPrivacy: Contact privacy options that the domain supports.
+    transferLockState: Indicates whether the domain is protected by a transfer
+      lock. For a transfer to succeed, this must show `UNLOCKED`. To unlock a
+      domain, go to its current registrar.
+    yearlyPrice: Price to transfer or renew the domain for one year.
+  """
+
+  class SupportedPrivacyValueListEntryValuesEnum(_messages.Enum):
+    r"""SupportedPrivacyValueListEntryValuesEnum enum type.
+
+    Values:
+      CONTACT_PRIVACY_UNSPECIFIED: The contact privacy settings are undefined.
+      PUBLIC_CONTACT_DATA: All the data from `ContactSettings` is publicly
+        available. When setting this option, you must also provide a
+        `PUBLIC_CONTACT_DATA_ACKNOWLEDGEMENT` in the `contact_notices` field
+        of the request.
+      PRIVATE_CONTACT_DATA: None of the data from `ContactSettings` is
+        publicly available. Instead, proxy contact data is published for your
+        domain. Email sent to the proxy email address is forwarded to the
+        registrant's email address. Cloud Domains provides this privacy proxy
+        service at no additional cost.
+      REDACTED_CONTACT_DATA: Some data from `ContactSettings` is publicly
+        available. The actual information redacted depends on the domain. For
+        details, see [the registration privacy
+        article](https://support.google.com/domains/answer/3251242).
+    """
+    CONTACT_PRIVACY_UNSPECIFIED = 0
+    PUBLIC_CONTACT_DATA = 1
+    PRIVATE_CONTACT_DATA = 2
+    REDACTED_CONTACT_DATA = 3
+
+  class TransferLockStateValueValuesEnum(_messages.Enum):
+    r"""Indicates whether the domain is protected by a transfer lock. For a
+    transfer to succeed, this must show `UNLOCKED`. To unlock a domain, go to
+    its current registrar.
+
+    Values:
+      TRANSFER_LOCK_STATE_UNSPECIFIED: The state is unspecified.
+      UNLOCKED: The domain is unlocked and can be transferred to another
+        registrar.
+      LOCKED: The domain is locked and cannot be transferred to another
+        registrar.
+    """
+    TRANSFER_LOCK_STATE_UNSPECIFIED = 0
+    UNLOCKED = 1
+    LOCKED = 2
+
+  currentRegistrar = _messages.StringField(1)
+  domainName = _messages.StringField(2)
+  nameServers = _messages.StringField(3, repeated=True)
+  supportedPrivacy = _messages.EnumField('SupportedPrivacyValueListEntryValuesEnum', 4, repeated=True)
+  transferLockState = _messages.EnumField('TransferLockStateValueValuesEnum', 5)
+  yearlyPrice = _messages.MessageField('Money', 6)
 
 
 encoding.AddCustomJsonFieldMapping(

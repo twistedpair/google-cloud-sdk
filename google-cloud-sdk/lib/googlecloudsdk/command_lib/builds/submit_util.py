@@ -261,7 +261,7 @@ def _SetSource(build_config,
     except api_exceptions.HttpForbiddenError:
       raise BucketForbiddenError(
           'The user is forbidden from accessing the bucket [{}]. Please check '
-          'your organization\'s policy or if the user has the "serviceusage.services.use" permisison'
+          'your organization\'s policy or if the user has the "serviceusage.services.use" permission'
           .format(gcs_source_staging_dir.bucket))
     except storage_api.BucketInWrongProjectError:
       # If we're using the default bucket but it already exists in a different

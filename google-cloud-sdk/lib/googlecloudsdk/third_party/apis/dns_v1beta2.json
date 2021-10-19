@@ -4,7 +4,7 @@
  "id": "dns:v1beta2",
  "name": "dns",
  "version": "v1beta2",
- "revision": "20210924",
+ "revision": "20211008",
  "title": "Google Cloud DNS API",
  "description": "Configures and serves authoritative DNS records.",
  "ownerDomain": "google.com",
@@ -993,12 +993,6 @@
    "id": "RRSetRoutingPolicyGeoPolicy",
    "type": "object",
    "properties": {
-    "failovers": {
-     "type": "array",
-     "items": {
-      "$ref": "RRSetRoutingPolicyGeoPolicyGeoPolicyItem"
-     }
-    },
     "items": {
      "type": "array",
      "items": {

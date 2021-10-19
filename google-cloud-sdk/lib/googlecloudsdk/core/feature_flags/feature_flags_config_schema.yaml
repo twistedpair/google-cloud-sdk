@@ -30,8 +30,7 @@ patternProperties:
         weight:
           type: integer
           minimum: 0
-          maximum: 1000
-          exclusiveMaximum: true
+          maximum: 999
       required: [value, weight]
       additionalProperties: false
 additionalProperties: false

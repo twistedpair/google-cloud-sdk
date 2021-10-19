@@ -465,3 +465,7 @@ class GcsObjectResource(resource_reference.ObjectResource):
 
   def get_json_dump(self):
     return _get_json_dump(self)
+
+  def is_encrypted(self):
+    cmek_in_metadata = self.metadata.kmsKeyName if self.metadata else False
+    return cmek_in_metadata or self.decryption_key_hash

@@ -64,7 +64,6 @@ def AddAvailabilityType(parser):
           'REGIONAL': 'Provides high availability and is recommended for '
                       'production instances; instance automatically fails over '
                       'to another zone within your selected region.',
-          'ZONAL': 'Provides no failover capability. This is the default.'
       },
       help='Specifies level of availability.')
 
@@ -87,22 +86,6 @@ def AddCluster(parser, positional=True):
         required=True,
         type=str,
         help='AlloyDB cluster ID')
-
-
-def AddCPU(parser):
-  """Adds a --cpu flag to parser.
-
-  Args:
-    parser: argparse.Parser: Parser object for command line inputs.
-  """
-  parser.add_argument(
-      '--cpu',
-      required=False,
-      type=int,
-      help=('Whole number value indicating how many cores are desired in '
-            'the machine. Both `--cpu` and `--memory` must be specified if a '
-            'custom machine type is desired, and the `--tier` flag must be '
-            'omitted.'))
 
 
 def AddDatabaseFlags(parser, update=False):
@@ -155,12 +138,14 @@ def AddInstanceType(parser, required=True):
       required=required,
       choices={
           'PRIMARY': 'PRIMARY instances support read and write operations.',
-          'READ': 'READ instances support read operations only. Each read '
-                  'instance consists of one or more homogeneous read replicas. '
-                  'READ Instances of size 1 can only have zonal availability. '
-                  'READ instances with replica count of 2 or more can have '
-                  'regional availability (replicas are present in 2 or more '
-                  'zones in a region).'
+          'READ_POOL':
+              'READ_POOL instances support read operations only. Each '
+              'read pool instance consists of one or more homogeneous '
+              'nodes. '
+              '  * Read pool of size 1 can only have zonal availability. '
+              '  * Read pools with node count of 2 or more can have  '
+              '    regional availability (nodes are present in 2 or  '
+              '    more zones in a region).'
       },
       help='Specifies instance type.')
 
@@ -175,23 +160,6 @@ def AddOperation(parser):
       'operation',
       type=str,
       help='AlloyDB operation ID')
-
-
-def AddMemory(parser):
-  """Adds a --memory flag to parser.
-
-  Args:
-    parser: argparse.Parser: Parser object for command line inputs.
-  """
-  parser.add_argument(
-      '--memory',
-      required=False,
-      type=arg_parsers.BinarySize(),
-      help=('Whole number value indicating how much memory is desired in '
-            'the machine. A size unit should be provided (eg. 3072MiB or '
-            '9GiB) - if no units are specified, GiB is assumed. Both `--cpu` '
-            'and `--memory` must be specified if a custom machine type is '
-            'desired, and the `--tier` flag must be omitted.'))
 
 
 def AddNetwork(parser):
@@ -209,17 +177,17 @@ def AddNetwork(parser):
             'testsharednetwork`'))
 
 
-def AddReadPoolSize(parser):
-  """Adds a --read-pool-size flag to parser.
+def AddReadPoolNodeCount(parser):
+  """Adds a --node-count flag to parser.
 
   Args:
     parser: argparse.Parser: Parser object for command line inputs.
   """
   parser.add_argument(
-      '--read-pool-size',
+      '--read-pool-node-count',
       required=False,
       type=int,
-      help='Read pool size.')
+      help='Read capacity, i.e. number of nodes in a read pool instance.')
 
 
 def AddRegion(parser, required=True):
@@ -236,21 +204,6 @@ def AddRegion(parser, required=True):
       help='Regional location (e.g. asia-east1, us-east1). See the full '
             'list of regions at '
             'https://cloud.google.com/sql/docs/instance-locations.')
-
-
-def AddTier(parser):
-  """Adds a '--tier' flag to parser.
-
-  Args:
-    parser: argparse.Parser: Parser object for command line inputs.
-  """
-  parser.add_argument(
-      '--tier',
-      required=False,
-      type=str,
-      help=(
-          'The tier for this instance. The following tiers are available for '
-          'AlloyDB instances: n2-highmem-8, n2-highmem-16, and n2-highmem-32.'))
 
 
 def AddZone(parser):
@@ -282,6 +235,24 @@ def AddForce(parser):
             'cluster, before deleting the cluster.'
             '\n\nIf flag is not specified, cluster delete will fail if there '
             'are instances present in the cluster.'))
+
+
+def AddMachineCPU(parser):
+  """Adds a --machine-cpu flag to parser.
+
+  Args:
+    parser: argparse.Parser: Parser object for command line inputs.
+  """
+  parser.add_argument(
+      '--machine-cpu',
+      required=True,
+      type=int,
+      choices=[8, 16, 32],
+      help=(
+          'Whole number value indicating how many vCPUs the machine should '
+          'contain. Each vCPU count corresponds to a N2 high-mem machine: '
+          '(https://cloud.google.com/compute/docs/general-purpose-machines#n2_'
+          'machines).'))
 
 
 def AddPassword(parser):

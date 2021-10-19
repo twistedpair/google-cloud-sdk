@@ -42,7 +42,6 @@ class LoggingV2(base_api.BaseApiClient):
     self.billingAccounts_buckets_views = self.BillingAccountsBucketsViewsService(self)
     self.billingAccounts_buckets = self.BillingAccountsBucketsService(self)
     self.billingAccounts_exclusions = self.BillingAccountsExclusionsService(self)
-    self.billingAccounts_locations_buckets_tables = self.BillingAccountsLocationsBucketsTablesService(self)
     self.billingAccounts_locations_buckets_views = self.BillingAccountsLocationsBucketsViewsService(self)
     self.billingAccounts_locations_buckets = self.BillingAccountsLocationsBucketsService(self)
     self.billingAccounts_locations_operations = self.BillingAccountsLocationsOperationsService(self)
@@ -54,7 +53,6 @@ class LoggingV2(base_api.BaseApiClient):
     self.entries = self.EntriesService(self)
     self.exclusions = self.ExclusionsService(self)
     self.folders_exclusions = self.FoldersExclusionsService(self)
-    self.folders_locations_buckets_tables = self.FoldersLocationsBucketsTablesService(self)
     self.folders_locations_buckets_views = self.FoldersLocationsBucketsViewsService(self)
     self.folders_locations_buckets = self.FoldersLocationsBucketsService(self)
     self.folders_locations_operations = self.FoldersLocationsOperationsService(self)
@@ -62,7 +60,6 @@ class LoggingV2(base_api.BaseApiClient):
     self.folders_logs = self.FoldersLogsService(self)
     self.folders_sinks = self.FoldersSinksService(self)
     self.folders = self.FoldersService(self)
-    self.locations_buckets_tables = self.LocationsBucketsTablesService(self)
     self.locations_buckets_views = self.LocationsBucketsViewsService(self)
     self.locations_buckets = self.LocationsBucketsService(self)
     self.locations_operations = self.LocationsOperationsService(self)
@@ -70,7 +67,6 @@ class LoggingV2(base_api.BaseApiClient):
     self.logs = self.LogsService(self)
     self.monitoredResourceDescriptors = self.MonitoredResourceDescriptorsService(self)
     self.organizations_exclusions = self.OrganizationsExclusionsService(self)
-    self.organizations_locations_buckets_tables = self.OrganizationsLocationsBucketsTablesService(self)
     self.organizations_locations_buckets_views = self.OrganizationsLocationsBucketsViewsService(self)
     self.organizations_locations_buckets = self.OrganizationsLocationsBucketsService(self)
     self.organizations_locations_operations = self.OrganizationsLocationsOperationsService(self)
@@ -79,7 +75,6 @@ class LoggingV2(base_api.BaseApiClient):
     self.organizations_sinks = self.OrganizationsSinksService(self)
     self.organizations = self.OrganizationsService(self)
     self.projects_exclusions = self.ProjectsExclusionsService(self)
-    self.projects_locations_buckets_tables = self.ProjectsLocationsBucketsTablesService(self)
     self.projects_locations_buckets_views = self.ProjectsLocationsBucketsViewsService(self)
     self.projects_locations_buckets = self.ProjectsLocationsBucketsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
@@ -176,7 +171,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new exclusion in a specified parent resource. Only log entries belonging to that resource can be excluded. You can have up to 10 exclusions in a resource.
+      r"""Creates a new exclusion in the _Default sink in a specified parent resource. Only log entries belonging to that resource can be excluded. You can have up to 10 exclusions in a resource.
 
       Args:
         request: (LoggingBillingAccountsExclusionsCreateRequest) input message
@@ -203,7 +198,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes an exclusion.
+      r"""Deletes an exclusion in the _Default sink.
 
       Args:
         request: (LoggingBillingAccountsExclusionsDeleteRequest) input message
@@ -230,7 +225,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets the description of an exclusion.
+      r"""Gets the description of an exclusion in the _Default sink.
 
       Args:
         request: (LoggingBillingAccountsExclusionsGetRequest) input message
@@ -257,7 +252,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists all the exclusions in a parent resource.
+      r"""Lists all the exclusions on the _Default sink in a parent resource.
 
       Args:
         request: (LoggingBillingAccountsExclusionsListRequest) input message
@@ -284,7 +279,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Changes one or more properties of an existing exclusion.
+      r"""Changes one or more properties of an existing exclusion in the _Default sink.
 
       Args:
         request: (LoggingBillingAccountsExclusionsPatchRequest) input message
@@ -307,43 +302,6 @@ class LoggingV2(base_api.BaseApiClient):
         request_field='logExclusion',
         request_type_name='LoggingBillingAccountsExclusionsPatchRequest',
         response_type_name='LogExclusion',
-        supports_download=False,
-    )
-
-  class BillingAccountsLocationsBucketsTablesService(base_api.BaseApiService):
-    """Service class for the billingAccounts_locations_buckets_tables resource."""
-
-    _NAME = 'billingAccounts_locations_buckets_tables'
-
-    def __init__(self, client):
-      super(LoggingV2.BillingAccountsLocationsBucketsTablesService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def List(self, request, global_params=None):
-      r"""Lists all tables in the specified log bucket.
-
-      Args:
-        request: (LoggingBillingAccountsLocationsBucketsTablesListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListTablesResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2/billingAccounts/{billingAccountsId}/locations/{locationsId}/buckets/{bucketsId}/tables',
-        http_method='GET',
-        method_id='logging.billingAccounts.locations.buckets.tables.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
-        relative_path='v2/{+parent}/tables',
-        request_field='',
-        request_type_name='LoggingBillingAccountsLocationsBucketsTablesListRequest',
-        response_type_name='ListTablesResponse',
         supports_download=False,
     )
 
@@ -1172,7 +1130,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new exclusion in a specified parent resource. Only log entries belonging to that resource can be excluded. You can have up to 10 exclusions in a resource.
+      r"""Creates a new exclusion in the _Default sink in a specified parent resource. Only log entries belonging to that resource can be excluded. You can have up to 10 exclusions in a resource.
 
       Args:
         request: (LoggingExclusionsCreateRequest) input message
@@ -1199,7 +1157,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes an exclusion.
+      r"""Deletes an exclusion in the _Default sink.
 
       Args:
         request: (LoggingExclusionsDeleteRequest) input message
@@ -1226,7 +1184,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets the description of an exclusion.
+      r"""Gets the description of an exclusion in the _Default sink.
 
       Args:
         request: (LoggingExclusionsGetRequest) input message
@@ -1253,7 +1211,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists all the exclusions in a parent resource.
+      r"""Lists all the exclusions on the _Default sink in a parent resource.
 
       Args:
         request: (LoggingExclusionsListRequest) input message
@@ -1280,7 +1238,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Changes one or more properties of an existing exclusion.
+      r"""Changes one or more properties of an existing exclusion in the _Default sink.
 
       Args:
         request: (LoggingExclusionsPatchRequest) input message
@@ -1317,7 +1275,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new exclusion in a specified parent resource. Only log entries belonging to that resource can be excluded. You can have up to 10 exclusions in a resource.
+      r"""Creates a new exclusion in the _Default sink in a specified parent resource. Only log entries belonging to that resource can be excluded. You can have up to 10 exclusions in a resource.
 
       Args:
         request: (LoggingFoldersExclusionsCreateRequest) input message
@@ -1344,7 +1302,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes an exclusion.
+      r"""Deletes an exclusion in the _Default sink.
 
       Args:
         request: (LoggingFoldersExclusionsDeleteRequest) input message
@@ -1371,7 +1329,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets the description of an exclusion.
+      r"""Gets the description of an exclusion in the _Default sink.
 
       Args:
         request: (LoggingFoldersExclusionsGetRequest) input message
@@ -1398,7 +1356,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists all the exclusions in a parent resource.
+      r"""Lists all the exclusions on the _Default sink in a parent resource.
 
       Args:
         request: (LoggingFoldersExclusionsListRequest) input message
@@ -1425,7 +1383,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Changes one or more properties of an existing exclusion.
+      r"""Changes one or more properties of an existing exclusion in the _Default sink.
 
       Args:
         request: (LoggingFoldersExclusionsPatchRequest) input message
@@ -1448,43 +1406,6 @@ class LoggingV2(base_api.BaseApiClient):
         request_field='logExclusion',
         request_type_name='LoggingFoldersExclusionsPatchRequest',
         response_type_name='LogExclusion',
-        supports_download=False,
-    )
-
-  class FoldersLocationsBucketsTablesService(base_api.BaseApiService):
-    """Service class for the folders_locations_buckets_tables resource."""
-
-    _NAME = 'folders_locations_buckets_tables'
-
-    def __init__(self, client):
-      super(LoggingV2.FoldersLocationsBucketsTablesService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def List(self, request, global_params=None):
-      r"""Lists all tables in the specified log bucket.
-
-      Args:
-        request: (LoggingFoldersLocationsBucketsTablesListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListTablesResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2/folders/{foldersId}/locations/{locationsId}/buckets/{bucketsId}/tables',
-        http_method='GET',
-        method_id='logging.folders.locations.buckets.tables.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
-        relative_path='v2/{+parent}/tables',
-        request_field='',
-        request_type_name='LoggingFoldersLocationsBucketsTablesListRequest',
-        response_type_name='ListTablesResponse',
         supports_download=False,
     )
 
@@ -2206,70 +2127,6 @@ class LoggingV2(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
-  class LocationsBucketsTablesService(base_api.BaseApiService):
-    """Service class for the locations_buckets_tables resource."""
-
-    _NAME = 'locations_buckets_tables'
-
-    def __init__(self, client):
-      super(LoggingV2.LocationsBucketsTablesService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Get(self, request, global_params=None):
-      r"""Gets the specified table resource by table ID. This method does not return the data in the table, it only returns the table resource, which describes the structure of this table.
-
-      Args:
-        request: (LoggingLocationsBucketsTablesGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Table) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}/tables/{tablesId}',
-        http_method='GET',
-        method_id='logging.locations.buckets.tables.get',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v2/{+name}',
-        request_field='',
-        request_type_name='LoggingLocationsBucketsTablesGetRequest',
-        response_type_name='Table',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""Lists all tables in the specified log bucket.
-
-      Args:
-        request: (LoggingLocationsBucketsTablesListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListTablesResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}/tables',
-        http_method='GET',
-        method_id='logging.locations.buckets.tables.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
-        relative_path='v2/{+parent}/tables',
-        request_field='',
-        request_type_name='LoggingLocationsBucketsTablesListRequest',
-        response_type_name='ListTablesResponse',
-        supports_download=False,
-    )
-
   class LocationsBucketsViewsService(base_api.BaseApiService):
     """Service class for the locations_buckets_views resource."""
 
@@ -2853,7 +2710,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new exclusion in a specified parent resource. Only log entries belonging to that resource can be excluded. You can have up to 10 exclusions in a resource.
+      r"""Creates a new exclusion in the _Default sink in a specified parent resource. Only log entries belonging to that resource can be excluded. You can have up to 10 exclusions in a resource.
 
       Args:
         request: (LoggingOrganizationsExclusionsCreateRequest) input message
@@ -2880,7 +2737,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes an exclusion.
+      r"""Deletes an exclusion in the _Default sink.
 
       Args:
         request: (LoggingOrganizationsExclusionsDeleteRequest) input message
@@ -2907,7 +2764,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets the description of an exclusion.
+      r"""Gets the description of an exclusion in the _Default sink.
 
       Args:
         request: (LoggingOrganizationsExclusionsGetRequest) input message
@@ -2934,7 +2791,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists all the exclusions in a parent resource.
+      r"""Lists all the exclusions on the _Default sink in a parent resource.
 
       Args:
         request: (LoggingOrganizationsExclusionsListRequest) input message
@@ -2961,7 +2818,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Changes one or more properties of an existing exclusion.
+      r"""Changes one or more properties of an existing exclusion in the _Default sink.
 
       Args:
         request: (LoggingOrganizationsExclusionsPatchRequest) input message
@@ -2984,43 +2841,6 @@ class LoggingV2(base_api.BaseApiClient):
         request_field='logExclusion',
         request_type_name='LoggingOrganizationsExclusionsPatchRequest',
         response_type_name='LogExclusion',
-        supports_download=False,
-    )
-
-  class OrganizationsLocationsBucketsTablesService(base_api.BaseApiService):
-    """Service class for the organizations_locations_buckets_tables resource."""
-
-    _NAME = 'organizations_locations_buckets_tables'
-
-    def __init__(self, client):
-      super(LoggingV2.OrganizationsLocationsBucketsTablesService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def List(self, request, global_params=None):
-      r"""Lists all tables in the specified log bucket.
-
-      Args:
-        request: (LoggingOrganizationsLocationsBucketsTablesListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListTablesResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2/organizations/{organizationsId}/locations/{locationsId}/buckets/{bucketsId}/tables',
-        http_method='GET',
-        method_id='logging.organizations.locations.buckets.tables.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
-        relative_path='v2/{+parent}/tables',
-        request_field='',
-        request_type_name='LoggingOrganizationsLocationsBucketsTablesListRequest',
-        response_type_name='ListTablesResponse',
         supports_download=False,
     )
 
@@ -3743,7 +3563,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def GetCmekSettings(self, request, global_params=None):
-      r"""Gets the Logs Router CMEK settings for the given resource.Note: CMEK for the Logs Router can currently only be configured for GCP organizations. Once configured, it applies to all projects and folders in the GCP organization.See Enabling CMEK for Logs Router (https://cloud.google.com/logging/docs/routing/managed-encryption) for more information.
+      r"""Gets the Logs Router CMEK settings for the given resource.Note: CMEK for the Logs Router can currently only be configured for Google Cloud organizations. Once configured, it applies to all projects and folders in the Google Cloud organization.See Enabling CMEK for Logs Router (https://cloud.google.com/logging/docs/routing/managed-encryption) for more information.
 
       Args:
         request: (LoggingOrganizationsGetCmekSettingsRequest) input message
@@ -3770,7 +3590,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def UpdateCmekSettings(self, request, global_params=None):
-      r"""Updates the Logs Router CMEK settings for the given resource.Note: CMEK for the Logs Router can currently only be configured for GCP organizations. Once configured, it applies to all projects and folders in the GCP organization.UpdateCmekSettings will fail if 1) kms_key_name is invalid, or 2) the associated service account does not have the required roles/cloudkms.cryptoKeyEncrypterDecrypter role assigned for the key, or 3) access to the key is disabled.See Enabling CMEK for Logs Router (https://cloud.google.com/logging/docs/routing/managed-encryption) for more information.
+      r"""Updates the Logs Router CMEK settings for the given resource.Note: CMEK for the Logs Router can currently only be configured for Google Cloud organizations. Once configured, it applies to all projects and folders in the Google Cloud organization.UpdateCmekSettings will fail if 1) kms_key_name is invalid, or 2) the associated service account does not have the required roles/cloudkms.cryptoKeyEncrypterDecrypter role assigned for the key, or 3) access to the key is disabled.See Enabling CMEK for Logs Router (https://cloud.google.com/logging/docs/routing/managed-encryption) for more information.
 
       Args:
         request: (LoggingOrganizationsUpdateCmekSettingsRequest) input message
@@ -3807,7 +3627,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new exclusion in a specified parent resource. Only log entries belonging to that resource can be excluded. You can have up to 10 exclusions in a resource.
+      r"""Creates a new exclusion in the _Default sink in a specified parent resource. Only log entries belonging to that resource can be excluded. You can have up to 10 exclusions in a resource.
 
       Args:
         request: (LoggingProjectsExclusionsCreateRequest) input message
@@ -3834,7 +3654,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes an exclusion.
+      r"""Deletes an exclusion in the _Default sink.
 
       Args:
         request: (LoggingProjectsExclusionsDeleteRequest) input message
@@ -3861,7 +3681,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets the description of an exclusion.
+      r"""Gets the description of an exclusion in the _Default sink.
 
       Args:
         request: (LoggingProjectsExclusionsGetRequest) input message
@@ -3888,7 +3708,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists all the exclusions in a parent resource.
+      r"""Lists all the exclusions on the _Default sink in a parent resource.
 
       Args:
         request: (LoggingProjectsExclusionsListRequest) input message
@@ -3915,7 +3735,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Changes one or more properties of an existing exclusion.
+      r"""Changes one or more properties of an existing exclusion in the _Default sink.
 
       Args:
         request: (LoggingProjectsExclusionsPatchRequest) input message
@@ -3938,43 +3758,6 @@ class LoggingV2(base_api.BaseApiClient):
         request_field='logExclusion',
         request_type_name='LoggingProjectsExclusionsPatchRequest',
         response_type_name='LogExclusion',
-        supports_download=False,
-    )
-
-  class ProjectsLocationsBucketsTablesService(base_api.BaseApiService):
-    """Service class for the projects_locations_buckets_tables resource."""
-
-    _NAME = 'projects_locations_buckets_tables'
-
-    def __init__(self, client):
-      super(LoggingV2.ProjectsLocationsBucketsTablesService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def List(self, request, global_params=None):
-      r"""Lists all tables in the specified log bucket.
-
-      Args:
-        request: (LoggingProjectsLocationsBucketsTablesListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListTablesResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2/projects/{projectsId}/locations/{locationsId}/buckets/{bucketsId}/tables',
-        http_method='GET',
-        method_id='logging.projects.locations.buckets.tables.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
-        relative_path='v2/{+parent}/tables',
-        request_field='',
-        request_type_name='LoggingProjectsLocationsBucketsTablesListRequest',
-        response_type_name='ListTablesResponse',
         supports_download=False,
     )
 
@@ -4997,7 +4780,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def GetCmekSettings(self, request, global_params=None):
-      r"""Gets the Logs Router CMEK settings for the given resource.Note: CMEK for the Logs Router can currently only be configured for GCP organizations. Once configured, it applies to all projects and folders in the GCP organization.See Enabling CMEK for Logs Router (https://cloud.google.com/logging/docs/routing/managed-encryption) for more information.
+      r"""Gets the Logs Router CMEK settings for the given resource.Note: CMEK for the Logs Router can currently only be configured for Google Cloud organizations. Once configured, it applies to all projects and folders in the Google Cloud organization.See Enabling CMEK for Logs Router (https://cloud.google.com/logging/docs/routing/managed-encryption) for more information.
 
       Args:
         request: (LoggingGetCmekSettingsRequest) input message
@@ -5024,7 +4807,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def UpdateCmekSettings(self, request, global_params=None):
-      r"""Updates the Logs Router CMEK settings for the given resource.Note: CMEK for the Logs Router can currently only be configured for GCP organizations. Once configured, it applies to all projects and folders in the GCP organization.UpdateCmekSettings will fail if 1) kms_key_name is invalid, or 2) the associated service account does not have the required roles/cloudkms.cryptoKeyEncrypterDecrypter role assigned for the key, or 3) access to the key is disabled.See Enabling CMEK for Logs Router (https://cloud.google.com/logging/docs/routing/managed-encryption) for more information.
+      r"""Updates the Logs Router CMEK settings for the given resource.Note: CMEK for the Logs Router can currently only be configured for Google Cloud organizations. Once configured, it applies to all projects and folders in the Google Cloud organization.UpdateCmekSettings will fail if 1) kms_key_name is invalid, or 2) the associated service account does not have the required roles/cloudkms.cryptoKeyEncrypterDecrypter role assigned for the key, or 3) access to the key is disabled.See Enabling CMEK for Logs Router (https://cloud.google.com/logging/docs/routing/managed-encryption) for more information.
 
       Args:
         request: (LoggingUpdateCmekSettingsRequest) input message

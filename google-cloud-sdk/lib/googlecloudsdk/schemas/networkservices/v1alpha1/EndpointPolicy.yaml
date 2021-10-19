@@ -67,7 +67,14 @@ properties:
   name:
     description: |-
       Name of the EndpointPolicy resource. It matches pattern
-      `projects/*/locations/global/endpointPolicies/`.
+      `projects/{project}/locations/global/endpointPolicies/{endpoint_policy}` .
+    type: string
+  securityPolicy:
+    description: |-
+      A URL referring to a SecurityPolicy resource. SecurityPolicy is used to
+      enforce rate limiting policy on the inbound traffic at the identified
+      backends. If this field is not set, rate limiting is disabled for this
+      endpoint.
     type: string
   serverTlsPolicy:
     description: |-

@@ -835,6 +835,7 @@ class UpdateClusterOptions(object):
       enable_gcfs=None,
       enable_image_streaming=None,
       enable_managed_prometheus=None,
+      disable_managed_prometheus=None,
   ):
     self.version = version
     self.update_master = bool(update_master)
@@ -927,6 +928,7 @@ class UpdateClusterOptions(object):
     self.enable_gcfs = enable_gcfs
     self.enable_image_streaming = enable_image_streaming
     self.enable_managed_prometheus = enable_managed_prometheus
+    self.disable_managed_prometheus = disable_managed_prometheus
 
 
 class SetMasterAuthOptions(object):
@@ -2253,7 +2255,7 @@ class APIAdapter(object):
         update.desiredMonitoringService = options.monitoring_service
       if options.logging_service:
         update.desiredLoggingService = options.logging_service
-    elif options.logging or options.monitoring or options.enable_managed_prometheus:
+    elif options.logging or options.monitoring or options.enable_managed_prometheus or options.disable_managed_prometheus:
       logging = _GetLoggingConfig(options, self.messages)
       monitoring = _GetMonitoringConfig(options, self.messages)
       update = self.messages.ClusterUpdate()
@@ -4879,6 +4881,16 @@ def _GetMonitoringConfig(options, messages):
     # beta. Guard against that here.
     if hasattr(config, 'managedPrometheusConfig'):
       config.managedPrometheusConfig = prom
+
+  # Disable flag only on cluster updates, check first.
+  if hasattr(options, 'disable_managed_prometheus'):
+    if options.disable_managed_prometheus is not None:
+      prom = messages.ManagedPrometheusConfig(
+          enabled=(not options.disable_managed_prometheus))
+      # The v1 MonitoringConfig does not have this field, as it is currently in
+      # beta. Guard against that here.
+      if hasattr(config, 'managedPrometheusConfig'):
+        config.managedPrometheusConfig = prom
 
   if comp is None and prom is None:
     return None

@@ -937,12 +937,14 @@
           "enumDescriptions": [
             "Invalid. A frequency must be specified.",
             "Indicates that the recurrence frequency should be expressed in terms of weeks.",
-            "Indicates that the recurrence frequency should be expressed in terms of months."
+            "Indicates that the recurrence frequency should be expressed in terms of months.",
+            "Indicates that the recurrence frequency should be expressed in terms of days."
           ],
           "enum": [
             "FREQUENCY_UNSPECIFIED",
             "WEEKLY",
-            "MONTHLY"
+            "MONTHLY",
+            "DAILY"
           ]
         },
         "weekly": {

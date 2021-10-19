@@ -18,11 +18,12 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.app import appengine_api_client as app_engine_api
 from googlecloudsdk.api_lib.tasks import GetApiAdapter
 from googlecloudsdk.calliope import base as calliope_base
+from googlecloudsdk.command_lib.tasks import constants
 from googlecloudsdk.core import exceptions
+from googlecloudsdk.core import log
 
 
 class RegionResolvingError(exceptions.Error):
@@ -38,14 +39,19 @@ def AppEngineAppExists():
   empty list otherwise if no app existed. Now with AppEngine dependency removal,
   ListLocations will return an actual list of valid regions. If an AppEngine app
   does exist, that location will be returned indexed at 0 in the result list.
+  Note: We also return False if the user does not have the necessary permissions
+  to determine if the project has an AppEngine app or not.
+
+  Returns:
+    Boolean representing whether an app exists or not.
   """
   app_engine_api_client = app_engine_api.GetApiClientForTrack(
       calliope_base.ReleaseTrack.GA)
-  found_app = True
   try:
     # Should raise NotFoundError if no app exists.
     app_engine_api_client.GetApplication()
-  except apitools_exceptions.HttpNotFoundError:
+    found_app = True
+  except Exception:  # pylint: disable=broad-except
     found_app = False
   return found_app
 
@@ -71,9 +77,10 @@ def ResolveAppLocation(project_ref, locations_client=None):
     locations_client = GetApiAdapter(calliope_base.ReleaseTrack.GA).locations
   locations = list(locations_client.List(project_ref))
   if len(locations) >= 1 and AppEngineAppExists():
-    return locations[0].labels.additionalProperties[0].value
+    location = locations[0].labels.additionalProperties[0].value
+    if len(locations) > 1:
+      log.warning(
+          constants.APP_ENGINE_DEFAULT_LOCATION_WARNING.format(location))
+    return location
   raise RegionResolvingError(
-      'There is no AppEngine app associated with the project so unable to use '
-      'the same location as default location. Please use the location flag to '
-      'manually specify a location.'
-  )
+      'Please use the location flag to manually specify a location.')

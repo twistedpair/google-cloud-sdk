@@ -182,12 +182,25 @@ workforce_pool:
       for use by Google, and may not be specified.
   disable_auto_completers: false
 
+workforce_pool_operation:
+  name: workforce pool operation
+  collection: iam.locations.workforcePools.operations
+  attributes:
+  - *wf_location
+  - *workforce_pool
+  - &workforce_pool_operation
+    parameter_name: operationsId
+    attribute_name: operation
+    help: |
+      The ID of the operation.
+  disable_auto_completers: false
+
 workforce_pool_provider:
   name: workforce pool provider
   collection: iam.locations.workforcePools.providers
   request_id_field: workforcePoolProviderId
   attributes:
-  - *location
+  - *wf_location
   - *workforce_pool
   - &workforce_pool_provider
     parameter_name: providersId
@@ -197,4 +210,18 @@ workforce_pool_provider:
       resource name. This value must be unique within the workforce pool, 4-32 characters in length,
       and may contain the characters [a-z0-9-]. The prefix `gcp-` is reserved for use by Google,
       and may not be specified.
+  disable_auto_completers: false
+
+workforce_pool_provider_operation:
+  name: workforce pool provider operation
+  collection: iam.locations.workforcePools.providers.operations
+  attributes:
+  - *wf_location
+  - *workforce_pool
+  - *workforce_pool_provider
+  - &workforce_pool_provider_operation
+    parameter_name: operationsId
+    attribute_name: operation
+    help: |
+      The ID of the operation.
   disable_auto_completers: false

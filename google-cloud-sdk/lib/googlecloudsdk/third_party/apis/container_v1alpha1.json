@@ -1328,6 +1328,15 @@
         "upgradeSettings": {
           "description": "Upgrade settings control disruption and speed of the upgrade.",
           "$ref": "UpgradeSettings"
+        },
+        "placementPolicy": {
+          "description": "Specifies the node placement policy.",
+          "$ref": "PlacementPolicy"
+        },
+        "updateInfo": {
+          "description": "Output only. [Output only] Upgrade info contains relevant information during a node pool update.",
+          "readOnly": true,
+          "$ref": "UpdateInfo"
         }
       }
     },
@@ -1586,6 +1595,85 @@
         }
       }
     },
+    "PlacementPolicy": {
+      "id": "PlacementPolicy",
+      "description": "PlacementPolicy defines the placement policy used by the node pool.",
+      "type": "object",
+      "properties": {
+        "type": {
+          "description": "The type of placement.",
+          "type": "string",
+          "enumDescriptions": [
+            "TYPE_UNSPECIFIED specifies no requirements on nodes placement.",
+            "COMPACT specifies node placement in the same availability domain to ensure low communication latency."
+          ],
+          "enum": [
+            "TYPE_UNSPECIFIED",
+            "COMPACT"
+          ]
+        }
+      }
+    },
+    "UpdateInfo": {
+      "id": "UpdateInfo",
+      "description": "UpdateInfo contains resource (instance groups, etc), status and other intermediate information relevant to a node pool update.",
+      "type": "object",
+      "properties": {
+        "blueGreenInfo": {
+          "description": "Information of a blue\/green update.",
+          "$ref": "BlueGreenInfo"
+        }
+      }
+    },
+    "BlueGreenInfo": {
+      "id": "BlueGreenInfo",
+      "description": "Information relevant to blue\/green update.",
+      "type": "object",
+      "properties": {
+        "phase": {
+          "description": "Current blue\/green update phase.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified phase.",
+            "Blue\/green update has been initiated.",
+            "Start creating green pool nodes.",
+            "Start cordoning blue pool nodes.",
+            "Start draining blue pool nodes.",
+            "Start soaking time after draining entire blue pool.",
+            "Start deleting blue nodes.",
+            "Rollback has been initiated."
+          ],
+          "enum": [
+            "PHASE_UNSPECIFIED",
+            "UPDATE_STARTED",
+            "CREATING_GREEN_POOL",
+            "CORDONING_BLUE_POOL",
+            "DRAINING_BLUE_POOL",
+            "NODE_POOL_SOAKING",
+            "DELETING_BLUE_POOL",
+            "ROLLBACK_STARTED"
+          ]
+        },
+        "blueInstanceGroupUrls": {
+          "description": "The resource URLs of the [managed instance groups] (\/compute\/docs\/instance-groups\/creating-groups-of-managed-instances) associated with blue pool.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "greenInstanceGroupUrls": {
+          "description": "The resource URLs of the [managed instance groups] (\/compute\/docs\/instance-groups\/creating-groups-of-managed-instances) associated with green pool.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "bluePoolDeletionStartTime": {
+          "description": "Time to start deleting blue pool to complete blue\/green update, in [RFC3339](https:\/\/www.ietf.org\/rfc\/rfc3339.txt) text format.",
+          "type": "string"
+        }
+      }
+    },
     "LegacyAbac": {
       "id": "LegacyAbac",
       "description": "Configuration for the legacy Attribute Based Access Control authorization mode.",
@@ -1697,6 +1785,20 @@
             "STACK_TYPE_UNSPECIFIED",
             "IPV4",
             "IPV4_IPV6"
+          ]
+        },
+        "ipv6AccessType": {
+          "description": "The ipv6 access type (internal or external) when create_subnetwork is true",
+          "type": "string",
+          "enumDescriptions": [
+            "Default value, will be defaulted as type external.",
+            "Access type internal (all v6 addresses are internal IPs)",
+            "Access type external (all v6 addresses are external IPs)"
+          ],
+          "enum": [
+            "IPV6_ACCESS_TYPE_UNSPECIFIED",
+            "INTERNAL",
+            "EXTERNAL"
           ]
         }
       }
@@ -4077,6 +4179,13 @@
         }
       }
     },
+    "CompleteNodePoolUpgradeRequest": {
+      "id": "CompleteNodePoolUpgradeRequest",
+      "description": "CompleteNodePoolUpgradeRequest sets the name of target node pool to complete upgrade.",
+      "type": "object",
+      "properties": {
+      }
+    },
     "RollbackNodePoolUpgradeRequest": {
       "id": "RollbackNodePoolUpgradeRequest",
       "description": "RollbackNodePoolUpgradeRequest rollbacks the previously Aborted or Failed NodePool upgrade. This will be an no-op if the last upgrade successfully completed.",
@@ -4101,6 +4210,10 @@
         "name": {
           "description": "The name (project, location, cluster, node pool id) of the node poll to rollback upgrade. Specified in the format 'projects\/*\/locations\/*\/clusters\/*\/nodePools\/*'.",
           "type": "string"
+        },
+        "respectPdb": {
+          "description": "Required. Option for rollback to ignore the PodDisruptionBudget. Default value is false.",
+          "type": "boolean"
         }
       }
     },
@@ -5320,6 +5433,34 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Deletes a node pool from a cluster."
+                    },
+                    "completeUpgrade": {
+                      "id": "container.projects.locations.clusters.nodePools.completeUpgrade",
+                      "path": "v1alpha1/{+name}:completeUpgrade",
+                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/nodePools/{nodePoolsId}:completeUpgrade",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "The name (project, location, cluster, node pool id) of the node pool to complete upgrade. Specified in the format 'projects\/*\/locations\/*\/clusters\/*\/nodePools\/*'.",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+\/nodePools\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "CompleteNodePoolUpgradeRequest"
+                      },
+                      "response": {
+                        "$ref": "Empty"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "CompleteNodePoolUpgrade will signal an on-going node pool upgrade to complete."
                     },
                     "rollback": {
                       "id": "container.projects.locations.clusters.nodePools.rollback",

@@ -19,19 +19,14 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.calliope import base
 
 
 def Messages(api_version):
   return apis.GetMessagesModule('krmapihosting', api_version)
 
 
-def AddExtraArgs():
-  """Adds additional args that can't be easily represented in create.yaml."""
-
-  return []
-
-
-def CreateUpdateRequest(ref, args):
+def CreateUpdateRequest(release_track, ref, args):
   """Returns an updated request formatted to the right URI endpoint."""
   messages = Messages(ref.GetCollectionInfo().api_version)
 
@@ -52,34 +47,10 @@ def CreateUpdateRequest(ref, args):
       configControllerConfig=messages.ConfigControllerConfig(enabled=True))
 
   krm_api_host = messages.KrmApiHost(
-      masterIpv4CidrBlock=master_ipv4_cidr_block,
       bundlesConfig=bundles_config)
 
-  # Pass through the network parameter if it was provided.
-  if args.network is not None:
-    krm_api_host.network = args.network
-
-  # Pass through the man_block parameter if it was provided.
-  if args.man_block is not None:
-    krm_api_host.manBlock = args.man_block
-
-  # Pass through the cluster_ipv4_cidr_block parameter if it was provided.
-  if args.cluster_ipv4_cidr_block is not None:
-    krm_api_host.clusterCidrBlock = args.cluster_ipv4_cidr_block
-
-  # Pass through the services-ipv4-cidr-block parameter if it was provided.
-  if args.services_ipv4_cidr_block is not None:
-    krm_api_host.servicesCidrBlock = args.services_ipv4_cidr_block
-
-  # Pass through the cluster_named_range parameter if it was provided.
-  if args.cluster_named_range is not None:
-    krm_api_host.clusterNamedRange = args.cluster_named_range
-
-  # Pass through the services_named_range parameter if it was provided.
-  if args.services_named_range is not None:
-    krm_api_host.servicesNamedRange = args.services_named_range
-
-  if args.full_management:
+  # The full-management flag is only available on the alpha command.
+  if release_track == base.ReleaseTrack.ALPHA and args.full_management:
     full_mgmt_config = messages.FullManagementConfig(
         clusterCidrBlock=args.cluster_ipv4_cidr_block,
         clusterNamedRange=args.cluster_named_range,

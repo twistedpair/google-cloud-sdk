@@ -55,6 +55,17 @@ instance:
     help: The name of the Filestore instance.
   disable_auto_completers: false
 
+instance_with_generic_location:
+  name: instance
+  collection: file.projects.locations.instances
+  request_id_field: instanceId
+  attributes:
+  - *location
+  - parameter_name: instancesId
+    attribute_name: instance
+    help: The name of the Filestore instance.
+  disable_auto_completers: false
+
 snapshot:
   name: snapshot
   collection: file.projects.locations.snapshots

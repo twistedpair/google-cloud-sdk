@@ -84,6 +84,11 @@ class _AzureClientBase(object):
     msg = 'GoogleCloudGkemulticloud{}AzureProxyConfig'.format(version)
     return getattr(self.messages, msg)(**kwargs)
 
+  def _CreateConfigEncryption(self, **kwargs):
+    version = util.GetApiVersionForTrack(self.track).capitalize()
+    msg = 'GoogleCloudGkemulticloud{}AzureConfigEncryption'.format(version)
+    return getattr(self.messages, msg)(**kwargs)
+
 
 class ClustersClient(_AzureClientBase):
   """Client for Azure Clusters in the gkemulticloud API."""
@@ -107,9 +112,13 @@ class ClustersClient(_AzureClientBase):
              validate_only=False,
              tags=None,
              admin_users=None,
-             db_resource_group_id=None,
-             db_kms_key_id=None,
-             replica_placements=None):
+             replica_placements=None,
+             fleet_project=None,
+             service_load_balancer_subnet_id=None,
+             endpoint_subnet_id=None,
+             database_encryption_key_id=None,
+             config_encryption_key_id=None,
+             config_encryption_public_key=None):
     """Create a new Azure Cluster."""
     req = self._service.GetRequestType('Create')(
         azureClusterId=cluster_ref.azureClustersId,
@@ -128,6 +137,8 @@ class ClustersClient(_AzureClientBase):
     net.podAddressCidrBlocks.append(pod_address_cidr_blocks)
     net.serviceAddressCidrBlocks.append(service_address_cidr_blocks)
     net.virtualNetworkId = vnet_id
+    if service_load_balancer_subnet_id is not None:
+      net.serviceLoadBalancerSubnetId = service_load_balancer_subnet_id
 
     cp = self._AddAzureControlPlane(c)
 
@@ -148,16 +159,26 @@ class ClustersClient(_AzureClientBase):
     if replica_placements:
       cp.replicaPlacements.extend(replica_placements)
 
-    if db_resource_group_id is not None and db_kms_key_id is not None:
-      db_encryption = self._AddAzureDatabaseEncryption(cp)
-      db_encryption.resourceGroupId = db_resource_group_id
-      db_encryption.kmsKeyIdentifier = db_kms_key_id
+    if endpoint_subnet_id is not None:
+      cp.endpointSubnetId = endpoint_subnet_id
+
+    if database_encryption_key_id is not None:
+      cp.databaseEncryption = self._CreateDatabaseEncryption(
+          keyId=database_encryption_key_id)
+
+    if config_encryption_key_id is not None:
+      cp.configEncryption = self._CreateConfigEncryption(
+          keyId=config_encryption_key_id,
+          publicKey=config_encryption_public_key)
 
     if tags:
       tag_type = type(cp).TagsValue.AdditionalProperty
       cp.tags = type(cp).TagsValue(additionalProperties=[
           tag_type(key=k, value=v) for k, v in tags.items()
       ])
+
+    if fleet_project:
+      c.fleet = self._CreateFleet(fleet_project)
 
     return self._service.Create(req)
 
@@ -240,12 +261,16 @@ class ClustersClient(_AzureClientBase):
     req.controlPlane = cp
     return cp
 
-  def _AddAzureDatabaseEncryption(self, control_plane):
+  def _CreateDatabaseEncryption(self, **kwargs):
     version = util.GetApiVersionForTrack(self.track).capitalize()
     msg = 'GoogleCloudGkemulticloud{}AzureDatabaseEncryption'.format(version)
-    database_encryption = getattr(self.messages, msg)()
-    control_plane.databaseEncryption = database_encryption
-    return database_encryption
+    return getattr(self.messages, msg)(**kwargs)
+
+  def _CreateFleet(self, fleet_project):
+    version = util.GetApiVersionForTrack(self.track).capitalize()
+    msg = 'GoogleCloudGkemulticloud{}Fleet'.format(version)
+    fleet = getattr(self.messages, msg)(project=fleet_project)
+    return fleet
 
   def _CreateSshConfig(self, **kwargs):
     # Using this to hide the 'v1alpha' that shows up in the type.
@@ -312,7 +337,9 @@ class NodePoolsClient(_AzureClientBase):
              max_pods_per_node=None,
              taints=None,
              labels=None,
-             azure_availability_zone=None):
+             azure_availability_zone=None,
+             config_encryption_key_id=None,
+             config_encryption_public_key=None):
     """Create a new Azure Node Pool."""
     req = self._service.GetRequestType('Create')(
         azureNodePoolId=nodepool_ref.azureNodePoolsId,
@@ -339,6 +366,11 @@ class NodePoolsClient(_AzureClientBase):
     nodeconfig.sshConfig = type(nodeconfig).sshConfig.type(
         authorizedKey=ssh_public_key)
     nodeconfig.taints.extend(taints)
+
+    if config_encryption_key_id is not None:
+      nodeconfig.configEncryption = self._CreateConfigEncryption(
+          keyId=config_encryption_key_id,
+          publicKey=config_encryption_public_key)
 
     if proxy_resource_group_id is not None and proxy_secret_id is not None:
       nodeconfig.proxyConfig = self._CreateProxyConfig(

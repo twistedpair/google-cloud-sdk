@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from contextlib import contextmanager
+import re
 
 from containerregistry.client import docker_creds
 from containerregistry.client import docker_name
@@ -37,6 +38,7 @@ from googlecloudsdk.api_lib.containeranalysis import requests
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import http
+from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.credentials import store as c_store
 from googlecloudsdk.core.docker import constants
@@ -67,6 +69,14 @@ def IsFullySpecified(image_name):
   return ':' in image_name or '@' in image_name
 
 
+def IsInvalidRegistry(registry):
+  ar_pattern = '^([a-z0-9-]*)-docker.pkg.dev'
+  gcr_pattern = '^([a-z0-9-]*)[.]?gcr.io'
+  ar_prog = re.compile(ar_pattern)
+  gcr_prog = re.compile(gcr_pattern)
+  return gcr_prog.match(registry) is None and ar_prog.match(registry) is None
+
+
 def ValidateRepositoryPath(repository_path):
   """Validates the repository path.
 
@@ -94,7 +104,7 @@ def ValidateRepositoryPath(repository_path):
       repository = docker_name.Registry(repository_path)
     else:
       repository = docker_name.Repository(repository_path)
-    if repository.registry not in constants.ALL_SUPPORTED_REGISTRIES:
+    if IsInvalidRegistry(repository.registry):
       raise docker.UnsupportedRegistryError(repository_path)
     return repository
   except docker_name.BadNameException as e:
@@ -423,6 +433,10 @@ def GetDigestFromName(image_name):
         '[{0}] is not a valid name. Expected tag in the form "base:tag" or '
         '"tag" or digest in the form "sha256:<digest>"'.format(image_name))
 
+  # Even though we were able to get the digest from the tag, we should warn
+  # users against using tags.
+  log.warning('Successfully resolved tag to sha256, but it is recommended to '
+              'use sha256 directly.')
   return docker_name.Digest('{registry}/{repository}@{sha256}'.format(
       registry=tag_or_digest.registry,
       repository=tag_or_digest.repository,

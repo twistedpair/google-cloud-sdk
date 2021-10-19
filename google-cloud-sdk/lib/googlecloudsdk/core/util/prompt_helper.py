@@ -128,17 +128,17 @@ class OptInPrompter(BasePrompter):
   """Prompter to opt-in in data usage."""
 
   PROMPT_INTERVAL = 86400 * 30 * 2  # 60 days
-  MESSAGE = """
-To help improve the quality of this product, we collect anonymized usage data
-and anonymized stacktraces when crashes are encountered; additional information
-is available at <https://cloud.google.com/sdk/usage-statistics>. This data is
-handled in accordance with our privacy policy
-<https://cloud.google.com/terms/cloud-privacy-notice>. You may choose to opt in this
-collection now (by choosing 'Y' at the below prompt), or at any time in the
-future by running the following command:
-
-    gcloud config set disable_usage_reporting false
-          """
+  MESSAGE = (
+      "To help improve the quality of this product, we collect anonymized "
+      "usage data and anonymized stacktraces when crashes are encountered; "
+      "additional information is available at "
+      "<https://cloud.google.com/sdk/usage-statistics>. This data is handled "
+      "in accordance with our privacy policy "
+      "<https://cloud.google.com/terms/cloud-privacy-notice>. You may choose "
+      "to opt in this collection now (by choosing 'Y' at the below "
+      "prompt), or at any time in the future by running the following "
+      "command:\n\n"
+      "    gcloud config set disable_usage_reporting false\n")
 
   def __init__(self):
     self.record = OptInPromptRecord()

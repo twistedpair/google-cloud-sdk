@@ -1361,10 +1361,13 @@ class RecurringSchedule(_messages.Message):
         weeks.
       MONTHLY: Indicates that the frequency should be expressed in terms of
         months.
+      DAILY: Indicates that the recurrence frequency should be expressed in
+        terms of days.
     """
     FREQUENCY_UNSPECIFIED = 0
     WEEKLY = 1
     MONTHLY = 2
+    DAILY = 3
 
   endTime = _messages.StringField(1)
   frequency = _messages.EnumField('FrequencyValueValuesEnum', 2)

@@ -2245,7 +2245,7 @@ class AiplatformV1alpha1(base_api.BaseApiClient):
     )
 
     def RawPredict(self, request, global_params=None):
-      r"""Perform an online prediction with arbitrary http payload.
+      r"""Perform an online prediction with an arbitrary HTTP payload. The response includes the following HTTP headers: * `X-Vertex-AI-Endpoint-Id`: ID of the Endpoint that served this prediction. * `X-Vertex-AI-Deployed-Model-Id`: ID of the Endpoint's DeployedModel that served this prediction.
 
       Args:
         request: (AiplatformProjectsLocationsEndpointsRawPredictRequest) input message
@@ -5384,7 +5384,7 @@ class AiplatformV1alpha1(base_api.BaseApiClient):
           }
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a Model. Note: Model can only be deleted if there are no DeployedModels created from it.
+      r"""Deletes a Model. Model can only be deleted if there are no DeployedModels created from it.
 
       Args:
         request: (AiplatformProjectsLocationsModelsDeleteRequest) input message

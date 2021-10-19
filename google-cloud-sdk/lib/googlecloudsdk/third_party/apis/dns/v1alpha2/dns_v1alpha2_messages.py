@@ -1869,20 +1869,13 @@ class RRSetRoutingPolicyGeoPolicy(_messages.Message):
   r"""A RRSetRoutingPolicyGeoPolicy object.
 
   Fields:
-    failovers: If the health check for the primary target for a geo location
-      returns an unhealthy status, the failover target is returned instead.
-      This failover configuration is not mandatory. If a failover is not
-      provided, the primary target won't be healthchecked, and it returns the
-      primarily configured rrdata irrespective of whether it is healthy or
-      not.
     items: The primary geo routing configuration. If there are multiple items
       with the same location, an error is returned instead.
     kind: A string attribute.
   """
 
-  failovers = _messages.MessageField('RRSetRoutingPolicyGeoPolicyGeoPolicyItem', 1, repeated=True)
-  items = _messages.MessageField('RRSetRoutingPolicyGeoPolicyGeoPolicyItem', 2, repeated=True)
-  kind = _messages.StringField(3, default='dns#rRSetRoutingPolicyGeoPolicy')
+  items = _messages.MessageField('RRSetRoutingPolicyGeoPolicyGeoPolicyItem', 1, repeated=True)
+  kind = _messages.StringField(2, default='dns#rRSetRoutingPolicyGeoPolicy')
 
 
 class RRSetRoutingPolicyGeoPolicyGeoPolicyItem(_messages.Message):

@@ -48,7 +48,7 @@ zone:
     parameter_name: zonesId
     attribute_name: zone
     help: |
-      The zone_id for the Lake Resource of the Dataplex service.
+      The zone_id for the Zone Resource of the Dataplex service.
 
 asset:
   name: asset
@@ -64,4 +64,35 @@ asset:
     parameter_name: assetsId
     attribute_name: asset
     help: |
-      The asset_id for the Lake Resource of the Dataplex service.
+      The asset_id for the Asset Resource of the Dataplex service.
+
+task:
+  name: task
+  collection: dataplex.projects.locations.lakes.tasks
+  request_id_field: taskId
+  disable_auto_completers: false
+  attributes:
+  - *project
+  - *location
+  - *lake
+  - &task
+    parameter_name: tasksId
+    attribute_name: task
+    help: |
+      The task_id for the Task Resource of the Dataplex service.
+
+job:
+  name: job
+  collection: dataplex.projects.locations.lakes.tasks.jobs
+  request_id_field: jobID
+  disable_auto_completers: false
+  attributes:
+  - *project
+  - *location
+  - *lake
+  - *task
+  - &job
+    parameter_name: jobsId
+    attribute_name: job
+    help: |
+      The job_id of the Job running a particular Task in Dataplex.

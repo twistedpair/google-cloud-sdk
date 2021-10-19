@@ -187,9 +187,11 @@ def AddCommonSourcesArgs(parser, sources_group):
   sources_group.add_argument(
       '--source-uri',
       help="""\
-      The full Google Cloud Storage URI where the disk image is stored.
+      The full Cloud Storage URI where the disk image is stored.
       This file must be a gzip-compressed tarball whose name ends in
       ``.tar.gz''.
+      For more information about Cloud Storage URIs,
+      see https://cloud.google.com/storage/docs/request-endpoints#json-api.
       """)
 
   SOURCE_DISK_ARG.AddArgument(parser, mutex_group=sources_group)

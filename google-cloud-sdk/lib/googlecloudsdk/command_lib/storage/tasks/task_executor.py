@@ -46,6 +46,7 @@ def _execute_tasks_sequential(task_iterator,
   for task in task_iterator:
     if received_messages is not None:
       task.received_messages = received_messages
+
     task_output = task.execute(task_status_queue=task_status_queue)
 
     if task_output is None:

@@ -118,8 +118,8 @@ class CmekSettings(_messages.Message):
   r"""Describes the customer-managed encryption key (CMEK) settings associated
   with a project, folder, organization, billing account, or flexible
   resource.Note: CMEK for the Logs Router can currently only be configured for
-  GCP organizations. Once configured, it applies to all projects and folders
-  in the GCP organization.See Enabling CMEK for Logs Router
+  Google Cloud organizations. Once configured, it applies to all projects and
+  folders in the Google Cloud organization.See Enabling CMEK for Logs Router
   (https://cloud.google.com/logging/docs/routing/managed-encryption) for more
   information.
 
@@ -629,21 +629,6 @@ class ListSinksResponse(_messages.Message):
   sinks = _messages.MessageField('LogSink', 2, repeated=True)
 
 
-class ListTablesResponse(_messages.Message):
-  r"""The response from ListTables.
-
-  Fields:
-    nextPageToken: If there are more results than those appearing in this
-      response, then nextPageToken is included. To get the next set of
-      results, call the same method again using the value of nextPageToken as
-      pageToken.
-    tables: A list of tables.
-  """
-
-  nextPageToken = _messages.StringField(1)
-  tables = _messages.MessageField('Table', 2, repeated=True)
-
-
 class ListViewsResponse(_messages.Message):
   r"""The response from ListViews.
 
@@ -1103,12 +1088,11 @@ class LogEntrySourceLocation(_messages.Message):
 
 
 class LogExclusion(_messages.Message):
-  r"""Specifies a set of log entries that are not to be stored in Cloud
-  Logging. If your GCP resource receives a large volume of log entries, you
-  can use exclusions to reduce your chargeable logs. Exclusions are processed
-  after log sinks, so you can export log entries before they are excluded.
-  Note that organization-level and folder-level exclusions don't apply to
-  child resources, and that you can't exclude audit log entries.
+  r"""Specifies a set of log entries that are filtered out by a sink. If your
+  Google Cloud resource receives a large volume of log entries, you can use
+  exclusions to reduce your chargeable logs. Note that exclusions on
+  organization-level and folder-level sinks don't apply to child resources.
+  Note also that you cannot modify the _Required sink or exclude logs from it.
 
   Fields:
     createTime: Output only. The creation timestamp of the exclusion.This
@@ -1689,26 +1673,6 @@ class LoggingBillingAccountsLocationsBucketsPatchRequest(_messages.Message):
   logBucket = _messages.MessageField('LogBucket', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
-
-
-class LoggingBillingAccountsLocationsBucketsTablesListRequest(_messages.Message):
-  r"""A LoggingBillingAccountsLocationsBucketsTablesListRequest object.
-
-  Fields:
-    pageSize: Optional. The maximum number of results to return from this
-      request. Non-positive values are ignored. The presence of nextPageToken
-      in the response indicates that more results might be available.
-    pageToken: Optional. If present, then retrieve the next batch of results
-      from the preceding call to this method. pageToken must be the value of
-      nextPageToken from the previous response. The values of other method
-      parameters should be identical to those in the previous call.
-    parent: Required. The bucket whose tables are to be listed: Example:
-      "projects/PROJECT_ID/locations/LOCATION_ID/buckets/BUCKET_ID"
-  """
-
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
 
 
 class LoggingBillingAccountsLocationsBucketsUndeleteRequest(_messages.Message):
@@ -2356,26 +2320,6 @@ class LoggingFoldersLocationsBucketsPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
-class LoggingFoldersLocationsBucketsTablesListRequest(_messages.Message):
-  r"""A LoggingFoldersLocationsBucketsTablesListRequest object.
-
-  Fields:
-    pageSize: Optional. The maximum number of results to return from this
-      request. Non-positive values are ignored. The presence of nextPageToken
-      in the response indicates that more results might be available.
-    pageToken: Optional. If present, then retrieve the next batch of results
-      from the preceding call to this method. pageToken must be the value of
-      nextPageToken from the previous response. The values of other method
-      parameters should be identical to those in the previous call.
-    parent: Required. The bucket whose tables are to be listed: Example:
-      "projects/PROJECT_ID/locations/LOCATION_ID/buckets/BUCKET_ID"
-  """
-
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-
-
 class LoggingFoldersLocationsBucketsUndeleteRequest(_messages.Message):
   r"""A LoggingFoldersLocationsBucketsUndeleteRequest object.
 
@@ -2763,8 +2707,9 @@ class LoggingGetCmekSettingsRequest(_messages.Message):
       "billingAccounts/[BILLING_ACCOUNT_ID]/cmekSettings"
       "folders/[FOLDER_ID]/cmekSettings" For
       example:"organizations/12345/cmekSettings"Note: CMEK for the Logs Router
-      can currently only be configured for GCP organizations. Once configured,
-      it applies to all projects and folders in the GCP organization.
+      can currently only be configured for Google Cloud organizations. Once
+      configured, it applies to all projects and folders in the Google Cloud
+      organization.
   """
 
   name = _messages.StringField(1, required=True)
@@ -2869,37 +2814,6 @@ class LoggingLocationsBucketsPatchRequest(_messages.Message):
   logBucket = _messages.MessageField('LogBucket', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
-
-
-class LoggingLocationsBucketsTablesGetRequest(_messages.Message):
-  r"""A LoggingLocationsBucketsTablesGetRequest object.
-
-  Fields:
-    name: Required. The resource name of the table. Example: "projects/PROJECT
-      _ID/locations/LOCATION_ID/buckets/BUCKET_ID/tables/TABLE_ID"
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class LoggingLocationsBucketsTablesListRequest(_messages.Message):
-  r"""A LoggingLocationsBucketsTablesListRequest object.
-
-  Fields:
-    pageSize: Optional. The maximum number of results to return from this
-      request. Non-positive values are ignored. The presence of nextPageToken
-      in the response indicates that more results might be available.
-    pageToken: Optional. If present, then retrieve the next batch of results
-      from the preceding call to this method. pageToken must be the value of
-      nextPageToken from the previous response. The values of other method
-      parameters should be identical to those in the previous call.
-    parent: Required. The bucket whose tables are to be listed: Example:
-      "projects/PROJECT_ID/locations/LOCATION_ID/buckets/BUCKET_ID"
-  """
-
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
 
 
 class LoggingLocationsBucketsUndeleteRequest(_messages.Message):
@@ -3240,8 +3154,9 @@ class LoggingOrganizationsGetCmekSettingsRequest(_messages.Message):
       "billingAccounts/[BILLING_ACCOUNT_ID]/cmekSettings"
       "folders/[FOLDER_ID]/cmekSettings" For
       example:"organizations/12345/cmekSettings"Note: CMEK for the Logs Router
-      can currently only be configured for GCP organizations. Once configured,
-      it applies to all projects and folders in the GCP organization.
+      can currently only be configured for Google Cloud organizations. Once
+      configured, it applies to all projects and folders in the Google Cloud
+      organization.
   """
 
   name = _messages.StringField(1, required=True)
@@ -3346,26 +3261,6 @@ class LoggingOrganizationsLocationsBucketsPatchRequest(_messages.Message):
   logBucket = _messages.MessageField('LogBucket', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
-
-
-class LoggingOrganizationsLocationsBucketsTablesListRequest(_messages.Message):
-  r"""A LoggingOrganizationsLocationsBucketsTablesListRequest object.
-
-  Fields:
-    pageSize: Optional. The maximum number of results to return from this
-      request. Non-positive values are ignored. The presence of nextPageToken
-      in the response indicates that more results might be available.
-    pageToken: Optional. If present, then retrieve the next batch of results
-      from the preceding call to this method. pageToken must be the value of
-      nextPageToken from the previous response. The values of other method
-      parameters should be identical to those in the previous call.
-    parent: Required. The bucket whose tables are to be listed: Example:
-      "projects/PROJECT_ID/locations/LOCATION_ID/buckets/BUCKET_ID"
-  """
-
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
 
 
 class LoggingOrganizationsLocationsBucketsUndeleteRequest(_messages.Message):
@@ -3756,8 +3651,9 @@ class LoggingOrganizationsUpdateCmekSettingsRequest(_messages.Message):
       "billingAccounts/[BILLING_ACCOUNT_ID]/cmekSettings"
       "folders/[FOLDER_ID]/cmekSettings" For
       example:"organizations/12345/cmekSettings"Note: CMEK for the Logs Router
-      can currently only be configured for GCP organizations. Once configured,
-      it applies to all projects and folders in the GCP organization.
+      can currently only be configured for Google Cloud organizations. Once
+      configured, it applies to all projects and folders in the Google Cloud
+      organization.
     updateMask: Optional. Field mask identifying which fields from
       cmek_settings should be updated. A field will be overwritten if and only
       if it is in the update mask. Output only fields cannot be updated.See
@@ -3958,26 +3854,6 @@ class LoggingProjectsLocationsBucketsPatchRequest(_messages.Message):
   logBucket = _messages.MessageField('LogBucket', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
-
-
-class LoggingProjectsLocationsBucketsTablesListRequest(_messages.Message):
-  r"""A LoggingProjectsLocationsBucketsTablesListRequest object.
-
-  Fields:
-    pageSize: Optional. The maximum number of results to return from this
-      request. Non-positive values are ignored. The presence of nextPageToken
-      in the response indicates that more results might be available.
-    pageToken: Optional. If present, then retrieve the next batch of results
-      from the preceding call to this method. pageToken must be the value of
-      nextPageToken from the previous response. The values of other method
-      parameters should be identical to those in the previous call.
-    parent: Required. The bucket whose tables are to be listed: Example:
-      "projects/PROJECT_ID/locations/LOCATION_ID/buckets/BUCKET_ID"
-  """
-
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
 
 
 class LoggingProjectsLocationsBucketsUndeleteRequest(_messages.Message):
@@ -4557,8 +4433,9 @@ class LoggingUpdateCmekSettingsRequest(_messages.Message):
       "billingAccounts/[BILLING_ACCOUNT_ID]/cmekSettings"
       "folders/[FOLDER_ID]/cmekSettings" For
       example:"organizations/12345/cmekSettings"Note: CMEK for the Logs Router
-      can currently only be configured for GCP organizations. Once configured,
-      it applies to all projects and folders in the GCP organization.
+      can currently only be configured for Google Cloud organizations. Once
+      configured, it applies to all projects and folders in the Google Cloud
+      organization.
     updateMask: Optional. Field mask identifying which fields from
       cmek_settings should be updated. A field will be overwritten if and only
       if it is in the update mask. Output only fields cannot be updated.See
@@ -5553,33 +5430,6 @@ class SuppressionInfo(_messages.Message):
 
   reason = _messages.EnumField('ReasonValueValuesEnum', 1)
   suppressedCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-
-
-class Table(_messages.Message):
-  r"""A table storing logs in an analytics log bucket. Logs are all stored in
-  a single unified 'logs' table in each Log Bucket. There may be other derived
-  tables curated by Google for specific purposes.
-
-  Fields:
-    createTime: Output only. The time when this table was created.
-    description: Describes this table.
-    name: Output only. The resource name of the table. Example: projects/[PROJ
-      ECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/tables/[TABLE_NAME]
-    rowCount: Output only. The number of rows of data in this table, excluding
-      any data in the streaming buffer.
-    schema: Describes the schema of this table.
-    tableSizeBytes: Output only. The size of this table in bytes, excluding
-      any data in the streaming buffer.
-    updateTime: Output only. The time when this table was last modified.
-  """
-
-  createTime = _messages.StringField(1)
-  description = _messages.StringField(2)
-  name = _messages.StringField(3)
-  rowCount = _messages.IntegerField(4)
-  schema = _messages.MessageField('TableSchema', 5)
-  tableSizeBytes = _messages.IntegerField(6)
-  updateTime = _messages.StringField(7)
 
 
 class TableFieldSchema(_messages.Message):

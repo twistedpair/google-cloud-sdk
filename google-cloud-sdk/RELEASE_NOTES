@@ -5,6 +5,134 @@ Copyright 2014-2021 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 361.0.0 (2021-10-19)
+
+### Breaking Changes
+
+*   **(Cloud SQL)** Enable backups by default when creating new database instances. Use
+  `--no-backup` to disable backups.
+*   **(Cloud SQL)** Backup start time will be randomly select if not specified.  Use
+  `--backup-start-time` to specify the start time for backups.
+
+
+### Cloud SDK
+
+* `gcloud` command-line tool supports authentication using an access token
+  from a file which can be specified in the global flag `--access-token-file`
+  or the property `auth/access_token_file`.
+
+### AI
+
+* Added `--analysis-instance-schema` flag in `gcloud beta ai model-monitoring-jobs update`.
+* Renamed `--work-dir` flag of `gcloud beta ai custom-jobs local-run` as `--local-package-path`. Deprecated `--work-dir` flag.
+* Renamed `--base-image` flag of `gcloud beta ai custom-jobs local-run` as `--executor-image-uri`. Deprecated `--base-image` flag.
+
+### Artifact Registry
+
+* Added `--show-provenance` flag in `gcloud artifacts docker images describe` command to show build provenance.
+* Removed the auth token placeholder from the output of `gcloud artifacts print-settings npm`.
+* Fixed issue where `gcloud artifacts tags list` errors when the package name has slashes.
+
+### Cloud Code
+
+* Support specifying a service yaml file in `gcloud beta
+  code dev`.
+* Support building with a Buildpack instead of a Dockerfile in `gcloud beta code
+dev`.
+
+### Cloud Domains
+
+* Promoted `gcloud domains registrations` to GA. Cloud Domains enables registering new domain names, transferring already registered domains from 3rd-party domains registrars and managing the domains.
+
+### Cloud Healthcare
+
+* Promoted `gcloud healthcare hl7v2-stores <import|export>` command groups to GA.
+
+### Cloud Key Management Service
+
+*   Added support for the following RSA OAEP+SHA1 algorithms to `gcloud kms keys create|update` and `gcloud kms keys versions import`:
+  * `rsa-decrypt-oaep-2048-sha1`
+  * `rsa-decrypt-oaep-3072-sha1`
+  * `rsa-decrypt-oaep-4096-sha1`
+
+### Cloud SQL
+
+* Added the following flags to `gcloud sql instances create` and
+  `gcloud sql instances patch` for GA:
+   * `--password-policy-min-length`
+   * `--password-policy-complexity`
+   * `--password-policy-reuse-interval`
+   * `--password-policy-disallow-username-substring`
+   * `--password-policy-password-change-interval`
+   * `--clear-password-policy`
+
+### Cloud Scheduler
+
+*   Updated `gcloud scheduler jobs` commands to accept a location flag to
+    manually specify a Cloud region.
+
+### Cloud Storage
+
+* Updated gsutil component to 5.4.
+
+### Cloud Tasks
+
+*   Added `--location` flag for `gcloud tasks` and `gcloud tasks queues` in
+    beta & GA to enable users to specify a GCP location when managing queues
+    and tasks.
+
+### Compute Engine
+
+* Promoted `--network` flag of `gcloud compute target-instances create` to GA.
+* Promoted `--subsetting-policy` of `gcloud compute backend-services create` and `gcloud compute backend-services update` to GA.
+* Added `--description` flag to `compute service-attachments update`.
+* Add `--add-share-with` and `--remove-share-with` flags to `reservations update` to make it easier to add and remove items in the share-with list without having to specify existing items.
+* Promoted `--type` flag of `gcloud compute commitments create` to GA.
+* Promoted `--share-setting` and `--share-with` flags of `glcloud compute reservations create` to GA.
+* Promoted `compute routers nats rules` command group to beta.
+* Promoted `--rules` flag of `compute routers nats create` and `compute routers nats update` to beta.
+* Promoted `--tcp-time-wait-timeout` flag of `compute routers nats create` and `compute routers nats update` to beta.
+* Promoted `--clear-tcp-time-wait-timeout` flag of `compute routers nats update` to beta.
+
+### Compute OS Config
+
+* Allow instance name in `gcloud compute os-config vulnerability-reports describe` and `gcloud compute os-config inventories describe`.
+* Promoted `gcloud compute os-config os-policy-assignments` to GA.
+
+### Config Connector
+
+* Updated Google Cloud Config Connector to version 1.63.0.
+  See Config Connector Overview for more details [https://cloud.google.com/config-connector/docs/overview](https://cloud.google.com/config-connector/docs/overview).
+
+### Config Controller
+
+* Promoted `gcloud anthos config controller` to GA.
+
+### Container Registry
+
+* Added support for pulling results with image names that use tags instead of
+  sha256.
+* Added warning in a case where a user pulls results with tags instead of sha256.
+
+### Kpt
+
+* Updated kpt from v1.0.0-beta.5 to v1.0.0-beta.6.
+  * Fixed yaml schema and added json schema for Kptfile.
+  * Added support for .krmignore files in subpackages in `kpt fn` commands.
+  * Added support for updating subpackages in kpt pkg update.
+  * Added support to show pipeline execution duration in kpt fn render.
+  * Fixed issue when parsing bare sequence nodes in yaml.
+  * `kpt fn render` executes pipeline even when there are no input resources.
+  * `kpt pkg get` no longer copies the entire repo if path is specified.
+
+### Pubsub Emulator
+
+*   Added support for topic retention.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 360.0.0 (2021-10-05)
 
 ### Artifact Registry

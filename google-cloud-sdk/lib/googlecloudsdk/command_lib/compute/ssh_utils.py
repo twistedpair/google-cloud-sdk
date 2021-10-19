@@ -963,6 +963,11 @@ class BaseSSHCLIHelper(BaseSSHHelper):
       ssh.CommandError: The ssh command failed.
       core_exceptions.NetworkIssueError: The instance id does not match.
     """
+    if options.get('StrictHostKeyChecking') == 'yes':
+      log.debug('Skipping internal IP verification in favor of strict host '
+                'key checking.')
+      return
+
     if not properties.VALUES.ssh.verify_internal_ip.GetBool():
       log.warning(
           'Skipping internal IP verification connection and connecting to [{}] '

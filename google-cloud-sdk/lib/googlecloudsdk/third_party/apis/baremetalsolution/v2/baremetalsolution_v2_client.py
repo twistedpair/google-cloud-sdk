@@ -40,6 +40,8 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.projects_locations_instances = self.ProjectsLocationsInstancesService(self)
+    self.projects_locations_volumes_luns = self.ProjectsLocationsVolumesLunsService(self)
+    self.projects_locations_volumes = self.ProjectsLocationsVolumesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
 
@@ -106,6 +108,80 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
         response_type_name='ListInstancesResponse',
         supports_download=False,
     )
+
+  class ProjectsLocationsVolumesLunsService(base_api.BaseApiService):
+    """Service class for the projects_locations_volumes_luns resource."""
+
+    _NAME = 'projects_locations_volumes_luns'
+
+    def __init__(self, client):
+      super(BaremetalsolutionV2.ProjectsLocationsVolumesLunsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Get details of a single storage lun.
+
+      Args:
+        request: (BaremetalsolutionProjectsLocationsVolumesLunsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Lun) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}/luns/{lunsId}',
+        http_method='GET',
+        method_id='baremetalsolution.projects.locations.volumes.luns.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='BaremetalsolutionProjectsLocationsVolumesLunsGetRequest',
+        response_type_name='Lun',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""List storage volume luns for given storage volume.
+
+      Args:
+        request: (BaremetalsolutionProjectsLocationsVolumesLunsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListLunsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/volumes/{volumesId}/luns',
+        http_method='GET',
+        method_id='baremetalsolution.projects.locations.volumes.luns.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/luns',
+        request_field='',
+        request_type_name='BaremetalsolutionProjectsLocationsVolumesLunsListRequest',
+        response_type_name='ListLunsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsVolumesService(base_api.BaseApiService):
+    """Service class for the projects_locations_volumes resource."""
+
+    _NAME = 'projects_locations_volumes'
+
+    def __init__(self, client):
+      super(BaremetalsolutionV2.ProjectsLocationsVolumesService, self).__init__(client)
+      self._upload_configs = {
+          }
 
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""

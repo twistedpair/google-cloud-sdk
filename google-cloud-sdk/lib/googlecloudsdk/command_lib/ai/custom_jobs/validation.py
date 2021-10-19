@@ -195,7 +195,7 @@ def _ValidBuildArgsOfLocalRun(args):
     raise exceptions.MinimumArgumentException(
         ['--script', '--python-module'],
         'They are required to build a training container image. '
-        'Otherwise, please remove flags [{}] to directly run the `base-image`.'
+        'Otherwise, please remove flags [{}] to directly run the `executor-image-uri`.'
         .format(', '.join(sorted(build_args_specified))))
 
   # Validate main script's existence:
@@ -247,13 +247,16 @@ def _ValidBuildArgsOfLocalRun(args):
 
 def ValidateLocalRunArgs(args):
   """Validates the arguments specified in `local-run` command and normalize them."""
-  if args.work_dir:
-    work_dir = os.path.abspath(files.ExpandHomeDir(args.work_dir))
+  args_local_package_pach = args.local_package_path or args.work_dir
+  if args_local_package_pach:
+    work_dir = os.path.abspath(files.ExpandHomeDir(args_local_package_pach))
     if not os.path.exists(work_dir) or not os.path.isdir(work_dir):
       raise exceptions.InvalidArgumentException(
-          '--work-dir', r"Directory '{}' is not found.".format(work_dir))
+          '--local_package_path',
+          r"Directory '{}' is not found.".format(work_dir))
   else:
     work_dir = files.GetCWD()
+  args.local_package_path = work_dir
   args.work_dir = work_dir
 
   _ValidBuildArgsOfLocalRun(args)

@@ -29,6 +29,7 @@ import sys
 import threading
 
 from googlecloudsdk.command_lib import crash_handling
+from googlecloudsdk.command_lib.storage import encryption_util
 from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage.tasks import task
 from googlecloudsdk.command_lib.storage.tasks import task_buffer
@@ -115,6 +116,32 @@ _SHUTDOWN = 'SHUTDOWN'
 _CREATE_WORKER_PROCESS = 'CREATE_WORKER_PROCESS'
 
 
+class SharedProcessContext:
+  """Context manager used to collect and set global state."""
+
+  def __init__(self):
+    if multiprocessing_context.get_start_method() == 'fork':
+      return
+    self._environment_variables = os.environ.copy()
+    self._creds_context_manager = (
+        creds_context_managers.CredentialProvidersManager())
+    self._key_store = encryption_util._key_store
+
+  def __enter__(self):
+    if multiprocessing_context.get_start_method() == 'fork':
+      return
+
+    os.environ.update(self._environment_variables)
+    self._creds_context_manager.__enter__()
+    encryption_util._key_store = self._key_store
+
+  def __exit__(self, exc_type, exc_value, exc_traceback):
+    del exc_type, exc_value, exc_traceback
+    if multiprocessing_context.get_start_method() == 'fork':
+      return
+    self._creds_context_manager.__exit__()
+
+
 @crash_handling.CrashManager
 def _thread_worker(task_queue, task_output_queue, task_status_queue,
                    idle_thread_count):
@@ -158,7 +185,7 @@ def _thread_worker(task_queue, task_output_queue, task_status_queue,
 
 @crash_handling.CrashManager
 def _process_worker(task_queue, task_output_queue, task_status_queue,
-                    thread_count, idle_thread_count, environment_variables):
+                    thread_count, idle_thread_count, shared_process_context):
   """Starts a consumer thread pool.
 
   Args:
@@ -169,13 +196,11 @@ def _process_worker(task_queue, task_output_queue, task_status_queue,
       progress to a central location.
     thread_count (int): Number of threads the process should spawn.
     idle_thread_count (multiprocessing.Semaphore): Passed on to worker threads.
-    environment_variables (dict): Environment variables from the main process.
-      Needed for spawn compatibility in testing environments, as the testing
-      framework clears environment variables in test SetUp methods.
+    shared_process_context (SharedProcessContext): Holds values from global
+      state that need to be replicated in child processes.
   """
-  os.environ.update(environment_variables)
   threads = []
-  with creds_context_managers.CredentialProvidersManager():
+  with shared_process_context:
     for _ in range(thread_count):
       thread = threading.Thread(
           target=_thread_worker,
@@ -191,7 +216,7 @@ def _process_worker(task_queue, task_output_queue, task_status_queue,
 @crash_handling.CrashManager
 def _process_factory(task_queue, task_output_queue, task_status_queue,
                      thread_count, idle_thread_count, signal_queue,
-                     environment_variables):
+                     shared_process_context):
   """Create worker processes.
 
   This factory must run in a separate process to avoid deadlock issue,
@@ -209,9 +234,8 @@ def _process_factory(task_queue, task_output_queue, task_status_queue,
     idle_thread_count (multiprocessing.Semaphore): Passed on to worker threads.
     signal_queue (multiprocessing.Queue): Queue used by parent process to
       signal when a new child worker process must be created.
-    environment_variables (dict): Environment variables from the main process.
-      Needed for spawn compatibility in testing environments, as the testing
-      framework clears environment variables in test SetUp methods.
+    shared_process_context (SharedProcessContext): Holds values from global
+      state that need to be replicated in child processes.
   """
   processes = []
   while True:
@@ -229,7 +253,7 @@ def _process_factory(task_queue, task_output_queue, task_status_queue,
       process = multiprocessing_context.Process(
           target=_process_worker,
           args=(task_queue, task_output_queue, task_status_queue,
-                thread_count, idle_thread_count, environment_variables))
+                thread_count, idle_thread_count, shared_process_context))
       processes.append(process)
       log.debug('Adding 1 process with {} threads.'
                 ' Total processes: {}. Total threads: {}.'.format(
@@ -414,12 +438,13 @@ class TaskGraphExecutor:
       An integer indicating the exit code. Zero indicates no fatal errors were
         raised.
     """
+    shared_process_context = SharedProcessContext()
     worker_process_spawner = multiprocessing_context.Process(
         target=_process_factory,
         args=(self._task_queue, self._task_output_queue,
               self._task_status_queue, self._thread_count,
               self._idle_thread_count, self._signal_queue,
-              os.environ.copy()))
+              shared_process_context))
     worker_process_spawner.start()
 
     # It is now safe to start the progress_manager.

@@ -33,6 +33,7 @@ from googlecloudsdk.command_lib.container.hub import api_util
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import http
+from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import requests
 from googlecloudsdk.core.util import encoding
@@ -271,8 +272,7 @@ class KubernetesClient(object):
                kubeconfig=None,
                context=None,
                public_issuer_url=None,
-               enable_workload_identity=False,
-               manage_workload_identity_bucket=False):
+               enable_workload_identity=False):
     """Constructor for KubernetesClient.
 
     Args:
@@ -284,7 +284,6 @@ class KubernetesClient(object):
       context: the context to use
       public_issuer_url: the public issuer url
       enable_workload_identity: whether to enable workload identity
-      manage_workload_identity_bucket: the workload identity bucket
 
     Raises:
       exceptions.Error: if the client cannot be configured
@@ -318,7 +317,7 @@ class KubernetesClient(object):
                              self.processor.gke_cluster_uri):
       return
 
-    if enable_workload_identity or manage_workload_identity_bucket:
+    if enable_workload_identity:
       self.kube_client = self.processor.GetKubeClient(self.kubeconfig,
                                                       self.context)
 
@@ -405,9 +404,10 @@ class KubernetesClient(object):
     _, err = self._RunKubectl(['delete', 'membership', 'membership'])
     return err
 
-  def RbacPolicyName(self, policy_name, project_id, membership):
+  def RbacPolicyName(self, policy_name, project_id, membership, user):
     """Generate RBAC policy name."""
-    metadata_name = project_id + '-' + membership
+    user_name = user.split('@')[0]
+    metadata_name = project_id + '_' + user_name + '_' + membership
     if policy_name == 'impersonate':
       return RBAC_IMPERSONATE_POLICY_NAME.format(metadata=metadata_name)
     if policy_name == 'permission':
@@ -415,7 +415,81 @@ class KubernetesClient(object):
     if policy_name == 'anthos':
       return RBAC_ANTHOS_SUPPORT_POLICY_NAME.format(metadata=metadata_name)
 
-  def GetRbacPolicy(self, membership, role, project_id, anthos_support):
+  # Get the clusterrolebinding/rolebinding from the RBAC permission policy.
+  def GetRbacPermissionPolicy(self, rbac_policy_name, role):
+    """Get the RBAC cluster role binding policy."""
+    # TODO(b/200192930): Remove the regex in next change.
+    cluster_pattern = re.compile('^clusterrole/')
+    namespace_pattern = re.compile('^role/')
+
+    if cluster_pattern.match(role.lower()):
+      out, error = self._RunKubectl(
+          ['get', 'clusterrolebinding', rbac_policy_name, '-o', 'yaml'])
+      if error:
+        raise exceptions.Error(
+            'Error retrieving RBAC policy: {}'.format(rbac_policy_name))
+      return out
+    if namespace_pattern.match(role.lower()):
+      out, error = self._RunKubectl(
+          ['get', 'rolebinding', rbac_policy_name, '-o', 'yaml'])
+      if error:
+        raise exceptions.Error(
+            'Error retrieving RBAC policy: {}'.format(rbac_policy_name))
+      return out
+
+  def CleanUpRbacPolicy(self, membership, role, project_id, user,
+                        anthos_support):
+    """Get the RBAC cluster role binding policy."""
+    # TODO(b/200192930): Remove the regex in next change.
+    cluster_pattern = re.compile('^clusterrole/')
+    namespace_pattern = re.compile('^role/')
+
+    rbac_to_check = [('clusterrole',
+                      self.RbacPolicyName('impersonate', project_id,
+                                          membership, user)),
+                     ('clusterrolebinding',
+                      self.RbacPolicyName('impersonate', project_id,
+                                          membership, user))]
+    # Check anthos-support permission policy when '--anthos-support' specified.
+    if anthos_support:
+      rbac_to_check.append(('clusterrolebinding',
+                            self.RbacPolicyName('anthos', project_id,
+                                                membership, user)))
+    # Check namespace permission policy when role is specified as
+    # 'role/namespace/namespace-permission'.
+    elif cluster_pattern.match(role.lower()):
+      rbac_to_check.append(('clusterrolebinding',
+                            self.RbacPolicyName('permission', project_id,
+                                                membership, user)))
+    # Check RBAC permission policy for general clusterrole.
+    elif namespace_pattern.match(role.lower()):
+      rbac_to_check.append(('rolebinding',
+                            self.RbacPolicyName('permission', project_id,
+                                                membership, user)))
+
+    for rbac_policy_pair in rbac_to_check:
+      rbac_type = rbac_policy_pair[0]
+      rbac_name = rbac_policy_pair[1]
+      out, err = self._RunKubectl(['delete', rbac_type, rbac_name], None)
+      if err:
+        if 'NotFound' in err:
+          log.status.Print('{} for RBAC policy: {} not exist.'.format(
+              rbac_type, rbac_name))
+          continue
+        else:
+          raise exceptions.Error('Error deleting RBAC policy: {}'.format(err))
+      else:
+        log.status.Print('{}'.format(out))
+    return True
+
+  def GetRbacPolicyDiff(self, rbac_policy_file):
+
+    out, err = self._RunKubectlDiff(['diff', '-f', rbac_policy_file], None)
+    return out, err
+
+  # Check the existing RBAC policy for specified cluster. Return false if there
+  # are existing one.
+  def GetRbacPolicy(self, membership, role, project_id, user, anthos_support):
     """Get the RBAC cluster role binding policy."""
     not_found = False
     # TODO(b/200192930): Remove the regex in next change.
@@ -424,44 +498,44 @@ class KubernetesClient(object):
 
     rbac_to_check = [('clusterrole',
                       self.RbacPolicyName('impersonate', project_id,
-                                          membership)),
+                                          membership, user)),
                      ('clusterrolebinding',
                       self.RbacPolicyName('impersonate', project_id,
-                                          membership))]
+                                          membership, user))]
     # Check anthos-support permission policy when '--anthos-support' specified.
     if anthos_support:
-      rbac_to_check.append(
-          ('clusterrole', self.RbacPolicyName('anthos', project_id,
-                                              membership)))
+      rbac_to_check.append(('clusterrolebinding',
+                            self.RbacPolicyName('anthos', project_id,
+                                                membership, user)))
     # Check namespace permission policy when role is specified as
     # 'role/namespace/namespace-permission'.
     elif cluster_pattern.match(role.lower()):
-      rbac_to_check.append(('clusterrole',
+      rbac_to_check.append(('clusterrolebinding',
                             self.RbacPolicyName('permission', project_id,
-                                                membership)))
+                                                membership, user)))
     # Check RBAC permission policy for general clusterrole.
     elif namespace_pattern.match(role.lower()):
       rbac_to_check.append(('rolebinding',
                             self.RbacPolicyName('permission', project_id,
-                                                membership)))
+                                                membership, user)))
 
     for rbac_policy_pair in rbac_to_check:
       rbac_type = rbac_policy_pair[0]
       rbac_name = rbac_policy_pair[1]
-      out, err = self._RunKubectl(['get', rbac_type, rbac_name])
+      _, err = self._RunKubectl(['get', rbac_type, rbac_name])
       if err:
         if 'NotFound' in err:
           not_found = True
         else:
           raise exceptions.Error('Error retrieving RBAC policy: {}'.format(err))
       else:
-        return rbac_name, rbac_type, out
+        return False
     if not_found:
-      return None, None, None
+      return True
 
   def MembershipCRDExists(self):
     _, err = self._RunKubectl([
-        'get', 'customresourcedefinitions.v1beta1.apiextensions.k8s.io',
+        'get', 'customresourcedefinitions.apiextensions.k8s.io',
         'memberships.hub.gke.io'
     ], None)
     if err:
@@ -483,7 +557,7 @@ class KubernetesClient(object):
   def GetMembershipCRD(self):
     """Get the YAML representation of the Membership CRD."""
     out, err = self._RunKubectl([
-        'get', 'customresourcedefinitions.v1beta1.apiextensions.k8s.io',
+        'get', 'customresourcedefinitions.apiextensions.k8s.io',
         'memberships.hub.gke.io', '-o', 'yaml'
     ], None)
     if err:
@@ -562,7 +636,7 @@ class KubernetesClient(object):
     return self._RunKubectl(cmd)
 
   def ApplyRbac(self, rbac_policy):
-    out, err = self._RunKubectl(['apply', '-f', rbac_policy])
+    out, err = self._RunKubectl(['apply', '-f', rbac_policy], None)
     return out, err
 
   def Apply(self, manifest):
@@ -729,6 +803,36 @@ class KubernetesClient(object):
 
     return out.getvalue() if returncode == 0 else None, err.getvalue(
     ) if returncode != 0 else None
+
+  def _RunKubectlDiff(self, args, stdin=None):
+    """Runs a kubectl diff command with the specified args.
+
+    Args:
+      args: command line arguments to pass to kubectl
+      stdin: text to be passed to kubectl via stdin
+
+    Returns:
+      The contents of stdout if the return code is 1, stderr (or a fabricated
+      error if stderr is empty) otherwise
+    """
+    cmd = [c_util.CheckKubectlInstalled()]
+    if self.context:
+      cmd.extend(['--context', self.context])
+
+    if self.kubeconfig:
+      cmd.extend(['--kubeconfig', self.kubeconfig])
+
+    cmd.extend(['--request-timeout', self.kubectl_timeout])
+    cmd.extend(args)
+    out = io.StringIO()
+    err = io.StringIO()
+    returncode = execution_utils.Exec(
+        cmd, no_exit=True, out_func=out.write, err_func=err.write, in_str=stdin)
+    # kubectl diff return is different with other CLI.
+    # Exit status: 0 No differences were found. 1 Differences were found.
+    # >1 Kubectl or diff failed with an error.
+    return out.getvalue() if returncode == 1 else None, err.getvalue(
+    ) if returncode > 1 else None
 
 
 class DeploymentPodsAvailableOperation(object):

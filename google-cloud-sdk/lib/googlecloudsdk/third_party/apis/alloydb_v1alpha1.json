@@ -6,7 +6,7 @@
   "canonicalName": "Cloud AlloyDB Admin",
   "version": "v1alpha1",
   "revision": "0",
-  "title": "Cloud AlloyDB API",
+  "title": "AlloyDB API",
   "description": "",
   "ownerDomain": "google.com",
   "ownerName": "Google",
@@ -14,7 +14,7 @@
     "x16": "http://www.google.com/images/icons/product/search-16.gif",
     "x32": "http://www.google.com/images/icons/product/search-32.gif"
    },
-  "documentationLink": "",
+  "documentationLink": "https://cloud.google.com/alloydb/",
   "protocol": "rest",
   "rootUrl": "https://alloydb.googleapis.com/",
   "mtlsRootUrl": "https://alloydb.mtls.googleapis.com/",
@@ -22,6 +22,7 @@
   "baseUrl": "https://alloydb.googleapis.com/",
   "batchPath": "batch",
   "version_module": true,
+  "fullyEncodeReservedExpansion": true,
   "parameters": {
     "access_token": {
       "type": "string",
@@ -179,7 +180,7 @@
     },
     "Policy": {
       "id": "Policy",
-      "description": "An Identity and Access Management (IAM) policy, which specifies access controls for Google Cloud resources. A `Policy` is a collection of `bindings`. A `binding` binds one or more `members` to a single `role`. Members can be user accounts, service accounts, Google groups, and domains (such as G Suite). A `role` is a named list of permissions; each `role` can be an IAM predefined role or a user-created custom role. For some types of Google Cloud resources, a `binding` can also specify a `condition`, which is a logical expression that allows access to a resource only if the expression evaluates to `true`. A condition can add constraints based on attributes of the request, the resource, or both. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies). **JSON example:** { \"bindings\": [ { \"role\": \"roles\/resourcemanager.organizationAdmin\", \"members\": [ \"user:mike@example.com\", \"group:admins@example.com\", \"domain:google.com\", \"serviceAccount:my-project-id@appspot.gserviceaccount.com\" ] }, { \"role\": \"roles\/resourcemanager.organizationViewer\", \"members\": [ \"user:eve@example.com\" ], \"condition\": { \"title\": \"expirable access\", \"description\": \"Does not grant access after Sep 2020\", \"expression\": \"request.time < timestamp('2020-10-01T00:00:00.000Z')\", } } ], \"etag\": \"BwWWja0YfJA=\", \"version\": 3 } **YAML example:** bindings: - members: - user:mike@example.com - group:admins@example.com - domain:google.com - serviceAccount:my-project-id@appspot.gserviceaccount.com role: roles\/resourcemanager.organizationAdmin - members: - user:eve@example.com role: roles\/resourcemanager.organizationViewer condition: title: expirable access description: Does not grant access after Sep 2020 expression: request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA= version: 3 For a description of IAM and its features, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/docs\/).",
+      "description": "An Identity and Access Management (IAM) policy, which specifies access controls for Google Cloud resources. A `Policy` is a collection of `bindings`. A `binding` binds one or more `members`, or principals, to a single `role`. Principals can be user accounts, service accounts, Google groups, and domains (such as G Suite). A `role` is a named list of permissions; each `role` can be an IAM predefined role or a user-created custom role. For some types of Google Cloud resources, a `binding` can also specify a `condition`, which is a logical expression that allows access to a resource only if the expression evaluates to `true`. A condition can add constraints based on attributes of the request, the resource, or both. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies). **JSON example:** { \"bindings\": [ { \"role\": \"roles\/resourcemanager.organizationAdmin\", \"members\": [ \"user:mike@example.com\", \"group:admins@example.com\", \"domain:google.com\", \"serviceAccount:my-project-id@appspot.gserviceaccount.com\" ] }, { \"role\": \"roles\/resourcemanager.organizationViewer\", \"members\": [ \"user:eve@example.com\" ], \"condition\": { \"title\": \"expirable access\", \"description\": \"Does not grant access after Sep 2020\", \"expression\": \"request.time < timestamp('2020-10-01T00:00:00.000Z')\", } } ], \"etag\": \"BwWWja0YfJA=\", \"version\": 3 } **YAML example:** bindings: - members: - user:mike@example.com - group:admins@example.com - domain:google.com - serviceAccount:my-project-id@appspot.gserviceaccount.com role: roles\/resourcemanager.organizationAdmin - members: - user:eve@example.com role: roles\/resourcemanager.organizationViewer condition: title: expirable access description: Does not grant access after Sep 2020 expression: request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA= version: 3 For a description of IAM and its features, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/docs\/).",
       "type": "object",
       "properties": {
         "version": {
@@ -188,7 +189,7 @@
           "format": "int32"
         },
         "bindings": {
-          "description": "Associates a list of `members` to a `role`. Optionally, may specify a `condition` that determines how and when the `bindings` are applied. Each of the `bindings` must contain at least one member.",
+          "description": "Associates a list of `members`, or principals, with a `role`. Optionally, may specify a `condition` that determines how and when the `bindings` are applied. Each of the `bindings` must contain at least one principal. The `bindings` in a `Policy` can refer to up to 1,500 principals; up to 250 of these principals can be Google groups. Each occurrence of a principal counts towards these limits. For example, if the `bindings` grant 50 different roles to `user:alice@example.com`, and not to any other principal, then you can add another 1,450 principals to the `bindings` in the `Policy`.",
           "type": "array",
           "items": {
             "$ref": "Binding"
@@ -210,22 +211,22 @@
     },
     "Binding": {
       "id": "Binding",
-      "description": "Associates `members` with a `role`.",
+      "description": "Associates `members`, or principals, with a `role`.",
       "type": "object",
       "properties": {
         "role": {
-          "description": "Role that is assigned to `members`. For example, `roles\/viewer`, `roles\/editor`, or `roles\/owner`.",
+          "description": "Role that is assigned to the list of `members`, or principals. For example, `roles\/viewer`, `roles\/editor`, or `roles\/owner`.",
           "type": "string"
         },
         "members": {
-          "description": "Specifies the identities requesting access for a Cloud Platform resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
+          "description": "Specifies the principals requesting access for a Cloud Platform resource. `members` can have the following values: * `allUsers`: A special identifier that represents anyone who is on the internet; with or without a Google account. * `allAuthenticatedUsers`: A special identifier that represents anyone who is authenticated with a Google account or a service account. * `user:{emailid}`: An email address that represents a specific Google account. For example, `alice@example.com` . * `serviceAccount:{emailid}`: An email address that represents a service account. For example, `my-other-app@appspot.gserviceaccount.com`. * `group:{emailid}`: An email address that represents a Google group. For example, `admins@example.com`. * `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a user that has been recently deleted. For example, `alice@example.com?uid=123456789012345678901`. If the user is recovered, this value reverts to `user:{emailid}` and the recovered user retains the role in the binding. * `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, `my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the service account is undeleted, this value reverts to `serviceAccount:{emailid}` and the undeleted service account retains the role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, `admins@example.com?uid=123456789012345678901`. If the group is recovered, this value reverts to `group:{emailid}` and the recovered group retains the role in the binding. * `domain:{domain}`: The G Suite domain (primary) that represents all the users of that domain. For example, `google.com` or `example.com`. ",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "condition": {
-          "description": "The condition that is associated with this binding. If the condition evaluates to `true`, then this binding applies to the current request. If the condition evaluates to `false`, then this binding does not apply to the current request. However, a different role binding might grant the same role to one or more of the members in this binding. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
+          "description": "The condition that is associated with this binding. If the condition evaluates to `true`, then this binding applies to the current request. If the condition evaluates to `false`, then this binding does not apply to the current request. However, a different role binding might grant the same role to one or more of the principals in this binding. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
           "$ref": "Expr"
         }
       }
@@ -450,7 +451,7 @@
     },
     "Cluster": {
       "id": "Cluster",
-      "description": "Message describing Cluster object NEXT_ID: 9",
+      "description": "Message describing Cluster object NEXT_ID: 10",
       "type": "object",
       "properties": {
         "name": {
@@ -537,16 +538,6 @@
         }
       }
     },
-    "FailoverClusterRequest": {
-      "id": "FailoverClusterRequest",
-      "type": "object",
-      "properties": {
-        "requestId": {
-          "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes after the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
-          "type": "string"
-        }
-      }
-    },
     "ListInstancesResponse": {
       "id": "ListInstancesResponse",
       "description": "Message for response to listing Instances",
@@ -574,7 +565,7 @@
     },
     "Instance": {
       "id": "Instance",
-      "description": "Message describing Instance object NEXT ID: 14",
+      "description": "Message describing Instance object NEXT ID: 15",
       "type": "object",
       "properties": {
         "name": {
@@ -606,12 +597,12 @@
           "enumDescriptions": [
             "",
             "PRIMARY instances support read and write operations.",
-            "READ instances support read operations only. Each read instance consists of one or more homogeneous read replicas. * READ instance of size 1 can only have zonal availability. * READ instances with replica count of 2 or more can have regional availability (replicas are present in 2 or more zones in a region)."
+            "READ_POOL instances support read operations only. Each read pool instance consists of one or more homogeneous nodes. * Read pool of size 1 can only have zonal availability. * Read pools with node count of 2 or more can have regional availability (nodes are present in 2 or more zones in a region)."
           ],
           "enum": [
             "INSTANCE_TYPE_UNSPECIFIED",
             "PRIMARY",
-            "READ"
+            "READ_POOL"
           ]
         },
         "state": {
@@ -638,8 +629,12 @@
           ]
         },
         "tier": {
-          "description": "The tier (or machine type) for this instance, for example *n2-standard-2* (PostgreSQL instances). Required for new instances and can be updated.",
+          "description": "Deprecated: Please use VMConfig instead. This field will be removed during private preview. The tier (or machine type) for this instance, for example *n2-standard-2* (PostgreSQL instances).",
           "type": "string"
+        },
+        "machineConfig": {
+          "description": "Configurations for the machines that host the underlying database engine.",
+          "$ref": "MachineConfig"
         },
         "availabilityType": {
           "description": "Availability type of an Instance. Defaults to REGIONAL for both primary and read instances. Note that primary and read instances can have different availability types.",
@@ -681,6 +676,18 @@
         }
       }
     },
+    "MachineConfig": {
+      "id": "MachineConfig",
+      "description": "MachineConfig describes the configuration of a machine.",
+      "type": "object",
+      "properties": {
+        "cpuCount": {
+          "description": "The number of CPU's in the VM instance.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
     "NetworkConfig": {
       "id": "NetworkConfig",
       "description": "Network Management configuration.",
@@ -698,50 +705,13 @@
     },
     "ReadPoolConfig": {
       "id": "ReadPoolConfig",
-      "description": "Read pool configuration for an instance.",
+      "description": "Configuration for a read pool instance.",
       "type": "object",
       "properties": {
-        "readPoolSize": {
-          "description": "Read pool size.",
+        "nodeCount": {
+          "description": "Read capacity, i.e. number of nodes in a read pool instance.",
           "type": "integer",
           "format": "int32"
-        }
-      }
-    },
-    "CreateInstanceRequests": {
-      "id": "CreateInstanceRequests",
-      "description": "See usage below for notes.",
-      "type": "object",
-      "properties": {
-        "createInstanceRequests": {
-          "description": "Required. Primary and read replica instances to be created. This list should not be empty.",
-          "type": "array",
-          "items": {
-            "$ref": "CreateInstanceRequest"
-          }
-        }
-      }
-    },
-    "CreateInstanceRequest": {
-      "id": "CreateInstanceRequest",
-      "description": "Message for creating a Instance",
-      "type": "object",
-      "properties": {
-        "parent": {
-          "description": "Required. The name of the parent resource. For the required format, see the comment on the Instance.name field.",
-          "type": "string"
-        },
-        "instanceId": {
-          "description": "Required. Id of the requesting object If auto-generating Id server-side, remove this field and instance_id from the method_signature of Create RPC",
-          "type": "string"
-        },
-        "instance": {
-          "description": "Required. The resource being created",
-          "$ref": "Instance"
-        },
-        "requestId": {
-          "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
-          "type": "string"
         }
       }
     },
@@ -763,149 +733,6 @@
         "requestId": {
           "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes after the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
           "type": "string"
-        }
-      }
-    },
-    "ListUsersResponse": {
-      "id": "ListUsersResponse",
-      "description": "Message for response to listing Users",
-      "type": "object",
-      "properties": {
-        "users": {
-          "description": "The list of User",
-          "type": "array",
-          "items": {
-            "$ref": "User"
-          }
-        },
-        "nextPageToken": {
-          "description": "A token identifying a page of results the server should return.",
-          "type": "string"
-        },
-        "unreachable": {
-          "description": "Locations that could not be reached.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "User": {
-      "id": "User",
-      "description": "Message describing User object",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "Output only. name of resource",
-          "readOnly": true,
-          "type": "string"
-        },
-        "createTime": {
-          "description": "Output only. Create time stamp",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "updateTime": {
-          "description": "Output only. Update time stamp",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "labels": {
-          "description": "Labels as key value pairs",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "ListBackupsResponse": {
-      "id": "ListBackupsResponse",
-      "description": "Message for response to listing Backups",
-      "type": "object",
-      "properties": {
-        "backups": {
-          "description": "The list of Backup",
-          "type": "array",
-          "items": {
-            "$ref": "Backup"
-          }
-        },
-        "nextPageToken": {
-          "description": "A token identifying a page of results the server should return.",
-          "type": "string"
-        },
-        "unreachable": {
-          "description": "Locations that could not be reached.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "Backup": {
-      "id": "Backup",
-      "description": "Message describing Backup object",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "Output only. The name of the backup resource with the format: * projects\/{project}\/locations\/{region}\/clusters\/{cluster_id}\/backups\/{backup_id} where the cluster and backup ID segments should satisfy the regex expression \"[a-z0-9-]+\". For more details see https:\/\/google.aip.dev\/122. The prefix of the backup resource name is the name of the parent resource: * projects\/{project}\/locations\/{region}\/clusters\/{cluster_id}",
-          "readOnly": true,
-          "type": "string"
-        },
-        "createTime": {
-          "description": "Output only. Create time stamp",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "updateTime": {
-          "description": "Output only. Update time stamp",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "labels": {
-          "description": "Labels as key value pairs",
-          "type": "object",
-          "additionalProperties": {
-            "type": "string"
-          }
-        },
-        "state": {
-          "description": "Output only. The current state of the backup.",
-          "readOnly": true,
-          "type": "string",
-          "enumDescriptions": [
-            "The state of the backup is unknown.",
-            "The backup is ready.",
-            "The backup is creating.",
-            "The backup failed."
-          ],
-          "enum": [
-            "STATE_UNSPECIFIED",
-            "READY",
-            "CREATING",
-            "FAILED"
-          ]
-        },
-        "type": {
-          "description": "The backup type, which suggests the trigger for the backup.",
-          "type": "string",
-          "enumDescriptions": [
-            "",
-            "ON_DEMAND backups that were triggered by the customer (e.g., not AUTOMATED).",
-            "AUTOMATED backups triggered by the backup scheduler."
-          ],
-          "enum": [
-            "TYPE_UNSPECIFIED",
-            "ON_DEMAND",
-            "AUTOMATED"
-          ]
         }
       }
     },
@@ -1060,77 +887,6 @@
           "description": "Output only. API version used to start the operation.",
           "readOnly": true,
           "type": "string"
-        },
-        "batchCreateInstancesMetadata": {
-          "readOnly": true,
-          "$ref": "BatchCreateInstancesMetadata"
-        }
-      }
-    },
-    "BatchCreateInstancesMetadata": {
-      "id": "BatchCreateInstancesMetadata",
-      "description": "Message for metadata that is specific to BatchCreateInstances API.",
-      "type": "object",
-      "properties": {
-        "instanceTargets": {
-          "description": "The instances being created in the API call. Each string in this list is the server defined resource path for target instances in the request and for the format of each string, see the comment on the Instance.name field.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "instanceStatuses": {
-          "description": "A map representing current state of the instances involved in the BatchCreateInstances operation. The instance state will be in STATE_UNSPECIFIED state if the instance has not yet been picked up for processing. The key of the map is the name of the instance resource. For the required format, see the comment on the Instance.name field.",
-          "type": "object",
-          "additionalProperties": {
-            "$ref": "BatchCreateInstanceStatus"
-          }
-        }
-      }
-    },
-    "BatchCreateInstanceStatus": {
-      "id": "BatchCreateInstanceStatus",
-      "description": "Message for current status of an instance in the BatchCreateInstances operation. For example, lets say a BatchCreateInstances workflow has 4 instances, Instance1 through Instance4. Lets also assume that 2 instances succeeded but the third failed to create and the 4th was never picked up for creation because of failure of the previous one. Then, resulting states would look something like: 1. Instance1 = ROLLED_BACK 2. Instance2 = ROLLED_BACK 3. Instance3 = FAILED 4. Instance4 = PENDING_CREATE However, while the operation is running, the instance might be in other states including ACTIVE, DELETING and CREATING.",
-      "type": "object",
-      "properties": {
-        "state": {
-          "description": "The current state of an instance involved in the batch create operation. Once the operation is complete, the final state of the instances in the LRO can be one of: 1. ACTIVE, indicating that instances were created successfully 2. FAILED, indicating that a particular instance failed creation 3. ROLLED_BACK indicating that although the instance was created successfully, it had to be rolled back and deleted due to failure in other steps of the workflow. 4. PENDING_CREATE, indicating that the instance was never picked up for creation due to some error in a preceding operation that caused the BatchCreateInstances operation to stop.",
-          "type": "string",
-          "enumDescriptions": [
-            "The state of the instance is unknown.",
-            "Instance is pending creation and has not yet been picked up for processsing in the backend.",
-            "The instance is active and running.",
-            "The instance is being created.",
-            "The instance is being deleted.",
-            "The creation of the instance failed or a fatal error occurred during an operation on the instance.",
-            "The instance was created successfully, but was rolled back and deleted due to some other failure during BatchCreateInstances operation."
-          ],
-          "enum": [
-            "STATE_UNSPECIFIED",
-            "PENDING_CREATE",
-            "ACTIVE",
-            "CREATING",
-            "DELETING",
-            "FAILED",
-            "ROLLED_BACK"
-          ]
-        },
-        "errorMsg": {
-          "description": "Error, if any error occurred and is available, during instance creation.",
-          "type": "string"
-        },
-        "type": {
-          "type": "string",
-          "enumDescriptions": [
-            "",
-            "PRIMARY instances support read and write operations.",
-            "READ instances support read operations only. Each read instance consists of one or more homogeneous read replicas. * READ instance of size 1 can only have zonal availability. * READ instances with replica count of 2 or more can have regional availability (replicas are present in 2 or more zones in a region)."
-          ],
-          "enum": [
-            "INSTANCE_TYPE_UNSPECIFIED",
-            "PRIMARY",
-            "READ"
-          ]
         }
       }
     }
@@ -1480,77 +1236,6 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Deletes a single Cluster."
-                },
-                "failover": {
-                  "id": "alloydb.projects.locations.clusters.failover",
-                  "path": "v1alpha1/{+name}:failover",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:failover",
-                  "httpMethod": "POST",
-                  "parameters": {
-                    "name": {
-                      "description": "Required. The name of the resource. For the required format, see the comment on the Cluster.name field.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "request": {
-                    "$ref": "FailoverClusterRequest"
-                  },
-                  "response": {
-                    "$ref": "Operation"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Forces a Failover for a regional cluster. Failover promotes the HA standby instance in the regional cluster."
-                },
-                "importCluster": {
-                  "id": "alloydb.projects.locations.clusters.importCluster",
-                  "path": "v1alpha1/{+parent}/clusters:importCluster",
-                  "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters:importCluster",
-                  "httpMethod": "POST",
-                  "parameters": {
-                    "parent": {
-                      "description": "Required. The name of the parent resource. For the required format, see the comment on the Cluster.name field.",
-                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "clusterId": {
-                      "description": "Required. Id of the requesting object If auto-generating Id server-side, remove this field and cluster_id from the method_signature of Create RPC",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "backupSource.backupName": {
-                      "description": "Required. The name of the backup resource with the format: * projects\/{project}\/locations\/{region}\/clusters\/{cluster_id}\/backups\/{backup_id}",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "requestId": {
-                      "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
-                      "location": "query",
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "parent"
-                  ],
-                  "request": {
-                    "$ref": "Cluster"
-                  },
-                  "response": {
-                    "$ref": "Operation"
-                  },
-                  "scopes": [
-                    "https://www.googleapis.com/auth/cloud-platform"
-                  ],
-                  "description": "Creates a new Cluster in a given project and location, with a volume restored from the provided backup ID."
                 }
               }
               ,
@@ -1665,39 +1350,6 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Creates a new Instance in a given project and location."
-                    },
-                    "batchCreate": {
-                      "id": "alloydb.projects.locations.clusters.instances.batchCreate",
-                      "path": "v1alpha1/{+parent}/instances:batchCreate",
-                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/instances:batchCreate",
-                      "httpMethod": "POST",
-                      "parameters": {
-                        "parent": {
-                          "description": "Required. The name of the parent resource.",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "requestId": {
-                          "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
-                          "location": "query",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "parent"
-                      ],
-                      "request": {
-                        "$ref": "CreateInstanceRequests"
-                      },
-                      "response": {
-                        "$ref": "Operation"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Creates new instances under the given project, location and cluster. There can be only one primary instance in a cluster. If the primary instance exists in the cluster as well as this request, then API will throw an error. The primary instance should exist before any read pool instance is created. If the primary instance is a part of the request payload, then the API will take care of creating instances in the correct order."
                     },
                     "patch": {
                       "id": "alloydb.projects.locations.clusters.instances.patch",
@@ -1823,370 +1475,6 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Restart an Instance in a cluster."
-                    }
-                  }
-                },
-                "users": {
-                  "methods": {
-                    "list": {
-                      "id": "alloydb.projects.locations.clusters.users.list",
-                      "path": "v1alpha1/{+parent}/users",
-                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/users",
-                      "httpMethod": "GET",
-                      "parameters": {
-                        "parent": {
-                          "description": "Required. Parent value for ListUsersRequest",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "pageSize": {
-                          "description": "Optional. Requested page size. Server may return fewer items than requested. If unspecified, server will pick an appropriate default.",
-                          "location": "query",
-                          "type": "integer",
-                          "format": "int32"
-                        },
-                        "pageToken": {
-                          "description": "A token identifying a page of results the server should return.",
-                          "location": "query",
-                          "type": "string"
-                        },
-                        "filter": {
-                          "description": "Optional. Filtering results",
-                          "location": "query",
-                          "type": "string"
-                        },
-                        "orderBy": {
-                          "description": "Optional. Hint for how to order the results",
-                          "location": "query",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "parent"
-                      ],
-                      "response": {
-                        "$ref": "ListUsersResponse"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Lists Users in a given project and location."
-                    },
-                    "get": {
-                      "id": "alloydb.projects.locations.clusters.users.get",
-                      "path": "v1alpha1/{+name}",
-                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/users/{usersId}",
-                      "httpMethod": "GET",
-                      "parameters": {
-                        "name": {
-                          "description": "Required. Name of the resource",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+\/users\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "response": {
-                        "$ref": "User"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Gets details of a single User."
-                    },
-                    "create": {
-                      "id": "alloydb.projects.locations.clusters.users.create",
-                      "path": "v1alpha1/{+parent}/users",
-                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/users",
-                      "httpMethod": "POST",
-                      "parameters": {
-                        "parent": {
-                          "description": "Required. Value for parent.",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "userId": {
-                          "description": "Required. Id of the requesting object If auto-generating Id server-side, remove this field and user_id from the method_signature of Create RPC",
-                          "location": "query",
-                          "type": "string"
-                        },
-                        "requestId": {
-                          "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
-                          "location": "query",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "parent"
-                      ],
-                      "request": {
-                        "$ref": "User"
-                      },
-                      "response": {
-                        "$ref": "Operation"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Creates a new User in a given project and location."
-                    },
-                    "patch": {
-                      "id": "alloydb.projects.locations.clusters.users.patch",
-                      "path": "v1alpha1/{+name}",
-                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/users/{usersId}",
-                      "httpMethod": "PATCH",
-                      "parameters": {
-                        "name": {
-                          "description": "Output only. name of resource",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+\/users\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "updateMask": {
-                          "description": "Optional. Field mask is used to specify the fields to be overwritten in the User resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
-                          "location": "query",
-                          "type": "string",
-                          "format": "google-fieldmask"
-                        },
-                        "requestId": {
-                          "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
-                          "location": "query",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "request": {
-                        "$ref": "User"
-                      },
-                      "response": {
-                        "$ref": "Operation"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Updates the parameters of a single User."
-                    },
-                    "delete": {
-                      "id": "alloydb.projects.locations.clusters.users.delete",
-                      "path": "v1alpha1/{+name}",
-                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/users/{usersId}",
-                      "httpMethod": "DELETE",
-                      "parameters": {
-                        "name": {
-                          "description": "Required. Name of the resource",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+\/users\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "requestId": {
-                          "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes after the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
-                          "location": "query",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "response": {
-                        "$ref": "Operation"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Deletes a single User."
-                    }
-                  }
-                },
-                "backups": {
-                  "methods": {
-                    "list": {
-                      "id": "alloydb.projects.locations.clusters.backups.list",
-                      "path": "v1alpha1/{+parent}/backups",
-                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/backups",
-                      "httpMethod": "GET",
-                      "parameters": {
-                        "parent": {
-                          "description": "Required. Parent value for ListBackupsRequest",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "pageSize": {
-                          "description": "Optional. Requested page size. Server may return fewer items than requested. If unspecified, server will pick an appropriate default.",
-                          "location": "query",
-                          "type": "integer",
-                          "format": "int32"
-                        },
-                        "pageToken": {
-                          "description": "A token identifying a page of results the server should return.",
-                          "location": "query",
-                          "type": "string"
-                        },
-                        "filter": {
-                          "description": "Optional. Filtering results",
-                          "location": "query",
-                          "type": "string"
-                        },
-                        "orderBy": {
-                          "description": "Optional. Hint for how to order the results",
-                          "location": "query",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "parent"
-                      ],
-                      "response": {
-                        "$ref": "ListBackupsResponse"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Lists Backups in a given project and location."
-                    },
-                    "get": {
-                      "id": "alloydb.projects.locations.clusters.backups.get",
-                      "path": "v1alpha1/{+name}",
-                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/backups/{backupsId}",
-                      "httpMethod": "GET",
-                      "parameters": {
-                        "name": {
-                          "description": "Required. Name of the resource",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+\/backups\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "response": {
-                        "$ref": "Backup"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Gets details of a single Backup."
-                    },
-                    "create": {
-                      "id": "alloydb.projects.locations.clusters.backups.create",
-                      "path": "v1alpha1/{+parent}/backups",
-                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/backups",
-                      "httpMethod": "POST",
-                      "parameters": {
-                        "parent": {
-                          "description": "Required. Value for parent.",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "backupId": {
-                          "description": "Required. Id of the requesting object If auto-generating Id server-side, remove this field and backup_id from the method_signature of Create RPC",
-                          "location": "query",
-                          "type": "string"
-                        },
-                        "requestId": {
-                          "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
-                          "location": "query",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "parent"
-                      ],
-                      "request": {
-                        "$ref": "Backup"
-                      },
-                      "response": {
-                        "$ref": "Operation"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Creates a new Backup in a given project and location."
-                    },
-                    "patch": {
-                      "id": "alloydb.projects.locations.clusters.backups.patch",
-                      "path": "v1alpha1/{+name}",
-                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/backups/{backupsId}",
-                      "httpMethod": "PATCH",
-                      "parameters": {
-                        "name": {
-                          "description": "Output only. The name of the backup resource with the format: * projects\/{project}\/locations\/{region}\/clusters\/{cluster_id}\/backups\/{backup_id} where the cluster and backup ID segments should satisfy the regex expression \"[a-z0-9-]+\". For more details see https:\/\/google.aip.dev\/122. The prefix of the backup resource name is the name of the parent resource: * projects\/{project}\/locations\/{region}\/clusters\/{cluster_id}",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+\/backups\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "updateMask": {
-                          "description": "Optional. Field mask is used to specify the fields to be overwritten in the Backup resource by the update. The fields specified in the update_mask are relative to the resource, not the full request. A field will be overwritten if it is in the mask. If the user does not provide a mask then all fields will be overwritten.",
-                          "location": "query",
-                          "type": "string",
-                          "format": "google-fieldmask"
-                        },
-                        "requestId": {
-                          "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes since the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
-                          "location": "query",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "request": {
-                        "$ref": "Backup"
-                      },
-                      "response": {
-                        "$ref": "Operation"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Updates the parameters of a single Backup."
-                    },
-                    "delete": {
-                      "id": "alloydb.projects.locations.clusters.backups.delete",
-                      "path": "v1alpha1/{+name}",
-                      "flatPath": "v1alpha1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}/backups/{backupsId}",
-                      "httpMethod": "DELETE",
-                      "parameters": {
-                        "name": {
-                          "description": "Required. Name of the resource",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/clusters\/[^\/]+\/backups\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "requestId": {
-                          "description": "Optional. An optional request ID to identify requests. Specify a unique request ID so that if you must retry your request, the server will know to ignore the request if it has already been completed. The server will guarantee that for at least 60 minutes after the first request. For example, consider a situation where you make an initial request and the request times out. If you make the request again with the same request ID, the server can check if original operation with the same request ID was received, and if so, will ignore the second request. This prevents clients from accidentally creating duplicate commitments. The request ID must be a valid UUID with the exception that zero UUID is not supported (00000000-0000-0000-0000-000000000000).",
-                          "location": "query",
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "response": {
-                        "$ref": "Operation"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Deletes a single Backup."
                     }
                   }
                 }

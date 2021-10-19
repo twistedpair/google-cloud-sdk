@@ -203,7 +203,7 @@ class InvalidValueError(Error):
   """An exception to be raised when the set value of a property is invalid."""
 
 
-class InvalidProjectError(InvalidValueError):
+class InvalidProjectError(Error):
   """An exception for bad project names, with a little user help."""
 
   def __init__(self, given):
@@ -1063,6 +1063,7 @@ class _SectionApiEndpointOverrides(_Section):
         'recaptchaenterprise', command='gcloud recaptcha')
     self.redis = self._Add('redis', command='gcloud redis')
     self.run = self._Add('run', command='gcloud run')
+    self.run_apps = self._Add('run_apps', hidden=True)
     self.scc = self._Add('securitycenter', command='gcloud scc')
     self.servicemanagement = self._Add(
         'servicemanagement', command='gcloud endpoints')
@@ -1238,6 +1239,13 @@ class _SectionAuth(_Section):
         'authorization_token_file', hidden=True)
     self.credential_file_override = self._Add(
         'credential_file_override', hidden=True)
+    self.access_token_file = self._Add(
+        'access_token_file',
+        help_text='A file path to read the access token. Use this property to '
+        'authenticate gcloud with an access token. The credentials '
+        'of the active account (if exists) will be ignored. '
+        'The file should contain an access token with no other '
+        'information.')
     self.impersonate_service_account = self._Add(
         'impersonate_service_account',
         help_text='After setting this property, all API requests will be made '
@@ -1638,7 +1646,7 @@ class _SectionCore(_Section):
         'enabled when interpreting resource arguments.')
     self.enable_feature_flags = self._AddBool(
         'enable_feature_flags',
-        default=False,
+        default=True,
         hidden=True,
         help_text='If True, remote config-file driven feature flags will be '
         'enabled.')
@@ -2732,6 +2740,25 @@ class _SectionStorage(_Section):
         default=2,
         help_text='Used in exponential backoff for retrying operations.')
 
+    self.key_store_path = self._Add(
+        'key_store_path',
+        hidden=True,
+        help_text=(
+            'Path to a yaml file containing an encryption key, and multiple'
+            ' decryption keys for use in storage commands. The file must be'
+            ' formatted as follows:\n'
+            '\n'
+            'encryption_key: {A customer-supplied or customer-managed key.}\n'
+            'decryption_keys:\n'
+            '- {A customer-supplied key}\n'
+            '...\n'
+            '\n'
+            'Customer-supplied encryption keys must be RFC 4648 section'
+            ' 4 base64-encoded AES256 strings. Customer-managed encryption keys'
+            ' must be of the form `projects/{project}/locations/{location}'
+            '/keyRings/{key-ring}/cryptoKeys/{crypto-key}`.'
+        ))
+
     self.max_retry_delay = self._Add(
         'max_retry_delay',
         default=32,
@@ -3121,7 +3148,12 @@ class _Property(object):
           validator.
     """
     if self.__validator:
-      self.__validator(value)
+      try:
+        self.__validator(value)
+      except InvalidValueError as e:
+        prop = '{}/{}'.format(self.section, self.name)
+        error = 'Invalid value for property [{}]: {}'.format(prop, e)
+        raise InvalidValueError(error)
 
   def GetBool(self, required=False, validate=True):
     """Gets the boolean value for this property.
@@ -3415,8 +3447,11 @@ def GetValueFromFeatureFlag(prop):
   Returns:
     str, the value of the property, or None if it is not set.
   """
-  ff_config = feature_flags_config.GetFeatureFlagsConfig()
-  return ff_config.Get(prop)
+  ff_config = feature_flags_config.GetFeatureFlagsConfig(
+      VALUES.core.account.Get())
+  if ff_config:
+    return ff_config.Get(prop)
+  return None
 
 
 def _GetPropertyWithoutDefault(prop, properties_file):

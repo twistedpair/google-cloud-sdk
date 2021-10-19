@@ -141,7 +141,6 @@ def DatabaseDialect(help_text):
   return base.Argument(
       '--database-dialect',
       required=False,
-      hidden=True,
       choices=[
           databases.DATABASE_DIALECT_POSTGRESQL,
           databases.DATABASE_DIALECT_GOOGLESQL

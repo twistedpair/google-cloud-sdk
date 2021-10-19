@@ -87,17 +87,21 @@ class FileUploadTask(task.Task):
         properties.VALUES.storage.parallel_composite_upload_threshold.Get())
 
   def execute(self, task_status_queue=None):
-    source_filename = self._source_resource.storage_url.object_name
-    size = os.path.getsize(source_filename)
+    source_url = self._source_resource.storage_url
+    source_filename = source_url.object_name
+
+    if source_url.is_pipe:
+      size = None
+    else:
+      size = os.path.getsize(source_filename)
 
     destination_provider = self._destination_resource.storage_url.scheme
     api_capabilties = api_factory.get_capabilities(destination_provider)
     should_perform_single_transfer = (
-        size < self._composite_upload_threshold or
+        source_url.is_pipe or size < self._composite_upload_threshold or
         not self._composite_upload_threshold or
         cloud_api.Capability.COMPOSE_OBJECTS not in api_capabilties or
-        not task_executor.should_use_parallelism()
-    )
+        not task_executor.should_use_parallelism())
 
     if should_perform_single_transfer:
       file_part_upload_task.FilePartUploadTask(
@@ -118,7 +122,7 @@ class FileUploadTask(task.Task):
       tracker_file_path = tracker_file_util.get_tracker_file_path(
           self._destination_resource.storage_url,
           tracker_file_util.TrackerFileType.PARALLEL_UPLOAD,
-          source_url=self._source_resource.storage_url)
+          source_url=source_url)
       tracker_data = tracker_file_util.read_composite_upload_tracker_file(
           tracker_file_path)
 

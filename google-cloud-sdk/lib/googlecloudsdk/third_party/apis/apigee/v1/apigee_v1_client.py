@@ -4603,6 +4603,33 @@ class ApigeeV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetResultView(self, request, global_params=None):
+      r"""After the query is completed, use this API to view the query result when result size is small.
+
+      Args:
+        request: (ApigeeOrganizationsEnvironmentsSecurityReportsGetResultViewRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1SecurityReportResultView) The response message.
+      """
+      config = self.GetMethodConfig('GetResultView')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetResultView.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/environments/{environmentsId}/securityReports/{securityReportsId}/resultView',
+        http_method='GET',
+        method_id='apigee.organizations.environments.securityReports.getResultView',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApigeeOrganizationsEnvironmentsSecurityReportsGetResultViewRequest',
+        response_type_name='GoogleCloudApigeeV1SecurityReportResultView',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Return a list of Security Reports.
 
@@ -5729,8 +5756,35 @@ class ApigeeV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetResultView(self, request, global_params=None):
+      r"""After the query is completed, use this API to view the query result when result size is small.
+
+      Args:
+        request: (ApigeeOrganizationsHostSecurityReportsGetResultViewRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1SecurityReportResultView) The response message.
+      """
+      config = self.GetMethodConfig('GetResultView')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetResultView.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/hostSecurityReports/{hostSecurityReportsId}/resultView',
+        http_method='GET',
+        method_id='apigee.organizations.hostSecurityReports.getResultView',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApigeeOrganizationsHostSecurityReportsGetResultViewRequest',
+        response_type_name='GoogleCloudApigeeV1SecurityReportResultView',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
-      r"""Return a list of Asynchronous Queries at host level.
+      r"""Return a list of Security Reports at host level.
 
       Args:
         request: (ApigeeOrganizationsHostSecurityReportsListRequest) input message
@@ -7272,6 +7326,33 @@ class ApigeeV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='ApigeeOrganizationsListRequest',
         response_type_name='GoogleCloudApigeeV1ListOrganizationsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates properties for an Apigee organization with patch semantics using a field mask.
+
+      Args:
+        request: (ApigeeOrganizationsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}',
+        http_method='PATCH',
+        method_id='apigee.organizations.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='googleCloudApigeeV1Organization',
+        request_type_name='ApigeeOrganizationsPatchRequest',
+        response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
 

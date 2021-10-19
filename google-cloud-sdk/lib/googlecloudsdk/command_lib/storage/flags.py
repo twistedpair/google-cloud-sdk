@@ -66,3 +66,31 @@ def add_object_metadata_flags(parser):
       '--custom-time',
       type=arg_parsers.Datetime.Parse,
       help='Custom time for Google Cloud Storage objects in RFC 3339 format.')
+
+
+def add_encryption_flags(parser):
+  """Adds flags for encryption and decryption keys."""
+  parser.add_argument(
+      '--encryption-key',
+      hidden=True,
+      help=(
+          'A customer-supplied encryption key (An RFC 4648 section'
+          ' 4 base64-encoded AES256 string), or customer-managed encryption key'
+          ' of the form `projects/{project}/locations/{location}/keyRings/'
+          '{key-ring}/cryptoKeys/{crypto-key}`. This key will be'
+          ' used for all data written to Google Cloud Storage.'
+      )
+  )
+  parser.add_argument(
+      '--decryption-keys',
+      type=arg_parsers.ArgList(),
+      metavar='DECRYPTION_KEY',
+      hidden=True,
+      help=(
+          'A comma separated list of customer-supplied encryption keys'
+          ' (RFC 4648 section 4 base64-encoded AES256 strings) that will'
+          ' be used to decrypt Google Cloud Storage objects. Data encrypted'
+          ' with a customer-managed encryption key (CMEK) is decrypted'
+          ' automatically, so CMEKs do not need to be listed here.'
+      )
+  )

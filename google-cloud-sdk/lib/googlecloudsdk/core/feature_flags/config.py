@@ -21,9 +21,13 @@ from __future__ import unicode_literals
 import functools
 import hashlib
 import logging
+import os
+import threading
+import time
 
 from googlecloudsdk.core import config
 from googlecloudsdk.core import yaml
+from googlecloudsdk.core.util import files as file_utils
 
 
 class Property:
@@ -38,7 +42,7 @@ class Property:
         self.values.append(attribute['value'])
         self.weights.append(attribute['weight'])
 
-
+_FEATURE_FLAG_CACHE_TIME_SECONDS = 30 * 60  # 30 minutes
 _FEATURE_FLAG_YAML_URL = 'http://www.gstatic.com/cloudsdk/feature_flag_config_file.yaml'
 
 
@@ -57,20 +61,77 @@ def Cache(func):
   return ReturnCachedOrCallFunc
 
 
-@Cache
-def GetFeatureFlagsConfig():
-  # pylint: disable=g-import-not-at-top
-  from googlecloudsdk.core import requests
-  yaml_request = requests.GetSession()
-  yaml_data = yaml_request.get(_FEATURE_FLAG_YAML_URL)
+def IsFeatureFlagsConfigStale(path):
+  try:
+    return (time.time() - os.path.getmtime(path) >
+            _FEATURE_FLAG_CACHE_TIME_SECONDS)
+  except OSError:
+    return True
 
-  return FeatureFlagsConfig(yaml_data)
+
+_FEATURE_FLAGS_LOCK = threading.RLock()
+
+
+def FetchFeatureFlagsConfig():
+  """Downloads the feature flag config file."""
+  # pylint: disable=g-import-not-at-top
+  import requests
+  from googlecloudsdk.core import requests as core_requests
+
+  try:
+    yaml_request = core_requests.GetSession()
+    return yaml_request.get(_FEATURE_FLAG_YAML_URL).text
+  except requests.exceptions.RequestException as e:
+    logging.warning('Unable to fetch feature flags config from [%s]: %s',
+                    _FEATURE_FLAG_YAML_URL, e)
+  return None
+
+
+@Cache
+def GetFeatureFlagsConfig(account_id):
+  """Gets the feature flags config.
+
+  If the feature flags config file does not exist or is stale, download and save
+  the feature flags config. Otherwise, read the feature flags config. Errors
+  will be logged, but will not interrupt normal operation.
+
+  Args:
+    account_id: str, account ID.
+
+
+  Returns:
+    A FeatureFlagConfig, or None.
+  """
+  feature_flags_config_path = config.Paths().feature_flags_config_path
+
+  with _FEATURE_FLAGS_LOCK:
+    yaml_data = None
+    if IsFeatureFlagsConfigStale(feature_flags_config_path):
+      yaml_data = FetchFeatureFlagsConfig()
+      try:
+        file_utils.WriteFileContents(feature_flags_config_path, yaml_data or '')
+      except file_utils.Error as e:
+        logging.warning('Unable to write feature flags config [%s]: %s. Please '
+                        'ensure that this path is writeable.',
+                        feature_flags_config_path, e)
+    else:
+      try:
+        yaml_data = file_utils.ReadFileContents(feature_flags_config_path)
+      except file_utils.Error as e:
+        logging.warning('Unable to read feature flags config [%s]: %s. Please '
+                        'ensure that this path is readable.',
+                        feature_flags_config_path, e)
+
+  if yaml_data:
+    return FeatureFlagsConfig(account_id, yaml_data)
+  return None
 
 
 class FeatureFlagsConfig:
   """Stores all Property Objects for a given FeatureFlagsConfig."""
 
-  def __init__(self, feature_flags_config_yaml):
+  def __init__(self, feature_flags_config_yaml, account_id=None):
+    self.user_key = account_id or config.GetCID()
     self.properties = _ParseFeatureFlagsConfig(feature_flags_config_yaml)
 
   def Get(self, prop):
@@ -104,7 +165,7 @@ def _ParseFeatureFlagsConfig(feature_flags_config_yaml):
   try:
     yaml_dict = yaml.load(feature_flags_config_yaml)
   except yaml.YAMLParseError as e:
-    logging.debug('Unable to parse config: %s', e)
+    logging.warning('Unable to parse config: %s', e)
     return {}
 
   property_dict = {}

@@ -265,7 +265,8 @@ def _VerifyConfigControllerInstance(config_controller, project, location):
         'enabled'.format(config_controller))
 
 
-def _GetOrCreateConfigControllerInstance(location_full_name):
+def _GetOrCreateConfigControllerInstance(config_controller,
+                                         deployment_full_name, async_):
   """Gets or creates a Config Controller instance for deployment.
 
   If no CC instance exists, the user will be prompted to create one.
@@ -273,25 +274,62 @@ def _GetOrCreateConfigControllerInstance(location_full_name):
   If multiple CC instance exist, the user will be prompted which one to use.
 
   Args:
-    location_full_name: the fully qualified name of the location in which the CC
-      instance must be located, e.g. "projects/p/locations/l".
+    config_controller: optional string. The config_controller flag provided by
+      the user, if applicable.
+    deployment_full_name: the fully qualified name of the deployment for which
+      the CC instance will be used. e.g. "projects/p/locations/l/deployments/d".
+    async_: bool, if True, we cannot create a new CC instance, since that would
+      require waiting on an LRO before proceeding to mutate the deployment.
 
   Returns:
     The fully qualified krmApiHost name of the chosen/created instance.
 
   Raises:
     RequiredArgumentException: If unable to list CC instances.
+    InvalidArgumentException: If --async is set along with --config-controller.
   """
+  deployment_ref = resources.REGISTRY.Parse(
+      deployment_full_name, collection='config.projects.locations.deployments')
+  location_ref = deployment_ref.Parent()
+  project_ref = location_ref.Parent()
+  # Get just the ID from the fully qualified name.
+
+  if config_controller:
+    # Make sure the ConfigController instance exists
+    _VerifyConfigControllerInstance(
+        config_controller,
+        project=project_ref.Name(),
+        location=location_ref.Name())
+    return config_controller
+
   try:
-    existing_instances = krmapihosting_util.ListKrmApiHosts(location_full_name)
+    existing_instances = krmapihosting_util.ListKrmApiHosts(
+        location_ref.RelativeName())
   except apitools_exceptions.HttpForbiddenError:
     raise c_exceptions.RequiredArgumentException(
         '--config_controller',
         'Unable to list Config Controller instances (missing '
         '"krmapihosting.krmApiHost.list"). Please specify a Config Controller '
         'instance with --config-controller, or grant yourself the '
-        '"krmapihosting.krmApiHost.list" permission.'
-    )
+        '"krmapihosting.krmApiHost.list" permission.')
+
+  # If there is exactly 1 CC instance, use that one.
+  if len(existing_instances) == 1:
+    instance_name = existing_instances[0].name
+    log.status.Print(
+        'Using Config Controller instance [{}] for deployment.'.format(
+            instance_name))
+    return instance_name
+
+  if async_:
+    # If we can't infer a CC instance, and async_ is set, then fail.
+    # If `--async` is set, we should not wait on an LRO. Thus, we cannot
+    # create a CC instance from gcloud if `--async` is set, because we'd need
+    # to wait for that LRO to complete before starting the Deployment
+    # operation.
+    raise c_exceptions.InvalidArgumentException(
+        'config-controller',
+        '--config-controller must be set if --async is set')
 
   # If no CC instance exists, prompt whether to create one.
   if not existing_instances:
@@ -302,14 +340,7 @@ def _GetOrCreateConfigControllerInstance(location_full_name):
         prompt_string='Would you like to create one? (This may take up to 20 '
         'minutes)',
         cancel_on_no=True)
-    return _CreateConfigControllerInstance(location_full_name)
-  # If there is exactly 1 CC instance, use that one.
-  elif len(existing_instances) == 1:
-    instance_name = existing_instances[0].name
-    log.status.Print(
-        'Using Config Controller instance [{}] for deployment.'.format(
-            instance_name))
-    return instance_name
+    return _CreateConfigControllerInstance(location_ref.RelativeName())
 
   # If multiple CC instances exist, prompt for which one to use (or create)
   # a new one.
@@ -326,7 +357,7 @@ def _GetOrCreateConfigControllerInstance(location_full_name):
         'Please specify a Config Controller instance to deploy to with '
         '--config-controller.')
   elif index == len(choices) - 1:
-    return _CreateConfigControllerInstance(location_full_name)
+    return _CreateConfigControllerInstance(location_ref.RelativeName())
   return existing_instances[index].name
 
 
@@ -351,7 +382,9 @@ def _CreateConfigControllerInstance(location_full_name):
   krm_api_host = messages.KrmApiHost(
       bundlesConfig=messages.BundlesConfig(
           configControllerConfig=messages.ConfigControllerConfig(enabled=True)),
-      masterIpv4CidrBlock=_DEFAULT_KRMAPIHOSTING_MASTER_CIDR_BLOCK)
+      managementConfig=messages.ManagementConfig(
+          standardManagementConfig=messages.StandardManagementConfig(
+              masterIpv4CidrBlock=_DEFAULT_KRMAPIHOSTING_MASTER_CIDR_BLOCK)))
   op = krmapihosting_util.CreateKrmApiHost(
       parent=location_full_name,
       krm_api_host_id=_RandomConfigControllerInstanceName(),
@@ -377,12 +410,13 @@ def Apply(source,
           stage_bucket,
           labels,
           messages,
-          location,
           ignore_file,
           async_,
           reconcile_timeout,
           source_git_subdir='.',
-          config_controller=None):
+          config_controller=None,
+          target_git=None,
+          target_git_subdir=None):
   """Updates the deployment if one exists, otherwise one will be created.
 
   Bundles parameters for creating/updating a deployment.
@@ -397,7 +431,6 @@ def Apply(source,
       deployment.
     messages: ModuleType, the messages module that lets us form blueprints API
       messages based on our protos.
-    location: string, a region like "us-central1".
     ignore_file: optional string, a path to a gcloudignore file.
     async_: bool, if True, gcloud will return immediately, otherwise it will
       wait on the long-running operation.
@@ -408,15 +441,23 @@ def Apply(source,
     config_controller: optional string, the fully qualified name of the
       config-controller instance to use. e.g.
       "projects/{project}/locations/{location}/krmApiHosts/{instance}".
+    target_git: optional string, a Git repo to use as a deployment target.
+    target_git_subdir: optional string. Represents the directory within the
+      target Git repo to use.
 
   Returns:
     The resulting Deployment resource or, in the case that async_ is True, a
       long-running operation.
+
+  Raises:
+    InvalidArgumentException: If an invalid set of flags is provided (e.g.
+      trying to run with --target-git-subdir but without --target-git).
   """
-  parent_resource = resources.REGISTRY.Create(
-      collection='config.projects.locations',
-      projectsId=properties.VALUES.core.project.GetOrFail(),
-      locationsId=location)
+
+  if target_git_subdir and not target_git:
+    raise c_exceptions.InvalidArgumentException(
+        'target-git-subdir',
+        '--target-git-subdir cannot be set if --target-git is not set')
 
   blueprint = _CreateBlueprint(messages, source, source_git_subdir,
                                stage_bucket, ignore_file)
@@ -433,8 +474,7 @@ def Apply(source,
   deployment = messages.Deployment(
       blueprint=blueprint,
       labels=labels_message,
-      reconcileTimeout=six.text_type(reconcile_timeout) +
-      's' if reconcile_timeout > 0 else None,
+      reconcileTimeout=six.text_type(reconcile_timeout) + 's',
   )
 
   # Check if a deployment with the given name already exists. If it does, we'll
@@ -449,54 +489,19 @@ def Apply(source,
 
   deployment_ref = resources.REGISTRY.Parse(
       deployment_full_name, collection='config.projects.locations.deployments')
-  location_ref = deployment_ref.Parent()
-  project_ref = location_ref.Parent()
   # Get just the ID from the fully qualified name.
   deployment_id = deployment_ref.Name()
 
+  git_target = git_blueprint_util.GetBlueprintTargetForGit(
+      messages, target_git, target_git_subdir) if target_git else None
+
   if is_creating_deployment:
-    # Make sure the ConfigController instance exists
-    if config_controller:
-      _VerifyConfigControllerInstance(
-          config_controller,
-          project=project_ref.Name(),
-          location=location_ref.Name())
-      deployment.configController = config_controller
-    elif not async_:
-      config_controller = _GetOrCreateConfigControllerInstance(
-          parent_resource.RelativeName())
-      deployment.configController = config_controller
-    else:
-      # If `--async` is set, we should not wait on an LRO. Thus, we cannot
-      # create a CC instance from gcloud if `--async` is set, because we'd need
-      # to wait for that LRO to complete before starting the Deployment
-      # operation.
-      raise c_exceptions.InvalidArgumentException(
-          'config-controller',
-          '--config-controller must be set if --async is set')
-
-    log.info('Creating the deployment')
-    op = blueprints_util.CreateDeployment(deployment, deployment_id,
-                                          parent_resource.RelativeName())
+    op = _CreateDeploymentOp(deployment, deployment_full_name,
+                             config_controller, git_target, async_)
   else:
-    if (config_controller is not None and
-        config_controller != existing_deployment.configController):
-      msg = '--config-controller cannot be updated for an existing deployment'
-      if existing_deployment.configController:
-        msg = ('--config-controller for the existing deployment is "{}", and '
-               'cannot be updated.'.format(
-                   existing_deployment.configController))
-      raise c_exceptions.InvalidArgumentException('config-controller', msg)
-
-    log.info('Updating the existing deployment')
-
-    # If the user didn't specify labels here, then we don't want to overwrite
-    # the existing labels on the deployment, so we provide them back to the
-    # underlying API.
-    if labels is None:
-      deployment.labels = existing_deployment.labels
-
-    op = blueprints_util.UpdateDeployment(deployment, deployment_full_name)
+    op = _UpdateDeploymentOp(deployment, existing_deployment,
+                             deployment_full_name, config_controller,
+                             git_target, labels)
 
   log.debug('LRO: %s', op.name)
 
@@ -518,18 +523,142 @@ def Apply(source,
 
   if applied_deployment.state == messages.Deployment.StateValueValuesEnum.FAILED:
     error_handling.DeploymentFailed(applied_deployment)
-  elif (applied_deployment.state
-        == messages.Deployment.StateValueValuesEnum.ACTIVE and
-        applied_deployment.latestRevision and
-        not applied_deployment.reconcileTimeout):
-    # If the deployment succeeded without a timeout defined and
-    # has a latest revision, fetch that revision and print its apply results.
+  elif _ShouldPrintKptApplyResults(messages, applied_deployment):
     revision_ref = blueprints_util.GetRevision(
         applied_deployment.latestRevision)
     error_handling.PrintKptApplyResultsError(
         revision_ref.applyResults.artifacts)
 
   return applied_deployment
+
+
+def _ShouldPrintKptApplyResults(messages, deployment):
+  """Returns if kpt apply results should be printed for the deployment.
+
+  Args:
+    messages: ModuleType, the messages module that lets us form blueprints API
+      messages based on our protos.
+    deployment: messages.Deployment. The applied deployment.
+
+  Returns:
+    bool. Whether gcloud should fetch kpt apply results and print them.
+  """
+  # If the deployment performed actions, succeeded without a timeout defined,
+  # and has a latest revision, then we should fetch that revision and print its
+  # apply results.
+  return (_DeploymentPerformsActuation(deployment) and deployment.state
+          == messages.Deployment.StateValueValuesEnum.ACTIVE and
+          deployment.latestRevision and not deployment.reconcileTimeout)
+
+
+def _DeploymentPerformsActuation(deployment):
+  """Returns whether the deployment performs actuation.
+
+  Args:
+    deployment: messages.Deployment. The applied deployment.
+
+  Returns:
+    bool. Whether the deployment performs actuation as part of applying it.
+  """
+  # Currently, deployments perform actuation unless they target a Git repo.
+  return deployment.gitTarget is None
+
+
+def _CreateDeploymentOp(deployment, deployment_full_name, config_controller,
+                        git_target, async_):
+  """Initiates and returns a CreateDeployment operation.
+
+  Args:
+    deployment: A partially filled messages.Deployment. The deployment will be
+      filled with its target (e.g. configController, gitTarget, etc.) before the
+      operation is initiated.
+    deployment_full_name: string, the fully qualified name of the deployment,
+      e.g. "projects/p/locations/l/deployments/d".
+    config_controller: optional string, the fully qualified name of the
+      config-controller instance to use. e.g.
+      "projects/{project}/locations/{location}/krmApiHosts/{instance}".
+    git_target: optional messages.GitTarget. The Git target for the deployment.
+    async_: bool, if True, gcloud will return immediately, otherwise it will
+      wait on the long-running operation.
+
+  Returns:
+    The CreateDeployment operation.
+
+  Raises:
+    InvalidArgumentException: If an invalid set of flags is provided (e.g.
+      trying to run with --async but without a target).
+  """
+  deployment_ref = resources.REGISTRY.Parse(
+      deployment_full_name, collection='config.projects.locations.deployments')
+  location_ref = deployment_ref.Parent()
+  # Get just the ID from the fully qualified name.
+  deployment_id = deployment_ref.Name()
+
+  # TODO(b/202192430): This logic assumes --config-controller is the "default"
+  # target, which is correct for now, since --git-target is hidden. However,
+  # if we decide to consolidate these into a single --target flag (or
+  # --target-git is becomes unhidden), then some of these error messages will
+  # need to be reworked.
+  if git_target:
+    deployment.gitTarget = git_target
+  else:
+    deployment.configController = _GetOrCreateConfigControllerInstance(
+        config_controller, deployment_full_name, async_)
+
+  log.info('Creating the deployment')
+  return blueprints_util.CreateDeployment(deployment, deployment_id,
+                                          location_ref.RelativeName())
+
+
+def _UpdateDeploymentOp(deployment, existing_deployment, deployment_full_name,
+                        config_controller, git_target, labels):
+  """Initiates and returns an UpdateDeployment operation.
+
+  Args:
+    deployment: A partially filled messages.Deployment. The deployment will be
+      filled with its target (e.g. configController, gitTarget, etc.) before the
+      operation is initiated.
+    existing_deployment: A messages.Deployment. The existing deployment to
+      update.
+    deployment_full_name: string, the fully qualified name of the deployment,
+      e.g. "projects/p/locations/l/deployments/d".
+    config_controller: optional string, the fully qualified name of the
+      config-controller instance to use. e.g.
+      "projects/{project}/locations/{location}/krmApiHosts/{instance}".
+    git_target: optional messages.GitTarget. The Git target for the deployment.
+    labels: dictionary of string → string, labels to be associated with the
+      deployment.
+
+  Returns:
+    The UpdateDeployment operation.
+
+  Raises:
+    InvalidArgumentException: If the user tries to update a field that cannot be
+    updated.
+  """
+  if (config_controller is not None and
+      config_controller != existing_deployment.configController):
+    msg = '--config-controller cannot be updated for an existing deployment'
+    if existing_deployment.configController:
+      msg = ('--config-controller for the existing deployment is "{}", and '
+             'cannot be updated.'.format(existing_deployment.configController))
+    raise c_exceptions.InvalidArgumentException('config-controller', msg)
+
+  if git_target != existing_deployment.gitTarget:
+    raise c_exceptions.InvalidArgumentException(
+        '--target-git',
+        '--target-git and --target-git-subdir cannot be updated for an '
+        'existing deployment')
+
+  log.info('Updating the existing deployment')
+
+  # If the user didn't specify labels here, then we don't want to overwrite
+  # the existing labels on the deployment, so we provide them back to the
+  # underlying API.
+  if labels is None:
+    deployment.labels = existing_deployment.labels
+
+  return blueprints_util.UpdateDeployment(deployment, deployment_full_name)
 
 
 def PreviewApply(source,
@@ -539,7 +668,8 @@ def PreviewApply(source,
                  location,
                  ignore_file,
                  source_git_subdir='.',
-                 preview_format=_PREVIEW_FORMAT_TEXT):
+                 preview_format=_PREVIEW_FORMAT_TEXT,
+                 config_controller=None):
   """Executes preview of a deployment.
 
   Bundles parameters for creating/updating a deployment.
@@ -557,11 +687,15 @@ def PreviewApply(source,
     source_git_subdir: optional string. If "source" represents a Git repo, then
       this argument represents the directory within that Git repo to use.
     preview_format: output format for preview results. Either "text" or "json".
+    config_controller: optional string, the fully qualified name of the
+      config-controller instance to use. Only valid for previewing without an
+      existing deployment. e.g.
+      "projects/{project}/locations/{location}/krmApiHosts/{instance}".
 
   Returns:
     Returns a messages.Preview that contains preview results.
   """
-  parent_resource = resources.REGISTRY.Create(
+  location_ref = resources.REGISTRY.Create(
       collection='config.projects.locations',
       projectsId=properties.VALUES.core.project.GetOrFail(),
       locationsId=location)
@@ -582,7 +716,21 @@ def PreviewApply(source,
       applyInput=messages.ApplyInput(
           blueprint=blueprint,
           deployment='' if is_creating_deployment else deployment_full_name))
-  op = blueprints_util.CreatePreview(preview, parent_resource.RelativeName())
+
+  if is_creating_deployment:
+    preview.applyInput.configController = _GetOrCreateConfigControllerInstance(
+        config_controller, deployment_full_name, async_=False)
+  # This just allows --config-controller to be set as a 'passthrough' as long
+  # as it matches the value on the existing deployment. The value of the flag
+  # is not used.
+  elif config_controller != existing_deployment.configController:
+    msg = ('--config-controller cannot differ from existing Deployment when '
+           'previewing an update.')
+    if existing_deployment.configController:
+      msg += ' Existing deployment has config_controller: [{}].'.format(
+          existing_deployment.configController)
+    raise c_exceptions.InvalidArgumentException('config-controller', msg)
+  op = blueprints_util.CreatePreview(preview, location_ref.RelativeName())
 
   log.debug('LRO: %s', op.name)
 
@@ -655,7 +803,8 @@ def _FetchAndPrintPreviewResultsJSON(gcs_path):
 def PreviewDelete(deployment_full_name,
                   messages,
                   location,
-                  preview_format=_PREVIEW_FORMAT_TEXT):
+                  preview_format=_PREVIEW_FORMAT_TEXT,
+                  config_controller=None):
   """Execute preview of delete operation of an existing deployment.
 
   Args:
@@ -665,6 +814,11 @@ def PreviewDelete(deployment_full_name,
       messages based on our protos.
     location: string, a region like "us-central1".
     preview_format: output format for preview results. Either "text" or "json".
+    config_controller: optional string, the fully qualified name of a
+      config-controller instance. This is not actually _used_ in the request,
+      but is allowed so that users can "pass through" the existing value, for
+      convenience. e.g.
+      "projects/{project}/locations/{location}/krmApiHosts/{instance}".
 
   Returns:
     Returns a messages.Preview that contains preview results.
@@ -684,6 +838,18 @@ def PreviewDelete(deployment_full_name,
     log.status.Print(
         'Specified deployment does not exist: {0}'.format(deployment_full_name))
     return
+
+  # This just allows --config-controller to be set as a 'passthrough' as long
+  # as it matches the value on the existing deployment. The value of the flag
+  # is not used.
+  if (config_controller is not None and
+      config_controller != existing_deployment.configController):
+    msg = ('--config-controller cannot differ from existing Deployment when '
+           'previewing a deletion.')
+    if existing_deployment.configController:
+      msg += ' Existing deployment has config_controller: [{}].'.format(
+          existing_deployment.configController)
+    raise c_exceptions.InvalidArgumentException('config-controller', msg)
 
   preview = messages.Preview(
       deleteInput=messages.DeleteInput(deployment=deployment_full_name))

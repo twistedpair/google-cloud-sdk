@@ -26,8 +26,9 @@ from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.util.apis import arg_utils
 
-# Alpha API = Beta API, it doesn't matter which one is used to generate flags.
-API_VERSION_FOR_FLAGS = registrations.BETA_API_VERSION
+# Alpha API = Beta API = GA API
+# It doesn't matter which one is used to generate flags.
+API_VERSION_FOR_FLAGS = registrations.GA_API_VERSION
 
 
 class MutationOp(enum.Enum):

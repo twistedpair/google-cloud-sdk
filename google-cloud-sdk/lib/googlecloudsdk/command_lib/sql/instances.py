@@ -199,7 +199,7 @@ def _ShowCmekPrompt():
 
 
 class _BaseInstances(object):
-  """Common utility functions for sql instance commands."""\
+  """Common utility functions for sql instance commands."""
 
   @classmethod
   def _ConstructBaseSettingsFromArgs(cls,
@@ -319,12 +319,15 @@ class _BaseInstances(object):
             sql_messages,
             instance,
             backup_enabled=args.backup,
+            backup_specified=args.IsSpecified('backup'),
             backup_location=args.backup_location,
             backup_start_time=args.backup_start_time,
             enable_bin_log=args.enable_bin_log,
             enable_point_in_time_recovery=args.enable_point_in_time_recovery,
             retained_backups_count=args.retained_backups_count,
-            retained_transaction_log_days=args.retained_transaction_log_days))
+            retained_transaction_log_days=args.retained_transaction_log_days,
+            is_new_primary=not args.IsSpecified('master_instance_name'),
+            is_new_replica=args.IsSpecified('master_instance_name')))
     if backup_configuration:
       cls.AddBackupConfigToSettings(settings, backup_configuration)
 
@@ -373,6 +376,17 @@ class _BaseInstances(object):
       settings.activeDirectoryConfig = (
           reducers.ActiveDirectoryConfig(sql_messages,
                                          args.active_directory_domain))
+
+    settings.passwordValidationPolicy = (
+        reducers.PasswordPolicy(
+            sql_messages,
+            password_policy_min_length=args.password_policy_min_length,
+            password_policy_complexity=args.password_policy_complexity,
+            password_policy_reuse_interval=args.password_policy_reuse_interval,
+            password_policy_disallow_username_substring=args
+            .password_policy_disallow_username_substring,
+            password_policy_password_change_interval=args
+            .password_policy_password_change_interval))
 
     # BETA args.
     if _IsBetaOrNewer(release_track):
@@ -483,6 +497,18 @@ class _BaseInstances(object):
       settings.activeDirectoryConfig = (
           reducers.ActiveDirectoryConfig(sql_messages,
                                          args.active_directory_domain))
+
+    settings.passwordValidationPolicy = (
+        reducers.PasswordPolicy(
+            sql_messages,
+            password_policy_min_length=args.password_policy_min_length,
+            password_policy_complexity=args.password_policy_complexity,
+            password_policy_reuse_interval=args.password_policy_reuse_interval,
+            password_policy_disallow_username_substring=args
+            .password_policy_disallow_username_substring,
+            password_policy_password_change_interval=args
+            .password_policy_password_change_interval,
+            clear_password_policy=args.clear_password_policy))
 
     # BETA args.
     if _IsBetaOrNewer(release_track):

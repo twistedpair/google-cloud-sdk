@@ -80,11 +80,9 @@ class NodeGroupsClient(object):
         zone=node_group_ref.zone)
     return self._service.Patch(request)
 
-  def UpdateShareSetting(self, node_group_ref, share_settings_args):
+  def UpdateShareSetting(self, node_group_ref, share_setting):
     """Sets the share setting on a node group."""
-    share_setting_ref = util.BuildShareSettings(self.messages,
-                                                share_settings_args[0],
-                                                share_settings_args[1])
+    share_setting_ref = util.BuildShareSettings(self.messages, share_setting)
     set_request = self.messages.NodeGroup(shareSettings=share_setting_ref)
     request = self.messages.ComputeNodeGroupsPatchRequest(
         nodeGroupResource=set_request,
@@ -108,7 +106,7 @@ class NodeGroupsClient(object):
              additional_node_count=None,
              delete_nodes=None,
              autoscaling_policy_args=None,
-             share_setting=None):
+             share_setting_args=None):
     """Updates a Compute Node Group."""
     set_node_template_ref = None
     add_nodes_ref = None
@@ -132,13 +130,9 @@ class NodeGroupsClient(object):
       operation = self.Patch(node_group_ref, autoscaling_policy_args)
       autoscaling_policy_ref = self._GetOperationsRef(operation)
 
-    if share_setting:
-      share_setting_arguments = share_setting.split(':')
-      if len(share_setting_arguments) == 2 and share_setting_arguments[
-          0] == 'specific_projects' and share_setting_arguments[1]:
-        operation = self.UpdateShareSetting(node_group_ref,
-                                            share_setting_arguments)
-        share_settings_ref = self._GetOperationsRef(operation)
+    if share_setting_args:
+      operation = self.UpdateShareSetting(node_group_ref, share_setting_args)
+      share_settings_ref = self._GetOperationsRef(operation)
 
     node_group_name = node_group_ref.Name()
     operation_poller = poller.Poller(self._service)
@@ -174,7 +168,17 @@ class NodeGroupsClient(object):
         operation_poller, autoscaling_policy_ref,
         'Updating autoscaling policy on [{0}] to [{1}].'.format(
             node_group_name, autoscaling_policy_str)) or result
+    share_setting_str_list = []
+    if share_setting_args:
+      type_str = 'share-setting={0}'.format(share_setting_args.share_setting)
+      share_setting_str_list.append(type_str)
+      if share_setting_args.share_with:
+        with_str = 'share-with={0}'.format(','.join(
+            share_setting_args.share_with))
+        share_setting_str_list.append(with_str)
+    share_setting_str = ','.join(share_setting_str_list)
     result = self._WaitForResult(
         operation_poller, share_settings_ref,
-        'Setting share settings to [{0}].'.format(share_setting)) or result
+        'Updating share setting on [{0}] to [{1}].'.format(
+            node_group_name, share_setting_str)) or result
     return result

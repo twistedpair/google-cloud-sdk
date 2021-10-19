@@ -74,6 +74,35 @@ class BaremetalsolutionProjectsLocationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class BaremetalsolutionProjectsLocationsVolumesLunsGetRequest(_messages.Message):
+  r"""A BaremetalsolutionProjectsLocationsVolumesLunsGetRequest object.
+
+  Fields:
+    name: Required. Name of the resource.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class BaremetalsolutionProjectsLocationsVolumesLunsListRequest(_messages.Message):
+  r"""A BaremetalsolutionProjectsLocationsVolumesLunsListRequest object.
+
+  Fields:
+    filter: Filtering results.
+    orderBy: Hint for how to order the results.
+    pageSize: Requested page size. The server might return fewer items than
+      requested. If unspecified, server will pick an appropriate default.
+    pageToken: A token identifying a page of results from the server.
+    parent: Required. Parent value for ListLunsRequest.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
 class Instance(_messages.Message):
   r"""A server.
 
@@ -181,6 +210,20 @@ class ListLocationsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class ListLunsResponse(_messages.Message):
+  r"""Response message containing the list of storage volume luns.
+
+  Fields:
+    luns: The list of luns.
+    nextPageToken: A token identifying a page of results from the server.
+    unreachable: Locations that could not be reached.
+  """
+
+  luns = _messages.MessageField('Lun', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
 class Location(_messages.Message):
   r"""A resource that represents Google Cloud Platform location.
 
@@ -281,6 +324,7 @@ class Lun(_messages.Message):
     state: The state of this storage volume.
     storageType: The storage type for this LUN.
     storageVolume: Display the storage volume for this LUN.
+    wwid: The WWID for this LUN.
   """
 
   class MultiprotocolTypeValueValuesEnum(_messages.Enum):
@@ -330,15 +374,18 @@ class Lun(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 6)
   storageType = _messages.EnumField('StorageTypeValueValuesEnum', 7)
   storageVolume = _messages.StringField(8)
+  wwid = _messages.StringField(9)
 
 
 class Network(_messages.Message):
-  r"""A network.
+  r"""A Network.
 
   Enums:
+    StateValueValuesEnum: The Network state.
     TypeValueValuesEnum: The type of this network.
 
   Fields:
+    cidr: The cidr of the Network.
     ipAddress: IP address configured.
     macAddress: List of physical interfaces.
     name: Output only. The resource name of this `Network`. Resource names are
@@ -349,8 +396,23 @@ class Network(_messages.Message):
       deprecated. Please use this field to reference the name of the network
       resource.
     network: Name of the network.
+    state: The Network state.
     type: The type of this network.
+    vlanId: The vlan id of the Network.
+    vrf: The vrf for the Network.
   """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""The Network state.
+
+    Values:
+      STATE_UNSPECIFIED: The Network is in an unknown state.
+      PROVISIONING: The Network is being provisioning.
+      PROVISIONED: The Network has been provisioned.
+    """
+    STATE_UNSPECIFIED = 0
+    PROVISIONING = 1
+    PROVISIONED = 2
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""The type of this network.
@@ -365,11 +427,15 @@ class Network(_messages.Message):
     CLIENT = 1
     PRIVATE = 2
 
-  ipAddress = _messages.StringField(1)
-  macAddress = _messages.StringField(2, repeated=True)
-  name = _messages.StringField(3)
-  network = _messages.StringField(4)
-  type = _messages.EnumField('TypeValueValuesEnum', 5)
+  cidr = _messages.StringField(1)
+  ipAddress = _messages.StringField(2)
+  macAddress = _messages.StringField(3, repeated=True)
+  name = _messages.StringField(4)
+  network = _messages.StringField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+  type = _messages.EnumField('TypeValueValuesEnum', 7)
+  vlanId = _messages.StringField(8)
+  vrf = _messages.MessageField('VRF', 9)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -433,6 +499,39 @@ class StandardQueryParameters(_messages.Message):
   trace = _messages.StringField(10)
   uploadType = _messages.StringField(11)
   upload_protocol = _messages.StringField(12)
+
+
+class VRF(_messages.Message):
+  r"""A network VRF.
+
+  Enums:
+    StateValueValuesEnum: The possible state of VRF.
+
+  Fields:
+    autonomousSystemNumber: The autonomous system number of the VRF.
+    juniperAlias: The Juniper alias of the VRF.
+    name: The name of the VRF.
+    routeTarget: The route target of the VRF.
+    state: The possible state of VRF.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""The possible state of VRF.
+
+    Values:
+      STATE_UNSPECIFIED: The unspecified state.
+      PROVISIONING: The vrf is being provisioning.
+      PROVISIONED: The vrf is being provisioning.
+    """
+    STATE_UNSPECIFIED = 0
+    PROVISIONING = 1
+    PROVISIONED = 2
+
+  autonomousSystemNumber = _messages.StringField(1)
+  juniperAlias = _messages.StringField(2)
+  name = _messages.StringField(3)
+  routeTarget = _messages.IntegerField(4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
 
 
 encoding.AddCustomJsonFieldMapping(

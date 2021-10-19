@@ -992,9 +992,9 @@
           "enumDescriptions": [
             "Default. Should not be used.",
             "The restriction state is currently being evaluated.",
-            "All transitive members are adhering to restriction.",
-            "Some transitive members violate the restriction. No new violating members can be added.",
-            "Some transitive members violate the restriction. New violating direct members will be denied while indirect members may be added."
+            "All transitive memberships are adhering to restriction.",
+            "Some transitive memberships violate the restriction. No new violating memberships can be added.",
+            "Some transitive memberships violate the restriction. New violating direct memberships will be denied while indirect memberships may be added."
           ],
           "enum": [
             "STATE_UNSPECIFIED",
@@ -1167,9 +1167,9 @@
           "type": "string",
           "enumDescriptions": [
             "Default. Should not be used.",
-            "The member adheres to the parent group\u2019s restriction.",
+            "The member adheres to the parent group's restriction.",
             "The group-group membership might be currently violating some parent group's restriction but in future, it will never allow any new member in the child group which can violate parent group's restriction.",
-            "The member violates the parent group\u2019s restriction.",
+            "The member violates the parent group's restriction.",
             "The state of the membership is under evaluation."
           ],
           "enum": [
@@ -1272,7 +1272,7 @@
       "type": "object",
       "properties": {
         "memberships": {
-          "description": "List of transitive members satisfying the query.",
+          "description": "List of transitive memberships satisfying the query.",
           "type": "array",
           "items": {
             "$ref": "MemberRelation"
@@ -1308,7 +1308,7 @@
           }
         },
         "relationType": {
-          "description": "The relation between the group and the transitive member.",
+          "description": "The relation between the group and the transitive membership.",
           "type": "string",
           "enumDescriptions": [
             "The relation type is undefined or undetermined.",

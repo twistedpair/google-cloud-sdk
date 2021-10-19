@@ -21,8 +21,12 @@ from __future__ import unicode_literals
 import base64
 
 from googlecloudsdk.api_lib.container import kubeconfig as kubeconfig_util
-from googlecloudsdk.core import exceptions
+from googlecloudsdk.command_lib.container.gkemulticloud import errors
+from googlecloudsdk.command_lib.container.hub import gwkubeconfig_util
+from googlecloudsdk.command_lib.projects import util as project_util
 from googlecloudsdk.core import log
+from googlecloudsdk.core import properties
+from googlecloudsdk.core import resources
 from googlecloudsdk.core.util import semver
 
 
@@ -59,14 +63,6 @@ run:
 
 $ {command} my-cluster --location=us-west1
 """
-
-
-class UnsupportedClusterVersion(exceptions.Error):
-  """Class for errors by unsupported cluster versions."""
-
-
-class MissingClusterField(exceptions.Error):
-  """Class for errors by missing cluster fields."""
 
 
 def GenerateContext(kind, project_id, location, cluster_id):
@@ -107,7 +103,7 @@ def GenerateAuthProviderCmdArgs(track, kind, cluster_id, location):
       track=track, kind=kind, cluster_id=cluster_id, location=location)
 
 
-def GenerateKubeconfig(cluster, context, cmd_path, cmd_args):
+def GenerateKubeconfig(cluster, context, cmd_path, cmd_args, private_ep=False):
   """Generates a kubeconfig entry for an Anthos Multi-cloud cluster.
 
   Args:
@@ -115,6 +111,7 @@ def GenerateKubeconfig(cluster, context, cmd_path, cmd_args):
     context: str, context for the kubeconfig entry.
     cmd_path: str, authentication provider command path.
     cmd_args: str, authentication provider command arguments.
+    private_ep: bool, whether to use private VPC for authentication.
 
   Raises:
       Error: don't have the permission to open kubeconfig file.
@@ -124,6 +121,60 @@ def GenerateKubeconfig(cluster, context, cmd_path, cmd_args):
   kubeconfig.contexts[context] = kubeconfig_util.Context(
       context, context, context)
 
+  # Only default to use Connect Gateway for 1.21+.
+  version = _GetSemver(cluster)
+  if private_ep or version < semver.SemVer('1.21.0'):
+    _PrivateVPCKubeconfig(kubeconfig, cluster, context, cmd_path, cmd_args)
+  else:
+    _ConnectGatewayKubeconfig(kubeconfig, cluster, context, cmd_path)
+
+  kubeconfig.SetCurrentContext(context)
+  kubeconfig.SaveToFile()
+  log.status.Print(
+      'A new kubeconfig entry "{}" has been generated and set as the '
+      'current context.'.format(context))
+
+
+def _ConnectGatewayKubeconfig(kubeconfig, cluster, context, cmd_path):
+  """Generates the Connect Gateway kubeconfig entry.
+
+  Args:
+    kubeconfig: object, Kubeconfig object.
+    cluster: object, Anthos Multi-cloud cluster.
+    context: str, context for the kubeconfig entry.
+    cmd_path: str, authentication provider command path.
+
+  Raises:
+      errors.MissingClusterField: cluster is missing required fields.
+  """
+  if cluster.fleet is None:
+    raise errors.MissingClusterField('fleet')
+  if cluster.fleet.membership is None:
+    raise errors.MissingClusterField('fleet.membership')
+  membership_resource = resources.REGISTRY.ParseRelativeName(
+      cluster.fleet.membership,
+      collection='gkehub.projects.locations.memberships')
+  # Connect Gateway only supports project number.
+  # TODO(b/198380839): Use the url with locations once rolled out.
+  server = 'https://{}/v1/projects/{}/memberships/{}'.format(
+      _GetConnectGatewayEndpoint(),
+      project_util.GetProjectNumber(membership_resource.projectsId),
+      membership_resource.membershipsId)
+  user_kwargs = {'auth_provider': 'gcp', 'auth_provider_cmd_path': cmd_path}
+  kubeconfig.users[context] = kubeconfig_util.User(context, **user_kwargs)
+  kubeconfig.clusters[context] = gwkubeconfig_util.Cluster(context, server)
+
+
+def _PrivateVPCKubeconfig(kubeconfig, cluster, context, cmd_path, cmd_args):
+  """Generates the kubeconfig entry to connect using private VPC.
+
+  Args:
+    kubeconfig: object, Kubeconfig object.
+    cluster: object, Anthos Multi-cloud cluster.
+    context: str, context for the kubeconfig entry.
+    cmd_path: str, authentication provider command path.
+    cmd_args: str, authentication provider command arguments.
+  """
   user_kwargs = {
       'auth_provider': 'gcp',
       'auth_provider_cmd_path': cmd_path,
@@ -138,14 +189,8 @@ def GenerateKubeconfig(cluster, context, cmd_path, cmd_args):
     log.warning('Cluster is missing certificate authority data.')
   else:
     cluster_kwargs['ca_data'] = _GetCaData(cluster.clusterCaCertificate)
-
   kubeconfig.clusters[context] = kubeconfig_util.Cluster(
       context, 'https://{}'.format(cluster.endpoint), **cluster_kwargs)
-  kubeconfig.SetCurrentContext(context)
-  kubeconfig.SaveToFile()
-  log.status.Print(
-      'A new kubeconfig entry "{}" has been generated and set as the '
-      'current context.'.format(context))
 
 
 def ValidateClusterVersion(cluster):
@@ -158,17 +203,50 @@ def ValidateClusterVersion(cluster):
       UnsupportedClusterVersion: cluster version is not supported.
       MissingClusterField: expected cluster field is missing.
   """
-  if cluster.controlPlane is None or cluster.controlPlane.version is None:
-    raise MissingClusterField('Cluster is missing cluster version.')
-  else:
-    version = semver.SemVer(cluster.controlPlane.version)
-    if version < semver.SemVer('1.20.0'):
-      raise UnsupportedClusterVersion(
-          'The command get-credentials is supported in cluster version 1.20 '
-          'and newer. For older versions, use get-kubeconfig.')
+  version = _GetSemver(cluster)
+  if version < semver.SemVer('1.20.0'):
+    raise errors.UnsupportedClusterVersion(
+        'The command get-credentials is supported in cluster version 1.20 '
+        'and newer. For older versions, use get-kubeconfig.')
 
 
 def _GetCaData(pem):
   # Field certificate-authority-data in kubeconfig
   # expects a base64 encoded string of a PEM.
   return base64.b64encode(pem.encode('utf-8')).decode('utf-8')
+
+
+def _GetSemver(cluster):
+  if cluster.controlPlane is None or cluster.controlPlane.version is None:
+    raise errors.MissingClusterField('version')
+  version = cluster.controlPlane.version
+  # The dev version e.g. 1.21-next does not conform to semantic versioning.
+  # Replace the -next suffix before parsing semver for version comparison.
+  if version.endswith('-next'):
+    v = version.replace('-next', '.0', 1)
+    return semver.SemVer(v)
+  return semver.SemVer(version)
+
+
+def _GetConnectGatewayEndpoint():
+  """Gets the corresponding Connect Gateway endpoint for Multicloud environment.
+
+  http://g3doc/cloud/kubernetes/multicloud/g3doc/oneplatform/team/how-to/hub
+
+  Returns:
+    The Connect Gateway endpoint.
+
+  Raises:
+    Error: Unknown API override.
+  """
+  endpoint = properties.VALUES.api_endpoint_overrides.gkemulticloud.Get()
+  # Multicloud overrides prod endpoint at run time with the regionalized version
+  # so we can't simply check that endpoint is not overriden.
+  if endpoint is None or endpoint.endswith('gkemulticloud.googleapis.com/'):
+    return 'connectgateway.googleapis.com'
+  if 'staging-gkemulticloud' in endpoint:
+    return 'staging-connectgateway.sandbox.googleapis.com'
+  if endpoint.startswith('http://localhost') or endpoint.endswith(
+      'gkemulticloud.sandbox.googleapis.com/'):
+    return 'autopush-connectgateway.sandbox.googleapis.com'
+  raise errors.UnknownApiEndpointOverrideError('gkemulticloud')

@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.command_lib.storage import encryption_util
+
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.core.util import debug_output
 
@@ -117,6 +119,10 @@ class _RequestConfig(object):
     content_type (str|None): Type of data contained in content
       (e.g. "text/html").
     custom_metadata (dict|None): Custom metadata fields set by user.
+    decryption_key (encryption_util.EncryptionKey): The key that should be used
+      to decrypt information in GCS.
+    encryption_key (encryption_util.EncryptionKey): The key that should be used
+      to encrypt information in GCS.
     md5_hash (str|None): MD5 digest to use for validation.
     predefined_acl_string (str|None): ACL to set on resource.
     predefined_default_acl_string (str|None): Default ACL to set on resources.
@@ -130,6 +136,8 @@ class _RequestConfig(object):
                content_language=None,
                content_type=None,
                custom_metadata=None,
+               decryption_key=None,
+               encryption_key=None,
                md5_hash=None,
                predefined_acl_string=None,
                predefined_default_acl_string=None,
@@ -140,6 +148,8 @@ class _RequestConfig(object):
     self.content_language = content_language
     self.content_type = content_type
     self.custom_metadata = custom_metadata
+    self.decryption_key = decryption_key
+    self.encryption_key = encryption_key
     self.md5_hash = md5_hash
     self.predefined_acl_string = predefined_acl_string
     self.predefined_default_acl_string = predefined_default_acl_string
@@ -154,6 +164,8 @@ class _RequestConfig(object):
             self.content_language == other.content_language and
             self.content_type == other.content_type and
             self.custom_metadata == other.custom_metadata and
+            self.decryption_key == other.decryption_key and
+            self.encryption_key == other.encryption_key and
             self.md5_hash == other.md5_hash and
             self.predefined_acl_string == other.predefined_acl_string and
             self.predefined_default_acl_string
@@ -190,6 +202,8 @@ class _GcsRequestConfig(_RequestConfig):
                content_type=None,
                custom_metadata=None,
                custom_time=None,
+               decryption_key=None,
+               encryption_key=None,
                gzip_encoded=False,
                max_bytes_per_call=None,
                md5_hash=None,
@@ -205,6 +219,8 @@ class _GcsRequestConfig(_RequestConfig):
         content_language=content_language,
         content_type=content_type,
         custom_metadata=custom_metadata,
+        decryption_key=None,
+        encryption_key=None,
         md5_hash=md5_hash,
         predefined_acl_string=predefined_acl_string,
         predefined_default_acl_string=predefined_default_acl_string,
@@ -242,6 +258,8 @@ class _S3RequestConfig(_RequestConfig):
                content_language=None,
                content_type=None,
                custom_metadata=None,
+               decryption_key=None,
+               encryption_key=None,
                md5_hash=None,
                predefined_acl_string=None,
                predefined_default_acl_string=None,
@@ -253,6 +271,8 @@ class _S3RequestConfig(_RequestConfig):
         content_language=content_language,
         content_type=content_type,
         custom_metadata=custom_metadata,
+        decryption_key=None,
+        encryption_key=None,
         md5_hash=md5_hash,
         predefined_acl_string=predefined_acl_string,
         predefined_default_acl_string=predefined_default_acl_string,
@@ -266,6 +286,7 @@ class _S3RequestConfig(_RequestConfig):
 
 def get_request_config(url,
                        content_type=None,
+                       decryption_key_hash=None,
                        md5_hash=None,
                        size=None,
                        user_request_args=None):
@@ -280,6 +301,11 @@ def get_request_config(url,
   request_config.content_type = content_type
   request_config.md5_hash = md5_hash
   request_config.size = size
+
+  request_config.encryption_key = encryption_util.get_encryption_key()
+  if decryption_key_hash:
+    request_config.decryption_key = encryption_util.get_decryption_key(
+        decryption_key_hash)
 
   if user_request_args:
     if url.scheme == storage_url.ProviderPrefix.GCS:

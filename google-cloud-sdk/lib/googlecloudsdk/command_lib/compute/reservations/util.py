@@ -102,7 +102,8 @@ def MakeShareSettingsWithArgs(messages,
       return messages.ShareSettings(
           shareType=messages.ShareSettings.ShareTypeValueValuesEnum
           .SPECIFIC_PROJECTS,
-          projects=getattr(args, share_with, None))
+          projectMap=MakeProjectMapFromProjectList(
+              messages, getattr(args, share_with, None)))
   else:
     if args.IsKnownAndSpecified(share_with):
       raise exceptions.InvalidArgumentException(
@@ -134,7 +135,8 @@ def MakeShareSettingsWithDict(messages, dictionary, setting_configs):
       return messages.ShareSettings(
           shareType=messages.ShareSettings.ShareTypeValueValuesEnum
           .SPECIFIC_PROJECTS,
-          projects=dictionary.get('share_with', None))
+          projectMap=MakeProjectMapFromProjectList(
+              messages, dictionary.get('share_with', None)))
   else:
     if 'share_with' in dictionary.keys():
       raise exceptions.InvalidArgumentException(
@@ -184,3 +186,14 @@ def MakeReservationMessage(messages, reservation_name, share_settings,
   if share_settings:
     reservation_message.shareSettings = share_settings
   return reservation_message
+
+
+def MakeProjectMapFromProjectList(messages, projects):
+  additional_properties = []
+  for project in projects:
+    additional_properties.append(
+        messages.ShareSettings.ProjectMapValue.AdditionalProperty(
+            key=project,
+            value=messages.ShareSettingsProjectConfig(projectId=project)))
+  return messages.ShareSettings.ProjectMapValue(
+      additionalProperties=additional_properties)

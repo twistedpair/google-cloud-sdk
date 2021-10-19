@@ -395,8 +395,8 @@ def _GetServiceConfig(args, messages, existing_function):
 def _ParseMemoryStrToK8sMemory(memory):
   """Parses user provided memory to kubernetes expected format.
 
-  Ensure --v2 continues to parse v1 --memory passed in arguments. Defaults as M
-  if no unit was specified.
+  Ensure --gen2 continues to parse Gen1 --memory passed in arguments. Defaults
+  as M if no unit was specified.
 
   k8s format:
   https://github.com/kubernetes/kubernetes/blob/master/staging/src/k8s.io/apimachinery/pkg/api/resource/generated.proto

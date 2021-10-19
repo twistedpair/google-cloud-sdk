@@ -671,3 +671,42 @@ def AddAnalyzerConditionContextGroup(parser):
       required=False,
       help='The hypothetical context to evaluate IAM conditions.')
   AddAnalyzerAccessTimeArgs(condition_context_group)
+
+
+def AddStatementArgs(parser):
+  parser.add_argument(
+      '--statement',
+      help=(
+          'A BigQuery Standard SQL compatible statement. If the query execution'
+          'finishes within timeout and there is no pagination, the full query'
+          'results will be returned. Otherwise, pass job_reference from '
+          'previous call as `--job-referrence` to obtain the full results.'))
+
+
+def AddJobReferenceArgs(parser):
+  parser.add_argument(
+      '--job-reference',
+      help=('Reference to the query job, which is from the previous call.'))
+
+
+def AddPageSize(parser):
+  parser.add_argument(
+      '--page-size',
+      type=int,
+      help=(
+          'The maximum number of rows to return in the results. Other than that, one page is also limited to 10 MB.'
+      ))
+
+
+def AddPageToken(parser):
+  parser.add_argument(
+      '--page-token', help=('A page token received from previous call.'))
+
+
+def AddTimeout(parser):
+  parser.add_argument(
+      '--timeout',
+      type=arg_parsers.Duration(),
+      help=(
+          'Maximum amount of time that the client is willing to wait for the query to complete.'
+      ))

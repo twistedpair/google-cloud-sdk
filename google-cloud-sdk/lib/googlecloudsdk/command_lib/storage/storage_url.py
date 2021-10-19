@@ -22,6 +22,7 @@ from __future__ import unicode_literals
 import abc
 import enum
 import os
+import stat
 
 from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.core.util import platforms
@@ -36,6 +37,7 @@ class ProviderPrefix(enum.Enum):
   GCS = 'gs'
   HTTP = 'http'
   HTTPS = 'https'
+  POSIX = 'posix'
   S3 = 's3'
 
 
@@ -52,6 +54,11 @@ class StorageUrl(six.with_metaclass(abc.ABCMeta)):
   @abc.abstractproperty
   def delimiter(self):
     """Returns the delimiter for the url."""
+
+  @property
+  def is_pipe(self):
+    """Returns if URL points to a named pipe (FIFO) or stream."""
+    raise NotImplementedError
 
   @abc.abstractproperty
   def url_string(self):
@@ -116,16 +123,19 @@ class FileUrl(StorageUrl):
     generation (str): None for FileUrl.
   """
 
-  def __init__(self, url_string):
+  def __init__(self, url_string, is_stream=False):
     """Initialize FileUrl instance.
 
     Args:
       url_string (str): The string representing the filepath.
+      is_stream (bool): URL points to a stream (e.g. stdin).
     """
     super(FileUrl, self).__init__()
     self.scheme = ProviderPrefix.FILE
     self.bucket_name = None
     self.generation = None
+    self._is_stream = is_stream
+
     if url_string.startswith('file://'):
       filename = url_string[len('file://'):]
     else:
@@ -144,6 +154,12 @@ class FileUrl(StorageUrl):
     """Returns the pathname separator character used by the OS."""
     return os.sep
 
+  @property
+  def is_pipe(self):
+    """Returns if URL points to a named pipe (FIFO) or stream."""
+    return self._is_stream or (os.path.exists(self.object_name) and
+                               stat.S_ISFIFO(os.stat(self.object_name).st_mode))
+
   def exists(self):
     """Returns True if the file/directory exists."""
     return os.path.exists(self.object_name)
@@ -151,6 +167,59 @@ class FileUrl(StorageUrl):
   def isdir(self):
     """Returns True if the path represents a directory."""
     return os.path.isdir(self.object_name)
+
+  @property
+  def url_string(self):
+    """Returns the string representation of the instance."""
+    return '%s://%s' % (self.scheme.value, self.object_name)
+
+  @property
+  def versionless_url_string(self):
+    """Returns the string representation of the instance without the version."""
+    return self.url_string
+
+
+class PosixFileSystemUrl(StorageUrl):
+  """URL class representing local and external POSIX file systems.
+
+  *Intended for Transfer component.*
+
+  This class is different from FileUrl in many ways:
+  1) It supports only POSIX file systems (not Windows).
+  2) It can represent file systems on external machines.
+  3) It cannot run checks on the address of the URL like "exists" or "is_pipe"
+     because the URL may point to a different machine.
+  4) The class is intended for use in "agent transfers". This is when a
+     Data Transfer customer installs agents on one machine or multiple and uses
+     the agent software to upload and download files on the machine(s).
+
+  We implement this class in the "storage" component for convenience and
+  because the "storage" and "transfer" products are tightly coupled.
+
+  Attributes:
+    scheme (ProviderPrefix): This will always be "posix" for PosixFileSystemUrl.
+    bucket_name (None): N/A
+    object_name (str): The file/directory path.
+    generation (None): N/A
+  """
+
+  def __init__(self, url_string):
+    """Initialize PosixFileSystemUrl instance.
+
+    Args:
+      url_string (str): Local or external POSIX file path.
+    """
+    super(PosixFileSystemUrl, self).__init__()
+    self.scheme = ProviderPrefix.POSIX
+    self.bucket_name = None
+    # Leaves one '/' at the beginning b/c these URLs start from root.
+    self.object_name = url_string[len(ProviderPrefix.POSIX.value + ':/'):]
+    self.generation = None
+
+  @property
+  def delimiter(self):
+    """Returns the pathname separator character used by POSIX."""
+    return '/'
 
   @property
   def url_string(self):
@@ -409,6 +478,8 @@ def storage_url_from_string(url_string):
   scheme = _get_scheme_from_url_string(url_string)
   if scheme == ProviderPrefix.FILE:
     return FileUrl(url_string)
+  if scheme == ProviderPrefix.POSIX:
+    return PosixFileSystemUrl(url_string)
   if scheme in VALID_HTTP_SCHEMES:
     # Azure's scheme breaks from other clouds.
     return AzureUrl.from_url_string(url_string)

@@ -194,6 +194,13 @@ class Validator(object):
       ValidationFailedError: Error raised when validation fails.
     """
     config_file_errors = []
+    if self.parsed_yaml is None:
+      return
+    if not isinstance(self.parsed_yaml, dict):
+      config_file_errors.append(InvalidSchemaError(
+          invalid_schema_reasons=['The file content is not in json format']))
+      raise ValidationFailedError(self.config_file_path, config_file_errors, {})
+
     AppendIfNotNone(config_file_errors, self.ValidateAlphabeticalOrder())
     AppendIfNotNone(config_file_errors, self.ValidateSchema())
 

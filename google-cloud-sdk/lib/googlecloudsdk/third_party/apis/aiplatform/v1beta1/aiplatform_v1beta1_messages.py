@@ -1530,11 +1530,11 @@ class AiplatformProjectsLocationsFeaturestoresEntityTypesListRequest(_messages.M
 
   Fields:
     filter: Lists the EntityTypes that match the filter expression. The
-      following filters are supported: * `create_time`: Supports =, !=, <, >,
-      >=, and <= comparisons. Values must be in RFC 3339 format. *
-      `update_time`: Supports =, !=, <, >, >=, and <= comparisons. Values must
-      be in RFC 3339 format. * `labels`: Supports key-value equality as well
-      as key presence. Examples: * `create_time >
+      following filters are supported: * `create_time`: Supports `=`, `!=`,
+      `<`, `>`, `>=`, and `<=` comparisons. Values must be in RFC 3339 format.
+      * `update_time`: Supports `=`, `!=`, `<`, `>`, `>=`, and `<=`
+      comparisons. Values must be in RFC 3339 format. * `labels`: Supports
+      key-value equality as well as key presence. Examples: * `create_time >
       \"2020-01-31T15:30:00.000000Z\" OR update_time >
       \"2020-01-31T15:30:00.000000Z\"` --> EntityTypes created or updated
       after 2020-01-31T15:30:00.000000Z. * `labels.active = yes AND labels.env
@@ -1675,11 +1675,10 @@ class AiplatformProjectsLocationsFeaturestoresEntityTypesReadFeatureValuesReques
 
   Fields:
     entityType: Required. The resource name of the EntityType for the entity
-      being read. Value format:
-      `projects/{project}/locations/{location}/featurestores/
-      {featurestore}/entityTypes/{entityType}`. For example, for a machine
-      learning model predicting user clicks on a website, an EntityType ID
-      could be "user".
+      being read. Value format: `projects/{project}/locations/{location}/featu
+      restores/{featurestore}/entityTypes/{entityType}`. For example, for a
+      machine learning model predicting user clicks on a website, an
+      EntityType ID could be `user`.
     googleCloudAiplatformV1beta1ReadFeatureValuesRequest: A
       GoogleCloudAiplatformV1beta1ReadFeatureValuesRequest resource to be
       passed as the request body.
@@ -1695,10 +1694,10 @@ class AiplatformProjectsLocationsFeaturestoresEntityTypesStreamingReadFeatureVal
 
   Fields:
     entityType: Required. The resource name of the entities' type. Value
-      format: `projects/{project}/locations/{location}/featurestores/
-      {featurestore}/entityTypes/{entityType}`. For example, for a machine
-      learning model predicting user clicks on a website, an EntityType ID
-      could be "user".
+      format: `projects/{project}/locations/{location}/featurestores/{features
+      tore}/entityTypes/{entityType}`. For example, for a machine learning
+      model predicting user clicks on a website, an EntityType ID could be
+      `user`.
     googleCloudAiplatformV1beta1StreamingReadFeatureValuesRequest: A
       GoogleCloudAiplatformV1beta1StreamingReadFeatureValuesRequest resource
       to be passed as the request body.
@@ -1723,15 +1722,15 @@ class AiplatformProjectsLocationsFeaturestoresListRequest(_messages.Message):
 
   Fields:
     filter: Lists the featurestores that match the filter expression. The
-      following fields are supported: * `create_time`: Supports =, !=, <, >,
-      <=, and >= comparisons. Values must be in RFC 3339 format. *
-      `update_time`: Supports =, !=, <, >, <=, and >= comparisons. Values must
-      be in RFC 3339 format. * `online_serving_config.fixed_node_count`:
-      Supports =, !=, <, >, <=, and >= comparisons. * `labels`: Supports key-
-      value equality and key presence. Examples: * `create_time > "2020-01-01"
-      OR update_time > "2020-01-01"` Featurestores created or updated after
-      2020-01-01. * `labels.env = "prod"` Featurestores with label "env" set
-      to "prod".
+      following fields are supported: * `create_time`: Supports `=`, `!=`,
+      `<`, `>`, `<=`, and `>=` comparisons. Values must be in RFC 3339 format.
+      * `update_time`: Supports `=`, `!=`, `<`, `>`, `<=`, and `>=`
+      comparisons. Values must be in RFC 3339 format. *
+      `online_serving_config.fixed_node_count`: Supports `=`, `!=`, `<`, `>`,
+      `<=`, and `>=` comparisons. * `labels`: Supports key-value equality and
+      key presence. Examples: * `create_time > "2020-01-01" OR update_time >
+      "2020-01-01"` Featurestores created or updated after 2020-01-01. *
+      `labels.env = "prod"` Featurestores with label "env" set to "prod".
     orderBy: A comma-separated list of fields to order by, sorted in ascending
       order. Use "desc" after a field name for descending. Supported Fields: *
       `create_time` * `update_time` * `online_serving_config.fixed_node_count`
@@ -1865,11 +1864,11 @@ class AiplatformProjectsLocationsFeaturestoresSearchFeaturesRequest(_messages.Me
       substring within Feature's FIELD. The QUERY and the FIELD are converted
       to a sequence of words (i.e. tokens) for comparison. This is done by: *
       Removing leading/trailing whitespace and tokenizing the search value.
-      Characters that are not one of alphanumeric [a-zA-Z0-9], underscore [_],
-      or asterisk [*] are treated as delimiters for tokens. (*) is treated as
-      a wildcard that matches characters within a token. * Ignoring case. *
-      Prepending an asterisk to the first and appending an asterisk to the
-      last token in QUERY. A QUERY must be either a singular token or a
+      Characters that are not one of alphanumeric `[a-zA-Z0-9]`, underscore
+      `_`, or asterisk `*` are treated as delimiters for tokens. `*` is
+      treated as a wildcard that matches characters within a token. * Ignoring
+      case. * Prepending an asterisk to the first and appending an asterisk to
+      the last token in QUERY. A QUERY must be either a singular token or a
       phrase. A phrase is one or multiple words enclosed in double quotation
       marks ("). With phrases, the order of the words is important. Words in
       the phrase must be matching in order and consecutively. Supported FIELDs
@@ -2410,19 +2409,20 @@ class AiplatformProjectsLocationsMetadataStoresArtifactsCreateRequest(_messages.
   object.
 
   Fields:
-    artifactId: The {artifact} portion of the resource name with the format: p
-      rojects/{project}/locations/{location}/metadataStores/{metadatastore}/ar
-      tifacts/{artifact} If not provided, the Artifact's ID will be a UUID
+    artifactId: The {artifact} portion of the resource name with the format: `
+      projects/{project}/locations/{location}/metadataStores/{metadatastore}/a
+      rtifacts/{artifact}` If not provided, the Artifact's ID will be a UUID
       generated by the service. Must be 4-128 characters in length. Valid
-      characters are /a-z-/. Must be unique across all Artifacts in the parent
-      MetadataStore. (Otherwise the request will fail with ALREADY_EXISTS, or
-      PERMISSION_DENIED if the caller can't view the preexisting Artifact.)
+      characters are `/a-z-/`. Must be unique across all Artifacts in the
+      parent MetadataStore. (Otherwise the request will fail with
+      ALREADY_EXISTS, or PERMISSION_DENIED if the caller can't view the
+      preexisting Artifact.)
     googleCloudAiplatformV1beta1Artifact: A
       GoogleCloudAiplatformV1beta1Artifact resource to be passed as the
       request body.
     parent: Required. The resource name of the MetadataStore where the
       Artifact should be created. Format:
-      projects/{project}/locations/{location}/metadataStores/{metadatastore}
+      `projects/{project}/locations/{location}/metadataStores/{metadatastore}`
   """
 
   artifactId = _messages.StringField(1)
@@ -2438,9 +2438,9 @@ class AiplatformProjectsLocationsMetadataStoresArtifactsDeleteRequest(_messages.
     etag: Optional. The etag of the Artifact to delete. If this is provided,
       it must match the server's etag. Otherwise, the request will fail with a
       FAILED_PRECONDITION.
-    name: Required. The resource name of the Artifact to delete. Format: proje
-      cts/{project}/locations/{location}/metadataStores/{metadatastore}/artifa
-      cts/{artifact}
+    name: Required. The resource name of the Artifact to delete. Format: `proj
+      ects/{project}/locations/{location}/metadataStores/{metadatastore}/artif
+      acts/{artifact}`
   """
 
   etag = _messages.StringField(1)
@@ -2451,9 +2451,9 @@ class AiplatformProjectsLocationsMetadataStoresArtifactsGetRequest(_messages.Mes
   r"""A AiplatformProjectsLocationsMetadataStoresArtifactsGetRequest object.
 
   Fields:
-    name: Required. The resource name of the Artifact to retrieve. Format: pro
-      jects/{project}/locations/{location}/metadataStores/{metadatastore}/arti
-      facts/{artifact}
+    name: Required. The resource name of the Artifact to retrieve. Format: `pr
+      ojects/{project}/locations/{location}/metadataStores/{metadatastore}/art
+      ifacts/{artifact}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -2489,7 +2489,7 @@ class AiplatformProjectsLocationsMetadataStoresArtifactsListRequest(_messages.Me
       fail with INVALID_ARGUMENT error.)
     parent: Required. The MetadataStore whose Artifacts should be listed.
       Format:
-      projects/{project}/locations/{location}/metadataStores/{metadatastore}
+      `projects/{project}/locations/{location}/metadataStores/{metadatastore}`
   """
 
   filter = _messages.StringField(1)
@@ -2526,7 +2526,7 @@ class AiplatformProjectsLocationsMetadataStoresArtifactsPurgeRequest(_messages.M
       GoogleCloudAiplatformV1beta1PurgeArtifactsRequest resource to be passed
       as the request body.
     parent: Required. The metadata store to purge Artifacts from. Format:
-      projects/{project}/locations/{location}/metadataStores/{metadatastore}
+      `projects/{project}/locations/{location}/metadataStores/{metadatastore}`
   """
 
   googleCloudAiplatformV1beta1PurgeArtifactsRequest = _messages.MessageField('GoogleCloudAiplatformV1beta1PurgeArtifactsRequest', 1)
@@ -2539,8 +2539,8 @@ class AiplatformProjectsLocationsMetadataStoresArtifactsQueryArtifactLineageSubg
 
   Fields:
     artifact: Required. The resource name of the Artifact whose Lineage needs
-      to be retrieved as a LineageSubgraph. Format: projects/{project}/locatio
-      ns/{location}/metadataStores/{metadatastore}/artifacts/{artifact} The
+      to be retrieved as a LineageSubgraph. Format: `projects/{project}/locati
+      ons/{location}/metadataStores/{metadatastore}/artifacts/{artifact}` The
       request may error with FAILED_PRECONDITION if the number of Artifacts,
       the number of Executions, or the number of Events that would be returned
       for the Context exceeds 1000.
@@ -2575,8 +2575,8 @@ class AiplatformProjectsLocationsMetadataStoresContextsAddContextArtifactsAndExe
 
   Fields:
     context: Required. The resource name of the Context that the Artifacts and
-      Executions belong to. Format: projects/{project}/locations/{location}/me
-      tadataStores/{metadatastore}/contexts/{context}
+      Executions belong to. Format: `projects/{project}/locations/{location}/m
+      etadataStores/{metadatastore}/contexts/{context}`
     googleCloudAiplatformV1beta1AddContextArtifactsAndExecutionsRequest: A
       GoogleCloudAiplatformV1beta1AddContextArtifactsAndExecutionsRequest
       resource to be passed as the request body.
@@ -2592,9 +2592,9 @@ class AiplatformProjectsLocationsMetadataStoresContextsAddContextChildrenRequest
   object.
 
   Fields:
-    context: Required. The resource name of the parent Context. Format: projec
-      ts/{project}/locations/{location}/metadataStores/{metadatastore}/context
-      s/{context}
+    context: Required. The resource name of the parent Context. Format: `proje
+      cts/{project}/locations/{location}/metadataStores/{metadatastore}/contex
+      ts/{context}`
     googleCloudAiplatformV1beta1AddContextChildrenRequest: A
       GoogleCloudAiplatformV1beta1AddContextChildrenRequest resource to be
       passed as the request body.
@@ -2608,18 +2608,19 @@ class AiplatformProjectsLocationsMetadataStoresContextsCreateRequest(_messages.M
   r"""A AiplatformProjectsLocationsMetadataStoresContextsCreateRequest object.
 
   Fields:
-    contextId: The {context} portion of the resource name with the format: pro
-      jects/{project}/locations/{location}/metadataStores/{metadatastore}/cont
-      exts/{context}. If not provided, the Context's ID will be a UUID
+    contextId: The {context} portion of the resource name with the format: `pr
+      ojects/{project}/locations/{location}/metadataStores/{metadatastore}/con
+      texts/{context}`. If not provided, the Context's ID will be a UUID
       generated by the service. Must be 4-128 characters in length. Valid
-      characters are /a-z-/. Must be unique across all Contexts in the parent
-      MetadataStore. (Otherwise the request will fail with ALREADY_EXISTS, or
-      PERMISSION_DENIED if the caller can't view the preexisting Context.)
+      characters are `/a-z-/`. Must be unique across all Contexts in the
+      parent MetadataStore. (Otherwise the request will fail with
+      ALREADY_EXISTS, or PERMISSION_DENIED if the caller can't view the
+      preexisting Context.)
     googleCloudAiplatformV1beta1Context: A GoogleCloudAiplatformV1beta1Context
       resource to be passed as the request body.
     parent: Required. The resource name of the MetadataStore where the Context
       should be created. Format:
-      projects/{project}/locations/{location}/metadataStores/{metadatastore}
+      `projects/{project}/locations/{location}/metadataStores/{metadatastore}`
   """
 
   contextId = _messages.StringField(1)
@@ -2636,9 +2637,9 @@ class AiplatformProjectsLocationsMetadataStoresContextsDeleteRequest(_messages.M
       FAILED_PRECONDITION.
     force: The force deletion semantics is still undefined. Users should not
       use this field.
-    name: Required. The resource name of the Context to delete. Format: projec
-      ts/{project}/locations/{location}/metadataStores/{metadatastore}/context
-      s/{context}
+    name: Required. The resource name of the Context to delete. Format: `proje
+      cts/{project}/locations/{location}/metadataStores/{metadatastore}/contex
+      ts/{context}`
   """
 
   etag = _messages.StringField(1)
@@ -2650,9 +2651,9 @@ class AiplatformProjectsLocationsMetadataStoresContextsGetRequest(_messages.Mess
   r"""A AiplatformProjectsLocationsMetadataStoresContextsGetRequest object.
 
   Fields:
-    name: Required. The resource name of the Context to retrieve. Format: proj
-      ects/{project}/locations/{location}/metadataStores/{metadatastore}/conte
-      xts/{context}
+    name: Required. The resource name of the Context to retrieve. Format: `pro
+      jects/{project}/locations/{location}/metadataStores/{metadatastore}/cont
+      exts/{context}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -2689,7 +2690,7 @@ class AiplatformProjectsLocationsMetadataStoresContextsListRequest(_messages.Mes
       fail with INVALID_ARGUMENT error.)
     parent: Required. The MetadataStore whose Contexts should be listed.
       Format:
-      projects/{project}/locations/{location}/metadataStores/{metadatastore}
+      `projects/{project}/locations/{location}/metadataStores/{metadatastore}`
   """
 
   filter = _messages.StringField(1)
@@ -2725,7 +2726,7 @@ class AiplatformProjectsLocationsMetadataStoresContextsPurgeRequest(_messages.Me
       GoogleCloudAiplatformV1beta1PurgeContextsRequest resource to be passed
       as the request body.
     parent: Required. The metadata store to purge Contexts from. Format:
-      projects/{project}/locations/{location}/metadataStores/{metadatastore}
+      `projects/{project}/locations/{location}/metadataStores/{metadatastore}`
   """
 
   googleCloudAiplatformV1beta1PurgeContextsRequest = _messages.MessageField('GoogleCloudAiplatformV1beta1PurgeContextsRequest', 1)
@@ -2738,9 +2739,9 @@ class AiplatformProjectsLocationsMetadataStoresContextsQueryContextLineageSubgra
 
   Fields:
     context: Required. The resource name of the Context whose Artifacts and
-      Executions should be retrieved as a LineageSubgraph. Format: projects/{p
-      roject}/locations/{location}/metadataStores/{metadatastore}/contexts/{co
-      ntext} The request may error with FAILED_PRECONDITION if the number of
+      Executions should be retrieved as a LineageSubgraph. Format: `projects/{
+      project}/locations/{location}/metadataStores/{metadatastore}/contexts/{c
+      ontext}` The request may error with FAILED_PRECONDITION if the number of
       Artifacts, the number of Executions, or the number of Events that would
       be returned for the Context exceeds 1000.
   """
@@ -2757,16 +2758,16 @@ class AiplatformProjectsLocationsMetadataStoresCreateRequest(_messages.Message):
       request body.
     metadataStoreId: The {metadatastore} portion of the resource name with the
       format:
-      projects/{project}/locations/{location}/metadataStores/{metadatastore}
+      `projects/{project}/locations/{location}/metadataStores/{metadatastore}`
       If not provided, the MetadataStore's ID will be a UUID generated by the
       service. Must be 4-128 characters in length. Valid characters are
-      /a-z-/. Must be unique across all MetadataStores in the parent Location.
-      (Otherwise the request will fail with ALREADY_EXISTS, or
+      `/a-z-/`. Must be unique across all MetadataStores in the parent
+      Location. (Otherwise the request will fail with ALREADY_EXISTS, or
       PERMISSION_DENIED if the caller can't view the preexisting
       MetadataStore.)
     parent: Required. The resource name of the Location where the
       MetadataStore should be created. Format:
-      projects/{project}/locations/{location}/
+      `projects/{project}/locations/{location}/`
   """
 
   googleCloudAiplatformV1beta1MetadataStore = _messages.MessageField('GoogleCloudAiplatformV1beta1MetadataStore', 1)
@@ -2780,7 +2781,7 @@ class AiplatformProjectsLocationsMetadataStoresDeleteRequest(_messages.Message):
   Fields:
     force: Deprecated: Field is no longer supported.
     name: Required. The resource name of the MetadataStore to delete. Format:
-      projects/{project}/locations/{location}/metadataStores/{metadatastore}
+      `projects/{project}/locations/{location}/metadataStores/{metadatastore}`
   """
 
   force = _messages.BooleanField(1)
@@ -2794,8 +2795,8 @@ class AiplatformProjectsLocationsMetadataStoresExecutionsAddExecutionEventsReque
 
   Fields:
     execution: Required. The resource name of the Execution that the Events
-      connect Artifacts with. Format: projects/{project}/locations/{location}/
-      metadataStores/{metadatastore}/executions/{execution}
+      connect Artifacts with. Format: `projects/{project}/locations/{location}
+      /metadataStores/{metadatastore}/executions/{execution}`
     googleCloudAiplatformV1beta1AddExecutionEventsRequest: A
       GoogleCloudAiplatformV1beta1AddExecutionEventsRequest resource to be
       passed as the request body.
@@ -2811,10 +2812,10 @@ class AiplatformProjectsLocationsMetadataStoresExecutionsCreateRequest(_messages
 
   Fields:
     executionId: The {execution} portion of the resource name with the format:
-      projects/{project}/locations/{location}/metadataStores/{metadatastore}/e
-      xecutions/{execution} If not provided, the Execution's ID will be a UUID
-      generated by the service. Must be 4-128 characters in length. Valid
-      characters are /a-z-/. Must be unique across all Executions in the
+      `projects/{project}/locations/{location}/metadataStores/{metadatastore}/
+      executions/{execution}` If not provided, the Execution's ID will be a
+      UUID generated by the service. Must be 4-128 characters in length. Valid
+      characters are `/a-z-/`. Must be unique across all Executions in the
       parent MetadataStore. (Otherwise the request will fail with
       ALREADY_EXISTS, or PERMISSION_DENIED if the caller can't view the
       preexisting Execution.)
@@ -2823,7 +2824,7 @@ class AiplatformProjectsLocationsMetadataStoresExecutionsCreateRequest(_messages
       request body.
     parent: Required. The resource name of the MetadataStore where the
       Execution should be created. Format:
-      projects/{project}/locations/{location}/metadataStores/{metadatastore}
+      `projects/{project}/locations/{location}/metadataStores/{metadatastore}`
   """
 
   executionId = _messages.StringField(1)
@@ -2839,9 +2840,9 @@ class AiplatformProjectsLocationsMetadataStoresExecutionsDeleteRequest(_messages
     etag: Optional. The etag of the Execution to delete. If this is provided,
       it must match the server's etag. Otherwise, the request will fail with a
       FAILED_PRECONDITION.
-    name: Required. The resource name of the Execution to delete. Format: proj
-      ects/{project}/locations/{location}/metadataStores/{metadatastore}/execu
-      tions/{execution}
+    name: Required. The resource name of the Execution to delete. Format: `pro
+      jects/{project}/locations/{location}/metadataStores/{metadatastore}/exec
+      utions/{execution}`
   """
 
   etag = _messages.StringField(1)
@@ -2852,9 +2853,9 @@ class AiplatformProjectsLocationsMetadataStoresExecutionsGetRequest(_messages.Me
   r"""A AiplatformProjectsLocationsMetadataStoresExecutionsGetRequest object.
 
   Fields:
-    name: Required. The resource name of the Execution to retrieve. Format: pr
-      ojects/{project}/locations/{location}/metadataStores/{metadatastore}/exe
-      cutions/{execution}
+    name: Required. The resource name of the Execution to retrieve. Format: `p
+      rojects/{project}/locations/{location}/metadataStores/{metadatastore}/ex
+      ecutions/{execution}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -2891,7 +2892,7 @@ class AiplatformProjectsLocationsMetadataStoresExecutionsListRequest(_messages.M
       fail with an INVALID_ARGUMENT error.)
     parent: Required. The MetadataStore whose Executions should be listed.
       Format:
-      projects/{project}/locations/{location}/metadataStores/{metadatastore}
+      `projects/{project}/locations/{location}/metadataStores/{metadatastore}`
   """
 
   filter = _messages.StringField(1)
@@ -2930,7 +2931,7 @@ class AiplatformProjectsLocationsMetadataStoresExecutionsPurgeRequest(_messages.
       GoogleCloudAiplatformV1beta1PurgeExecutionsRequest resource to be passed
       as the request body.
     parent: Required. The metadata store to purge Executions from. Format:
-      projects/{project}/locations/{location}/metadataStores/{metadatastore}
+      `projects/{project}/locations/{location}/metadataStores/{metadatastore}`
   """
 
   googleCloudAiplatformV1beta1PurgeExecutionsRequest = _messages.MessageField('GoogleCloudAiplatformV1beta1PurgeExecutionsRequest', 1)
@@ -2943,9 +2944,9 @@ class AiplatformProjectsLocationsMetadataStoresExecutionsQueryExecutionInputsAnd
 
   Fields:
     execution: Required. The resource name of the Execution whose input and
-      output Artifacts should be retrieved as a LineageSubgraph. Format: proje
-      cts/{project}/locations/{location}/metadataStores/{metadatastore}/execut
-      ions/{execution}
+      output Artifacts should be retrieved as a LineageSubgraph. Format: `proj
+      ects/{project}/locations/{location}/metadataStores/{metadatastore}/execu
+      tions/{execution}`
   """
 
   execution = _messages.StringField(1, required=True)
@@ -2957,7 +2958,7 @@ class AiplatformProjectsLocationsMetadataStoresGetRequest(_messages.Message):
   Fields:
     name: Required. The resource name of the MetadataStore to retrieve.
       Format:
-      projects/{project}/locations/{location}/metadataStores/{metadatastore}
+      `projects/{project}/locations/{location}/metadataStores/{metadatastore}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -2975,7 +2976,7 @@ class AiplatformProjectsLocationsMetadataStoresListRequest(_messages.Message):
       match the call that provided the page token. (Otherwise the request will
       fail with INVALID_ARGUMENT error.)
     parent: Required. The Location whose MetadataStores should be listed.
-      Format: projects/{project}/locations/{location}
+      Format: `projects/{project}/locations/{location}`
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -2992,16 +2993,16 @@ class AiplatformProjectsLocationsMetadataStoresMetadataSchemasCreateRequest(_mes
       GoogleCloudAiplatformV1beta1MetadataSchema resource to be passed as the
       request body.
     metadataSchemaId: The {metadata_schema} portion of the resource name with
-      the format: projects/{project}/locations/{location}/metadataStores/{meta
-      datastore}/metadataSchemas/{metadataschema} If not provided, the
+      the format: `projects/{project}/locations/{location}/metadataStores/{met
+      adatastore}/metadataSchemas/{metadataschema}` If not provided, the
       MetadataStore's ID will be a UUID generated by the service. Must be
-      4-128 characters in length. Valid characters are /a-z-/. Must be unique
-      across all MetadataSchemas in the parent Location. (Otherwise the
+      4-128 characters in length. Valid characters are `/a-z-/`. Must be
+      unique across all MetadataSchemas in the parent Location. (Otherwise the
       request will fail with ALREADY_EXISTS, or PERMISSION_DENIED if the
       caller can't view the preexisting MetadataSchema.)
     parent: Required. The resource name of the MetadataStore where the
       MetadataSchema should be created. Format:
-      projects/{project}/locations/{location}/metadataStores/{metadatastore}
+      `projects/{project}/locations/{location}/metadataStores/{metadatastore}`
   """
 
   googleCloudAiplatformV1beta1MetadataSchema = _messages.MessageField('GoogleCloudAiplatformV1beta1MetadataSchema', 1)
@@ -3015,8 +3016,8 @@ class AiplatformProjectsLocationsMetadataStoresMetadataSchemasGetRequest(_messag
 
   Fields:
     name: Required. The resource name of the MetadataSchema to retrieve.
-      Format: projects/{project}/locations/{location}/metadataStores/{metadata
-      store}/metadataSchemas/{metadataschema}
+      Format: `projects/{project}/locations/{location}/metadataStores/{metadat
+      astore}/metadataSchemas/{metadataschema}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -3037,7 +3038,7 @@ class AiplatformProjectsLocationsMetadataStoresMetadataSchemasListRequest(_messa
       INVALID_ARGUMENT error.)
     parent: Required. The MetadataStore whose MetadataSchemas should be
       listed. Format:
-      projects/{project}/locations/{location}/metadataStores/{metadatastore}
+      `projects/{project}/locations/{location}/metadataStores/{metadatastore}`
   """
 
   filter = _messages.StringField(1)
@@ -3371,6 +3372,18 @@ class AiplatformProjectsLocationsModelsDeleteRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class AiplatformProjectsLocationsModelsDeleteVersionRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsModelsDeleteVersionRequest object.
+
+  Fields:
+    name: Required. The name of the model version to be deleted, with a
+      version ID explicitly included. Example:
+      `projects/{project}/locations/{location}/models/{model}@1234`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class AiplatformProjectsLocationsModelsEvaluationsGetRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsModelsEvaluationsGetRequest object.
 
@@ -3512,8 +3525,7 @@ class AiplatformProjectsLocationsModelsExportRequest(_messages.Message):
     googleCloudAiplatformV1beta1ExportModelRequest: A
       GoogleCloudAiplatformV1beta1ExportModelRequest resource to be passed as
       the request body.
-    name: Required. The resource name of the Model to export. Format:
-      `projects/{project}/locations/{location}/models/{model}`
+    name: Required. The resource name of the Model to export.
   """
 
   googleCloudAiplatformV1beta1ExportModelRequest = _messages.MessageField('GoogleCloudAiplatformV1beta1ExportModelRequest', 1)
@@ -3556,6 +3568,32 @@ class AiplatformProjectsLocationsModelsListRequest(_messages.Message):
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4, required=True)
+  readMask = _messages.StringField(5)
+
+
+class AiplatformProjectsLocationsModelsListVersionsRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsModelsListVersionsRequest object.
+
+  Fields:
+    filter: An expression for filtering the results of the request. For field
+      names both snake_case and camelCase are supported. * `display_name`
+      supports = and != * `labels` supports general map functions that is: *
+      `labels.key=value` - key:value equality * `labels.key:* or labels:key -
+      key existence * A key including a space must be quoted. `labels."a
+      key"`. Some examples: * `displayName="myDisplayName"` *
+      `labels.myKey="myValue"`
+    name: Required. The name of the model to list versions for.
+    pageSize: The standard list page size.
+    pageToken: The standard list page token. Typically obtained via
+      ListModelVersionsResponse.next_page_token of the previous
+      ModelService.ListModelversions call.
+    readMask: Mask specifying which fields to read.
+  """
+
+  filter = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
   readMask = _messages.StringField(5)
 
 
@@ -3634,6 +3672,22 @@ class AiplatformProjectsLocationsModelsPatchRequest(_messages.Message):
   googleCloudAiplatformV1beta1Model = _messages.MessageField('GoogleCloudAiplatformV1beta1Model', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
+
+
+class AiplatformProjectsLocationsModelsSetVersionAliasRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsModelsSetVersionAliasRequest object.
+
+  Fields:
+    googleCloudAiplatformV1beta1SetVersionAliasRequest: A
+      GoogleCloudAiplatformV1beta1SetVersionAliasRequest resource to be passed
+      as the request body.
+    name: Required. The name of the model version to set alias, with a version
+      ID explicitly included. Example:
+      `projects/{project}/locations/{location}/models/{model}@1234`
+  """
+
+  googleCloudAiplatformV1beta1SetVersionAliasRequest = _messages.MessageField('GoogleCloudAiplatformV1beta1SetVersionAliasRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class AiplatformProjectsLocationsModelsUploadRequest(_messages.Message):
@@ -3776,16 +3830,19 @@ class AiplatformProjectsLocationsPipelineJobsListRequest(_messages.Message):
   Fields:
     filter: Lists the PipelineJobs that match the filter expression. The
       following fields are supported: * `pipeline_name`: Supports `=` and `!=`
-      comparisons. * `create_time`: Supports `=`, `!=`, `<`, `>`, `<=`, and
-      `>=` comparisons. Values must be in RFC 3339 format. * `update_time`:
-      Supports `=`, `!=`, `<`, `>`, `<=`, and `>=` comparisons. Values must be
-      in RFC 3339 format. * `end_time`: Supports `=`, `!=`, `<`, `>`, `<=`,
-      and `>=` comparisons. Values must be in RFC 3339 format. * `labels`:
-      Supports key-value equality and key presence. Filter expressions can be
-      combined together using logical operators (`AND` & `OR`). For example:
-      `pipeline_name="test" AND create_time>"2020-05-18T13:30:00Z"`. The
-      syntax to define filter expression is based on
-      https://google.aip.dev/160. Examples: *
+      comparisons. * `display_name`: Supports `=`, `!=` comparisons, and `:`
+      wildcard. * `pipeline_job_user_id`: Supports `=`, `!=` comparisons, and
+      `:` wildcard. for example, can check if pipeline's display_name contains
+      *step* by doing display_name:\"*step*\" * `create_time`: Supports `=`,
+      `!=`, `<`, `>`, `<=`, and `>=` comparisons. Values must be in RFC 3339
+      format. * `update_time`: Supports `=`, `!=`, `<`, `>`, `<=`, and `>=`
+      comparisons. Values must be in RFC 3339 format. * `end_time`: Supports
+      `=`, `!=`, `<`, `>`, `<=`, and `>=` comparisons. Values must be in RFC
+      3339 format. * `labels`: Supports key-value equality and key presence.
+      Filter expressions can be combined together using logical operators
+      (`AND` & `OR`). For example: `pipeline_name="test" AND
+      create_time>"2020-05-18T13:30:00Z"`. The syntax to define filter
+      expression is based on https://google.aip.dev/160. Examples: *
       `create_time>"2021-05-18T00:00:00Z" OR
       update_time>"2020-05-18T00:00:00Z"` PipelineJobs created or updated
       after 2020-05-18 00:00:00 UTC. * `labels.env = "prod"` PipelineJobs with
@@ -5406,6 +5463,19 @@ class GoogleCloudAiplatformInternalAnnotationSpecStats(_messages.Message):
   validationDataItemsCount = _messages.IntegerField(10)
 
 
+class GoogleCloudAiplatformInternalAutoAssignConfig(_messages.Message):
+  r"""Configuration to enable automatic task assignment.
+
+  Fields:
+    autoAssignOnCreation: If set to true, it means at the time of
+      HumanInTheLoopService.CreateHumanInTheLoop call, all the existing
+      specialist workers in HumanInTheLoop will be assigned with all the
+      future data labeling tasks associated with this HITL.
+  """
+
+  autoAssignOnCreation = _messages.BooleanField(1)
+
+
 class GoogleCloudAiplatformInternalAutomaticResources(_messages.Message):
   r"""A description of resources that to large degree are decided by Vertex
   AI, and require only a modest additional configuration. Each Model
@@ -5576,6 +5646,16 @@ class GoogleCloudAiplatformInternalCalculateStatsConfig(_messages.Message):
 
 class GoogleCloudAiplatformInternalCreateDatasetOperationMetadata(_messages.Message):
   r"""Runtime operation information for DatasetService.CreateDataset.
+
+  Fields:
+    genericMetadata: The operation generic information.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformInternalGenericOperationMetadata', 1)
+
+
+class GoogleCloudAiplatformInternalCreateDeploymentResourcePoolOperationMetadata(_messages.Message):
+  r"""Runtime operation information for CreateDeploymentResourcePool method.
 
   Fields:
     genericMetadata: The operation generic information.
@@ -6841,7 +6921,7 @@ class GoogleCloudAiplatformInternalGenericOperationMetadata(_messages.Message):
 class GoogleCloudAiplatformInternalHumanInTheLoop(_messages.Message):
   r"""A human in the loop configuration describing how to trigger a human
   labeling job in a prediction process and properties of the human labeling
-  job. Next id: 25
+  job. Next id: 26
 
   Enums:
     GoogleSpecialistRegionValueValuesEnum: Residency of Google in-house
@@ -6864,6 +6944,8 @@ class GoogleCloudAiplatformInternalHumanInTheLoop(_messages.Message):
       output only, its value is the inputs_schema's title.
 
   Fields:
+    autoAssignConfig: Auto task assignment configuration of this human in the
+      loop.
     batchConfig: Batching configuration of this human in the loop
       configuration.
     completedDataItemsCount: Output only. Number of labeled data items from
@@ -6990,30 +7072,31 @@ class GoogleCloudAiplatformInternalHumanInTheLoop(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  batchConfig = _messages.MessageField('GoogleCloudAiplatformInternalBatchConfig', 1)
-  completedDataItemsCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  completedDataLabelingJobsCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  createTime = _messages.StringField(4)
-  dataLabelingJobInputsSchemaUri = _messages.StringField(5)
-  dataLabelingJobParameters = _messages.MessageField('extra_types.JsonValue', 6)
-  deIdConfig = _messages.MessageField('GoogleCloudAiplatformInternalDeIdentificationConfig', 7)
-  displayName = _messages.StringField(8)
-  documentCriteria = _messages.MessageField('GoogleCloudAiplatformInternalDocumentCriteria', 9)
-  documentMetadata = _messages.MessageField('GoogleCloudAiplatformInternalDocumentMetadata', 10)
-  encryptionSpec = _messages.MessageField('GoogleCloudAiplatformInternalEncryptionSpec', 11)
-  googleSpecialistRegion = _messages.EnumField('GoogleSpecialistRegionValueValuesEnum', 12)
-  instructionUri = _messages.StringField(13)
-  labels = _messages.MessageField('LabelsValue', 14)
-  name = _messages.StringField(15)
-  outputPath = _messages.StringField(16)
-  pendingDataItemsCount = _messages.IntegerField(17, variant=_messages.Variant.INT32)
-  pipeliningConfig = _messages.MessageField('GoogleCloudAiplatformInternalPipeliningAndAuditConfig', 18)
-  replicaCount = _messages.IntegerField(19, variant=_messages.Variant.INT32)
-  runningDataItemsCount = _messages.IntegerField(20, variant=_messages.Variant.INT32)
-  runningDataLabelingJobsCount = _messages.IntegerField(21, variant=_messages.Variant.INT32)
-  specialistPool = _messages.StringField(22, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 23)
-  updateTime = _messages.StringField(24)
+  autoAssignConfig = _messages.MessageField('GoogleCloudAiplatformInternalAutoAssignConfig', 1)
+  batchConfig = _messages.MessageField('GoogleCloudAiplatformInternalBatchConfig', 2)
+  completedDataItemsCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  completedDataLabelingJobsCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  createTime = _messages.StringField(5)
+  dataLabelingJobInputsSchemaUri = _messages.StringField(6)
+  dataLabelingJobParameters = _messages.MessageField('extra_types.JsonValue', 7)
+  deIdConfig = _messages.MessageField('GoogleCloudAiplatformInternalDeIdentificationConfig', 8)
+  displayName = _messages.StringField(9)
+  documentCriteria = _messages.MessageField('GoogleCloudAiplatformInternalDocumentCriteria', 10)
+  documentMetadata = _messages.MessageField('GoogleCloudAiplatformInternalDocumentMetadata', 11)
+  encryptionSpec = _messages.MessageField('GoogleCloudAiplatformInternalEncryptionSpec', 12)
+  googleSpecialistRegion = _messages.EnumField('GoogleSpecialistRegionValueValuesEnum', 13)
+  instructionUri = _messages.StringField(14)
+  labels = _messages.MessageField('LabelsValue', 15)
+  name = _messages.StringField(16)
+  outputPath = _messages.StringField(17)
+  pendingDataItemsCount = _messages.IntegerField(18, variant=_messages.Variant.INT32)
+  pipeliningConfig = _messages.MessageField('GoogleCloudAiplatformInternalPipeliningAndAuditConfig', 19)
+  replicaCount = _messages.IntegerField(20, variant=_messages.Variant.INT32)
+  runningDataItemsCount = _messages.IntegerField(21, variant=_messages.Variant.INT32)
+  runningDataLabelingJobsCount = _messages.IntegerField(22, variant=_messages.Variant.INT32)
+  specialistPool = _messages.StringField(23, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 24)
+  updateTime = _messages.StringField(25)
 
 
 class GoogleCloudAiplatformInternalHumanInTheLoopRandomSampling(_messages.Message):
@@ -7453,6 +7536,16 @@ class GoogleCloudAiplatformInternalUndeployModelOperationMetadata(_messages.Mess
 
 class GoogleCloudAiplatformInternalUndeployModelResponse(_messages.Message):
   r"""Response message for EndpointService.UndeployModel."""
+
+
+class GoogleCloudAiplatformInternalUpdateDeploymentResourcePoolOperationMetadata(_messages.Message):
+  r"""Runtime operation information for UpdateDeploymentResourcePool method.
+
+  Fields:
+    genericMetadata: The operation generic information.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformInternalGenericOperationMetadata', 1)
 
 
 class GoogleCloudAiplatformInternalUpdateFeaturestoreOperationMetadata(_messages.Message):
@@ -11573,11 +11666,10 @@ class GoogleCloudAiplatformV1DeployedIndex(_messages.Message):
     automaticResources: Optional. A description of resources that the
       DeployedIndex uses, which to large degree are decided by Vertex AI, and
       optionally allows only a modest additional configuration. If
-      min_replica_count is not set, the default value is 1. If
-      max_replica_count is not set, the default value is min_replica_count.
-      The max allowed replica count is 1000. The user is billed for the
-      resources (at least their minimal amount) even if the DeployedIndex
-      receives no traffic.
+      min_replica_count is not set, the default value is 2 (we don't provide
+      SLA when min_replica_count=1). If max_replica_count is not set, the
+      default value is min_replica_count. The max allowed replica count is
+      1000.
     createTime: Output only. Timestamp when the DeployedIndex was created.
     deployedIndexAuthConfig: Optional. If set, the authentication is enabled
       for the private endpoint.
@@ -16449,11 +16541,10 @@ class GoogleCloudAiplatformV1alpha1DeployedIndex(_messages.Message):
     automaticResources: Optional. A description of resources that the
       DeployedIndex uses, which to large degree are decided by Vertex AI, and
       optionally allows only a modest additional configuration. If
-      min_replica_count is not set, the default value is 1. If
-      max_replica_count is not set, the default value is min_replica_count.
-      The max allowed replica count is 1000. The user is billed for the
-      resources (at least their minimal amount) even if the DeployedIndex
-      receives no traffic.
+      min_replica_count is not set, the default value is 2 (we don't provide
+      SLA when min_replica_count=1). If max_replica_count is not set, the
+      default value is min_replica_count. The max allowed replica count is
+      1000.
     createTime: Output only. Timestamp when the DeployedIndex was created.
     displayName: The display name of the DeployedIndex. If not provided upon
       creation, the Index's display_name is used.
@@ -18163,11 +18254,11 @@ class GoogleCloudAiplatformV1beta1AddContextArtifactsAndExecutionsRequest(_messa
 
   Fields:
     artifacts: The resource names of the Artifacts to attribute to the
-      Context. Format: projects/{project}/locations/{location}/metadataStores/
-      {metadatastore}/artifacts/{artifact}
+      Context. Format: `projects/{project}/locations/{location}/metadataStores
+      /{metadatastore}/artifacts/{artifact}`
     executions: The resource names of the Executions to associate with the
-      Context. Format: projects/{project}/locations/{location}/metadataStores/
-      {metadatastore}/executions/{execution}
+      Context. Format: `projects/{project}/locations/{location}/metadataStores
+      /{metadatastore}/executions/{execution}`
   """
 
   artifacts = _messages.StringField(1, repeated=True)
@@ -19013,8 +19104,7 @@ class GoogleCloudAiplatformV1beta1BatchReadFeatureValuesOperationMetadata(_messa
 
 
 class GoogleCloudAiplatformV1beta1BatchReadFeatureValuesRequest(_messages.Message):
-  r"""Request message for FeaturestoreService.BatchReadFeatureValues. (- Next
-  Id: 6 -)
+  r"""Request message for FeaturestoreService.BatchReadFeatureValues.
 
   Fields:
     bigqueryReadInstances: Similar to csv_read_instances, but from BigQuery
@@ -20310,11 +20400,10 @@ class GoogleCloudAiplatformV1beta1DeployedIndex(_messages.Message):
     automaticResources: Optional. A description of resources that the
       DeployedIndex uses, which to large degree are decided by Vertex AI, and
       optionally allows only a modest additional configuration. If
-      min_replica_count is not set, the default value is 1. If
-      max_replica_count is not set, the default value is min_replica_count.
-      The max allowed replica count is 1000. The user is billed for the
-      resources (at least their minimal amount) even if the DeployedIndex
-      receives no traffic.
+      min_replica_count is not set, the default value is 2 (we don't provide
+      SLA when min_replica_count=1). If max_replica_count is not set, the
+      default value is min_replica_count. The max allowed replica count is
+      1000.
     createTime: Output only. Timestamp when the DeployedIndex was created.
     deployedIndexAuthConfig: Optional. If set, the authentication is enabled
       for the private endpoint.
@@ -20586,13 +20675,13 @@ class GoogleCloudAiplatformV1beta1Endpoint(_messages.Message):
       job}`
     name: Output only. The resource name of the Endpoint.
     network: The full name of the Google Compute Engine
-      [network](/compute/docs/networks-and-firewalls#networks) to which the
-      Endpoint should be peered. Private services access must already be
-      configured for the network. If left unspecified, the Endpoint is not
-      peered with any network. [Format](https://cloud.google.com/compute/docs/
-      reference/rest/v1/networks/insert):
+      [network](https://cloud.google.com//compute/docs/networks-and-
+      firewalls#networks) to which the Endpoint should be peered. Private
+      services access must already be configured for the network. If left
+      unspecified, the Endpoint is not peered with any network. [Format](https
+      ://cloud.google.com/compute/docs/reference/rest/v1/networks/insert):
       projects/{project}/global/networks/{network}. Where {project} is a
-      project number, as in '12345', and {network} is network name.
+      project number, as in `12345`, and {network} is network name.
     trafficSplit: A map from a DeployedModel's ID to the percentage of this
       Endpoint's traffic that should be forwarded to that DeployedModel. If a
       DeployedModel's ID is not listed in this map, then it receives no
@@ -21558,6 +21647,8 @@ class GoogleCloudAiplatformV1beta1ExplanationParameters(_messages.Message):
       sampling strategy is used to approximate the value rather than
       considering all subsets of features. Refer to this paper for model
       details: https://arxiv.org/abs/1306.4265.
+    similarity: Similarity explainability that returns the nearest neighbors
+      from the provided dataset.
     topK: If populated, returns attributions for top K indices of outputs
       (defaults to 1). Only applies to Models that predicts more than one
       outputs (e,g, multi-class Models). When set to -1, returns explanations
@@ -21575,8 +21666,9 @@ class GoogleCloudAiplatformV1beta1ExplanationParameters(_messages.Message):
   integratedGradientsAttribution = _messages.MessageField('GoogleCloudAiplatformV1beta1IntegratedGradientsAttribution', 1)
   outputIndices = _messages.MessageField('extra_types.JsonValue', 2, repeated=True)
   sampledShapleyAttribution = _messages.MessageField('GoogleCloudAiplatformV1beta1SampledShapleyAttribution', 3)
-  topK = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  xraiAttribution = _messages.MessageField('GoogleCloudAiplatformV1beta1XraiAttribution', 5)
+  similarity = _messages.MessageField('GoogleCloudAiplatformV1beta1Similarity', 4)
+  topK = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  xraiAttribution = _messages.MessageField('GoogleCloudAiplatformV1beta1XraiAttribution', 6)
 
 
 class GoogleCloudAiplatformV1beta1ExplanationSpec(_messages.Message):
@@ -22107,8 +22199,9 @@ class GoogleCloudAiplatformV1beta1FeatureValueMetadata(_messages.Message):
 
 
 class GoogleCloudAiplatformV1beta1Featurestore(_messages.Message):
-  r"""Featurestore configuration information on how the Featurestore is
-  configured.
+  r"""Vertex Feature Store provides a centralized repository for organizing,
+  storing, and serving ML features. The Featurestore is a top-level container
+  for your features and their values.
 
   Enums:
     StateValueValuesEnum: Output only. State of the featurestore.
@@ -23289,6 +23382,20 @@ class GoogleCloudAiplatformV1beta1ListModelEvaluationsResponse(_messages.Message
   nextPageToken = _messages.StringField(2)
 
 
+class GoogleCloudAiplatformV1beta1ListModelVersionsResponse(_messages.Message):
+  r"""Response message for ModelService.ListModelVersions
+
+  Fields:
+    models: List of Model versions in the requested page. In the returned
+      Model name field, version ID instead of regvision tag will be included.
+    nextPageToken: A token to retrieve the next page of results. Pass to
+      ListModelVersionsRequest.page_token to obtain that page.
+  """
+
+  models = _messages.MessageField('GoogleCloudAiplatformV1beta1Model', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class GoogleCloudAiplatformV1beta1ListModelsResponse(_messages.Message):
   r"""Response message for ModelService.ListModels
 
@@ -23572,7 +23679,7 @@ class GoogleCloudAiplatformV1beta1MetadataSchema(_messages.Message):
       identifies which metadata types will use the MetadataSchema.
     schemaVersion: The version of the MetadataSchema. The version's format
       must match the following regular expression: `^[0-9]+.+.+$`, which would
-      allow to order/compare different versions.Example: 1.0.0, 1.0.1, etc.
+      allow to order/compare different versions. Example: 1.0.0, 1.0.1, etc.
   """
 
   class SchemaTypeValueValuesEnum(_messages.Enum):
@@ -23972,6 +24079,22 @@ class GoogleCloudAiplatformV1beta1Model(_messages.Message):
       that uploaded this Model, if any.
     updateTime: Output only. Timestamp when this Model was most recently
       updated.
+    versionAliases: User provided version aliases so that a model version can
+      be referenced via alias (i.e. projects/{project}/locations/{location}/mo
+      dels/{model_id}@{version_alias} instead of auto-generated version id
+      (i.e.
+      projects/{project}/locations/{location}/models/{model_id}@{version_id}).
+      The format is a-z{0,126}[a-z0-9] to distinguish from version_id. A
+      default version alias will be created for the first version of the
+      model, and there must be exactly one default version alias for a model.
+    versionCreateTime: Output only. Timestamp when this version was created.
+    versionDescription: The description of this version.
+    versionId: Output only. Immutable. The version ID of the model. A new
+      version is committed when a new model version is uploaded or trained
+      under an existing model id. It is an auto-incrementing decimal number in
+      string representation.
+    versionUpdateTime: Output only. Timestamp when this version was most
+      recently updated.
   """
 
   class SupportedDeploymentResourcesTypesValueListEntryValuesEnum(_messages.Enum):
@@ -24036,6 +24159,11 @@ class GoogleCloudAiplatformV1beta1Model(_messages.Message):
   supportedOutputStorageFormats = _messages.StringField(18, repeated=True)
   trainingPipeline = _messages.StringField(19)
   updateTime = _messages.StringField(20)
+  versionAliases = _messages.StringField(21, repeated=True)
+  versionCreateTime = _messages.StringField(22)
+  versionDescription = _messages.StringField(23)
+  versionId = _messages.StringField(24)
+  versionUpdateTime = _messages.StringField(25)
 
 
 class GoogleCloudAiplatformV1beta1ModelContainerSpec(_messages.Message):
@@ -24283,9 +24411,9 @@ class GoogleCloudAiplatformV1beta1ModelDeploymentMonitoringJob(_messages.Message
       and can be consist of any UTF-8 characters. Display name of a
       ModelDeploymentMonitoringJob.
     enableMonitoringPipelineLogs: If true, the scheduled monitoring pipeline
-      status logs are sent to StackDriver Logging. Please note the logs incur
+      status logs are sent to Google Cloud Logging. Please note the logs incur
       cost, which are subject to [Cloud Logging
-      pricing](https://cloud.google.com/stackdriver/pricing).
+      pricing](https://cloud.google.com/logging#pricing).
     encryptionSpec: Customer-managed encryption key spec for a
       ModelDeploymentMonitoringJob. If set, this ModelDeploymentMonitoringJob
       and all sub-resources of this ModelDeploymentMonitoringJob will be
@@ -25283,6 +25411,8 @@ class GoogleCloudAiplatformV1beta1PipelineTaskDetail(_messages.Message):
     outputs: Output only. The runtime output artifacts of the task.
     parentTaskId: Output only. The id of the parent task if the task is within
       a component scope. Empty if the task is at the root level.
+    pipelineTaskStatus: Output only. A list of task status. This field keeps a
+      record of task status evolving over time.
     startTime: Output only. Task start time.
     state: Output only. State of the task.
     taskId: Output only. The system generated ID of the task.
@@ -25376,10 +25506,11 @@ class GoogleCloudAiplatformV1beta1PipelineTaskDetail(_messages.Message):
   inputs = _messages.MessageField('InputsValue', 6)
   outputs = _messages.MessageField('OutputsValue', 7)
   parentTaskId = _messages.IntegerField(8)
-  startTime = _messages.StringField(9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  taskId = _messages.IntegerField(11)
-  taskName = _messages.StringField(12)
+  pipelineTaskStatus = _messages.MessageField('GoogleCloudAiplatformV1beta1PipelineTaskDetailPipelineTaskStatus', 9, repeated=True)
+  startTime = _messages.StringField(10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  taskId = _messages.IntegerField(12)
+  taskName = _messages.StringField(13)
 
 
 class GoogleCloudAiplatformV1beta1PipelineTaskDetailArtifactList(_messages.Message):
@@ -25390,6 +25521,55 @@ class GoogleCloudAiplatformV1beta1PipelineTaskDetailArtifactList(_messages.Messa
   """
 
   artifacts = _messages.MessageField('GoogleCloudAiplatformV1beta1Artifact', 1, repeated=True)
+
+
+class GoogleCloudAiplatformV1beta1PipelineTaskDetailPipelineTaskStatus(_messages.Message):
+  r"""A single record of the task status.
+
+  Enums:
+    StateValueValuesEnum: Output only. The state of the task.
+
+  Fields:
+    error: Output only. The error that occurred during the state. May be set
+      when the state is any of the non-final state
+      (PENDING/RUNNING/CANCELLING) or FAILED state. If the state is FAILED,
+      the error here is final and not going to be retried. If the state is a
+      non-final state, the error indicates a system-error being retried.
+    state: Output only. The state of the task.
+    updateTime: Output only. Update time of this status.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the task.
+
+    Values:
+      STATE_UNSPECIFIED: Unspecified.
+      PENDING: Specifies pending state for the task.
+      RUNNING: Specifies task is being executed.
+      SUCCEEDED: Specifies task completed successfully.
+      CANCEL_PENDING: Specifies Task cancel is in pending state.
+      CANCELLING: Specifies task is being cancelled.
+      CANCELLED: Specifies task was cancelled.
+      FAILED: Specifies task failed.
+      SKIPPED: Specifies task was skipped due to cache hit.
+      NOT_TRIGGERED: Specifies that the task was not triggered because the
+        task's trigger policy is not satisfied. The trigger policy is
+        specified in the `condition` field of PipelineJob.pipeline_spec.
+    """
+    STATE_UNSPECIFIED = 0
+    PENDING = 1
+    RUNNING = 2
+    SUCCEEDED = 3
+    CANCEL_PENDING = 4
+    CANCELLING = 5
+    CANCELLED = 6
+    FAILED = 7
+    SKIPPED = 8
+    NOT_TRIGGERED = 9
+
+  error = _messages.MessageField('GoogleRpcStatus', 1)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
+  updateTime = _messages.StringField(3)
 
 
 class GoogleCloudAiplatformV1beta1PipelineTaskExecutorDetail(_messages.Message):
@@ -25484,10 +25664,10 @@ class GoogleCloudAiplatformV1beta1PredictResponse(_messages.Message):
   Fields:
     deployedModelId: ID of the Endpoint's DeployedModel that served this
       prediction.
-    model: Output only. The name of the Model this DeployedModel, that served
-      this prediction, was created from.
-    modelDisplayName: Output only. The display name of the Model this
-      DeployedModel, that served this prediction, was created from.
+    model: Output only. The resource name of the Model which is deployed as
+      the DeployedModel that this prediction hits.
+    modelDisplayName: Output only. The display name of the Model which is
+      deployed as the DeployedModel that this prediction hits.
     predictions: The predictions that are the output of the predictions call.
       The schema of any single prediction may be specified via Endpoint's
       DeployedModels' Model's PredictSchemata's prediction_schema_uri.
@@ -25573,7 +25753,7 @@ class GoogleCloudAiplatformV1beta1PurgeArtifactsRequest(_messages.Message):
 
   Fields:
     filter: Required. A required filter matching the Artifacts to be purged.
-      E.g., update_time <= 2020-11-19T11:30:00-04:00.
+      E.g., `update_time <= 2020-11-19T11:30:00-04:00`.
     force: Optional. Flag to indicate to actually perform the purge. If
       `force` is set to false, the method will return a sample of Artifact
       names that would be deleted.
@@ -25614,7 +25794,7 @@ class GoogleCloudAiplatformV1beta1PurgeContextsRequest(_messages.Message):
 
   Fields:
     filter: Required. A required filter matching the Contexts to be purged.
-      E.g., update_time <= 2020-11-19T11:30:00-04:00.
+      E.g., `update_time <= 2020-11-19T11:30:00-04:00`.
     force: Optional. Flag to indicate to actually perform the purge. If
       `force` is set to false, the method will return a sample of Context
       names that would be deleted.
@@ -25655,7 +25835,7 @@ class GoogleCloudAiplatformV1beta1PurgeExecutionsRequest(_messages.Message):
 
   Fields:
     filter: Required. A required filter matching the Executions to be purged.
-      E.g., update_time <= 2020-11-19T11:30:00-04:00.
+      E.g., `update_time <= 2020-11-19T11:30:00-04:00`.
     force: Optional. Flag to indicate to actually perform the purge. If
       `force` is set to false, the method will return a sample of Execution
       names that would be deleted.
@@ -25729,7 +25909,7 @@ class GoogleCloudAiplatformV1beta1ReadFeatureValuesRequest(_messages.Message):
   Fields:
     entityId: Required. ID for a specific entity. For example, for a machine
       learning model predicting user clicks on a website, an entity ID could
-      be "user_123".
+      be `user_123`.
     featureSelector: Required. Selector choosing Features of the target
       EntityType.
   """
@@ -25800,9 +25980,8 @@ class GoogleCloudAiplatformV1beta1ReadFeatureValuesResponseHeader(_messages.Mess
 
   Fields:
     entityType: The resource name of the EntityType from the
-      ReadFeatureValuesRequest. Value format:
-      `projects/{project}/locations/{location}/featurestores/
-      {featurestore}/entityTypes/{entityType}`.
+      ReadFeatureValuesRequest. Value format: `projects/{project}/locations/{l
+      ocation}/featurestores/{featurestore}/entityTypes/{entityType}`.
     featureDescriptors: List of Feature metadata corresponding to each piece
       of ReadFeatureValuesResponse.data.
   """
@@ -28476,6 +28655,32 @@ class GoogleCloudAiplatformV1beta1SearchModelDeploymentMonitoringStatsAnomaliesR
   nextPageToken = _messages.StringField(2)
 
 
+class GoogleCloudAiplatformV1beta1SetVersionAliasRequest(_messages.Message):
+  r"""Request message for ModelService.SetVersionAlias.
+
+  Fields:
+    versionAlias: Required. The version alias to set. The alias should be at
+      most 128 characters, and match `a-z{0,126}[a-z-0-9]`.
+  """
+
+  versionAlias = _messages.StringField(1)
+
+
+class GoogleCloudAiplatformV1beta1Similarity(_messages.Message):
+  r"""Similarity explainability that returns the nearest neighbors from the
+  provided dataset.
+
+  Fields:
+    gcsSource: The Cloud Storage location for the input instances.
+    nearestNeighborSearchConfig: The configuration for the generated index,
+      the semantics are the same as metadata and should match
+      NearestNeighborSearchConfig.
+  """
+
+  gcsSource = _messages.MessageField('GoogleCloudAiplatformV1beta1GcsSource', 1)
+  nearestNeighborSearchConfig = _messages.MessageField('extra_types.JsonValue', 2)
+
+
 class GoogleCloudAiplatformV1beta1SmoothGradConfig(_messages.Message):
   r"""Config for SmoothGrad approximation of gradients. When enabled, the
   gradients are approximated by averaging the gradients from noisy samples in
@@ -28553,7 +28758,7 @@ class GoogleCloudAiplatformV1beta1StreamingReadFeatureValuesRequest(_messages.Me
   Fields:
     entityIds: Required. IDs of entities to read Feature values of. The
       maximum number of IDs is 100. For example, for a machine learning model
-      predicting user clicks on a website, an entity ID could be "user_123".
+      predicting user clicks on a website, an entity ID could be `user_123`.
     featureSelector: Required. Selector choosing Features of the target
       EntityType. Feature IDs will be deduplicated.
   """
@@ -29999,9 +30204,16 @@ class GoogleCloudAiplatformV1beta1UploadModelRequest(_messages.Message):
 
   Fields:
     model: Required. The Model to create.
+    modelId: Optional. The ID to use for the uploaded Model, which will become
+      the final component of the model resource name. This value should be
+      1-128 characters, and valid characters are /a-z-/.
+    parentModel: Optional. The resource name of the model into which to upload
+      the version. Only specify this field when uploading a new version.
   """
 
   model = _messages.MessageField('GoogleCloudAiplatformV1beta1Model', 1)
+  modelId = _messages.StringField(2)
+  parentModel = _messages.StringField(3)
 
 
 class GoogleCloudAiplatformV1beta1UploadModelResponse(_messages.Message):

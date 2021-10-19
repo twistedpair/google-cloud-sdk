@@ -79,6 +79,9 @@ def AugmentImagesStatus(resource_registry, project_id, images):
       else:
         image['status'] = 'BLOCKED_BY_POLICY'
         yield image
+  else:
+    for image in images:
+      yield image
 
   # At this point all images were returned, but we may have some errors
   # collected which should be forwarded to the user as well. OrgPolicy call is

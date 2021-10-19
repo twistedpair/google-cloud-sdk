@@ -178,9 +178,12 @@ def AssertADCExists():
 
 
 def ADCIsUserAccount():
+  """Returns whether the ADC credentials correspond to a user account or not."""
   cred_file = config.ADCFilePath()
-  creds = client.GoogleCredentials.from_stream(cred_file)
-  return creds.serialization_data['type'] == 'authorized_user'
+  creds, _ = c_creds.GetGoogleAuthDefault().load_credentials_from_file(
+      cred_file)
+  return (c_creds.IsUserAccountCredentials(creds) or
+          c_creds.IsExternalAccountUserCredentials(creds))
 
 
 def AdcHasGivenPermissionOnProject(project_id, permissions):
@@ -303,7 +306,8 @@ def AddQuotaProjectToADC(quota_project):
         'as a quota project because the account in ADC does not have the '
         '"{}" permission on this project.'.format(quota_project,
                                                   SERVICEUSAGE_PERMISSION))
-  credentials = client.GoogleCredentials.from_stream(config.ADCFilePath())
+  credentials, _ = c_creds.GetGoogleAuthDefault().load_credentials_from_file(
+      config.ADCFilePath())
   adc_path = c_creds.ADC(credentials).DumpExtendedADCToFile(
       quota_project=quota_project)
   LogADCIsWritten(adc_path)

@@ -430,7 +430,8 @@ class ArgumentParser(argparse.ArgumentParser):
     messages = []
     suggester = usage_text.TextChoiceSuggester()
     # pylint:disable=protected-access, This is an instance of this class.
-    for flag in self._calliope_command.GetAllAvailableFlags():
+    for flag in self._calliope_command.GetAllAvailableFlags(
+        include_hidden=False):
       options = flag.option_strings
       if options:
         # This is a flag, add all its names as choices.
@@ -902,7 +903,8 @@ class ArgumentParser(argparse.ArgumentParser):
     """
     res = []
     for alternate in self._CommandAlternativeReleaseTracks():
-      if arg in [f.option_strings[0] for f in alternate.GetAllAvailableFlags()]:
+      if arg in [f.option_strings[0] for f in alternate.GetAllAvailableFlags(
+          include_hidden=False)]:
         res.append(' '.join(alternate.GetPath()) + ' ' + arg)
     return res
 

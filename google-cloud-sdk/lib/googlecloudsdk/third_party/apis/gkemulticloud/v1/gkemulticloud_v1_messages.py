@@ -1441,7 +1441,6 @@ class GoogleCloudGkemulticloudV1AzureClient(_messages.Message):
 
   Fields:
     applicationId: Required. The Azure Active Directory Application ID.
-    certificate: Output only. The PEM encoded x509 certificate.
     createTime: Output only. The time at which this resource was created.
     name: The name of this resource. `AzureClient` resource names are
       formatted as `projects//locations//azureClients/`. See [Resource
@@ -1453,12 +1452,11 @@ class GoogleCloudGkemulticloudV1AzureClient(_messages.Message):
   """
 
   applicationId = _messages.StringField(1)
-  certificate = _messages.BytesField(2)
-  createTime = _messages.StringField(3)
-  name = _messages.StringField(4)
-  pemCertificate = _messages.StringField(5)
-  tenantId = _messages.StringField(6)
-  uid = _messages.StringField(7)
+  createTime = _messages.StringField(2)
+  name = _messages.StringField(3)
+  pemCertificate = _messages.StringField(4)
+  tenantId = _messages.StringField(5)
+  uid = _messages.StringField(6)
 
 
 class GoogleCloudGkemulticloudV1AzureCluster(_messages.Message):
@@ -1616,6 +1614,12 @@ class GoogleCloudGkemulticloudV1AzureClusterNetworking(_messages.Message):
       the cluster get assigned a unique RFC1918 IPv4 address from these
       ranges. Only a single range is supported. This field cannot be changed
       after creating a cluster.
+    serviceLoadBalancerSubnetId: Optional. The ARM ID of the subnet where
+      Kubernetes private service type load balancers are deployed, when the
+      Service lacks a subnet annotation. When unspecified, it defaults to
+      AzureControlPlane.subnet_id. Example: "/subscriptions/d00494d6-6f3c-4280
+      -bbb2-899e163d1d30/resourceGroups/anthos_cluster_gkeust4/providers/Micro
+      soft.Network/virtualNetworks/gke-vnet-gkeust4/subnets/subnetid456"
     virtualNetworkId: Required. The Azure Resource Manager (ARM) ID of the
       VNet associated with your cluster. All components in the cluster (i.e.
       control plane and node pools) run on a single VNet. Example: `/subscript
@@ -1625,7 +1629,8 @@ class GoogleCloudGkemulticloudV1AzureClusterNetworking(_messages.Message):
 
   podAddressCidrBlocks = _messages.StringField(1, repeated=True)
   serviceAddressCidrBlocks = _messages.StringField(2, repeated=True)
-  virtualNetworkId = _messages.StringField(3)
+  serviceLoadBalancerSubnetId = _messages.StringField(3)
+  virtualNetworkId = _messages.StringField(4)
 
 
 class GoogleCloudGkemulticloudV1AzureClusterUser(_messages.Message):
@@ -1638,6 +1643,24 @@ class GoogleCloudGkemulticloudV1AzureClusterUser(_messages.Message):
   username = _messages.StringField(1)
 
 
+class GoogleCloudGkemulticloudV1AzureConfigEncryption(_messages.Message):
+  r"""Configuration related to config data encryption. Azure VM bootstrap
+  secret is envelope encrypted with the provided key vault key.
+
+  Fields:
+    keyId: Required. The ARM ID of the Azure Key Vault key to encrypt /
+      decrypt config data. For example: `/subscriptions//resourceGroups//provi
+      ders/Microsoft.KeyVault/vaults//keys/`
+    publicKey: Optional. RSA key of the Azure Key Vault public key to use for
+      encrypting the data. This key must be formatted as a PEM-encoded
+      SubjectPublicKeyInfo (RFC 5280) in ASN.1 DER form. The string must be
+      comprised of a single PEM block of type "PUBLIC KEY".
+  """
+
+  keyId = _messages.StringField(1)
+  publicKey = _messages.StringField(2)
+
+
 class GoogleCloudGkemulticloudV1AzureControlPlane(_messages.Message):
   r"""AzureControlPlane represents the control plane configurations.
 
@@ -1646,8 +1669,14 @@ class GoogleCloudGkemulticloudV1AzureControlPlane(_messages.Message):
       plane Azure resources.
 
   Fields:
+    configEncryption: Optional. Configuration related to vm config encryption.
     databaseEncryption: Optional. Configuration related to application-layer
       secrets encryption.
+    endpointSubnetId: Optional. The ARM ID of the subnet where the control
+      plane load balancer is deployed. When unspecified, it defaults to
+      AzureControlPlane.subnet_id. Example: "/subscriptions/d00494d6-6f3c-4280
+      -bbb2-899e163d1d30/resourceGroups/anthos_cluster_gkeust4/providers/Micro
+      soft.Network/virtualNetworks/gke-vnet-gkeust4/subnets/subnetid123"
     mainVolume: Optional. Configuration related to the main volume provisioned
       for each control plane replica. The main volume is in charge of storing
       all of the cluster's etcd state. When unspecified, it defaults to a
@@ -1663,9 +1692,15 @@ class GoogleCloudGkemulticloudV1AzureControlPlane(_messages.Message):
       Azure Disk.
     sshConfig: Required. SSH configuration for how to access the underlying
       control plane machines.
-    subnetId: Required. The ARM ID of the subnet where the control plane VMs
-      are deployed. Example: `/subscriptions//resourceGroups//providers/Micros
-      oft.Network/virtualNetworks//subnets/default`.
+    subnetId: Optional. The ARM ID of the default subnet for the control
+      plane. The control plane VMs are deployed in this subnet, unless
+      `AzureControlPlane.replica_placements` is specified. This subnet will
+      also be used as default for `AzureControlPlane.endpoint_subnet_id` if
+      `AzureControlPlane.endpoint_subnet_id` is not specified. Similarly it
+      will be used as default for
+      `AzureClusterNetworking.service_load_balancer_subnet_id`. Example: `/sub
+      scriptions//resourceGroups//providers/Microsoft.Network/virtualNetworks/
+      /subnets/default`.
     tags: Optional. A set of tags to apply to all underlying control plane
       Azure resources.
     version: Required. The Kubernetes version to run on control plane replicas
@@ -1702,16 +1737,18 @@ class GoogleCloudGkemulticloudV1AzureControlPlane(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  databaseEncryption = _messages.MessageField('GoogleCloudGkemulticloudV1AzureDatabaseEncryption', 1)
-  mainVolume = _messages.MessageField('GoogleCloudGkemulticloudV1AzureDiskTemplate', 2)
-  proxyConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AzureProxyConfig', 3)
-  replicaPlacements = _messages.MessageField('GoogleCloudGkemulticloudV1ReplicaPlacement', 4, repeated=True)
-  rootVolume = _messages.MessageField('GoogleCloudGkemulticloudV1AzureDiskTemplate', 5)
-  sshConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AzureSshConfig', 6)
-  subnetId = _messages.StringField(7)
-  tags = _messages.MessageField('TagsValue', 8)
-  version = _messages.StringField(9)
-  vmSize = _messages.StringField(10)
+  configEncryption = _messages.MessageField('GoogleCloudGkemulticloudV1AzureConfigEncryption', 1)
+  databaseEncryption = _messages.MessageField('GoogleCloudGkemulticloudV1AzureDatabaseEncryption', 2)
+  endpointSubnetId = _messages.StringField(3)
+  mainVolume = _messages.MessageField('GoogleCloudGkemulticloudV1AzureDiskTemplate', 4)
+  proxyConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AzureProxyConfig', 5)
+  replicaPlacements = _messages.MessageField('GoogleCloudGkemulticloudV1ReplicaPlacement', 6, repeated=True)
+  rootVolume = _messages.MessageField('GoogleCloudGkemulticloudV1AzureDiskTemplate', 7)
+  sshConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AzureSshConfig', 8)
+  subnetId = _messages.StringField(9)
+  tags = _messages.MessageField('TagsValue', 10)
+  version = _messages.StringField(11)
+  vmSize = _messages.StringField(12)
 
 
 class GoogleCloudGkemulticloudV1AzureDatabaseEncryption(_messages.Message):
@@ -1720,16 +1757,13 @@ class GoogleCloudGkemulticloudV1AzureDatabaseEncryption(_messages.Message):
   Key Vault.
 
   Fields:
-    kmsKeyIdentifier: Optional. The URL the of the Azure Key Vault key (with
-      its version) to use to encrypt / decrypt data. For example:
-      `https://.vault.azure.net/keys//`
-    resourceGroupId: Optional. The ARM ID the of the Azure resource group
-      containing the Azure Key Vault key. Example:
-      `/subscriptions//resourceGroups/`
+    keyId: Required. The ARM ID of the Azure Key Vault key to encrypt /
+      decrypt data. For example: `/subscriptions//resourceGroups//providers/Mi
+      crosoft.KeyVault/vaults//keys/` Encryption will always take the latest
+      version of the key and hence specific version is not supported.
   """
 
-  kmsKeyIdentifier = _messages.StringField(1)
-  resourceGroupId = _messages.StringField(2)
+  keyId = _messages.StringField(1)
 
 
 class GoogleCloudGkemulticloudV1AzureDiskTemplate(_messages.Message):
@@ -1780,6 +1814,7 @@ class GoogleCloudGkemulticloudV1AzureNodeConfig(_messages.Message):
       characters. Values can be up to 255 Unicode characters.
 
   Fields:
+    configEncryption: Optional. Configuration related to vm config encryption.
     labels: Optional. The initial labels assigned to nodes of this node pool.
       An object containing a list of "key": value pairs. Example: { "name":
       "wrench", "mass": "1.3kg", "count": "3" }.
@@ -1854,13 +1889,14 @@ class GoogleCloudGkemulticloudV1AzureNodeConfig(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  labels = _messages.MessageField('LabelsValue', 1)
-  proxyConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AzureProxyConfig', 2)
-  rootVolume = _messages.MessageField('GoogleCloudGkemulticloudV1AzureDiskTemplate', 3)
-  sshConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AzureSshConfig', 4)
-  tags = _messages.MessageField('TagsValue', 5)
-  taints = _messages.MessageField('GoogleCloudGkemulticloudV1NodeTaint', 6, repeated=True)
-  vmSize = _messages.StringField(7)
+  configEncryption = _messages.MessageField('GoogleCloudGkemulticloudV1AzureConfigEncryption', 1)
+  labels = _messages.MessageField('LabelsValue', 2)
+  proxyConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AzureProxyConfig', 3)
+  rootVolume = _messages.MessageField('GoogleCloudGkemulticloudV1AzureDiskTemplate', 4)
+  sshConfig = _messages.MessageField('GoogleCloudGkemulticloudV1AzureSshConfig', 5)
+  tags = _messages.MessageField('TagsValue', 6)
+  taints = _messages.MessageField('GoogleCloudGkemulticloudV1NodeTaint', 7, repeated=True)
+  vmSize = _messages.StringField(8)
 
 
 class GoogleCloudGkemulticloudV1AzureNodePool(_messages.Message):

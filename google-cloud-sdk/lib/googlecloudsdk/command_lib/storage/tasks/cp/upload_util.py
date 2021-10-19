@@ -81,6 +81,9 @@ def get_content_type(file_resource):
     If a type cannot be guessed, request_config_factory.DEFAULT_CONTENT_TYPE is
     returned.
   """
+  if file_resource.storage_url.is_pipe:
+    return request_config_factory.DEFAULT_CONTENT_TYPE
+
   path = file_resource.storage_url.object_name
 
   # Some common extensions are not recognized by the mimetypes library and

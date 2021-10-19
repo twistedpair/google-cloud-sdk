@@ -276,8 +276,7 @@ def GetShowProvenanceFlag():
   return base.Argument(
       '--show-provenance',
       action='store_true',
-      hidden=True,
-      help='Include provenance metadata in the output.')
+      help='Include build provenance metadata in the output.')
 
 
 def GetResourceURIArg():

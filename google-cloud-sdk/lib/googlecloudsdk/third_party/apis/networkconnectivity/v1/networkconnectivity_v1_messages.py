@@ -99,19 +99,19 @@ class AuditLogConfig(_messages.Message):
 
 
 class Binding(_messages.Message):
-  r"""Associates `members` with a `role`.
+  r"""Associates `members`, or principals, with a `role`.
 
   Fields:
     condition: The condition that is associated with this binding. If the
       condition evaluates to `true`, then this binding applies to the current
       request. If the condition evaluates to `false`, then this binding does
       not apply to the current request. However, a different role binding
-      might grant the same role to one or more of the members in this binding.
-      To learn which resources support conditions in their IAM policies, see
-      the [IAM
+      might grant the same role to one or more of the principals in this
+      binding. To learn which resources support conditions in their IAM
+      policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
-    members: Specifies the identities requesting access for a Cloud Platform
+    members: Specifies the principals requesting access for a Cloud Platform
       resource. `members` can have the following values: * `allUsers`: A
       special identifier that represents anyone who is on the internet; with
       or without a Google account. * `allAuthenticatedUsers`: A special
@@ -141,8 +141,8 @@ class Binding(_messages.Message):
       group retains the role in the binding. * `domain:{domain}`: The G Suite
       domain (primary) that represents all the users of that domain. For
       example, `google.com` or `example.com`.
-    role: Role that is assigned to `members`. For example, `roles/viewer`,
-      `roles/editor`, or `roles/owner`.
+    role: Role that is assigned to the list of `members`, or principals. For
+      example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """
 
   condition = _messages.MessageField('Expr', 1)
@@ -215,6 +215,43 @@ class Expr(_messages.Message):
   expression = _messages.StringField(2)
   location = _messages.StringField(3)
   title = _messages.StringField(4)
+
+
+class Filter(_messages.Message):
+  r"""Filter matches L4 traffic.
+
+  Enums:
+    ProtocolVersionValueValuesEnum: Required. Internet protocol versions this
+      policy based route applies to. For this version, only IPV4 is supported.
+
+  Fields:
+    destRange: Optional. The destination IP range of outgoing packets that
+      this policy based route applies to. Default is "0.0.0.0/0" if protocol
+      version is IPv4.
+    ipProtocol: Optional. The IP protocol that this policy based route applies
+      to. Valid values are 'TCP', 'UDP', and 'ALL'. Default is 'ALL'.
+    protocolVersion: Required. Internet protocol versions this policy based
+      route applies to. For this version, only IPV4 is supported.
+    srcRange: Optional. The source IP range of outgoing packets that this
+      policy based route applies to. Default is "0.0.0.0/0" if protocol
+      version is IPv4.
+  """
+
+  class ProtocolVersionValueValuesEnum(_messages.Enum):
+    r"""Required. Internet protocol versions this policy based route applies
+    to. For this version, only IPV4 is supported.
+
+    Values:
+      PROTOCOL_VERSION_UNSPECIFIED: Default value.
+      IPV4: The PBR is for IPv4 internet protocol traffic.
+    """
+    PROTOCOL_VERSION_UNSPECIFIED = 0
+    IPV4 = 1
+
+  destRange = _messages.StringField(1)
+  ipProtocol = _messages.StringField(2)
+  protocolVersion = _messages.EnumField('ProtocolVersionValueValuesEnum', 3)
+  srcRange = _messages.StringField(4)
 
 
 class GoogleLongrunningCancelOperationRequest(_messages.Message):
@@ -479,6 +516,18 @@ class Hub(_messages.Message):
   updateTime = _messages.StringField(8)
 
 
+class InterconnectAttachment(_messages.Message):
+  r"""InterconnectAttachment to which this route applies to.
+
+  Fields:
+    region: Optional. The scope of the PBR in the Cloud region. If scope is
+      "all", applies globally to all zakim endpoint. If not present, then does
+      not apply to any region.
+  """
+
+  region = _messages.StringField(1)
+
+
 class LinkedInterconnectAttachments(_messages.Message):
   r"""A collection of VLAN attachment resources. These resources should be
   redundant attachments that all advertise the same prefixes to Google Cloud.
@@ -559,6 +608,22 @@ class ListLocationsResponse(_messages.Message):
 
   locations = _messages.MessageField('Location', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+
+
+class ListPolicyBasedRoutesResponse(_messages.Message):
+  r"""Response for PolicyBasedRouting.ListPolicyBasedRoutes method.
+
+  Fields:
+    nextPageToken: The next pagination token in the List response. It should
+      be used as page_token for the following request. An empty value means no
+      more result.
+    policyBasedRoutes: Policy based routes to be returned.
+    unreachable: Locations that could not be reached.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  policyBasedRoutes = _messages.MessageField('PolicyBasedRoute', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListSpokesResponse(_messages.Message):
@@ -833,6 +898,60 @@ class NetworkconnectivityProjectsLocationsGlobalHubsTestIamPermissionsRequest(_m
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
+class NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesCreateRequest(_messages.Message):
+  r"""A
+  NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesCreateRequest
+  object.
+
+  Fields:
+    parent: Required. The parent resource's name of the PolicyBasedRoute.
+    policyBasedRoute: A PolicyBasedRoute resource to be passed as the request
+      body.
+    policyBasedRouteId: Optional. Unique id for the Policy Based Route to
+      create.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and t he request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  parent = _messages.StringField(1, required=True)
+  policyBasedRoute = _messages.MessageField('PolicyBasedRoute', 2)
+  policyBasedRouteId = _messages.StringField(3)
+  requestId = _messages.StringField(4)
+
+
+class NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesDeleteRequest(_messages.Message):
+  r"""A
+  NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesDeleteRequest
+  object.
+
+  Fields:
+    name: Required. Name of the PolicyBasedRoute resource to delete.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and t he request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
 class NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesGetIamPolicyRequest(_messages.Message):
   r"""A NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesGetIamPolic
   yRequest object.
@@ -853,6 +972,37 @@ class NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesGetIamPolicyReq
 
   options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   resource = _messages.StringField(2, required=True)
+
+
+class NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesGetRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesGetRequest
+  object.
+
+  Fields:
+    name: Required. Name of the PolicyBasedRoute resource to get.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesListRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesListRequest
+  object.
+
+  Fields:
+    filter: A filter expression that filters the results listed in the
+      response.
+    orderBy: Sort the results by a certain order.
+    pageSize: The maximum number of results per page that should be returned.
+    pageToken: The page token.
+    parent: Required. The parent resource's name.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
 
 
 class NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesSetIamPolicyRequest(_messages.Message):
@@ -1176,15 +1326,15 @@ class OperationMetadata(_messages.Message):
 class Policy(_messages.Message):
   r"""An Identity and Access Management (IAM) policy, which specifies access
   controls for Google Cloud resources. A `Policy` is a collection of
-  `bindings`. A `binding` binds one or more `members` to a single `role`.
-  Members can be user accounts, service accounts, Google groups, and domains
-  (such as G Suite). A `role` is a named list of permissions; each `role` can
-  be an IAM predefined role or a user-created custom role. For some types of
-  Google Cloud resources, a `binding` can also specify a `condition`, which is
-  a logical expression that allows access to a resource only if the expression
-  evaluates to `true`. A condition can add constraints based on attributes of
-  the request, the resource, or both. To learn which resources support
-  conditions in their IAM policies, see the [IAM
+  `bindings`. A `binding` binds one or more `members`, or principals, to a
+  single `role`. Principals can be user accounts, service accounts, Google
+  groups, and domains (such as G Suite). A `role` is a named list of
+  permissions; each `role` can be an IAM predefined role or a user-created
+  custom role. For some types of Google Cloud resources, a `binding` can also
+  specify a `condition`, which is a logical expression that allows access to a
+  resource only if the expression evaluates to `true`. A condition can add
+  constraints based on attributes of the request, the resource, or both. To
+  learn which resources support conditions in their IAM policies, see the [IAM
   documentation](https://cloud.google.com/iam/help/conditions/resource-
   policies). **JSON example:** { "bindings": [ { "role":
   "roles/resourcemanager.organizationAdmin", "members": [
@@ -1206,9 +1356,15 @@ class Policy(_messages.Message):
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
-    bindings: Associates a list of `members` to a `role`. Optionally, may
-      specify a `condition` that determines how and when the `bindings` are
-      applied. Each of the `bindings` must contain at least one member.
+    bindings: Associates a list of `members`, or principals, with a `role`.
+      Optionally, may specify a `condition` that determines how and when the
+      `bindings` are applied. Each of the `bindings` must contain at least one
+      principal. The `bindings` in a `Policy` can refer to up to 1,500
+      principals; up to 250 of these principals can be Google groups. Each
+      occurrence of a principal counts towards these limits. For example, if
+      the `bindings` grant 50 different roles to `user:alice@example.com`, and
+      not to any other principal, then you can add another 1,450 principals to
+      the `bindings` in the `Policy`.
     etag: `etag` is used for optimistic concurrency control as a way to help
       prevent simultaneous updates of a policy from overwriting each other. It
       is strongly suggested that systems make use of the `etag` in the read-
@@ -1243,6 +1399,88 @@ class Policy(_messages.Message):
   bindings = _messages.MessageField('Binding', 2, repeated=True)
   etag = _messages.BytesField(3)
   version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
+class PolicyBasedRoute(_messages.Message):
+  r"""Policy Based Routes (PBR) are more powerful routes that allows GCP
+  customers to route their L4 network traffic based on not just destination
+  IP, but also source IP, protocol and more. A PBR always take precedence when
+  it conflicts with other types of routes. Next id: 18
+
+  Messages:
+    LabelsValue: User-defined labels.
+
+  Fields:
+    createTime: Time when the PolicyBasedRoute was created.
+    description: Optional. An optional description of this resource. Provide
+      this field when you create the resource.
+    filter: Required. The filter to match L4 traffic.
+    interconnectAttachment: Optional. The interconnect attachments to which
+      this route applies to.
+    kind: Output only. Type of this resource. Always
+      networkconnectivity#policyBasedRoute for Policy Based Route resources.
+    labels: User-defined labels.
+    name: A unique name of the resource in the form of `projects/{project_numb
+      er}/locations/global/PolicyBasedRoutes/{policy_based_route_id}`
+    network: Required. Fully-qualified URL of the network that this route
+      applies to. e.g. projects/my-project/global/networks/my-network.
+    nextHopIlbIp: Optional. The IP of a global access enabled L4 ILB that
+      should be the next hop to handle matching packets. For this version,
+      only next_hop_ilb_ip is supported.
+    priority: Optional. The priority of this policy based route. Priority is
+      used to break ties in cases where there are more than one matching
+      policy based routes found. In cases where multiple policy based routes
+      are matched, the one with the lowest-numbered priority value wins. The
+      default value is 1000. The priority value must be from 1 to 65535,
+      inclusive.
+    selfLink: Output only. Server-defined fully-qualified URL for this
+      resource.
+    tags: Optional. A list of instance tags to which this route applies to. If
+      tags is not set, then the PBR will be install on all endpoints within
+      the network.
+    updateTime: Time when the PolicyBasedRoute was updated.
+    warnings: Output only. If potential misconfigurations are detected for
+      this route, this field will be populated with warning messages.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""User-defined labels.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  filter = _messages.MessageField('Filter', 3)
+  interconnectAttachment = _messages.MessageField('InterconnectAttachment', 4)
+  kind = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  network = _messages.StringField(8)
+  nextHopIlbIp = _messages.StringField(9)
+  priority = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  selfLink = _messages.StringField(11)
+  tags = _messages.StringField(12, repeated=True)
+  updateTime = _messages.StringField(13)
+  warnings = _messages.MessageField('Warnings', 14, repeated=True)
 
 
 class RouterApplianceInstance(_messages.Message):
@@ -1308,7 +1546,7 @@ class Spoke(_messages.Message):
   Fields:
     createTime: Output only. The time the spoke was created.
     description: An optional description of the spoke.
-    hub: Immutable. The URI of the hub that this spoke is attached to.
+    hub: Immutable. The name of the hub that this spoke is attached to.
     labels: Optional labels in key:value format. For more information about
       labels, see [Requirements for labels](https://cloud.google.com/resource-
       manager/docs/creating-managing-labels#requirements).
@@ -1466,6 +1704,76 @@ class TestIamPermissionsResponse(_messages.Message):
   """
 
   permissions = _messages.StringField(1, repeated=True)
+
+
+class Warnings(_messages.Message):
+  r"""Informational warning message.
+
+  Enums:
+    CodeValueValuesEnum: Output only. A warning code, if applicable.
+
+  Messages:
+    DataValue: Output only. Metadata about this warning in key: value format.
+      The key should provides more detail on the warning being returned. For
+      example, for warnings where there are no results in a list request for a
+      particular zone, this key might be scope and the key value might be the
+      zone name. Other examples might be a key indicating a deprecated
+      resource and a suggested replacement.
+
+  Fields:
+    code: Output only. A warning code, if applicable.
+    data: Output only. Metadata about this warning in key: value format. The
+      key should provides more detail on the warning being returned. For
+      example, for warnings where there are no results in a list request for a
+      particular zone, this key might be scope and the key value might be the
+      zone name. Other examples might be a key indicating a deprecated
+      resource and a suggested replacement.
+    warningMessage: Output only. A human-readable description of the warning
+      code.
+  """
+
+  class CodeValueValuesEnum(_messages.Enum):
+    r"""Output only. A warning code, if applicable.
+
+    Values:
+      WARNING_UNSPECIFIED: Default value.
+      RESOURCE_NOT_ACTIVE: The policy based route is not active.
+    """
+    WARNING_UNSPECIFIED = 0
+    RESOURCE_NOT_ACTIVE = 1
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DataValue(_messages.Message):
+    r"""Output only. Metadata about this warning in key: value format. The key
+    should provides more detail on the warning being returned. For example,
+    for warnings where there are no results in a list request for a particular
+    zone, this key might be scope and the key value might be the zone name.
+    Other examples might be a key indicating a deprecated resource and a
+    suggested replacement.
+
+    Messages:
+      AdditionalProperty: An additional property for a DataValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type DataValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  code = _messages.EnumField('CodeValueValuesEnum', 1)
+  data = _messages.MessageField('DataValue', 2)
+  warningMessage = _messages.StringField(3)
 
 
 encoding.AddCustomJsonFieldMapping(

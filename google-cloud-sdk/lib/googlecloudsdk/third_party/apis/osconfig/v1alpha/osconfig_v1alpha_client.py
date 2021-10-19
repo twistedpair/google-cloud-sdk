@@ -188,6 +188,33 @@ class OsconfigV1alpha(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Get(self, request, global_params=None):
+      r"""Get the OS policy asssignment report for the specified Compute Engine VM instance.
+
+      Args:
+        request: (OsconfigProjectsLocationsInstancesOsPolicyAssignmentsReportsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (OSPolicyAssignmentReport) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}/osPolicyAssignments/{osPolicyAssignmentsId}/report',
+        http_method='GET',
+        method_id='osconfig.projects.locations.instances.osPolicyAssignments.reports.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='OsconfigProjectsLocationsInstancesOsPolicyAssignmentsReportsGetRequest',
+        response_type_name='OSPolicyAssignmentReport',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""List OS policy asssignment reports for all Compute Engine VM instances in the specified zone.
 
@@ -224,33 +251,6 @@ class OsconfigV1alpha(base_api.BaseApiClient):
       super(OsconfigV1alpha.ProjectsLocationsInstancesOsPolicyAssignmentsService, self).__init__(client)
       self._upload_configs = {
           }
-
-    def GetReport(self, request, global_params=None):
-      r"""Get the OS policy asssignment report for the specified Compute Engine VM instance.
-
-      Args:
-        request: (OsconfigProjectsLocationsInstancesOsPolicyAssignmentsGetReportRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (OSPolicyAssignmentReport) The response message.
-      """
-      config = self.GetMethodConfig('GetReport')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GetReport.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}/osPolicyAssignments/{osPolicyAssignmentsId}/report',
-        http_method='GET',
-        method_id='osconfig.projects.locations.instances.osPolicyAssignments.getReport',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1alpha/{+name}',
-        request_field='',
-        request_type_name='OsconfigProjectsLocationsInstancesOsPolicyAssignmentsGetReportRequest',
-        response_type_name='OSPolicyAssignmentReport',
-        supports_download=False,
-    )
 
   class ProjectsLocationsInstancesVulnerabilityReportsService(base_api.BaseApiService):
     """Service class for the projects_locations_instances_vulnerabilityReports resource."""

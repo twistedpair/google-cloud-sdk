@@ -112,11 +112,11 @@
   "schemas": {
     "GoogleCloudDataplexV1Entity": {
       "id": "GoogleCloudDataplexV1Entity",
-      "description": "Represents tables and fileset metadata contained within a Zone.",
+      "description": "Represents tables and fileset metadata contained within a zone.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. Immutable. The resource name of the entity, of the form: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id}\/zones\/{zone_id}\/entities\/{entity} The {entity} is a generated unique ID.",
+          "description": "Output only. Immutable. The resource name of the entity, of the form: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id}\/zones\/{zone_id}\/entities\/{entity_id}. {entity} is a generated unique ID.",
           "readOnly": true,
           "type": "string"
         },
@@ -141,11 +141,11 @@
           "format": "google-datetime"
         },
         "id": {
-          "description": "Required. A user provide entity ID. It is mutable and will be used for the published table name.",
+          "description": "Required. A user-provided entity ID. It is mutable, and will be used as the published table name.",
           "type": "string"
         },
         "etag": {
-          "description": "Optional. The etag for this entity. Required for update requests, it must match the server's etag.",
+          "description": "Optional. The etag for this entity. Required for update requests. It must match the server's etag.",
           "type": "string"
         },
         "type": {
@@ -167,11 +167,11 @@
           "type": "string"
         },
         "dataPath": {
-          "description": "Required. Immutable. The storage path of the entity data. For Cloud Storage data, this is the fully-qualified path to the entity, such as gs:\/\/bucket\/path\/to\/data. For BigQuery data, this is the name of the table resource such as projects\/project_id\/datasets\/dataset_id\/tables\/table_id.",
+          "description": "Required. Immutable. The storage path of the entity data. For Cloud Storage data, this is the fully-qualified path to the entity, such as gs:\/\/bucket\/path\/to\/data. For BigQuery data, this is the name of the table resource, such as projects\/project_id\/datasets\/dataset_id\/tables\/table_id.",
           "type": "string"
         },
         "dataPathPattern": {
-          "description": "Optional. The set of items within the data path constituting the data in the entity represented as a glob path. Eg. gs:\/\/bucket\/path\/to\/data\/**\/*.csv.",
+          "description": "Optional. The set of items within the data path constituting the data in the entity, represented as a glob path. Example: gs:\/\/bucket\/path\/to\/data\/**\/*.csv.",
           "type": "string"
         },
         "catalogEntry": {
@@ -183,7 +183,7 @@
           "description": "Required. Identifies the storage system of the entity data.",
           "type": "string",
           "enumDescriptions": [
-            "StorageSystem unspecified.",
+            "Storage system unspecified.",
             "The entity data is contained within a Cloud Storage bucket.",
             "The entity data is contained within a BigQuery dataset."
           ],
@@ -194,21 +194,21 @@
           ]
         },
         "format": {
-          "description": "Required. Identifies the storage format of the entity data. This does not apply to entities with data stored in BigQuery.",
+          "description": "Required. Identifies the storage format of the entity data. It does not apply to entities with data stored in BigQuery.",
           "$ref": "GoogleCloudDataplexV1StorageFormat"
         },
         "compatibilityDeprecated": {
-          "description": "Output only. Metadata stores the entity is compatible with.",
+          "description": "Output only. Metadata stores that the entity is compatible with.",
           "readOnly": true,
           "$ref": "GoogleCloudDataplexV1EntityCompatibility"
         },
         "compatibility": {
-          "description": "Output only. Metadata stores the entity is compatible with.",
+          "description": "Output only. Metadata stores that the entity is compatible with.",
           "readOnly": true,
           "$ref": "GoogleCloudDataplexV1EntityCompatibilityStatus"
         },
         "schema": {
-          "description": "Required. The description of the data structure and layout. Schema is not included in list responses and only included in SCHEMA and FULL entity views of get entity response.",
+          "description": "Required. The description of the data structure and layout. The schema is not included in list responses. It is only included in SCHEMA and FULL entity views of a get entity response.",
           "$ref": "GoogleCloudDataplexV1Schema"
         }
       }
@@ -219,7 +219,7 @@
       "type": "object",
       "properties": {
         "format": {
-          "description": "Required. The data format associated with the stored data, represented using content type values.",
+          "description": "Required. The data format associated with the stored data, which represents content type values.",
           "type": "string",
           "enumDescriptions": [
             "Format unspecified.",
@@ -228,10 +228,10 @@
             "Orc-formatted structured data.",
             "Csv-formatted semi-structured data.",
             "Json-formatted semi-structured data.",
-            "Image data formats (such as jpg, png, etc.)",
-            "Audio data formats (such as mp3, wav, etc.)",
-            "Video data formats (such as mp4, mpg, etc.)",
-            "Textual data formats (such as txt, xml, etc.)",
+            "Image data formats (such as jpg and png)",
+            "Audio data formats (such as mp3, and wav)",
+            "Video data formats (such as mp4 and mpg)",
+            "Textual data formats (such as txt and xml)",
             "TensorFlow record format",
             "Data that doesn't match a specific format.",
             "Data of an unknown format."
@@ -253,7 +253,7 @@
           ]
         },
         "compressionFormat": {
-          "description": "Optional. The compression type associated with the stored data. If this is not specified, the data is uncompressed.",
+          "description": "Optional. The compression type associated with the stored data. If unspecified, the data is uncompressed.",
           "type": "string",
           "enumDescriptions": [
             "CompressionFormat unspecified. Implies uncompressed data.",
@@ -269,7 +269,7 @@
           ]
         },
         "mimeType": {
-          "description": "Optional. The mime type descriptor for the data. This is valid for formats other than UNKNOWN and MIXED.",
+          "description": "Optional. The mime type descriptor for the data. This field is valid for formats other than UNKNOWN and MIXED.",
           "type": "string"
         },
         "userManaged": {
@@ -301,11 +301,11 @@
           "format": "int32"
         },
         "delimiter": {
-          "description": "Optional. The delimiter being used to separate values. This defaults to ','.",
+          "description": "Optional. The delimiter used to separate values. Defaults to ','.",
           "type": "string"
         },
         "quote": {
-          "description": "Optional. The character used to quote column values. This defaults to empty, implying unquoted data.",
+          "description": "Optional. The character used to quote column values. Defaults to empty, implying unquoted data.",
           "type": "string"
         }
       }
@@ -340,7 +340,7 @@
     },
     "GoogleCloudDataplexV1EntityCompatibilityStatus": {
       "id": "GoogleCloudDataplexV1EntityCompatibilityStatus",
-      "description": "Provides information about compatibility with various metadata stores.",
+      "description": "Provides compatibility information for various metadata stores.",
       "type": "object",
       "properties": {
         "hiveMetastore": {
@@ -357,7 +357,7 @@
     },
     "GoogleCloudDataplexV1EntityCompatibilityStatusCompatibility": {
       "id": "GoogleCloudDataplexV1EntityCompatibilityStatusCompatibility",
-      "description": "Provides information about compatibility for a specific metadata store.",
+      "description": "Provides compatibility information for a specific metadata store.",
       "type": "object",
       "properties": {
         "compatible": {
@@ -374,11 +374,11 @@
     },
     "GoogleCloudDataplexV1Schema": {
       "id": "GoogleCloudDataplexV1Schema",
-      "description": "The schema information describing the structure and layout of the data.",
+      "description": "Schema information describing the structure and layout of the data.",
       "type": "object",
       "properties": {
         "userManaged": {
-          "description": "Required. Whether the schema is user managed, or managed by the service. User managed schemas are not automatically updated by discovery jobs.",
+          "description": "Required. Whether the schema is user-managed or managed by the service. User-managed schemas are not automatically updated by discovery jobs.",
           "type": "boolean"
         },
         "fields": {
@@ -389,7 +389,7 @@
           }
         },
         "partitionFields": {
-          "description": "Optional. The sequence of fields describing the partition structure in entities. If this is empty, there are no partitions within the data.",
+          "description": "Optional. The sequence of fields describing the partition structure in entities. If this field is empty, there are no partitions within the data.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudDataplexV1SchemaPartitionField"
@@ -400,7 +400,7 @@
           "type": "string",
           "enumDescriptions": [
             "PartitionStyle unspecified",
-            "Partitions are hive-compatible. Eg. gs:\/\/bucket\/path\/to\/table\/dt=2019-10-31\/lang=en Eg. gs:\/\/bucket\/path\/to\/table\/dt=2019-10-31\/lang=en\/late"
+            "Partitions are hive-compatible. Examples: gs:\/\/bucket\/path\/to\/table\/dt=2019-10-31\/lang=en, gs:\/\/bucket\/path\/to\/table\/dt=2019-10-31\/lang=en\/late."
           ],
           "enum": [
             "PARTITION_STYLE_UNSPECIFIED",
@@ -423,7 +423,7 @@
           "type": "string"
         },
         "type": {
-          "description": "Required. The type of the field.",
+          "description": "Required. The type of field.",
           "type": "string",
           "enumDescriptions": [
             "SchemaType unspecified.",
@@ -440,7 +440,7 @@
             "Date and time field.",
             "Date field.",
             "Time field.",
-            "Structured field. The nested fields define the structure of the map. If all the nested fields are nullable, this represents a union."
+            "Structured field. Nested fields that define the structure of the map. If all nested fields are nullable, this field represents a union."
           ],
           "enum": [
             "TYPE_UNSPECIFIED",
@@ -466,8 +466,8 @@
           "enumDescriptions": [
             "Mode unspecified.",
             "The field has required semantics.",
-            "The field has optional semantics and may be null.",
-            "The field has repeated (0 or more) semantics and is a list of values."
+            "The field has optional semantics, and may be null.",
+            "The field has repeated (0 or more) semantics, and is a list of values."
           ],
           "enum": [
             "MODE_UNSPECIFIED",
@@ -495,7 +495,7 @@
           "type": "string"
         },
         "type": {
-          "description": "Required. The type of the field.",
+          "description": "Required. The type of field.",
           "type": "string",
           "enumDescriptions": [
             "SchemaType unspecified.",
@@ -512,7 +512,7 @@
             "Date and time field.",
             "Date field.",
             "Time field.",
-            "Structured field. The nested fields define the structure of the map. If all the nested fields are nullable, this represents a union."
+            "Structured field. Nested fields that define the structure of the map. If all nested fields are nullable, this field represents a union."
           ],
           "enum": [
             "TYPE_UNSPECIFIED",
@@ -540,41 +540,41 @@
       "type": "object",
       "properties": {
         "entities": {
-          "description": "Entities under the given parent zone.",
+          "description": "Entities in the specified parent zone.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudDataplexV1Entity"
           }
         },
         "nextPageToken": {
-          "description": "Token to retrieve the next page of results, or empty if there are no more results in the list.",
+          "description": "Token to retrieve the next page of results, or empty if there are no remaining results in the list.",
           "type": "string"
         }
       }
     },
     "GoogleCloudDataplexV1Partition": {
       "id": "GoogleCloudDataplexV1Partition",
-      "description": "Represents partition metadata contained within Entity instances.",
+      "description": "Represents partition metadata contained within entity instances.",
       "type": "object",
       "properties": {
         "name": {
-          "description": "Output only. The resource name of the entity, of the form: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id}\/zones\/{zone_id}\/entities\/{entity}\/partitions\/{partition} The {partition} is a generated unique ID.",
+          "description": "Output only. The resource name of the partition, of the form: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id}\/zones\/{zone_id}\/entities\/{entity}\/partitions\/{partition_id}. {partition_id} is a generated unique ID.",
           "readOnly": true,
           "type": "string"
         },
         "values": {
-          "description": "Required. Immutable. The set of values representing the partition. These correspond to the partition schema defined in the parent entity.",
+          "description": "Required. Immutable. The set of values representing the partition, which correspond to the partition schema defined in the parent entity.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "location": {
-          "description": "Required. Immutable. The location of the entity data within the partition. Eg. gs:\/\/bucket\/path\/to\/entity\/key1=value1\/key2=value2",
+          "description": "Required. Immutable. The location of the entity data within the partition, for example, gs:\/\/bucket\/path\/to\/entity\/key1=value1\/key2=value2.",
           "type": "string"
         },
         "etag": {
-          "description": "Optional. The etag for this partitioin. Required for update requests, it must match the server's etag.",
+          "description": "Optional. The etag for this partition. Required for update requests. It must match the server's etag.",
           "type": "string"
         }
       }
@@ -585,14 +585,14 @@
       "type": "object",
       "properties": {
         "partitions": {
-          "description": "Partitions under the given parent entity.",
+          "description": "Partitions under the specified parent entity.",
           "type": "array",
           "items": {
             "$ref": "GoogleCloudDataplexV1Partition"
           }
         },
         "nextPageToken": {
-          "description": "Token to retrieve the next page of results, or empty if there are no more results in the list.",
+          "description": "Token to retrieve the next page of results, or empty if there are no remaining results in the list.",
           "type": "string"
         }
       }
@@ -757,15 +757,6 @@
           "readOnly": true,
           "type": "string"
         },
-        "securitySpec": {
-          "description": "Optional. Specification of the security policy applied to data in this lake. Typically it should take a few minutes for the security policy to fully propagate.",
-          "$ref": "GoogleCloudDataplexV1LakeSecuritySpec"
-        },
-        "securityStatus": {
-          "description": "Output only. Status of the security policy applied to data in this lake.",
-          "readOnly": true,
-          "$ref": "GoogleCloudDataplexV1SecurityStatus"
-        },
         "metastore": {
           "description": "Optional. Settings to manage lake and Dataproc Metastore service instance association.",
           "$ref": "GoogleCloudDataplexV1LakeMetastore"
@@ -787,66 +778,6 @@
           "items": {
             "$ref": "GoogleCloudDataplexV1Action"
           }
-        }
-      }
-    },
-    "GoogleCloudDataplexV1LakeSecuritySpec": {
-      "id": "GoogleCloudDataplexV1LakeSecuritySpec",
-      "description": "Settings to manage the security policy applied to data in a lake.",
-      "type": "object",
-      "properties": {
-        "readerGroups": {
-          "description": "Optional. A list of groups that should be granted the roles\/dataplex.dataReader IAM role, that allows group members to read data being managed within a lake. By default this is inherited by all assets within a lake. For example, yourgroup@yourdomain.com. It cannot be a service account, user or another type of identity.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "writerGroups": {
-          "description": "Optional. A list of groups that should be granted the roles\/dataplex.dataWriter IAM role, that allows group members to update data being managed within a lake. By default this is inherited by all assets within a lake. For example, yourgroup@yourdomain.com. It cannot be a service account, user or another type of identity.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "ownerGroups": {
-          "description": "Optional. A list of groups that should be granted the roles\/dataplex.dataOwner IAM role, that allows group members to modify the resources (including their IAM policies and child resources) managed within a lake. By default this is inherited by all assets within the lake. For example, yourgroup@yourdomain.com. It cannot be a service account, user or another type of identity.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        }
-      }
-    },
-    "GoogleCloudDataplexV1SecurityStatus": {
-      "id": "GoogleCloudDataplexV1SecurityStatus",
-      "description": "Status of the security policy specified on lakes & zones.",
-      "type": "object",
-      "properties": {
-        "state": {
-          "description": "The current state of the security policy applied to data.",
-          "type": "string",
-          "enumDescriptions": [
-            "State unspecified.",
-            "Security policy has been successfully applied to data.",
-            "Security policy is in the process of being applied to data.",
-            "Security policy could not be applied to data due to errors."
-          ],
-          "enum": [
-            "STATE_UNSPECIFIED",
-            "READY",
-            "APPLYING",
-            "ERROR"
-          ]
-        },
-        "message": {
-          "description": "Additional information about the current state.",
-          "type": "string"
-        },
-        "updateTime": {
-          "description": "Last update time of the status.",
-          "type": "string",
-          "format": "google-datetime"
         }
       }
     },
@@ -1007,10 +938,6 @@
           "description": "Details for issues related to lack of permissions to access data resources.",
           "$ref": "GoogleCloudDataplexV1ActionUnauthorizedResource"
         },
-        "invalidSecurityPolicy": {
-          "description": "Details for issues related to invalid security policy specifications.",
-          "$ref": "GoogleCloudDataplexV1ActionInvalidSecurityPolicy"
-        },
         "invalidDiscoveryConfig": {
           "description": "Details for issues related to invalid discovery configuration files.",
           "$ref": "GoogleCloudDataplexV1ActionInvalidDiscoveryConfig"
@@ -1123,13 +1050,6 @@
     "GoogleCloudDataplexV1ActionUnauthorizedResource": {
       "id": "GoogleCloudDataplexV1ActionUnauthorizedResource",
       "description": "Action details for unauthorized resource issues raised to indicate that the service account associated with the lake instance is not authorized to access or manage the resource associated with an asset.",
-      "type": "object",
-      "properties": {
-      }
-    },
-    "GoogleCloudDataplexV1ActionInvalidSecurityPolicy": {
-      "id": "GoogleCloudDataplexV1ActionInvalidSecurityPolicy",
-      "description": "Action details for invalid security policy issues raised when the specified security policy cannot be applied on a managed resource.",
       "type": "object",
       "properties": {
       }
@@ -1305,15 +1225,6 @@
             "CURATED"
           ]
         },
-        "securitySpec": {
-          "description": "Optional. Specification of the security policy applied to data in this zone. Typically it should take a few minutes for the security policy to fully propagate.",
-          "$ref": "GoogleCloudDataplexV1ZoneSecuritySpec"
-        },
-        "securityStatus": {
-          "description": "Output only. Status of the security policy applied to data in this zone.",
-          "readOnly": true,
-          "$ref": "GoogleCloudDataplexV1SecurityStatus"
-        },
         "discoverySpec": {
           "description": "Optional. Specification of the discovery feature applied to data in this zone.",
           "$ref": "GoogleCloudDataplexV1ZoneDiscoverySpec"
@@ -1334,38 +1245,6 @@
           "items": {
             "$ref": "GoogleCloudDataplexV1Action"
           }
-        }
-      }
-    },
-    "GoogleCloudDataplexV1ZoneSecuritySpec": {
-      "id": "GoogleCloudDataplexV1ZoneSecuritySpec",
-      "description": "Settings to manage the security policy applied to data in a zone.",
-      "type": "object",
-      "properties": {
-        "readerGroups": {
-          "description": "Optional. A list of groups that should be granted the roles\/dataplex.dataReader IAM role, that allows group members to read data being managed within a zone. By default this is inherited by all assets within a zone. For example, yourgroup@yourdomain.com. It cannot be a service account, user or another type of identity.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "writerGroups": {
-          "description": "Optional. A list of groups that should be granted the roles\/dataplex.dataWriter IAM role, that allows group members to update data being managed within a zone. By default this is inherited by all assets within a zone. For example, yourgroup@yourdomain.com. It cannot be a service account, user or another type of identity.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "ownerGroups": {
-          "description": "Optional. A list of groups that should be granted the roles\/dataplex.dataOwner IAM role, that allows group members to modify the resources (including their IAM policies and child resources) managed within a zone. By default this is inherited by all assets within the zone. For example, yourgroup@yourdomain.com. It cannot be a service account, user or another type of identity.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "overrideParentSpec": {
-          "description": "Optional. Indicates whether the policy overrides the list of groups specified in the policy associated with the parent lake or adds to the parent policy. By default, the policy is additive. If this flag is true, the list of groups must each include at least one entry.",
-          "type": "boolean"
         }
       }
     },
@@ -1392,13 +1271,60 @@
             "type": "string"
           }
         },
+        "csvOptions": {
+          "description": "Optional. Configuration for CSV data.",
+          "$ref": "GoogleCloudDataplexV1ZoneDiscoverySpecCsvOptions"
+        },
+        "jsonOptions": {
+          "description": "Optional. Configuration for Json data.",
+          "$ref": "GoogleCloudDataplexV1ZoneDiscoverySpecJsonOptions"
+        },
         "schedule": {
-          "description": "Optional. Cron schedule (https:\/\/en.wikipedia.org\/wiki\/Cron) for running discovery jobs periodically. Discovery jobs must be scheduled at least 30 minutes apart. To explicitly set a timezone to the cron tab, apply a prefix in the cron tab: \"CRON_TZ=${IANA_TIME_ZONE}\" or \"RON_TZ=${IANA_TIME_ZONE}\". The ${IANA_TIME_ZONE} may only be a valid string from IANA time zone database. For example, \"CRON_TZ=America\/New_York 1 * * * *\", or \"TZ=America\/New_York 1 * * * *\".",
+          "description": "Optional. Cron schedule (https:\/\/en.wikipedia.org\/wiki\/Cron) for running discovery jobs periodically. Discovery jobs must be scheduled at least 30 minutes apart. To explicitly set a timezone to the cron tab, apply a prefix in the cron tab: \"CRON_TZ=${IANA_TIME_ZONE}\" or TZ=${IANA_TIME_ZONE}\". The ${IANA_TIME_ZONE} may only be a valid string from IANA time zone database. For example, \"CRON_TZ=America\/New_York 1 * * * *\", or \"TZ=America\/New_York 1 * * * *\".",
           "type": "string"
         },
         "publishing": {
           "description": "Optional. Settings to manage metadata publishing from the zone.",
           "$ref": "GoogleCloudDataplexV1ZoneDiscoverySpecMetadataPublishing"
+        }
+      }
+    },
+    "GoogleCloudDataplexV1ZoneDiscoverySpecCsvOptions": {
+      "id": "GoogleCloudDataplexV1ZoneDiscoverySpecCsvOptions",
+      "description": "Describe CSV and similar semi-structured data formats.",
+      "type": "object",
+      "properties": {
+        "headerRows": {
+          "description": "Optional. The number of rows to interpret as header rows that should be skipped when reading data rows.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "delimiter": {
+          "description": "Optional. The delimiter being used to separate values. This defaults to ','.",
+          "type": "string"
+        },
+        "encoding": {
+          "description": "Optional. The character encoding of the data. The default is UTF-8.",
+          "type": "string"
+        },
+        "disableTypeInference": {
+          "description": "Optional. Whether to disable the inference of data type for CSV data. If true, all columns will be registered as strings.",
+          "type": "boolean"
+        }
+      }
+    },
+    "GoogleCloudDataplexV1ZoneDiscoverySpecJsonOptions": {
+      "id": "GoogleCloudDataplexV1ZoneDiscoverySpecJsonOptions",
+      "description": "Describe JSON data format.",
+      "type": "object",
+      "properties": {
+        "encoding": {
+          "description": "Optional. The character encoding of the data. The default is UTF-8.",
+          "type": "string"
+        },
+        "disableTypeInference": {
+          "description": "Optional. Whether to disable the inference of data type for Json data. If true, all columns will be registered as their primitive types (strings, number or boolean).",
+          "type": "boolean"
         }
       }
     },
@@ -1563,10 +1489,6 @@
           "readOnly": true,
           "$ref": "GoogleCloudDataplexV1AssetResourceStatus"
         },
-        "securitySpec": {
-          "description": "Optional. Specification of the security policy applied to resource referenced by this asset. Typically it should take a few minutes for the security policy to fully propagate.",
-          "$ref": "GoogleCloudDataplexV1AssetSecuritySpec"
-        },
         "securityStatus": {
           "description": "Output only. Status of the security policy applied to resource referenced by this asset.",
           "readOnly": true,
@@ -1674,38 +1596,6 @@
         }
       }
     },
-    "GoogleCloudDataplexV1AssetSecuritySpec": {
-      "id": "GoogleCloudDataplexV1AssetSecuritySpec",
-      "description": "Settings to manage the security policy applied to data referenced by an asset.",
-      "type": "object",
-      "properties": {
-        "readerGroups": {
-          "description": "Optional. A list of groups that should be granted the roles\/dataplex.dataReader IAM role, that allows group members to read data referenced by an asset. For example, yourgroup@yourdomain.com. It cannot be a service account, user or another type of identity.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "writerGroups": {
-          "description": "Optional. A list of groups that should be granted the roles\/dataplex.dataWriter IAM role, that allows group members to update data referenced by an asset. For example, yourgroup@yourdomain.com. It cannot be a service account, user or another type of identity.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "ownerGroups": {
-          "description": "Optional. A list of groups that should be granted the roles\/dataplex.dataOwner IAM role, that allows group members to modify the resources (including their IAM policies and child resources) referenced by an asset. For example, yourgroup@yourdomain.com. It cannot be a service account, user or another type of identity.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "overrideParentSpec": {
-          "description": "Optional. Indicates whether the policy overrides the list of groups specified in the policy associated with the parent lake and zone. By default, the policy is additive. If this flag is true, the list of groups must each include at least one entry.",
-          "type": "boolean"
-        }
-      }
-    },
     "GoogleCloudDataplexV1AssetSecurityStatus": {
       "id": "GoogleCloudDataplexV1AssetSecurityStatus",
       "description": "Security policy status of the asset. Data security policy, i.e., readers, writers & owners, should be specified in the lake\/zone\/asset IAM policy.",
@@ -1735,27 +1625,6 @@
           "description": "Last update time of the status.",
           "type": "string",
           "format": "google-datetime"
-        },
-        "appliedReaderGroups": {
-          "description": "Cumulative set of reader groups that were last applied on the managed resource. These groups may have been specified at lake, zone or asset levels.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "appliedWriterGroups": {
-          "description": "Cumulative set of writer groups that were last applied on the managed resource. These groups may have been specified at lake, zone or asset levels.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
-        },
-        "appliedOwnerGroups": {
-          "description": "Cumulative set of owner groups that were last applied on the managed resource. These groups may have been specified at lake, zone or asset levels.",
-          "type": "array",
-          "items": {
-            "type": "string"
-          }
         }
       }
     },
@@ -1782,6 +1651,14 @@
             "type": "string"
           }
         },
+        "csvOptions": {
+          "description": "Optional. Configuration for CSV data.",
+          "$ref": "GoogleCloudDataplexV1AssetDiscoverySpecCsvOptions"
+        },
+        "jsonOptions": {
+          "description": "Optional. Configuration for Json data.",
+          "$ref": "GoogleCloudDataplexV1AssetDiscoverySpecJsonOptions"
+        },
         "schedule": {
           "description": "Optional. Cron schedule (https:\/\/en.wikipedia.org\/wiki\/Cron) for running discovery jobs periodically. Discovery jobs must be scheduled at least 30 minutes apart.",
           "type": "string"
@@ -1803,6 +1680,45 @@
         "publishing": {
           "description": "Optional. Settings to manage metadata publishing for the zone.",
           "$ref": "GoogleCloudDataplexV1AssetDiscoverySpecMetadataPublishing"
+        }
+      }
+    },
+    "GoogleCloudDataplexV1AssetDiscoverySpecCsvOptions": {
+      "id": "GoogleCloudDataplexV1AssetDiscoverySpecCsvOptions",
+      "description": "Describe CSV and similar semi-structured data formats.",
+      "type": "object",
+      "properties": {
+        "headerRows": {
+          "description": "Optional. The number of rows to interpret as header rows that should be skipped when reading data rows.",
+          "type": "integer",
+          "format": "int32"
+        },
+        "delimiter": {
+          "description": "Optional. The delimiter being used to separate values. This defaults to ','.",
+          "type": "string"
+        },
+        "encoding": {
+          "description": "Optional. The character encoding of the data. The default is UTF-8.",
+          "type": "string"
+        },
+        "disableTypeInference": {
+          "description": "Optional. Whether to disable the inference of data type for CSV data. If true, all columns will be registered as strings.",
+          "type": "boolean"
+        }
+      }
+    },
+    "GoogleCloudDataplexV1AssetDiscoverySpecJsonOptions": {
+      "id": "GoogleCloudDataplexV1AssetDiscoverySpecJsonOptions",
+      "description": "Describe JSON data format.",
+      "type": "object",
+      "properties": {
+        "encoding": {
+          "description": "Optional. The character encoding of the data. The default is UTF-8.",
+          "type": "string"
+        },
+        "disableTypeInference": {
+          "description": "Optional. Whether to disable the inference of data type for Json data. If true, all columns will be registered as their primitive types (strings, number or boolean).",
+          "type": "boolean"
         }
       }
     },
@@ -2056,7 +1972,7 @@
           "format": "int32"
         },
         "schedule": {
-          "description": "Optional. Cron schedule (https:\/\/en.wikipedia.org\/wiki\/Cron) for running tasks periodically. To explicitly set a timezone to the cron tab, apply a prefix in the cron tab: \"CRON_TZ=${IANA_TIME_ZONE}\" or \"RON_TZ=${IANA_TIME_ZONE}\". The ${IANA_TIME_ZONE} may only be a valid string from IANA time zone database. For example, \"CRON_TZ=America\/New_York 1 * * * *\", or \"TZ=America\/New_York 1 * * * *\". This field is required for RECURRING tasks.",
+          "description": "Optional. Cron schedule (https:\/\/en.wikipedia.org\/wiki\/Cron) for running tasks periodically. To explicitly set a timezone to the cron tab, apply a prefix in the cron tab: \"CRON_TZ=${IANA_TIME_ZONE}\" or \"TZ=${IANA_TIME_ZONE}\". The ${IANA_TIME_ZONE} may only be a valid string from IANA time zone database. For example, \"CRON_TZ=America\/New_York 1 * * * *\", or \"TZ=America\/New_York 1 * * * *\". This field is required for RECURRING tasks.",
           "type": "string"
         }
       }
@@ -2419,7 +2335,7 @@
     },
     "GoogleIamV1Policy": {
       "id": "GoogleIamV1Policy",
-      "description": "An Identity and Access Management (IAM) policy, which specifies access controls for Google Cloud resources.A Policy is a collection of bindings. A binding binds one or more members to a single role. Members can be user accounts, service accounts, Google groups, and domains (such as G Suite). A role is a named list of permissions; each role can be an IAM predefined role or a user-created custom role.For some types of Google Cloud resources, a binding can also specify a condition, which is a logical expression that allows access to a resource only if the expression evaluates to true. A condition can add constraints based on attributes of the request, the resource, or both. To learn which resources support conditions in their IAM policies, see the IAM documentation (https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).JSON example: { \"bindings\": [ { \"role\": \"roles\/resourcemanager.organizationAdmin\", \"members\": [ \"user:mike@example.com\", \"group:admins@example.com\", \"domain:google.com\", \"serviceAccount:my-project-id@appspot.gserviceaccount.com\" ] }, { \"role\": \"roles\/resourcemanager.organizationViewer\", \"members\": [ \"user:eve@example.com\" ], \"condition\": { \"title\": \"expirable access\", \"description\": \"Does not grant access after Sep 2020\", \"expression\": \"request.time < timestamp('2020-10-01T00:00:00.000Z')\", } } ], \"etag\": \"BwWWja0YfJA=\", \"version\": 3 } YAML example: bindings: - members: - user:mike@example.com - group:admins@example.com - domain:google.com - serviceAccount:my-project-id@appspot.gserviceaccount.com role: roles\/resourcemanager.organizationAdmin - members: - user:eve@example.com role: roles\/resourcemanager.organizationViewer condition: title: expirable access description: Does not grant access after Sep 2020 expression: request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA= version: 3 For a description of IAM and its features, see the IAM documentation (https:\/\/cloud.google.com\/iam\/docs\/).",
+      "description": "An Identity and Access Management (IAM) policy, which specifies access controls for Google Cloud resources.A Policy is a collection of bindings. A binding binds one or more members, or principals, to a single role. Principals can be user accounts, service accounts, Google groups, and domains (such as G Suite). A role is a named list of permissions; each role can be an IAM predefined role or a user-created custom role.For some types of Google Cloud resources, a binding can also specify a condition, which is a logical expression that allows access to a resource only if the expression evaluates to true. A condition can add constraints based on attributes of the request, the resource, or both. To learn which resources support conditions in their IAM policies, see the IAM documentation (https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).JSON example: { \"bindings\": [ { \"role\": \"roles\/resourcemanager.organizationAdmin\", \"members\": [ \"user:mike@example.com\", \"group:admins@example.com\", \"domain:google.com\", \"serviceAccount:my-project-id@appspot.gserviceaccount.com\" ] }, { \"role\": \"roles\/resourcemanager.organizationViewer\", \"members\": [ \"user:eve@example.com\" ], \"condition\": { \"title\": \"expirable access\", \"description\": \"Does not grant access after Sep 2020\", \"expression\": \"request.time < timestamp('2020-10-01T00:00:00.000Z')\", } } ], \"etag\": \"BwWWja0YfJA=\", \"version\": 3 } YAML example: bindings: - members: - user:mike@example.com - group:admins@example.com - domain:google.com - serviceAccount:my-project-id@appspot.gserviceaccount.com role: roles\/resourcemanager.organizationAdmin - members: - user:eve@example.com role: roles\/resourcemanager.organizationViewer condition: title: expirable access description: Does not grant access after Sep 2020 expression: request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA= version: 3 For a description of IAM and its features, see the IAM documentation (https:\/\/cloud.google.com\/iam\/docs\/).",
       "type": "object",
       "properties": {
         "version": {
@@ -2428,7 +2344,7 @@
           "format": "int32"
         },
         "bindings": {
-          "description": "Associates a list of members to a role. Optionally, may specify a condition that determines how and when the bindings are applied. Each of the bindings must contain at least one member.",
+          "description": "Associates a list of members, or principals, with a role. Optionally, may specify a condition that determines how and when the bindings are applied. Each of the bindings must contain at least one principal.The bindings in a Policy can refer to up to 1,500 principals; up to 250 of these principals can be Google groups. Each occurrence of a principal counts towards these limits. For example, if the bindings grant 50 different roles to user:alice@example.com, and not to any other principal, then you can add another 1,450 principals to the bindings in the Policy.",
           "type": "array",
           "items": {
             "$ref": "GoogleIamV1Binding"
@@ -2450,22 +2366,22 @@
     },
     "GoogleIamV1Binding": {
       "id": "GoogleIamV1Binding",
-      "description": "Associates members with a role.",
+      "description": "Associates members, or principals, with a role.",
       "type": "object",
       "properties": {
         "role": {
-          "description": "Role that is assigned to members. For example, roles\/viewer, roles\/editor, or roles\/owner.",
+          "description": "Role that is assigned to the list of members, or principals. For example, roles\/viewer, roles\/editor, or roles\/owner.",
           "type": "string"
         },
         "members": {
-          "description": "Specifies the identities requesting access for a Cloud Platform resource. members can have the following values: allUsers: A special identifier that represents anyone who is on the internet; with or without a Google account. allAuthenticatedUsers: A special identifier that represents anyone who is authenticated with a Google account or a service account. user:{emailid}: An email address that represents a specific Google account. For example, alice@example.com . serviceAccount:{emailid}: An email address that represents a service account. For example, my-other-app@appspot.gserviceaccount.com. group:{emailid}: An email address that represents a Google group. For example, admins@example.com. deleted:user:{emailid}?uid={uniqueid}: An email address (plus unique identifier) representing a user that has been recently deleted. For example, alice@example.com?uid=123456789012345678901. If the user is recovered, this value reverts to user:{emailid} and the recovered user retains the role in the binding. deleted:serviceAccount:{emailid}?uid={uniqueid}: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901. If the service account is undeleted, this value reverts to serviceAccount:{emailid} and the undeleted service account retains the role in the binding. deleted:group:{emailid}?uid={uniqueid}: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, admins@example.com?uid=123456789012345678901. If the group is recovered, this value reverts to group:{emailid} and the recovered group retains the role in the binding. domain:{domain}: The G Suite domain (primary) that represents all the users of that domain. For example, google.com or example.com.",
+          "description": "Specifies the principals requesting access for a Cloud Platform resource. members can have the following values: allUsers: A special identifier that represents anyone who is on the internet; with or without a Google account. allAuthenticatedUsers: A special identifier that represents anyone who is authenticated with a Google account or a service account. user:{emailid}: An email address that represents a specific Google account. For example, alice@example.com . serviceAccount:{emailid}: An email address that represents a service account. For example, my-other-app@appspot.gserviceaccount.com. group:{emailid}: An email address that represents a Google group. For example, admins@example.com. deleted:user:{emailid}?uid={uniqueid}: An email address (plus unique identifier) representing a user that has been recently deleted. For example, alice@example.com?uid=123456789012345678901. If the user is recovered, this value reverts to user:{emailid} and the recovered user retains the role in the binding. deleted:serviceAccount:{emailid}?uid={uniqueid}: An email address (plus unique identifier) representing a service account that has been recently deleted. For example, my-other-app@appspot.gserviceaccount.com?uid=123456789012345678901. If the service account is undeleted, this value reverts to serviceAccount:{emailid} and the undeleted service account retains the role in the binding. deleted:group:{emailid}?uid={uniqueid}: An email address (plus unique identifier) representing a Google group that has been recently deleted. For example, admins@example.com?uid=123456789012345678901. If the group is recovered, this value reverts to group:{emailid} and the recovered group retains the role in the binding. domain:{domain}: The G Suite domain (primary) that represents all the users of that domain. For example, google.com or example.com.",
           "type": "array",
           "items": {
             "type": "string"
           }
         },
         "condition": {
-          "description": "The condition that is associated with this binding.If the condition evaluates to true, then this binding applies to the current request.If the condition evaluates to false, then this binding does not apply to the current request. However, a different role binding might grant the same role to one or more of the members in this binding.To learn which resources support conditions in their IAM policies, see the IAM documentation (https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
+          "description": "The condition that is associated with this binding.If the condition evaluates to true, then this binding applies to the current request.If the condition evaluates to false, then this binding does not apply to the current request. However, a different role binding might grant the same role to one or more of the principals in this binding.To learn which resources support conditions in their IAM policies, see the IAM documentation (https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
           "$ref": "GoogleTypeExpr"
         }
       }
@@ -3416,7 +3332,7 @@
                           "type": "string"
                         },
                         "zoneId": {
-                          "description": "Required. Zone identifier. This ID will be used to generate names such as database and dataset names when publishing metadata to Hive Metastore and BigQuery. * Must contain only lowercase letters, numbers and hyphens. * Must start with a letter. * Must end with a number or a letter. * Must be between 1-63 characters. * Must be unique within the lake.",
+                          "description": "Required. Zone identifier. This ID will be used to generate names such as database and dataset names when publishing metadata to Hive Metastore and BigQuery. * Must contain only lowercase letters, numbers and hyphens. * Must start with a letter. * Must end with a number or a letter. * Must be between 1-63 characters. * Must be unique within the lake. * Must not be one of the reserved IDs (i.e. \"default\", \"global-temp\")",
                           "location": "query",
                           "type": "string"
                         },
@@ -3702,28 +3618,26 @@
                           "httpMethod": "GET",
                           "parameters": {
                             "name": {
-                              "description": "Required. The resource name of the entity: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id} \/zones\/{zone_id}\/entities\/{entity_id_or_entity_uid} The entity id part could either be the entity unique ID or the user provided ID.",
+                              "description": "Required. The resource name of the entity: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id}\/zones\/{zone_id}\/entities\/{entity_id}.",
                               "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/lakes\/[^\/]+\/zones\/[^\/]+\/entities\/[^\/]+$",
                               "location": "path",
                               "required": true,
                               "type": "string"
                             },
                             "view": {
-                              "description": "Optional. Used to select the subset of information about the Entity to return. Defaults to BASIC.",
+                              "description": "Optional. Used to select the subset of entity information to return. Defaults to BASIC.",
                               "location": "query",
                               "type": "string",
                               "enumDescriptions": [
                                 "The API will default to the BASIC view.",
                                 "Minimal view that does not include the schema.",
-                                "Includes basic information and schema.",
-                                "Includes basic information and statistics.",
-                                "Includes everything."
+                                "Include basic information and schema.",
+                                "Include everything."
                               ],
                               "enum": [
                                 "ENTITY_VIEW_UNSPECIFIED",
                                 "BASIC",
                                 "SCHEMA",
-                                "STATS",
                                 "FULL"
                               ]
                             }
@@ -3746,7 +3660,7 @@
                           "httpMethod": "GET",
                           "parameters": {
                             "parent": {
-                              "description": "Required. The resource name of the parent zone: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id} \/zones\/{zone_id}`",
+                              "description": "Required. The resource name of the parent zone: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id}\/zones\/{zone_id}.",
                               "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/lakes\/[^\/]+\/zones\/[^\/]+$",
                               "location": "path",
                               "required": true,
@@ -3757,7 +3671,7 @@
                               "location": "query",
                               "type": "string",
                               "enumDescriptions": [
-                                "The default \/ unset value. The API will default to the FULL view.",
+                                "The default unset value. The API will default to the FULL view.",
                                 "Only list table entities.",
                                 "Only list fileset entities."
                               ],
@@ -3768,7 +3682,7 @@
                               ]
                             },
                             "pageSize": {
-                              "description": "Optional. Maximum number of entities to return. The service may return fewer than this value. If unspecified, at most 10 entities will be returned. The maximum value is 1000; values above 1000 will be coerced to 1000.",
+                              "description": "Optional. Maximum number of entities to return. The service may return fewer than this value. If unspecified, at most 10 entities will be returned. The maximum value is 1000; values above 1000 are set to 1000.",
                               "location": "query",
                               "type": "integer",
                               "format": "int32"
@@ -3793,7 +3707,7 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "List metadata entities of a given zone."
+                          "description": "List metadata entities in a zone."
                         }
                       }
                       ,
@@ -3807,7 +3721,7 @@
                               "httpMethod": "GET",
                               "parameters": {
                                 "name": {
-                                  "description": "Required. The resource name of the partition: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id} \/zones\/{zone_id}\/entities\/{entity_id}\/partitions\/{partition_id}",
+                                  "description": "Required. The resource name of the partition: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id}\/zones\/{zone_id}\/entities\/{entity_id}\/partitions\/{partition_id}.",
                                   "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/lakes\/[^\/]+\/zones\/[^\/]+\/entities\/[^\/]+\/partitions\/[^\/]+$",
                                   "location": "path",
                                   "required": true,
@@ -3823,7 +3737,7 @@
                               "scopes": [
                                 "https://www.googleapis.com/auth/cloud-platform"
                               ],
-                              "description": "Get a metadata partition of a given entity."
+                              "description": "Get a metadata partition of an entity."
                             },
                             "list": {
                               "id": "dataplex.projects.locations.lakes.zones.entities.partitions.list",
@@ -3832,7 +3746,7 @@
                               "httpMethod": "GET",
                               "parameters": {
                                 "parent": {
-                                  "description": "Required. The resource name of the parent entity: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id} \/zones\/{zone_id}\/entities\/{entity_id}`",
+                                  "description": "Required. The resource name of the parent entity: projects\/{project_number}\/locations\/{location_id}\/lakes\/{lake_id}\/zones\/{zone_id}\/entities\/{entity_id}`.",
                                   "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/lakes\/[^\/]+\/zones\/[^\/]+\/entities\/[^\/]+$",
                                   "location": "path",
                                   "required": true,
@@ -3864,7 +3778,7 @@
                               "scopes": [
                                 "https://www.googleapis.com/auth/cloud-platform"
                               ],
-                              "description": "List metadata partitions of a given entity."
+                              "description": "List metadata partitions of an entity."
                             }
                           }
                         }
@@ -4604,188 +4518,6 @@
                           "description": "Cancel jobs running for the task resource."
                         }
                       }
-                    }
-                  }
-                },
-                "environments": {
-                  "methods": {
-                    "setIamPolicy": {
-                      "id": "dataplex.projects.locations.lakes.environments.setIamPolicy",
-                      "path": "v1/{+resource}:setIamPolicy",
-                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/environments/{environmentsId}:setIamPolicy",
-                      "httpMethod": "POST",
-                      "parameters": {
-                        "resource": {
-                          "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/lakes\/[^\/]+\/environments\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "resource"
-                      ],
-                      "request": {
-                        "$ref": "GoogleIamV1SetIamPolicyRequest"
-                      },
-                      "response": {
-                        "$ref": "GoogleIamV1Policy"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Sets the access control policy on the specified resource. Replaces any existing policy.Can return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED errors."
-                    },
-                    "getIamPolicy": {
-                      "id": "dataplex.projects.locations.lakes.environments.getIamPolicy",
-                      "path": "v1/{+resource}:getIamPolicy",
-                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/environments/{environmentsId}:getIamPolicy",
-                      "httpMethod": "GET",
-                      "parameters": {
-                        "resource": {
-                          "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/lakes\/[^\/]+\/environments\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "options.requestedPolicyVersion": {
-                          "description": "Optional. The policy format version to be returned.Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected.Requests for policies with any conditional bindings must specify version 3. Policies without any conditional bindings may specify any valid value or leave the field unset.To learn which resources support conditions in their IAM policies, see the IAM documentation (https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
-                          "location": "query",
-                          "type": "integer",
-                          "format": "int32"
-                        }
-                      },
-                      "parameterOrder": [
-                        "resource"
-                      ],
-                      "response": {
-                        "$ref": "GoogleIamV1Policy"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set."
-                    },
-                    "testIamPermissions": {
-                      "id": "dataplex.projects.locations.lakes.environments.testIamPermissions",
-                      "path": "v1/{+resource}:testIamPermissions",
-                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/environments/{environmentsId}:testIamPermissions",
-                      "httpMethod": "POST",
-                      "parameters": {
-                        "resource": {
-                          "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/lakes\/[^\/]+\/environments\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "resource"
-                      ],
-                      "request": {
-                        "$ref": "GoogleIamV1TestIamPermissionsRequest"
-                      },
-                      "response": {
-                        "$ref": "GoogleIamV1TestIamPermissionsResponse"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a NOT_FOUND error.Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
-                    }
-                  }
-                },
-                "content": {
-                  "methods": {
-                    "setIamPolicy": {
-                      "id": "dataplex.projects.locations.lakes.content.setIamPolicy",
-                      "path": "v1/{+resource}:setIamPolicy",
-                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/content/{contentId}:setIamPolicy",
-                      "httpMethod": "POST",
-                      "parameters": {
-                        "resource": {
-                          "description": "REQUIRED: The resource for which the policy is being specified. See the operation documentation for the appropriate value for this field.",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/lakes\/[^\/]+\/content\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "resource"
-                      ],
-                      "request": {
-                        "$ref": "GoogleIamV1SetIamPolicyRequest"
-                      },
-                      "response": {
-                        "$ref": "GoogleIamV1Policy"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Sets the access control policy on the specified resource. Replaces any existing policy.Can return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED errors."
-                    },
-                    "getIamPolicy": {
-                      "id": "dataplex.projects.locations.lakes.content.getIamPolicy",
-                      "path": "v1/{+resource}:getIamPolicy",
-                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/content/{contentId}:getIamPolicy",
-                      "httpMethod": "GET",
-                      "parameters": {
-                        "resource": {
-                          "description": "REQUIRED: The resource for which the policy is being requested. See the operation documentation for the appropriate value for this field.",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/lakes\/[^\/]+\/content\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "options.requestedPolicyVersion": {
-                          "description": "Optional. The policy format version to be returned.Valid values are 0, 1, and 3. Requests specifying an invalid value will be rejected.Requests for policies with any conditional bindings must specify version 3. Policies without any conditional bindings may specify any valid value or leave the field unset.To learn which resources support conditions in their IAM policies, see the IAM documentation (https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies).",
-                          "location": "query",
-                          "type": "integer",
-                          "format": "int32"
-                        }
-                      },
-                      "parameterOrder": [
-                        "resource"
-                      ],
-                      "response": {
-                        "$ref": "GoogleIamV1Policy"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set."
-                    },
-                    "testIamPermissions": {
-                      "id": "dataplex.projects.locations.lakes.content.testIamPermissions",
-                      "path": "v1/{+resource}:testIamPermissions",
-                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/lakes/{lakesId}/content/{contentId}:testIamPermissions",
-                      "httpMethod": "POST",
-                      "parameters": {
-                        "resource": {
-                          "description": "REQUIRED: The resource for which the policy detail is being requested. See the operation documentation for the appropriate value for this field.",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/lakes\/[^\/]+\/content\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "resource"
-                      ],
-                      "request": {
-                        "$ref": "GoogleIamV1TestIamPermissionsRequest"
-                      },
-                      "response": {
-                        "$ref": "GoogleIamV1TestIamPermissionsResponse"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a NOT_FOUND error.Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may \"fail open\" without warning."
                     }
                   }
                 }

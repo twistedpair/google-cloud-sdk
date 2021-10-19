@@ -93,10 +93,14 @@ def _log_or_raise_crc32c_issues(resource):
     raise errors.Error(_NO_HASH_CHECK_ERROR)
 
 
-def _should_perform_sliced_download(resource):
+def _should_perform_sliced_download(source_resource, destination_resource):
   """Returns True if conditions are right for a sliced download."""
-  if (not resource.crc32c_hash and properties.VALUES.storage.check_hashes.Get()
-      != properties.CheckHashes.NEVER.value):
+  if destination_resource.storage_url.is_pipe:
+    # Can't write to different indices of pipe.
+    return False
+  if (not source_resource.crc32c_hash and
+      properties.VALUES.storage.check_hashes.Get() !=
+      properties.CheckHashes.NEVER.value):
     # Do not perform sliced download if hash validation is not possible.
     return False
 
@@ -105,9 +109,10 @@ def _should_perform_sliced_download(resource):
   component_size = scaled_integer.ParseInteger(
       properties.VALUES.storage.sliced_object_download_component_size.Get())
   # TODO(b/183017513): Only perform sliced downloads with parallelism.
-  api_capabilities = api_factory.get_capabilities(resource.storage_url.scheme)
-  return (resource.size and threshold != 0 and resource.size > threshold and
-          component_size and
+  api_capabilities = api_factory.get_capabilities(
+      source_resource.storage_url.scheme)
+  return (source_resource.size and threshold != 0 and
+          source_resource.size > threshold and component_size and
           cloud_api.Capability.SLICED_DOWNLOAD in api_capabilities and
           task_executor.should_use_parallelism())
 
@@ -150,6 +155,9 @@ class FileDownloadTask(task.Task):
         self._destination_resource.storage_url.url_string)
 
   def _get_temporary_destination_resource(self):
+    if self._destination_resource.storage_url.is_pipe:
+      # Stream download directly to pipe.
+      return self._destination_resource
     temporary_resource = copy.deepcopy(self._destination_resource)
     temporary_resource.storage_url.object_name += TEMPORARY_FILE_SUFFIX
     return temporary_resource
@@ -195,6 +203,7 @@ class FileDownloadTask(task.Task):
 
   def execute(self, task_status_queue=None):
     """Creates appropriate download tasks."""
+    destination_url = self._destination_resource.storage_url
 
     # We need to call os.remove here for two reasons:
     # 1. It saves on disk space during a transfer.
@@ -202,8 +211,8 @@ class FileDownloadTask(task.Task):
     # removing files after a download makes us susceptible to a race condition
     # between two running instances of gcloud storage. See the following PR for
     # more information: https://github.com/GoogleCloudPlatform/gsutil/pull/1202.
-    if self._destination_resource.storage_url.exists():
-      os.remove(self._destination_resource.storage_url.object_name)
+    if destination_url.exists() and not destination_url.is_pipe:
+      os.remove(destination_url.object_name)
     temporary_download_file_exists = (
         self._temporary_destination_resource.storage_url.exists())
     if temporary_download_file_exists and os.path.getsize(
@@ -211,7 +220,8 @@ class FileDownloadTask(task.Task):
     ) > self._source_resource.size:
       self._restart_download()
 
-    if _should_perform_sliced_download(self._source_resource):
+    if _should_perform_sliced_download(self._source_resource,
+                                       self._destination_resource):
       download_component_task_list, finalize_sliced_download_task_list = (
           self._get_sliced_download_tasks())
 
@@ -250,11 +260,12 @@ class FileDownloadTask(task.Task):
         strategy=self._strategy).execute(task_status_queue=task_status_queue)
 
     temporary_file_url = self._temporary_destination_resource.storage_url
-    download_util.decompress_or_rename_file(
-        self._source_resource,
-        temporary_file_url.object_name,
-        self._destination_resource.storage_url.object_name,
-        do_not_decompress_flag=self._do_not_decompress)
+    if not temporary_file_url.is_pipe:
+      download_util.decompress_or_rename_file(
+          self._source_resource,
+          temporary_file_url.object_name,
+          destination_url.object_name,
+          do_not_decompress_flag=self._do_not_decompress)
 
     # For sliced download, cleanup is done in the finalized sliced download task
     # We perform cleanup here for all other types in case some corrupt files

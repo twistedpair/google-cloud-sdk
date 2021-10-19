@@ -75,9 +75,9 @@ When uploading local files, matches in the `.gcloudignore` file are skipped. For
 more information, see `gcloud topic gcloudignore`. By default, `.git` and
 `.gitignore` are ignored, meaning they are be uploaded with your blueprint.
 
-Git repositories can either be a private Cloud Source Repositories (CSR)
-repository (in which case you must have permission to access it) or a public Git
-repository (e.g. on GitHub). Each takes the form `_URL_@_REF_`:
+Git repositories can either be a Cloud Source Repositories (CSR) repository (in
+which case you must have permission to access it) or a public Git repository
+(e.g. on GitHub). Each takes the form `_URL_@_REF_`:
   * Example CSR `_URL_`: https://source.cloud.google.com/my-project/my-csr-repository
   * Example GitHub `_URL_`: https://github.com/google/repository
   * `@` is a literal `@` character. `_REF_` is a commit hash, branch, or tag.
@@ -169,6 +169,59 @@ Create a deployment from the "blueprints/compute" folder:
   )
 
 
+# TODO(b/202192430): Consider consolidating this with --config-controller into
+# a single --target flag.
+def AddGitTargetFlag(parser, hidden=True):
+  """Add --target-git and --target-git-subdir flags."""
+  target_git_subdir_help = """\
+Use in conjunction with `--target-git` to specify which subdirectory to push
+blueprint contents to.
+
+This defaults to `./`, meaning the root of the specified repository is used.
+
+Examples:
+
+Push blueprint artifacts to the "blueprints/compute" folder:
+
+  $ {command} [...] my-deployment --target-git="https://source.cloud.google.com/my-project/my-csr-repository"
+    --target-git-subdir="blueprints/compute"
+"""
+
+  target_git_help_text = """\
+The Git repository to which a blueprint will be uploaded after the pipeline
+is run.
+
+The Git repository must be a Cloud Source Repositories (CSR)
+repository:
+  * Example CSR `_URL_`: https://source.cloud.google.com/my-project/my-csr-repository
+
+The 'Cloud Build' service account must hold the `source.repos.update`
+permission. The role `roles/source.writer` contains this permission. Here is an
+example of how to add the role to project `project-with-csr-repository` for a
+project whose project number is `1234`:
+
+  $ gcloud projects add-iam-policy-binding project-with-csr-repository --member=serviceAccount:1234@cloudbuild.gserviceaccount.com --role=roles/source.writer
+
+See `target-git-subdir` for how to specify a subdirectory within a Git
+repository.
+
+Examples:
+
+Create a deployment to use a CSR repository:
+
+  $ {command} [...] new-deployment --target-git="https://source.cloud.google.com/my-project/my-csr-repository"
+"""
+  target_details = parser.add_group(hidden=hidden)
+  target_details.add_argument(
+      '--target-git',
+      help=target_git_help_text,
+  )
+  target_details.add_argument(
+      '--target-git-subdir',
+      help=target_git_subdir_help,
+  )
+
+
 def AddIgnoreFileFlag(parser, hidden=False):
   """Add --ignore-file flag."""
   parser.add_argument(
@@ -184,7 +237,8 @@ def AddTimeoutFlag(parser):
   help_text = ('Set a reconcile timeout for the deployment. If the resources '
                'fail to reconcile within the timeout, the deployment will fail.'
                '\n\n'
-               'If unspecified, the deployment will not timeout waiting to '
+               'If unspecified, a timeout of 5 minutes will be used. If '
+               'specified as 0, the deployment will not timeout waiting to '
                'reconcile resources.'
                '\n\n'
                'See $ gcloud topic datetimes for information about absolute '
@@ -193,7 +247,7 @@ def AddTimeoutFlag(parser):
   parser.add_argument(
       '--reconcile-timeout',
       type=arg_parsers.Duration(default_unit='s', parsed_unit='s'),
-      default=0,
+      default=5*60,
       help=help_text)
 
 

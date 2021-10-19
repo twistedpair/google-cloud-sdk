@@ -497,19 +497,19 @@ class BinaryauthorizationSystempolicyGetPolicyRequest(_messages.Message):
 
 
 class Binding(_messages.Message):
-  r"""Associates `members` with a `role`.
+  r"""Associates `members`, or principals, with a `role`.
 
   Fields:
     condition: The condition that is associated with this binding. If the
       condition evaluates to `true`, then this binding applies to the current
       request. If the condition evaluates to `false`, then this binding does
       not apply to the current request. However, a different role binding
-      might grant the same role to one or more of the members in this binding.
-      To learn which resources support conditions in their IAM policies, see
-      the [IAM
+      might grant the same role to one or more of the principals in this
+      binding. To learn which resources support conditions in their IAM
+      policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
-    members: Specifies the identities requesting access for a Cloud Platform
+    members: Specifies the principals requesting access for a Cloud Platform
       resource. `members` can have the following values: * `allUsers`: A
       special identifier that represents anyone who is on the internet; with
       or without a Google account. * `allAuthenticatedUsers`: A special
@@ -539,8 +539,8 @@ class Binding(_messages.Message):
       group retains the role in the binding. * `domain:{domain}`: The G Suite
       domain (primary) that represents all the users of that domain. For
       example, `google.com` or `example.com`.
-    role: Role that is assigned to `members`. For example, `roles/viewer`,
-      `roles/editor`, or `roles/owner`.
+    role: Role that is assigned to the list of `members`, or principals. For
+      example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """
 
   condition = _messages.MessageField('Expr', 1)
@@ -553,7 +553,21 @@ class ContinuousValidationConfig(_messages.Message):
   various policies. There is at most one config per project (a singleton
   resource).
 
+  Messages:
+    ClusterSafeguardConfigsValue: Optional. Per-cluster Safeguard config.
+      Cluster spec format: `location.clusterId`. There can be at most one
+      admission rule per cluster spec. A `location` is either a compute zone
+      (e.g. us-central1-a) or a region (e.g. us-central1). For `clusterId`
+      syntax restrictions see https://cloud.google.com/container-
+      engine/reference/rest/v1/projects.zones.clusters.
+
   Fields:
+    clusterSafeguardConfigs: Optional. Per-cluster Safeguard config. Cluster
+      spec format: `location.clusterId`. There can be at most one admission
+      rule per cluster spec. A `location` is either a compute zone (e.g. us-
+      central1-a) or a region (e.g. us-central1). For `clusterId` syntax
+      restrictions see https://cloud.google.com/container-
+      engine/reference/rest/v1/projects.zones.clusters.
     enforcementPolicyConfig: The continuous validation config for enforcement
       policy.
     name: Output only. The resource name, in the format
@@ -562,9 +576,41 @@ class ContinuousValidationConfig(_messages.Message):
     updateTime: Output only. Time when the config was last updated.
   """
 
-  enforcementPolicyConfig = _messages.MessageField('EnforcementPolicyConfig', 1)
-  name = _messages.StringField(2)
-  updateTime = _messages.StringField(3)
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ClusterSafeguardConfigsValue(_messages.Message):
+    r"""Optional. Per-cluster Safeguard config. Cluster spec format:
+    `location.clusterId`. There can be at most one admission rule per cluster
+    spec. A `location` is either a compute zone (e.g. us-central1-a) or a
+    region (e.g. us-central1). For `clusterId` syntax restrictions see
+    https://cloud.google.com/container-
+    engine/reference/rest/v1/projects.zones.clusters.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        ClusterSafeguardConfigsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        ClusterSafeguardConfigsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ClusterSafeguardConfigsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A SafeguardConfig attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('SafeguardConfig', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  clusterSafeguardConfigs = _messages.MessageField('ClusterSafeguardConfigsValue', 1)
+  enforcementPolicyConfig = _messages.MessageField('EnforcementPolicyConfig', 2)
+  name = _messages.StringField(3)
+  updateTime = _messages.StringField(4)
 
 
 class Empty(_messages.Message):
@@ -626,15 +672,15 @@ class Expr(_messages.Message):
 class IamPolicy(_messages.Message):
   r"""An Identity and Access Management (IAM) policy, which specifies access
   controls for Google Cloud resources. A `Policy` is a collection of
-  `bindings`. A `binding` binds one or more `members` to a single `role`.
-  Members can be user accounts, service accounts, Google groups, and domains
-  (such as G Suite). A `role` is a named list of permissions; each `role` can
-  be an IAM predefined role or a user-created custom role. For some types of
-  Google Cloud resources, a `binding` can also specify a `condition`, which is
-  a logical expression that allows access to a resource only if the expression
-  evaluates to `true`. A condition can add constraints based on attributes of
-  the request, the resource, or both. To learn which resources support
-  conditions in their IAM policies, see the [IAM
+  `bindings`. A `binding` binds one or more `members`, or principals, to a
+  single `role`. Principals can be user accounts, service accounts, Google
+  groups, and domains (such as G Suite). A `role` is a named list of
+  permissions; each `role` can be an IAM predefined role or a user-created
+  custom role. For some types of Google Cloud resources, a `binding` can also
+  specify a `condition`, which is a logical expression that allows access to a
+  resource only if the expression evaluates to `true`. A condition can add
+  constraints based on attributes of the request, the resource, or both. To
+  learn which resources support conditions in their IAM policies, see the [IAM
   documentation](https://cloud.google.com/iam/help/conditions/resource-
   policies). **JSON example:** { "bindings": [ { "role":
   "roles/resourcemanager.organizationAdmin", "members": [
@@ -655,9 +701,15 @@ class IamPolicy(_messages.Message):
   documentation](https://cloud.google.com/iam/docs/).
 
   Fields:
-    bindings: Associates a list of `members` to a `role`. Optionally, may
-      specify a `condition` that determines how and when the `bindings` are
-      applied. Each of the `bindings` must contain at least one member.
+    bindings: Associates a list of `members`, or principals, with a `role`.
+      Optionally, may specify a `condition` that determines how and when the
+      `bindings` are applied. Each of the `bindings` must contain at least one
+      principal. The `bindings` in a `Policy` can refer to up to 1,500
+      principals; up to 250 of these principals can be Google groups. Each
+      occurrence of a principal counts towards these limits. For example, if
+      the `bindings` grant 50 different roles to `user:alice@example.com`, and
+      not to any other principal, then you can add another 1,450 principals to
+      the `bindings` in the `Policy`.
     etag: `etag` is used for optimistic concurrency control as a way to help
       prevent simultaneous updates of a policy from overwriting each other. It
       is strongly suggested that systems make use of the `etag` in the read-
@@ -993,6 +1045,19 @@ class Policy(_messages.Message):
   updateTime = _messages.StringField(10)
 
 
+class SafeguardConfig(_messages.Message):
+  r"""Safeguard config. It includes all safeguard types. We plan to grow the
+  types of Safeguards we support. Currently supported: - Trusted Directory
+  Safeguard
+
+  Fields:
+    trustedDirectorySafeguard: Optional. Trusted directory safeguard,
+      optional.
+  """
+
+  trustedDirectorySafeguard = _messages.MessageField('TrustedDirectorySafeguard', 1)
+
+
 class SetIamPolicyRequest(_messages.Message):
   r"""Request message for `SetIamPolicy` method.
 
@@ -1136,6 +1201,41 @@ class TestIamPermissionsResponse(_messages.Message):
   """
 
   permissions = _messages.StringField(1, repeated=True)
+
+
+class TrustedDirectoryPattern(_messages.Message):
+  r"""A trusted directory pattern exempts images when their directory matches
+  the pattern.
+
+  Fields:
+    dirPattern: A directory url pattern to allow. The pattern is in the form
+      "registry/path/to/directory". Additionally, * can be used in three ways
+      as wildcards: 1. leading * to match varying prefixes (useful for
+      location prefixes); 2. trailing * after registry/ to match varying
+      endings; 3. trailing ** after registry/ to match "/" as well. For
+      example: -- gcr.io/my-project/my-repo is valid to match a single
+      directory -- *-docker.pkg.dev/my-project/my-repo is valid to match
+      varying prefixes -- gcr.io/my-project/* will match all direct
+      directories in my-project -- gcr.io/my-project/** would match all
+      directories in my-project -- gcr.i* is not allowed since the registry is
+      not completely specified -- **-docker.pkg.dev is not allowed since
+      leading * cannot match "/"
+  """
+
+  dirPattern = _messages.StringField(1)
+
+
+class TrustedDirectorySafeguard(_messages.Message):
+  r"""A trusted directory safeguard, when enabled, will alert on images that
+  do not come from the set of user-configured trusted diretories.
+
+  Fields:
+    enabled: Required. Whether the safeguard is enabled.
+    trustedDirPatterns: Optional. List of trusted directory patterns.
+  """
+
+  enabled = _messages.BooleanField(1)
+  trustedDirPatterns = _messages.MessageField('TrustedDirectoryPattern', 2, repeated=True)
 
 
 class UserOwnedDrydockNote(_messages.Message):

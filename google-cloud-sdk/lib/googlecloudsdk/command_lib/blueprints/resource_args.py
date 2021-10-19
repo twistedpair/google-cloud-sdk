@@ -81,7 +81,7 @@ def GetRevisionResourceSpec():
 def GetConfigControllerResourceSpec():
   return concepts.ResourceSpec(
       'krmapihosting.projects.locations.krmApiHosts',
-      resource_name='KRM API Host',
+      resource_name='Config Controller instance',
       krmApiHostsId=KrmApiHostAttributeConfig(),
       locationsId=LocationAttributeConfig(),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,

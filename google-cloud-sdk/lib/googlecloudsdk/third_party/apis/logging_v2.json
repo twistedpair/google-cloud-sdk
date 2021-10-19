@@ -339,68 +339,6 @@
         }
       }
     },
-    "ListTablesResponse": {
-      "id": "ListTablesResponse",
-      "description": "The response from ListTables.",
-      "type": "object",
-      "properties": {
-        "tables": {
-          "description": "A list of tables.",
-          "type": "array",
-          "items": {
-            "$ref": "Table"
-          }
-        },
-        "nextPageToken": {
-          "description": "If there are more results than those appearing in this response, then nextPageToken is included. To get the next set of results, call the same method again using the value of nextPageToken as pageToken.",
-          "type": "string"
-        }
-      }
-    },
-    "Table": {
-      "id": "Table",
-      "description": "A table storing logs in an analytics log bucket. Logs are all stored in a single unified 'logs' table in each Log Bucket. There may be other derived tables curated by Google for specific purposes.",
-      "type": "object",
-      "properties": {
-        "name": {
-          "description": "Output only. The resource name of the table. Example: projects\/[PROJECT_ID]\/locations\/[LOCATION_ID]\/buckets\/[BUCKET_ID]\/tables\/[TABLE_NAME]",
-          "readOnly": true,
-          "type": "string"
-        },
-        "description": {
-          "description": "Describes this table.",
-          "type": "string"
-        },
-        "schema": {
-          "description": "Describes the schema of this table.",
-          "$ref": "TableSchema"
-        },
-        "tableSizeBytes": {
-          "description": "Output only. The size of this table in bytes, excluding any data in the streaming buffer.",
-          "readOnly": true,
-          "type": "string",
-          "format": "int64"
-        },
-        "rowCount": {
-          "description": "Output only. The number of rows of data in this table, excluding any data in the streaming buffer.",
-          "readOnly": true,
-          "type": "string",
-          "format": "int64"
-        },
-        "createTime": {
-          "description": "Output only. The time when this table was created.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        },
-        "updateTime": {
-          "description": "Output only. The time when this table was last modified.",
-          "readOnly": true,
-          "type": "string",
-          "format": "google-datetime"
-        }
-      }
-    },
     "ListBucketsResponse": {
       "id": "ListBucketsResponse",
       "description": "The response from ListBuckets.",
@@ -699,7 +637,7 @@
     },
     "LogExclusion": {
       "id": "LogExclusion",
-      "description": "Specifies a set of log entries that are not to be stored in Cloud Logging. If your GCP resource receives a large volume of log entries, you can use exclusions to reduce your chargeable logs. Exclusions are processed after log sinks, so you can export log entries before they are excluded. Note that organization-level and folder-level exclusions don't apply to child resources, and that you can't exclude audit log entries.",
+      "description": "Specifies a set of log entries that are filtered out by a sink. If your Google Cloud resource receives a large volume of log entries, you can use exclusions to reduce your chargeable logs. Note that exclusions on organization-level and folder-level sinks don't apply to child resources. Note also that you cannot modify the _Required sink or exclude logs from it.",
       "type": "object",
       "properties": {
         "name": {
@@ -768,7 +706,7 @@
     },
     "CmekSettings": {
       "id": "CmekSettings",
-      "description": "Describes the customer-managed encryption key (CMEK) settings associated with a project, folder, organization, billing account, or flexible resource.Note: CMEK for the Logs Router can currently only be configured for GCP organizations. Once configured, it applies to all projects and folders in the GCP organization.See Enabling CMEK for Logs Router (https:\/\/cloud.google.com\/logging\/docs\/routing\/managed-encryption) for more information.",
+      "description": "Describes the customer-managed encryption key (CMEK) settings associated with a project, folder, organization, billing account, or flexible resource.Note: CMEK for the Logs Router can currently only be configured for Google Cloud organizations. Once configured, it applies to all projects and folders in the Google Cloud organization.See Enabling CMEK for Logs Router (https:\/\/cloud.google.com\/logging\/docs\/routing\/managed-encryption) for more information.",
       "type": "object",
       "properties": {
         "name": {
@@ -2367,7 +2305,7 @@
                 "https://www.googleapis.com/auth/logging.admin",
                 "https://www.googleapis.com/auth/logging.read"
               ],
-              "description": "Lists all the exclusions in a parent resource."
+              "description": "Lists all the exclusions on the _Default sink in a parent resource."
             },
             "get": {
               "id": "logging.projects.exclusions.get",
@@ -2395,7 +2333,7 @@
                 "https://www.googleapis.com/auth/logging.admin",
                 "https://www.googleapis.com/auth/logging.read"
               ],
-              "description": "Gets the description of an exclusion."
+              "description": "Gets the description of an exclusion in the _Default sink."
             },
             "create": {
               "id": "logging.projects.exclusions.create",
@@ -2424,7 +2362,7 @@
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/logging.admin"
               ],
-              "description": "Creates a new exclusion in a specified parent resource. Only log entries belonging to that resource can be excluded. You can have up to 10 exclusions in a resource."
+              "description": "Creates a new exclusion in the _Default sink in a specified parent resource. Only log entries belonging to that resource can be excluded. You can have up to 10 exclusions in a resource."
             },
             "patch": {
               "id": "logging.projects.exclusions.patch",
@@ -2459,7 +2397,7 @@
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/logging.admin"
               ],
-              "description": "Changes one or more properties of an existing exclusion."
+              "description": "Changes one or more properties of an existing exclusion in the _Default sink."
             },
             "delete": {
               "id": "logging.projects.exclusions.delete",
@@ -2485,7 +2423,7 @@
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/logging.admin"
               ],
-              "description": "Deletes an exclusion."
+              "description": "Deletes an exclusion in the _Default sink."
             }
           }
         },
@@ -2867,43 +2805,6 @@
               }
               ,
               "resources": {
-                "tables": {
-                  "methods": {
-                    "list": {
-                      "id": "logging.projects.locations.buckets.tables.list",
-                      "path": "v2/{+parent}/tables",
-                      "flatPath": "v2/projects/{projectsId}/locations/{locationsId}/buckets/{bucketsId}/tables",
-                      "httpMethod": "GET",
-                      "parameters": {
-                        "parent": {
-                          "description": "Required. The bucket whose tables are to be listed: Example: \"projects\/PROJECT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\"",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "pageToken": {
-                          "description": "Optional. If present, then retrieve the next batch of results from the preceding call to this method. pageToken must be the value of nextPageToken from the previous response. The values of other method parameters should be identical to those in the previous call.",
-                          "location": "query",
-                          "type": "string"
-                        },
-                        "pageSize": {
-                          "description": "Optional. The maximum number of results to return from this request. Non-positive values are ignored. The presence of nextPageToken in the response indicates that more results might be available.",
-                          "location": "query",
-                          "type": "integer",
-                          "format": "int32"
-                        }
-                      },
-                      "parameterOrder": [
-                        "parent"
-                      ],
-                      "response": {
-                        "$ref": "ListTablesResponse"
-                      },
-                      "description": "Lists all tables in the specified log bucket."
-                    }
-                  }
-                },
                 "views": {
                   "methods": {
                     "list": {
@@ -3561,7 +3462,7 @@
                 "https://www.googleapis.com/auth/logging.admin",
                 "https://www.googleapis.com/auth/logging.read"
               ],
-              "description": "Lists all the exclusions in a parent resource."
+              "description": "Lists all the exclusions on the _Default sink in a parent resource."
             },
             "get": {
               "id": "logging.folders.exclusions.get",
@@ -3589,7 +3490,7 @@
                 "https://www.googleapis.com/auth/logging.admin",
                 "https://www.googleapis.com/auth/logging.read"
               ],
-              "description": "Gets the description of an exclusion."
+              "description": "Gets the description of an exclusion in the _Default sink."
             },
             "create": {
               "id": "logging.folders.exclusions.create",
@@ -3618,7 +3519,7 @@
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/logging.admin"
               ],
-              "description": "Creates a new exclusion in a specified parent resource. Only log entries belonging to that resource can be excluded. You can have up to 10 exclusions in a resource."
+              "description": "Creates a new exclusion in the _Default sink in a specified parent resource. Only log entries belonging to that resource can be excluded. You can have up to 10 exclusions in a resource."
             },
             "patch": {
               "id": "logging.folders.exclusions.patch",
@@ -3653,7 +3554,7 @@
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/logging.admin"
               ],
-              "description": "Changes one or more properties of an existing exclusion."
+              "description": "Changes one or more properties of an existing exclusion in the _Default sink."
             },
             "delete": {
               "id": "logging.folders.exclusions.delete",
@@ -3679,7 +3580,7 @@
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/logging.admin"
               ],
-              "description": "Deletes an exclusion."
+              "description": "Deletes an exclusion in the _Default sink."
             }
           }
         },
@@ -4061,43 +3962,6 @@
               }
               ,
               "resources": {
-                "tables": {
-                  "methods": {
-                    "list": {
-                      "id": "logging.folders.locations.buckets.tables.list",
-                      "path": "v2/{+parent}/tables",
-                      "flatPath": "v2/folders/{foldersId}/locations/{locationsId}/buckets/{bucketsId}/tables",
-                      "httpMethod": "GET",
-                      "parameters": {
-                        "parent": {
-                          "description": "Required. The bucket whose tables are to be listed: Example: \"projects\/PROJECT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\"",
-                          "pattern": "^folders\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "pageToken": {
-                          "description": "Optional. If present, then retrieve the next batch of results from the preceding call to this method. pageToken must be the value of nextPageToken from the previous response. The values of other method parameters should be identical to those in the previous call.",
-                          "location": "query",
-                          "type": "string"
-                        },
-                        "pageSize": {
-                          "description": "Optional. The maximum number of results to return from this request. Non-positive values are ignored. The presence of nextPageToken in the response indicates that more results might be available.",
-                          "location": "query",
-                          "type": "integer",
-                          "format": "int32"
-                        }
-                      },
-                      "parameterOrder": [
-                        "parent"
-                      ],
-                      "response": {
-                        "$ref": "ListTablesResponse"
-                      },
-                      "description": "Lists all tables in the specified log bucket."
-                    }
-                  }
-                },
                 "views": {
                   "methods": {
                     "list": {
@@ -4696,7 +4560,7 @@
                 "https://www.googleapis.com/auth/logging.admin",
                 "https://www.googleapis.com/auth/logging.read"
               ],
-              "description": "Lists all the exclusions in a parent resource."
+              "description": "Lists all the exclusions on the _Default sink in a parent resource."
             },
             "get": {
               "id": "logging.billingAccounts.exclusions.get",
@@ -4724,7 +4588,7 @@
                 "https://www.googleapis.com/auth/logging.admin",
                 "https://www.googleapis.com/auth/logging.read"
               ],
-              "description": "Gets the description of an exclusion."
+              "description": "Gets the description of an exclusion in the _Default sink."
             },
             "create": {
               "id": "logging.billingAccounts.exclusions.create",
@@ -4753,7 +4617,7 @@
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/logging.admin"
               ],
-              "description": "Creates a new exclusion in a specified parent resource. Only log entries belonging to that resource can be excluded. You can have up to 10 exclusions in a resource."
+              "description": "Creates a new exclusion in the _Default sink in a specified parent resource. Only log entries belonging to that resource can be excluded. You can have up to 10 exclusions in a resource."
             },
             "patch": {
               "id": "logging.billingAccounts.exclusions.patch",
@@ -4788,7 +4652,7 @@
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/logging.admin"
               ],
-              "description": "Changes one or more properties of an existing exclusion."
+              "description": "Changes one or more properties of an existing exclusion in the _Default sink."
             },
             "delete": {
               "id": "logging.billingAccounts.exclusions.delete",
@@ -4814,7 +4678,7 @@
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/logging.admin"
               ],
-              "description": "Deletes an exclusion."
+              "description": "Deletes an exclusion in the _Default sink."
             }
           }
         },
@@ -5140,43 +5004,6 @@
               }
               ,
               "resources": {
-                "tables": {
-                  "methods": {
-                    "list": {
-                      "id": "logging.billingAccounts.locations.buckets.tables.list",
-                      "path": "v2/{+parent}/tables",
-                      "flatPath": "v2/billingAccounts/{billingAccountsId}/locations/{locationsId}/buckets/{bucketsId}/tables",
-                      "httpMethod": "GET",
-                      "parameters": {
-                        "parent": {
-                          "description": "Required. The bucket whose tables are to be listed: Example: \"projects\/PROJECT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\"",
-                          "pattern": "^billingAccounts\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "pageToken": {
-                          "description": "Optional. If present, then retrieve the next batch of results from the preceding call to this method. pageToken must be the value of nextPageToken from the previous response. The values of other method parameters should be identical to those in the previous call.",
-                          "location": "query",
-                          "type": "string"
-                        },
-                        "pageSize": {
-                          "description": "Optional. The maximum number of results to return from this request. Non-positive values are ignored. The presence of nextPageToken in the response indicates that more results might be available.",
-                          "location": "query",
-                          "type": "integer",
-                          "format": "int32"
-                        }
-                      },
-                      "parameterOrder": [
-                        "parent"
-                      ],
-                      "response": {
-                        "$ref": "ListTablesResponse"
-                      },
-                      "description": "Lists all tables in the specified log bucket."
-                    }
-                  }
-                },
                 "views": {
                   "methods": {
                     "list": {
@@ -5722,7 +5549,7 @@
             "https://www.googleapis.com/auth/logging.admin",
             "https://www.googleapis.com/auth/logging.read"
           ],
-          "description": "Lists all the exclusions in a parent resource."
+          "description": "Lists all the exclusions on the _Default sink in a parent resource."
         },
         "get": {
           "id": "logging.exclusions.get",
@@ -5750,7 +5577,7 @@
             "https://www.googleapis.com/auth/logging.admin",
             "https://www.googleapis.com/auth/logging.read"
           ],
-          "description": "Gets the description of an exclusion."
+          "description": "Gets the description of an exclusion in the _Default sink."
         },
         "create": {
           "id": "logging.exclusions.create",
@@ -5779,7 +5606,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/logging.admin"
           ],
-          "description": "Creates a new exclusion in a specified parent resource. Only log entries belonging to that resource can be excluded. You can have up to 10 exclusions in a resource."
+          "description": "Creates a new exclusion in the _Default sink in a specified parent resource. Only log entries belonging to that resource can be excluded. You can have up to 10 exclusions in a resource."
         },
         "patch": {
           "id": "logging.exclusions.patch",
@@ -5814,7 +5641,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/logging.admin"
           ],
-          "description": "Changes one or more properties of an existing exclusion."
+          "description": "Changes one or more properties of an existing exclusion in the _Default sink."
         },
         "delete": {
           "id": "logging.exclusions.delete",
@@ -5840,7 +5667,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/logging.admin"
           ],
-          "description": "Deletes an exclusion."
+          "description": "Deletes an exclusion in the _Default sink."
         }
       }
     },
@@ -5853,7 +5680,7 @@
           "httpMethod": "GET",
           "parameters": {
             "name": {
-              "description": "Required. The resource for which to retrieve CMEK settings. \"projects\/[PROJECT_ID]\/cmekSettings\" \"organizations\/[ORGANIZATION_ID]\/cmekSettings\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/cmekSettings\" \"folders\/[FOLDER_ID]\/cmekSettings\" For example:\"organizations\/12345\/cmekSettings\"Note: CMEK for the Logs Router can currently only be configured for GCP organizations. Once configured, it applies to all projects and folders in the GCP organization.",
+              "description": "Required. The resource for which to retrieve CMEK settings. \"projects\/[PROJECT_ID]\/cmekSettings\" \"organizations\/[ORGANIZATION_ID]\/cmekSettings\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/cmekSettings\" \"folders\/[FOLDER_ID]\/cmekSettings\" For example:\"organizations\/12345\/cmekSettings\"Note: CMEK for the Logs Router can currently only be configured for Google Cloud organizations. Once configured, it applies to all projects and folders in the Google Cloud organization.",
               "pattern": "^[^\/]+\/[^\/]+$",
               "location": "path",
               "required": true,
@@ -5872,7 +5699,7 @@
             "https://www.googleapis.com/auth/logging.admin",
             "https://www.googleapis.com/auth/logging.read"
           ],
-          "description": "Gets the Logs Router CMEK settings for the given resource.Note: CMEK for the Logs Router can currently only be configured for GCP organizations. Once configured, it applies to all projects and folders in the GCP organization.See Enabling CMEK for Logs Router (https:\/\/cloud.google.com\/logging\/docs\/routing\/managed-encryption) for more information."
+          "description": "Gets the Logs Router CMEK settings for the given resource.Note: CMEK for the Logs Router can currently only be configured for Google Cloud organizations. Once configured, it applies to all projects and folders in the Google Cloud organization.See Enabling CMEK for Logs Router (https:\/\/cloud.google.com\/logging\/docs\/routing\/managed-encryption) for more information."
         },
         "updateCmekSettings": {
           "id": "logging.updateCmekSettings",
@@ -5881,7 +5708,7 @@
           "httpMethod": "PATCH",
           "parameters": {
             "name": {
-              "description": "Required. The resource name for the CMEK settings to update. \"projects\/[PROJECT_ID]\/cmekSettings\" \"organizations\/[ORGANIZATION_ID]\/cmekSettings\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/cmekSettings\" \"folders\/[FOLDER_ID]\/cmekSettings\" For example:\"organizations\/12345\/cmekSettings\"Note: CMEK for the Logs Router can currently only be configured for GCP organizations. Once configured, it applies to all projects and folders in the GCP organization.",
+              "description": "Required. The resource name for the CMEK settings to update. \"projects\/[PROJECT_ID]\/cmekSettings\" \"organizations\/[ORGANIZATION_ID]\/cmekSettings\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/cmekSettings\" \"folders\/[FOLDER_ID]\/cmekSettings\" For example:\"organizations\/12345\/cmekSettings\"Note: CMEK for the Logs Router can currently only be configured for Google Cloud organizations. Once configured, it applies to all projects and folders in the Google Cloud organization.",
               "pattern": "^[^\/]+\/[^\/]+$",
               "location": "path",
               "required": true,
@@ -5907,7 +5734,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/logging.admin"
           ],
-          "description": "Updates the Logs Router CMEK settings for the given resource.Note: CMEK for the Logs Router can currently only be configured for GCP organizations. Once configured, it applies to all projects and folders in the GCP organization.UpdateCmekSettings will fail if 1) kms_key_name is invalid, or 2) the associated service account does not have the required roles\/cloudkms.cryptoKeyEncrypterDecrypter role assigned for the key, or 3) access to the key is disabled.See Enabling CMEK for Logs Router (https:\/\/cloud.google.com\/logging\/docs\/routing\/managed-encryption) for more information."
+          "description": "Updates the Logs Router CMEK settings for the given resource.Note: CMEK for the Logs Router can currently only be configured for Google Cloud organizations. Once configured, it applies to all projects and folders in the Google Cloud organization.UpdateCmekSettings will fail if 1) kms_key_name is invalid, or 2) the associated service account does not have the required roles\/cloudkms.cryptoKeyEncrypterDecrypter role assigned for the key, or 3) access to the key is disabled.See Enabling CMEK for Logs Router (https:\/\/cloud.google.com\/logging\/docs\/routing\/managed-encryption) for more information."
         }
       }
     },
@@ -5920,7 +5747,7 @@
           "httpMethod": "GET",
           "parameters": {
             "name": {
-              "description": "Required. The resource for which to retrieve CMEK settings. \"projects\/[PROJECT_ID]\/cmekSettings\" \"organizations\/[ORGANIZATION_ID]\/cmekSettings\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/cmekSettings\" \"folders\/[FOLDER_ID]\/cmekSettings\" For example:\"organizations\/12345\/cmekSettings\"Note: CMEK for the Logs Router can currently only be configured for GCP organizations. Once configured, it applies to all projects and folders in the GCP organization.",
+              "description": "Required. The resource for which to retrieve CMEK settings. \"projects\/[PROJECT_ID]\/cmekSettings\" \"organizations\/[ORGANIZATION_ID]\/cmekSettings\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/cmekSettings\" \"folders\/[FOLDER_ID]\/cmekSettings\" For example:\"organizations\/12345\/cmekSettings\"Note: CMEK for the Logs Router can currently only be configured for Google Cloud organizations. Once configured, it applies to all projects and folders in the Google Cloud organization.",
               "pattern": "^organizations\/[^\/]+$",
               "location": "path",
               "required": true,
@@ -5939,7 +5766,7 @@
             "https://www.googleapis.com/auth/logging.admin",
             "https://www.googleapis.com/auth/logging.read"
           ],
-          "description": "Gets the Logs Router CMEK settings for the given resource.Note: CMEK for the Logs Router can currently only be configured for GCP organizations. Once configured, it applies to all projects and folders in the GCP organization.See Enabling CMEK for Logs Router (https:\/\/cloud.google.com\/logging\/docs\/routing\/managed-encryption) for more information."
+          "description": "Gets the Logs Router CMEK settings for the given resource.Note: CMEK for the Logs Router can currently only be configured for Google Cloud organizations. Once configured, it applies to all projects and folders in the Google Cloud organization.See Enabling CMEK for Logs Router (https:\/\/cloud.google.com\/logging\/docs\/routing\/managed-encryption) for more information."
         },
         "updateCmekSettings": {
           "id": "logging.organizations.updateCmekSettings",
@@ -5948,7 +5775,7 @@
           "httpMethod": "PATCH",
           "parameters": {
             "name": {
-              "description": "Required. The resource name for the CMEK settings to update. \"projects\/[PROJECT_ID]\/cmekSettings\" \"organizations\/[ORGANIZATION_ID]\/cmekSettings\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/cmekSettings\" \"folders\/[FOLDER_ID]\/cmekSettings\" For example:\"organizations\/12345\/cmekSettings\"Note: CMEK for the Logs Router can currently only be configured for GCP organizations. Once configured, it applies to all projects and folders in the GCP organization.",
+              "description": "Required. The resource name for the CMEK settings to update. \"projects\/[PROJECT_ID]\/cmekSettings\" \"organizations\/[ORGANIZATION_ID]\/cmekSettings\" \"billingAccounts\/[BILLING_ACCOUNT_ID]\/cmekSettings\" \"folders\/[FOLDER_ID]\/cmekSettings\" For example:\"organizations\/12345\/cmekSettings\"Note: CMEK for the Logs Router can currently only be configured for Google Cloud organizations. Once configured, it applies to all projects and folders in the Google Cloud organization.",
               "pattern": "^organizations\/[^\/]+$",
               "location": "path",
               "required": true,
@@ -5974,7 +5801,7 @@
             "https://www.googleapis.com/auth/cloud-platform",
             "https://www.googleapis.com/auth/logging.admin"
           ],
-          "description": "Updates the Logs Router CMEK settings for the given resource.Note: CMEK for the Logs Router can currently only be configured for GCP organizations. Once configured, it applies to all projects and folders in the GCP organization.UpdateCmekSettings will fail if 1) kms_key_name is invalid, or 2) the associated service account does not have the required roles\/cloudkms.cryptoKeyEncrypterDecrypter role assigned for the key, or 3) access to the key is disabled.See Enabling CMEK for Logs Router (https:\/\/cloud.google.com\/logging\/docs\/routing\/managed-encryption) for more information."
+          "description": "Updates the Logs Router CMEK settings for the given resource.Note: CMEK for the Logs Router can currently only be configured for Google Cloud organizations. Once configured, it applies to all projects and folders in the Google Cloud organization.UpdateCmekSettings will fail if 1) kms_key_name is invalid, or 2) the associated service account does not have the required roles\/cloudkms.cryptoKeyEncrypterDecrypter role assigned for the key, or 3) access to the key is disabled.See Enabling CMEK for Logs Router (https:\/\/cloud.google.com\/logging\/docs\/routing\/managed-encryption) for more information."
         }
       }
       ,
@@ -6229,7 +6056,7 @@
                 "https://www.googleapis.com/auth/logging.admin",
                 "https://www.googleapis.com/auth/logging.read"
               ],
-              "description": "Lists all the exclusions in a parent resource."
+              "description": "Lists all the exclusions on the _Default sink in a parent resource."
             },
             "get": {
               "id": "logging.organizations.exclusions.get",
@@ -6257,7 +6084,7 @@
                 "https://www.googleapis.com/auth/logging.admin",
                 "https://www.googleapis.com/auth/logging.read"
               ],
-              "description": "Gets the description of an exclusion."
+              "description": "Gets the description of an exclusion in the _Default sink."
             },
             "create": {
               "id": "logging.organizations.exclusions.create",
@@ -6286,7 +6113,7 @@
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/logging.admin"
               ],
-              "description": "Creates a new exclusion in a specified parent resource. Only log entries belonging to that resource can be excluded. You can have up to 10 exclusions in a resource."
+              "description": "Creates a new exclusion in the _Default sink in a specified parent resource. Only log entries belonging to that resource can be excluded. You can have up to 10 exclusions in a resource."
             },
             "patch": {
               "id": "logging.organizations.exclusions.patch",
@@ -6321,7 +6148,7 @@
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/logging.admin"
               ],
-              "description": "Changes one or more properties of an existing exclusion."
+              "description": "Changes one or more properties of an existing exclusion in the _Default sink."
             },
             "delete": {
               "id": "logging.organizations.exclusions.delete",
@@ -6347,7 +6174,7 @@
                 "https://www.googleapis.com/auth/cloud-platform",
                 "https://www.googleapis.com/auth/logging.admin"
               ],
-              "description": "Deletes an exclusion."
+              "description": "Deletes an exclusion in the _Default sink."
             }
           }
         },
@@ -6729,43 +6556,6 @@
               }
               ,
               "resources": {
-                "tables": {
-                  "methods": {
-                    "list": {
-                      "id": "logging.organizations.locations.buckets.tables.list",
-                      "path": "v2/{+parent}/tables",
-                      "flatPath": "v2/organizations/{organizationsId}/locations/{locationsId}/buckets/{bucketsId}/tables",
-                      "httpMethod": "GET",
-                      "parameters": {
-                        "parent": {
-                          "description": "Required. The bucket whose tables are to be listed: Example: \"projects\/PROJECT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\"",
-                          "pattern": "^organizations\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        },
-                        "pageToken": {
-                          "description": "Optional. If present, then retrieve the next batch of results from the preceding call to this method. pageToken must be the value of nextPageToken from the previous response. The values of other method parameters should be identical to those in the previous call.",
-                          "location": "query",
-                          "type": "string"
-                        },
-                        "pageSize": {
-                          "description": "Optional. The maximum number of results to return from this request. Non-positive values are ignored. The presence of nextPageToken in the response indicates that more results might be available.",
-                          "location": "query",
-                          "type": "integer",
-                          "format": "int32"
-                        }
-                      },
-                      "parameterOrder": [
-                        "parent"
-                      ],
-                      "response": {
-                        "$ref": "ListTablesResponse"
-                      },
-                      "description": "Lists all tables in the specified log bucket."
-                    }
-                  }
-                },
                 "views": {
                   "methods": {
                     "list": {
@@ -7391,65 +7181,6 @@
           }
           ,
           "resources": {
-            "tables": {
-              "methods": {
-                "list": {
-                  "id": "logging.locations.buckets.tables.list",
-                  "path": "v2/{+parent}/tables",
-                  "flatPath": "v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}/tables",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "parent": {
-                      "description": "Required. The bucket whose tables are to be listed: Example: \"projects\/PROJECT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\"",
-                      "pattern": "^[^\/]+\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    },
-                    "pageToken": {
-                      "description": "Optional. If present, then retrieve the next batch of results from the preceding call to this method. pageToken must be the value of nextPageToken from the previous response. The values of other method parameters should be identical to those in the previous call.",
-                      "location": "query",
-                      "type": "string"
-                    },
-                    "pageSize": {
-                      "description": "Optional. The maximum number of results to return from this request. Non-positive values are ignored. The presence of nextPageToken in the response indicates that more results might be available.",
-                      "location": "query",
-                      "type": "integer",
-                      "format": "int32"
-                    }
-                  },
-                  "parameterOrder": [
-                    "parent"
-                  ],
-                  "response": {
-                    "$ref": "ListTablesResponse"
-                  },
-                  "description": "Lists all tables in the specified log bucket."
-                },
-                "get": {
-                  "id": "logging.locations.buckets.tables.get",
-                  "path": "v2/{+name}",
-                  "flatPath": "v2/{v2Id}/{v2Id1}/locations/{locationsId}/buckets/{bucketsId}/tables/{tablesId}",
-                  "httpMethod": "GET",
-                  "parameters": {
-                    "name": {
-                      "description": "Required. The resource name of the table. Example: \"projects\/PROJECT_ID\/locations\/LOCATION_ID\/buckets\/BUCKET_ID\/tables\/TABLE_ID\"",
-                      "pattern": "^[^\/]+\/[^\/]+\/locations\/[^\/]+\/buckets\/[^\/]+\/tables\/[^\/]+$",
-                      "location": "path",
-                      "required": true,
-                      "type": "string"
-                    }
-                  },
-                  "parameterOrder": [
-                    "name"
-                  ],
-                  "response": {
-                    "$ref": "Table"
-                  },
-                  "description": "Gets the specified table resource by table ID. This method does not return the data in the table, it only returns the table resource, which describes the structure of this table."
-                }
-              }
-            },
             "views": {
               "methods": {
                 "list": {

@@ -246,6 +246,53 @@ class BinaryAuthorization(_messages.Message):
   enabled = _messages.BooleanField(1)
 
 
+class BlueGreenInfo(_messages.Message):
+  r"""Information relevant to blue/green update.
+
+  Enums:
+    PhaseValueValuesEnum: Current blue/green update phase.
+
+  Fields:
+    blueInstanceGroupUrls: The resource URLs of the [managed instance groups]
+      (/compute/docs/instance-groups/creating-groups-of-managed-instances)
+      associated with blue pool.
+    bluePoolDeletionStartTime: Time to start deleting blue pool to complete
+      blue/green update, in [RFC3339](https://www.ietf.org/rfc/rfc3339.txt)
+      text format.
+    greenInstanceGroupUrls: The resource URLs of the [managed instance groups]
+      (/compute/docs/instance-groups/creating-groups-of-managed-instances)
+      associated with green pool.
+    phase: Current blue/green update phase.
+  """
+
+  class PhaseValueValuesEnum(_messages.Enum):
+    r"""Current blue/green update phase.
+
+    Values:
+      PHASE_UNSPECIFIED: Unspecified phase.
+      UPDATE_STARTED: Blue/green update has been initiated.
+      CREATING_GREEN_POOL: Start creating green pool nodes.
+      CORDONING_BLUE_POOL: Start cordoning blue pool nodes.
+      DRAINING_BLUE_POOL: Start draining blue pool nodes.
+      NODE_POOL_SOAKING: Start soaking time after draining entire blue pool.
+      DELETING_BLUE_POOL: Start deleting blue nodes.
+      ROLLBACK_STARTED: Rollback has been initiated.
+    """
+    PHASE_UNSPECIFIED = 0
+    UPDATE_STARTED = 1
+    CREATING_GREEN_POOL = 2
+    CORDONING_BLUE_POOL = 3
+    DRAINING_BLUE_POOL = 4
+    NODE_POOL_SOAKING = 5
+    DELETING_BLUE_POOL = 6
+    ROLLBACK_STARTED = 7
+
+  blueInstanceGroupUrls = _messages.StringField(1, repeated=True)
+  bluePoolDeletionStartTime = _messages.StringField(2)
+  greenInstanceGroupUrls = _messages.StringField(3, repeated=True)
+  phase = _messages.EnumField('PhaseValueValuesEnum', 4)
+
+
 class BlueGreenSettings(_messages.Message):
   r"""Settings for blue/green update.
 
@@ -1052,6 +1099,13 @@ class CompleteIPRotationRequest(_messages.Message):
   zone = _messages.StringField(4)
 
 
+class CompleteNodePoolUpgradeRequest(_messages.Message):
+  r"""CompleteNodePoolUpgradeRequest sets the name of target node pool to
+  complete upgrade.
+  """
+
+
+
 class ConfidentialNodes(_messages.Message):
   r"""ConfidentialNodes is configuration for the confidential nodes feature,
   which makes nodes run on confidential VMs.
@@ -1185,6 +1239,22 @@ class ContainerProjectsLocationsClustersListRequest(_messages.Message):
   parent = _messages.StringField(1, required=True)
   projectId = _messages.StringField(2)
   zone = _messages.StringField(3)
+
+
+class ContainerProjectsLocationsClustersNodePoolsCompleteUpgradeRequest(_messages.Message):
+  r"""A ContainerProjectsLocationsClustersNodePoolsCompleteUpgradeRequest
+  object.
+
+  Fields:
+    completeNodePoolUpgradeRequest: A CompleteNodePoolUpgradeRequest resource
+      to be passed as the request body.
+    name: The name (project, location, cluster, node pool id) of the node pool
+      to complete upgrade. Specified in the format
+      'projects/*/locations/*/clusters/*/nodePools/*'.
+  """
+
+  completeNodePoolUpgradeRequest = _messages.MessageField('CompleteNodePoolUpgradeRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class ContainerProjectsLocationsClustersNodePoolsDeleteRequest(_messages.Message):
@@ -2009,6 +2079,8 @@ class IPAllocationPolicy(_messages.Message):
   r"""Configuration for controlling how IPs are allocated in the cluster.
 
   Enums:
+    Ipv6AccessTypeValueValuesEnum: The ipv6 access type (internal or external)
+      when create_subnetwork is true
     StackTypeValueValuesEnum: IP stack type
 
   Fields:
@@ -2040,6 +2112,8 @@ class IPAllocationPolicy(_messages.Message):
     createSubnetwork: Whether a new subnetwork will be created automatically
       for the cluster. This field is only applicable when `use_ip_aliases` is
       true.
+    ipv6AccessType: The ipv6 access type (internal or external) when
+      create_subnetwork is true
     nodeIpv4Cidr: This field is deprecated, use node_ipv4_cidr_block.
     nodeIpv4CidrBlock: The IP address range of the instance IPs in this
       cluster. This is applicable only if `create_subnetwork` is true. Set to
@@ -2094,6 +2168,20 @@ class IPAllocationPolicy(_messages.Message):
       then the server picks the default IP allocation mode
   """
 
+  class Ipv6AccessTypeValueValuesEnum(_messages.Enum):
+    r"""The ipv6 access type (internal or external) when create_subnetwork is
+    true
+
+    Values:
+      IPV6_ACCESS_TYPE_UNSPECIFIED: Default value, will be defaulted as type
+        external.
+      INTERNAL: Access type internal (all v6 addresses are internal IPs)
+      EXTERNAL: Access type external (all v6 addresses are external IPs)
+    """
+    IPV6_ACCESS_TYPE_UNSPECIFIED = 0
+    INTERNAL = 1
+    EXTERNAL = 2
+
   class StackTypeValueValuesEnum(_messages.Enum):
     r"""IP stack type
 
@@ -2111,17 +2199,18 @@ class IPAllocationPolicy(_messages.Message):
   clusterIpv4CidrBlock = _messages.StringField(3)
   clusterSecondaryRangeName = _messages.StringField(4)
   createSubnetwork = _messages.BooleanField(5)
-  nodeIpv4Cidr = _messages.StringField(6)
-  nodeIpv4CidrBlock = _messages.StringField(7)
-  servicesIpv4Cidr = _messages.StringField(8)
-  servicesIpv4CidrBlock = _messages.StringField(9)
-  servicesSecondaryRangeName = _messages.StringField(10)
-  stackType = _messages.EnumField('StackTypeValueValuesEnum', 11)
-  subnetworkName = _messages.StringField(12)
-  tpuIpv4CidrBlock = _messages.StringField(13)
-  tpuUseServiceNetworking = _messages.BooleanField(14)
-  useIpAliases = _messages.BooleanField(15)
-  useRoutes = _messages.BooleanField(16)
+  ipv6AccessType = _messages.EnumField('Ipv6AccessTypeValueValuesEnum', 6)
+  nodeIpv4Cidr = _messages.StringField(7)
+  nodeIpv4CidrBlock = _messages.StringField(8)
+  servicesIpv4Cidr = _messages.StringField(9)
+  servicesIpv4CidrBlock = _messages.StringField(10)
+  servicesSecondaryRangeName = _messages.StringField(11)
+  stackType = _messages.EnumField('StackTypeValueValuesEnum', 12)
+  subnetworkName = _messages.StringField(13)
+  tpuIpv4CidrBlock = _messages.StringField(14)
+  tpuUseServiceNetworking = _messages.BooleanField(15)
+  useIpAliases = _messages.BooleanField(16)
+  useRoutes = _messages.BooleanField(17)
 
 
 class IdentityServiceConfig(_messages.Message):
@@ -3371,6 +3460,7 @@ class NodePool(_messages.Message):
     name: The name of the node pool.
     networkConfig: Networking configuration for this NodePool. If specified,
       it overrides the cluster-level defaults.
+    placementPolicy: Specifies the node placement policy.
     podIpv4CidrSize: [Output only] The pod CIDR block size per node in this
       node pool.
     resourceVersion: Server-defined resource version (etag).
@@ -3379,6 +3469,8 @@ class NodePool(_messages.Message):
     statusMessage: [Output only] Additional information about the current
       status of this node pool instance, if available. Deprecated, use the
       field conditions instead.
+    updateInfo: Output only. [Output only] Upgrade info contains relevant
+      information during a node pool update.
     upgradeSettings: Upgrade settings control disruption and speed of the
       upgrade.
     version: The version of the Kubernetes of this node.
@@ -3422,13 +3514,15 @@ class NodePool(_messages.Message):
   maxPodsConstraint = _messages.MessageField('MaxPodsConstraint', 8)
   name = _messages.StringField(9)
   networkConfig = _messages.MessageField('NodeNetworkConfig', 10)
-  podIpv4CidrSize = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  resourceVersion = _messages.StringField(12)
-  selfLink = _messages.StringField(13)
-  status = _messages.EnumField('StatusValueValuesEnum', 14)
-  statusMessage = _messages.StringField(15)
-  upgradeSettings = _messages.MessageField('UpgradeSettings', 16)
-  version = _messages.StringField(17)
+  placementPolicy = _messages.MessageField('PlacementPolicy', 11)
+  podIpv4CidrSize = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  resourceVersion = _messages.StringField(13)
+  selfLink = _messages.StringField(14)
+  status = _messages.EnumField('StatusValueValuesEnum', 15)
+  statusMessage = _messages.StringField(16)
+  updateInfo = _messages.MessageField('UpdateInfo', 17)
+  upgradeSettings = _messages.MessageField('UpgradeSettings', 18)
+  version = _messages.StringField(19)
 
 
 class NodePoolAutoscaling(_messages.Message):
@@ -3668,6 +3762,31 @@ class OperationProgress(_messages.Message):
   name = _messages.StringField(2)
   stages = _messages.MessageField('OperationProgress', 3, repeated=True)
   status = _messages.EnumField('StatusValueValuesEnum', 4)
+
+
+class PlacementPolicy(_messages.Message):
+  r"""PlacementPolicy defines the placement policy used by the node pool.
+
+  Enums:
+    TypeValueValuesEnum: The type of placement.
+
+  Fields:
+    type: The type of placement.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""The type of placement.
+
+    Values:
+      TYPE_UNSPECIFIED: TYPE_UNSPECIFIED specifies no requirements on nodes
+        placement.
+      COMPACT: COMPACT specifies node placement in the same availability
+        domain to ensure low communication latency.
+    """
+    TYPE_UNSPECIFIED = 0
+    COMPACT = 1
+
+  type = _messages.EnumField('TypeValueValuesEnum', 1)
 
 
 class PodSecurityPolicyConfig(_messages.Message):
@@ -3958,6 +4077,8 @@ class RollbackNodePoolUpgradeRequest(_messages.Message):
     projectId: Deprecated. The Google Developers Console [project ID or
       project number](https://support.google.com/cloud/answer/6158840). This
       field has been deprecated and replaced by the name field.
+    respectPdb: Required. Option for rollback to ignore the
+      PodDisruptionBudget. Default value is false.
     zone: Deprecated. The name of the Google Compute Engine
       [zone](/compute/docs/zones#available) in which the cluster resides. This
       field has been deprecated and replaced by the name field.
@@ -3967,7 +4088,8 @@ class RollbackNodePoolUpgradeRequest(_messages.Message):
   name = _messages.StringField(2)
   nodePoolId = _messages.StringField(3)
   projectId = _messages.StringField(4)
-  zone = _messages.StringField(5)
+  respectPdb = _messages.BooleanField(5)
+  zone = _messages.StringField(6)
 
 
 class SandboxConfig(_messages.Message):
@@ -4847,6 +4969,17 @@ class UpdateClusterRequest(_messages.Message):
   update = _messages.MessageField('ClusterUpdate', 4)
   updatedCluster = _messages.MessageField('Cluster', 5)
   zone = _messages.StringField(6)
+
+
+class UpdateInfo(_messages.Message):
+  r"""UpdateInfo contains resource (instance groups, etc), status and other
+  intermediate information relevant to a node pool update.
+
+  Fields:
+    blueGreenInfo: Information of a blue/green update.
+  """
+
+  blueGreenInfo = _messages.MessageField('BlueGreenInfo', 1)
 
 
 class UpdateMasterRequest(_messages.Message):

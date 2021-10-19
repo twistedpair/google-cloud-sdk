@@ -47,8 +47,13 @@ def TriggerAttributeConfig():
 
 
 def ChannelAttributeConfig():
-  """Builds and AttributeConfig for the channel resrouce."""
+  """Builds an AttributeConfig for the channel resource."""
   return concepts.ResourceParameterAttributeConfig(name='channel')
+
+
+def ProviderAttributeConfig():
+  """Builds an AttributeConfig for the provider resource."""
+  return concepts.ResourceParameterAttributeConfig(name='provider')
 
 
 def TransportTopicAttributeConfig():
@@ -57,7 +62,7 @@ def TransportTopicAttributeConfig():
 
 
 def TriggerResourceSpec():
-  """Builds an ResourceSpec for trigger resource."""
+  """Builds a ResourceSpec for trigger resource."""
   return concepts.ResourceSpec(
       'eventarc.projects.locations.triggers',
       resource_name='trigger',
@@ -67,11 +72,21 @@ def TriggerResourceSpec():
 
 
 def ChannelResourceSpec():
-  """Builds an ResourceSpac for channel resource."""
+  """Builds a ResourceSpec for channel resource."""
   return concepts.ResourceSpec(
       'eventarc.projects.locations.channels',
       resource_name='channel',
       channelsId=ChannelAttributeConfig(),
+      locationsId=LocationAttributeConfig(),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
+
+
+def ProviderResourceSpec():
+  """Builds a ResourceSpec for event provider."""
+  return concepts.ResourceSpec(
+      'eventarc.projects.locations.providers',
+      resource_name='provider',
+      providersId=ProviderAttributeConfig(),
       locationsId=LocationAttributeConfig(),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
 
@@ -144,6 +159,13 @@ def AddChannelResourceArg(parser, group_help_text, required=False):
   """Adds a resource argument for an Eventarc channel."""
   concept_parsers.ConceptParser.ForResource(
       'channel', ChannelResourceSpec(), group_help_text,
+      required=required).AddToParser(parser)
+
+
+def AddProviderResourceArg(parser, group_help_text, required=False):
+  """Adds a resource argument for an Eventarc provider."""
+  concept_parsers.ConceptParser.ForResource(
+      'provider', ProviderResourceSpec(), group_help_text,
       required=required).AddToParser(parser)
 
 

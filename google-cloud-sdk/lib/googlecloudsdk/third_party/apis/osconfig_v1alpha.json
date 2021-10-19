@@ -2374,37 +2374,34 @@
             "instances": {
               "resources": {
                 "osPolicyAssignments": {
-                  "methods": {
-                    "getReport": {
-                      "id": "osconfig.projects.locations.instances.osPolicyAssignments.getReport",
-                      "path": "v1alpha/{+name}",
-                      "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}/osPolicyAssignments/{osPolicyAssignmentsId}/report",
-                      "httpMethod": "GET",
-                      "parameters": {
-                        "name": {
-                          "description": "Required. API resource name for OS policy assignment report. Format: `\/projects\/{project}\/locations\/{location}\/instances\/{instance}\/osPolicyAssignments\/{assignment}\/report` For `{project}`, either `project-number` or `project-id` can be provided. For `{instance_id}`, either Compute Engine `instance-id` or `instance-name` can be provided. For `{assignment_id}`, the OSPolicyAssignment id must be provided.",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+\/osPolicyAssignments\/[^\/]+\/report$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "response": {
-                        "$ref": "OSPolicyAssignmentReport"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Get the OS policy asssignment report for the specified Compute Engine VM instance."
-                    }
-                  }
-                  ,
                   "resources": {
                     "reports": {
                       "methods": {
+                        "get": {
+                          "id": "osconfig.projects.locations.instances.osPolicyAssignments.reports.get",
+                          "path": "v1alpha/{+name}",
+                          "flatPath": "v1alpha/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}/osPolicyAssignments/{osPolicyAssignmentsId}/report",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "name": {
+                              "description": "Required. API resource name for OS policy assignment report. Format: `\/projects\/{project}\/locations\/{location}\/instances\/{instance}\/osPolicyAssignments\/{assignment}\/report` For `{project}`, either `project-number` or `project-id` can be provided. For `{instance_id}`, either Compute Engine `instance-id` or `instance-name` can be provided. For `{assignment_id}`, the OSPolicyAssignment id must be provided.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+\/osPolicyAssignments\/[^\/]+\/report$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "response": {
+                            "$ref": "OSPolicyAssignmentReport"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Get the OS policy asssignment report for the specified Compute Engine VM instance."
+                        },
                         "list": {
                           "id": "osconfig.projects.locations.instances.osPolicyAssignments.reports.list",
                           "path": "v1alpha/{+parent}/reports",

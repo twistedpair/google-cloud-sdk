@@ -32,6 +32,8 @@ from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core.util import times
 
+import six
+
 API_NAME = 'cloudasset'
 DEFAULT_API_VERSION = 'v1'
 V1P1BETA1_API_VERSION = 'v1p1beta1'
@@ -783,3 +785,27 @@ class AnalyzeMoveClient(object):
         destinationParent=destination, resource=project, view=scope)
 
     return self.service.AnalyzeMove(request_message)
+
+
+class AssetQueryClient(object):
+  """Client for QueryAsset API."""
+
+  def __init__(self, parent, api_version=DEFAULT_API_VERSION):
+    self.parent = parent
+    self.message_module = GetMessages(api_version)
+    self.service = GetClient(api_version).v1
+
+  def Query(self, args):
+    """Make QueryAssets request."""
+    timeout = None
+    if args.IsSpecified('timeout'):
+      timeout = six.text_type(args.timeout) + 's'
+    query_assets_request = self.message_module.CloudassetQueryAssetsRequest(
+        parent=self.parent,
+        queryAssetsRequest=self.message_module.QueryAssetsRequest(
+            jobReference=args.job_reference,
+            pageSize=args.page_size,
+            pageToken=args.page_token,
+            statement=args.statement,
+            timeout=timeout))
+    return self.service.QueryAssets(query_assets_request)

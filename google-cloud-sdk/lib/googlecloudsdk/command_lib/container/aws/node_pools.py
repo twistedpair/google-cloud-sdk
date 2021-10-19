@@ -85,6 +85,10 @@ class NodePoolsClient(object):
     return getattr(self.messages, msg)(
         secretArn=secret_arn, secretVersion=secret_version_id)
 
+  def _CreateAwsConfigEncryption(self, kms_key_arn):
+    msg = 'GoogleCloudGkemulticloud{}AwsConfigEncryption'.format(self.version)
+    return getattr(self.messages, msg)(kmsKeyArn=kms_key_arn)
+
   def Create(self, node_pool_ref, args):
     """Create an AWS node pool."""
     validate_only = getattr(args, 'validate_only', False)
@@ -113,6 +117,9 @@ class NodePoolsClient(object):
     if args.proxy_secret_arn and args.proxy_secret_version_id:
       config.proxyConfig = self._CreateAwsProxyConfig(
           args.proxy_secret_arn, args.proxy_secret_version_id)
+    if args.config_encryption_kms_key_arn:
+      config.configEncryption = self._CreateAwsConfigEncryption(
+          args.config_encryption_kms_key_arn)
 
     root_volume = self._AddAwsNodePoolRootVolume(config)
     root_volume.sizeGib = args.root_volume_size
@@ -164,3 +171,28 @@ class NodePoolsClient(object):
         field='awsNodePools',
         batch_size_attribute='pageSize'):
       yield node_pool
+
+  def Update(self, node_pool_ref, args):
+    """Updates a node pool in an Anthos cluster on AWS.
+
+    Args:
+      node_pool_ref: gkemulticloud.GoogleCloudGkemulticloudV1AwsNodePool object.
+      args: argparse.Namespace, Arguments parsed from the command.
+
+    Returns:
+      Response to the update request.
+    """
+    validate_only = getattr(args, 'validate_only', False)
+    req = self.messages.GkemulticloudProjectsLocationsAwsClustersAwsNodePoolsPatchRequest(
+        name=node_pool_ref.RelativeName(),
+        validateOnly=validate_only)
+
+    update_mask = []
+    nodepool = self._AddAwsNodePool(req)
+    if args.node_version:
+      nodepool.version = args.node_version
+      update_mask.append('version')
+
+    req.updateMask = ','.join(update_mask)
+
+    return self.service.Patch(req)

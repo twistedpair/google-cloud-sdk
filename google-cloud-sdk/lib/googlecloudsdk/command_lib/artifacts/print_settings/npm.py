@@ -19,19 +19,21 @@ from __future__ import division
 from __future__ import unicode_literals
 
 SERVICE_ACCOUNT_TEMPLATE = """\
-# Insert following snippet into your .npmrc
+# Insert the following snippet into your project .npmrc
 
 {configured_registry}=https://{registry_path}
+//{registry_path}:always-auth=true
+
+# Insert the following snippet into your user .npmrc
+
 //{registry_path}:_password="{password}"
 //{registry_path}:username=_json_key_base64
 //{registry_path}:email=not.valid@email.com
-//{registry_path}:always-auth=true
 """
 
 NO_SERVICE_ACCOUNT_TEMPLATE = """\
-# Insert following snippet into your .npmrc
+# Insert the following snippet into your project .npmrc
 
 {configured_registry}=https://{registry_path}
-//{registry_path}:_authToken=""
 //{registry_path}:always-auth=true
 """

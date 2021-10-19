@@ -405,6 +405,14 @@ MAP = {
                 mtls_endpoint_override=''),
     },
     'certificatemanager': {
+        'v1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.certificatemanager.v1',
+                client_classpath='certificatemanager_v1_client.CertificatemanagerV1',
+                messages_modulepath='certificatemanager_v1_messages',
+                default_version=True,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
         'v1alpha1':
             APIDef(
                 class_path='googlecloudsdk.third_party.apis.certificatemanager.v1alpha1',
@@ -418,7 +426,7 @@ MAP = {
                 class_path='googlecloudsdk.third_party.apis.certificatemanager.v1alpha2',
                 client_classpath='certificatemanager_v1alpha2_client.CertificatemanagerV1alpha2',
                 messages_modulepath='certificatemanager_v1alpha2_messages',
-                default_version=True,
+                default_version=False,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
     },
@@ -1085,6 +1093,14 @@ MAP = {
                 mtls_endpoint_override=''),
     },
     'domains': {
+        'v1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.domains.v1',
+                client_classpath='domains_v1_client.DomainsV1',
+                messages_modulepath='domains_v1_messages',
+                default_version=True,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
         'v1alpha2':
             APIDef(
                 class_path='googlecloudsdk.third_party.apis.domains.v1alpha2',
@@ -1098,7 +1114,7 @@ MAP = {
                 class_path='googlecloudsdk.third_party.apis.domains.v1beta1',
                 client_classpath='domains_v1beta1_client.DomainsV1beta1',
                 messages_modulepath='domains_v1beta1_messages',
-                default_version=True,
+                default_version=False,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
     },
@@ -2091,6 +2107,16 @@ MAP = {
                 client_classpath='run_v1beta1_client.RunV1beta1',
                 messages_modulepath='run_v1beta1_messages',
                 default_version=False,
+                enable_mtls=False,
+                mtls_endpoint_override=''),
+    },
+    'run_apps': {
+        'v1alpha1':
+            APIDef(
+                class_path='googlecloudsdk.third_party.apis.run_apps.v1alpha1',
+                client_classpath='run_apps_v1alpha1_client.RunAppsV1alpha1',
+                messages_modulepath='run_apps_v1alpha1_messages',
+                default_version=True,
                 enable_mtls=False,
                 mtls_endpoint_override=''),
     },

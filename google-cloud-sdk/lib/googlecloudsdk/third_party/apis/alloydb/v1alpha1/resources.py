@@ -18,7 +18,7 @@ import enum
 
 
 BASE_URL = 'https://alloydb.googleapis.com/v1alpha1/'
-DOCS_URL = ''
+DOCS_URL = 'https://cloud.google.com/alloydb/'
 
 
 class Collections(enum.Enum):
@@ -52,17 +52,6 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  PROJECTS_LOCATIONS_CLUSTERS_BACKUPS = (
-      'projects.locations.clusters.backups',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/clusters/'
-              '{clustersId}/backups/{backupsId}',
-      },
-      ['name'],
-      True
-  )
   PROJECTS_LOCATIONS_CLUSTERS_INSTANCES = (
       'projects.locations.clusters.instances',
       '{+name}',
@@ -70,17 +59,6 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/clusters/'
               '{clustersId}/instances/{instancesId}',
-      },
-      ['name'],
-      True
-  )
-  PROJECTS_LOCATIONS_CLUSTERS_USERS = (
-      'projects.locations.clusters.users',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/clusters/'
-              '{clustersId}/users/{usersId}',
       },
       ['name'],
       True

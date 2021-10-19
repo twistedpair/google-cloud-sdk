@@ -250,12 +250,6 @@ def ApplyProgressStages(preview=False):
   stages[step_enum.PREPARING_STORAGE_BUCKET.name] = (
       'Preparing storage bucket (this can take up to 7 minutes on the '
       'first deployment).')
-  if preview:
-    # TODO(b/200984145): Remove this stage message once none of the gcloud
-    # Preview workflows can perform cluster creation.
-    stages[step_enum.PREPARING_CONFIG_CONTROLLER.name] = (
-        'Preparing Config Controller instance (this can take up to 20 '
-        'minutes on the first deployment).')
   # TODO(b/195148906): Add Cloud Build log URL to pipeline and apply messages.
   stages[step_enum.RUNNING_PIPELINE
          .name] = 'Processing blueprint through kpt pipeline.'

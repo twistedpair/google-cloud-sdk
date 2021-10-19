@@ -19,8 +19,11 @@ class Bucket(_messages.Message):
   r"""A bucket.
 
   Messages:
+    AutoclassValue: The bucket's Autoclass configuration.
     BillingValue: The bucket's billing configuration.
     CorsValueListEntry: A CorsValueListEntry object.
+    CustomPlacementConfigValue: The bucket's custom placement configuration
+      for Custom Dual Regions.
     EncryptionValue: Encryption configuration for a bucket.
     IamConfigurationValue: The bucket's IAM configuration.
     LabelsValue: User-provided labels, in key/value pairs.
@@ -47,8 +50,11 @@ class Bucket(_messages.Message):
 
   Fields:
     acl: Access controls on the bucket.
+    autoclass: The bucket's Autoclass configuration.
     billing: The bucket's billing configuration.
     cors: The bucket's Cross-Origin Resource Sharing (CORS) configuration.
+    customPlacementConfig: The bucket's custom placement configuration for
+      Custom Dual Regions.
     defaultEventBasedHold: The default value for event-based hold on newly
       created objects in this bucket. Event-based hold is a way to retain
       objects indefinitely until an event occurs, signified by the hold's
@@ -94,6 +100,8 @@ class Bucket(_messages.Message):
       retention policy cannot be removed or shortened in duration for the
       lifetime of the bucket. Attempting to remove or decrease period of a
       locked retention policy will result in a PERMISSION_DENIED error.
+    rpo: The Recovery Point Objective (RPO) of this bucket. Set to ASYNC_TURBO
+      to turn on Turbo Replication on a bucket.
     satisfiesPZS: Reserved for future use.
     selfLink: The URI of this bucket.
     storageClass: The bucket's default storage class, used whenever no
@@ -109,12 +117,19 @@ class Bucket(_messages.Message):
     website: The bucket's website configuration, controlling how the service
       behaves when accessing bucket contents as a web site. See the Static
       Website Examples for more information.
-    zoneAffinity: The zone or zones from which the bucket is intended to use
-      zonal quota. Requests for data from outside the specified affinities are
-      still allowed but won't be able to use zonal quota. The zone or zones
-      need to be within the bucket location otherwise the requests will fail
-      with a 400 Bad Request response.
   """
+
+  class AutoclassValue(_messages.Message):
+    r"""The bucket's Autoclass configuration.
+
+    Fields:
+      enabled: Whether or not Autoclass is enabled on this bucket
+      toggleTime: A date and time in RFC 3339 format representing the instant
+        at which "enabled" was last toggled.
+    """
+
+    enabled = _messages.BooleanField(1)
+    toggleTime = _message_types.DateTimeField(2)
 
   class BillingValue(_messages.Message):
     r"""The bucket's billing configuration.
@@ -145,6 +160,15 @@ class Bucket(_messages.Message):
     method = _messages.StringField(2, repeated=True)
     origin = _messages.StringField(3, repeated=True)
     responseHeader = _messages.StringField(4, repeated=True)
+
+  class CustomPlacementConfigValue(_messages.Message):
+    r"""The bucket's custom placement configuration for Custom Dual Regions.
+
+    Fields:
+      dataLocations: The list of regional locations in which data is placed.
+    """
+
+    dataLocations = _messages.StringField(1, repeated=True)
 
   class EncryptionValue(_messages.Message):
     r"""Encryption configuration for a bucket.
@@ -426,33 +450,35 @@ class Bucket(_messages.Message):
     notFoundPage = _messages.StringField(2)
 
   acl = _messages.MessageField('BucketAccessControl', 1, repeated=True)
-  billing = _messages.MessageField('BillingValue', 2)
-  cors = _messages.MessageField('CorsValueListEntry', 3, repeated=True)
-  defaultEventBasedHold = _messages.BooleanField(4)
-  defaultObjectAcl = _messages.MessageField('ObjectAccessControl', 5, repeated=True)
-  encryption = _messages.MessageField('EncryptionValue', 6)
-  etag = _messages.StringField(7)
-  iamConfiguration = _messages.MessageField('IamConfigurationValue', 8)
-  id = _messages.StringField(9)
-  kind = _messages.StringField(10, default='storage#bucket')
-  labels = _messages.MessageField('LabelsValue', 11)
-  lifecycle = _messages.MessageField('LifecycleValue', 12)
-  location = _messages.StringField(13)
-  locationType = _messages.StringField(14)
-  logging = _messages.MessageField('LoggingValue', 15)
-  metageneration = _messages.IntegerField(16)
-  name = _messages.StringField(17)
-  owner = _messages.MessageField('OwnerValue', 18)
-  projectNumber = _messages.IntegerField(19, variant=_messages.Variant.UINT64)
-  retentionPolicy = _messages.MessageField('RetentionPolicyValue', 20)
-  satisfiesPZS = _messages.BooleanField(21)
-  selfLink = _messages.StringField(22)
-  storageClass = _messages.StringField(23)
-  timeCreated = _message_types.DateTimeField(24)
-  updated = _message_types.DateTimeField(25)
-  versioning = _messages.MessageField('VersioningValue', 26)
-  website = _messages.MessageField('WebsiteValue', 27)
-  zoneAffinity = _messages.StringField(28, repeated=True)
+  autoclass = _messages.MessageField('AutoclassValue', 2)
+  billing = _messages.MessageField('BillingValue', 3)
+  cors = _messages.MessageField('CorsValueListEntry', 4, repeated=True)
+  customPlacementConfig = _messages.MessageField('CustomPlacementConfigValue', 5)
+  defaultEventBasedHold = _messages.BooleanField(6)
+  defaultObjectAcl = _messages.MessageField('ObjectAccessControl', 7, repeated=True)
+  encryption = _messages.MessageField('EncryptionValue', 8)
+  etag = _messages.StringField(9)
+  iamConfiguration = _messages.MessageField('IamConfigurationValue', 10)
+  id = _messages.StringField(11)
+  kind = _messages.StringField(12, default='storage#bucket')
+  labels = _messages.MessageField('LabelsValue', 13)
+  lifecycle = _messages.MessageField('LifecycleValue', 14)
+  location = _messages.StringField(15)
+  locationType = _messages.StringField(16)
+  logging = _messages.MessageField('LoggingValue', 17)
+  metageneration = _messages.IntegerField(18)
+  name = _messages.StringField(19)
+  owner = _messages.MessageField('OwnerValue', 20)
+  projectNumber = _messages.IntegerField(21, variant=_messages.Variant.UINT64)
+  retentionPolicy = _messages.MessageField('RetentionPolicyValue', 22)
+  rpo = _messages.StringField(23)
+  satisfiesPZS = _messages.BooleanField(24)
+  selfLink = _messages.StringField(25)
+  storageClass = _messages.StringField(26)
+  timeCreated = _message_types.DateTimeField(27)
+  updated = _message_types.DateTimeField(28)
+  versioning = _messages.MessageField('VersioningValue', 29)
+  website = _messages.MessageField('WebsiteValue', 30)
 
 
 class BucketAccessControl(_messages.Message):

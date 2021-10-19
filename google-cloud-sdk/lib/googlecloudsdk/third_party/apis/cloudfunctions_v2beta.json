@@ -217,7 +217,7 @@
           "format": "int32"
         },
         "bindings": {
-          "description": "Associates a list of `members` to a `role`. Optionally, may specify a `condition` that determines how and when the `bindings` are applied. Each of the `bindings` must contain at least one member.",
+          "description": "Associates a list of `members` to a `role`. Optionally, may specify a `condition` that determines how and when the `bindings` are applied. Each of the `bindings` must contain at least one member. The `bindings` in a `Policy` can refer to up to 1,500 members; up to 250 of these members can be Google groups. Each occurrence of a member counts towards these limits. For example, if the `bindings` grant 50 different roles to `user:alice@example.com`, and not to any other member, then you can add another 1,450 members to the `bindings` in the `Policy`.",
           "type": "array",
           "items": {
             "$ref": "Binding"
@@ -674,6 +674,20 @@
         "serviceAccountEmail": {
           "description": "Optional. The email of the trigger's service account. The service account must have permission to invoke Cloud Run services, the permission is `run.routes.invoke`. If empty, defaults to the Compute Engine default service account: `{project_number}-compute@developer.gserviceaccount.com`.",
           "type": "string"
+        },
+        "retryPolicy": {
+          "description": "Optional. If unset, then defaults to ignoring failures (i.e. not retrying them).",
+          "type": "string",
+          "enumDescriptions": [
+            "Not specified.",
+            "Do not retry.",
+            "Retry on any failure, retry up to 7 days with an exponential backoff (capped at 10 seconds)."
+          ],
+          "enum": [
+            "RETRY_POLICY_UNSPECIFIED",
+            "RETRY_POLICY_DO_NOT_RETRY",
+            "RETRY_POLICY_RETRY"
+          ]
         }
       }
     },
@@ -783,6 +797,60 @@
         "downloadUrl": {
           "description": "The generated Google Cloud Storage signed URL that should be used for function source code download.",
           "type": "string"
+        }
+      }
+    },
+    "ListRuntimesResponse": {
+      "id": "ListRuntimesResponse",
+      "description": "Response for the `ListRuntimes` method.",
+      "type": "object",
+      "properties": {
+        "runtimes": {
+          "description": "The runtimes that match the request.",
+          "type": "array",
+          "items": {
+            "$ref": "Runtime"
+          }
+        }
+      }
+    },
+    "Runtime": {
+      "id": "Runtime",
+      "description": "Describes a runtime and any special information (e.g., deprecation status) related to it.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "description": "The name of the runtime, e.g., 'go113', 'nodejs12', etc.",
+          "type": "string"
+        },
+        "stage": {
+          "description": "The stage of life this runtime is in, e.g., BETA, GA, etc.",
+          "type": "string",
+          "enumDescriptions": [
+            "Not specified.",
+            "The runtime is in development.",
+            "The runtime is in the Alpha stage.",
+            "The runtime is in the Beta stage.",
+            "The runtime is generally available.",
+            "The runtime is deprecated.",
+            "The runtime is no longer supported."
+          ],
+          "enum": [
+            "RUNTIME_STAGE_UNSPECIFIED",
+            "DEVELOPMENT",
+            "ALPHA",
+            "BETA",
+            "GA",
+            "DEPRECATED",
+            "DECOMMISSIONED"
+          ]
+        },
+        "warnings": {
+          "description": "Warning messages, e.g., a deprecation warning.",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
         }
       }
     },
@@ -1575,6 +1643,35 @@
                     "https://www.googleapis.com/auth/cloud-platform"
                   ],
                   "description": "Returns a signed URL for downloading deployed function source code. The URL is only valid for a limited period and should be used within 30 minutes of generation. For more information about the signed URL usage see: https:\/\/cloud.google.com\/storage\/docs\/access-control\/signed-urls"
+                }
+              }
+            },
+            "runtimes": {
+              "methods": {
+                "list": {
+                  "id": "cloudfunctions.projects.locations.runtimes.list",
+                  "path": "v2beta/{+parent}/runtimes",
+                  "flatPath": "v2beta/projects/{projectsId}/locations/{locationsId}/runtimes",
+                  "httpMethod": "GET",
+                  "parameters": {
+                    "parent": {
+                      "description": "Required. The project and location from which the runtimes should be listed, specified in the format `projects\/*\/locations\/*`",
+                      "pattern": "^projects\/[^\/]+\/locations\/[^\/]+$",
+                      "location": "path",
+                      "required": true,
+                      "type": "string"
+                    }
+                  },
+                  "parameterOrder": [
+                    "parent"
+                  ],
+                  "response": {
+                    "$ref": "ListRuntimesResponse"
+                  },
+                  "scopes": [
+                    "https://www.googleapis.com/auth/cloud-platform"
+                  ],
+                  "description": "Returns a list of runtimes that are supported for the requested project."
                 }
               }
             }

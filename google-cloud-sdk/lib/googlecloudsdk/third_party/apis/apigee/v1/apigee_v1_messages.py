@@ -2359,7 +2359,7 @@ class ApigeeOrganizationsEnvironmentsSecurityReportsGetRequest(_messages.Message
   r"""A ApigeeOrganizationsEnvironmentsSecurityReportsGetRequest object.
 
   Fields:
-    name: Required. Name of the asynchronous query to get. Must be of the form
+    name: Required. Name of the security report to get. Must be of the form
       `organizations/{org}/environments/{env}/securityReports/{reportId}`.
   """
 
@@ -2378,12 +2378,25 @@ class ApigeeOrganizationsEnvironmentsSecurityReportsGetResultRequest(_messages.M
   name = _messages.StringField(1, required=True)
 
 
+class ApigeeOrganizationsEnvironmentsSecurityReportsGetResultViewRequest(_messages.Message):
+  r"""A ApigeeOrganizationsEnvironmentsSecurityReportsGetResultViewRequest
+  object.
+
+  Fields:
+    name: Required. Name of the security report result view to get. Must be of
+      the form `organizations/{org}/environments/{env}/securityReports/{report
+      Id}/resultView`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class ApigeeOrganizationsEnvironmentsSecurityReportsListRequest(_messages.Message):
   r"""A ApigeeOrganizationsEnvironmentsSecurityReportsListRequest object.
 
   Fields:
     dataset: Filter response list by dataset. Example: `api`, `mint`
-    from_: Filter response list by returning asynchronous queries that created
+    from_: Filter response list by returning security reports that created
       after this date time. Time must be in ISO date-time format like
       '2011-12-03T10:15:30Z'.
     pageSize: The maximum number of security report to return in the list
@@ -2392,10 +2405,10 @@ class ApigeeOrganizationsEnvironmentsSecurityReportsListRequest(_messages.Messag
       next page.
     parent: Required. The parent resource name. Must be of the form
       `organizations/{org}/environments/{env}`.
-    status: Filter response list by asynchronous query status.
+    status: Filter response list by security reports status.
     submittedBy: Filter response list by user who submitted queries.
-    to: Filter response list by returning asynchronous queries that created
-      before this date time. Time must be in ISO date-time format like
+    to: Filter response list by returning security reports that created before
+      this date time. Time must be in ISO date-time format like
       '2011-12-03T10:16:30Z'.
   """
 
@@ -2920,7 +2933,7 @@ class ApigeeOrganizationsHostSecurityReportsGetRequest(_messages.Message):
   r"""A ApigeeOrganizationsHostSecurityReportsGetRequest object.
 
   Fields:
-    name: Required. Name of the asynchronous query to get. Must be of the form
+    name: Required. Name of the security report to get. Must be of the form
       `organizations/{org}/securityReports/{reportId}`.
   """
 
@@ -2931,8 +2944,19 @@ class ApigeeOrganizationsHostSecurityReportsGetResultRequest(_messages.Message):
   r"""A ApigeeOrganizationsHostSecurityReportsGetResultRequest object.
 
   Fields:
-    name: Required. Name of the asynchronous query result to get. Must be of
-      the form `organizations/{org}/securityReports/{reportId}/result`.
+    name: Required. Name of the security report result to get. Must be of the
+      form `organizations/{org}/securityReports/{reportId}/result`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApigeeOrganizationsHostSecurityReportsGetResultViewRequest(_messages.Message):
+  r"""A ApigeeOrganizationsHostSecurityReportsGetResultViewRequest object.
+
+  Fields:
+    name: Required. Name of the security report result view to get. Must be of
+      the form `organizations/{org}/securityReports/{reportId}/resultView`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -2944,7 +2968,7 @@ class ApigeeOrganizationsHostSecurityReportsListRequest(_messages.Message):
   Fields:
     dataset: Filter response list by dataset. Example: `api`, `mint`
     envgroupHostname: Required. Filter response list by hostname.
-    from_: Filter response list by returning asynchronous queries that created
+    from_: Filter response list by returning security reports that created
       after this date time. Time must be in ISO date-time format like
       '2011-12-03T10:15:30Z'.
     pageSize: The maximum number of security report to return in the list
@@ -2953,10 +2977,10 @@ class ApigeeOrganizationsHostSecurityReportsListRequest(_messages.Message):
       next page.
     parent: Required. The parent resource name. Must be of the form
       `organizations/{org}`.
-    status: Filter response list by asynchronous query status.
+    status: Filter response list by security report status.
     submittedBy: Filter response list by user who submitted queries.
-    to: Filter response list by returning asynchronous queries that created
-      before this date time. Time must be in ISO date-time format like
+    to: Filter response list by returning security reports that created before
+      this date time. Time must be in ISO date-time format like
       '2011-12-03T10:16:30Z'.
   """
 
@@ -3395,6 +3419,23 @@ class ApigeeOrganizationsOptimizedHostStatsGetRequest(_messages.Message):
   topk = _messages.StringField(13)
   tsAscending = _messages.BooleanField(14)
   tzo = _messages.StringField(15)
+
+
+class ApigeeOrganizationsPatchRequest(_messages.Message):
+  r"""A ApigeeOrganizationsPatchRequest object.
+
+  Fields:
+    googleCloudApigeeV1Organization: A GoogleCloudApigeeV1Organization
+      resource to be passed as the request body.
+    name: Required. Apigee organization name in the following format:
+      `organizations/{org}`
+    updateMask: List of fields to be updated. Fields that can be updated:
+      portal_disabled, release_channel, addon_config.
+  """
+
+  googleCloudApigeeV1Organization = _messages.MessageField('GoogleCloudApigeeV1Organization', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class ApigeeOrganizationsReportsCreateRequest(_messages.Message):
@@ -6522,8 +6563,7 @@ class GoogleCloudApigeeV1ListSecurityReportsResponse(_messages.Message):
       requested, the token can be used to fetch the next page in a subsequent
       call. If the response is the last page and there are no more reports to
       return this field is left empty.
-    securityReports: The asynchronous security reports belong to requested
-      resource name.
+    securityReports: The security reports belong to requested resource name.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -6941,6 +6981,7 @@ class GoogleCloudApigeeV1Organization(_messages.Message):
     lastModifiedAt: Output only. Time that the Apigee organization was last
       modified in milliseconds since epoch.
     name: Output only. Name of the Apigee organization.
+    portalDisabled: Configuration for the Portals settings.
     projectId: Output only. Project ID associated with the Apigee
       organization.
     properties: Properties defined in the Apigee organization profile.
@@ -7088,14 +7129,15 @@ class GoogleCloudApigeeV1Organization(_messages.Message):
   expiresAt = _messages.IntegerField(12)
   lastModifiedAt = _messages.IntegerField(13)
   name = _messages.StringField(14)
-  projectId = _messages.StringField(15)
-  properties = _messages.MessageField('GoogleCloudApigeeV1Properties', 16)
-  releaseChannel = _messages.EnumField('ReleaseChannelValueValuesEnum', 17)
-  runtimeDatabaseEncryptionKeyName = _messages.StringField(18)
-  runtimeType = _messages.EnumField('RuntimeTypeValueValuesEnum', 19)
-  state = _messages.EnumField('StateValueValuesEnum', 20)
-  subscriptionType = _messages.EnumField('SubscriptionTypeValueValuesEnum', 21)
-  type = _messages.EnumField('TypeValueValuesEnum', 22)
+  portalDisabled = _messages.BooleanField(15)
+  projectId = _messages.StringField(16)
+  properties = _messages.MessageField('GoogleCloudApigeeV1Properties', 17)
+  releaseChannel = _messages.EnumField('ReleaseChannelValueValuesEnum', 18)
+  runtimeDatabaseEncryptionKeyName = _messages.StringField(19)
+  runtimeType = _messages.EnumField('RuntimeTypeValueValuesEnum', 20)
+  state = _messages.EnumField('StateValueValuesEnum', 21)
+  subscriptionType = _messages.EnumField('SubscriptionTypeValueValuesEnum', 22)
+  type = _messages.EnumField('TypeValueValuesEnum', 23)
 
 
 class GoogleCloudApigeeV1OrganizationProjectMapping(_messages.Message):
@@ -7983,7 +8025,7 @@ class GoogleCloudApigeeV1SecurityReport(_messages.Message):
       completed.
     queryParams: Contains information like metrics, dimenstions etc of the
       Security Report.
-    reportDefinitionId: Asynchronous Report ID.
+    reportDefinitionId: Report Definition ID.
     result: Result is available only after the query is completed.
     resultFileSize: ResultFileSize is available only after the query is
       completed.
@@ -8065,7 +8107,7 @@ class GoogleCloudApigeeV1SecurityReportQuery(_messages.Message):
     metrics: A list of Metrics.
     mimeType: Valid values include: `csv` or `json`. Defaults to `json`. Note:
       Configure the delimiter for CSV output using the csvDelimiter property.
-    reportDefinitionId: Asynchronous Report ID.
+    reportDefinitionId: Report Definition ID.
     timeRange: Required. Time range for the query. Can use the following
       predefined strings to specify the time range: `last60minutes`
       `last24hours` `last7days` Or, specify the timeRange as a structure
@@ -8121,6 +8163,26 @@ class GoogleCloudApigeeV1SecurityReportResultMetadata(_messages.Message):
 
   expires = _messages.StringField(1)
   self = _messages.StringField(2)
+
+
+class GoogleCloudApigeeV1SecurityReportResultView(_messages.Message):
+  r"""The response for security report result view APIs.
+
+  Fields:
+    code: Error code when there is a failure.
+    error: Error message when there is a failure.
+    metadata: Metadata contains information like metrics, dimenstions etc of
+      the security report.
+    rows: Rows of security report result. Each row is a JSON object. Example:
+      {sum(message_count): 1, developer_app: "(not set)",...}
+    state: State of retrieving ResultView.
+  """
+
+  code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  error = _messages.StringField(2)
+  metadata = _messages.MessageField('GoogleCloudApigeeV1SecurityReportMetadata', 3)
+  rows = _messages.MessageField('extra_types.JsonValue', 4, repeated=True)
+  state = _messages.StringField(5)
 
 
 class GoogleCloudApigeeV1ServiceIssuersMapping(_messages.Message):
@@ -8828,19 +8890,19 @@ class GoogleIamV1AuditLogConfig(_messages.Message):
 
 
 class GoogleIamV1Binding(_messages.Message):
-  r"""Associates `members` with a `role`.
+  r"""Associates `members`, or principals, with a `role`.
 
   Fields:
     condition: The condition that is associated with this binding. If the
       condition evaluates to `true`, then this binding applies to the current
       request. If the condition evaluates to `false`, then this binding does
       not apply to the current request. However, a different role binding
-      might grant the same role to one or more of the members in this binding.
-      To learn which resources support conditions in their IAM policies, see
-      the [IAM
+      might grant the same role to one or more of the principals in this
+      binding. To learn which resources support conditions in their IAM
+      policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
-    members: Specifies the identities requesting access for a Cloud Platform
+    members: Specifies the principals requesting access for a Cloud Platform
       resource. `members` can have the following values: * `allUsers`: A
       special identifier that represents anyone who is on the internet; with
       or without a Google account. * `allAuthenticatedUsers`: A special
@@ -8870,8 +8932,8 @@ class GoogleIamV1Binding(_messages.Message):
       group retains the role in the binding. * `domain:{domain}`: The G Suite
       domain (primary) that represents all the users of that domain. For
       example, `google.com` or `example.com`.
-    role: Role that is assigned to `members`. For example, `roles/viewer`,
-      `roles/editor`, or `roles/owner`.
+    role: Role that is assigned to the list of `members`, or principals. For
+      example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """
 
   condition = _messages.MessageField('GoogleTypeExpr', 1)
@@ -8882,15 +8944,15 @@ class GoogleIamV1Binding(_messages.Message):
 class GoogleIamV1Policy(_messages.Message):
   r"""An Identity and Access Management (IAM) policy, which specifies access
   controls for Google Cloud resources. A `Policy` is a collection of
-  `bindings`. A `binding` binds one or more `members` to a single `role`.
-  Members can be user accounts, service accounts, Google groups, and domains
-  (such as G Suite). A `role` is a named list of permissions; each `role` can
-  be an IAM predefined role or a user-created custom role. For some types of
-  Google Cloud resources, a `binding` can also specify a `condition`, which is
-  a logical expression that allows access to a resource only if the expression
-  evaluates to `true`. A condition can add constraints based on attributes of
-  the request, the resource, or both. To learn which resources support
-  conditions in their IAM policies, see the [IAM
+  `bindings`. A `binding` binds one or more `members`, or principals, to a
+  single `role`. Principals can be user accounts, service accounts, Google
+  groups, and domains (such as G Suite). A `role` is a named list of
+  permissions; each `role` can be an IAM predefined role or a user-created
+  custom role. For some types of Google Cloud resources, a `binding` can also
+  specify a `condition`, which is a logical expression that allows access to a
+  resource only if the expression evaluates to `true`. A condition can add
+  constraints based on attributes of the request, the resource, or both. To
+  learn which resources support conditions in their IAM policies, see the [IAM
   documentation](https://cloud.google.com/iam/help/conditions/resource-
   policies). **JSON example:** { "bindings": [ { "role":
   "roles/resourcemanager.organizationAdmin", "members": [
@@ -8912,9 +8974,15 @@ class GoogleIamV1Policy(_messages.Message):
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
-    bindings: Associates a list of `members` to a `role`. Optionally, may
-      specify a `condition` that determines how and when the `bindings` are
-      applied. Each of the `bindings` must contain at least one member.
+    bindings: Associates a list of `members`, or principals, with a `role`.
+      Optionally, may specify a `condition` that determines how and when the
+      `bindings` are applied. Each of the `bindings` must contain at least one
+      principal. The `bindings` in a `Policy` can refer to up to 1,500
+      principals; up to 250 of these principals can be Google groups. Each
+      occurrence of a principal counts towards these limits. For example, if
+      the `bindings` grant 50 different roles to `user:alice@example.com`, and
+      not to any other principal, then you can add another 1,450 principals to
+      the `bindings` in the `Policy`.
     etag: `etag` is used for optimistic concurrency control as a way to help
       prevent simultaneous updates of a policy from overwriting each other. It
       is strongly suggested that systems make use of the `etag` in the read-

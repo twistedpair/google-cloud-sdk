@@ -633,7 +633,7 @@ def GetFunctionResourceSpec():
   )
 
 
-def AddFunctionResourceArg(parser, verb, positional=True):
+def AddFunctionResourceArg(parser, verb):
   """Adds a Cloud function resource argument.
 
   NOTE: May be used only if it's the only resource arg in the command.
@@ -641,12 +641,9 @@ def AddFunctionResourceArg(parser, verb, positional=True):
   Args:
     parser: the argparse parser for the command.
     verb: str, the verb to describe the resource, such as 'to update'.
-    positional: bool, if True, means that the instance ID is a positional rather
-      than a flag.
   """
-  name = 'NAME' if positional else '--function'
   concept_parsers.ConceptParser.ForResource(
-      name,
+      'NAME',
       GetFunctionResourceSpec(),
       'The Cloud function name {}.'.format(verb),
       required=True).AddToParser(parser)

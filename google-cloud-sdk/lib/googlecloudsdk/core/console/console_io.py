@@ -83,11 +83,13 @@ class OperationCancelledError(Error):
         message or self.DEFAULT_MESSAGE)
 
 
-TEXTWRAP = textwrap.TextWrapper(replace_whitespace=False,
-                                drop_whitespace=False,
-                                break_on_hyphens=False)
-  # All wrapping is done by this single global wrapper. If you have different
-  # wrapping needs, consider the _NarrowWrap context manager, below.
+# All wrapping is done by this single global wrapper. If you have different
+# wrapping needs, consider the _NarrowWrap context manager, below.
+TEXTWRAP = textwrap.TextWrapper(
+    replace_whitespace=False,
+    drop_whitespace=False,
+    break_on_hyphens=False,
+    width=console_attr.GetConsoleAttr().GetTermSize()[0])
 
 
 def _DoWrap(message):

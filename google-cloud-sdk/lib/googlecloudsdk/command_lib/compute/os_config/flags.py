@@ -18,8 +18,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import re
-
 from googlecloudsdk.command_lib.compute import completers as compute_completers
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 from googlecloudsdk.core import exceptions
@@ -92,27 +90,15 @@ def ValidateFlagNotEmpty(value, flag_name):
     raise exceptions.Error('Missing required flag ' + flag_name)
 
 
-def ValidateInstanceID(value, param_name):
-  """Performs syntax check on an instance ID; doesn't check whether it exists.
+def ValidateInstance(value, param_name):
+  """Performs syntax check on an instance value; doesn't check whether it exists.
 
   Args:
-    value: str, the instance ID to check
+    value: str, the instance value to check
     param_name: str, the parameter's name; included in the exception's message
 
   Raises:
-    exceptions.Error: if value is an invalid instance ID
+    exceptions.Error: if value is empty
   """
   if not value:
     raise exceptions.Error('Missing required parameter ' + param_name)
-
-  if re.match(r'^\d+$', value):
-    return
-
-  raise exceptions.Error(
-      'Invalid value `{value}` for parameter {param_name}. '
-      'For details on valid instance IDs, refer to the criteria '
-      'documented under the field `id` at: {url}'.format(
-          value=value,
-          param_name=param_name,
-          url='https://cloud.google.com/compute/docs/reference/rest/v1/instances'
-      ))

@@ -28,6 +28,7 @@ def CreateMuteConfigReqHook(ref, args, req):
   """Generates a mute config."""
   del ref
   req.parent = _ValidateAndGetParent(args)
+  req.muteConfigId = _ValidateAndGetMuteConfigId(args)
   args.filter = ""
   return req
 
@@ -114,10 +115,11 @@ def _ValidateAndGetParent(args):
 
 def _ValidateAndGetMuteConfigId(args):
   """Validate muteConfigId."""
-  mute_config_id = args.muteConfigId
-  pattern = re.compile("^[0-9]{1,20}$")
+  mute_config_id = args.mute_config_id
+  pattern = re.compile("^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$")
   if not pattern.match(mute_config_id):
     raise InvalidSCCInputError(
-        "Mute config id does not match the pattern '^[0-9]{1,20}$'.")
+        "Mute config id does not match the pattern '^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$'."
+    )
   else:
     return mute_config_id

@@ -818,7 +818,8 @@ class FirestoreProjectsDatabasesDocumentsDeleteRequest(_messages.Message):
     currentDocument_exists: When set to `true`, the target document must
       exist. When set to `false`, the target document must not exist.
     currentDocument_updateTime: When set, the target document must exist and
-      have been last updated at that time.
+      have been last updated at that time. Timestamp must be microsecond
+      aligned.
     name: Required. The resource name of the Document to delete. In the
       format: `projects/{project_id}/databases/{database_id}/documents/{docume
       nt_path}`.
@@ -940,7 +941,8 @@ class FirestoreProjectsDatabasesDocumentsPatchRequest(_messages.Message):
     currentDocument_exists: When set to `true`, the target document must
       exist. When set to `false`, the target document must not exist.
     currentDocument_updateTime: When set, the target document must exist and
-      have been last updated at that time.
+      have been last updated at that time. Timestamp must be microsecond
+      aligned.
     document: A Document resource to be passed as the request body.
     mask_fieldPaths: The list of field paths in the mask. See Document.fields
       for a field path syntax reference.
@@ -1165,6 +1167,15 @@ class GoogleFirestoreAdminV1Database(_messages.Message):
 
   Fields:
     concurrencyMode: The concurrency control mode to use for this database.
+    earliestVersionTime: Output only. The earliest timestamp at which older
+      versions of the data can be read from the database. See
+      [version_retention_period] above; this field is populated with `now -
+      version_retention_period`. This value is continuously updated, and
+      becomes stale the moment it is queried. If you are using this value to
+      recover data, make sure to account for the time from the moment when the
+      value is queried to the moment when you initiate the recovery. Note that
+      you should not need to query this field: if you know the
+      `version_retention_period` then you can query within that time.
     etag: This checksum is computed by the server based on the value of other
       fields, and may be sent on update and delete requests to ensure the
       client has an up-to-date value before proceeding.
@@ -1212,10 +1223,11 @@ class GoogleFirestoreAdminV1Database(_messages.Message):
     DATASTORE_MODE = 2
 
   concurrencyMode = _messages.EnumField('ConcurrencyModeValueValuesEnum', 1)
-  etag = _messages.StringField(2)
-  locationId = _messages.StringField(3)
-  name = _messages.StringField(4)
-  type = _messages.EnumField('TypeValueValuesEnum', 5)
+  earliestVersionTime = _messages.StringField(2)
+  etag = _messages.StringField(3)
+  locationId = _messages.StringField(4)
+  name = _messages.StringField(5)
+  type = _messages.EnumField('TypeValueValuesEnum', 6)
 
 
 class GoogleFirestoreAdminV1ExportDocumentsMetadata(_messages.Message):
@@ -2222,7 +2234,7 @@ class Precondition(_messages.Message):
     exists: When set to `true`, the target document must exist. When set to
       `false`, the target document must not exist.
     updateTime: When set, the target document must exist and have been last
-      updated at that time.
+      updated at that time. Timestamp must be microsecond aligned.
   """
 
   exists = _messages.BooleanField(1)

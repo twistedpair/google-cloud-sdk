@@ -12,7 +12,6 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-
 """Factory for ExecutionConfig message."""
 
 from __future__ import absolute_import
@@ -87,6 +86,9 @@ class ExecutionConfigFactory(object):
       # args.scopes should be parsed as a list of string.
       kwargs['serviceAccountScopes'] = args.scopes
 
+    if args.kms_key:
+      kwargs['kmsKey'] = args.kms_key
+
     if not kwargs:
       return None
 
@@ -103,9 +105,9 @@ def AddArguments(parser):
       '--performance-tier',
       hidden=True,  # Not supported yet.
       choices=_PERFORMANCE_TIER,
-      help_str=('Performance tier for a batch job performance. '
-                'The default performance level is STANDARD.')
-      ).AddToParser(parser)
+      help_str=(
+          'Performance tier for a batch job performance. '
+          'The default performance level is STANDARD.')).AddToParser(parser)
 
   parser.add_argument(
       '--service-account',
@@ -158,3 +160,6 @@ def AddArguments(parser):
       metavar='TAGS',
       default=[],
       help='Network tags for traffic control.')
+
+  parser.add_argument(
+      '--kms-key', help='Cloud KMS key to use for encryption.')

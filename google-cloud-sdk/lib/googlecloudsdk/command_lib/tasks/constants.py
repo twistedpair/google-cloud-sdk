@@ -20,11 +20,20 @@ from __future__ import unicode_literals
 
 import frozendict
 
-
 PROJECTS_COLLECTION = 'cloudtasks.projects'
 LOCATIONS_COLLECTION = 'cloudtasks.projects.locations'
 QUEUES_COLLECTION = 'cloudtasks.projects.locations.queues'
 TASKS_COLLECTION = 'cloudtasks.projects.locations.queues.tasks'
+
+GCLOUD_COMMAND_ENV_KEY = 'CLOUDSDK_METRICS_COMMAND_NAME'
+COMMANDS_THAT_NEED_APPENGINE = frozenset([
+    'gcloud.scheduler.jobs.create.app-engine',
+    'gcloud.alpha.scheduler.jobs.create.app-engine',
+    'gcloud.beta.scheduler.jobs.create.app-engine',
+    'gcloud.scheduler.jobs.update.app-engine',
+    'gcloud.alpha.scheduler.jobs.update.app-engine',
+    'gcloud.beta.scheduler.jobs.update.app-engine',
+])
 
 PULL_QUEUE = 'pull'
 PUSH_QUEUE = 'push'
@@ -35,6 +44,10 @@ APP_ENGINE_TASK = 'app-engine'
 HTTP_TASK = 'http'
 
 APP_ENGINE_ROUTING_KEYS = ('service', 'version', 'instance')
+
+APP_ENGINE_DEFAULT_LOCATION_WARNING = (
+    'We are using the App Engine app location ({}) as the default location. '
+    'Please use the "--location" flag if you want to use a different location.')
 
 QUEUE_MANAGEMENT_WARNING = (
     'You are managing queues with gcloud, do not use queue.yaml or queue.xml '

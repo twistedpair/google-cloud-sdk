@@ -1246,7 +1246,8 @@ def _ConvertGoogleAuthCredentialsToADC(credentials):
         'client_email': credentials.service_account_email,
         'private_key_id': credentials.private_key_id,
         'private_key': credentials.private_key,
-        'client_id': credentials.client_id
+        'client_id': credentials.client_id,
+        'token_uri': credentials._token_uri  # pylint: disable=protected-access
     }
   if (creds_type == CredentialTypeGoogleAuth.EXTERNAL_ACCOUNT or
       creds_type == CredentialTypeGoogleAuth.EXTERNAL_ACCOUNT_USER):

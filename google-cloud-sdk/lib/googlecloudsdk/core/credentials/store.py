@@ -232,6 +232,10 @@ class InvalidCodeVerifierError(Error):
   """Exception for invalid code verifier for pkce."""
 
 
+class UnsupportedCredentialsError(Error):
+  """Exception for when a credential type is not supported."""
+
+
 IMPERSONATION_TOKEN_PROVIDER = None
 
 
@@ -730,13 +734,38 @@ def _LoadFromFileOverride(cred_file_override, scopes, use_google_auth):
   return cred
 
 
+def _LoadAccessTokenCredsFromFile(token_file, use_google_auth):
+  """Loads an AccessTokenCredentials from token_file."""
+  log.info('Using access token from file: [%s]', token_file)
+  # All commands should be using google-auth, we have this check in case some
+  # users disabled google-auth using the hidden auth/disable_load_google_auth.
+  if not use_google_auth:
+    raise UnsupportedCredentialsError(
+        'You may have passed an access token to gcloud using '
+        '--access-token-file or auth/access_token_file. At the same time, '
+        'google-auth is disabled by auth/disable_load_google_auth. '
+        'They do not work together. Please unset '
+        'auth/disable_load_google_auth and retry.'
+    )
+  content = files.ReadFileContents(token_file).strip()
+  # Import only when necessary to decrease the startup time. Move it to
+  # global once google-auth replaces oauth2client.
+  # pylint: disable=g-import-not-at-top
+  from googlecloudsdk.core.credentials import google_auth_credentials as c_google_auth
+  # pylint: enable=g-import-not-at-top
+  return c_google_auth.AccessTokenCredentials(content)
+
+
 def _Load(account, scopes, prevent_refresh, use_google_auth=True):
   """Helper for Load()."""
   # If a credential file is set, just use that and ignore the active account
   # and whatever is in the credential store.
+  access_token_file = properties.VALUES.auth.access_token_file.Get()
   cred_file_override = properties.VALUES.auth.credential_file_override.Get()
 
-  if cred_file_override:
+  if access_token_file:
+    cred = _LoadAccessTokenCredsFromFile(access_token_file, use_google_auth)
+  elif cred_file_override:
     cred = _LoadFromFileOverride(cred_file_override, scopes, use_google_auth)
   else:
     if not account:
@@ -1122,7 +1151,9 @@ def RevokeCredentials(credentials):
   Raises:
     RevokeError: If credentials to revoke is not user account credentials.
   """
-  if not c_creds.IsUserAccountCredentials(credentials):
+  if (not c_creds.IsUserAccountCredentials(credentials) or
+      # External account user credentials cannot be revoked.
+      c_creds.IsExternalAccountUserCredentials(credentials)):
     raise RevokeError('The token cannot be revoked from server because it is '
                       'not user account credentials.')
   if c_creds.IsOauth2ClientCredentials(credentials):

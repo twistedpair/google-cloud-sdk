@@ -130,6 +130,7 @@ def _create_or_modify_transfer_spec(job, args, messages):
   if args.source:
     # Clear any existing data source to make space for new one.
     job.transferSpec.httpDataSource = None
+    job.transferSpec.posixDataSource = None
     job.transferSpec.gcsDataSource = None
     job.transferSpec.awsS3DataSource = None
     job.transferSpec.azureBlobStorageDataSource = None
@@ -144,7 +145,10 @@ def _create_or_modify_transfer_spec(job, args, messages):
         raise
 
     if source_url:
-      if source_url.scheme is storage_url.ProviderPrefix.GCS:
+      if source_url.scheme is storage_url.ProviderPrefix.POSIX:
+        job.transferSpec.posixDataSource = messages.PosixFilesystem(
+            rootDirectory=source_url.object_name)
+      elif source_url.scheme is storage_url.ProviderPrefix.GCS:
         job.transferSpec.gcsDataSource = messages.GcsData(
             bucketName=source_url.bucket_name,
             path=source_url.object_name,

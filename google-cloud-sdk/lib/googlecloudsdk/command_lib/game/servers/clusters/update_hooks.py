@@ -206,6 +206,10 @@ def SetUpdateMask(ref, args, request):
   if getattr(args, 'allocation_priority', None) is not None:
     update_mask.append('allocationPriority')
 
+  # TODO(b/202893776): Use IsSpecified once allocation-weight is GA
+  if getattr(args, 'allocation_weight', None) is not None:
+    update_mask.append('allocationWeight')
+
   if not args.dry_run and not update_mask:
     raise NoFieldsSpecifiedError(
         'Must specify at least one parameter to update.')

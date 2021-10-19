@@ -45,58 +45,6 @@ class DataplexProjectsLocationsLakesActionsListRequest(_messages.Message):
   parent = _messages.StringField(3, required=True)
 
 
-class DataplexProjectsLocationsLakesContentGetIamPolicyRequest(_messages.Message):
-  r"""A DataplexProjectsLocationsLakesContentGetIamPolicyRequest object.
-
-  Fields:
-    options_requestedPolicyVersion: Optional. The policy format version to be
-      returned.Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected.Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset.To learn
-      which resources support conditions in their IAM policies, see the IAM
-      documentation (https://cloud.google.com/iam/help/conditions/resource-
-      policies).
-    resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
-  """
-
-  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  resource = _messages.StringField(2, required=True)
-
-
-class DataplexProjectsLocationsLakesContentSetIamPolicyRequest(_messages.Message):
-  r"""A DataplexProjectsLocationsLakesContentSetIamPolicyRequest object.
-
-  Fields:
-    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
-      to be passed as the request body.
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
-  """
-
-  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
-  resource = _messages.StringField(2, required=True)
-
-
-class DataplexProjectsLocationsLakesContentTestIamPermissionsRequest(_messages.Message):
-  r"""A DataplexProjectsLocationsLakesContentTestIamPermissionsRequest object.
-
-  Fields:
-    googleIamV1TestIamPermissionsRequest: A
-      GoogleIamV1TestIamPermissionsRequest resource to be passed as the
-      request body.
-    resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
-  """
-
-  googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
-  resource = _messages.StringField(2, required=True)
-
-
 class DataplexProjectsLocationsLakesCreateRequest(_messages.Message):
   r"""A DataplexProjectsLocationsLakesCreateRequest object.
 
@@ -131,59 +79,6 @@ class DataplexProjectsLocationsLakesDeleteRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
-
-
-class DataplexProjectsLocationsLakesEnvironmentsGetIamPolicyRequest(_messages.Message):
-  r"""A DataplexProjectsLocationsLakesEnvironmentsGetIamPolicyRequest object.
-
-  Fields:
-    options_requestedPolicyVersion: Optional. The policy format version to be
-      returned.Valid values are 0, 1, and 3. Requests specifying an invalid
-      value will be rejected.Requests for policies with any conditional
-      bindings must specify version 3. Policies without any conditional
-      bindings may specify any valid value or leave the field unset.To learn
-      which resources support conditions in their IAM policies, see the IAM
-      documentation (https://cloud.google.com/iam/help/conditions/resource-
-      policies).
-    resource: REQUIRED: The resource for which the policy is being requested.
-      See the operation documentation for the appropriate value for this
-      field.
-  """
-
-  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  resource = _messages.StringField(2, required=True)
-
-
-class DataplexProjectsLocationsLakesEnvironmentsSetIamPolicyRequest(_messages.Message):
-  r"""A DataplexProjectsLocationsLakesEnvironmentsSetIamPolicyRequest object.
-
-  Fields:
-    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
-      to be passed as the request body.
-    resource: REQUIRED: The resource for which the policy is being specified.
-      See the operation documentation for the appropriate value for this
-      field.
-  """
-
-  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
-  resource = _messages.StringField(2, required=True)
-
-
-class DataplexProjectsLocationsLakesEnvironmentsTestIamPermissionsRequest(_messages.Message):
-  r"""A DataplexProjectsLocationsLakesEnvironmentsTestIamPermissionsRequest
-  object.
-
-  Fields:
-    googleIamV1TestIamPermissionsRequest: A
-      GoogleIamV1TestIamPermissionsRequest resource to be passed as the
-      request body.
-    resource: REQUIRED: The resource for which the policy detail is being
-      requested. See the operation documentation for the appropriate value for
-      this field.
-  """
-
-  googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
-  resource = _messages.StringField(2, required=True)
 
 
 class DataplexProjectsLocationsLakesGetIamPolicyRequest(_messages.Message):
@@ -721,7 +616,8 @@ class DataplexProjectsLocationsLakesZonesCreateRequest(_messages.Message):
       Metastore and BigQuery. * Must contain only lowercase letters, numbers
       and hyphens. * Must start with a letter. * Must end with a number or a
       letter. * Must be between 1-63 characters. * Must be unique within the
-      lake.
+      lake. * Must not be one of the reserved IDs (i.e. "default", "global-
+      temp")
   """
 
   googleCloudDataplexV1Zone = _messages.MessageField('GoogleCloudDataplexV1Zone', 1)
@@ -746,34 +642,31 @@ class DataplexProjectsLocationsLakesZonesEntitiesGetRequest(_messages.Message):
   r"""A DataplexProjectsLocationsLakesZonesEntitiesGetRequest object.
 
   Enums:
-    ViewValueValuesEnum: Optional. Used to select the subset of information
-      about the Entity to return. Defaults to BASIC.
+    ViewValueValuesEnum: Optional. Used to select the subset of entity
+      information to return. Defaults to BASIC.
 
   Fields:
-    name: Required. The resource name of the entity:
-      projects/{project_number}/locations/{location_id}/lakes/{lake_id}
-      /zones/{zone_id}/entities/{entity_id_or_entity_uid} The entity id part
-      could either be the entity unique ID or the user provided ID.
-    view: Optional. Used to select the subset of information about the Entity
-      to return. Defaults to BASIC.
+    name: Required. The resource name of the entity: projects/{project_number}
+      /locations/{location_id}/lakes/{lake_id}/zones/{zone_id}/entities/{entit
+      y_id}.
+    view: Optional. Used to select the subset of entity information to return.
+      Defaults to BASIC.
   """
 
   class ViewValueValuesEnum(_messages.Enum):
-    r"""Optional. Used to select the subset of information about the Entity to
-    return. Defaults to BASIC.
+    r"""Optional. Used to select the subset of entity information to return.
+    Defaults to BASIC.
 
     Values:
       ENTITY_VIEW_UNSPECIFIED: The API will default to the BASIC view.
       BASIC: Minimal view that does not include the schema.
-      SCHEMA: Includes basic information and schema.
-      STATS: Includes basic information and statistics.
-      FULL: Includes everything.
+      SCHEMA: Include basic information and schema.
+      FULL: Include everything.
     """
     ENTITY_VIEW_UNSPECIFIED = 0
     BASIC = 1
     SCHEMA = 2
-    STATS = 3
-    FULL = 4
+    FULL = 3
 
   name = _messages.StringField(1, required=True)
   view = _messages.EnumField('ViewValueValuesEnum', 2)
@@ -790,15 +683,14 @@ class DataplexProjectsLocationsLakesZonesEntitiesListRequest(_messages.Message):
     filter: Optional. Filter request by name prefix.
     pageSize: Optional. Maximum number of entities to return. The service may
       return fewer than this value. If unspecified, at most 10 entities will
-      be returned. The maximum value is 1000; values above 1000 will be
-      coerced to 1000.
+      be returned. The maximum value is 1000; values above 1000 are set to
+      1000.
     pageToken: Optional. Page token received from a previous ListEntities
       call. Provide this to retrieve the subsequent page. When paginating, all
       other parameters provided to ListEntities must match the call that
       provided the page token.
-    parent: Required. The resource name of the parent zone:
-      projects/{project_number}/locations/{location_id}/lakes/{lake_id}
-      /zones/{zone_id}`
+    parent: Required. The resource name of the parent zone: projects/{project_
+      number}/locations/{location_id}/lakes/{lake_id}/zones/{zone_id}.
     view: Required. Specify the entity view to make a partial list request.
   """
 
@@ -806,7 +698,7 @@ class DataplexProjectsLocationsLakesZonesEntitiesListRequest(_messages.Message):
     r"""Required. Specify the entity view to make a partial list request.
 
     Values:
-      ENTITY_VIEW_UNSPECIFIED: The default / unset value. The API will default
+      ENTITY_VIEW_UNSPECIFIED: The default unset value. The API will default
         to the FULL view.
       TABLES: Only list table entities.
       FILESETS: Only list fileset entities.
@@ -827,9 +719,9 @@ class DataplexProjectsLocationsLakesZonesEntitiesPartitionsGetRequest(_messages.
   object.
 
   Fields:
-    name: Required. The resource name of the partition:
-      projects/{project_number}/locations/{location_id}/lakes/{lake_id}
-      /zones/{zone_id}/entities/{entity_id}/partitions/{partition_id}
+    name: Required. The resource name of the partition: projects/{project_numb
+      er}/locations/{location_id}/lakes/{lake_id}/zones/{zone_id}/entities/{en
+      tity_id}/partitions/{partition_id}.
   """
 
   name = _messages.StringField(1, required=True)
@@ -849,9 +741,9 @@ class DataplexProjectsLocationsLakesZonesEntitiesPartitionsListRequest(_messages
       call. Provide this to retrieve the subsequent page. When paginating, all
       other parameters provided to ListPartitions must match the call that
       provided the page token.
-    parent: Required. The resource name of the parent entity:
-      projects/{project_number}/locations/{location_id}/lakes/{lake_id}
-      /zones/{zone_id}/entities/{entity_id}`
+    parent: Required. The resource name of the parent entity: projects/{projec
+      t_number}/locations/{location_id}/lakes/{lake_id}/zones/{zone_id}/entiti
+      es/{entity_id}`.
   """
 
   filter = _messages.StringField(1)
@@ -1098,8 +990,6 @@ class GoogleCloudDataplexV1Action(_messages.Message):
     invalidMetastore: Details for issues related to metadata publishing to
       Dataproc Metastore caused by issues in the metastore service instance,
       e.g., wrong metastore configuration.
-    invalidSecurityPolicy: Details for issues related to invalid security
-      policy specifications.
     issue: Detailed description of the issue requiring action.
     lake: Output only. The relative resource name of the lake, of the form:
       projects/{project_number}/locations/{location_id}/lakes/{lake_id}
@@ -1153,17 +1043,16 @@ class GoogleCloudDataplexV1Action(_messages.Message):
   invalidDataPartition = _messages.MessageField('GoogleCloudDataplexV1ActionInvalidDataPartition', 9)
   invalidDiscoveryConfig = _messages.MessageField('GoogleCloudDataplexV1ActionInvalidDiscoveryConfig', 10)
   invalidMetastore = _messages.MessageField('GoogleCloudDataplexV1ActionInvalidMetastore', 11)
-  invalidSecurityPolicy = _messages.MessageField('GoogleCloudDataplexV1ActionInvalidSecurityPolicy', 12)
-  issue = _messages.StringField(13)
-  lake = _messages.StringField(14)
-  locations = _messages.MessageField('GoogleCloudDataplexV1ActionLocation', 15, repeated=True)
-  missingData = _messages.MessageField('GoogleCloudDataplexV1ActionMissingData', 16)
-  missingMetastore = _messages.MessageField('GoogleCloudDataplexV1ActionMissingMetastore', 17)
-  missingResource = _messages.MessageField('GoogleCloudDataplexV1ActionMissingResource', 18)
-  name = _messages.StringField(19)
-  unauthorizedDataset = _messages.MessageField('GoogleCloudDataplexV1ActionUnauthorizedDataset', 20)
-  unauthorizedResource = _messages.MessageField('GoogleCloudDataplexV1ActionUnauthorizedResource', 21)
-  zone = _messages.StringField(22)
+  issue = _messages.StringField(12)
+  lake = _messages.StringField(13)
+  locations = _messages.MessageField('GoogleCloudDataplexV1ActionLocation', 14, repeated=True)
+  missingData = _messages.MessageField('GoogleCloudDataplexV1ActionMissingData', 15)
+  missingMetastore = _messages.MessageField('GoogleCloudDataplexV1ActionMissingMetastore', 16)
+  missingResource = _messages.MessageField('GoogleCloudDataplexV1ActionMissingResource', 17)
+  name = _messages.StringField(18)
+  unauthorizedDataset = _messages.MessageField('GoogleCloudDataplexV1ActionUnauthorizedDataset', 19)
+  unauthorizedResource = _messages.MessageField('GoogleCloudDataplexV1ActionUnauthorizedResource', 20)
+  zone = _messages.StringField(21)
 
 
 class GoogleCloudDataplexV1ActionFailedSecurityPolicyApply(_messages.Message):
@@ -1233,13 +1122,6 @@ class GoogleCloudDataplexV1ActionInvalidMetastore(_messages.Message):
   r"""Action details for issues of metadata publishing to Dataproc Metastore
   caused by issues in the metastore service instance, e.g., wrong metastore
   configuration.
-  """
-
-
-
-class GoogleCloudDataplexV1ActionInvalidSecurityPolicy(_messages.Message):
-  r"""Action details for invalid security policy issues raised when the
-  specified security policy cannot be applied on a managed resource.
   """
 
 
@@ -1323,9 +1205,6 @@ class GoogleCloudDataplexV1Asset(_messages.Message):
       by this asset.
     resourceStatus: Output only. Status of the resource referenced by this
       asset.
-    securitySpec: Optional. Specification of the security policy applied to
-      resource referenced by this asset. Typically it should take a few
-      minutes for the security policy to fully propagate.
     securityStatus: Output only. Status of the security policy applied to
       resource referenced by this asset.
     state: Output only. Current state of the asset.
@@ -1385,11 +1264,10 @@ class GoogleCloudDataplexV1Asset(_messages.Message):
   name = _messages.StringField(8)
   resourceSpec = _messages.MessageField('GoogleCloudDataplexV1AssetResourceSpec', 9)
   resourceStatus = _messages.MessageField('GoogleCloudDataplexV1AssetResourceStatus', 10)
-  securitySpec = _messages.MessageField('GoogleCloudDataplexV1AssetSecuritySpec', 11)
-  securityStatus = _messages.MessageField('GoogleCloudDataplexV1AssetSecurityStatus', 12)
-  state = _messages.EnumField('StateValueValuesEnum', 13)
-  uid = _messages.StringField(14)
-  updateTime = _messages.StringField(15)
+  securityStatus = _messages.MessageField('GoogleCloudDataplexV1AssetSecurityStatus', 11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  uid = _messages.StringField(13)
+  updateTime = _messages.StringField(14)
 
 
 class GoogleCloudDataplexV1AssetDiscoverySpec(_messages.Message):
@@ -1406,6 +1284,7 @@ class GoogleCloudDataplexV1AssetDiscoverySpec(_messages.Message):
       config entirely.
 
   Fields:
+    csvOptions: Optional. Configuration for CSV data.
     enabled: Optional. Whether discovery is enabled. When inheritance_mode is
       set to INHERIT this field is unset and ignored.
     excludePatterns: Optional. The list of patterns to apply for selecting
@@ -1427,6 +1306,7 @@ class GoogleCloudDataplexV1AssetDiscoverySpec(_messages.Message):
       that behave this way are called out as such via documentation.
       Deprecated: Rather than configure inheritance behavior via this enum,
       users can enable inheritance by omitting the discovery config entirely.
+    jsonOptions: Optional. Configuration for Json data.
     publishing: Optional. Settings to manage metadata publishing for the zone.
     schedule: Optional. Cron schedule (https://en.wikipedia.org/wiki/Cron) for
       running discovery jobs periodically. Discovery jobs must be scheduled at
@@ -1454,12 +1334,49 @@ class GoogleCloudDataplexV1AssetDiscoverySpec(_messages.Message):
     OVERRIDE = 1
     INHERIT = 2
 
-  enabled = _messages.BooleanField(1)
-  excludePatterns = _messages.StringField(2, repeated=True)
-  includePatterns = _messages.StringField(3, repeated=True)
-  inheritanceMode = _messages.EnumField('InheritanceModeValueValuesEnum', 4)
-  publishing = _messages.MessageField('GoogleCloudDataplexV1AssetDiscoverySpecMetadataPublishing', 5)
-  schedule = _messages.StringField(6)
+  csvOptions = _messages.MessageField('GoogleCloudDataplexV1AssetDiscoverySpecCsvOptions', 1)
+  enabled = _messages.BooleanField(2)
+  excludePatterns = _messages.StringField(3, repeated=True)
+  includePatterns = _messages.StringField(4, repeated=True)
+  inheritanceMode = _messages.EnumField('InheritanceModeValueValuesEnum', 5)
+  jsonOptions = _messages.MessageField('GoogleCloudDataplexV1AssetDiscoverySpecJsonOptions', 6)
+  publishing = _messages.MessageField('GoogleCloudDataplexV1AssetDiscoverySpecMetadataPublishing', 7)
+  schedule = _messages.StringField(8)
+
+
+class GoogleCloudDataplexV1AssetDiscoverySpecCsvOptions(_messages.Message):
+  r"""Describe CSV and similar semi-structured data formats.
+
+  Fields:
+    delimiter: Optional. The delimiter being used to separate values. This
+      defaults to ','.
+    disableTypeInference: Optional. Whether to disable the inference of data
+      type for CSV data. If true, all columns will be registered as strings.
+    encoding: Optional. The character encoding of the data. The default is
+      UTF-8.
+    headerRows: Optional. The number of rows to interpret as header rows that
+      should be skipped when reading data rows.
+  """
+
+  delimiter = _messages.StringField(1)
+  disableTypeInference = _messages.BooleanField(2)
+  encoding = _messages.StringField(3)
+  headerRows = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudDataplexV1AssetDiscoverySpecJsonOptions(_messages.Message):
+  r"""Describe JSON data format.
+
+  Fields:
+    disableTypeInference: Optional. Whether to disable the inference of data
+      type for Json data. If true, all columns will be registered as their
+      primitive types (strings, number or boolean).
+    encoding: Optional. The character encoding of the data. The default is
+      UTF-8.
+  """
+
+  disableTypeInference = _messages.BooleanField(1)
+  encoding = _messages.StringField(2)
 
 
 class GoogleCloudDataplexV1AssetDiscoverySpecMetadataPublishing(_messages.Message):
@@ -1652,36 +1569,6 @@ class GoogleCloudDataplexV1AssetResourceStatus(_messages.Message):
   updateTime = _messages.StringField(3)
 
 
-class GoogleCloudDataplexV1AssetSecuritySpec(_messages.Message):
-  r"""Settings to manage the security policy applied to data referenced by an
-  asset.
-
-  Fields:
-    overrideParentSpec: Optional. Indicates whether the policy overrides the
-      list of groups specified in the policy associated with the parent lake
-      and zone. By default, the policy is additive. If this flag is true, the
-      list of groups must each include at least one entry.
-    ownerGroups: Optional. A list of groups that should be granted the
-      roles/dataplex.dataOwner IAM role, that allows group members to modify
-      the resources (including their IAM policies and child resources)
-      referenced by an asset. For example, yourgroup@yourdomain.com. It cannot
-      be a service account, user or another type of identity.
-    readerGroups: Optional. A list of groups that should be granted the
-      roles/dataplex.dataReader IAM role, that allows group members to read
-      data referenced by an asset. For example, yourgroup@yourdomain.com. It
-      cannot be a service account, user or another type of identity.
-    writerGroups: Optional. A list of groups that should be granted the
-      roles/dataplex.dataWriter IAM role, that allows group members to update
-      data referenced by an asset. For example, yourgroup@yourdomain.com. It
-      cannot be a service account, user or another type of identity.
-  """
-
-  overrideParentSpec = _messages.BooleanField(1)
-  ownerGroups = _messages.StringField(2, repeated=True)
-  readerGroups = _messages.StringField(3, repeated=True)
-  writerGroups = _messages.StringField(4, repeated=True)
-
-
 class GoogleCloudDataplexV1AssetSecurityStatus(_messages.Message):
   r"""Security policy status of the asset. Data security policy, i.e.,
   readers, writers & owners, should be specified in the lake/zone/asset IAM
@@ -1692,15 +1579,6 @@ class GoogleCloudDataplexV1AssetSecurityStatus(_messages.Message):
       the attached resource.
 
   Fields:
-    appliedOwnerGroups: Cumulative set of owner groups that were last applied
-      on the managed resource. These groups may have been specified at lake,
-      zone or asset levels.
-    appliedReaderGroups: Cumulative set of reader groups that were last
-      applied on the managed resource. These groups may have been specified at
-      lake, zone or asset levels.
-    appliedWriterGroups: Cumulative set of writer groups that were last
-      applied on the managed resource. These groups may have been specified at
-      lake, zone or asset levels.
     message: Additional information about the current state.
     state: The current state of the security policy applied to the attached
       resource.
@@ -1725,12 +1603,9 @@ class GoogleCloudDataplexV1AssetSecurityStatus(_messages.Message):
     APPLYING = 2
     ERROR = 3
 
-  appliedOwnerGroups = _messages.StringField(1, repeated=True)
-  appliedReaderGroups = _messages.StringField(2, repeated=True)
-  appliedWriterGroups = _messages.StringField(3, repeated=True)
-  message = _messages.StringField(4)
-  state = _messages.EnumField('StateValueValuesEnum', 5)
-  updateTime = _messages.StringField(6)
+  message = _messages.StringField(1)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
+  updateTime = _messages.StringField(3)
 
 
 class GoogleCloudDataplexV1AssetStatus(_messages.Message):
@@ -1753,7 +1628,7 @@ class GoogleCloudDataplexV1CancelJobRequest(_messages.Message):
 
 
 class GoogleCloudDataplexV1Entity(_messages.Message):
-  r"""Represents tables and fileset metadata contained within a Zone.
+  r"""Represents tables and fileset metadata contained within a zone.
 
   Enums:
     SystemValueValuesEnum: Required. Identifies the storage system of the
@@ -1764,32 +1639,33 @@ class GoogleCloudDataplexV1Entity(_messages.Message):
     asset: Required. The name of the asset associated with the storage
       location containing the entity data.
     catalogEntry: Output only. The name of the associated Data Catalog entry.
-    compatibility: Output only. Metadata stores the entity is compatible with.
-    compatibilityDeprecated: Output only. Metadata stores the entity is
+    compatibility: Output only. Metadata stores that the entity is compatible
+      with.
+    compatibilityDeprecated: Output only. Metadata stores that the entity is
       compatible with.
     createTime: Output only. The time when the entity was created.
     dataPath: Required. Immutable. The storage path of the entity data. For
       Cloud Storage data, this is the fully-qualified path to the entity, such
       as gs://bucket/path/to/data. For BigQuery data, this is the name of the
-      table resource such as
+      table resource, such as
       projects/project_id/datasets/dataset_id/tables/table_id.
     dataPathPattern: Optional. The set of items within the data path
-      constituting the data in the entity represented as a glob path. Eg.
-      gs://bucket/path/to/data/**/*.csv.
+      constituting the data in the entity, represented as a glob path.
+      Example: gs://bucket/path/to/data/**/*.csv.
     description: Optional. User friendly longer description text.
     displayName: Optional. User friendly display name.
-    etag: Optional. The etag for this entity. Required for update requests, it
+    etag: Optional. The etag for this entity. Required for update requests. It
       must match the server's etag.
-    format: Required. Identifies the storage format of the entity data. This
+    format: Required. Identifies the storage format of the entity data. It
       does not apply to entities with data stored in BigQuery.
-    id: Required. A user provide entity ID. It is mutable and will be used for
-      the published table name.
+    id: Required. A user-provided entity ID. It is mutable, and will be used
+      as the published table name.
     name: Output only. Immutable. The resource name of the entity, of the
       form: projects/{project_number}/locations/{location_id}/lakes/{lake_id}/
-      zones/{zone_id}/entities/{entity} The {entity} is a generated unique ID.
-    schema: Required. The description of the data structure and layout. Schema
-      is not included in list responses and only included in SCHEMA and FULL
-      entity views of get entity response.
+      zones/{zone_id}/entities/{entity_id}. {entity} is a generated unique ID.
+    schema: Required. The description of the data structure and layout. The
+      schema is not included in list responses. It is only included in SCHEMA
+      and FULL entity views of a get entity response.
     system: Required. Identifies the storage system of the entity data.
     type: Required. The type of entity.
     updateTime: Output only. The time when the entity was last updated.
@@ -1799,7 +1675,7 @@ class GoogleCloudDataplexV1Entity(_messages.Message):
     r"""Required. Identifies the storage system of the entity data.
 
     Values:
-      STORAGE_SYSTEM_UNSPECIFIED: StorageSystem unspecified.
+      STORAGE_SYSTEM_UNSPECIFIED: Storage system unspecified.
       CLOUD_STORAGE: The entity data is contained within a Cloud Storage
         bucket.
       BIGQUERY: The entity data is contained within a BigQuery dataset.
@@ -1853,7 +1729,7 @@ class GoogleCloudDataplexV1EntityCompatibility(_messages.Message):
 
 
 class GoogleCloudDataplexV1EntityCompatibilityStatus(_messages.Message):
-  r"""Provides information about compatibility with various metadata stores.
+  r"""Provides compatibility information for various metadata stores.
 
   Fields:
     bigquery: Output only. Whether this entity is compatible with BigQuery.
@@ -1866,7 +1742,7 @@ class GoogleCloudDataplexV1EntityCompatibilityStatus(_messages.Message):
 
 
 class GoogleCloudDataplexV1EntityCompatibilityStatusCompatibility(_messages.Message):
-  r"""Provides information about compatibility for a specific metadata store.
+  r"""Provides compatibility information for a specific metadata store.
 
   Fields:
     compatible: Output only. Whether the entity is compatible and can be
@@ -2064,11 +1940,6 @@ class GoogleCloudDataplexV1Lake(_messages.Message):
     metastoreStatus: Output only. Metastore status of the lake.
     name: Output only. The relative resource name of the lake, of the form:
       projects/{project_number}/locations/{location_id}/lakes/{lake_id}
-    securitySpec: Optional. Specification of the security policy applied to
-      data in this lake. Typically it should take a few minutes for the
-      security policy to fully propagate.
-    securityStatus: Output only. Status of the security policy applied to data
-      in this lake.
     serviceAccount: Output only. Service account associated with this lake.
       This service account must be authorized to access or operate on
       resources managed by the lake.
@@ -2128,12 +1999,10 @@ class GoogleCloudDataplexV1Lake(_messages.Message):
   metastore = _messages.MessageField('GoogleCloudDataplexV1LakeMetastore', 7)
   metastoreStatus = _messages.MessageField('GoogleCloudDataplexV1LakeMetastoreStatus', 8)
   name = _messages.StringField(9)
-  securitySpec = _messages.MessageField('GoogleCloudDataplexV1LakeSecuritySpec', 10)
-  securityStatus = _messages.MessageField('GoogleCloudDataplexV1SecurityStatus', 11)
-  serviceAccount = _messages.StringField(12)
-  state = _messages.EnumField('StateValueValuesEnum', 13)
-  uid = _messages.StringField(14)
-  updateTime = _messages.StringField(15)
+  serviceAccount = _messages.StringField(10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  uid = _messages.StringField(12)
+  updateTime = _messages.StringField(13)
 
 
 class GoogleCloudDataplexV1LakeMetastore(_messages.Message):
@@ -2182,33 +2051,6 @@ class GoogleCloudDataplexV1LakeMetastoreStatus(_messages.Message):
   updateTime = _messages.StringField(3)
 
 
-class GoogleCloudDataplexV1LakeSecuritySpec(_messages.Message):
-  r"""Settings to manage the security policy applied to data in a lake.
-
-  Fields:
-    ownerGroups: Optional. A list of groups that should be granted the
-      roles/dataplex.dataOwner IAM role, that allows group members to modify
-      the resources (including their IAM policies and child resources) managed
-      within a lake. By default this is inherited by all assets within the
-      lake. For example, yourgroup@yourdomain.com. It cannot be a service
-      account, user or another type of identity.
-    readerGroups: Optional. A list of groups that should be granted the
-      roles/dataplex.dataReader IAM role, that allows group members to read
-      data being managed within a lake. By default this is inherited by all
-      assets within a lake. For example, yourgroup@yourdomain.com. It cannot
-      be a service account, user or another type of identity.
-    writerGroups: Optional. A list of groups that should be granted the
-      roles/dataplex.dataWriter IAM role, that allows group members to update
-      data being managed within a lake. By default this is inherited by all
-      assets within a lake. For example, yourgroup@yourdomain.com. It cannot
-      be a service account, user or another type of identity.
-  """
-
-  ownerGroups = _messages.StringField(1, repeated=True)
-  readerGroups = _messages.StringField(2, repeated=True)
-  writerGroups = _messages.StringField(3, repeated=True)
-
-
 class GoogleCloudDataplexV1ListActionsResponse(_messages.Message):
   r"""List actions response.
 
@@ -2239,9 +2081,9 @@ class GoogleCloudDataplexV1ListEntitiesResponse(_messages.Message):
   r"""List metadata entities response.
 
   Fields:
-    entities: Entities under the given parent zone.
+    entities: Entities in the specified parent zone.
     nextPageToken: Token to retrieve the next page of results, or empty if
-      there are no more results in the list.
+      there are no remaining results in the list.
   """
 
   entities = _messages.MessageField('GoogleCloudDataplexV1Entity', 1, repeated=True)
@@ -2281,8 +2123,8 @@ class GoogleCloudDataplexV1ListPartitionsResponse(_messages.Message):
 
   Fields:
     nextPageToken: Token to retrieve the next page of results, or empty if
-      there are no more results in the list.
-    partitions: Partitions under the given parent entity.
+      there are no remaining results in the list.
+    partitions: Partitions under the specified parent entity.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -2481,19 +2323,20 @@ class GoogleCloudDataplexV1OperationMetadata(_messages.Message):
 
 
 class GoogleCloudDataplexV1Partition(_messages.Message):
-  r"""Represents partition metadata contained within Entity instances.
+  r"""Represents partition metadata contained within entity instances.
 
   Fields:
-    etag: Optional. The etag for this partitioin. Required for update
-      requests, it must match the server's etag.
+    etag: Optional. The etag for this partition. Required for update requests.
+      It must match the server's etag.
     location: Required. Immutable. The location of the entity data within the
-      partition. Eg. gs://bucket/path/to/entity/key1=value1/key2=value2
-    name: Output only. The resource name of the entity, of the form: projects/
-      {project_number}/locations/{location_id}/lakes/{lake_id}/zones/{zone_id}
-      /entities/{entity}/partitions/{partition} The {partition} is a generated
-      unique ID.
-    values: Required. Immutable. The set of values representing the partition.
-      These correspond to the partition schema defined in the parent entity.
+      partition, for example,
+      gs://bucket/path/to/entity/key1=value1/key2=value2.
+    name: Output only. The resource name of the partition, of the form: projec
+      ts/{project_number}/locations/{location_id}/lakes/{lake_id}/zones/{zone_
+      id}/entities/{entity}/partitions/{partition_id}. {partition_id} is a
+      generated unique ID.
+    values: Required. Immutable. The set of values representing the partition,
+      which correspond to the partition schema defined in the parent entity.
   """
 
   etag = _messages.StringField(1)
@@ -2515,7 +2358,7 @@ class GoogleCloudDataplexV1ResolveZoneActionsRequest(_messages.Message):
 
 
 class GoogleCloudDataplexV1Schema(_messages.Message):
-  r"""The schema information describing the structure and layout of the data.
+  r"""Schema information describing the structure and layout of the data.
 
   Enums:
     PartitionStyleValueValuesEnum: Optional. The structure of paths containing
@@ -2525,12 +2368,12 @@ class GoogleCloudDataplexV1Schema(_messages.Message):
     fields: Optional. The sequence of fields describing data in table
       entities.
     partitionFields: Optional. The sequence of fields describing the partition
-      structure in entities. If this is empty, there are no partitions within
-      the data.
+      structure in entities. If this field is empty, there are no partitions
+      within the data.
     partitionStyle: Optional. The structure of paths containing partition data
       within the entity.
-    userManaged: Required. Whether the schema is user managed, or managed by
-      the service. User managed schemas are not automatically updated by
+    userManaged: Required. Whether the schema is user-managed or managed by
+      the service. User-managed schemas are not automatically updated by
       discovery jobs.
   """
 
@@ -2540,9 +2383,9 @@ class GoogleCloudDataplexV1Schema(_messages.Message):
 
     Values:
       PARTITION_STYLE_UNSPECIFIED: PartitionStyle unspecified
-      HIVE_COMPATIBLE: Partitions are hive-compatible. Eg.
-        gs://bucket/path/to/table/dt=2019-10-31/lang=en Eg.
-        gs://bucket/path/to/table/dt=2019-10-31/lang=en/late
+      HIVE_COMPATIBLE: Partitions are hive-compatible. Examples:
+        gs://bucket/path/to/table/dt=2019-10-31/lang=en,
+        gs://bucket/path/to/table/dt=2019-10-31/lang=en/late.
     """
     PARTITION_STYLE_UNSPECIFIED = 0
     HIVE_COMPATIBLE = 1
@@ -2557,15 +2400,15 @@ class GoogleCloudDataplexV1SchemaPartitionField(_messages.Message):
   r"""Represents a key field within the entity's partition structure.
 
   Enums:
-    TypeValueValuesEnum: Required. The type of the field.
+    TypeValueValuesEnum: Required. The type of field.
 
   Fields:
     name: Required. The name of the field.
-    type: Required. The type of the field.
+    type: Required. The type of field.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
-    r"""Required. The type of the field.
+    r"""Required. The type of field.
 
     Values:
       TYPE_UNSPECIFIED: SchemaType unspecified.
@@ -2582,8 +2425,8 @@ class GoogleCloudDataplexV1SchemaPartitionField(_messages.Message):
       TIMESTAMP: Date and time field.
       DATE: Date field.
       TIME: Time field.
-      RECORD: Structured field. The nested fields define the structure of the
-        map. If all the nested fields are nullable, this represents a union.
+      RECORD: Structured field. Nested fields that define the structure of the
+        map. If all nested fields are nullable, this field represents a union.
     """
     TYPE_UNSPECIFIED = 0
     BOOLEAN = 1
@@ -2610,14 +2453,14 @@ class GoogleCloudDataplexV1SchemaSchemaField(_messages.Message):
 
   Enums:
     ModeValueValuesEnum: Required. Additional field semantics.
-    TypeValueValuesEnum: Required. The type of the field.
+    TypeValueValuesEnum: Required. The type of field.
 
   Fields:
     description: Optional. User friendly field description.
     fields: Optional. Any nested field for complex types.
     mode: Required. Additional field semantics.
     name: Required. The name of the field.
-    type: Required. The type of the field.
+    type: Required. The type of field.
   """
 
   class ModeValueValuesEnum(_messages.Enum):
@@ -2626,8 +2469,8 @@ class GoogleCloudDataplexV1SchemaSchemaField(_messages.Message):
     Values:
       MODE_UNSPECIFIED: Mode unspecified.
       REQUIRED: The field has required semantics.
-      NULLABLE: The field has optional semantics and may be null.
-      REPEATED: The field has repeated (0 or more) semantics and is a list of
+      NULLABLE: The field has optional semantics, and may be null.
+      REPEATED: The field has repeated (0 or more) semantics, and is a list of
         values.
     """
     MODE_UNSPECIFIED = 0
@@ -2636,7 +2479,7 @@ class GoogleCloudDataplexV1SchemaSchemaField(_messages.Message):
     REPEATED = 3
 
   class TypeValueValuesEnum(_messages.Enum):
-    r"""Required. The type of the field.
+    r"""Required. The type of field.
 
     Values:
       TYPE_UNSPECIFIED: SchemaType unspecified.
@@ -2653,8 +2496,8 @@ class GoogleCloudDataplexV1SchemaSchemaField(_messages.Message):
       TIMESTAMP: Date and time field.
       DATE: Date field.
       TIME: Time field.
-      RECORD: Structured field. The nested fields define the structure of the
-        map. If all the nested fields are nullable, this represents a union.
+      RECORD: Structured field. Nested fields that define the structure of the
+        map. If all nested fields are nullable, this field represents a union.
     """
     TYPE_UNSPECIFIED = 0
     BOOLEAN = 1
@@ -2679,57 +2522,25 @@ class GoogleCloudDataplexV1SchemaSchemaField(_messages.Message):
   type = _messages.EnumField('TypeValueValuesEnum', 5)
 
 
-class GoogleCloudDataplexV1SecurityStatus(_messages.Message):
-  r"""Status of the security policy specified on lakes & zones.
-
-  Enums:
-    StateValueValuesEnum: The current state of the security policy applied to
-      data.
-
-  Fields:
-    message: Additional information about the current state.
-    state: The current state of the security policy applied to data.
-    updateTime: Last update time of the status.
-  """
-
-  class StateValueValuesEnum(_messages.Enum):
-    r"""The current state of the security policy applied to data.
-
-    Values:
-      STATE_UNSPECIFIED: State unspecified.
-      READY: Security policy has been successfully applied to data.
-      APPLYING: Security policy is in the process of being applied to data.
-      ERROR: Security policy could not be applied to data due to errors.
-    """
-    STATE_UNSPECIFIED = 0
-    READY = 1
-    APPLYING = 2
-    ERROR = 3
-
-  message = _messages.StringField(1)
-  state = _messages.EnumField('StateValueValuesEnum', 2)
-  updateTime = _messages.StringField(3)
-
-
 class GoogleCloudDataplexV1StorageFormat(_messages.Message):
   r"""Describes the format of the data within its storage location.
 
   Enums:
     CompressionFormatValueValuesEnum: Optional. The compression type
-      associated with the stored data. If this is not specified, the data is
+      associated with the stored data. If unspecified, the data is
       uncompressed.
     FormatValueValuesEnum: Required. The data format associated with the
-      stored data, represented using content type values.
+      stored data, which represents content type values.
 
   Fields:
     compressionFormat: Optional. The compression type associated with the
-      stored data. If this is not specified, the data is uncompressed.
+      stored data. If unspecified, the data is uncompressed.
     csv: Optional. Additional information about CSV formatted data.
-    format: Required. The data format associated with the stored data,
-      represented using content type values.
+    format: Required. The data format associated with the stored data, which
+      represents content type values.
     json: Optional. Additional information about CSV formatted data.
-    mimeType: Optional. The mime type descriptor for the data. This is valid
-      for formats other than UNKNOWN and MIXED.
+    mimeType: Optional. The mime type descriptor for the data. This field is
+      valid for formats other than UNKNOWN and MIXED.
     userManaged: Required. Whether the format and content type are user-
       managed or managed by the service. User managed formats are not
       automatically updated by discovery jobs.
@@ -2737,7 +2548,7 @@ class GoogleCloudDataplexV1StorageFormat(_messages.Message):
 
   class CompressionFormatValueValuesEnum(_messages.Enum):
     r"""Optional. The compression type associated with the stored data. If
-    this is not specified, the data is uncompressed.
+    unspecified, the data is uncompressed.
 
     Values:
       COMPRESSION_FORMAT_UNSPECIFIED: CompressionFormat unspecified. Implies
@@ -2752,8 +2563,8 @@ class GoogleCloudDataplexV1StorageFormat(_messages.Message):
     BZIP2 = 3
 
   class FormatValueValuesEnum(_messages.Enum):
-    r"""Required. The data format associated with the stored data, represented
-    using content type values.
+    r"""Required. The data format associated with the stored data, which
+    represents content type values.
 
     Values:
       FORMAT_UNSPECIFIED: Format unspecified.
@@ -2762,10 +2573,10 @@ class GoogleCloudDataplexV1StorageFormat(_messages.Message):
       ORC: Orc-formatted structured data.
       CSV: Csv-formatted semi-structured data.
       JSON: Json-formatted semi-structured data.
-      IMAGE: Image data formats (such as jpg, png, etc.)
-      AUDIO: Audio data formats (such as mp3, wav, etc.)
-      VIDEO: Video data formats (such as mp4, mpg, etc.)
-      TEXT: Textual data formats (such as txt, xml, etc.)
+      IMAGE: Image data formats (such as jpg and png)
+      AUDIO: Audio data formats (such as mp3, and wav)
+      VIDEO: Video data formats (such as mp4 and mpg)
+      TEXT: Textual data formats (such as txt and xml)
       TFRECORD: TensorFlow record format
       OTHER: Data that doesn't match a specific format.
       UNKNOWN: Data of an unknown format.
@@ -2796,14 +2607,14 @@ class GoogleCloudDataplexV1StorageFormatCsvOptions(_messages.Message):
   r"""Describes CSV and similar semi-structured data formats.
 
   Fields:
-    delimiter: Optional. The delimiter being used to separate values. This
-      defaults to ','.
+    delimiter: Optional. The delimiter used to separate values. Defaults to
+      ','.
     encoding: Optional. The character encoding of the data. The default is
       UTF-8.
     headerRows: Optional. The number of rows to interpret as header rows that
       should be skipped when reading data rows.
-    quote: Optional. The character used to quote column values. This defaults
-      to empty, implying unquoted data.
+    quote: Optional. The character used to quote column values. Defaults to
+      empty, implying unquoted data.
   """
 
   delimiter = _messages.StringField(1)
@@ -3138,10 +2949,10 @@ class GoogleCloudDataplexV1TaskTriggerSpec(_messages.Message):
     schedule: Optional. Cron schedule (https://en.wikipedia.org/wiki/Cron) for
       running tasks periodically. To explicitly set a timezone to the cron
       tab, apply a prefix in the cron tab: "CRON_TZ=${IANA_TIME_ZONE}" or
-      "RON_TZ=${IANA_TIME_ZONE}". The ${IANA_TIME_ZONE} may only be a valid
-      string from IANA time zone database. For example,
-      "CRON_TZ=America/New_York 1 * * * *", or "TZ=America/New_York 1 * * *
-      *". This field is required for RECURRING tasks.
+      "TZ=${IANA_TIME_ZONE}". The ${IANA_TIME_ZONE} may only be a valid string
+      from IANA time zone database. For example, "CRON_TZ=America/New_York 1 *
+      * * *", or "TZ=America/New_York 1 * * * *". This field is required for
+      RECURRING tasks.
     startTime: Optional. The first run of the task will be after this time. If
       not specified, the task will run shortly after being submitted if
       ON_DEMAND and based on the schedule if RECURRING.
@@ -3196,11 +3007,6 @@ class GoogleCloudDataplexV1Zone(_messages.Message):
       one_id}
     resourceSpec: Required. Specification of the resources that are referenced
       by the assets within this zone.
-    securitySpec: Optional. Specification of the security policy applied to
-      data in this zone. Typically it should take a few minutes for the
-      security policy to fully propagate.
-    securityStatus: Output only. Status of the security policy applied to data
-      in this zone.
     state: Output only. Current state of the zone.
     type: Required. Immutable. The type of the zone.
     uid: Output only. System generated globally unique ID for the zone. This
@@ -3274,18 +3080,17 @@ class GoogleCloudDataplexV1Zone(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 7)
   name = _messages.StringField(8)
   resourceSpec = _messages.MessageField('GoogleCloudDataplexV1ZoneResourceSpec', 9)
-  securitySpec = _messages.MessageField('GoogleCloudDataplexV1ZoneSecuritySpec', 10)
-  securityStatus = _messages.MessageField('GoogleCloudDataplexV1SecurityStatus', 11)
-  state = _messages.EnumField('StateValueValuesEnum', 12)
-  type = _messages.EnumField('TypeValueValuesEnum', 13)
-  uid = _messages.StringField(14)
-  updateTime = _messages.StringField(15)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  type = _messages.EnumField('TypeValueValuesEnum', 11)
+  uid = _messages.StringField(12)
+  updateTime = _messages.StringField(13)
 
 
 class GoogleCloudDataplexV1ZoneDiscoverySpec(_messages.Message):
   r"""Settings to manage the metadata discovery and publishing in a zone.
 
   Fields:
+    csvOptions: Optional. Configuration for CSV data.
     enabled: Required. Whether discovery is enabled.
     excludePatterns: Optional. The list of patterns to apply for selecting
       data to exclude during discovery. For Cloud Storage bucket assets, these
@@ -3297,23 +3102,60 @@ class GoogleCloudDataplexV1ZoneDiscoverySpec(_messages.Message):
       considered. For Cloud Storage bucket assets, these are interpreted as
       glob patterns used to match object names. For BigQuery dataset assets,
       these are interpreted as patterns to match table names.
+    jsonOptions: Optional. Configuration for Json data.
     publishing: Optional. Settings to manage metadata publishing from the
       zone.
     schedule: Optional. Cron schedule (https://en.wikipedia.org/wiki/Cron) for
       running discovery jobs periodically. Discovery jobs must be scheduled at
       least 30 minutes apart. To explicitly set a timezone to the cron tab,
       apply a prefix in the cron tab: "CRON_TZ=${IANA_TIME_ZONE}" or
-      "RON_TZ=${IANA_TIME_ZONE}". The ${IANA_TIME_ZONE} may only be a valid
-      string from IANA time zone database. For example,
-      "CRON_TZ=America/New_York 1 * * * *", or "TZ=America/New_York 1 * * *
-      *".
+      TZ=${IANA_TIME_ZONE}". The ${IANA_TIME_ZONE} may only be a valid string
+      from IANA time zone database. For example, "CRON_TZ=America/New_York 1 *
+      * * *", or "TZ=America/New_York 1 * * * *".
   """
 
-  enabled = _messages.BooleanField(1)
-  excludePatterns = _messages.StringField(2, repeated=True)
-  includePatterns = _messages.StringField(3, repeated=True)
-  publishing = _messages.MessageField('GoogleCloudDataplexV1ZoneDiscoverySpecMetadataPublishing', 4)
-  schedule = _messages.StringField(5)
+  csvOptions = _messages.MessageField('GoogleCloudDataplexV1ZoneDiscoverySpecCsvOptions', 1)
+  enabled = _messages.BooleanField(2)
+  excludePatterns = _messages.StringField(3, repeated=True)
+  includePatterns = _messages.StringField(4, repeated=True)
+  jsonOptions = _messages.MessageField('GoogleCloudDataplexV1ZoneDiscoverySpecJsonOptions', 5)
+  publishing = _messages.MessageField('GoogleCloudDataplexV1ZoneDiscoverySpecMetadataPublishing', 6)
+  schedule = _messages.StringField(7)
+
+
+class GoogleCloudDataplexV1ZoneDiscoverySpecCsvOptions(_messages.Message):
+  r"""Describe CSV and similar semi-structured data formats.
+
+  Fields:
+    delimiter: Optional. The delimiter being used to separate values. This
+      defaults to ','.
+    disableTypeInference: Optional. Whether to disable the inference of data
+      type for CSV data. If true, all columns will be registered as strings.
+    encoding: Optional. The character encoding of the data. The default is
+      UTF-8.
+    headerRows: Optional. The number of rows to interpret as header rows that
+      should be skipped when reading data rows.
+  """
+
+  delimiter = _messages.StringField(1)
+  disableTypeInference = _messages.BooleanField(2)
+  encoding = _messages.StringField(3)
+  headerRows = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudDataplexV1ZoneDiscoverySpecJsonOptions(_messages.Message):
+  r"""Describe JSON data format.
+
+  Fields:
+    disableTypeInference: Optional. Whether to disable the inference of data
+      type for Json data. If true, all columns will be registered as their
+      primitive types (strings, number or boolean).
+    encoding: Optional. The character encoding of the data. The default is
+      UTF-8.
+  """
+
+  disableTypeInference = _messages.BooleanField(1)
+  encoding = _messages.StringField(2)
 
 
 class GoogleCloudDataplexV1ZoneDiscoverySpecMetadataPublishing(_messages.Message):
@@ -3394,39 +3236,6 @@ class GoogleCloudDataplexV1ZoneResourceSpec(_messages.Message):
     MULTI_REGION = 2
 
   locationType = _messages.EnumField('LocationTypeValueValuesEnum', 1)
-
-
-class GoogleCloudDataplexV1ZoneSecuritySpec(_messages.Message):
-  r"""Settings to manage the security policy applied to data in a zone.
-
-  Fields:
-    overrideParentSpec: Optional. Indicates whether the policy overrides the
-      list of groups specified in the policy associated with the parent lake
-      or adds to the parent policy. By default, the policy is additive. If
-      this flag is true, the list of groups must each include at least one
-      entry.
-    ownerGroups: Optional. A list of groups that should be granted the
-      roles/dataplex.dataOwner IAM role, that allows group members to modify
-      the resources (including their IAM policies and child resources) managed
-      within a zone. By default this is inherited by all assets within the
-      zone. For example, yourgroup@yourdomain.com. It cannot be a service
-      account, user or another type of identity.
-    readerGroups: Optional. A list of groups that should be granted the
-      roles/dataplex.dataReader IAM role, that allows group members to read
-      data being managed within a zone. By default this is inherited by all
-      assets within a zone. For example, yourgroup@yourdomain.com. It cannot
-      be a service account, user or another type of identity.
-    writerGroups: Optional. A list of groups that should be granted the
-      roles/dataplex.dataWriter IAM role, that allows group members to update
-      data being managed within a zone. By default this is inherited by all
-      assets within a zone. For example, yourgroup@yourdomain.com. It cannot
-      be a service account, user or another type of identity.
-  """
-
-  overrideParentSpec = _messages.BooleanField(1)
-  ownerGroups = _messages.StringField(2, repeated=True)
-  readerGroups = _messages.StringField(3, repeated=True)
-  writerGroups = _messages.StringField(4, repeated=True)
 
 
 class GoogleCloudLocationListLocationsResponse(_messages.Message):
@@ -3586,18 +3395,18 @@ class GoogleIamV1AuditLogConfig(_messages.Message):
 
 
 class GoogleIamV1Binding(_messages.Message):
-  r"""Associates members with a role.
+  r"""Associates members, or principals, with a role.
 
   Fields:
     condition: The condition that is associated with this binding.If the
       condition evaluates to true, then this binding applies to the current
       request.If the condition evaluates to false, then this binding does not
       apply to the current request. However, a different role binding might
-      grant the same role to one or more of the members in this binding.To
+      grant the same role to one or more of the principals in this binding.To
       learn which resources support conditions in their IAM policies, see the
       IAM documentation
       (https://cloud.google.com/iam/help/conditions/resource-policies).
-    members: Specifies the identities requesting access for a Cloud Platform
+    members: Specifies the principals requesting access for a Cloud Platform
       resource. members can have the following values: allUsers: A special
       identifier that represents anyone who is on the internet; with or
       without a Google account. allAuthenticatedUsers: A special identifier
@@ -3626,8 +3435,8 @@ class GoogleIamV1Binding(_messages.Message):
       the role in the binding. domain:{domain}: The G Suite domain (primary)
       that represents all the users of that domain. For example, google.com or
       example.com.
-    role: Role that is assigned to members. For example, roles/viewer,
-      roles/editor, or roles/owner.
+    role: Role that is assigned to the list of members, or principals. For
+      example, roles/viewer, roles/editor, or roles/owner.
   """
 
   condition = _messages.MessageField('GoogleTypeExpr', 1)
@@ -3638,15 +3447,15 @@ class GoogleIamV1Binding(_messages.Message):
 class GoogleIamV1Policy(_messages.Message):
   r"""An Identity and Access Management (IAM) policy, which specifies access
   controls for Google Cloud resources.A Policy is a collection of bindings. A
-  binding binds one or more members to a single role. Members can be user
-  accounts, service accounts, Google groups, and domains (such as G Suite). A
-  role is a named list of permissions; each role can be an IAM predefined role
-  or a user-created custom role.For some types of Google Cloud resources, a
-  binding can also specify a condition, which is a logical expression that
-  allows access to a resource only if the expression evaluates to true. A
-  condition can add constraints based on attributes of the request, the
-  resource, or both. To learn which resources support conditions in their IAM
-  policies, see the IAM documentation
+  binding binds one or more members, or principals, to a single role.
+  Principals can be user accounts, service accounts, Google groups, and
+  domains (such as G Suite). A role is a named list of permissions; each role
+  can be an IAM predefined role or a user-created custom role.For some types
+  of Google Cloud resources, a binding can also specify a condition, which is
+  a logical expression that allows access to a resource only if the expression
+  evaluates to true. A condition can add constraints based on attributes of
+  the request, the resource, or both. To learn which resources support
+  conditions in their IAM policies, see the IAM documentation
   (https://cloud.google.com/iam/help/conditions/resource-policies).JSON
   example: { "bindings": [ { "role":
   "roles/resourcemanager.organizationAdmin", "members": [
@@ -3668,9 +3477,15 @@ class GoogleIamV1Policy(_messages.Message):
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
-    bindings: Associates a list of members to a role. Optionally, may specify
-      a condition that determines how and when the bindings are applied. Each
-      of the bindings must contain at least one member.
+    bindings: Associates a list of members, or principals, with a role.
+      Optionally, may specify a condition that determines how and when the
+      bindings are applied. Each of the bindings must contain at least one
+      principal.The bindings in a Policy can refer to up to 1,500 principals;
+      up to 250 of these principals can be Google groups. Each occurrence of a
+      principal counts towards these limits. For example, if the bindings
+      grant 50 different roles to user:alice@example.com, and not to any other
+      principal, then you can add another 1,450 principals to the bindings in
+      the Policy.
     etag: etag is used for optimistic concurrency control as a way to help
       prevent simultaneous updates of a policy from overwriting each other. It
       is strongly suggested that systems make use of the etag in the read-

@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 import copy
 
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.command_lib.storage import encryption_util
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage.resources import gcs_resource_reference
 
@@ -183,6 +184,12 @@ def update_object_metadata_from_request_config(object_metadata, request_config):
     object_metadata.contentType = request_config.content_type
   if request_config.md5_hash is not None:
     object_metadata.md5Hash = request_config.md5_hash
+
+  if (
+      request_config.encryption_key
+      and request_config.encryption_key.type == encryption_util.KeyType.CMEK
+  ):
+    object_metadata.kmsKeyName = request_config.encryption_key.key
 
   if request_config.custom_metadata:
     messages = apis.GetMessagesModule('storage', 'v1')

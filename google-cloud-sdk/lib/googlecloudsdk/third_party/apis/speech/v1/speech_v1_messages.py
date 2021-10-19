@@ -73,14 +73,19 @@ class LongRunningRecognizeResponse(_messages.Message):
   `google::longrunning::Operations` service.
 
   Fields:
+    outputConfig: Original output config if present in the request.
+    outputError: If the transcript output fails this field contains the
+      relevant error.
     results: Sequential list of transcription results corresponding to
       sequential portions of audio.
     totalBilledTime: When available, billed audio seconds for the
       corresponding request.
   """
 
-  results = _messages.MessageField('SpeechRecognitionResult', 1, repeated=True)
-  totalBilledTime = _messages.StringField(2)
+  outputConfig = _messages.MessageField('TranscriptOutputConfig', 1)
+  outputError = _messages.MessageField('Status', 2)
+  results = _messages.MessageField('SpeechRecognitionResult', 3, repeated=True)
+  totalBilledTime = _messages.StringField(4)
 
 
 class Operation(_messages.Message):
@@ -225,6 +230,17 @@ class RecognitionConfig(_messages.Message):
       AudioEncoding.
 
   Fields:
+    alternativeLanguageCodes: A list of up to 3 additional
+      [BCP-47](https://www.rfc-editor.org/rfc/bcp/bcp47.txt) language tags,
+      listing possible alternative languages of the supplied audio. See
+      [Language Support](https://cloud.google.com/speech-to-
+      text/docs/languages) for a list of the currently supported language
+      codes. If alternative languages are listed, recognition result will
+      contain recognition in the most likely language detected including the
+      main language_code. The recognition result will include the language tag
+      of the language detected in the audio. Note: This feature is only
+      supported for Voice Command and Voice Search use cases and performance
+      may vary for other use cases (e.g., phone call transcription).
     audioChannelCount: The number of channels in the input audio data. ONLY
       set this for MULTI-CHANNEL recognition. Valid values for LINEAR16 and
       FLAC are `1`-`8`. Valid values for OGG_OPUS are '1'-'254'. Valid value
@@ -251,6 +267,9 @@ class RecognitionConfig(_messages.Message):
       only recognize the first channel. The request is billed cumulatively for
       all channels recognized: `audio_channel_count` multiplied by the length
       of the audio.
+    enableWordConfidence: If `true`, the top result includes a list of words
+      and the confidence for those words. If `false`, no word-level confidence
+      information is returned. The default is `false`.
     enableWordTimeOffsets: If `true`, the top result includes a list of words
       and the start and end time offsets (timestamps) for those words. If
       `false`, no word-level time offset information is returned. The default
@@ -339,6 +358,10 @@ class RecognitionConfig(_messages.Message):
         as specified in RFC 5574. In other words, each RTP header is replaced
         with a single byte containing the block length. Only Speex wideband is
         supported. `sample_rate_hertz` must be 16000.
+      WEBM_OPUS: Opus encoded audio frames in WebM container
+        ([OggOpus](https://wiki.xiph.org/OggOpus)). This is a Beta features
+        and only available in v1p1beta1. `sample_rate_hertz` must be one of
+        8000, 12000, 16000, 24000, or 48000.
     """
     ENCODING_UNSPECIFIED = 0
     LINEAR16 = 1
@@ -348,21 +371,24 @@ class RecognitionConfig(_messages.Message):
     AMR_WB = 5
     OGG_OPUS = 6
     SPEEX_WITH_HEADER_BYTE = 7
+    WEBM_OPUS = 8
 
-  audioChannelCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  diarizationConfig = _messages.MessageField('SpeakerDiarizationConfig', 2)
-  enableAutomaticPunctuation = _messages.BooleanField(3)
-  enableSeparateRecognitionPerChannel = _messages.BooleanField(4)
-  enableWordTimeOffsets = _messages.BooleanField(5)
-  encoding = _messages.EnumField('EncodingValueValuesEnum', 6)
-  languageCode = _messages.StringField(7)
-  maxAlternatives = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  metadata = _messages.MessageField('RecognitionMetadata', 9)
-  model = _messages.StringField(10)
-  profanityFilter = _messages.BooleanField(11)
-  sampleRateHertz = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  speechContexts = _messages.MessageField('SpeechContext', 13, repeated=True)
-  useEnhanced = _messages.BooleanField(14)
+  alternativeLanguageCodes = _messages.StringField(1, repeated=True)
+  audioChannelCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  diarizationConfig = _messages.MessageField('SpeakerDiarizationConfig', 3)
+  enableAutomaticPunctuation = _messages.BooleanField(4)
+  enableSeparateRecognitionPerChannel = _messages.BooleanField(5)
+  enableWordConfidence = _messages.BooleanField(6)
+  enableWordTimeOffsets = _messages.BooleanField(7)
+  encoding = _messages.EnumField('EncodingValueValuesEnum', 8)
+  languageCode = _messages.StringField(9)
+  maxAlternatives = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  metadata = _messages.MessageField('RecognitionMetadata', 11)
+  model = _messages.StringField(12)
+  profanityFilter = _messages.BooleanField(13)
+  sampleRateHertz = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  speechContexts = _messages.MessageField('SpeechContext', 15, repeated=True)
+  useEnhanced = _messages.BooleanField(16)
 
 
 class RecognitionMetadata(_messages.Message):
@@ -626,10 +652,15 @@ class SpeechRecognitionResult(_messages.Message):
       corresponding to the recognized result for the audio from that channel.
       For audio_channel_count = N, its output values can range from '1' to
       'N'.
+    languageCode: Output only. The [BCP-47](https://www.rfc-
+      editor.org/rfc/bcp/bcp47.txt) language tag of the language in this
+      result. This language code was detected to have the most likelihood of
+      being spoken in the audio.
   """
 
   alternatives = _messages.MessageField('SpeechRecognitionAlternative', 1, repeated=True)
   channelTag = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  languageCode = _messages.StringField(3)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -762,6 +793,13 @@ class WordInfo(_messages.Message):
   r"""Word-specific information for recognized words.
 
   Fields:
+    confidence: The confidence estimate between 0.0 and 1.0. A higher number
+      indicates an estimated greater likelihood that the recognized words are
+      correct. This field is set only for the top alternative of a non-
+      streaming result or, of a streaming result where `is_final=true`. This
+      field is not guaranteed to be accurate and users should not rely on it
+      to be always provided. The default of 0.0 is a sentinel value indicating
+      `confidence` was not set.
     endTime: Time offset relative to the beginning of the audio, and
       corresponding to the end of the spoken word. This field is only set if
       `enable_word_time_offsets=true` and only in the top hypothesis. This is
@@ -778,10 +816,11 @@ class WordInfo(_messages.Message):
     word: The word corresponding to this set of information.
   """
 
-  endTime = _messages.StringField(1)
-  speakerTag = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  startTime = _messages.StringField(3)
-  word = _messages.StringField(4)
+  confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  endTime = _messages.StringField(2)
+  speakerTag = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  startTime = _messages.StringField(4)
+  word = _messages.StringField(5)
 
 
 encoding.AddCustomJsonFieldMapping(

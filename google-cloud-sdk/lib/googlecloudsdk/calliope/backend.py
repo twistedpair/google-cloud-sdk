@@ -457,7 +457,7 @@ class CommandCommon(object):
       return flags
     return [f for f in flags if
             (include_global or not f.is_global) and
-            (include_hidden or not f.hidden)]
+            (include_hidden or not f.is_hidden)]
 
   def GetSpecificFlags(self, include_hidden=True):
     flags = self.ai.flag_args

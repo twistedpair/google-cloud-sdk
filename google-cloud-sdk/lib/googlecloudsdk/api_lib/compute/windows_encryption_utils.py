@@ -13,7 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Utilities for encryption functions on Windows."""
-# TODO(b/36051032) Create unittests for this module (which only run on Windows).
 from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals

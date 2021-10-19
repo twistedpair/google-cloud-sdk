@@ -193,11 +193,13 @@ apis:
       discovery_doc: config_v1alpha1.json
       default: true
   certificatemanager:
+    v1:
+      discovery_doc: certificatemanager_v1.json
+      default: true
     v1alpha1:
       discovery_doc: certificatemanager_v1alpha1.json
     v1alpha2:
       discovery_doc: certificatemanager_v1alpha2.json
-      default: true
   cloudasset:
     v1:
       default: true
@@ -548,9 +550,11 @@ apis:
     v1alpha2:
       discovery_doc: dns_v1alpha2.json
   domains:
+    v1:
+      discovery_doc: domains_v1.json
+      default: true
     v1beta1:
       discovery_doc: domains_v1beta1.json
-      default: true
     v1alpha2:
       discovery_doc: domains_v1alpha2.json
   edgecontainer:
@@ -973,6 +977,9 @@ apis:
     v1:
       discovery_doc: run_v1.json
       default: true
+  run_apps:
+    v1alpha1:
+      discovery_doc: run_apps_v1alpha1.json
   runtimeconfig:
     v1beta1:
       discovery_doc: runtimeconfig_v1beta1.json

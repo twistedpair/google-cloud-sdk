@@ -317,7 +317,7 @@ class _StdinSocket(object):
   """
 
   class _StdinSocketMessage(object):
-    """A class to wrap messages coming to the stdin socket for unix systems."""
+    """A class to wrap messages coming to the stdin socket for windows systems."""
 
     def __init__(self, messageType, data):
       self._type = messageType
@@ -343,17 +343,13 @@ class _StdinSocket(object):
 
   def __init__(self):
 
-    # We will use this thread-safe queue to communicate with the input
-    # reading thread.
-    self._message_queue = queue.Queue()
     self._stdin_closed = False
     # Maximum number of bytes the thread should read.
     self._bufsize = utils.SUBPROTOCOL_MAX_DATA_FRAME_SIZE
-    if not platforms.OperatingSystem.IsWindows():
-      new_thread = threading.Thread(target=
-                                    self._ReadFromStdinAndEnqueueMessageUnix)
-      new_thread.start()
-    else:
+    if platforms.OperatingSystem.IsWindows():
+      # We will use this thread-safe queue to communicate with the input
+      # reading thread.
+      self._message_queue = queue.Queue()
       new_thread = threading.Thread(
           target=self._ReadFromStdinAndEnqueueMessageWindows)
       new_thread.daemon = True
@@ -402,11 +398,11 @@ class _StdinSocket(object):
     # Shutting down read only (SHUT_RD)
     if how in (socket.SHUT_RDWR, socket.SHUT_RD):
       self._stdin_closed = True
-      # We queue the message so that the recv loop can abort
-      msg = self._StdinSocketMessage(self._StdinClosedMessageType, b'')
 
-      # For linux we still need to unblock the queue in the main thread
-      if not platforms.OperatingSystem.IsWindows():
+      # For windows we will unblock the thread early
+      if platforms.OperatingSystem.IsWindows():
+        # We queue the message so that the recv loop can abort
+        msg = self._StdinSocketMessage(self._StdinClosedMessageType, b'')
         self._message_queue.put(msg)
 
   def _ReadFromStdinAndEnqueueMessageWindows(self):
@@ -473,48 +469,6 @@ class _StdinSocket(object):
     # behavior as the unix version
     return b''
 
-  # TODO(b/198682299): This method is not needed anymore, we should refactor
-  # it out.
-  def _ReadFromStdinAndEnqueueMessageUnix(self):
-    """Reads data from stdin on Unix, blocking on the first byte.
-
-    This method will loop until stdin is closed. Should be executed in a
-    separate thread to avoid blocking the main thread.
-    """
-
-    try:
-      while not self._stdin_closed:
-
-        # We have a timeout here because of b/197960494
-        stdin_ready = select.select([sys.stdin], (), (),
-                                    READ_FROM_STDIN_TIMEOUT_SECS)
-        if not stdin_ready[0]:
-          continue
-
-        if six.PY2:
-          first_byte = sys.stdin.read(1)
-        else:
-          first_byte = sys.stdin.buffer.read(1)
-
-        # If we close stdin, read() will return an empty byte (b'').
-        if first_byte == b'':  # pylint: disable=g-explicit-bool-comparison
-          raise _StdinSocket._EOFError
-
-        # On Unix, the way to quickly read bytes without unnecessary blocking
-        # is to make stdin non-blocking.
-        complete_msg = first_byte + self._ReadUnixNonBlocking(self._bufsize - 1)
-        msg = self._StdinSocketMessage(self._DataMessageType, complete_msg)
-        self._message_queue.put(msg)
-    except _StdinSocket._EOFError:
-      msg = self._StdinSocketMessage(self._StdinClosedMessageType, b'')
-      self._message_queue.put(msg)
-    except Exception:  # pylint: disable=broad-except
-      # We had an exception in a separate thread, so we need to notify the
-      # main thread somehow. We will add the exception to the queue,
-      # and rethrow on the main thread.
-      msg = self._StdinSocketMessage(self._ExceptionMessageType, sys.exc_info())
-      self._message_queue.put(msg)
-
   def _RecvUnix(self, bufsize):
     """Reads data from stdin on Unix.
 
@@ -536,19 +490,17 @@ class _StdinSocket(object):
     if self._stdin_closed:
       return b''
 
-    # The call to Queue.get() will block if no data is available in the queue
-    # at the moment.
-    msg = self._message_queue.get()
-    msg_type = msg.GetType()
-    msg_data = msg.GetData()
-
-    if msg_type is self._ExceptionMessageType:
-      six.reraise(msg_data[0], msg_data[1], msg_data[2])
-
-    if msg_type is self._StdinClosedMessageType:
+    try:
+      while not self._stdin_closed:
+        # We have a timeout here because of b/197960494
+        stdin_ready = select.select([sys.stdin], (), (),
+                                    READ_FROM_STDIN_TIMEOUT_SECS)
+        if not stdin_ready[0]:
+          continue
+        return self._ReadUnixNonBlocking(self._bufsize)
+    except _StdinSocket._EOFError:
       self._stdin_closed = True
-
-    return msg_data
+    return b''
 
   def _ReadUnixNonBlocking(self, bufsize):
     """Reads from stdin on Unix in a nonblocking manner.
@@ -594,6 +546,11 @@ class _StdinSocket(object):
       # and exiting it, or just closing the terminal.
       # If gcloud is running as an ssh ProxyCommand this problem doesn't happen.
       fcntl.fcntl(sys.stdin, fcntl.F_SETFL, old_flags)
+
+    if b == b'':  # pylint: disable=g-explicit-bool-comparison
+      # In python 2 and 3, EOF is indicated by returning b''.
+      raise _StdinSocket._EOFError
+
     if b is None:
       # Regardless of what the online python3 documentation says, it actually
       # returns None to indicate no nonblocking data available.

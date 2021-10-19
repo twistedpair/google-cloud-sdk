@@ -59,11 +59,25 @@ class AutoscalingConfig(_messages.Message):
 class AutoscalingPolicy(_messages.Message):
   r"""Describes an autoscaling policy for Dataproc cluster autoscaler.
 
+  Messages:
+    LabelsValue: Optional. The labels to associate with this autoscaling
+      policy. Label keys must contain 1 to 63 characters, and must conform to
+      RFC 1035 (https://www.ietf.org/rfc/rfc1035.txt). Label values may be
+      empty, but, if present, must contain 1 to 63 characters, and must
+      conform to RFC 1035 (https://www.ietf.org/rfc/rfc1035.txt). No more than
+      32 labels can be associated with an autoscaling policy.
+
   Fields:
     basicAlgorithm: A BasicAutoscalingAlgorithm attribute.
     id: Required. The policy id.The id must contain only letters (a-z, A-Z),
       numbers (0-9), underscores (_), and hyphens (-). Cannot begin or end
       with underscore or hyphen. Must consist of between 3 and 50 characters.
+    labels: Optional. The labels to associate with this autoscaling policy.
+      Label keys must contain 1 to 63 characters, and must conform to RFC 1035
+      (https://www.ietf.org/rfc/rfc1035.txt). Label values may be empty, but,
+      if present, must contain 1 to 63 characters, and must conform to RFC
+      1035 (https://www.ietf.org/rfc/rfc1035.txt). No more than 32 labels can
+      be associated with an autoscaling policy.
     name: Output only. The "resource name" of the autoscaling policy, as
       described in https://cloud.google.com/apis/design/resource_names. For
       projects.regions.autoscalingPolicies, the resource name of the policy
@@ -78,11 +92,41 @@ class AutoscalingPolicy(_messages.Message):
       primary workers.
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. The labels to associate with this autoscaling policy. Label
+    keys must contain 1 to 63 characters, and must conform to RFC 1035
+    (https://www.ietf.org/rfc/rfc1035.txt). Label values may be empty, but, if
+    present, must contain 1 to 63 characters, and must conform to RFC 1035
+    (https://www.ietf.org/rfc/rfc1035.txt). No more than 32 labels can be
+    associated with an autoscaling policy.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   basicAlgorithm = _messages.MessageField('BasicAutoscalingAlgorithm', 1)
   id = _messages.StringField(2)
-  name = _messages.StringField(3)
-  secondaryWorkerConfig = _messages.MessageField('InstanceGroupAutoscalingPolicyConfig', 4)
-  workerConfig = _messages.MessageField('InstanceGroupAutoscalingPolicyConfig', 5)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
+  secondaryWorkerConfig = _messages.MessageField('InstanceGroupAutoscalingPolicyConfig', 5)
+  workerConfig = _messages.MessageField('InstanceGroupAutoscalingPolicyConfig', 6)
 
 
 class BasicAutoscalingAlgorithm(_messages.Message):
@@ -326,18 +370,18 @@ class BatchOperationMetadata(_messages.Message):
 
 
 class Binding(_messages.Message):
-  r"""Associates members with a role.
+  r"""Associates members, or principals, with a role.
 
   Fields:
     condition: The condition that is associated with this binding.If the
       condition evaluates to true, then this binding applies to the current
       request.If the condition evaluates to false, then this binding does not
       apply to the current request. However, a different role binding might
-      grant the same role to one or more of the members in this binding.To
+      grant the same role to one or more of the principals in this binding.To
       learn which resources support conditions in their IAM policies, see the
       IAM documentation
       (https://cloud.google.com/iam/help/conditions/resource-policies).
-    members: Specifies the identities requesting access for a Cloud Platform
+    members: Specifies the principals requesting access for a Cloud Platform
       resource. members can have the following values: allUsers: A special
       identifier that represents anyone who is on the internet; with or
       without a Google account. allAuthenticatedUsers: A special identifier
@@ -366,8 +410,8 @@ class Binding(_messages.Message):
       the role in the binding. domain:{domain}: The G Suite domain (primary)
       that represents all the users of that domain. For example, google.com or
       example.com.
-    role: Role that is assigned to members. For example, roles/viewer,
-      roles/editor, or roles/owner.
+    role: Role that is assigned to the list of members, or principals. For
+      example, roles/viewer, roles/editor, or roles/owner.
   """
 
   condition = _messages.MessageField('Expr', 1)
@@ -2299,6 +2343,18 @@ class DriverRunner(_messages.Message):
   yarnDriverRunner = _messages.MessageField('YarnDriverRunner', 2)
 
 
+class DriverSchedulingConfig(_messages.Message):
+  r"""Configurations for the driver scheduling
+
+  Fields:
+    memoryMb: Required. The amount of memory in MB this driver is requesting
+    vcores: Required. The number of vCPUs this driver is requesting
+  """
+
+  memoryMb = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  vcores = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -2384,6 +2440,7 @@ class ExecutionConfig(_messages.Message):
       execution.
 
   Fields:
+    kmsKey: Optional. The Cloud KMS key to use for encryption.
     networkTags: Optional. Tags used for network traffic control.
     networkUri: Optional. Network URI to connect workload to.
     performanceTier: Optional. Performance tier for workload execution.
@@ -2406,12 +2463,13 @@ class ExecutionConfig(_messages.Message):
     STANDARD = 2
     HIGH = 3
 
-  networkTags = _messages.StringField(1, repeated=True)
-  networkUri = _messages.StringField(2)
-  performanceTier = _messages.EnumField('PerformanceTierValueValuesEnum', 3)
-  serviceAccount = _messages.StringField(4)
-  serviceAccountScopes = _messages.StringField(5, repeated=True)
-  subnetworkUri = _messages.StringField(6)
+  kmsKey = _messages.StringField(1)
+  networkTags = _messages.StringField(2, repeated=True)
+  networkUri = _messages.StringField(3)
+  performanceTier = _messages.EnumField('PerformanceTierValueValuesEnum', 4)
+  serviceAccount = _messages.StringField(5)
+  serviceAccountScopes = _messages.StringField(6, repeated=True)
+  subnetworkUri = _messages.StringField(7)
 
 
 class Expr(_messages.Message):
@@ -3205,6 +3263,7 @@ class Job(_messages.Message):
     driverOutputResourceUri: Output only. A URI pointing to the location of
       the stdout of the job's driver program.
     driverRunner: Optional. Configurations for the driver runner
+    driverSchedulingConfig: Optional. Configurations for the driver scheduling
     hadoopJob: Optional. Job is a Hadoop job.
     hiveJob: Optional. Job is a Hive job.
     jobUuid: Output only. A UUID that uniquely identifies a job within the
@@ -3271,22 +3330,23 @@ class Job(_messages.Message):
   driverControlFilesUri = _messages.StringField(2)
   driverOutputResourceUri = _messages.StringField(3)
   driverRunner = _messages.MessageField('DriverRunner', 4)
-  hadoopJob = _messages.MessageField('HadoopJob', 5)
-  hiveJob = _messages.MessageField('HiveJob', 6)
-  jobUuid = _messages.StringField(7)
-  labels = _messages.MessageField('LabelsValue', 8)
-  pigJob = _messages.MessageField('PigJob', 9)
-  placement = _messages.MessageField('JobPlacement', 10)
-  prestoJob = _messages.MessageField('PrestoJob', 11)
-  pysparkJob = _messages.MessageField('PySparkJob', 12)
-  reference = _messages.MessageField('JobReference', 13)
-  scheduling = _messages.MessageField('JobScheduling', 14)
-  sparkJob = _messages.MessageField('SparkJob', 15)
-  sparkRJob = _messages.MessageField('SparkRJob', 16)
-  sparkSqlJob = _messages.MessageField('SparkSqlJob', 17)
-  status = _messages.MessageField('JobStatus', 18)
-  statusHistory = _messages.MessageField('JobStatus', 19, repeated=True)
-  yarnApplications = _messages.MessageField('YarnApplication', 20, repeated=True)
+  driverSchedulingConfig = _messages.MessageField('DriverSchedulingConfig', 5)
+  hadoopJob = _messages.MessageField('HadoopJob', 6)
+  hiveJob = _messages.MessageField('HiveJob', 7)
+  jobUuid = _messages.StringField(8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  pigJob = _messages.MessageField('PigJob', 10)
+  placement = _messages.MessageField('JobPlacement', 11)
+  prestoJob = _messages.MessageField('PrestoJob', 12)
+  pysparkJob = _messages.MessageField('PySparkJob', 13)
+  reference = _messages.MessageField('JobReference', 14)
+  scheduling = _messages.MessageField('JobScheduling', 15)
+  sparkJob = _messages.MessageField('SparkJob', 16)
+  sparkRJob = _messages.MessageField('SparkRJob', 17)
+  sparkSqlJob = _messages.MessageField('SparkSqlJob', 18)
+  status = _messages.MessageField('JobStatus', 19)
+  statusHistory = _messages.MessageField('JobStatus', 20, repeated=True)
+  yarnApplications = _messages.MessageField('YarnApplication', 21, repeated=True)
 
 
 class JobMetadata(_messages.Message):
@@ -4222,15 +4282,15 @@ class PigJob(_messages.Message):
 class Policy(_messages.Message):
   r"""An Identity and Access Management (IAM) policy, which specifies access
   controls for Google Cloud resources.A Policy is a collection of bindings. A
-  binding binds one or more members to a single role. Members can be user
-  accounts, service accounts, Google groups, and domains (such as G Suite). A
-  role is a named list of permissions; each role can be an IAM predefined role
-  or a user-created custom role.For some types of Google Cloud resources, a
-  binding can also specify a condition, which is a logical expression that
-  allows access to a resource only if the expression evaluates to true. A
-  condition can add constraints based on attributes of the request, the
-  resource, or both. To learn which resources support conditions in their IAM
-  policies, see the IAM documentation
+  binding binds one or more members, or principals, to a single role.
+  Principals can be user accounts, service accounts, Google groups, and
+  domains (such as G Suite). A role is a named list of permissions; each role
+  can be an IAM predefined role or a user-created custom role.For some types
+  of Google Cloud resources, a binding can also specify a condition, which is
+  a logical expression that allows access to a resource only if the expression
+  evaluates to true. A condition can add constraints based on attributes of
+  the request, the resource, or both. To learn which resources support
+  conditions in their IAM policies, see the IAM documentation
   (https://cloud.google.com/iam/help/conditions/resource-policies).JSON
   example: { "bindings": [ { "role":
   "roles/resourcemanager.organizationAdmin", "members": [
@@ -4251,9 +4311,15 @@ class Policy(_messages.Message):
   documentation (https://cloud.google.com/iam/docs/).
 
   Fields:
-    bindings: Associates a list of members to a role. Optionally, may specify
-      a condition that determines how and when the bindings are applied. Each
-      of the bindings must contain at least one member.
+    bindings: Associates a list of members, or principals, with a role.
+      Optionally, may specify a condition that determines how and when the
+      bindings are applied. Each of the bindings must contain at least one
+      principal.The bindings in a Policy can refer to up to 1,500 principals;
+      up to 250 of these principals can be Google groups. Each occurrence of a
+      principal counts towards these limits. For example, if the bindings
+      grant 50 different roles to user:alice@example.com, and not to any other
+      principal, then you can add another 1,450 principals to the bindings in
+      the Policy.
     etag: etag is used for optimistic concurrency control as a way to help
       prevent simultaneous updates of a policy from overwriting each other. It
       is strongly suggested that systems make use of the etag in the read-
@@ -5599,7 +5665,20 @@ class TemplateParameter(_messages.Message):
 
 
 class TerminateSessionRequest(_messages.Message):
-  r"""A request to terminate an interactive session."""
+  r"""A request to terminate an interactive session.
+
+  Fields:
+    requestId: Optional. A unique ID used to identify the request. If the
+      service receives two TerminateSessionRequest (https://cloud.google.com/d
+      ataproc/docs/reference/rpc/google.cloud.dataproc.v1#google.cloud.datapro
+      c.v1.TerminateSessionRequest)s with the same ID, the second request is
+      ignored.Recommendation: Set this value to a UUID
+      (https://en.wikipedia.org/wiki/Universally_unique_identifier).The value
+      must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
+      and hyphens (-). The maximum length is 40 characters.
+  """
+
+  requestId = _messages.StringField(1)
 
 
 class TestIamPermissionsRequest(_messages.Message):

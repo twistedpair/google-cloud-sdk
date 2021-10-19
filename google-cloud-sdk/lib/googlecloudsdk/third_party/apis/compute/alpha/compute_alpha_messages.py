@@ -1542,14 +1542,17 @@ class AllocationSpecificSKUReservation(_messages.Message):
   configuration. Next ID: 5
 
   Fields:
+    assuredCount: [Output Only] Indicates how many instances are actually
+      usable currently.
     count: Specifies the number of resources that are allocated.
     inUseCount: [Output Only] Indicates how many instances are in use.
     instanceProperties: The instance properties for the reservation.
   """
 
-  count = _messages.IntegerField(1)
-  inUseCount = _messages.IntegerField(2)
-  instanceProperties = _messages.MessageField('AllocationSpecificSKUAllocationReservedInstanceProperties', 3)
+  assuredCount = _messages.IntegerField(1)
+  count = _messages.IntegerField(2)
+  inUseCount = _messages.IntegerField(3)
+  instanceProperties = _messages.MessageField('AllocationSpecificSKUAllocationReservedInstanceProperties', 4)
 
 
 class AttachedDisk(_messages.Message):
@@ -3782,10 +3785,10 @@ class BackendService(_messages.Message):
       INTERNAL_MANAGED. - A global backend service with the
       load_balancing_scheme set to INTERNAL_SELF_MANAGED. If sessionAffinity
       is not NONE, and this field is not set to MAGLEV or RING_HASH, session
-      affinity settings will not take effect. Only the default ROUND_ROBIN
-      policy is supported when the backend service is referenced by a URL map
-      that is bound to target gRPC proxy that has validateForProxyless field
-      set to true.
+      affinity settings will not take effect. Only ROUND_ROBIN and RING_HASH
+      are supported when the backend service is referenced by a URL map that
+      is bound to target gRPC proxy that has validateForProxyless field set to
+      true.
     ProtocolValueValuesEnum: The protocol this BackendService uses to
       communicate with backends. Possible values are HTTP, HTTPS, HTTP2, TCP,
       SSL, UDP or GRPC. depending on the chosen load balancer or Traffic
@@ -3794,11 +3797,11 @@ class BackendService(_messages.Message):
       GRPC when the backend service is referenced by a URL map that is bound
       to target gRPC proxy.
     SessionAffinityValueValuesEnum: Type of session affinity to use. The
-      default is NONE. For a detailed description of session affinity options,
-      see: [Session affinity](https://cloud.google.com/load-
-      balancing/docs/backend-service#session_affinity). Not supported when the
+      default is NONE. Only NONE and HEADER_FIELD are supported when the
       backend service is referenced by a URL map that is bound to target gRPC
-      proxy that has validateForProxyless field set to true.
+      proxy that has validateForProxyless field set to true. For more details,
+      see: [Session Affinity](https://cloud.google.com/load-
+      balancing/docs/backend-service#session_affinity).
 
   Fields:
     affinityCookieTtlSec: Lifetime of cookies in seconds. This setting is
@@ -3816,8 +3819,9 @@ class BackendService(_messages.Message):
     compressionMode: Compress text responses using Brotli or gzip compression,
       based on the client's Accept-Encoding header.
     connectionDraining: A ConnectionDraining attribute.
-    connectionTrackingPolicy: A BackendServiceConnectionTrackingPolicy
-      attribute.
+    connectionTrackingPolicy: Connection Tracking configuration for this
+      BackendService. Connection tracking policy settings are only available
+      for Network Load Balancing and Internal TCP/UDP Load Balancing.
     consistentHash: Consistent Hash-based load balancing can be used to
       provide soft session affinity based on HTTP headers, cookies or other
       properties. This load balancing policy is applicable only for HTTP
@@ -3828,10 +3832,7 @@ class BackendService(_messages.Message):
       RING_HASH. This field is applicable to either: - A regional backend
       service with the service_protocol set to HTTP, HTTPS, or HTTP2, and
       load_balancing_scheme set to INTERNAL_MANAGED. - A global backend
-      service with the load_balancing_scheme set to INTERNAL_SELF_MANAGED. Not
-      supported when the backend service is referenced by a URL map that is
-      bound to target gRPC proxy that has validateForProxyless field set to
-      true.
+      service with the load_balancing_scheme set to INTERNAL_SELF_MANAGED.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     customRequestHeaders: Headers that the load balancer adds to proxied
@@ -3898,10 +3899,10 @@ class BackendService(_messages.Message):
       INTERNAL_MANAGED. - A global backend service with the
       load_balancing_scheme set to INTERNAL_SELF_MANAGED. If sessionAffinity
       is not NONE, and this field is not set to MAGLEV or RING_HASH, session
-      affinity settings will not take effect. Only the default ROUND_ROBIN
-      policy is supported when the backend service is referenced by a URL map
-      that is bound to target gRPC proxy that has validateForProxyless field
-      set to true.
+      affinity settings will not take effect. Only ROUND_ROBIN and RING_HASH
+      are supported when the backend service is referenced by a URL map that
+      is bound to target gRPC proxy that has validateForProxyless field set to
+      true.
     logConfig: This field denotes the logging options for the load balancer
       traffic served by this backend service. If logging is enabled, logs will
       be exported to Stackdriver.
@@ -3971,12 +3972,12 @@ class BackendService(_messages.Message):
       INTERNAL_SELF_MANAGED. If used with a backend service, must reference a
       global policy. If used with a regional backend service, must reference a
       regional policy.
-    sessionAffinity: Type of session affinity to use. The default is NONE. For
-      a detailed description of session affinity options, see: [Session
-      affinity](https://cloud.google.com/load-balancing/docs/backend-
-      service#session_affinity). Not supported when the backend service is
+    sessionAffinity: Type of session affinity to use. The default is NONE.
+      Only NONE and HEADER_FIELD are supported when the backend service is
       referenced by a URL map that is bound to target gRPC proxy that has
-      validateForProxyless field set to true.
+      validateForProxyless field set to true. For more details, see: [Session
+      Affinity](https://cloud.google.com/load-balancing/docs/backend-
+      service#session_affinity).
     subsetting: A Subsetting attribute.
     timeoutSec: Not supported when the backend service is referenced by a URL
       map that is bound to target gRPC proxy that has validateForProxyless
@@ -4005,7 +4006,7 @@ class BackendService(_messages.Message):
       EXTERNAL: Signifies that this will be used for external HTTP(S), SSL
         Proxy, TCP Proxy, or Network Load Balancing
       EXTERNAL_MANAGED: Signifies that this will be used for External Managed
-        HTTP(S), SSL Proxy, or TCP Proxy Load Balancing.
+        HTTP(S) Load Balancing.
       INTERNAL: Signifies that this will be used for Internal TCP/UDP Load
         Balancing.
       INTERNAL_MANAGED: Signifies that this will be used for Internal HTTP(S)
@@ -4044,7 +4045,7 @@ class BackendService(_messages.Message):
     - A global backend service with the load_balancing_scheme set to
     INTERNAL_SELF_MANAGED. If sessionAffinity is not NONE, and this field is
     not set to MAGLEV or RING_HASH, session affinity settings will not take
-    effect. Only the default ROUND_ROBIN policy is supported when the backend
+    effect. Only ROUND_ROBIN and RING_HASH are supported when the backend
     service is referenced by a URL map that is bound to target gRPC proxy that
     has validateForProxyless field set to true.
 
@@ -4109,12 +4110,12 @@ class BackendService(_messages.Message):
     UNSPECIFIED = 8
 
   class SessionAffinityValueValuesEnum(_messages.Enum):
-    r"""Type of session affinity to use. The default is NONE. For a detailed
-    description of session affinity options, see: [Session
-    affinity](https://cloud.google.com/load-balancing/docs/backend-
-    service#session_affinity). Not supported when the backend service is
-    referenced by a URL map that is bound to target gRPC proxy that has
-    validateForProxyless field set to true.
+    r"""Type of session affinity to use. The default is NONE. Only NONE and
+    HEADER_FIELD are supported when the backend service is referenced by a URL
+    map that is bound to target gRPC proxy that has validateForProxyless field
+    set to true. For more details, see: [Session
+    Affinity](https://cloud.google.com/load-balancing/docs/backend-
+    service#session_affinity).
 
     Values:
       CLIENT_IP: 2-tuple hash on packet's source and destination IP addresses.
@@ -4580,13 +4581,24 @@ class BackendServiceConnectionTrackingPolicy(_messages.Message):
       unhealthy). If set to ALWAYS_PERSIST, existing connections always
       persist on unhealthy backends regardless of protocol and session
       affinity. It is generally not recommended to use this mode overriding
-      the default.
+      the default. For more details, see [Connection Persistence for Network
+      Load Balancing](https://cloud.google.com/load-
+      balancing/docs/network/networklb-backend-service#connection-persistence)
+      and [Connection Persistence for Internal TCP/UDP Load
+      Balancing](https://cloud.google.com/load-
+      balancing/docs/internal#connection-persistence).
     TrackingModeValueValuesEnum: Specifies the key used for connection
-      tracking. There are two options: PER_CONNECTION: This is the default
+      tracking. There are two options: - PER_CONNECTION: This is the default
       mode. The Connection Tracking is performed as per the Connection Key
-      (default Hash Method) for the specific protocol. PER_SESSION: The
+      (default Hash Method) for the specific protocol. - PER_SESSION: The
       Connection Tracking is performed as per the configured Session Affinity.
-      It matches the configured Session Affinity.
+      It matches the configured Session Affinity. For more details, see
+      [Tracking Mode for Network Load
+      Balancing](https://cloud.google.com/load-
+      balancing/docs/network/networklb-backend-service#tracking-mode) and
+      [Tracking Mode for Internal TCP/UDP Load
+      Balancing](https://cloud.google.com/load-
+      balancing/docs/internal#tracking-mode).
 
   Fields:
     connectionPersistenceOnUnhealthyBackends: Specifies connection persistence
@@ -4601,21 +4613,33 @@ class BackendServiceConnectionTrackingPolicy(_messages.Message):
       backends (unless all backends are unhealthy). If set to ALWAYS_PERSIST,
       existing connections always persist on unhealthy backends regardless of
       protocol and session affinity. It is generally not recommended to use
-      this mode overriding the default.
+      this mode overriding the default. For more details, see [Connection
+      Persistence for Network Load Balancing](https://cloud.google.com/load-
+      balancing/docs/network/networklb-backend-service#connection-persistence)
+      and [Connection Persistence for Internal TCP/UDP Load
+      Balancing](https://cloud.google.com/load-
+      balancing/docs/internal#connection-persistence).
     enableStrongAffinity: Enable Strong Session Affinity for Network Load
       Balancing. This option is not available publicly.
     idleTimeoutSec: Specifies how long to keep a Connection Tracking entry
-      while there is no matching traffic (in seconds). For L4 ILB the
-      minimum(default) is 10 minutes and maximum is 16 hours. For Network Load
+      while there is no matching traffic (in seconds). For Internal TCP/UDP
+      Load Balancing: - The minimum (default) is 10 minutes and the maximum is
+      16 hours. - It can be set only if Connection Tracking is less than
+      5-tuple (i.e. Session Affinity is CLIENT_IP_NO_DESTINATION, CLIENT_IP or
+      CLIENT_IP_PROTO, and Tracking Mode is PER_SESSION). For Network Load
       Balancer the default is 60 seconds. This option is not available
-      publicly. This field will be supported only if the Connection Tracking
-      key is less than 5-tuple.
+      publicly.
     trackingMode: Specifies the key used for connection tracking. There are
-      two options: PER_CONNECTION: This is the default mode. The Connection
+      two options: - PER_CONNECTION: This is the default mode. The Connection
       Tracking is performed as per the Connection Key (default Hash Method)
-      for the specific protocol. PER_SESSION: The Connection Tracking is
+      for the specific protocol. - PER_SESSION: The Connection Tracking is
       performed as per the configured Session Affinity. It matches the
-      configured Session Affinity.
+      configured Session Affinity. For more details, see [Tracking Mode for
+      Network Load Balancing](https://cloud.google.com/load-
+      balancing/docs/network/networklb-backend-service#tracking-mode) and
+      [Tracking Mode for Internal TCP/UDP Load
+      Balancing](https://cloud.google.com/load-
+      balancing/docs/internal#tracking-mode).
   """
 
   class ConnectionPersistenceOnUnhealthyBackendsValueValuesEnum(_messages.Enum):
@@ -4631,7 +4655,11 @@ class BackendServiceConnectionTrackingPolicy(_messages.Message):
     backends are unhealthy). If set to ALWAYS_PERSIST, existing connections
     always persist on unhealthy backends regardless of protocol and session
     affinity. It is generally not recommended to use this mode overriding the
-    default.
+    default. For more details, see [Connection Persistence for Network Load
+    Balancing](https://cloud.google.com/load-balancing/docs/network/networklb-
+    backend-service#connection-persistence) and [Connection Persistence for
+    Internal TCP/UDP Load Balancing](https://cloud.google.com/load-
+    balancing/docs/internal#connection-persistence).
 
     Values:
       ALWAYS_PERSIST: <no description>
@@ -4644,10 +4672,15 @@ class BackendServiceConnectionTrackingPolicy(_messages.Message):
 
   class TrackingModeValueValuesEnum(_messages.Enum):
     r"""Specifies the key used for connection tracking. There are two options:
-    PER_CONNECTION: This is the default mode. The Connection Tracking is
+    - PER_CONNECTION: This is the default mode. The Connection Tracking is
     performed as per the Connection Key (default Hash Method) for the specific
-    protocol. PER_SESSION: The Connection Tracking is performed as per the
+    protocol. - PER_SESSION: The Connection Tracking is performed as per the
     configured Session Affinity. It matches the configured Session Affinity.
+    For more details, see [Tracking Mode for Network Load
+    Balancing](https://cloud.google.com/load-balancing/docs/network/networklb-
+    backend-service#tracking-mode) and [Tracking Mode for Internal TCP/UDP
+    Load Balancing](https://cloud.google.com/load-
+    balancing/docs/internal#tracking-mode).
 
     Values:
       INVALID_TRACKING_MODE: <no description>
@@ -5371,7 +5404,7 @@ class BfdStatusPacketCounts(_messages.Message):
 
 
 class Binding(_messages.Message):
-  r"""Associates `members` with a `role`.
+  r"""Associates `members`, or principals, with a `role`.
 
   Fields:
     bindingId: This is deprecated and has no effect. Do not use.
@@ -5379,12 +5412,12 @@ class Binding(_messages.Message):
       condition evaluates to `true`, then this binding applies to the current
       request. If the condition evaluates to `false`, then this binding does
       not apply to the current request. However, a different role binding
-      might grant the same role to one or more of the members in this binding.
-      To learn which resources support conditions in their IAM policies, see
-      the [IAM
+      might grant the same role to one or more of the principals in this
+      binding. To learn which resources support conditions in their IAM
+      policies, see the [IAM
       documentation](https://cloud.google.com/iam/help/conditions/resource-
       policies).
-    members: Specifies the identities requesting access for a Cloud Platform
+    members: Specifies the principals requesting access for a Cloud Platform
       resource. `members` can have the following values: * `allUsers`: A
       special identifier that represents anyone who is on the internet; with
       or without a Google account. * `allAuthenticatedUsers`: A special
@@ -5414,8 +5447,8 @@ class Binding(_messages.Message):
       group retains the role in the binding. * `domain:{domain}`: The G Suite
       domain (primary) that represents all the users of that domain. For
       example, `google.com` or `example.com`.
-    role: Role that is assigned to `members`. For example, `roles/viewer`,
-      `roles/editor`, or `roles/owner`.
+    role: Role that is assigned to the list of `members`, or principals. For
+      example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """
 
   bindingId = _messages.StringField(1)
@@ -6386,12 +6419,16 @@ class ComputeAcceleratorTypesAggregatedListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -6458,12 +6495,16 @@ class ComputeAcceleratorTypesListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -6510,12 +6551,16 @@ class ComputeAddressesAggregatedListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -6632,12 +6677,16 @@ class ComputeAddressesListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -6729,12 +6778,16 @@ class ComputeAutoscalersAggregatedListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -6851,12 +6904,16 @@ class ComputeAutoscalersListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -7100,12 +7157,16 @@ class ComputeBackendBucketsListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -7285,12 +7346,16 @@ class ComputeBackendServicesAggregatedListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -7458,12 +7523,16 @@ class ComputeBackendServicesListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -7644,12 +7713,16 @@ class ComputeDiskTypesAggregatedListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -7716,12 +7789,16 @@ class ComputeDiskTypesListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -7796,12 +7873,16 @@ class ComputeDisksAggregatedListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -7968,12 +8049,16 @@ class ComputeDisksListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -8229,12 +8314,16 @@ class ComputeExternalVpnGatewaysListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -8491,12 +8580,16 @@ class ComputeFirewallPoliciesListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -8744,12 +8837,16 @@ class ComputeFirewallsListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -8859,12 +8956,16 @@ class ComputeForwardingRulesAggregatedListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -8982,12 +9083,16 @@ class ComputeForwardingRulesListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -9136,12 +9241,16 @@ class ComputeFutureReservationsAggregatedListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -9287,12 +9396,16 @@ class ComputeFutureReservationsListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -9445,12 +9558,16 @@ class ComputeGlobalAddressesListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -9584,12 +9701,16 @@ class ComputeGlobalForwardingRulesListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -9836,12 +9957,16 @@ class ComputeGlobalNetworkEndpointGroupsListNetworkEndpointsRequest(_messages.Me
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -9890,12 +10015,16 @@ class ComputeGlobalNetworkEndpointGroupsListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -9940,12 +10069,16 @@ class ComputeGlobalOperationsAggregatedListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -10026,12 +10159,16 @@ class ComputeGlobalOperationsListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -10116,12 +10253,16 @@ class ComputeGlobalOrganizationOperationsListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -10229,12 +10370,16 @@ class ComputeGlobalPublicDelegatedPrefixesListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -10307,12 +10452,16 @@ class ComputeHealthChecksAggregatedListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -10423,12 +10572,16 @@ class ComputeHealthChecksListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -10599,12 +10752,16 @@ class ComputeHttpHealthChecksListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -10775,12 +10932,16 @@ class ComputeHttpsHealthChecksListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -11018,12 +11179,16 @@ class ComputeImagesListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -11169,12 +11334,16 @@ class ComputeInstanceGroupManagersAggregatedListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -11392,12 +11561,16 @@ class ComputeInstanceGroupManagersListErrorsRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -11450,12 +11623,16 @@ class ComputeInstanceGroupManagersListManagedInstancesRequest(_messages.Message)
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -11504,12 +11681,16 @@ class ComputeInstanceGroupManagersListPerInstanceConfigsRequest(_messages.Messag
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -11560,12 +11741,16 @@ class ComputeInstanceGroupManagersListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -12069,12 +12254,16 @@ class ComputeInstanceGroupsAggregatedListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -12191,12 +12380,16 @@ class ComputeInstanceGroupsListInstancesRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -12249,12 +12442,16 @@ class ComputeInstanceGroupsListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -12450,12 +12647,16 @@ class ComputeInstanceTemplatesListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -12588,12 +12789,16 @@ class ComputeInstancesAggregatedListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -12962,12 +13167,16 @@ class ComputeInstancesListReferrersRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -13017,12 +13226,16 @@ class ComputeInstancesListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -13946,12 +14159,16 @@ class ComputeInstantSnapshotsAggregatedListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -14113,12 +14330,16 @@ class ComputeInstantSnapshotsListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -14227,12 +14448,16 @@ class ComputeInterconnectAttachmentsAggregatedListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -14368,12 +14593,16 @@ class ComputeInterconnectAttachmentsListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -14522,12 +14751,16 @@ class ComputeInterconnectLocationsListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -14683,12 +14916,16 @@ class ComputeInterconnectsListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -14932,12 +15169,16 @@ class ComputeLicensesListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -15087,12 +15328,16 @@ class ComputeMachineImagesListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -15167,12 +15412,16 @@ class ComputeMachineTypesAggregatedListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -15239,12 +15488,16 @@ class ComputeMachineTypesListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -15291,12 +15544,16 @@ class ComputeNetworkEdgeSecurityServicesAggregatedListRequest(_messages.Message)
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -15451,12 +15708,16 @@ class ComputeNetworkEndpointGroupsAggregatedListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -15641,12 +15902,16 @@ class ComputeNetworkEndpointGroupsListNetworkEndpointsRequest(_messages.Message)
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -15702,12 +15967,16 @@ class ComputeNetworkEndpointGroupsListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -15965,12 +16234,16 @@ class ComputeNetworkFirewallPoliciesListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -16245,12 +16518,16 @@ class ComputeNetworksListIpAddressesRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -16301,12 +16578,16 @@ class ComputeNetworksListIpOwnersRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -16369,12 +16650,16 @@ class ComputeNetworksListPeeringRoutesRequest(_messages.Message):
   Fields:
     direction: The direction of the exchanged routes.
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -16438,12 +16723,16 @@ class ComputeNetworksListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -16632,12 +16921,16 @@ class ComputeNodeGroupsAggregatedListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -16800,12 +17093,16 @@ class ComputeNodeGroupsListNodesRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -16854,12 +17151,16 @@ class ComputeNodeGroupsListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -16995,12 +17296,16 @@ class ComputeNodeTemplatesAggregatedListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -17133,12 +17438,16 @@ class ComputeNodeTemplatesListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -17219,12 +17528,16 @@ class ComputeNodeTypesAggregatedListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -17291,12 +17604,16 @@ class ComputeNodeTypesListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -17513,12 +17830,16 @@ class ComputeOrganizationSecurityPoliciesListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -17682,12 +18003,16 @@ class ComputePacketMirroringsAggregatedListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -17805,12 +18130,16 @@ class ComputePacketMirroringsListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -18012,12 +18341,16 @@ class ComputeProjectsGetXpnResourcesRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -18062,12 +18395,16 @@ class ComputeProjectsListXpnHostsRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -18323,12 +18660,16 @@ class ComputePublicAdvertisedPrefixesListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -18401,12 +18742,16 @@ class ComputePublicDelegatedPrefixesAggregatedListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -18528,12 +18873,16 @@ class ComputePublicDelegatedPrefixesListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -18674,12 +19023,16 @@ class ComputeRegionAutoscalersListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -18898,12 +19251,16 @@ class ComputeRegionBackendServicesListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -19040,12 +19397,16 @@ class ComputeRegionCommitmentsAggregatedListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -19137,12 +19498,16 @@ class ComputeRegionCommitmentsListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -19283,12 +19648,16 @@ class ComputeRegionDiskTypesListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -19478,12 +19847,16 @@ class ComputeRegionDisksListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -19681,12 +20054,16 @@ class ComputeRegionHealthCheckServicesAggregatedListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -19806,12 +20183,16 @@ class ComputeRegionHealthCheckServicesListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -19968,12 +20349,16 @@ class ComputeRegionHealthChecksListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -20288,12 +20673,16 @@ class ComputeRegionInstanceGroupManagersListErrorsRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -20346,12 +20735,16 @@ class ComputeRegionInstanceGroupManagersListManagedInstancesRequest(_messages.Me
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -20401,12 +20794,16 @@ class ComputeRegionInstanceGroupManagersListPerInstanceConfigsRequest(_messages.
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -20457,12 +20854,16 @@ class ComputeRegionInstanceGroupManagersListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -20952,12 +21353,16 @@ class ComputeRegionInstanceGroupsListInstancesRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -21011,12 +21416,16 @@ class ComputeRegionInstanceGroupsListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -21245,12 +21654,16 @@ class ComputeRegionInstantSnapshotsListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -21429,12 +21842,16 @@ class ComputeRegionNetworkEndpointGroupsListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -21707,12 +22124,16 @@ class ComputeRegionNetworkFirewallPoliciesListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -21905,12 +22326,16 @@ class ComputeRegionNotificationEndpointsAggregatedListRequest(_messages.Message)
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -22030,12 +22455,16 @@ class ComputeRegionNotificationEndpointsListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -22131,12 +22560,16 @@ class ComputeRegionOperationsListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -22264,12 +22697,16 @@ class ComputeRegionSecurityPoliciesListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -22411,12 +22848,16 @@ class ComputeRegionSslCertificatesListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -22545,12 +22986,16 @@ class ComputeRegionTargetHttpProxiesListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -22709,12 +23154,16 @@ class ComputeRegionTargetHttpsProxiesListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -22906,12 +23355,16 @@ class ComputeRegionUrlMapsListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -23042,12 +23495,16 @@ class ComputeRegionsListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -23092,12 +23549,16 @@ class ComputeReservationsAggregatedListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -23230,12 +23691,16 @@ class ComputeReservationsListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -23377,12 +23842,16 @@ class ComputeResourcePoliciesAggregatedListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -23516,12 +23985,16 @@ class ComputeResourcePoliciesListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -23602,12 +24075,16 @@ class ComputeRoutersAggregatedListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -23685,12 +24162,16 @@ class ComputeRoutersGetNatMappingInfoRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -23797,12 +24278,16 @@ class ComputeRoutersListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -23994,12 +24479,16 @@ class ComputeRoutesListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -24076,12 +24565,16 @@ class ComputeSecurityPoliciesAggregatedListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -24210,12 +24703,16 @@ class ComputeSecurityPoliciesListPreconfiguredExpressionSetsRequest(_messages.Me
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -24260,12 +24757,16 @@ class ComputeSecurityPoliciesListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -24399,12 +24900,16 @@ class ComputeServiceAttachmentsAggregatedListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -24540,12 +25045,16 @@ class ComputeServiceAttachmentsListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -24729,12 +25238,16 @@ class ComputeSnapshotsListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -24824,12 +25337,16 @@ class ComputeSslCertificatesAggregatedListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -24943,12 +25460,16 @@ class ComputeSslCertificatesListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -25068,12 +25589,16 @@ class ComputeSslPoliciesListAvailableFeaturesRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -25118,12 +25643,16 @@ class ComputeSslPoliciesListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -25209,12 +25738,16 @@ class ComputeSubnetworksAggregatedListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -25375,12 +25908,16 @@ class ComputeSubnetworksListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -25427,12 +25964,16 @@ class ComputeSubnetworksListUsableRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -25642,12 +26183,16 @@ class ComputeTargetGrpcProxiesListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -25734,12 +26279,16 @@ class ComputeTargetHttpProxiesAggregatedListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -25851,12 +26400,16 @@ class ComputeTargetHttpProxiesListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -25969,12 +26522,16 @@ class ComputeTargetHttpsProxiesAggregatedListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -26086,12 +26643,16 @@ class ComputeTargetHttpsProxiesListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -26318,12 +26879,16 @@ class ComputeTargetInstancesAggregatedListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -26441,12 +27006,16 @@ class ComputeTargetInstancesListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -26566,12 +27135,16 @@ class ComputeTargetPoolsAggregatedListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -26706,12 +27279,16 @@ class ComputeTargetPoolsListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -26920,12 +27497,16 @@ class ComputeTargetSslProxiesListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -27184,12 +27765,16 @@ class ComputeTargetTcpProxiesListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -27305,12 +27890,16 @@ class ComputeTargetVpnGatewaysAggregatedListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -27428,12 +28017,16 @@ class ComputeTargetVpnGatewaysListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -27525,12 +28118,16 @@ class ComputeUrlMapsAggregatedListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -27667,12 +28264,16 @@ class ComputeUrlMapsListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -27797,12 +28398,16 @@ class ComputeVpnGatewaysAggregatedListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -27933,12 +28538,16 @@ class ComputeVpnGatewaysListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -28030,12 +28639,16 @@ class ComputeVpnTunnelsAggregatedListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -28152,12 +28765,16 @@ class ComputeVpnTunnelsListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -28281,12 +28898,16 @@ class ComputeZoneOperationsListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -28359,12 +28980,16 @@ class ComputeZonesListRequest(_messages.Message):
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
-      The expression must specify the field name, a comparison operator, and
-      the value that you want to use for filtering. The value must be a
-      string, a number, or a boolean. The comparison operator must be either
-      `=`, `!=`, `>`, or `<`. For example, if you are filtering Compute Engine
+      The expression must specify the field name, an operator, and the value
+      that you want to use for filtering. The value must be a string, a
+      number, or a boolean. The operator must be either `=`, `!=`, `>`, `<`,
+      `<=`, `>=` or `:`. For example, if you are filtering Compute Engine
       instances, you can exclude instances named `example-instance` by
-      specifying `name != example-instance`. You can also filter nested
+      specifying `name != example-instance`. The `:` operator can be used with
+      string fields to match substrings. For non-string fields it is
+      equivalent to the `=` operator. The `:*` comparison can be used to test
+      whether a key has been defined. For example, to find all objects with
+      `owner` label use: ``` labels.owner:* ``` You can also filter nested
       fields. For example, you could specify `scheduling.automaticRestart =
       false` to include instances only if they are not scheduled for automatic
       restarts. You can use filtering on nested fields to filter based on
@@ -28513,7 +29138,10 @@ class ConsistentHashLoadBalancerSettings(_messages.Message):
     httpCookie: Hash is based on HTTP Cookie. This field describes a HTTP
       cookie that will be used as the hash key for the consistent hash load
       balancer. If the cookie is not present, it will be generated. This field
-      is applicable if the sessionAffinity is set to HTTP_COOKIE.
+      is applicable if the sessionAffinity is set to HTTP_COOKIE. Not
+      supported when the backend service is referenced by a URL map that is
+      bound to target gRPC proxy that has validateForProxyless field set to
+      true.
     httpHeaderName: The hash based on the value of the specified header field.
       This field is applicable if the sessionAffinity is set to HEADER_FIELD.
     minimumRingSize: The minimum number of virtual nodes to use for the hash
@@ -28544,31 +29172,33 @@ class ConsistentHashLoadBalancerSettingsHttpCookie(_messages.Message):
 
 
 class CorsPolicy(_messages.Message):
-  r"""The specification for allowing client side cross-origin requests. Please
-  see W3C Recommendation for Cross Origin Resource Sharing
+  r"""The specification for allowing client-side cross-origin requests. For
+  more information about the W3C recommendation for cross-origin resource
+  sharing (CORS), see Fetch API Living Standard.
 
   Fields:
     allowCredentials: In response to a preflight request, setting this to true
       indicates that the actual request can include user credentials. This
-      translates to the Access-Control-Allow-Credentials header. Default is
-      false.
+      field translates to the Access-Control-Allow-Credentials header. Default
+      is false.
     allowHeaders: Specifies the content for the Access-Control-Allow-Headers
       header.
     allowMethods: Specifies the content for the Access-Control-Allow-Methods
       header.
-    allowOriginRegexes: Specifies the regualar expression patterns that match
-      allowed origins. For regular expression grammar please see
-      github.com/google/re2/wiki/Syntax An origin is allowed if it matches
-      either an item in allowOrigins or an item in allowOriginRegexes.
-    allowOrigins: Specifies the list of origins that will be allowed to do
-      CORS requests. An origin is allowed if it matches either an item in
+    allowOriginRegexes: Specifies a regular expression that matches allowed
+      origins. For more information about the regular expression syntax, see
+      Syntax. An origin is allowed if it matches either an item in
       allowOrigins or an item in allowOriginRegexes.
-    disabled: If true, specifies the CORS policy is disabled. The default
-      value of false, which indicates that the CORS policy is in effect.
+    allowOrigins: Specifies the list of origins that is allowed to do CORS
+      requests. An origin is allowed if it matches either an item in
+      allowOrigins or an item in allowOriginRegexes.
+    disabled: If true, the setting specifies the CORS policy is disabled. The
+      default value of false, which indicates that the CORS policy is in
+      effect.
     exposeHeaders: Specifies the content for the Access-Control-Expose-Headers
       header.
     maxAge: Specifies how long results of a preflight request can be cached in
-      seconds. This translates to the Access-Control-Max-Age header.
+      seconds. This field translates to the Access-Control-Max-Age header.
   """
 
   allowCredentials = _messages.BooleanField(1)
@@ -33363,17 +33993,27 @@ class GuestOsFeature(_messages.Message):
   r"""Guest OS features.
 
   Enums:
-    TypeValueValuesEnum: The ID of a supported feature. Read Enabling guest
-      operating system features to see a list of available options.
+    TypeValueValuesEnum: The ID of a supported feature. To add multiple
+      values, use commas to separate values. Set to one or more of the
+      following values: - VIRTIO_SCSI_MULTIQUEUE - WINDOWS - MULTI_IP_SUBNET -
+      UEFI_COMPATIBLE - SECURE_BOOT - GVNIC - SEV_CAPABLE -
+      SUSPEND_RESUME_COMPATIBLE For more information, see Enabling guest
+      operating system features.
 
   Fields:
-    type: The ID of a supported feature. Read Enabling guest operating system
-      features to see a list of available options.
+    type: The ID of a supported feature. To add multiple values, use commas to
+      separate values. Set to one or more of the following values: -
+      VIRTIO_SCSI_MULTIQUEUE - WINDOWS - MULTI_IP_SUBNET - UEFI_COMPATIBLE -
+      SECURE_BOOT - GVNIC - SEV_CAPABLE - SUSPEND_RESUME_COMPATIBLE For more
+      information, see Enabling guest operating system features.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
-    r"""The ID of a supported feature. Read Enabling guest operating system
-    features to see a list of available options.
+    r"""The ID of a supported feature. To add multiple values, use commas to
+    separate values. Set to one or more of the following values: -
+    VIRTIO_SCSI_MULTIQUEUE - WINDOWS - MULTI_IP_SUBNET - UEFI_COMPATIBLE -
+    SECURE_BOOT - GVNIC - SEV_CAPABLE - SUSPEND_RESUME_COMPATIBLE For more
+    information, see Enabling guest operating system features.
 
     Values:
       BARE_METAL_LINUX_COMPATIBLE: <no description>
@@ -35103,7 +35743,7 @@ class HostRule(_messages.Message):
       with optional port numbers in the format host:port. * matches any string
       of ([a-z0-9-.]*). In that case, * must be the first character and must
       be followed in the pattern by either - or .. * based matching is not
-      supported when the URL map is bound to target gRPC proxy that has
+      supported when the URL map is bound to a target gRPC proxy that has the
       validateForProxyless field set to true.
     pathMatcher: The name of the PathMatcher to use to match the path portion
       of the URL if the hostRule matches the URL's host portion.
@@ -35119,13 +35759,13 @@ class HttpFaultAbort(_messages.Message):
 
   Fields:
     httpStatus: The HTTP status code used to abort the request. The value must
-      be between 200 and 599 inclusive. For gRPC protocol, the gRPC status
-      code is mapped to HTTP status code according to this mapping table. HTTP
-      status 200 is mapped to gRPC status UNKNOWN. Injecting an OK status is
+      be from 200 to 599 inclusive. For gRPC protocol, the gRPC status code is
+      mapped to HTTP status code according to this mapping table. HTTP status
+      200 is mapped to gRPC status UNKNOWN. Injecting an OK status is
       currently not supported by Traffic Director.
-    percentage: The percentage of traffic (connections/operations/requests)
-      which will be aborted as part of fault injection. The value must be
-      between 0.0 and 100.0 inclusive.
+    percentage: The percentage of traffic for connections, operations, or
+      requests that is aborted as part of fault injection. The value must be
+      from 0.0 to 100.0 inclusive.
   """
 
   httpStatus = _messages.IntegerField(1, variant=_messages.Variant.UINT32)
@@ -35133,14 +35773,14 @@ class HttpFaultAbort(_messages.Message):
 
 
 class HttpFaultDelay(_messages.Message):
-  r"""Specifies the delay introduced by Loadbalancer before forwarding the
-  request to the backend service as part of fault injection.
+  r"""Specifies the delay introduced by the load balancer before forwarding
+  the request to the backend service as part of fault injection.
 
   Fields:
     fixedDelay: Specifies the value of the fixed delay interval.
-    percentage: The percentage of traffic (connections/operations/requests) on
-      which delay will be introduced as part of fault injection. The value
-      must be between 0.0 and 100.0 inclusive.
+    percentage: The percentage of traffic for connections, operations, or
+      requests for which a delay is introduced as part of fault injection. The
+      value must be from 0.0 to 100.0 inclusive.
   """
 
   fixedDelay = _messages.MessageField('Duration', 1)
@@ -35151,9 +35791,9 @@ class HttpFaultInjection(_messages.Message):
   r"""The specification for fault injection introduced into traffic to test
   the resiliency of clients to backend service failure. As part of fault
   injection, when clients send requests to a backend service, delays can be
-  introduced by Loadbalancer on a percentage of requests before sending those
-  request to the backend service. Similarly requests from clients can be
-  aborted by the Loadbalancer for a percentage of requests.
+  introduced by the load balancer on a percentage of requests before sending
+  those request to the backend service. Similarly requests from clients can be
+  aborted by the load balancer for a percentage of requests.
 
   Fields:
     abort: The specification for how client requests are aborted as part of
@@ -35192,15 +35832,15 @@ class HttpHeaderAction(_messages.Message):
   the request is passed along to the selected backendService.
 
   Fields:
-    requestHeadersToAdd: Headers to add to a matching request prior to
+    requestHeadersToAdd: Headers to add to a matching request before
       forwarding the request to the backendService.
     requestHeadersToRemove: A list of header names for headers that need to be
-      removed from the request prior to forwarding the request to the
+      removed from the request before forwarding the request to the
       backendService.
-    responseHeadersToAdd: Headers to add the response prior to sending the
+    responseHeadersToAdd: Headers to add the response before sending the
       response back to the client.
     responseHeadersToRemove: A list of header names for headers that need to
-      be removed from the response prior to sending the response back to the
+      be removed from the response before sending the response back to the
       client.
   """
 
@@ -35220,18 +35860,18 @@ class HttpHeaderMatch(_messages.Message):
     headerName: The name of the HTTP header to match. For matching against the
       HTTP request's authority, use a headerMatch with the header name
       ":authority". For matching a request's method, use the headerName
-      ":method". When the URL map is bound to target gRPC proxy that has
+      ":method". When the URL map is bound to a target gRPC proxy that has the
       validateForProxyless field set to true, only non-binary user-specified
       custom metadata and the `content-type` header are supported. The
       following transport-level headers cannot be used in header matching
       rules: `:authority`, `:method`, `:path`, `:scheme`, `user-agent`,
       `accept-encoding`, `content-encoding`, `grpc-accept-encoding`, `grpc-
       encoding`, `grpc-previous-rpc-attempts`, `grpc-tags-bin`, `grpc-timeout`
-      and `grpc-trace-bin.
+      and `grpc-trace-bin`.
     invertMatch: If set to false, the headerMatch is considered a match if the
-      match criteria above are met. If set to true, the headerMatch is
-      considered a match if the match criteria above are NOT met. The default
-      setting is false.
+      preceding match criteria are met. If set to true, the headerMatch is
+      considered a match if the preceding match criteria are NOT met. The
+      default setting is false.
     prefixMatch: The value of the header must start with the contents of
       prefixMatch. Only one of exactMatch, prefixMatch, suffixMatch,
       regexMatch, presentMatch or rangeMatch must be set.
@@ -35244,18 +35884,17 @@ class HttpHeaderMatch(_messages.Message):
       integer, number or is empty, the match fails. For example for a range
       [-5, 0] - -3 will match. - 0 will not match. - 0.25 will not match. -
       -3someString will not match. Only one of exactMatch, prefixMatch,
-      suffixMatch, regexMatch, presentMatch or rangeMatch must be set. Note
-      that rangeMatch is not supported for Loadbalancers that have their
+      suffixMatch, regexMatch, presentMatch or rangeMatch must be set.
+      rangeMatch is not supported for load balancers that have
       loadBalancingScheme set to EXTERNAL.
     regexMatch: The value of the header must match the regular expression
-      specified in regexMatch. For regular expression grammar, please see:
-      github.com/google/re2/wiki/Syntax For matching against a port specified
-      in the HTTP request, use a headerMatch with headerName set to PORT and a
-      regular expression that satisfies the RFC2616 Host header's port
-      specifier. Only one of exactMatch, prefixMatch, suffixMatch, regexMatch,
-      presentMatch or rangeMatch must be set. Note that regexMatch only
-      applies to Loadbalancers that have their loadBalancingScheme set to
-      INTERNAL_SELF_MANAGED.
+      specified in regexMatch. For more information about regular expression
+      syntax, see Syntax. For matching against a port specified in the HTTP
+      request, use a headerMatch with headerName set to PORT and a regular
+      expression that satisfies the RFC2616 Host header's port specifier. Only
+      one of exactMatch, prefixMatch, suffixMatch, regexMatch, presentMatch or
+      rangeMatch must be set. regexMatch only applies to load balancers that
+      have loadBalancingScheme set to INTERNAL_SELF_MANAGED.
     suffixMatch: The value of the header must end with the contents of
       suffixMatch. Only one of exactMatch, prefixMatch, suffixMatch,
       regexMatch, presentMatch or rangeMatch must be set.
@@ -35506,19 +36145,18 @@ class HttpQueryParameterMatch(_messages.Message):
   Fields:
     exactMatch: The queryParameterMatch matches if the value of the parameter
       exactly matches the contents of exactMatch. Only one of presentMatch,
-      exactMatch or regexMatch must be set.
+      exactMatch, or regexMatch must be set.
     name: The name of the query parameter to match. The query parameter must
       exist in the request, in the absence of which the request match fails.
     presentMatch: Specifies that the queryParameterMatch matches if the
       request contains the query parameter, irrespective of whether the
-      parameter has a value or not. Only one of presentMatch, exactMatch or
+      parameter has a value or not. Only one of presentMatch, exactMatch, or
       regexMatch must be set.
     regexMatch: The queryParameterMatch matches if the value of the parameter
-      matches the regular expression specified by regexMatch. For the regular
-      expression grammar, please see github.com/google/re2/wiki/Syntax Only
-      one of presentMatch, exactMatch or regexMatch must be set. Note that
-      regexMatch only applies when the loadBalancingScheme is set to
-      INTERNAL_SELF_MANAGED.
+      matches the regular expression specified by regexMatch. For more
+      information about regular expression syntax, see Syntax. Only one of
+      presentMatch, exactMatch, or regexMatch must be set. regexMatch only
+      applies when the loadBalancingScheme is set to INTERNAL_SELF_MANAGED.
   """
 
   exactMatch = _messages.StringField(1)
@@ -35535,39 +36173,39 @@ class HttpRedirectAction(_messages.Message):
       RedirectAction. Supported values are: - MOVED_PERMANENTLY_DEFAULT, which
       is the default value and corresponds to 301. - FOUND, which corresponds
       to 302. - SEE_OTHER which corresponds to 303. - TEMPORARY_REDIRECT,
-      which corresponds to 307. In this case, the request method will be
-      retained. - PERMANENT_REDIRECT, which corresponds to 308. In this case,
-      the request method will be retained.
+      which corresponds to 307. In this case, the request method is retained.
+      - PERMANENT_REDIRECT, which corresponds to 308. In this case, the
+      request method is retained.
 
   Fields:
-    hostRedirect: The host that will be used in the redirect response instead
-      of the one that was supplied in the request. The value must be between 1
-      and 255 characters.
+    hostRedirect: The host that is used in the redirect response instead of
+      the one that was supplied in the request. The value must be from 1 to
+      255 characters.
     httpsRedirect: If set to true, the URL scheme in the redirected request is
-      set to https. If set to false, the URL scheme of the redirected request
-      will remain the same as that of the request. This must only be set for
-      UrlMaps used in TargetHttpProxys. Setting this true for TargetHttpsProxy
-      is not permitted. The default is set to false.
-    pathRedirect: The path that will be used in the redirect response instead
-      of the one that was supplied in the request. pathRedirect cannot be
+      set to HTTPS. If set to false, the URL scheme of the redirected request
+      remains the same as that of the request. This must only be set for URL
+      maps used in TargetHttpProxys. Setting this true for TargetHttpsProxy is
+      not permitted. The default is set to false.
+    pathRedirect: The path that is used in the redirect response instead of
+      the one that was supplied in the request. pathRedirect cannot be
       supplied together with prefixRedirect. Supply one alone or neither. If
-      neither is supplied, the path of the original request will be used for
-      the redirect. The value must be between 1 and 1024 characters.
+      neither is supplied, the path of the original request is used for the
+      redirect. The value must be from 1 to 1024 characters.
     prefixRedirect: The prefix that replaces the prefixMatch specified in the
       HttpRouteRuleMatch, retaining the remaining portion of the URL before
       redirecting the request. prefixRedirect cannot be supplied together with
       pathRedirect. Supply one alone or neither. If neither is supplied, the
-      path of the original request will be used for the redirect. The value
-      must be between 1 and 1024 characters.
+      path of the original request is used for the redirect. The value must be
+      from 1 to 1024 characters.
     redirectResponseCode: The HTTP Status code to use for this RedirectAction.
       Supported values are: - MOVED_PERMANENTLY_DEFAULT, which is the default
       value and corresponds to 301. - FOUND, which corresponds to 302. -
       SEE_OTHER which corresponds to 303. - TEMPORARY_REDIRECT, which
-      corresponds to 307. In this case, the request method will be retained. -
+      corresponds to 307. In this case, the request method is retained. -
       PERMANENT_REDIRECT, which corresponds to 308. In this case, the request
-      method will be retained.
+      method is retained.
     stripQuery: If set to true, any accompanying query portion of the original
-      URL is removed prior to redirecting the request. If set to false, the
+      URL is removed before redirecting the request. If set to false, the
       query portion of the original URL is retained. The default is set to
       false.
   """
@@ -35577,9 +36215,8 @@ class HttpRedirectAction(_messages.Message):
     are: - MOVED_PERMANENTLY_DEFAULT, which is the default value and
     corresponds to 301. - FOUND, which corresponds to 302. - SEE_OTHER which
     corresponds to 303. - TEMPORARY_REDIRECT, which corresponds to 307. In
-    this case, the request method will be retained. - PERMANENT_REDIRECT,
-    which corresponds to 308. In this case, the request method will be
-    retained.
+    this case, the request method is retained. - PERMANENT_REDIRECT, which
+    corresponds to 308. In this case, the request method is retained.
 
     Values:
       FOUND: Http Status Code 302 - Found.
@@ -35611,31 +36248,35 @@ class HttpRetryPolicy(_messages.Message):
     numRetries: Specifies the allowed number retries. This number must be > 0.
       If not specified, defaults to 1.
     perTryTimeout: Specifies a non-zero timeout per retry attempt. If not
-      specified, will use the timeout set in HttpRouteAction. If timeout in
-      HttpRouteAction is not set, will use the largest timeout among all
-      backend services associated with the route.
+      specified, will use the timeout set in the HttpRouteAction field. If
+      timeout in the HttpRouteAction field is not set, this field uses the
+      largest timeout among all backend services associated with the route.
+      Not supported when the URL map is bound to a target gRPC proxy that has
+      the validateForProxyless field set to true.
     retryConditions: Specifies one or more conditions when this retry policy
-      applies. Valid values are: - 5xx: Retry will be attempted if the
-      instance or endpoint responds with any 5xx response code, or if the
-      instance or endpoint does not respond at all, example: disconnects,
-      reset, read timeout, connection failure, and refused streams. - gateway-
-      error: Similar to 5xx, but only applies to response codes 502, 503 or
-      504. - - connect-failure: A retry will be attempted on failures
-      connecting to the instance or endpoint, for example due to connection
-      timeouts. - retriable-4xx: A retry will be attempted if the instance or
-      endpoint responds with a retriable 4xx response code. Currently the only
-      retriable error supported is 409. - refused-stream: A retry will be
-      attempted if the instance or endpoint resets the stream with a
-      REFUSED_STREAM error code. This reset type indicates that it is safe to
-      retry. - cancelled: A retry will be attempted if the gRPC status code in
-      the response header is set to cancelled. - deadline-exceeded: A retry
-      will be attempted if the gRPC status code in the response header is set
-      to deadline-exceeded. - internal: A retry will be attempted if the gRPC
-      status code in the response header is set to internal. - resource-
-      exhausted: A retry will be attempted if the gRPC status code in the
-      response header is set to resource-exhausted. - unavailable: A retry
-      will be attempted if the gRPC status code in the response header is set
-      to unavailable.
+      applies. Valid values are: - 5xx: retry is attempted if the instance or
+      endpoint responds with any 5xx response code, or if the instance or
+      endpoint does not respond at all. For example, disconnects, reset, read
+      timeout, connection failure, and refused streams. - gateway-error:
+      Similar to 5xx, but only applies to response codes 502, 503 or 504. -
+      connect-failure: a retry is attempted on failures connecting to the
+      instance or endpoint. For example, connection timeouts. - retriable-4xx:
+      a retry is attempted if the instance or endpoint responds with a 4xx
+      response code. The only error that you can retry is error code 409. -
+      refused-stream: a retry is attempted if the instance or endpoint resets
+      the stream with a REFUSED_STREAM error code. This reset type indicates
+      that it is safe to retry. - cancelled: a retry is attempted if the gRPC
+      status code in the response header is set to cancelled. - deadline-
+      exceeded: a retry is attempted if the gRPC status code in the response
+      header is set to deadline-exceeded. - internal: a retry is attempted if
+      the gRPC status code in the response header is set to internal. -
+      resource-exhausted: a retry is attempted if the gRPC status code in the
+      response header is set to resource-exhausted. - unavailable: a retry is
+      attempted if the gRPC status code in the response header is set to
+      unavailable. Only the following codes are supported when the URL map is
+      bound to target gRPC proxy that has validateForProxyless field set to
+      true. - cancelled - deadline-exceeded - internal - resource-exhausted -
+      unavailable
   """
 
   numRetries = _messages.IntegerField(1, variant=_messages.Variant.UINT32)
@@ -35647,55 +36288,55 @@ class HttpRouteAction(_messages.Message):
   r"""A HttpRouteAction object.
 
   Fields:
-    corsPolicy: The specification for allowing client side cross-origin
-      requests. Please see W3C Recommendation for Cross Origin Resource
-      Sharing Not supported when the URL map is bound to target gRPC proxy.
+    corsPolicy: The specification for allowing client-side cross-origin
+      requests. For more information about the W3C recommendation for cross-
+      origin resource sharing (CORS), see Fetch API Living Standard. Not
+      supported when the URL map is bound to a target gRPC proxy.
     faultInjectionPolicy: The specification for fault injection introduced
       into traffic to test the resiliency of clients to backend service
       failure. As part of fault injection, when clients send requests to a
-      backend service, delays can be introduced by Loadbalancer on a
-      percentage of requests before sending those request to the backend
-      service. Similarly requests from clients can be aborted by the
-      Loadbalancer for a percentage of requests. For the requests impacted by
-      fault injection, timeout and retry_policy will be ignored by clients
-      that are configured with a fault_injection_policy.
+      backend service, delays can be introduced by a load balancer on a
+      percentage of requests before sending those requests to the backend
+      service. Similarly requests from clients can be aborted by the load
+      balancer for a percentage of requests. For the requests impacted by
+      fault injection, timeout and retry_policy is ignored by clients that are
+      configured with a fault_injection_policy.
     maxStreamDuration: Specifies the maximum duration (timeout) for streams on
       the selected route. Unlike the timeout field where the timeout duration
-      starts from the time the request has been fully processed (i.e. end-of-
-      stream), the duration in this field is computed from the beginning of
-      the stream until the response has been completely processed, including
+      starts from the time the request has been fully processed (known as
+      *end-of-stream*), the duration in this field is computed from the
+      beginning of the stream until the response has been processed, including
       all retries. A stream that does not complete in this duration is closed.
-      If not specified, will use the largest maxStreamDuration among all
-      backend services associated with the route. This field is only allowed
-      if the Url map is used with backend services with loadBalancingScheme
-      set to INTERNAL_SELF_MANAGED.
+      If not specified, this field uses the maximum maxStreamDuration value
+      among all backend services associated with the route. This field is only
+      allowed if the Url map is used with backend services with
+      loadBalancingScheme set to INTERNAL_SELF_MANAGED.
     requestMirrorPolicy: Specifies the policy on how requests intended for the
       route's backends are shadowed to a separate mirrored backend service.
-      Loadbalancer does not wait for responses from the shadow service. Prior
-      to sending traffic to the shadow service, the host / authority header is
-      suffixed with -shadow. Not supported when the URL map is bound to target
-      gRPC proxy that has validateForProxyless field set to true.
-    retryPolicy: Specifies the retry policy associated with this route. Not
-      supported when the URL map is bound to target gRPC proxy that has
-      validateForProxyless field set to true.
+      The load balancer does not wait for responses from the shadow service.
+      Before sending traffic to the shadow service, the host / authority
+      header is suffixed with -shadow. Not supported when the URL map is bound
+      to a target gRPC proxy that has the validateForProxyless field set to
+      true.
+    retryPolicy: Specifies the retry policy associated with this route.
     timeout: Specifies the timeout for the selected route. Timeout is computed
-      from the time the request has been fully processed (i.e. end-of-stream)
-      up until the response has been completely processed. Timeout includes
-      all retries. If not specified, will use the largest timeout among all
+      from the time the request has been fully processed (known as *end-of-
+      stream*) up until the response has been processed. Timeout includes all
+      retries. If not specified, this field uses the largest timeout among all
       backend services associated with the route. Not supported when the URL
-      map is bound to target gRPC proxy that has validateForProxyless field
+      map is bound to a target gRPC proxy that has validateForProxyless field
       set to true.
-    urlRewrite: The spec to modify the URL of the request, prior to forwarding
+    urlRewrite: The spec to modify the URL of the request, before forwarding
       the request to the matched service. urlRewrite is the only action
       supported in UrlMaps for external HTTP(S) load balancers. Not supported
-      when the URL map is bound to target gRPC proxy that has
+      when the URL map is bound to a target gRPC proxy that has the
       validateForProxyless field set to true.
     weightedBackendServices: A list of weighted backend services to send
       traffic to when a route match occurs. The weights determine the fraction
       of traffic that flows to their corresponding backend service. If all
       traffic needs to go to a single backend service, there must be one
-      weightedBackendService with weight set to a non-zero number. Once a
-      backendService is identified and before forwarding the request to the
+      weightedBackendService with weight set to a non-zero number. After a
+      backend service is identified and before forwarding the request to the
       backend service, advanced routing actions such as URL rewrites and
       header transformations are applied depending on additional settings
       specified in this HttpRouteAction.
@@ -35712,34 +36353,34 @@ class HttpRouteAction(_messages.Message):
 
 
 class HttpRouteRule(_messages.Message):
-  r"""An HttpRouteRule specifies how to match an HTTP request and the
-  corresponding routing action that load balancing proxies will perform.
+  r"""The HttpRouteRule setting specifies how to match an HTTP request and the
+  corresponding routing action that load balancing proxies perform.
 
   Fields:
     description: The short description conveying the intent of this routeRule.
       The description can have a maximum length of 1024 characters.
     headerAction: Specifies changes to request and response headers that need
-      to take effect for the selected backendService. The headerAction
-      specified here are applied before the matching
+      to take effect for the selected backendService. The headerAction value
+      specified here is applied before the matching
       pathMatchers[].headerAction and after pathMatchers[].routeRules[].routeA
       ction.weightedBackendService.backendServiceWeightAction[].headerAction
-      Note that headerAction is not supported for Loadbalancers that have
-      their loadBalancingScheme set to EXTERNAL. Not supported when the URL
-      map is bound to target gRPC proxy that has validateForProxyless field
-      set to true.
+      HeaderAction is not supported for load balancers that have their
+      loadBalancingScheme set to EXTERNAL. Not supported when the URL map is
+      bound to a target gRPC proxy that has validateForProxyless field set to
+      true.
     httpFilterConfigs: Outbound route specific configuration for
       networkservices.HttpFilter resources enabled by Traffic Director.
-      httpFilterConfigs only applies for Loadbalancers with
+      httpFilterConfigs only applies for load balancers with
       loadBalancingScheme set to INTERNAL_SELF_MANAGED. See ForwardingRule for
-      more details. Not supported when the URL map is bound to target gRPC
+      more details. Not supported when the URL map is bound to a target gRPC
       proxy that has validateForProxyless field set to true.
     httpFilterMetadata: Outbound route specific metadata supplied to
       networkservices.HttpFilter resources enabled by Traffic Director.
-      httpFilterMetadata only applies for Loadbalancers with
+      httpFilterMetadata only applies for load balancers with
       loadBalancingScheme set to INTERNAL_SELF_MANAGED. See ForwardingRule for
       more details. The only configTypeUrl supported is
       type.googleapis.com/google.protobuf.Struct Not supported when the URL
-      map is bound to target gRPC proxy that has validateForProxyless field
+      map is bound to a target gRPC proxy that has validateForProxyless field
       set to true.
     matchRules: The list of criteria for matching attributes of a request to
       this routeRule. This list has OR semantics: the request matches this
@@ -35747,38 +36388,38 @@ class HttpRouteRule(_messages.Message):
       within a given matchRule have AND semantics. All predicates within a
       matchRule must match for the request to match the rule.
     priority: For routeRules within a given pathMatcher, priority determines
-      the order in which load balancer will interpret routeRules. RouteRules
-      are evaluated in order of priority, from the lowest to highest number.
-      The priority of a rule decreases as its number increases (1, 2, 3, N+1).
-      The first rule that matches the request is applied. You cannot configure
-      two or more routeRules with the same priority. Priority for each rule
-      must be set to a number between 0 and 2147483647 inclusive. Priority
-      numbers can have gaps, which enable you to add or remove rules in the
-      future without affecting the rest of the rules. For example, 1, 2, 3, 4,
-      5, 9, 12, 16 is a valid series of priority numbers to which you could
-      add rules numbered from 6 to 8, 10 to 11, and 13 to 15 in the future
-      without any impact on existing rules.
+      the order in which a load balancer interprets routeRules. RouteRules are
+      evaluated in order of priority, from the lowest to highest number. The
+      priority of a rule decreases as its number increases (1, 2, 3, N+1). The
+      first rule that matches the request is applied. You cannot configure two
+      or more routeRules with the same priority. Priority for each rule must
+      be set to a number from 0 to 2147483647 inclusive. Priority numbers can
+      have gaps, which enable you to add or remove rules in the future without
+      affecting the rest of the rules. For example, 1, 2, 3, 4, 5, 9, 12, 16
+      is a valid series of priority numbers to which you could add rules
+      numbered from 6 to 8, 10 to 11, and 13 to 15 in the future without any
+      impact on existing rules.
     routeAction: In response to a matching matchRule, the load balancer
-      performs advanced routing actions like URL rewrites, header
-      transformations, etc. prior to forwarding the request to the selected
-      backend. If routeAction specifies any weightedBackendServices, service
-      must not be set. Conversely if service is set, routeAction cannot
-      contain any weightedBackendServices. Only one of urlRedirect, service or
+      performs advanced routing actions, such as URL rewrites and header
+      transformations, before forwarding the request to the selected backend.
+      If routeAction specifies any weightedBackendServices, service must not
+      be set. Conversely if service is set, routeAction cannot contain any
+      weightedBackendServices. Only one of urlRedirect, service or
       routeAction.weightedBackendService must be set. UrlMaps for external
-      HTTP(S) load balancers support only the urlRewrite action within a
-      routeRule's routeAction.
+      HTTP(S) load balancers support only the urlRewrite action within a route
+      rule's routeAction.
     service: The full or partial URL of the backend service resource to which
-      traffic is directed if this rule is matched. If routeAction is
-      additionally specified, advanced routing actions like URL Rewrites, etc.
-      take effect prior to sending the request to the backend. However, if
-      service is specified, routeAction cannot contain any
-      weightedBackendService s. Conversely, if routeAction specifies any
-      weightedBackendServices, service must not be specified. Only one of
-      urlRedirect, service or routeAction.weightedBackendService must be set.
+      traffic is directed if this rule is matched. If routeAction is also
+      specified, advanced routing actions, such as URL rewrites, take effect
+      before sending the request to the backend. However, if service is
+      specified, routeAction cannot contain any weightedBackendServices.
+      Conversely, if routeAction specifies any weightedBackendServices,
+      service must not be specified. Only one of urlRedirect, service or
+      routeAction.weightedBackendService must be set.
     urlRedirect: When this rule is matched, the request is redirected to a URL
       specified by urlRedirect. If urlRedirect is specified, service or
       routeAction must not be set. Not supported when the URL map is bound to
-      target gRPC proxy.
+      a target gRPC proxy.
   """
 
   description = _messages.StringField(1)
@@ -35801,46 +36442,44 @@ class HttpRouteRuleMatch(_messages.Message):
     fullPathMatch: For satisfying the matchRule condition, the path of the
       request must exactly match the value specified in fullPathMatch after
       removing any query parameters and anchor that may be part of the
-      original URL. fullPathMatch must be between 1 and 1024 characters. Only
-      one of prefixMatch, fullPathMatch or regexMatch must be specified.
+      original URL. fullPathMatch must be from 1 to 1024 characters. Only one
+      of prefixMatch, fullPathMatch or regexMatch must be specified.
     headerMatches: Specifies a list of header match criteria, all of which
       must match corresponding headers in the request.
     ignoreCase: Specifies that prefixMatch and fullPathMatch matches are case
       sensitive. The default value is false. ignoreCase must not be used with
-      regexMatch. Not supported when the URL map is bound to target gRPC
+      regexMatch. Not supported when the URL map is bound to a target gRPC
       proxy.
-    metadataFilters: Opaque filter criteria used by Loadbalancer to restrict
-      routing configuration to a limited set of xDS compliant clients. In
-      their xDS requests to Loadbalancer, xDS clients present node metadata.
-      When there is a match, the relevant routing configuration is made
-      available to those proxies. For each metadataFilter in this list, if its
-      filterMatchCriteria is set to MATCH_ANY, at least one of the
-      filterLabels must match the corresponding label provided in the
+    metadataFilters: Opaque filter criteria used by the load balancer to
+      restrict routing configuration to a limited set of xDS compliant
+      clients. In their xDS requests to the load balancer, xDS clients present
+      node metadata. When there is a match, the relevant routing configuration
+      is made available to those proxies. For each metadataFilter in this
+      list, if its filterMatchCriteria is set to MATCH_ANY, at least one of
+      the filterLabels must match the corresponding label provided in the
       metadata. If its filterMatchCriteria is set to MATCH_ALL, then all of
       its filterLabels must match with corresponding labels provided in the
-      metadata. If multiple metadataFilters are specified, all of them need to
-      be satisfied in order to be considered a match. metadataFilters
-      specified here will be applied after those specified in ForwardingRule
-      that refers to the UrlMap this HttpRouteRuleMatch belongs to.
-      metadataFilters only applies to Loadbalancers that have their
-      loadBalancingScheme set to INTERNAL_SELF_MANAGED. Not supported when the
-      URL map is bound to target gRPC proxy that has validateForProxyless
-      field set to true.
+      metadata. If multiple metadata filters are specified, all of them need
+      to be satisfied in order to be considered a match. metadataFilters
+      specified here is applied after those specified in ForwardingRule that
+      refers to the UrlMap this HttpRouteRuleMatch belongs to. metadataFilters
+      only applies to load balancers that have loadBalancingScheme set to
+      INTERNAL_SELF_MANAGED. Not supported when the URL map is bound to a
+      target gRPC proxy that has validateForProxyless field set to true.
     prefixMatch: For satisfying the matchRule condition, the request's path
       must begin with the specified prefixMatch. prefixMatch must begin with a
-      /. The value must be between 1 and 1024 characters. Only one of
-      prefixMatch, fullPathMatch or regexMatch must be specified.
+      /. The value must be from 1 to 1024 characters. Only one of prefixMatch,
+      fullPathMatch or regexMatch must be specified.
     queryParameterMatches: Specifies a list of query parameter match criteria,
       all of which must match corresponding query parameters in the request.
-      Not supported when the URL map is bound to target gRPC proxy.
+      Not supported when the URL map is bound to a target gRPC proxy.
     regexMatch: For satisfying the matchRule condition, the path of the
       request must satisfy the regular expression specified in regexMatch
       after removing any query parameters and anchor supplied with the
-      original URL. For regular expression grammar please see
-      github.com/google/re2/wiki/Syntax Only one of prefixMatch, fullPathMatch
-      or regexMatch must be specified. Note that regexMatch only applies to
-      Loadbalancers that have their loadBalancingScheme set to
-      INTERNAL_SELF_MANAGED.
+      original URL. For more information about regular expression syntax, see
+      Syntax. Only one of prefixMatch, fullPathMatch or regexMatch must be
+      specified. regexMatch only applies to load balancers that have
+      loadBalancingScheme set to INTERNAL_SELF_MANAGED.
   """
 
   fullPathMatch = _messages.StringField(1)
@@ -36095,8 +36734,8 @@ class Image(_messages.Message):
       name. The image family always returns its latest image that is not
       deprecated. The name of the image family must comply with RFC1035.
     guestOsFeatures: A list of features to enable on the guest operating
-      system. Applicable only for bootable images. Read Enabling guest
-      operating system features to see a list of available options.
+      system. Applicable only for bootable images. To see a list of available
+      options, see the guestOSfeatures[].type parameter.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     imageEncryptionKey: Encrypts the image using a customer-supplied
@@ -36527,6 +37166,8 @@ class Instance(_messages.Message):
   Machine Instances.
 
   Enums:
+    KeyRevocationActionTypeValueValuesEnum: KeyRevocationActionType of the
+      instance.
     PostKeyRevocationActionTypeValueValuesEnum: PostKeyRevocationActionType of
       the instance.
     PrivateIpv6GoogleAccessValueValuesEnum: The private IPv6 google access
@@ -36590,6 +37231,7 @@ class Instance(_messages.Message):
       later. Instance templates do not store customer-supplied encryption
       keys, so you cannot use your own keys to encrypt local SSDs and in-
       memory content in a managed instance group.
+    keyRevocationActionType: KeyRevocationActionType of the instance.
     kind: [Output Only] Type of the resource. Always compute#instance for
       instances.
     labelFingerprint: A fingerprint for this request, which is essentially a
@@ -36687,6 +37329,19 @@ class Instance(_messages.Message):
       specify this field as part of the HTTP request URL. It is not settable
       as a field in the request body.
   """
+
+  class KeyRevocationActionTypeValueValuesEnum(_messages.Enum):
+    r"""KeyRevocationActionType of the instance.
+
+    Values:
+      KEY_REVOCATION_ACTION_TYPE_UNSPECIFIED: Default value. This value is
+        unused.
+      NONE: Indicates user chose no operation.
+      STOP: Indicates user chose to opt for VM shutdown on key revocation.
+    """
+    KEY_REVOCATION_ACTION_TYPE_UNSPECIFIED = 0
+    NONE = 1
+    STOP = 2
 
   class PostKeyRevocationActionTypeValueValuesEnum(_messages.Enum):
     r"""PostKeyRevocationActionType of the instance.
@@ -36795,42 +37450,43 @@ class Instance(_messages.Message):
   hostname = _messages.StringField(13)
   id = _messages.IntegerField(14, variant=_messages.Variant.UINT64)
   instanceEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 15)
-  kind = _messages.StringField(16, default='compute#instance')
-  labelFingerprint = _messages.BytesField(17)
-  labels = _messages.MessageField('LabelsValue', 18)
-  lastStartTimestamp = _messages.StringField(19)
-  lastStopTimestamp = _messages.StringField(20)
-  lastSuspendedTimestamp = _messages.StringField(21)
-  machineType = _messages.StringField(22)
-  metadata = _messages.MessageField('Metadata', 23)
-  minCpuPlatform = _messages.StringField(24)
-  name = _messages.StringField(25)
-  networkInterfaces = _messages.MessageField('NetworkInterface', 26, repeated=True)
-  networkPerformanceConfig = _messages.MessageField('NetworkPerformanceConfig', 27)
-  postKeyRevocationActionType = _messages.EnumField('PostKeyRevocationActionTypeValueValuesEnum', 28)
-  preservedStateSizeGb = _messages.IntegerField(29)
-  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 30)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 31)
-  resourcePolicies = _messages.StringField(32, repeated=True)
-  resourceStatus = _messages.MessageField('ResourceStatus', 33)
-  satisfiesPzs = _messages.BooleanField(34)
-  scheduling = _messages.MessageField('Scheduling', 35)
-  secureTags = _messages.StringField(36, repeated=True)
-  selfLink = _messages.StringField(37)
-  selfLinkWithId = _messages.StringField(38)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 39, repeated=True)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 40)
-  shieldedInstanceIntegrityPolicy = _messages.MessageField('ShieldedInstanceIntegrityPolicy', 41)
-  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 42)
-  shieldedVmIntegrityPolicy = _messages.MessageField('ShieldedVmIntegrityPolicy', 43)
-  sourceMachineImage = _messages.StringField(44)
-  sourceMachineImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 45)
-  startRestricted = _messages.BooleanField(46)
-  status = _messages.EnumField('StatusValueValuesEnum', 47)
-  statusMessage = _messages.StringField(48)
-  tags = _messages.MessageField('Tags', 49)
-  upcomingMaintenance = _messages.MessageField('UpcomingMaintenance', 50)
-  zone = _messages.StringField(51)
+  keyRevocationActionType = _messages.EnumField('KeyRevocationActionTypeValueValuesEnum', 16)
+  kind = _messages.StringField(17, default='compute#instance')
+  labelFingerprint = _messages.BytesField(18)
+  labels = _messages.MessageField('LabelsValue', 19)
+  lastStartTimestamp = _messages.StringField(20)
+  lastStopTimestamp = _messages.StringField(21)
+  lastSuspendedTimestamp = _messages.StringField(22)
+  machineType = _messages.StringField(23)
+  metadata = _messages.MessageField('Metadata', 24)
+  minCpuPlatform = _messages.StringField(25)
+  name = _messages.StringField(26)
+  networkInterfaces = _messages.MessageField('NetworkInterface', 27, repeated=True)
+  networkPerformanceConfig = _messages.MessageField('NetworkPerformanceConfig', 28)
+  postKeyRevocationActionType = _messages.EnumField('PostKeyRevocationActionTypeValueValuesEnum', 29)
+  preservedStateSizeGb = _messages.IntegerField(30)
+  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 31)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 32)
+  resourcePolicies = _messages.StringField(33, repeated=True)
+  resourceStatus = _messages.MessageField('ResourceStatus', 34)
+  satisfiesPzs = _messages.BooleanField(35)
+  scheduling = _messages.MessageField('Scheduling', 36)
+  secureTags = _messages.StringField(37, repeated=True)
+  selfLink = _messages.StringField(38)
+  selfLinkWithId = _messages.StringField(39)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 40, repeated=True)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 41)
+  shieldedInstanceIntegrityPolicy = _messages.MessageField('ShieldedInstanceIntegrityPolicy', 42)
+  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 43)
+  shieldedVmIntegrityPolicy = _messages.MessageField('ShieldedVmIntegrityPolicy', 44)
+  sourceMachineImage = _messages.StringField(45)
+  sourceMachineImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 46)
+  startRestricted = _messages.BooleanField(47)
+  status = _messages.EnumField('StatusValueValuesEnum', 48)
+  statusMessage = _messages.StringField(49)
+  tags = _messages.MessageField('Tags', 50)
+  upcomingMaintenance = _messages.MessageField('UpcomingMaintenance', 51)
+  zone = _messages.StringField(52)
 
 
 class InstanceAggregatedList(_messages.Message):
@@ -39791,6 +40447,8 @@ class InstanceProperties(_messages.Message):
   r"""A InstanceProperties object.
 
   Enums:
+    KeyRevocationActionTypeValueValuesEnum: KeyRevocationActionType of the
+      instance.
     PostKeyRevocationActionTypeValueValuesEnum: PostKeyRevocationActionType of
       the instance.
     PrivateIpv6GoogleAccessValueValuesEnum: The private IPv6 google access
@@ -39821,6 +40479,7 @@ class InstanceProperties(_messages.Message):
       MachineImage, this is not supported yet.
     guestAccelerators: A list of guest accelerator cards' type and count to
       use for instances created from these properties.
+    keyRevocationActionType: KeyRevocationActionType of the instance.
     labels: Labels to apply to instances that are created from these
       properties.
     machineType: The machine type to use for instances that are created from
@@ -39865,6 +40524,19 @@ class InstanceProperties(_messages.Message):
       firewalls. The setTags method can modify this list of tags. Each tag
       within the list must comply with RFC1035.
   """
+
+  class KeyRevocationActionTypeValueValuesEnum(_messages.Enum):
+    r"""KeyRevocationActionType of the instance.
+
+    Values:
+      KEY_REVOCATION_ACTION_TYPE_UNSPECIFIED: Default value. This value is
+        unused.
+      NONE: Indicates user chose no operation.
+      STOP: Indicates user chose to opt for VM shutdown on key revocation.
+    """
+    KEY_REVOCATION_ACTION_TYPE_UNSPECIFIED = 0
+    NONE = 1
+    STOP = 2
 
   class PostKeyRevocationActionTypeValueValuesEnum(_messages.Enum):
     r"""PostKeyRevocationActionType of the instance.
@@ -39931,22 +40603,23 @@ class InstanceProperties(_messages.Message):
   disks = _messages.MessageField('AttachedDisk', 5, repeated=True)
   displayDevice = _messages.MessageField('DisplayDevice', 6)
   guestAccelerators = _messages.MessageField('AcceleratorConfig', 7, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 8)
-  machineType = _messages.StringField(9)
-  metadata = _messages.MessageField('Metadata', 10)
-  minCpuPlatform = _messages.StringField(11)
-  networkInterfaces = _messages.MessageField('NetworkInterface', 12, repeated=True)
-  networkPerformanceConfig = _messages.MessageField('NetworkPerformanceConfig', 13)
-  postKeyRevocationActionType = _messages.EnumField('PostKeyRevocationActionTypeValueValuesEnum', 14)
-  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 15)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 16)
-  resourcePolicies = _messages.StringField(17, repeated=True)
-  scheduling = _messages.MessageField('Scheduling', 18)
-  secureTags = _messages.StringField(19, repeated=True)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 20, repeated=True)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 21)
-  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 22)
-  tags = _messages.MessageField('Tags', 23)
+  keyRevocationActionType = _messages.EnumField('KeyRevocationActionTypeValueValuesEnum', 8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  machineType = _messages.StringField(10)
+  metadata = _messages.MessageField('Metadata', 11)
+  minCpuPlatform = _messages.StringField(12)
+  networkInterfaces = _messages.MessageField('NetworkInterface', 13, repeated=True)
+  networkPerformanceConfig = _messages.MessageField('NetworkPerformanceConfig', 14)
+  postKeyRevocationActionType = _messages.EnumField('PostKeyRevocationActionTypeValueValuesEnum', 15)
+  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 16)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 17)
+  resourcePolicies = _messages.StringField(18, repeated=True)
+  scheduling = _messages.MessageField('Scheduling', 19)
+  secureTags = _messages.StringField(20, repeated=True)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 21, repeated=True)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 22)
+  shieldedVmConfig = _messages.MessageField('ShieldedVmConfig', 23)
+  tags = _messages.MessageField('Tags', 24)
 
 
 class InstancePropertiesPatch(_messages.Message):
@@ -45542,45 +46215,45 @@ class MetadataCredentialsFromPlugin(_messages.Message):
 
 
 class MetadataFilter(_messages.Message):
-  r"""Opaque filter criteria used by loadbalancers to restrict routing
-  configuration to a limited set of loadbalancing proxies. Proxies and
-  sidecars involved in loadbalancing would typically present metadata to the
-  loadbalancers which need to match criteria specified here. If a match takes
+  r"""Opaque filter criteria used by load balancers to restrict routing
+  configuration to a limited set of load balancing proxies. Proxies and
+  sidecars involved in load balancing would typically present metadata to the
+  load balancers that need to match criteria specified here. If a match takes
   place, the relevant configuration is made available to those proxies. For
   each metadataFilter in this list, if its filterMatchCriteria is set to
   MATCH_ANY, at least one of the filterLabels must match the corresponding
   label provided in the metadata. If its filterMatchCriteria is set to
   MATCH_ALL, then all of its filterLabels must match with corresponding labels
   provided in the metadata. An example for using metadataFilters would be: if
-  loadbalancing involves Envoys, they will only receive routing configuration
-  when values in metadataFilters match values supplied in of their XDS
-  requests to loadbalancers.
+  load balancing involves Envoys, they receive routing configuration when
+  values in metadataFilters match values supplied in of their XDS requests to
+  loadbalancers.
 
   Enums:
-    FilterMatchCriteriaValueValuesEnum: Specifies how individual filterLabel
-      matches within the list of filterLabels contribute towards the overall
-      metadataFilter match. Supported values are: - MATCH_ANY: At least one of
-      the filterLabels must have a matching label in the provided metadata. -
-      MATCH_ALL: All filterLabels must have matching labels in the provided
-      metadata.
+    FilterMatchCriteriaValueValuesEnum: Specifies how individual filter label
+      matches within the list of filterLabels and contributes toward the
+      overall metadataFilter match. Supported values are: - MATCH_ANY: at
+      least one of the filterLabels must have a matching label in the provided
+      metadata. - MATCH_ALL: all filterLabels must have matching labels in the
+      provided metadata.
 
   Fields:
     filterLabels: The list of label value pairs that must match labels in the
       provided metadata based on filterMatchCriteria This list must not be
       empty and can have at the most 64 entries.
-    filterMatchCriteria: Specifies how individual filterLabel matches within
-      the list of filterLabels contribute towards the overall metadataFilter
-      match. Supported values are: - MATCH_ANY: At least one of the
-      filterLabels must have a matching label in the provided metadata. -
-      MATCH_ALL: All filterLabels must have matching labels in the provided
+    filterMatchCriteria: Specifies how individual filter label matches within
+      the list of filterLabels and contributes toward the overall
+      metadataFilter match. Supported values are: - MATCH_ANY: at least one of
+      the filterLabels must have a matching label in the provided metadata. -
+      MATCH_ALL: all filterLabels must have matching labels in the provided
       metadata.
   """
 
   class FilterMatchCriteriaValueValuesEnum(_messages.Enum):
-    r"""Specifies how individual filterLabel matches within the list of
-    filterLabels contribute towards the overall metadataFilter match.
-    Supported values are: - MATCH_ANY: At least one of the filterLabels must
-    have a matching label in the provided metadata. - MATCH_ALL: All
+    r"""Specifies how individual filter label matches within the list of
+    filterLabels and contributes toward the overall metadataFilter match.
+    Supported values are: - MATCH_ANY: at least one of the filterLabels must
+    have a matching label in the provided metadata. - MATCH_ALL: all
     filterLabels must have matching labels in the provided metadata.
 
     Values:
@@ -45601,7 +46274,7 @@ class MetadataFilter(_messages.Message):
 
 class MetadataFilterLabelMatch(_messages.Message):
   r"""MetadataFilter label name value pairs that are expected to match
-  corresponding labels presented as metadata to the loadbalancer.
+  corresponding labels presented as metadata to the load balancer.
 
   Fields:
     name: Name of metadata label. The name can have a maximum length of 1024
@@ -47229,12 +47902,14 @@ class NetworkInterface(_messages.Message):
       for network interfaces.
     name: [Output Only] The name of the network interface, which is generated
       by the server. For network devices, these are eth0, eth1, etc.
-    network: URL of the network resource for this instance. When creating an
-      instance, if neither the network nor the subnetwork is specified, the
-      default network global/networks/default is used; if the network is not
-      specified but the subnetwork is specified, the network is inferred. If
-      you specify this property, you can specify the network as a full or
-      partial URL. For example, the following are all valid URLs: -
+    network: URL of the VPC network resource for this instance. When creating
+      an instance, if neither the network nor the subnetwork is specified, the
+      default network global/networks/default is used. If the selected project
+      doesn't have the default network, you must specify a network or subnet.
+      If the network is not specified but the subnetwork is specified, the
+      network is inferred. If you specify this property, you can specify the
+      network as a full or partial URL. For example, the following are all
+      valid URLs: -
       https://www.googleapis.com/compute/v1/projects/project/global/networks/
       network - projects/project/global/networks/network -
       global/networks/default
@@ -51922,33 +52597,33 @@ class PacketMirroringsScopedList(_messages.Message):
 class PathMatcher(_messages.Message):
   r"""A matcher for the path portion of the URL. The BackendService from the
   longest-matched rule will serve the URL. If no rule was matched, the default
-  service will be used.
+  service is used.
 
   Fields:
     defaultRouteAction: defaultRouteAction takes effect when none of the
       pathRules or routeRules match. The load balancer performs advanced
-      routing actions like URL rewrites, header transformations, etc. prior to
+      routing actions, such as URL rewrites and header transformations, before
       forwarding the request to the selected backend. If defaultRouteAction
       specifies any weightedBackendServices, defaultService must not be set.
       Conversely if defaultService is set, defaultRouteAction cannot contain
       any weightedBackendServices. Only one of defaultRouteAction or
       defaultUrlRedirect must be set. UrlMaps for external HTTP(S) load
-      balancers support only the urlRewrite action within a pathMatcher's
+      balancers support only the urlRewrite action within a path matcher's
       defaultRouteAction.
     defaultService: The full or partial URL to the BackendService resource.
-      This will be used if none of the pathRules or routeRules defined by this
+      This URL is used if none of the pathRules or routeRules defined by this
       PathMatcher are matched. For example, the following are all valid URLs
       to a BackendService resource: -
       https://www.googleapis.com/compute/v1/projects/project
       /global/backendServices/backendService -
       compute/v1/projects/project/global/backendServices/backendService -
-      global/backendServices/backendService If defaultRouteAction is
-      additionally specified, advanced routing actions like URL Rewrites, etc.
-      take effect prior to sending the request to the backend. However, if
-      defaultService is specified, defaultRouteAction cannot contain any
+      global/backendServices/backendService If defaultRouteAction is also
+      specified, advanced routing actions, such as URL rewrites, take effect
+      before sending the request to the backend. However, if defaultService is
+      specified, defaultRouteAction cannot contain any
       weightedBackendServices. Conversely, if defaultRouteAction specifies any
       weightedBackendServices, defaultService must not be specified. Only one
-      of defaultService, defaultUrlRedirect or
+      of defaultService, defaultUrlRedirect , or
       defaultRouteAction.weightedBackendService must be set. Authorization
       requires one or more of the following Google IAM permissions on the
       specified resource default_service: - compute.backendBuckets.use -
@@ -51957,16 +52632,16 @@ class PathMatcher(_messages.Message):
       match, the request is redirected to a URL specified by
       defaultUrlRedirect. If defaultUrlRedirect is specified, defaultService
       or defaultRouteAction must not be set. Not supported when the URL map is
-      bound to target gRPC proxy.
+      bound to a target gRPC proxy.
     description: An optional description of this resource. Provide this
       property when you create the resource.
     headerAction: Specifies changes to request and response headers that need
-      to take effect for the selected backendService. HeaderAction specified
+      to take effect for the selected backend service. HeaderAction specified
       here are applied after the matching HttpRouteRule HeaderAction and
-      before the HeaderAction in the UrlMap Note that headerAction is not
-      supported for Loadbalancers that have their loadBalancingScheme set to
-      EXTERNAL. Not supported when the URL map is bound to target gRPC proxy
-      that has validateForProxyless field set to true.
+      before the HeaderAction in the UrlMap HeaderAction is not supported for
+      load balancers that have their loadBalancingScheme set to EXTERNAL. Not
+      supported when the URL map is bound to a target gRPC proxy that has
+      validateForProxyless field set to true.
     name: The name to which this PathMatcher is referred by the HostRule.
     pathRules: The list of path rules. Use this list instead of routeRules
       when routing based on simple path matching is all that's required. The
@@ -52002,25 +52677,25 @@ class PathRule(_messages.Message):
       the path matcher does not include any text after the first ? or #, and
       those chars are not allowed here.
     routeAction: In response to a matching path, the load balancer performs
-      advanced routing actions like URL rewrites, header transformations, etc.
-      prior to forwarding the request to the selected backend. If routeAction
-      specifies any weightedBackendServices, service must not be set.
-      Conversely if service is set, routeAction cannot contain any
+      advanced routing actions, such as URL rewrites and header
+      transformations, before forwarding the request to the selected backend.
+      If routeAction specifies any weightedBackendServices, service must not
+      be set. Conversely if service is set, routeAction cannot contain any
       weightedBackendServices. Only one of routeAction or urlRedirect must be
-      set. UrlMaps for external HTTP(S) load balancers support only the
-      urlRewrite action within a pathRule's routeAction.
+      set. URL maps for external HTTP(S) load balancers support only the
+      urlRewrite action within a path rule's routeAction.
     service: The full or partial URL of the backend service resource to which
-      traffic is directed if this rule is matched. If routeAction is
-      additionally specified, advanced routing actions like URL Rewrites, etc.
-      take effect prior to sending the request to the backend. However, if
-      service is specified, routeAction cannot contain any
-      weightedBackendService s. Conversely, if routeAction specifies any
-      weightedBackendServices, service must not be specified. Only one of
-      urlRedirect, service or routeAction.weightedBackendService must be set.
+      traffic is directed if this rule is matched. If routeAction is also
+      specified, advanced routing actions, such as URL rewrites, take effect
+      before sending the request to the backend. However, if service is
+      specified, routeAction cannot contain any weightedBackendServices.
+      Conversely, if routeAction specifies any weightedBackendServices,
+      service must not be specified. Only one of urlRedirect, service or
+      routeAction.weightedBackendService must be set.
     urlRedirect: When a path pattern is matched, the request is redirected to
       a URL specified by urlRedirect. If urlRedirect is specified, service or
       routeAction must not be set. Not supported when the URL map is bound to
-      target gRPC proxy.
+      a target gRPC proxy.
   """
 
   paths = _messages.StringField(1, repeated=True)
@@ -52143,15 +52818,15 @@ class PermissionConstraint(_messages.Message):
 class Policy(_messages.Message):
   r"""An Identity and Access Management (IAM) policy, which specifies access
   controls for Google Cloud resources. A `Policy` is a collection of
-  `bindings`. A `binding` binds one or more `members` to a single `role`.
-  Members can be user accounts, service accounts, Google groups, and domains
-  (such as G Suite). A `role` is a named list of permissions; each `role` can
-  be an IAM predefined role or a user-created custom role. For some types of
-  Google Cloud resources, a `binding` can also specify a `condition`, which is
-  a logical expression that allows access to a resource only if the expression
-  evaluates to `true`. A condition can add constraints based on attributes of
-  the request, the resource, or both. To learn which resources support
-  conditions in their IAM policies, see the [IAM
+  `bindings`. A `binding` binds one or more `members`, or principals, to a
+  single `role`. Principals can be user accounts, service accounts, Google
+  groups, and domains (such as G Suite). A `role` is a named list of
+  permissions; each `role` can be an IAM predefined role or a user-created
+  custom role. For some types of Google Cloud resources, a `binding` can also
+  specify a `condition`, which is a logical expression that allows access to a
+  resource only if the expression evaluates to `true`. A condition can add
+  constraints based on attributes of the request, the resource, or both. To
+  learn which resources support conditions in their IAM policies, see the [IAM
   documentation](https://cloud.google.com/iam/help/conditions/resource-
   policies). **JSON example:** { "bindings": [ { "role":
   "roles/resourcemanager.organizationAdmin", "members": [
@@ -52173,9 +52848,15 @@ class Policy(_messages.Message):
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
-    bindings: Associates a list of `members` to a `role`. Optionally, may
-      specify a `condition` that determines how and when the `bindings` are
-      applied. Each of the `bindings` must contain at least one member.
+    bindings: Associates a list of `members`, or principals, with a `role`.
+      Optionally, may specify a `condition` that determines how and when the
+      `bindings` are applied. Each of the `bindings` must contain at least one
+      principal. The `bindings` in a `Policy` can refer to up to 1,500
+      principals; up to 250 of these principals can be Google groups. Each
+      occurrence of a principal counts towards these limits. For example, if
+      the `bindings` grant 50 different roles to `user:alice@example.com`, and
+      not to any other principal, then you can add another 1,450 principals to
+      the `bindings` in the `Policy`.
     etag: `etag` is used for optimistic concurrency control as a way to help
       prevent simultaneous updates of a policy from overwriting each other. It
       is strongly suggested that systems make use of the `etag` in the read-
@@ -52730,6 +53411,12 @@ class PublicAdvertisedPrefix(_messages.Message):
 
   Enums:
     StatusValueValuesEnum: The status of the public advertised prefix.
+      Possible values include: - `INITIAL`: RPKI validation is complete. -
+      `PTR_CONFIGURED`: User has configured the PTR. - `VALIDATED`: Reverse
+      DNS lookup is successful. - `REVERSE_DNS_LOOKUP_FAILED`: Reverse DNS
+      lookup failed. - `PREFIX_CONFIGURATION_IN_PROGRESS`: The prefix is being
+      configured. - `PREFIX_CONFIGURATION_COMPLETE`: The prefix is fully
+      configured. - `PREFIX_REMOVAL_IN_PROGRESS`: The prefix is being removed.
 
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
@@ -52764,20 +53451,32 @@ class PublicAdvertisedPrefix(_messages.Message):
     selfLinkWithId: [Output Only] Server-defined URL with id for the resource.
     sharedSecret: [Output Only] The shared secret to be used for reverse DNS
       verification.
-    status: The status of the public advertised prefix.
+    status: The status of the public advertised prefix. Possible values
+      include: - `INITIAL`: RPKI validation is complete. - `PTR_CONFIGURED`:
+      User has configured the PTR. - `VALIDATED`: Reverse DNS lookup is
+      successful. - `REVERSE_DNS_LOOKUP_FAILED`: Reverse DNS lookup failed. -
+      `PREFIX_CONFIGURATION_IN_PROGRESS`: The prefix is being configured. -
+      `PREFIX_CONFIGURATION_COMPLETE`: The prefix is fully configured. -
+      `PREFIX_REMOVAL_IN_PROGRESS`: The prefix is being removed.
   """
 
   class StatusValueValuesEnum(_messages.Enum):
-    r"""The status of the public advertised prefix.
+    r"""The status of the public advertised prefix. Possible values include: -
+    `INITIAL`: RPKI validation is complete. - `PTR_CONFIGURED`: User has
+    configured the PTR. - `VALIDATED`: Reverse DNS lookup is successful. -
+    `REVERSE_DNS_LOOKUP_FAILED`: Reverse DNS lookup failed. -
+    `PREFIX_CONFIGURATION_IN_PROGRESS`: The prefix is being configured. -
+    `PREFIX_CONFIGURATION_COMPLETE`: The prefix is fully configured. -
+    `PREFIX_REMOVAL_IN_PROGRESS`: The prefix is being removed.
 
     Values:
-      INITIAL: <no description>
-      PREFIX_CONFIGURATION_COMPLETE: <no description>
-      PREFIX_CONFIGURATION_IN_PROGRESS: <no description>
-      PREFIX_REMOVAL_IN_PROGRESS: <no description>
-      PTR_CONFIGURED: <no description>
-      REVERSE_DNS_LOOKUP_FAILED: <no description>
-      VALIDATED: <no description>
+      INITIAL: RPKI validation is complete.
+      PREFIX_CONFIGURATION_COMPLETE: The prefix is fully configured.
+      PREFIX_CONFIGURATION_IN_PROGRESS: The prefix is being configured.
+      PREFIX_REMOVAL_IN_PROGRESS: The prefix is being removed.
+      PTR_CONFIGURED: User has configured the PTR.
+      REVERSE_DNS_LOOKUP_FAILED: Reverse DNS lookup failed.
+      VALIDATED: Reverse DNS lookup is successful.
     """
     INITIAL = 0
     PREFIX_CONFIGURATION_COMPLETE = 1
@@ -52984,7 +53683,12 @@ class PublicDelegatedPrefix(_messages.Message):
 
   Enums:
     StatusValueValuesEnum: [Output Only] The status of the public delegated
-      prefix.
+      prefix, which can be one of following values: - `INITIALIZING` The
+      public delegated prefix is being initialized and addresses cannot be
+      created yet. - `READY_TO_ANNOUNCE` The public delegated prefix is a live
+      migration prefix and is active. - `ANNOUNCED` The public delegated
+      prefix is active. - `DELETING` The public delegated prefix is being
+      deprovsioned.
 
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
@@ -53022,17 +53726,29 @@ class PublicDelegatedPrefix(_messages.Message):
       as a field in the request body.
     selfLink: [Output Only] Server-defined URL for the resource.
     selfLinkWithId: [Output Only] Server-defined URL with id for the resource.
-    status: [Output Only] The status of the public delegated prefix.
+    status: [Output Only] The status of the public delegated prefix, which can
+      be one of following values: - `INITIALIZING` The public delegated prefix
+      is being initialized and addresses cannot be created yet. -
+      `READY_TO_ANNOUNCE` The public delegated prefix is a live migration
+      prefix and is active. - `ANNOUNCED` The public delegated prefix is
+      active. - `DELETING` The public delegated prefix is being deprovsioned.
   """
 
   class StatusValueValuesEnum(_messages.Enum):
-    r"""[Output Only] The status of the public delegated prefix.
+    r"""[Output Only] The status of the public delegated prefix, which can be
+    one of following values: - `INITIALIZING` The public delegated prefix is
+    being initialized and addresses cannot be created yet. -
+    `READY_TO_ANNOUNCE` The public delegated prefix is a live migration prefix
+    and is active. - `ANNOUNCED` The public delegated prefix is active. -
+    `DELETING` The public delegated prefix is being deprovsioned.
 
     Values:
-      ANNOUNCED: <no description>
-      DELETING: <no description>
-      INITIALIZING: <no description>
-      READY_TO_ANNOUNCE: <no description>
+      ANNOUNCED: The public delegated prefix is active.
+      DELETING: The public delegated prefix is being deprovsioned.
+      INITIALIZING: The public delegated prefix is being initialized and
+        addresses cannot be created yet.
+      READY_TO_ANNOUNCE: The public delegated prefix is a live migration
+        prefix and is active.
     """
     ANNOUNCED = 0
     DELETING = 1
@@ -53615,6 +54331,7 @@ class Quota(_messages.Message):
       COMMITTED_NVIDIA_P4_GPUS: <no description>
       COMMITTED_NVIDIA_T4_GPUS: <no description>
       COMMITTED_NVIDIA_V100_GPUS: <no description>
+      COMMITTED_T2A_CPUS: <no description>
       COMMITTED_T2D_CPUS: <no description>
       CPUS: Guest CPUs
       CPUS_ALL_REGIONS: <no description>
@@ -53711,6 +54428,7 @@ class Quota(_messages.Message):
       STATIC_BYOIP_ADDRESSES: <no description>
       SUBNETWORKS: <no description>
       SUBNET_RANGES_PER_NETWORK: <no description>
+      T2A_CPUS: <no description>
       T2D_CPUS: <no description>
       TARGET_HTTPS_PROXIES: <no description>
       TARGET_HTTP_PROXIES: <no description>
@@ -53753,111 +54471,113 @@ class Quota(_messages.Message):
     COMMITTED_NVIDIA_P4_GPUS = 26
     COMMITTED_NVIDIA_T4_GPUS = 27
     COMMITTED_NVIDIA_V100_GPUS = 28
-    COMMITTED_T2D_CPUS = 29
-    CPUS = 30
-    CPUS_ALL_REGIONS = 31
-    DISKS_TOTAL_GB = 32
-    E2_CPUS = 33
-    EXTERNAL_NETWORK_LB_FORWARDING_RULES = 34
-    EXTERNAL_PROTOCOL_FORWARDING_RULES = 35
-    EXTERNAL_VPN_GATEWAYS = 36
-    FIREWALLS = 37
-    FORWARDING_RULES = 38
-    GLOBAL_INTERNAL_ADDRESSES = 39
-    GPUS_ALL_REGIONS = 40
-    HEALTH_CHECKS = 41
-    IMAGES = 42
-    INSTANCES = 43
-    INSTANCES_PER_NETWORK_GLOBAL = 44
-    INSTANCE_GROUPS = 45
-    INSTANCE_GROUP_MANAGERS = 46
-    INSTANCE_TEMPLATES = 47
-    INTERCONNECTS = 48
-    INTERCONNECT_ATTACHMENTS_PER_REGION = 49
-    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 50
-    INTERCONNECT_TOTAL_GBPS = 51
-    INTERNAL_ADDRESSES = 52
-    INTERNAL_FORWARDING_RULES_PER_NETWORK = 53
-    INTERNAL_FORWARDING_RULES_WITH_GLOBAL_ACCESS_PER_NETWORK = 54
-    INTERNAL_FORWARDING_RULES_WITH_TARGET_INSTANCE_PER_NETWORK = 55
-    INTERNAL_TARGET_INSTANCE_WITH_GLOBAL_ACCESS_PER_NETWORK = 56
-    INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES = 57
-    IN_PLACE_SNAPSHOTS = 58
-    IN_USE_ADDRESSES = 59
-    IN_USE_BACKUP_SCHEDULES = 60
-    IN_USE_MAINTENANCE_WINDOWS = 61
-    IN_USE_SNAPSHOT_SCHEDULES = 62
-    LOCAL_SSD_TOTAL_GB = 63
-    M1_CPUS = 64
-    M2_CPUS = 65
-    MACHINE_IMAGES = 66
-    N2A_CPUS = 67
-    N2D_CPUS = 68
-    N2_CPUS = 69
-    NETWORKS = 70
-    NETWORK_ENDPOINT_GROUPS = 71
-    NETWORK_FIREWALL_POLICIES = 72
-    NODE_GROUPS = 73
-    NODE_TEMPLATES = 74
-    NVIDIA_A100_GPUS = 75
-    NVIDIA_K80_GPUS = 76
-    NVIDIA_P100_GPUS = 77
-    NVIDIA_P100_VWS_GPUS = 78
-    NVIDIA_P4_GPUS = 79
-    NVIDIA_P4_VWS_GPUS = 80
-    NVIDIA_T4_GPUS = 81
-    NVIDIA_T4_VWS_GPUS = 82
-    NVIDIA_V100_GPUS = 83
-    PACKET_MIRRORINGS = 84
-    PD_EXTREME_TOTAL_PROVISIONED_IOPS = 85
-    PREEMPTIBLE_CPUS = 86
-    PREEMPTIBLE_LOCAL_SSD_GB = 87
-    PREEMPTIBLE_NVIDIA_A100_GPUS = 88
-    PREEMPTIBLE_NVIDIA_K80_GPUS = 89
-    PREEMPTIBLE_NVIDIA_P100_GPUS = 90
-    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 91
-    PREEMPTIBLE_NVIDIA_P4_GPUS = 92
-    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 93
-    PREEMPTIBLE_NVIDIA_T4_GPUS = 94
-    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 95
-    PREEMPTIBLE_NVIDIA_V100_GPUS = 96
-    PRIVATE_V6_ACCESS_SUBNETWORKS = 97
-    PSC_GOOGLE_APIS_FORWARDING_RULES_PER_NETWORK = 98
-    PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK = 99
-    PSC_INTERNAL_LB_FORWARDING_RULES = 100
-    PUBLIC_ADVERTISED_PREFIXES = 101
-    PUBLIC_DELEGATED_PREFIXES = 102
-    REGIONAL_AUTOSCALERS = 103
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 104
-    RESERVATIONS = 105
-    RESOURCE_POLICIES = 106
-    ROUTERS = 107
-    ROUTES = 108
-    SECURITY_POLICIES = 109
-    SECURITY_POLICIES_PER_REGION = 110
-    SECURITY_POLICY_CEVAL_RULES = 111
-    SECURITY_POLICY_RULES = 112
-    SECURITY_POLICY_RULES_PER_REGION = 113
-    SERVICE_ATTACHMENTS = 114
-    SNAPSHOTS = 115
-    SSD_TOTAL_GB = 116
-    SSL_CERTIFICATES = 117
-    STATIC_ADDRESSES = 118
-    STATIC_BYOIP_ADDRESSES = 119
-    SUBNETWORKS = 120
-    SUBNET_RANGES_PER_NETWORK = 121
-    T2D_CPUS = 122
-    TARGET_HTTPS_PROXIES = 123
-    TARGET_HTTP_PROXIES = 124
-    TARGET_INSTANCES = 125
-    TARGET_POOLS = 126
-    TARGET_SSL_PROXIES = 127
-    TARGET_TCP_PROXIES = 128
-    TARGET_VPN_GATEWAYS = 129
-    URL_MAPS = 130
-    VPN_GATEWAYS = 131
-    VPN_TUNNELS = 132
-    XPN_SERVICE_PROJECTS = 133
+    COMMITTED_T2A_CPUS = 29
+    COMMITTED_T2D_CPUS = 30
+    CPUS = 31
+    CPUS_ALL_REGIONS = 32
+    DISKS_TOTAL_GB = 33
+    E2_CPUS = 34
+    EXTERNAL_NETWORK_LB_FORWARDING_RULES = 35
+    EXTERNAL_PROTOCOL_FORWARDING_RULES = 36
+    EXTERNAL_VPN_GATEWAYS = 37
+    FIREWALLS = 38
+    FORWARDING_RULES = 39
+    GLOBAL_INTERNAL_ADDRESSES = 40
+    GPUS_ALL_REGIONS = 41
+    HEALTH_CHECKS = 42
+    IMAGES = 43
+    INSTANCES = 44
+    INSTANCES_PER_NETWORK_GLOBAL = 45
+    INSTANCE_GROUPS = 46
+    INSTANCE_GROUP_MANAGERS = 47
+    INSTANCE_TEMPLATES = 48
+    INTERCONNECTS = 49
+    INTERCONNECT_ATTACHMENTS_PER_REGION = 50
+    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 51
+    INTERCONNECT_TOTAL_GBPS = 52
+    INTERNAL_ADDRESSES = 53
+    INTERNAL_FORWARDING_RULES_PER_NETWORK = 54
+    INTERNAL_FORWARDING_RULES_WITH_GLOBAL_ACCESS_PER_NETWORK = 55
+    INTERNAL_FORWARDING_RULES_WITH_TARGET_INSTANCE_PER_NETWORK = 56
+    INTERNAL_TARGET_INSTANCE_WITH_GLOBAL_ACCESS_PER_NETWORK = 57
+    INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES = 58
+    IN_PLACE_SNAPSHOTS = 59
+    IN_USE_ADDRESSES = 60
+    IN_USE_BACKUP_SCHEDULES = 61
+    IN_USE_MAINTENANCE_WINDOWS = 62
+    IN_USE_SNAPSHOT_SCHEDULES = 63
+    LOCAL_SSD_TOTAL_GB = 64
+    M1_CPUS = 65
+    M2_CPUS = 66
+    MACHINE_IMAGES = 67
+    N2A_CPUS = 68
+    N2D_CPUS = 69
+    N2_CPUS = 70
+    NETWORKS = 71
+    NETWORK_ENDPOINT_GROUPS = 72
+    NETWORK_FIREWALL_POLICIES = 73
+    NODE_GROUPS = 74
+    NODE_TEMPLATES = 75
+    NVIDIA_A100_GPUS = 76
+    NVIDIA_K80_GPUS = 77
+    NVIDIA_P100_GPUS = 78
+    NVIDIA_P100_VWS_GPUS = 79
+    NVIDIA_P4_GPUS = 80
+    NVIDIA_P4_VWS_GPUS = 81
+    NVIDIA_T4_GPUS = 82
+    NVIDIA_T4_VWS_GPUS = 83
+    NVIDIA_V100_GPUS = 84
+    PACKET_MIRRORINGS = 85
+    PD_EXTREME_TOTAL_PROVISIONED_IOPS = 86
+    PREEMPTIBLE_CPUS = 87
+    PREEMPTIBLE_LOCAL_SSD_GB = 88
+    PREEMPTIBLE_NVIDIA_A100_GPUS = 89
+    PREEMPTIBLE_NVIDIA_K80_GPUS = 90
+    PREEMPTIBLE_NVIDIA_P100_GPUS = 91
+    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 92
+    PREEMPTIBLE_NVIDIA_P4_GPUS = 93
+    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 94
+    PREEMPTIBLE_NVIDIA_T4_GPUS = 95
+    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 96
+    PREEMPTIBLE_NVIDIA_V100_GPUS = 97
+    PRIVATE_V6_ACCESS_SUBNETWORKS = 98
+    PSC_GOOGLE_APIS_FORWARDING_RULES_PER_NETWORK = 99
+    PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK = 100
+    PSC_INTERNAL_LB_FORWARDING_RULES = 101
+    PUBLIC_ADVERTISED_PREFIXES = 102
+    PUBLIC_DELEGATED_PREFIXES = 103
+    REGIONAL_AUTOSCALERS = 104
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 105
+    RESERVATIONS = 106
+    RESOURCE_POLICIES = 107
+    ROUTERS = 108
+    ROUTES = 109
+    SECURITY_POLICIES = 110
+    SECURITY_POLICIES_PER_REGION = 111
+    SECURITY_POLICY_CEVAL_RULES = 112
+    SECURITY_POLICY_RULES = 113
+    SECURITY_POLICY_RULES_PER_REGION = 114
+    SERVICE_ATTACHMENTS = 115
+    SNAPSHOTS = 116
+    SSD_TOTAL_GB = 117
+    SSL_CERTIFICATES = 118
+    STATIC_ADDRESSES = 119
+    STATIC_BYOIP_ADDRESSES = 120
+    SUBNETWORKS = 121
+    SUBNET_RANGES_PER_NETWORK = 122
+    T2A_CPUS = 123
+    T2D_CPUS = 124
+    TARGET_HTTPS_PROXIES = 125
+    TARGET_HTTP_PROXIES = 126
+    TARGET_INSTANCES = 127
+    TARGET_POOLS = 128
+    TARGET_SSL_PROXIES = 129
+    TARGET_TCP_PROXIES = 130
+    TARGET_VPN_GATEWAYS = 131
+    URL_MAPS = 132
+    VPN_GATEWAYS = 133
+    VPN_TUNNELS = 134
+    XPN_SERVICE_PROJECTS = 135
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -55584,9 +56304,10 @@ class RegionUrlMapsValidateRequest(_messages.Message):
 
 class RequestMirrorPolicy(_messages.Message):
   r"""A policy that specifies how requests intended for the route's backends
-  are shadowed to a separate mirrored backend service. Loadbalancer does not
-  wait for responses from the shadow service. Prior to sending traffic to the
-  shadow service, the host / authority header is suffixed with -shadow.
+  are shadowed to a separate mirrored backend service. The load balancer
+  doesn't wait for responses from the shadow service. Before sending traffic
+  to the shadow service, the host or authority header is suffixed with
+  -shadow.
 
   Fields:
     backendService: The full or partial URL to the BackendService resource
@@ -58631,6 +59352,8 @@ class RouterNat(_messages.Message):
       contains ALL_SUBNETWORKS_ALL_IP_RANGES or
       ALL_SUBNETWORKS_ALL_PRIMARY_IP_RANGES, then there should not be any
       other Router.Nat section in any Router for this network in this region.
+    TypeValueValuesEnum: Indicates whether this NAT is used for public or
+      private IP translation. If unspecified, it defaults to PUBLIC.
 
   Fields:
     drainNatIps: A list of URLs of the IP resources to be drained. These IPs
@@ -58689,6 +59412,8 @@ class RouterNat(_messages.Message):
       in TIME_WAIT state. Defaults to 120s if not set.
     tcpTransitoryIdleTimeoutSec: Timeout (in seconds) for TCP transitory
       connections. Defaults to 30s if not set.
+    type: Indicates whether this NAT is used for public or private IP
+      translation. If unspecified, it defaults to PUBLIC.
     udpIdleTimeoutSec: Timeout (in seconds) for UDP connections. Defaults to
       30s if not set.
   """
@@ -58734,6 +59459,17 @@ class RouterNat(_messages.Message):
     ALL_SUBNETWORKS_ALL_PRIMARY_IP_RANGES = 1
     LIST_OF_SUBNETWORKS = 2
 
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Indicates whether this NAT is used for public or private IP
+    translation. If unspecified, it defaults to PUBLIC.
+
+    Values:
+      PRIVATE: NAT used for private IP translation.
+      PUBLIC: NAT used for public IP translation. This is the default.
+    """
+    PRIVATE = 0
+    PUBLIC = 1
+
   drainNatIps = _messages.StringField(1, repeated=True)
   enableDynamicPortAllocation = _messages.BooleanField(2)
   enableEndpointIndependentMapping = _messages.BooleanField(3)
@@ -58750,7 +59486,8 @@ class RouterNat(_messages.Message):
   tcpEstablishedIdleTimeoutSec = _messages.IntegerField(14, variant=_messages.Variant.INT32)
   tcpTimeWaitTimeoutSec = _messages.IntegerField(15, variant=_messages.Variant.INT32)
   tcpTransitoryIdleTimeoutSec = _messages.IntegerField(16, variant=_messages.Variant.INT32)
-  udpIdleTimeoutSec = _messages.IntegerField(17, variant=_messages.Variant.INT32)
+  type = _messages.EnumField('TypeValueValuesEnum', 17)
+  udpIdleTimeoutSec = _messages.IntegerField(18, variant=_messages.Variant.INT32)
 
 
 class RouterNatLogConfig(_messages.Message):
@@ -58808,7 +59545,9 @@ class RouterNatRule(_messages.Message):
       '1.1.0.0/16') || inIpRange(destination.ip, '2.2.0.0/16')"
       "destination.ip == '1.1.0.1' || destination.ip == '8.8.8.8'" The
       following example is a valid match expression for private NAT:
-      "nexthop.hub == '/projects/my-project/global/hub/hub-1'"
+      "nexthop.hub ==
+      'https://networkconnectivity.googleapis.com/v1alpha1/projects/my-
+      project/global/hub/hub-1'"
     ruleNumber: An integer uniquely identifying a rule in the list. The rule
       number must be a positive value between 0 and 65000, and must be unique
       among rules within a NAT.
@@ -58827,14 +59566,23 @@ class RouterNatRuleAction(_messages.Message):
     sourceNatActiveIps: A list of URLs of the IP resources used for this NAT
       rule. These IP addresses must be valid static external IP addresses
       assigned to the project. This field is used for public NAT.
+    sourceNatActiveRanges: A list of URLs of the subnetworks used as source
+      ranges for this NAT Rule. These subnetworks must have purpose set to
+      PRIVATE_NAT. This field is used for private NAT.
     sourceNatDrainIps: A list of URLs of the IP resources to be drained. These
       IPs must be valid static external IPs that have been assigned to the
       NAT. These IPs should be used for updating/patching a NAT rule only.
       This field is used for public NAT.
+    sourceNatDrainRanges: A list of URLs of subnetworks representing source
+      ranges to be drained. This is only supported on patch/update, and these
+      subnetworks must have previously been used as active ranges in this NAT
+      Rule. This field is used for private NAT.
   """
 
   sourceNatActiveIps = _messages.StringField(1, repeated=True)
-  sourceNatDrainIps = _messages.StringField(2, repeated=True)
+  sourceNatActiveRanges = _messages.StringField(2, repeated=True)
+  sourceNatDrainIps = _messages.StringField(3, repeated=True)
+  sourceNatDrainRanges = _messages.StringField(4, repeated=True)
 
 
 class RouterNatSubnetworkToNat(_messages.Message):
@@ -60994,6 +61742,9 @@ class ServiceAttachment(_messages.Message):
       format.
     description: An optional description of this resource. Provide this
       property when you create the resource.
+    domainNames: If specified, the domain name will be used during the
+      integration between the PSC connected endpoints and the Cloud DNS. For
+      example, this is a valid domain name: "p.mycompany.com".
     enableProxyProtocol: If true, enable the proxy protocol which is for
       supplying client TCP/IP address data in TCP connections that traverse
       proxies on their way to destination servers.
@@ -61052,17 +61803,18 @@ class ServiceAttachment(_messages.Message):
   consumerRejectLists = _messages.StringField(4, repeated=True)
   creationTimestamp = _messages.StringField(5)
   description = _messages.StringField(6)
-  enableProxyProtocol = _messages.BooleanField(7)
-  fingerprint = _messages.BytesField(8)
-  id = _messages.IntegerField(9, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(10, default='compute#serviceAttachment')
-  name = _messages.StringField(11)
-  natSubnets = _messages.StringField(12, repeated=True)
-  producerForwardingRule = _messages.StringField(13)
-  pscServiceAttachmentId = _messages.MessageField('Uint128', 14)
-  region = _messages.StringField(15)
-  selfLink = _messages.StringField(16)
-  targetService = _messages.StringField(17)
+  domainNames = _messages.StringField(7, repeated=True)
+  enableProxyProtocol = _messages.BooleanField(8)
+  fingerprint = _messages.BytesField(9)
+  id = _messages.IntegerField(10, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(11, default='compute#serviceAttachment')
+  name = _messages.StringField(12)
+  natSubnets = _messages.StringField(13, repeated=True)
+  producerForwardingRule = _messages.StringField(14)
+  pscServiceAttachmentId = _messages.MessageField('Uint128', 15)
+  region = _messages.StringField(16)
+  selfLink = _messages.StringField(17)
+  targetService = _messages.StringField(18)
 
 
 class ServiceAttachmentAggregatedList(_messages.Message):
@@ -61591,17 +62343,15 @@ class ShareSettings(_messages.Message):
     FolderMapValue: A map of folder id and folder config to specify consumer
       projects for this shared-reservation. This is only valid when
       share_type's value is DIRECT_PROJECTS_UNDER_SPECIFIC_FOLDERS.
-    ProjectMapValue: A map of project id and project config. Using map format
-      to ease add-to/remove-from the Project list in PATCH command. In future
-      we will deprecate (And later remove) the array one.
+    ProjectMapValue: A map of project id and project config. This is only
+      valid when share_type's value is SPECIFIC_PROJECTS.
 
   Fields:
     folderMap: A map of folder id and folder config to specify consumer
       projects for this shared-reservation. This is only valid when
       share_type's value is DIRECT_PROJECTS_UNDER_SPECIFIC_FOLDERS.
-    projectMap: A map of project id and project config. Using map format to
-      ease add-to/remove-from the Project list in PATCH command. In future we
-      will deprecate (And later remove) the array one.
+    projectMap: A map of project id and project config. This is only valid
+      when share_type's value is SPECIFIC_PROJECTS.
     projects: A List of Project names to specify consumer projects for this
       shared-reservation. This is only valid when share_type's value is
       SPECIFIC_PROJECTS.
@@ -61653,9 +62403,8 @@ class ShareSettings(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ProjectMapValue(_messages.Message):
-    r"""A map of project id and project config. Using map format to ease add-
-    to/remove-from the Project list in PATCH command. In future we will
-    deprecate (And later remove) the array one.
+    r"""A map of project id and project config. This is only valid when
+    share_type's value is SPECIFIC_PROJECTS.
 
     Messages:
       AdditionalProperty: An additional property for a ProjectMapValue object.
@@ -62234,6 +62983,8 @@ class SourceInstanceProperties(_messages.Message):
   r"""A SourceInstanceProperties object.
 
   Enums:
+    KeyRevocationActionTypeValueValuesEnum: KeyRevocationActionType of the
+      instance.
     PostKeyRevocationActionTypeValueValuesEnum: PostKeyRevocationActionType of
       the instance.
 
@@ -62256,6 +63007,7 @@ class SourceInstanceProperties(_messages.Message):
       created from this machine image.
     guestAccelerators: A list of guest accelerator cards' type and count to
       use for instances created from this machine image.
+    keyRevocationActionType: KeyRevocationActionType of the instance.
     labels: Labels to apply to instances that are created from this machine
       image.
     machineType: The machine type to use for instances that are created from
@@ -62284,6 +63036,19 @@ class SourceInstanceProperties(_messages.Message):
       firewalls. The setTags method can modify this list of tags. Each tag
       within the list must comply with RFC1035.
   """
+
+  class KeyRevocationActionTypeValueValuesEnum(_messages.Enum):
+    r"""KeyRevocationActionType of the instance.
+
+    Values:
+      KEY_REVOCATION_ACTION_TYPE_UNSPECIFIED: Default value. This value is
+        unused.
+      NONE: Indicates user chose no operation.
+      STOP: Indicates user chose to opt for VM shutdown on key revocation.
+    """
+    KEY_REVOCATION_ACTION_TYPE_UNSPECIFIED = 0
+    NONE = 1
+    STOP = 2
 
   class PostKeyRevocationActionTypeValueValuesEnum(_messages.Enum):
     r"""PostKeyRevocationActionType of the instance.
@@ -62327,15 +63092,16 @@ class SourceInstanceProperties(_messages.Message):
   description = _messages.StringField(3)
   disks = _messages.MessageField('SavedAttachedDisk', 4, repeated=True)
   guestAccelerators = _messages.MessageField('AcceleratorConfig', 5, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 6)
-  machineType = _messages.StringField(7)
-  metadata = _messages.MessageField('Metadata', 8)
-  minCpuPlatform = _messages.StringField(9)
-  networkInterfaces = _messages.MessageField('NetworkInterface', 10, repeated=True)
-  postKeyRevocationActionType = _messages.EnumField('PostKeyRevocationActionTypeValueValuesEnum', 11)
-  scheduling = _messages.MessageField('Scheduling', 12)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 13, repeated=True)
-  tags = _messages.MessageField('Tags', 14)
+  keyRevocationActionType = _messages.EnumField('KeyRevocationActionTypeValueValuesEnum', 6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  machineType = _messages.StringField(8)
+  metadata = _messages.MessageField('Metadata', 9)
+  minCpuPlatform = _messages.StringField(10)
+  networkInterfaces = _messages.MessageField('NetworkInterface', 11, repeated=True)
+  postKeyRevocationActionType = _messages.EnumField('PostKeyRevocationActionTypeValueValuesEnum', 12)
+  scheduling = _messages.MessageField('Scheduling', 13)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 14, repeated=True)
+  tags = _messages.MessageField('Tags', 15)
 
 
 class SslCertificate(_messages.Message):
@@ -63967,6 +64733,7 @@ class Subnetwork(_messages.Message):
       INTERNAL_HTTPS_LOAD_BALANCER: Subnet reserved for Internal HTTP(S) Load
         Balancing.
       PRIVATE: Regular user created or automatically created subnet.
+      PRIVATE_NAT: Subnetwork used as source range for Private NAT Gateways.
       PRIVATE_RFC_1918: Regular user created or automatically created subnet.
       PRIVATE_SERVICE_CONNECT: Subnetworks created for Private Service Connect
         in the producer network.
@@ -63978,9 +64745,10 @@ class Subnetwork(_messages.Message):
     GLOBAL_MANAGED_PROXY = 2
     INTERNAL_HTTPS_LOAD_BALANCER = 3
     PRIVATE = 4
-    PRIVATE_RFC_1918 = 5
-    PRIVATE_SERVICE_CONNECT = 6
-    REGIONAL_MANAGED_PROXY = 7
+    PRIVATE_NAT = 5
+    PRIVATE_RFC_1918 = 6
+    PRIVATE_SERVICE_CONNECT = 7
+    REGIONAL_MANAGED_PROXY = 8
 
   class RoleValueValuesEnum(_messages.Enum):
     r"""The role of subnetwork. Currently, this field is only used when
@@ -68578,12 +69346,12 @@ class TestFailure(_messages.Message):
   r"""A TestFailure object.
 
   Fields:
-    actualOutputUrl: The actual output URL evaluated by load balancer
+    actualOutputUrl: The actual output URL evaluated by a load balancer
       containing the scheme, host, path and query parameters.
     actualRedirectResponseCode: Actual HTTP status code for rule with
       `urlRedirect` calculated by load balancer
     actualService: BackendService or BackendBucket returned by load balancer.
-    expectedOutputUrl: The expected output URL evaluated by load balancer
+    expectedOutputUrl: The expected output URL evaluated by a load balancer
       containing the scheme, host, path and query parameters.
     expectedRedirectResponseCode: Expected HTTP status code for rule with
       `urlRedirect` calculated by load balancer
@@ -68771,6 +69539,8 @@ class UpcomingMaintenance(_messages.Message):
     TypeValueValuesEnum: Defines the type of maintenance.
 
   Fields:
+    canReschedule: Indicates if the maintenance can be customer triggered.
+      From more detail, see go/sf-ctm-design.
     date: [Output Only] The date when the maintenance will take place. This
       value is in RFC3339 text format. DEPRECATED: Use start_time_window
       instead.
@@ -68796,10 +69566,11 @@ class UpcomingMaintenance(_messages.Message):
     UNKNOWN_TYPE = 1
     UNSCHEDULED = 2
 
-  date = _messages.StringField(1)
-  startTimeWindow = _messages.MessageField('UpcomingMaintenanceTimeWindow', 2)
-  time = _messages.StringField(3)
-  type = _messages.EnumField('TypeValueValuesEnum', 4)
+  canReschedule = _messages.BooleanField(1)
+  date = _messages.StringField(2)
+  startTimeWindow = _messages.MessageField('UpcomingMaintenanceTimeWindow', 3)
+  time = _messages.StringField(4)
+  type = _messages.EnumField('TypeValueValuesEnum', 5)
 
 
 class UpcomingMaintenanceTimeWindow(_messages.Message):
@@ -68816,17 +69587,17 @@ class UpcomingMaintenanceTimeWindow(_messages.Message):
 
 
 class UrlMap(_messages.Message):
-  r"""Represents a URL Map resource. Google Compute Engine has two URL Map
-  resources: * [Global](/compute/docs/reference/rest/alpha/urlMaps) *
+  r"""Represents a URL Map resource. Compute Engine has two URL Map resources:
+  * [Global](/compute/docs/reference/rest/alpha/urlMaps) *
   [Regional](/compute/docs/reference/rest/alpha/regionUrlMaps) A URL map
-  resource is a component of certain types of GCP load balancers and Traffic
-  Director. * urlMaps are used by external HTTP(S) load balancers and Traffic
+  resource is a component of certain types of cloud load balancers and Traffic
+  Director: * urlMaps are used by external HTTP(S) load balancers and Traffic
   Director. * regionUrlMaps are used by internal HTTP(S) load balancers. For a
-  list of supported URL map features by load balancer type, see the Load
+  list of supported URL map features by the load balancer type, see the Load
   balancing features: Routing and traffic management table. For a list of
   supported URL map features for Traffic Director, see the Traffic Director
   features: Routing and traffic management table. This resource defines
-  mappings from host names and URL paths to either a backend service or a
+  mappings from hostnames and URL paths to either a backend service or a
   backend bucket. To use the global urlMaps resource, the backend service must
   have a loadBalancingScheme of either EXTERNAL or INTERNAL_SELF_MANAGED. To
   use the regionUrlMaps resource, the backend service must have a
@@ -68837,48 +69608,48 @@ class UrlMap(_messages.Message):
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     defaultRouteAction: defaultRouteAction takes effect when none of the
-      hostRules match. The load balancer performs advanced routing actions
-      like URL rewrites, header transformations, etc. prior to forwarding the
+      hostRules match. The load balancer performs advanced routing actions,
+      such as URL rewrites and header transformations, before forwarding the
       request to the selected backend. If defaultRouteAction specifies any
       weightedBackendServices, defaultService must not be set. Conversely if
       defaultService is set, defaultRouteAction cannot contain any
       weightedBackendServices. Only one of defaultRouteAction or
       defaultUrlRedirect must be set. UrlMaps for external HTTP(S) load
       balancers support only the urlRewrite action within defaultRouteAction.
-      defaultRouteAction has no effect when the URL map is bound to target
-      gRPC proxy that has validateForProxyless field set to true.
+      defaultRouteAction has no effect when the URL map is bound to a target
+      gRPC proxy that has the validateForProxyless field set to true.
     defaultService: The full or partial URL of the defaultService resource to
       which traffic is directed if none of the hostRules match. If
-      defaultRouteAction is additionally specified, advanced routing actions
-      like URL Rewrites, etc. take effect prior to sending the request to the
-      backend. However, if defaultService is specified, defaultRouteAction
-      cannot contain any weightedBackendServices. Conversely, if routeAction
+      defaultRouteAction is also specified, advanced routing actions, such as
+      URL rewrites, take effect before sending the request to the backend.
+      However, if defaultService is specified, defaultRouteAction cannot
+      contain any weightedBackendServices. Conversely, if routeAction
       specifies any weightedBackendServices, service must not be specified.
-      Only one of defaultService, defaultUrlRedirect or
+      Only one of defaultService, defaultUrlRedirect , or
       defaultRouteAction.weightedBackendService must be set. defaultService
-      has no effect when the URL map is bound to target gRPC proxy that has
-      validateForProxyless field set to true.
+      has no effect when the URL map is bound to a target gRPC proxy that has
+      the validateForProxyless field set to true.
     defaultUrlRedirect: When none of the specified hostRules match, the
       request is redirected to a URL specified by defaultUrlRedirect. If
       defaultUrlRedirect is specified, defaultService or defaultRouteAction
-      must not be set. Not supported when the URL map is bound to target gRPC
-      proxy.
+      must not be set. Not supported when the URL map is bound to a target
+      gRPC proxy.
     description: An optional description of this resource. Provide this
       property when you create the resource.
     fingerprint: Fingerprint of this resource. A hash of the contents stored
-      in this object. This field is used in optimistic locking. This field
-      will be ignored when inserting a UrlMap. An up-to-date fingerprint must
-      be provided in order to update the UrlMap, otherwise the request will
-      fail with error 412 conditionNotMet. To see the latest fingerprint, make
-      a get() request to retrieve a UrlMap.
+      in this object. This field is used in optimistic locking. This field is
+      ignored when inserting a UrlMap. An up-to-date fingerprint must be
+      provided in order to update the UrlMap, otherwise the request will fail
+      with error 412 conditionNotMet. To see the latest fingerprint, make a
+      get() request to retrieve a UrlMap.
     headerAction: Specifies changes to request and response headers that need
       to take effect for the selected backendService. The headerAction
       specified here take effect after headerAction specified under
-      pathMatcher. Note that headerAction is not supported for Loadbalancers
-      that have their loadBalancingScheme set to EXTERNAL. Not supported when
-      the URL map is bound to target gRPC proxy that has validateForProxyless
-      field set to true.
-    hostRules: The list of HostRules to use against the URL.
+      pathMatcher. headerAction is not supported for load balancers that have
+      their loadBalancingScheme set to EXTERNAL. Not supported when the URL
+      map is bound to a target gRPC proxy that has validateForProxyless field
+      set to true.
+    hostRules: The list of host rules to use against the URL.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of the resource. Always compute#urlMaps for url
@@ -68896,11 +69667,10 @@ class UrlMap(_messages.Message):
       specify this field as part of the HTTP request URL. It is not settable
       as a field in the request body.
     selfLink: [Output Only] Server-defined URL for the resource.
-    tests: The list of expected URL mapping tests. Request to update this
-      UrlMap will succeed only if all of the test cases pass. You can specify
-      a maximum of 100 tests per UrlMap. Not supported when the URL map is
-      bound to target gRPC proxy that has validateForProxyless field set to
-      true.
+    tests: The list of expected URL mapping tests. Request to update the
+      UrlMap succeeds only if all test cases pass. You can specify a maximum
+      of 100 tests per UrlMap. Not supported when the URL map is bound to a
+      target gRPC proxy that has validateForProxyless field set to true.
   """
 
   creationTimestamp = _messages.StringField(1)
@@ -69087,17 +69857,17 @@ class UrlMapTest(_messages.Message):
     backendServiceWeight: The weight to use for the supplied host and path
       when using advanced routing rules that involve traffic splitting.
     description: Description of this test case.
-    expectedOutputUrl: The expected output URL evaluated by load balancer
+    expectedOutputUrl: The expected output URL evaluated by the load balancer
       containing the scheme, host, path and query parameters. For rules that
       forward requests to backends, the test passes only when
-      expectedOutputUrl matches the request forwarded by load balancer to
+      expectedOutputUrl matches the request forwarded by the load balancer to
       backends. For rules with urlRewrite, the test verifies that the
       forwarded request matches hostRewrite and pathPrefixRewrite in the
       urlRewrite action. When service is specified, expectedOutputUrl`s scheme
       is ignored. For rules with urlRedirect, the test passes only if
       expectedOutputUrl matches the URL in the load balancer's redirect
       response. If urlRedirect specifies https_redirect, the test passes only
-      if the scheme in expectedOutputUrl is also set to https. If urlRedirect
+      if the scheme in expectedOutputUrl is also set to HTTPS. If urlRedirect
       specifies strip_query, the test passes only if expectedOutputUrl does
       not contain any query parameters. expectedOutputUrl is optional when
       service is specified.
@@ -69114,7 +69884,7 @@ class UrlMapTest(_messages.Message):
       host must also match the header value.
     path: Path portion of the URL.
     service: Expected BackendService or BackendBucket resource the given URL
-      should be mapped to. service cannot be set if
+      should be mapped to. The service field cannot be set if
       expectedRedirectResponseCode is set.
   """
 
@@ -69479,11 +70249,44 @@ class UrlMapsScopedList(_messages.Message):
 class UrlMapsValidateRequest(_messages.Message):
   r"""A UrlMapsValidateRequest object.
 
+  Enums:
+    LoadBalancingSchemesValueListEntryValuesEnum:
+
   Fields:
+    loadBalancingSchemes: Specifies the load balancer type(s) this validation
+      request is for. Use EXTERNAL_MANAGED for HTTP/HTTPS External Global Load
+      Balancer with Advanced Traffic Management. Use EXTERNAL for Classic
+      HTTP/HTTPS External Global Load Balancer. Other load balancer types are
+      not supported. For more information, refer to Choosing a load balancer.
+      If unspecified, the load balancing scheme will be inferred from the
+      backend service resources this URL map references. If that can not be
+      inferred (for example, this URL map only references backend buckets, or
+      this Url map is for rewrites and redirects only and doesn't reference
+      any backends), EXTERNAL will be used as the default type. If specified,
+      the scheme(s) must not conflict with the load balancing scheme of the
+      backend service resources this Url map references.
     resource: Content of the UrlMap to be validated.
   """
 
-  resource = _messages.MessageField('UrlMap', 1)
+  class LoadBalancingSchemesValueListEntryValuesEnum(_messages.Enum):
+    r"""LoadBalancingSchemesValueListEntryValuesEnum enum type.
+
+    Values:
+      EXTERNAL: Signifies that this will be used for Classic L7 External Load
+        Balancing.
+      EXTERNAL_MANAGED: Signifies that this will be used for Envoy-based L7
+        External Load Balancing.
+      LOAD_BALANCING_SCHEME_UNSPECIFIED: If unspecified, the validation will
+        try to infer the scheme from the backend service resources this Url
+        map references. If the inferrence is not possible, EXTERNAL will be
+        used as the default type.
+    """
+    EXTERNAL = 0
+    EXTERNAL_MANAGED = 1
+    LOAD_BALANCING_SCHEME_UNSPECIFIED = 2
+
+  loadBalancingSchemes = _messages.EnumField('LoadBalancingSchemesValueListEntryValuesEnum', 1, repeated=True)
+  resource = _messages.MessageField('UrlMap', 2)
 
 
 class UrlMapsValidateResponse(_messages.Message):
@@ -69501,12 +70304,12 @@ class UrlRewrite(_messages.Message):
   matched backend service.
 
   Fields:
-    hostRewrite: Prior to forwarding the request to the selected service, the
+    hostRewrite: Before forwarding the request to the selected service, the
       request's host header is replaced with contents of hostRewrite. The
-      value must be between 1 and 255 characters.
-    pathPrefixRewrite: Prior to forwarding the request to the selected backend
+      value must be from 1 to 255 characters.
+    pathPrefixRewrite: Before forwarding the request to the selected backend
       service, the matching portion of the request's path is replaced by
-      pathPrefixRewrite. The value must be between 1 and 1024 characters.
+      pathPrefixRewrite. The value must be from 1 to 1024 characters.
   """
 
   hostRewrite = _messages.StringField(1)
@@ -71400,29 +72203,29 @@ class WafExpressionSetExpression(_messages.Message):
 class WeightedBackendService(_messages.Message):
   r"""In contrast to a single BackendService in HttpRouteAction to which all
   matching traffic is directed to, WeightedBackendService allows traffic to be
-  split across multiple BackendServices. The volume of traffic for each
-  BackendService is proportional to the weight specified in each
+  split across multiple backend services. The volume of traffic for each
+  backend service is proportional to the weight specified in each
   WeightedBackendService
 
   Fields:
     backendService: The full or partial URL to the default BackendService
-      resource. Before forwarding the request to backendService, the
-      loadbalancer applies any relevant headerActions specified as part of
-      this backendServiceWeight.
+      resource. Before forwarding the request to backendService, the load
+      balancer applies any relevant headerActions specified as part of this
+      backendServiceWeight.
     headerAction: Specifies changes to request and response headers that need
       to take effect for the selected backendService. headerAction specified
       here take effect before headerAction in the enclosing HttpRouteRule,
-      PathMatcher and UrlMap. Note that headerAction is not supported for
-      Loadbalancers that have their loadBalancingScheme set to EXTERNAL. Not
-      supported when the URL map is bound to target gRPC proxy that has
+      PathMatcher and UrlMap. headerAction is not supported for load balancers
+      that have their loadBalancingScheme set to EXTERNAL. Not supported when
+      the URL map is bound to a target gRPC proxy that has
       validateForProxyless field set to true.
-    weight: Specifies the fraction of traffic sent to backendService, computed
-      as weight / (sum of all weightedBackendService weights in routeAction) .
-      The selection of a backend service is determined only for new traffic.
-      Once a user's request has been directed to a backendService, subsequent
-      requests will be sent to the same backendService as determined by the
-      BackendService's session affinity policy. The value must be between 0
-      and 1000
+    weight: Specifies the fraction of traffic sent to a backend service,
+      computed as weight / (sum of all weightedBackendService weights in
+      routeAction) . The selection of a backend service is determined only for
+      new traffic. Once a user's request has been directed to a backend
+      service, subsequent requests are sent to the same backend service as
+      determined by the backend service's session affinity policy. The value
+      must be from 0 to 1000.
   """
 
   backendService = _messages.StringField(1)

@@ -37,6 +37,12 @@ class Info(object):
 
 
 _INFO = {
+    'anthosobservability':
+        Info(
+            display_name='Anthos Observability',
+            api='anthosobservability.googleapis.com',
+            cmd_group='anthosobservability',
+        ),
     'appdevexperience':
         Info(
             display_name='CloudRun',

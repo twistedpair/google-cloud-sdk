@@ -48,8 +48,13 @@ def AddTaskResourceArgs(parser, verb):
 
 def AddLocationFlag(parser):
   argument = base.Argument(
-      '--location', hidden=True,
-      help='The location of the app associated with the active project.')
+      '--location',
+      hidden=False,
+      help=(
+          "The location where we want to manage the queue or task. If not "
+          "specified, uses the location of the current project's App Engine "
+          "app if there is an associated app."
+      ))
   argument.AddToParser(parser)
 
 

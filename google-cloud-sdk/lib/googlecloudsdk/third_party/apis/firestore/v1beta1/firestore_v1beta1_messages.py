@@ -696,7 +696,8 @@ class FirestoreProjectsDatabasesDocumentsDeleteRequest(_messages.Message):
     currentDocument_exists: When set to `true`, the target document must
       exist. When set to `false`, the target document must not exist.
     currentDocument_updateTime: When set, the target document must exist and
-      have been last updated at that time.
+      have been last updated at that time. Timestamp must be microsecond
+      aligned.
     name: Required. The resource name of the Document to delete. In the
       format: `projects/{project_id}/databases/{database_id}/documents/{docume
       nt_path}`.
@@ -818,7 +819,8 @@ class FirestoreProjectsDatabasesDocumentsPatchRequest(_messages.Message):
     currentDocument_exists: When set to `true`, the target document must
       exist. When set to `false`, the target document must not exist.
     currentDocument_updateTime: When set, the target document must exist and
-      have been last updated at that time.
+      have been last updated at that time. Timestamp must be microsecond
+      aligned.
     document: A Document resource to be passed as the request body.
     mask_fieldPaths: The list of field paths in the mask. See Document.fields
       for a field path syntax reference.
@@ -1622,7 +1624,7 @@ class Precondition(_messages.Message):
     exists: When set to `true`, the target document must exist. When set to
       `false`, the target document must not exist.
     updateTime: When set, the target document must exist and have been last
-      updated at that time.
+      updated at that time. Timestamp must be microsecond aligned.
   """
 
   exists = _messages.BooleanField(1)

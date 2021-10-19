@@ -31,6 +31,7 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.util import text
+import six
 
 
 def GetCloudBuild(build_id):
@@ -164,6 +165,20 @@ def GetPipelineResultsPathInGCS(artifacts_path):
   return '{0}/results/results.yaml'.format(artifacts_path)
 
 
+def GetPreviewResultsPathInGCS(artifacts_path):
+  """Gets a full Cloud Storage path to a preview results JSON file.
+
+  Args:
+    artifacts_path: string, the full Cloud Storage path to the folder containing
+      preview artifacts, e.g. 'gs://my-bucket/preview/results'.
+
+  Returns:
+    A string representing the full Cloud Storage path to the preview results
+    JSON file.
+  """
+  return '{0}/result.json'.format(artifacts_path)
+
+
 def PrintKptApplyResultsError(artifacts_folder,
                               action='apply',
                               max_resource_errors=25):
@@ -198,8 +213,8 @@ def PrintKptApplyResultsError(artifacts_folder,
 
   resource_failures = [
       event for event in results_data
-      if (event.get('type') == action and
-          event.get('eventType') in ('resourceDeleted', 'resourceFailed'))
+      if (event.get('type') == action and event.get('eventType') in (
+          'resourceDeleted', 'resourceFailed'))
   ]
   # Kpt sometimes emits generic errors during apply that are not tied to a
   # specific resource. In this case, both `eventType` and `type` are "error".
@@ -259,9 +274,8 @@ def PrintKptPipelineResultsError(artifacts_folder):
 
   printed_error = False
   for pipeline_result in pipeline_results_data.get('items', []):
-    error_messages = [
-        result.get('message')
-        for result in pipeline_result.get('results', [])
+    error_results = [
+        result for result in pipeline_result.get('results', [])
         if 'message' in result and result.get('severity') == 'error'
     ]
     exit_code = pipeline_result.get('exitCode')
@@ -271,7 +285,7 @@ def PrintKptPipelineResultsError(artifacts_folder):
     # TODO(b/197227175): This line is not marked as covered by Zapfhan, but it
     # is being executed in tests. gcloud mandates 100% coverage, so this should
     # get fixed.
-    if exit_code == 0 or not (error_messages or stderr):
+    if exit_code == 0 or not (error_results or stderr):
       continue
 
     if not printed_error:
@@ -279,9 +293,9 @@ def PrintKptPipelineResultsError(artifacts_folder):
       printed_error = True
     log.status.Print('- Function with image "{}" exited with code {}'.format(
         image, exit_code or '(Unknown)'))
-    if error_messages:
-      for msg in error_messages:
-        log.status.Print('  - Error: "{}"'.format(msg))
+    if error_results:
+      for result in error_results:
+        log.status.Print(_FormatPipelineErrorResult(result))
     elif stderr:
       log.status.Print('  - Stderr:\n{}'.format('\n'.join(
           textwrap.wrap(
@@ -290,6 +304,38 @@ def PrintKptPipelineResultsError(artifacts_folder):
   if printed_error:
     log.status.Print('See {0} for details.'.format(pipeline_results_path))
   return printed_error
+
+
+def _FormatPipelineErrorResult(result):
+  """Formats a kpt pipeline error result.
+
+  Args:
+    result: The pipeline error result object.
+
+  Returns:
+    string. The formatted result string, including the resource, file, and
+      field that the result references, as applicable.
+
+  """
+  prefix = '  - Error'
+
+  file = result.get('file')
+  if file and 'path' in file:
+    prefix += ' in file "{}"'.format(file.get('path'))
+
+  resource_ref = result.get('resourceRef')
+  if resource_ref:
+    resource = '{}/{}/{}'.format(
+        resource_ref.get('apiVersion'), resource_ref.get('kind'),
+        resource_ref.get('name'))
+    prefix += ' in resource "{}"'.format(resource)
+
+  field = result.get('field')
+  if field:
+    prefix += ' in field "{}"'.format(field)
+
+  msg = result.get('message')
+  return '{}:\n      "{}"'.format(prefix, msg)
 
 
 def PrintApplyRunError(revision):
@@ -339,6 +385,27 @@ def PrintPipelineRunError(revision):
   if not kpt_error_found:
     log.error(revision.stateDetail)
     PrintCloudBuildResults(pipeline_results.logs, pipeline_results.build)
+
+
+def PrintPreviewRunError(preview):
+  """Prints error details for a failed preview run.
+
+  Args:
+    preview: a Preview Proto for the failed preview operation.
+  """
+  preview_results = preview.previewResults
+  artifact_path = GetPreviewResultsPathInGCS(preview_results.artifacts)
+  try:
+    artifact_content = GetTextFileContentsFromStorageBucket(artifact_path)
+    content = json.loads(artifact_content)
+    log.error('\n'.join(
+        ['{0}: {1}'.format(k, v) for k, v in six.iteritems(content)]))
+  except exceptions.BadFileException:
+    # Failed to read preview artifact, instead going to print cloud-build logs.
+    log.debug(
+        'Failed to fetch preview results from {0}. Getting GCB logs.'.format(
+            artifact_path))
+    PrintCloudBuildResults(preview_results.logs, preview_results.build)
 
 
 def RevisionFailed(revision_ref):
@@ -405,3 +472,5 @@ def PreviewFailed(preview_ref):
 
   if preview_error_code == messages.Preview.ErrorCodeValueValuesEnum.PIPELINE_BUILD_RUN_FAILED:
     PrintPipelineRunError(preview_ref)
+  if preview_error_code == messages.Preview.ErrorCodeValueValuesEnum.PREVIEW_BUILD_RUN_FAILED:
+    PrintPreviewRunError(preview_ref)

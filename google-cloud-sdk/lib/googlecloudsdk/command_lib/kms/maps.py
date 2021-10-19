@@ -73,8 +73,11 @@ VALID_ALGORITHMS_MAP = {
         'rsa-sign-pkcs1-4096-sha512',
     ],
     PURPOSE_ENUM.ASYMMETRIC_DECRYPT: [
+        'rsa-decrypt-oaep-2048-sha1',
         'rsa-decrypt-oaep-2048-sha256',
+        'rsa-decrypt-oaep-3072-sha1',
         'rsa-decrypt-oaep-3072-sha256',
+        'rsa-decrypt-oaep-4096-sha1',
         'rsa-decrypt-oaep-4096-sha256',
         'rsa-decrypt-oaep-4096-sha512',
     ],

@@ -104,7 +104,7 @@
     "oauth2": {
       "scopes": {
         "https://www.googleapis.com/auth/cloud-platform": {
-          "description": "See, edit, configure, and delete your Google Cloud Platform data"
+          "description": "See, edit, configure, and delete your Google Cloud data and see the email address for your Google Account."
         }
       }
     }
@@ -180,7 +180,7 @@
     },
     "Policy": {
       "id": "Policy",
-      "description": "An Identity and Access Management (IAM) policy, which specifies access controls for Google Cloud resources. A `Policy` is a collection of `bindings`. A `binding` binds one or more `members` to a single `role`. Members can be user accounts, service accounts, Google groups, and domains (such as G Suite). A `role` is a named list of permissions; each `role` can be an IAM predefined role or a user-created custom role. For some types of Google Cloud resources, a `binding` can also specify a `condition`, which is a logical expression that allows access to a resource only if the expression evaluates to `true`. A condition can add constraints based on attributes of the request, the resource, or both. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies). **JSON example:** { \"bindings\": [ { \"role\": \"roles\/resourcemanager.organizationAdmin\", \"members\": [ \"user:mike@example.com\", \"group:admins@example.com\", \"domain:google.com\", \"serviceAccount:my-project-id@appspot.gserviceaccount.com\" ] }, { \"role\": \"roles\/resourcemanager.organizationViewer\", \"members\": [ \"user:eve@example.com\" ], \"condition\": { \"title\": \"expirable access\", \"description\": \"Does not grant access after Sep 2020\", \"expression\": \"request.time < timestamp('2020-10-01T00:00:00.000Z')\", } } ], \"etag\": \"BwWWja0YfJA=\", \"version\": 3 } **YAML example:** bindings: - members: - user:mike@example.com - group:admins@example.com - domain:google.com - serviceAccount:my-project-id@appspot.gserviceaccount.com role: roles\/resourcemanager.organizationAdmin - members: - user:eve@example.com role: roles\/resourcemanager.organizationViewer condition: title: expirable access description: Does not grant access after Sep 2020 expression: request.time < timestamp('2020-10-01T00:00:00.000Z') - etag: BwWWja0YfJA= - version: 3 For a description of IAM and its features, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/docs\/).",
+      "description": "An Identity and Access Management (IAM) policy, which specifies access controls for Google Cloud resources. A `Policy` is a collection of `bindings`. A `binding` binds one or more `members` to a single `role`. Members can be user accounts, service accounts, Google groups, and domains (such as G Suite). A `role` is a named list of permissions; each `role` can be an IAM predefined role or a user-created custom role. For some types of Google Cloud resources, a `binding` can also specify a `condition`, which is a logical expression that allows access to a resource only if the expression evaluates to `true`. A condition can add constraints based on attributes of the request, the resource, or both. To learn which resources support conditions in their IAM policies, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/help\/conditions\/resource-policies). **JSON example:** { \"bindings\": [ { \"role\": \"roles\/resourcemanager.organizationAdmin\", \"members\": [ \"user:mike@example.com\", \"group:admins@example.com\", \"domain:google.com\", \"serviceAccount:my-project-id@appspot.gserviceaccount.com\" ] }, { \"role\": \"roles\/resourcemanager.organizationViewer\", \"members\": [ \"user:eve@example.com\" ], \"condition\": { \"title\": \"expirable access\", \"description\": \"Does not grant access after Sep 2020\", \"expression\": \"request.time < timestamp('2020-10-01T00:00:00.000Z')\", } } ], \"etag\": \"BwWWja0YfJA=\", \"version\": 3 } **YAML example:** bindings: - members: - user:mike@example.com - group:admins@example.com - domain:google.com - serviceAccount:my-project-id@appspot.gserviceaccount.com role: roles\/resourcemanager.organizationAdmin - members: - user:eve@example.com role: roles\/resourcemanager.organizationViewer condition: title: expirable access description: Does not grant access after Sep 2020 expression: request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA= version: 3 For a description of IAM and its features, see the [IAM documentation](https:\/\/cloud.google.com\/iam\/docs\/).",
       "type": "object",
       "properties": {
         "version": {
@@ -189,7 +189,7 @@
           "format": "int32"
         },
         "bindings": {
-          "description": "Associates a list of `members` to a `role`. Optionally, may specify a `condition` that determines how and when the `bindings` are applied. Each of the `bindings` must contain at least one member.",
+          "description": "Associates a list of `members` to a `role`. Optionally, may specify a `condition` that determines how and when the `bindings` are applied. Each of the `bindings` must contain at least one member. The `bindings` in a `Policy` can refer to up to 1,500 members; up to 250 of these members can be Google groups. Each occurrence of a member counts towards these limits. For example, if the `bindings` grant 50 different roles to `user:alice@example.com`, and not to any other member, then you can add another 1,450 members to the `bindings` in the `Policy`.",
           "type": "array",
           "items": {
             "$ref": "Binding"
@@ -496,7 +496,7 @@
           ]
         },
         "allowedValues": {
-          "description": "Required. Possible values for the attribute. The number of allowed values must not exceed 100. An empty list is invalid. The list can only be expanded after creation.",
+          "description": "Required. Possible values for the attribute. The number of allowed values must not exceed 500. An empty list is invalid. The list can only be expanded after creation.",
           "type": "array",
           "items": {
             "type": "string"
@@ -676,9 +676,9 @@
           "description": "Required. Indicates the current state of this Consent.",
           "type": "string",
           "enumDescriptions": [
-            "No state specified.",
+            "No state specified. Treated as ACTIVE only at the time of resource creation.",
             "The Consent is active and is considered when evaluating a user's consent on resources.",
-            "When a Consent is updated, the current version is archived and a new one is created with its state set to the updated Consent's previous state.",
+            "The archived state is currently not being used.",
             "A revoked Consent is not considered when evaluating a user's consent on resources.",
             "A draft Consent is not considered when evaluating a user's consent on resources unless explicitly specified.",
             "When a draft Consent is rejected by a user, it is set to a rejected state. A rejected Consent is not considered when evaluating a user's consent on resources."
@@ -1584,7 +1584,7 @@
           "type": "string"
         },
         "force": {
-          "description": "If the destination table already exists and this flag is `TRUE`, the table is overwritten by the contents of the DICOM store. If the flag is not set and the destination table already exists, the export call returns an error.",
+          "description": "Use `write_disposition` instead. If `write_disposition` is specified, this parameter is ignored. force=false is equivalent to write_disposition=WRITE_EMPTY and force=true is equivalent to write_disposition=WRITE_TRUNCATE.",
           "type": "boolean"
         }
       }
@@ -1666,6 +1666,20 @@
         "schema": {
           "description": "Schemas used to parse messages in this store, if schematized parsing is desired.",
           "$ref": "SchemaPackage"
+        },
+        "version": {
+          "description": "Immutable. Determines the version of the unschematized parser to be used when `schema` is not given. This field is immutable after store creation.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified parser version, equivalent to V1.",
+            "The `parsed_data` includes every given non-empty message field except the Field Separator (MSH-1) field. As a result, the parsed MSH segment starts with the MSH-2 field and the field numbers are off-by-one with respect to the HL7 standard.",
+            "The `parsed_data` includes every given non-empty message field."
+          ],
+          "enum": [
+            "PARSER_VERSION_UNSPECIFIED",
+            "V1",
+            "V2"
+          ]
         }
       }
     },
@@ -1705,6 +1719,22 @@
         "ignoreMinOccurs": {
           "description": "Flag to ignore all min_occurs restrictions in the schema. This means that incoming messages can omit any group, segment, field, component, or subcomponent.",
           "type": "boolean"
+        },
+        "unexpectedSegmentHandling": {
+          "description": "Determines how unexpected segments (segments not matched to the schema) are handled.",
+          "type": "string",
+          "enumDescriptions": [
+            "Unspecified handling mode, equivalent to FAIL.",
+            "Unexpected segments fail to parse and return an error.",
+            "Unexpected segments do not fail, but are omitted from the output.",
+            "Unexpected segments do not fail, but are parsed in place and added to the current group. If a segment has a type definition, it is used, otherwise it is parsed as VARIES."
+          ],
+          "enum": [
+            "UNEXPECTED_SEGMENT_HANDLING_MODE_UNSPECIFIED",
+            "FAIL",
+            "SKIP",
+            "PARSE"
+          ]
         }
       }
     },
@@ -2106,6 +2136,92 @@
         }
       }
     },
+    "ExportMessagesRequest": {
+      "id": "ExportMessagesRequest",
+      "description": "Request to schedule an export.",
+      "type": "object",
+      "properties": {
+        "startTime": {
+          "description": "The start of the range in `send_time` (MSH.7, https:\/\/www.hl7.org\/documentcenter\/public_temp_2E58C1F9-1C23-BA17-0C6126475344DA9D\/wg\/conf\/HL7MSH.htm) to process. If not specified, the UNIX epoch (1970-01-01T00:00:00Z) is used. This value has to come before the `end_time` defined below. Only messages whose `send_time` lies in the range `start_time` (inclusive) to `end_time` (exclusive) are exported.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "endTime": {
+          "description": "The end of the range in `send_time` (MSH.7, https:\/\/www.hl7.org\/documentcenter\/public_temp_2E58C1F9-1C23-BA17-0C6126475344DA9D\/wg\/conf\/HL7MSH.htm) to process. If not specified, the time when the export is scheduled is used. This value has to come after the `start_time` defined below. Only messages whose `send_time` lies in the range `start_time` (inclusive) to `end_time` (exclusive) are exported.",
+          "type": "string",
+          "format": "google-datetime"
+        },
+        "gcsDestination": {
+          "description": "Export to a Cloud Storage destination.",
+          "$ref": "GcsDestination"
+        }
+      }
+    },
+    "GcsDestination": {
+      "id": "GcsDestination",
+      "description": "The Cloud Storage output destination. The Cloud Healthcare Service Agent requires the `roles\/storage.objectAdmin` Cloud IAM roles on the Cloud Storage location.",
+      "type": "object",
+      "properties": {
+        "uriPrefix": {
+          "description": "URI of an existing Cloud Storage directory where the server writes result files, in the format `gs:\/\/{bucket-id}\/{path\/to\/destination\/dir}`. If there is no trailing slash, the service appends one when composing the object path.",
+          "type": "string"
+        },
+        "messageView": {
+          "description": "Specifies the parts of the Message resource to include in the export. If not specified, FULL is used.",
+          "type": "string",
+          "enumDescriptions": [
+            "Not specified, equivalent to FULL.",
+            "Server responses include all the message fields except parsed_data field, and schematized_data fields.",
+            "Server responses include all the message fields except data field, and schematized_data fields.",
+            "Server responses include all the message fields.",
+            "Server responses include all the message fields except data and parsed_data fields.",
+            "Server responses include only the name field."
+          ],
+          "enum": [
+            "MESSAGE_VIEW_UNSPECIFIED",
+            "RAW_ONLY",
+            "PARSED_ONLY",
+            "FULL",
+            "SCHEMATIZED_ONLY",
+            "BASIC"
+          ]
+        },
+        "contentStructure": {
+          "description": "The format of the exported HL7v2 message files.",
+          "type": "string",
+          "enumDescriptions": [
+            "If the content structure is not specified, the default value `MESSAGE_JSON` will be used.",
+            "Messages are printed using the JSON format returned from the `GetMessage` API. Messages are delimited with newlines."
+          ],
+          "enum": [
+            "CONTENT_STRUCTURE_UNSPECIFIED",
+            "MESSAGE_JSON"
+          ]
+        }
+      }
+    },
+    "ImportMessagesRequest": {
+      "id": "ImportMessagesRequest",
+      "description": "Request to import messages.",
+      "type": "object",
+      "properties": {
+        "gcsSource": {
+          "description": "Cloud Storage source data location and import configuration. The Cloud Healthcare Service Agent requires the `roles\/storage.objectViewer` Cloud IAM roles on the Cloud Storage location.",
+          "$ref": "GcsSource"
+        }
+      }
+    },
+    "GcsSource": {
+      "id": "GcsSource",
+      "description": "Specifies the configuration for importing data from Cloud Storage.",
+      "type": "object",
+      "properties": {
+        "uri": {
+          "description": "Points to a Cloud Storage URI containing file(s) to import. The URI must be in the following format: `gs:\/\/{bucket_id}\/{object_id}`. The URI can include wildcards in `object_id` and thus identify multiple files. Supported wildcards: * `*` to match 0 or more non-separator characters * `**` to match 0 or more characters (including separators). Must be used at the end of a path and with no other wildcards in the path. Can also be used with a file extension (such as .ndjson), which imports all files with the extension in the specified directory and its sub-directories. For example, `gs:\/\/my-bucket\/my-directory\/**.ndjson` imports all files with `.ndjson` extensions in `my-directory\/` and its sub-directories. * `?` to match 1 character Files matching the wildcard are expected to contain content only, no metadata.",
+          "type": "string"
+        }
+      }
+    },
     "SearchResourcesRequest": {
       "id": "SearchResourcesRequest",
       "description": "Request to search the resources in the specified FHIR store.",
@@ -2191,7 +2307,7 @@
           }
         },
         "bigqueryDestination": {
-          "description": "The destination BigQuery structure that contains both the dataset location and corresponding schema config. The output is organized in one table per resource type. The server reuses the existing tables (if any) that are named after the resource types. For example, \"Patient\", \"Observation\". When there is no existing table for a given resource type, the server attempts to create one. When a table schema doesn't align with the schema config, either because of existing incompatible schema or out of band incompatible modification, the server does not stream in new data. BigQuery imposes a 1 MB limit on streaming insert row size, therefore any resource mutation that generates more than 1 MB of BigQuery data is not streamed. One resolution in this case is to delete the incompatible table and let the server recreate one, though the newly created table only contains data after the table recreation. Results are appended to the corresponding BigQuery tables. Different versions of the same resource are distinguishable by the meta.versionId and meta.lastUpdated columns. The operation (CREATE\/UPDATE\/DELETE) that results in the new version is recorded in the meta.tag. The tables contain all historical resource versions since streaming was enabled. For query convenience, the server also creates one view per table of the same name containing only the current resource version. The streamed data in the BigQuery dataset is not guaranteed to be completely unique. The combination of the id and meta.versionId columns should ideally identify a single unique row. But in rare cases, duplicates may exist. At query time, users may use the SQL select statement to keep only one of the duplicate rows given an id and meta.versionId pair. Alternatively, the server created view mentioned above also filters out duplicates. If a resource mutation cannot be streamed to BigQuery, errors are logged to Cloud Logging. For more information, see [Viewing error logs in Cloud Logging](https:\/\/cloud.google.com\/healthcare\/docs\/how-tos\/logging)).",
+          "description": "The destination BigQuery structure that contains both the dataset location and corresponding schema config. The output is organized in one table per resource type. The server reuses the existing tables (if any) that are named after the resource types. For example, \"Patient\", \"Observation\". When there is no existing table for a given resource type, the server attempts to create one. When a table schema doesn't align with the schema config, either because of existing incompatible schema or out of band incompatible modification, the server does not stream in new data. BigQuery imposes a 1 MB limit on streaming insert row size, therefore any resource mutation that generates more than 1 MB of BigQuery data is not streamed. One resolution in this case is to delete the incompatible table and let the server recreate one, though the newly created table only contains data after the table recreation. Results are written to BigQuery tables according to the parameters in BigQueryDestination.WriteDisposition. Different versions of the same resource are distinguishable by the meta.versionId and meta.lastUpdated columns. The operation (CREATE\/UPDATE\/DELETE) that results in the new version is recorded in the meta.tag. The tables contain all historical resource versions since streaming was enabled. For query convenience, the server also creates one view per table of the same name containing only the current resource version. The streamed data in the BigQuery dataset is not guaranteed to be completely unique. The combination of the id and meta.versionId columns should ideally identify a single unique row. But in rare cases, duplicates may exist. At query time, users may use the SQL select statement to keep only one of the duplicate rows given an id and meta.versionId pair. Alternatively, the server created view mentioned above also filters out duplicates. If a resource mutation cannot be streamed to BigQuery, errors are logged to Cloud Logging. For more information, see [Viewing error logs in Cloud Logging](https:\/\/cloud.google.com\/healthcare\/docs\/how-tos\/logging)).",
           "$ref": "GoogleCloudHealthcareV1FhirBigQueryDestination"
         }
       }
@@ -2323,7 +2439,7 @@
           "$ref": "GoogleCloudHealthcareV1FhirGcsDestination"
         },
         "bigqueryDestination": {
-          "description": "The BigQuery output destination. The Cloud Healthcare Service Agent requires two IAM roles on the BigQuery location: `roles\/bigquery.dataEditor` and `roles\/bigquery.jobUser`. The output is one BigQuery table per resource type. Note that unlike in FhirStore.StreamConfig.BigQueryDestination, BigQuery views will not be created by ExportResources.",
+          "description": "The BigQuery output destination. The Cloud Healthcare Service Agent requires two IAM roles on the BigQuery location: `roles\/bigquery.dataEditor` and `roles\/bigquery.jobUser`. The output is one BigQuery table per resource type. Unlike when setting `BigQueryDestination` for `StreamConfig`, `ExportResources` does not create BigQuery views.",
           "$ref": "GoogleCloudHealthcareV1FhirBigQueryDestination"
         }
       }
@@ -2336,6 +2452,190 @@
         "uriPrefix": {
           "description": "URI for a Cloud Storage directory where result files should be written, in the format of `gs:\/\/{bucket-id}\/{path\/to\/destination\/dir}`. If there is no trailing slash, the service appends one when composing the object path. The user is responsible for creating the Cloud Storage bucket referenced in `uri_prefix`.",
           "type": "string"
+        }
+      }
+    },
+    "AnalyzeEntitiesRequest": {
+      "id": "AnalyzeEntitiesRequest",
+      "description": "The request to analyze healthcare entities in a document.",
+      "type": "object",
+      "properties": {
+        "documentContent": {
+          "description": "document_content is a document to be annotated.",
+          "type": "string"
+        },
+        "licensedVocabularies": {
+          "description": "A list of licensed vocabularies to use in the request, in addition to the default unlicensed vocabularies.",
+          "type": "array",
+          "items": {
+            "type": "string",
+            "enumDescriptions": [
+              "No licensed vocabulary specified.",
+              "ICD-10-CM vocabulary",
+              "SNOMED CT (US version) vocabulary"
+            ],
+            "enum": [
+              "LICENSED_VOCABULARY_UNSPECIFIED",
+              "ICD10CM",
+              "SNOMEDCT_US"
+            ]
+          }
+        }
+      }
+    },
+    "AnalyzeEntitiesResponse": {
+      "id": "AnalyzeEntitiesResponse",
+      "description": "Includes recognized entity mentions and relationships between them.",
+      "type": "object",
+      "properties": {
+        "entityMentions": {
+          "description": "entity_mentions contains all the annotated medical entities that were mentioned in the provided document.",
+          "type": "array",
+          "items": {
+            "$ref": "EntityMention"
+          }
+        },
+        "entities": {
+          "description": "The union of all the candidate entities that the entity_mentions in this response could link to. These are UMLS concepts or normalized mention content.",
+          "type": "array",
+          "items": {
+            "$ref": "Entity"
+          }
+        },
+        "relationships": {
+          "description": "relationships contains all the binary relationships that were identified between entity mentions within the provided document.",
+          "type": "array",
+          "items": {
+            "$ref": "EntityMentionRelationship"
+          }
+        }
+      }
+    },
+    "EntityMention": {
+      "id": "EntityMention",
+      "description": "An entity mention in the document.",
+      "type": "object",
+      "properties": {
+        "mentionId": {
+          "description": "mention_id uniquely identifies each entity mention in a single response.",
+          "type": "string"
+        },
+        "type": {
+          "description": "The semantic type of the entity: UNKNOWN_ENTITY_TYPE, ALONE, ANATOMICAL_STRUCTURE, ASSISTED_LIVING, BF_RESULT, BM_RESULT, BM_UNIT, BM_VALUE, BODY_FUNCTION, BODY_MEASUREMENT, COMPLIANT, DOESNOT_FOLLOWUP, FAMILY, FOLLOWSUP, LABORATORY_DATA, LAB_RESULT, LAB_UNIT, LAB_VALUE, MEDICAL_DEVICE, MEDICINE, MED_DOSE, MED_DURATION, MED_FORM, MED_FREQUENCY, MED_ROUTE, MED_STATUS, MED_STRENGTH, MED_TOTALDOSE, MED_UNIT, NON_COMPLIANT, OTHER_LIVINGSTATUS, PROBLEM, PROCEDURE, PROCEDURE_RESULT, PROC_METHOD, REASON_FOR_NONCOMPLIANCE, SEVERITY, SUBSTANCE_ABUSE, UNCLEAR_FOLLOWUP.",
+          "type": "string"
+        },
+        "text": {
+          "description": "text is the location of the entity mention in the document.",
+          "$ref": "TextSpan"
+        },
+        "linkedEntities": {
+          "description": "linked_entities are candidate ontological concepts that this entity mention may refer to. They are sorted by decreasing confidence.it",
+          "type": "array",
+          "items": {
+            "$ref": "LinkedEntity"
+          }
+        },
+        "temporalAssessment": {
+          "description": "How this entity mention relates to the subject temporally. Its value is one of: CURRENT, CLINICAL_HISTORY, FAMILY_HISTORY, UPCOMING, ALLERGY",
+          "$ref": "Feature"
+        },
+        "certaintyAssessment": {
+          "description": "The certainty assessment of the entity mention. Its value is one of: LIKELY, SOMEWHAT_LIKELY, UNCERTAIN, SOMEWHAT_UNLIKELY, UNLIKELY, CONDITIONAL",
+          "$ref": "Feature"
+        },
+        "subject": {
+          "description": "The subject this entity mention relates to. Its value is one of: PATIENT, FAMILY_MEMBER, OTHER",
+          "$ref": "Feature"
+        },
+        "confidence": {
+          "description": "The model's confidence in this entity mention annotation. A number between 0 and 1.",
+          "type": "number",
+          "format": "double"
+        }
+      }
+    },
+    "TextSpan": {
+      "id": "TextSpan",
+      "description": "A span of text in the provided document.",
+      "type": "object",
+      "properties": {
+        "content": {
+          "description": "The original text contained in this span.",
+          "type": "string"
+        },
+        "beginOffset": {
+          "description": "The unicode codepoint index of the beginning of this span.",
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    },
+    "LinkedEntity": {
+      "id": "LinkedEntity",
+      "description": "EntityMentions can be linked to multiple entities using a LinkedEntity message lets us add other fields, e.g. confidence.",
+      "type": "object",
+      "properties": {
+        "entityId": {
+          "description": "entity_id is a concept unique identifier. These are prefixed by a string that identifies the entity coding system, followed by the unique identifier within that system. For example, \"UMLS\/C0000970\". This also supports ad hoc entities, which are formed by normalizing entity mention content.",
+          "type": "string"
+        }
+      }
+    },
+    "Feature": {
+      "id": "Feature",
+      "description": "A feature of an entity mention.",
+      "type": "object",
+      "properties": {
+        "value": {
+          "description": "The value of this feature annotation. Its range depends on the type of the feature.",
+          "type": "string"
+        },
+        "confidence": {
+          "description": "The model's confidence in this feature annotation. A number between 0 and 1.",
+          "type": "number",
+          "format": "double"
+        }
+      }
+    },
+    "Entity": {
+      "id": "Entity",
+      "description": "The candidate entities that an entity mention could link to.",
+      "type": "object",
+      "properties": {
+        "entityId": {
+          "description": "entity_id is a first class field entity_id uniquely identifies this concept and its meta-vocabulary. For example, \"UMLS\/C0000970\".",
+          "type": "string"
+        },
+        "preferredTerm": {
+          "description": "preferred_term is the preferred term for this concept. For example, \"Acetaminophen\". For ad hoc entities formed by normalization, this is the most popular unnormalized string.",
+          "type": "string"
+        },
+        "vocabularyCodes": {
+          "description": "Vocabulary codes are first-class fields and differentiated from the concept unique identifier (entity_id). vocabulary_codes contains the representation of this concept in particular vocabularies, such as ICD-10, SNOMED-CT and RxNORM. These are prefixed by the name of the vocabulary, followed by the unique code within that vocabulary. For example, \"RXNORM\/A10334543\".",
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "EntityMentionRelationship": {
+      "id": "EntityMentionRelationship",
+      "description": "Defines directed relationship from one entity mention to another.",
+      "type": "object",
+      "properties": {
+        "subjectId": {
+          "description": "subject_id is the id of the subject entity mention.",
+          "type": "string"
+        },
+        "objectId": {
+          "description": "object_id is the id of the object entity mention.",
+          "type": "string"
+        },
+        "confidence": {
+          "description": "The model's confidence in this annotation. A number between 0 and 1.",
+          "type": "number",
+          "format": "double"
         }
       }
     },
@@ -2452,6 +2752,20 @@
     "ExportResourcesResponse": {
       "id": "ExportResourcesResponse",
       "description": "Response when all resources export successfully. This structure is included in the response to describe the detailed outcome after the operation finishes successfully.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "ExportMessagesResponse": {
+      "id": "ExportMessagesResponse",
+      "description": "Final response for the export operation. This structure is included in the response to describe the detailed outcome.",
+      "type": "object",
+      "properties": {
+      }
+    },
+    "ImportMessagesResponse": {
+      "id": "ImportMessagesResponse",
+      "description": "Final response of importing messages. This structure is included in the response to describe the detailed outcome. It is only included when the operation finishes successfully.",
       "type": "object",
       "properties": {
       }
@@ -5189,6 +5503,62 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Updates the HL7v2 store."
+                    },
+                    "export": {
+                      "id": "healthcare.projects.locations.datasets.hl7V2Stores.export",
+                      "path": "v1/{+name}:export",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/hl7V2Stores/{hl7V2StoresId}:export",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the source HL7v2 store, in the format `projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/hl7v2Stores\/{hl7v2_store_id}`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/hl7V2Stores\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "ExportMessagesRequest"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Exports the messages to a destination. To filter messages to be exported, define a filter using the start and end time, relative to the message generation time (MSH.7). This API returns an Operation that can be used to track the status of the job by calling GetOperation. Immediate fatal errors appear in the error field. Otherwise, when the operation finishes, a detailed response of type ExportMessagesResponse is returned in the response field. The metadata field type for this operation is OperationMetadata."
+                    },
+                    "import": {
+                      "id": "healthcare.projects.locations.datasets.hl7V2Stores.import",
+                      "path": "v1/{+name}:import",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/hl7V2Stores/{hl7V2StoresId}:import",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "name": {
+                          "description": "The name of the target HL7v2 store, in the format `projects\/{project_id}\/locations\/{location_id}\/datasets\/{dataset_id}\/hl7v2Stores\/{hl7v2_store_id}`",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/datasets\/[^\/]+\/hl7V2Stores\/[^\/]+$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "name"
+                      ],
+                      "request": {
+                        "$ref": "ImportMessagesRequest"
+                      },
+                      "response": {
+                        "$ref": "Operation"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Import messages to the HL7v2 store by loading data from the specified sources. This method is optimized to load large quantities of data using import semantics that ignore some HL7v2 store configuration options and are not suitable for all use cases. It is primarily intended to load data into an empty HL7v2 store that is not being used by other clients. An existing message will be overwritten if a duplicate message is imported. A duplicate message is a message with the same raw bytes as a message that already exists in this HL7v2 store. When a message is overwritten, its labels will also be overwritten. The import operation is idempotent unless the input data contains multiple valid messages with the same raw bytes but different labels. In that case, after the import completes, the store contains exactly one message with those raw bytes but there is no ordering guarantee on which version of the labels it has. The operation result counters do not count duplicated raw bytes as an error and count one success for each message in the input, which might result in a success count larger than the number of messages in the HL7v2 store. If some messages fail to import, for example due to parsing errors, successfully imported messages are not rolled back. This method returns an Operation that can be used to track the status of the import by calling GetOperation. Immediate fatal errors appear in the error field, errors are also logged to Cloud Logging (see [Viewing error logs in Cloud Logging](https:\/\/cloud.google.com\/healthcare\/docs\/how-tos\/logging)). Otherwise, when the operation finishes, a response of type ImportMessagesResponse is returned in the response field. The metadata field type for this operation is OperationMetadata."
                     }
                   }
                   ,
@@ -5960,7 +6330,7 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "Searches for resources in the given FHIR store according to criteria specified as query parameters. Implements the FHIR standard search interaction ([DSTU2](http:\/\/hl7.org\/implement\/standards\/fhir\/DSTU2\/http.html#search), [STU3](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/http.html#search), [R4](http:\/\/hl7.org\/implement\/standards\/fhir\/R4\/http.html#search)) using the search semantics described in the FHIR Search specification ([DSTU2](http:\/\/hl7.org\/implement\/standards\/fhir\/DSTU2\/search.html), [STU3](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/search.html), [R4](http:\/\/hl7.org\/implement\/standards\/fhir\/R4\/search.html)). Supports four methods of search defined by the specification: * `GET [base]?[parameters]` to search across all resources. * `GET [base]\/[type]?[parameters]` to search resources of a specified type. * `POST [base]\/_search?[parameters]` as an alternate form having the same semantics as the `GET` method across all resources. * `POST [base]\/[type]\/_search?[parameters]` as an alternate form having the same semantics as the `GET` method for the specified type. The `GET` and `POST` methods do not support compartment searches. The `POST` method does not support `application\/x-www-form-urlencoded` search parameters. On success, the response body contains a JSON-encoded representation of a `Bundle` resource of type `searchset`, containing the results of the search. Errors generated by the FHIR store contain a JSON-encoded `OperationOutcome` resource describing the reason for the error. If the request cannot be mapped to a valid API method on a FHIR store, a generic GCP error might be returned instead. The server's capability statement, retrieved through capabilities, indicates what search parameters are supported on each FHIR resource. A list of all search parameters defined by the specification can be found in the FHIR Search Parameter Registry ([STU3](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/searchparameter-registry.html), [R4](http:\/\/hl7.org\/implement\/standards\/fhir\/R4\/searchparameter-registry.html)). FHIR search parameters for DSTU2 can be found on each resource's definition page. Supported search modifiers: `:missing`, `:exact`, `:contains`, `:text`, `:in`, `:not-in`, `:above`, `:below`, `:[type]`, `:not`, and `:recurse`. Supported search result parameters: `_sort`, `_count`, `_include`, `_revinclude`, `_summary=text`, `_summary=data`, and `_elements`. The maximum number of search results returned defaults to 100, which can be overridden by the `_count` parameter up to a maximum limit of 1000. If there are additional results, the returned `Bundle` will contain pagination links. Resources with a total size larger than 5MB or a field count larger than 50,000 might not be fully searchable as the server might trim its generated search index in those cases. Note: FHIR resources are indexed asynchronously, so there might be a slight delay between the time a resource is created or changes and when the change is reflected in search results. For samples and detailed information, see [Searching for FHIR resources](\/healthcare\/docs\/how-tos\/fhir-search) and [Advanced FHIR search features](\/healthcare\/docs\/how-tos\/fhir-advanced-search)."
+                          "description": "Searches for resources in the given FHIR store according to criteria specified as query parameters. Implements the FHIR standard search interaction ([DSTU2](http:\/\/hl7.org\/implement\/standards\/fhir\/DSTU2\/http.html#search), [STU3](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/http.html#search), [R4](http:\/\/hl7.org\/implement\/standards\/fhir\/R4\/http.html#search)) using the search semantics described in the FHIR Search specification ([DSTU2](http:\/\/hl7.org\/implement\/standards\/fhir\/DSTU2\/search.html), [STU3](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/search.html), [R4](http:\/\/hl7.org\/implement\/standards\/fhir\/R4\/search.html)). Supports four methods of search defined by the specification: * `GET [base]?[parameters]` to search across all resources. * `GET [base]\/[type]?[parameters]` to search resources of a specified type. * `POST [base]\/_search?[parameters]` as an alternate form having the same semantics as the `GET` method across all resources. * `POST [base]\/[type]\/_search?[parameters]` as an alternate form having the same semantics as the `GET` method for the specified type. The `GET` and `POST` methods do not support compartment searches. The `POST` method does not support `application\/x-www-form-urlencoded` search parameters. On success, the response body contains a JSON-encoded representation of a `Bundle` resource of type `searchset`, containing the results of the search. Errors generated by the FHIR store contain a JSON-encoded `OperationOutcome` resource describing the reason for the error. If the request cannot be mapped to a valid API method on a FHIR store, a generic GCP error might be returned instead. The server's capability statement, retrieved through capabilities, indicates what search parameters are supported on each FHIR resource. A list of all search parameters defined by the specification can be found in the FHIR Search Parameter Registry ([STU3](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/searchparameter-registry.html), [R4](http:\/\/hl7.org\/implement\/standards\/fhir\/R4\/searchparameter-registry.html)). FHIR search parameters for DSTU2 can be found on each resource's definition page. Supported search modifiers: `:missing`, `:exact`, `:contains`, `:text`, `:in`, `:not-in`, `:above`, `:below`, `:[type]`, `:not`, and `:recurse`. Supported search result parameters: `_sort`, `_count`, `_include`, `_revinclude`, `_summary=text`, `_summary=data`, and `_elements`. The maximum number of search results returned defaults to 100, which can be overridden by the `_count` parameter up to a maximum limit of 1000. If there are additional results, the returned `Bundle` contains a link of `relation` \"next\", which has a `_page_token` parameter for an opaque pagination token that can be used to retrieve the next page. Resources with a total size larger than 5MB or a field count larger than 50,000 might not be fully searchable as the server might trim its generated search index in those cases. Note: FHIR resources are indexed asynchronously, so there might be a slight delay between the time a resource is created or changes and when the change is reflected in search results. For samples and detailed information, see [Searching for FHIR resources](\/healthcare\/docs\/how-tos\/fhir-search) and [Advanced FHIR search features](\/healthcare\/docs\/how-tos\/fhir-advanced-search)."
                         },
                         "search": {
                           "id": "healthcare.projects.locations.datasets.fhirStores.fhir.search",
@@ -5990,7 +6360,7 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "Searches for resources in the given FHIR store according to criteria specified as query parameters. Implements the FHIR standard search interaction ([DSTU2](http:\/\/hl7.org\/implement\/standards\/fhir\/DSTU2\/http.html#search), [STU3](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/http.html#search), [R4](http:\/\/hl7.org\/implement\/standards\/fhir\/R4\/http.html#search)) using the search semantics described in the FHIR Search specification ([DSTU2](http:\/\/hl7.org\/implement\/standards\/fhir\/DSTU2\/search.html), [STU3](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/search.html), [R4](http:\/\/hl7.org\/implement\/standards\/fhir\/R4\/search.html)). Supports four methods of search defined by the specification: * `GET [base]?[parameters]` to search across all resources. * `GET [base]\/[type]?[parameters]` to search resources of a specified type. * `POST [base]\/_search?[parameters]` as an alternate form having the same semantics as the `GET` method across all resources. * `POST [base]\/[type]\/_search?[parameters]` as an alternate form having the same semantics as the `GET` method for the specified type. The `GET` and `POST` methods do not support compartment searches. The `POST` method does not support `application\/x-www-form-urlencoded` search parameters. On success, the response body contains a JSON-encoded representation of a `Bundle` resource of type `searchset`, containing the results of the search. Errors generated by the FHIR store contain a JSON-encoded `OperationOutcome` resource describing the reason for the error. If the request cannot be mapped to a valid API method on a FHIR store, a generic GCP error might be returned instead. The server's capability statement, retrieved through capabilities, indicates what search parameters are supported on each FHIR resource. A list of all search parameters defined by the specification can be found in the FHIR Search Parameter Registry ([STU3](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/searchparameter-registry.html), [R4](http:\/\/hl7.org\/implement\/standards\/fhir\/R4\/searchparameter-registry.html)). FHIR search parameters for DSTU2 can be found on each resource's definition page. Supported search modifiers: `:missing`, `:exact`, `:contains`, `:text`, `:in`, `:not-in`, `:above`, `:below`, `:[type]`, `:not`, and `:recurse`. Supported search result parameters: `_sort`, `_count`, `_include`, `_revinclude`, `_summary=text`, `_summary=data`, and `_elements`. The maximum number of search results returned defaults to 100, which can be overridden by the `_count` parameter up to a maximum limit of 1000. If there are additional results, the returned `Bundle` will contain pagination links. Resources with a total size larger than 5MB or a field count larger than 50,000 might not be fully searchable as the server might trim its generated search index in those cases. Note: FHIR resources are indexed asynchronously, so there might be a slight delay between the time a resource is created or changes and when the change is reflected in search results. For samples and detailed information, see [Searching for FHIR resources](\/healthcare\/docs\/how-tos\/fhir-search) and [Advanced FHIR search features](\/healthcare\/docs\/how-tos\/fhir-advanced-search)."
+                          "description": "Searches for resources in the given FHIR store according to criteria specified as query parameters. Implements the FHIR standard search interaction ([DSTU2](http:\/\/hl7.org\/implement\/standards\/fhir\/DSTU2\/http.html#search), [STU3](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/http.html#search), [R4](http:\/\/hl7.org\/implement\/standards\/fhir\/R4\/http.html#search)) using the search semantics described in the FHIR Search specification ([DSTU2](http:\/\/hl7.org\/implement\/standards\/fhir\/DSTU2\/search.html), [STU3](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/search.html), [R4](http:\/\/hl7.org\/implement\/standards\/fhir\/R4\/search.html)). Supports four methods of search defined by the specification: * `GET [base]?[parameters]` to search across all resources. * `GET [base]\/[type]?[parameters]` to search resources of a specified type. * `POST [base]\/_search?[parameters]` as an alternate form having the same semantics as the `GET` method across all resources. * `POST [base]\/[type]\/_search?[parameters]` as an alternate form having the same semantics as the `GET` method for the specified type. The `GET` and `POST` methods do not support compartment searches. The `POST` method does not support `application\/x-www-form-urlencoded` search parameters. On success, the response body contains a JSON-encoded representation of a `Bundle` resource of type `searchset`, containing the results of the search. Errors generated by the FHIR store contain a JSON-encoded `OperationOutcome` resource describing the reason for the error. If the request cannot be mapped to a valid API method on a FHIR store, a generic GCP error might be returned instead. The server's capability statement, retrieved through capabilities, indicates what search parameters are supported on each FHIR resource. A list of all search parameters defined by the specification can be found in the FHIR Search Parameter Registry ([STU3](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/searchparameter-registry.html), [R4](http:\/\/hl7.org\/implement\/standards\/fhir\/R4\/searchparameter-registry.html)). FHIR search parameters for DSTU2 can be found on each resource's definition page. Supported search modifiers: `:missing`, `:exact`, `:contains`, `:text`, `:in`, `:not-in`, `:above`, `:below`, `:[type]`, `:not`, and `:recurse`. Supported search result parameters: `_sort`, `_count`, `_include`, `_revinclude`, `_summary=text`, `_summary=data`, and `_elements`. The maximum number of search results returned defaults to 100, which can be overridden by the `_count` parameter up to a maximum limit of 1000. If there are additional results, the returned `Bundle` contains a link of `relation` \"next\", which has a `_page_token` parameter for an opaque pagination token that can be used to retrieve the next page. Resources with a total size larger than 5MB or a field count larger than 50,000 might not be fully searchable as the server might trim its generated search index in those cases. Note: FHIR resources are indexed asynchronously, so there might be a slight delay between the time a resource is created or changes and when the change is reflected in search results. For samples and detailed information, see [Searching for FHIR resources](\/healthcare\/docs\/how-tos\/fhir-search) and [Advanced FHIR search features](\/healthcare\/docs\/how-tos\/fhir-advanced-search)."
                         },
                         "search-type": {
                           "id": "healthcare.projects.locations.datasets.fhirStores.fhir.search-type",
@@ -6025,7 +6395,7 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "Searches for resources in the given FHIR store according to criteria specified as query parameters. Implements the FHIR standard search interaction ([DSTU2](http:\/\/hl7.org\/implement\/standards\/fhir\/DSTU2\/http.html#search), [STU3](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/http.html#search), [R4](http:\/\/hl7.org\/implement\/standards\/fhir\/R4\/http.html#search)) using the search semantics described in the FHIR Search specification ([DSTU2](http:\/\/hl7.org\/implement\/standards\/fhir\/DSTU2\/search.html), [STU3](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/search.html), [R4](http:\/\/hl7.org\/implement\/standards\/fhir\/R4\/search.html)). Supports four methods of search defined by the specification: * `GET [base]?[parameters]` to search across all resources. * `GET [base]\/[type]?[parameters]` to search resources of a specified type. * `POST [base]\/_search?[parameters]` as an alternate form having the same semantics as the `GET` method across all resources. * `POST [base]\/[type]\/_search?[parameters]` as an alternate form having the same semantics as the `GET` method for the specified type. The `GET` and `POST` methods do not support compartment searches. The `POST` method does not support `application\/x-www-form-urlencoded` search parameters. On success, the response body contains a JSON-encoded representation of a `Bundle` resource of type `searchset`, containing the results of the search. Errors generated by the FHIR store contain a JSON-encoded `OperationOutcome` resource describing the reason for the error. If the request cannot be mapped to a valid API method on a FHIR store, a generic GCP error might be returned instead. The server's capability statement, retrieved through capabilities, indicates what search parameters are supported on each FHIR resource. A list of all search parameters defined by the specification can be found in the FHIR Search Parameter Registry ([STU3](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/searchparameter-registry.html), [R4](http:\/\/hl7.org\/implement\/standards\/fhir\/R4\/searchparameter-registry.html)). FHIR search parameters for DSTU2 can be found on each resource's definition page. Supported search modifiers: `:missing`, `:exact`, `:contains`, `:text`, `:in`, `:not-in`, `:above`, `:below`, `:[type]`, `:not`, and `:recurse`. Supported search result parameters: `_sort`, `_count`, `_include`, `_revinclude`, `_summary=text`, `_summary=data`, and `_elements`. The maximum number of search results returned defaults to 100, which can be overridden by the `_count` parameter up to a maximum limit of 1000. If there are additional results, the returned `Bundle` will contain pagination links. Resources with a total size larger than 5MB or a field count larger than 50,000 might not be fully searchable as the server might trim its generated search index in those cases. Note: FHIR resources are indexed asynchronously, so there might be a slight delay between the time a resource is created or changes and when the change is reflected in search results. For samples and detailed information, see [Searching for FHIR resources](\/healthcare\/docs\/how-tos\/fhir-search) and [Advanced FHIR search features](\/healthcare\/docs\/how-tos\/fhir-advanced-search)."
+                          "description": "Searches for resources in the given FHIR store according to criteria specified as query parameters. Implements the FHIR standard search interaction ([DSTU2](http:\/\/hl7.org\/implement\/standards\/fhir\/DSTU2\/http.html#search), [STU3](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/http.html#search), [R4](http:\/\/hl7.org\/implement\/standards\/fhir\/R4\/http.html#search)) using the search semantics described in the FHIR Search specification ([DSTU2](http:\/\/hl7.org\/implement\/standards\/fhir\/DSTU2\/search.html), [STU3](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/search.html), [R4](http:\/\/hl7.org\/implement\/standards\/fhir\/R4\/search.html)). Supports four methods of search defined by the specification: * `GET [base]?[parameters]` to search across all resources. * `GET [base]\/[type]?[parameters]` to search resources of a specified type. * `POST [base]\/_search?[parameters]` as an alternate form having the same semantics as the `GET` method across all resources. * `POST [base]\/[type]\/_search?[parameters]` as an alternate form having the same semantics as the `GET` method for the specified type. The `GET` and `POST` methods do not support compartment searches. The `POST` method does not support `application\/x-www-form-urlencoded` search parameters. On success, the response body contains a JSON-encoded representation of a `Bundle` resource of type `searchset`, containing the results of the search. Errors generated by the FHIR store contain a JSON-encoded `OperationOutcome` resource describing the reason for the error. If the request cannot be mapped to a valid API method on a FHIR store, a generic GCP error might be returned instead. The server's capability statement, retrieved through capabilities, indicates what search parameters are supported on each FHIR resource. A list of all search parameters defined by the specification can be found in the FHIR Search Parameter Registry ([STU3](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/searchparameter-registry.html), [R4](http:\/\/hl7.org\/implement\/standards\/fhir\/R4\/searchparameter-registry.html)). FHIR search parameters for DSTU2 can be found on each resource's definition page. Supported search modifiers: `:missing`, `:exact`, `:contains`, `:text`, `:in`, `:not-in`, `:above`, `:below`, `:[type]`, `:not`, and `:recurse`. Supported search result parameters: `_sort`, `_count`, `_include`, `_revinclude`, `_summary=text`, `_summary=data`, and `_elements`. The maximum number of search results returned defaults to 100, which can be overridden by the `_count` parameter up to a maximum limit of 1000. If there are additional results, the returned `Bundle` contains a link of `relation` \"next\", which has a `_page_token` parameter for an opaque pagination token that can be used to retrieve the next page. Resources with a total size larger than 5MB or a field count larger than 50,000 might not be fully searchable as the server might trim its generated search index in those cases. Note: FHIR resources are indexed asynchronously, so there might be a slight delay between the time a resource is created or changes and when the change is reflected in search results. For samples and detailed information, see [Searching for FHIR resources](\/healthcare\/docs\/how-tos\/fhir-search) and [Advanced FHIR search features](\/healthcare\/docs\/how-tos\/fhir-advanced-search)."
                         },
                         "search": {
                           "id": "healthcare.projects.locations.datasets.fhirStores.fhir.search",
@@ -6053,7 +6423,7 @@
                           "scopes": [
                             "https://www.googleapis.com/auth/cloud-platform"
                           ],
-                          "description": "Searches for resources in the given FHIR store according to criteria specified as query parameters. Implements the FHIR standard search interaction ([DSTU2](http:\/\/hl7.org\/implement\/standards\/fhir\/DSTU2\/http.html#search), [STU3](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/http.html#search), [R4](http:\/\/hl7.org\/implement\/standards\/fhir\/R4\/http.html#search)) using the search semantics described in the FHIR Search specification ([DSTU2](http:\/\/hl7.org\/implement\/standards\/fhir\/DSTU2\/search.html), [STU3](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/search.html), [R4](http:\/\/hl7.org\/implement\/standards\/fhir\/R4\/search.html)). Supports four methods of search defined by the specification: * `GET [base]?[parameters]` to search across all resources. * `GET [base]\/[type]?[parameters]` to search resources of a specified type. * `POST [base]\/_search?[parameters]` as an alternate form having the same semantics as the `GET` method across all resources. * `POST [base]\/[type]\/_search?[parameters]` as an alternate form having the same semantics as the `GET` method for the specified type. The `GET` and `POST` methods do not support compartment searches. The `POST` method does not support `application\/x-www-form-urlencoded` search parameters. On success, the response body contains a JSON-encoded representation of a `Bundle` resource of type `searchset`, containing the results of the search. Errors generated by the FHIR store contain a JSON-encoded `OperationOutcome` resource describing the reason for the error. If the request cannot be mapped to a valid API method on a FHIR store, a generic GCP error might be returned instead. The server's capability statement, retrieved through capabilities, indicates what search parameters are supported on each FHIR resource. A list of all search parameters defined by the specification can be found in the FHIR Search Parameter Registry ([STU3](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/searchparameter-registry.html), [R4](http:\/\/hl7.org\/implement\/standards\/fhir\/R4\/searchparameter-registry.html)). FHIR search parameters for DSTU2 can be found on each resource's definition page. Supported search modifiers: `:missing`, `:exact`, `:contains`, `:text`, `:in`, `:not-in`, `:above`, `:below`, `:[type]`, `:not`, and `:recurse`. Supported search result parameters: `_sort`, `_count`, `_include`, `_revinclude`, `_summary=text`, `_summary=data`, and `_elements`. The maximum number of search results returned defaults to 100, which can be overridden by the `_count` parameter up to a maximum limit of 1000. If there are additional results, the returned `Bundle` will contain pagination links. Resources with a total size larger than 5MB or a field count larger than 50,000 might not be fully searchable as the server might trim its generated search index in those cases. Note: FHIR resources are indexed asynchronously, so there might be a slight delay between the time a resource is created or changes and when the change is reflected in search results. For samples and detailed information, see [Searching for FHIR resources](\/healthcare\/docs\/how-tos\/fhir-search) and [Advanced FHIR search features](\/healthcare\/docs\/how-tos\/fhir-advanced-search)."
+                          "description": "Searches for resources in the given FHIR store according to criteria specified as query parameters. Implements the FHIR standard search interaction ([DSTU2](http:\/\/hl7.org\/implement\/standards\/fhir\/DSTU2\/http.html#search), [STU3](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/http.html#search), [R4](http:\/\/hl7.org\/implement\/standards\/fhir\/R4\/http.html#search)) using the search semantics described in the FHIR Search specification ([DSTU2](http:\/\/hl7.org\/implement\/standards\/fhir\/DSTU2\/search.html), [STU3](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/search.html), [R4](http:\/\/hl7.org\/implement\/standards\/fhir\/R4\/search.html)). Supports four methods of search defined by the specification: * `GET [base]?[parameters]` to search across all resources. * `GET [base]\/[type]?[parameters]` to search resources of a specified type. * `POST [base]\/_search?[parameters]` as an alternate form having the same semantics as the `GET` method across all resources. * `POST [base]\/[type]\/_search?[parameters]` as an alternate form having the same semantics as the `GET` method for the specified type. The `GET` and `POST` methods do not support compartment searches. The `POST` method does not support `application\/x-www-form-urlencoded` search parameters. On success, the response body contains a JSON-encoded representation of a `Bundle` resource of type `searchset`, containing the results of the search. Errors generated by the FHIR store contain a JSON-encoded `OperationOutcome` resource describing the reason for the error. If the request cannot be mapped to a valid API method on a FHIR store, a generic GCP error might be returned instead. The server's capability statement, retrieved through capabilities, indicates what search parameters are supported on each FHIR resource. A list of all search parameters defined by the specification can be found in the FHIR Search Parameter Registry ([STU3](http:\/\/hl7.org\/implement\/standards\/fhir\/STU3\/searchparameter-registry.html), [R4](http:\/\/hl7.org\/implement\/standards\/fhir\/R4\/searchparameter-registry.html)). FHIR search parameters for DSTU2 can be found on each resource's definition page. Supported search modifiers: `:missing`, `:exact`, `:contains`, `:text`, `:in`, `:not-in`, `:above`, `:below`, `:[type]`, `:not`, and `:recurse`. Supported search result parameters: `_sort`, `_count`, `_include`, `_revinclude`, `_summary=text`, `_summary=data`, and `_elements`. The maximum number of search results returned defaults to 100, which can be overridden by the `_count` parameter up to a maximum limit of 1000. If there are additional results, the returned `Bundle` contains a link of `relation` \"next\", which has a `_page_token` parameter for an opaque pagination token that can be used to retrieve the next page. Resources with a total size larger than 5MB or a field count larger than 50,000 might not be fully searchable as the server might trim its generated search index in those cases. Note: FHIR resources are indexed asynchronously, so there might be a slight delay between the time a resource is created or changes and when the change is reflected in search results. For samples and detailed information, see [Searching for FHIR resources](\/healthcare\/docs\/how-tos\/fhir-search) and [Advanced FHIR search features](\/healthcare\/docs\/how-tos\/fhir-advanced-search)."
                         },
                         "Patient-everything": {
                           "id": "healthcare.projects.locations.datasets.fhirStores.fhir.Patient-everything",
@@ -6334,6 +6704,42 @@
                         "https://www.googleapis.com/auth/cloud-platform"
                       ],
                       "description": "Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`."
+                    }
+                  }
+                }
+              }
+            },
+            "services": {
+              "resources": {
+                "nlp": {
+                  "methods": {
+                    "analyzeEntities": {
+                      "id": "healthcare.projects.locations.services.nlp.analyzeEntities",
+                      "path": "v1/{+nlpService}:analyzeEntities",
+                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/services/nlp:analyzeEntities",
+                      "httpMethod": "POST",
+                      "parameters": {
+                        "nlpService": {
+                          "description": "The resource name of the service of the form: \"projects\/{project_id}\/locations\/{location_id}\/services\/nlp\".",
+                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/services\/nlp$",
+                          "location": "path",
+                          "required": true,
+                          "type": "string"
+                        }
+                      },
+                      "parameterOrder": [
+                        "nlpService"
+                      ],
+                      "request": {
+                        "$ref": "AnalyzeEntitiesRequest"
+                      },
+                      "response": {
+                        "$ref": "AnalyzeEntitiesResponse"
+                      },
+                      "scopes": [
+                        "https://www.googleapis.com/auth/cloud-platform"
+                      ],
+                      "description": "Analyze heathcare entity in a document. Its response includes the recognized entity mentions and the relationships between them. AnalyzeEntities uses context aware models to detect entities."
                     }
                   }
                 }

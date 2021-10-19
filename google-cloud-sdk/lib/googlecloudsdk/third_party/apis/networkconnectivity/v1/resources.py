@@ -51,6 +51,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_GLOBAL_POLICYBASEDROUTES = (
+      'projects.locations.global.policyBasedRoutes',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/global/policyBasedRoutes/'
+              '{policyBasedRoutesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_OPERATIONS = (
       'projects.locations.operations',
       '{+name}',

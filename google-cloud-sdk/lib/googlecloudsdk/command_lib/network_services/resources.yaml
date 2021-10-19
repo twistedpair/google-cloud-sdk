@@ -103,3 +103,15 @@ tcpRoute:
     parameter_name: tcpRoutesId
     attribute_name: tcp_route
     help: Id of the tcp route.
+
+serviceBinding:
+  name: service binding
+  collection: networkservices.projects.locations.serviceBindings
+  request_id_field: serviceBindingId
+  attributes:
+  - *project
+  - *location
+  - &serviceBinding
+    parameter_name: serviceBindingsId
+    attribute_name: service_binding
+    help: Id of the service binding.

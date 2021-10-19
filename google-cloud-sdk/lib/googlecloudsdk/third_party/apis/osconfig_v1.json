@@ -910,12 +910,14 @@
           "enumDescriptions": [
             "Invalid. A frequency must be specified.",
             "Indicates that the frequency should be expressed in terms of weeks.",
-            "Indicates that the frequency should be expressed in terms of months."
+            "Indicates that the frequency should be expressed in terms of months.",
+            "Indicates that the frequency should be expressed in terms of days."
           ],
           "enum": [
             "FREQUENCY_UNSPECIFIED",
             "WEEKLY",
-            "MONTHLY"
+            "MONTHLY",
+            "DAILY"
           ]
         },
         "weekly": {
@@ -3050,6 +3052,40 @@
                 "https://www.googleapis.com/auth/cloud-platform"
               ],
               "description": "Delete an OS Config patch deployment."
+            },
+            "patch": {
+              "id": "osconfig.projects.patchDeployments.patch",
+              "path": "v1/{+name}",
+              "flatPath": "v1/projects/{projectsId}/patchDeployments/{patchDeploymentsId}",
+              "httpMethod": "PATCH",
+              "parameters": {
+                "name": {
+                  "description": "Unique name for the patch deployment resource in a project. The patch deployment name is in the form: `projects\/{project_id}\/patchDeployments\/{patch_deployment_id}`. This field is ignored when you create a new patch deployment.",
+                  "pattern": "^projects\/[^\/]+\/patchDeployments\/[^\/]+$",
+                  "location": "path",
+                  "required": true,
+                  "type": "string"
+                },
+                "updateMask": {
+                  "description": "Optional. Field mask that controls which fields of the patch deployment should be updated.",
+                  "location": "query",
+                  "type": "string",
+                  "format": "google-fieldmask"
+                }
+              },
+              "parameterOrder": [
+                "name"
+              ],
+              "request": {
+                "$ref": "PatchDeployment"
+              },
+              "response": {
+                "$ref": "PatchDeployment"
+              },
+              "scopes": [
+                "https://www.googleapis.com/auth/cloud-platform"
+              ],
+              "description": "Update an OS Config patch deployment."
             }
           }
         },
@@ -3311,37 +3347,34 @@
             "instances": {
               "resources": {
                 "osPolicyAssignments": {
-                  "methods": {
-                    "getReport": {
-                      "id": "osconfig.projects.locations.instances.osPolicyAssignments.getReport",
-                      "path": "v1/{+name}",
-                      "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}/osPolicyAssignments/{osPolicyAssignmentsId}/report",
-                      "httpMethod": "GET",
-                      "parameters": {
-                        "name": {
-                          "description": "Required. API resource name for OS policy assignment report. Format: `\/projects\/{project}\/locations\/{location}\/instances\/{instance}\/osPolicyAssignments\/{assignment}\/report` For `{project}`, either `project-number` or `project-id` can be provided. For `{instance_id}`, either Compute Engine `instance-id` or `instance-name` can be provided. For `{assignment_id}`, the OSPolicyAssignment id must be provided.",
-                          "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+\/osPolicyAssignments\/[^\/]+\/report$",
-                          "location": "path",
-                          "required": true,
-                          "type": "string"
-                        }
-                      },
-                      "parameterOrder": [
-                        "name"
-                      ],
-                      "response": {
-                        "$ref": "OSPolicyAssignmentReport"
-                      },
-                      "scopes": [
-                        "https://www.googleapis.com/auth/cloud-platform"
-                      ],
-                      "description": "Get the OS policy asssignment report for the specified Compute Engine VM instance."
-                    }
-                  }
-                  ,
                   "resources": {
                     "reports": {
                       "methods": {
+                        "get": {
+                          "id": "osconfig.projects.locations.instances.osPolicyAssignments.reports.get",
+                          "path": "v1/{+name}",
+                          "flatPath": "v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}/osPolicyAssignments/{osPolicyAssignmentsId}/report",
+                          "httpMethod": "GET",
+                          "parameters": {
+                            "name": {
+                              "description": "Required. API resource name for OS policy assignment report. Format: `\/projects\/{project}\/locations\/{location}\/instances\/{instance}\/osPolicyAssignments\/{assignment}\/report` For `{project}`, either `project-number` or `project-id` can be provided. For `{instance_id}`, either Compute Engine `instance-id` or `instance-name` can be provided. For `{assignment_id}`, the OSPolicyAssignment id must be provided.",
+                              "pattern": "^projects\/[^\/]+\/locations\/[^\/]+\/instances\/[^\/]+\/osPolicyAssignments\/[^\/]+\/report$",
+                              "location": "path",
+                              "required": true,
+                              "type": "string"
+                            }
+                          },
+                          "parameterOrder": [
+                            "name"
+                          ],
+                          "response": {
+                            "$ref": "OSPolicyAssignmentReport"
+                          },
+                          "scopes": [
+                            "https://www.googleapis.com/auth/cloud-platform"
+                          ],
+                          "description": "Get the OS policy asssignment report for the specified Compute Engine VM instance."
+                        },
                         "list": {
                           "id": "osconfig.projects.locations.instances.osPolicyAssignments.reports.list",
                           "path": "v1/{+parent}/reports",
